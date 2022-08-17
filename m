@@ -2,78 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71570C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A92C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234161AbiHPLaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59280 "EHLO
+        id S233952AbiHPLaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbiHPL3a (ORCPT
+        with ESMTP id S234748AbiHPLaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:29:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052D1D31DB;
-        Tue, 16 Aug 2022 03:46:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E85CB8169E;
-        Tue, 16 Aug 2022 10:46:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9CAC433C1;
-        Tue, 16 Aug 2022 10:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660646807;
-        bh=qTgkAUd/vi2DE12y645WmWS69rJJiMlcQOUJOELNr/o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fOIjjW1Yqm4cTqTpyRsnRW3lWfVjjJwTxpyTo7LRNDNe5hSLt8b9/0BAjmYquA79q
-         l9ZOUb1oVHb8JpwDUg8Jjfo91bZOTuYeSvdAfskaraN+s+VAEfQINbn0t/6RnKpMxT
-         ZIDeHm3ccKD9C9E+b4feK0rgRxLRTyM/ilNYo/r7ZRpHQcYZAC7MEiRYig4IZmN7dx
-         QNHSXCvpwORccOR739Z1brNpB6GzviQ7wJDGnURXv4EMth+DCA/gmegw+//qJH+7zK
-         wYcwgb2kFeOPywg5lPjOe2QNJYMq7hM7tTq1LdZHzFDcW05Ld7fqDKElU6nD/xlpnu
-         Yvbgnmg6KtlNQ==
-Date:   Tue, 16 Aug 2022 12:46:42 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Hao Sun <sunhao.th@gmail.com>, Jiacheng Xu <stitch@zju.edu.cn>,
-        stable@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] fs: fix UAF/GPF bug in nilfs_mdt_destroy
-Message-ID: <20220816104642.qmjegdtthyzy5xbv@wittgenstein>
-References: <20220816040859.659129-1-dzm91@hust.edu.cn>
+        Tue, 16 Aug 2022 07:30:01 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD2F12080;
+        Tue, 16 Aug 2022 03:47:39 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6SRf31mKzXdRB;
+        Tue, 16 Aug 2022 18:43:26 +0800 (CST)
+Received: from huawei.com (10.67.174.191) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 16 Aug
+ 2022 18:47:37 +0800
+From:   Li Hua <hucool.lihua@huawei.com>
+To:     <peterz@infradead.org>
+CC:     <bristot@redhat.com>, <bsegall@google.com>,
+        <dietmar.eggemann@arm.com>, <hucool.lihua@huawei.com>,
+        <juri.lelli@redhat.com>, <linux-kernel@vger.kernel.org>,
+        <mgorman@suse.de>, <mingo@redhat.com>, <rostedt@goodmis.org>,
+        <stable@vger.kernel.org>, <vincent.guittot@linaro.org>,
+        <vschneid@redhat.com>
+Subject: Re: [PATCH -next] sched/cputime: Fix the bug of reading time backward from /proc/stat
+Date:   Wed, 17 Aug 2022 08:44:45 +0800
+Message-ID: <20220817004445.43216-1-hucool.lihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <YvoAk1pnU4gZcFJ1@worktop.programming.kicks-ass.net>
+References: <YvoAk1pnU4gZcFJ1@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220816040859.659129-1-dzm91@hust.edu.cn>
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.191]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 12:08:58PM +0800, Dongliang Mu wrote:
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> 
-> In alloc_inode, inode_init_always() could return -ENOMEM if
-> security_inode_alloc() fails, which causes inode->i_private
-> uninitialized. Then nilfs_is_metadata_file_inode() returns
-> true and nilfs_free_inode() wrongly calls nilfs_mdt_destroy(),
-> which frees the uninitialized inode->i_private
-> and leads to crashes(e.g., UAF/GPF).
-> 
-> Fix this by moving security_inode_alloc just prior to
-> this_cpu_inc(nr_inodes)
-> 
-> Link: https://lkml.kernel.org/r/CAFcO6XOcf1Jj2SeGt=jJV59wmhESeSKpfR0omdFRq+J9nD1vfQ@mail.gmail.com
-> Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-> Reported-by: Hao Sun <sunhao.th@gmail.com>
-> Reported-by: Jiacheng Xu <stitch@zju.edu.cn>
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: stable@vger.kernel.org
-> ---
+It's unreadable, I'm sorry about that.
 
-Looks good to me,
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+The CPU statistics time read from /proc/stat should only be incremented. The bug
+I found is that the value read latest is smaller than the former.
+
+The root cause of the problem is that the "vtime->utime" and "delta" are temporarily
+added to the stack and show to the user. The value of 'vtime->utime + delta' depends
+on which task the CPU is executing. As bellow:
+show_stat -> kcpustat_cpu_fetch -> kcpustat_cpu_fetch_vtime -> cpustat[CPUTIME_USER] += vtime->utime + delta
