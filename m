@@ -2,486 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0FAC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A47D9C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242198AbiHQXDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 19:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
+        id S241884AbiHQXFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 19:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242086AbiHQXDl (ORCPT
+        with ESMTP id S232457AbiHQXFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 19:03:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E47A50F6;
-        Wed, 17 Aug 2022 16:03:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9ECFB81FCC;
-        Wed, 17 Aug 2022 23:03:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F1C4C43140;
-        Wed, 17 Aug 2022 23:03:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660777416;
-        bh=lgW5f/v0qSxgkHrNjAqybtRTzfetRdmdVzUBSAlIV5w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZFaYqrKzgvt6kvzkh+Npk/YVeKgZI0fzIbR//n3JUdyyEtGVS9P5H5Q5GdfgPaIgQ
-         /7qDmuvHATEpBajqKaB5miDiVpR+ombNoJZaS2siIY2aojzXqnZEolBcsIgbU78vTZ
-         KVhf7iGy/U6Zpy/jOKMBzhqNmtmD7K1/bvYq14fgpT5lwl12IOaIRmJtDyid2tl17w
-         0xKFpcDK4nuC7eyC7F9mJNn0p/N4STKPqrly/UjVpejaQ7I5eeQnhhnAVbdYQYjHnU
-         iSM4iFPf4wzKOxkrOPcQ8Lrg/Lg3kWmJINAasvEoFB1GllriVqPVJwvA4T6wax7Eik
-         q7V3/LWcySvZg==
-Received: by pali.im (Postfix)
-        id 618D927CB; Thu, 18 Aug 2022 01:03:33 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 2/4] PCI: mvebu: Implement support for interrupts on emulated bridge
-Date:   Thu, 18 Aug 2022 01:00:34 +0200
-Message-Id: <20220817230036.817-3-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220817230036.817-1-pali@kernel.org>
-References: <20220817230036.817-1-pali@kernel.org>
+        Wed, 17 Aug 2022 19:05:52 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2065.outbound.protection.outlook.com [40.107.243.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D52FAB4E5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:05:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YuqzDhXhqxEolWP5FhbGArCq/Sz4DHa93E7t/zHhfTwDU6fG/2GOeKCEYCY9J47skpDrRc6+1Gc3qEy6+qtdjWbXySI0hlDhnz3J+ueDjPUKsQLG14b/+gv+VO7nhZoCVbbPNyCqraFCDe3DHUE4+alUhHHieuCGZUysLx7ipTgrv96+r0hO1ct7F5hG+0/S2r3FXJZI/vx3/bIvNsdA2TLvYMgrs+EE4qEQGkwe0VRM/V30zYRFcao9aWDOknEI1NZexjPLAIlVZKoKE6jjq1nSUn4sOP7Wmz4MucNlA+GdR7FAhNAKucLANhLLc6H4fz2mol897Rqw2UjCb5OkHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5x+XSbyXzVn/BM/TyfJjFuaJolS10xhq7JVoEGrVyiM=;
+ b=RQiubdtHD2/bAmDHMRGAvs2u5SrNU4EdsgMpr9cPJ8AIeNPfd8ixMy03nnY28f/ZRnYRciAZ4NJk5OaaitHK2lmz7lnbgc2NOysH+Tp1HqAnLz925J6CbQlVDp/CWKTDYq3+D6rjbPGMZ53MKSKHrNohtj/Ic3jF/imeUZrXaisgaUgnDM1q4VRqSkd+RYHJN8lySSFIVcMa0pfs/hNtnS2zaSKpGd4h8S+L/ywOq8I75DZAKwLOjiGdAD66uzZZREm/VAzrcS9y2+bSCxcny2Xuhqntf37KO4UVacj0/ShQ+jUPgTNbha++2UJwbf2YbOeyHJFdpKX0+dsTni3+tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5x+XSbyXzVn/BM/TyfJjFuaJolS10xhq7JVoEGrVyiM=;
+ b=aOoJcaChuXom7RO/bWNw5Mibp/Jsy15IiAXsORZv23TtzFDE20UhLrV/jTqtEpdWarZEGaKn8Yakhg450cGDNLlNDBHANjvq2HYAxOCZxccus8b1yDCfhEgwtOPK/9B5vVNHrCfO472u3Uu0Lm/+G5Xc3sOz6Xt4t4OH7VydjmDprLNZ2EPeE+nR+/TQspCed4y1t0d4vO6QswILWWaGJBCn2CadomCGR+P/i1g1/YW1cWYM0DQxnm3YVyizp39R+2a+AVmyUfaPbziYj0fewKoU8KXSHrgvd5VCRBB0R7wCx0EeAbdKr0fzrd4Lkp5VreZ8VJHEiqbOgFLoafdMJQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
+ by BL1PR12MB5048.namprd12.prod.outlook.com (2603:10b6:208:30a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Wed, 17 Aug
+ 2022 23:05:49 +0000
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5]) by BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5%9]) with mapi id 15.20.5525.011; Wed, 17 Aug 2022
+ 23:05:49 +0000
+Message-ID: <20370ebb-8e63-2065-307a-81fa874eced2@nvidia.com>
+Date:   Wed, 17 Aug 2022 16:05:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 2/2] mm/gup.c: Refactor
+ check_and_migrate_movable_pages()
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>
+References: <487960bf67c7273ff5606c76f73bb51271bc7b90.1660269441.git-series.apopple@nvidia.com>
+ <6b61e9bf7c65f78524db32ba3e65a7eb6b8a76a0.1660269441.git-series.apopple@nvidia.com>
+ <YvpxOyrDBUHagpC6@nvidia.com> <87edxgvixy.fsf@nvdebian.thelocal>
+ <Yvt/hZYfSvlCbU02@nvidia.com> <87wnb7tycb.fsf@nvdebian.thelocal>
+ <YvzaXeRox/9fqfdW@nvidia.com>
+ <de9a3db9-6130-fe07-88ec-7e728ff5701c@nvidia.com>
+ <Yv1wntznpzSXuTYh@nvidia.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <Yv1wntznpzSXuTYh@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR13CA0020.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::33) To BY5PR12MB4130.namprd12.prod.outlook.com
+ (2603:10b6:a03:20b::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ed9092f2-8d39-4c01-93c3-08da80a506a0
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5048:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e/lZoDzIoOPQfbqMH8jy7qg1SrMH6peqiDUJ+Tc5SbUIBUBrpHjSz2Wf6luGEYLeH/q+gkVSTfA2c+5QTOxVF5fOmmIu3tZQsqPxq6CuGEJImcggrGAaDuTWiKr1LHU7LyE1U0IV38zbhWczYG+QGrU+WkC6ukWmfFSzhar05LsFDqp7HY41o3JVBHt6HwZaPQS+lhuoAzwwn7K63QMh3O/asT47wrr6ROor3/pdcpKi05S7HH3zHyYNNo3r9gH3VXBg/RfguiwizjLhx0w8g8yeYQhr6TCERiB30qLEiGDGedKiuzR4wjta1z3GABLFU/acrV6S/q1qJUzvkE9w7AA/vB2iQx9WPyCYKqPdnBqzWUl1JZxAkJxLArRqyC90tyyZK+ZpFjUA7caJTrjAT6BUlB0YVR9LSAgsSEzSX6EVRNQZJLJln49V5JCTmTgBHZqrIke01FGOAOgT+1BQ9XVYZRiV+47ZEbMle7/0NTfJLp4f7iethC3XkrVPb+44NY7ec6KyKrt/oUsHP4HLgbedK5kJ+GqhNTxv2JczG9XzSEwm1up6tIkVekrcypf1glRaWvedhCbmhrSowNtxyh4XBBsC421ue3JVNEh8VuAoVaAiiRihhW3b9J1/MszKbGhO6rt6nwAA9V7tU5Kbi3HyVa0zCrIOHUZNaFf9Y6CKoeL3SI5U1qup5YUvQmU4DqitLOR9uDjXJqUdYwEy/ZRKrocaX4r+Yr/rsX1nWiHk40P8jnJ9HqGbfMNHF+8wMy71kcTSirE9VaZ3hx/asu7X5sfzuWxNzcuTNea9PNO8XDGV1bnJ+bVLeDf3FQY6phpF2YTgio17D8ct9VZi2NTAd7ztTrVZoD5EyCmfP+keN9tnFxk3UyUxSN0IrOw4
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(346002)(136003)(396003)(26005)(86362001)(53546011)(186003)(31696002)(36756003)(31686004)(2616005)(83380400001)(6512007)(6506007)(316002)(4744005)(54906003)(478600001)(966005)(6636002)(41300700001)(66476007)(66556008)(8936002)(7416002)(66946007)(8676002)(5660300002)(2906002)(6862004)(4326008)(38100700002)(6486002)(37006003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TEYwcEpxUjFrSjd4MWhFTzRLaDN6UE15OFlzWkJVaTZDOEFwRCtmL0ZYZVF1?=
+ =?utf-8?B?dGp4R0dCUklZeUk3ajMwNm9BcW9adXNCRXpNYkJHM01ORHlQQ0l1QnN3RS9B?=
+ =?utf-8?B?WXh3WTVwbHlMckZJMGNiRVFpL0RzbFh4YUNHWkE5NktmdnY2aHNBU0VHS05Y?=
+ =?utf-8?B?a2NhK3F4V3Fib0g4UmJZTDNFb1FoOVVnd2JCM2lXTlFBaHpUcXJIN0xDOEJ3?=
+ =?utf-8?B?UFV5RVFja1hjek9SZUt1UHVzeC9qRjF5dHRUV3J4WlNwREJtMlhPbnhZV0xs?=
+ =?utf-8?B?NXB3bTNURDlqTGlGV2daRW9JR29TRmprR3hyalhtZ0dUSGI4Rk5UeDJZZlB2?=
+ =?utf-8?B?OGljTnhCaEtrUjFvNk5MaHovbFhrVC93bytGNjYwQnYwR1U5UjI4b0dKdjJW?=
+ =?utf-8?B?S3Rqc0JnQXBEbWJ0UEt6WTZQVTJGcGNwbXBVcno3ZE84RXRIbGVoblFNMncv?=
+ =?utf-8?B?QkdwUURiU3pXbTQ5NmdxUjFyWldwMnhxRElLR1N1YWt3QXFhT1hWa2hZbk9W?=
+ =?utf-8?B?NDVtUWNSTU5LTTB3TkEvY2xNWnJCWjFYcVNjeHVUNTVUT2lUWE9kSXMrQ0Q2?=
+ =?utf-8?B?ZXRPbVp3aUZLcXljK1BvdGsvK25aNDY3VzVMOWFhR3ZYckk4bStGeWhMc1hS?=
+ =?utf-8?B?MFhsZjFpemUrY1krWXpGQXBXMmRlK0p2VmVzbEo2QmcramkralRtdmFrODZ0?=
+ =?utf-8?B?bTl2ZUo0V2VzUFhGa0tFRTVsc1B5VW9IVmRNaFI3N2pNeHpJTDA4T2d1dU1o?=
+ =?utf-8?B?QUowQ2w2VFFFNXFRVVAyU3IybTZnZERkY24xeTc1UllCaUhYcVRvcHViMkZK?=
+ =?utf-8?B?VVcwMXdJTVFrUStocS9jcnJ1YkIwZ0EzbzFybVArdTBZaHBKUlZ0RnI2aWFh?=
+ =?utf-8?B?cFFBWGNwWTdkNkhIOEdSdE9vL2pRd05ROG1FMG42d1kxL1JYZVA5T2JUQlpX?=
+ =?utf-8?B?YkZILzNmUEFOV3lidERhZlNzL21ZWkhVZ2I1aUF6S1pVd0U0K1NFRFFjOExD?=
+ =?utf-8?B?V0J1RkQ2UHIxWnJ1azRESXprZjB4TFY0NmgvL3RrRFlVOGNhTFNNc3BuZU5R?=
+ =?utf-8?B?VDh0dEtHNmJPVGE0WE1FOC9WNlUwZlRpbEhFVC9jVitzVzQ1YVVmRnhzOXdt?=
+ =?utf-8?B?bEZiVE1HYUZ2aWFod1pmbG9MMXQvdGxlclllMUpvNkpRUjZYcGtIbGJoSXl0?=
+ =?utf-8?B?RWlPWXZKaWIvSk1xY01CdGV4WFM3MFF5WUs4d3ZjTktZbUZLSlR3dDlsNC9N?=
+ =?utf-8?B?UGx6Smsvd1NlZzhQT01kSHh1YUx1YlB3ZExZV1llTm4xOG40b0RlZFF2QnVt?=
+ =?utf-8?B?bXNFczhVRzUwS3Nlelk2TGlDeGtDWW9icGVJZE9BOUZXL3BjZ251TE5vYWpZ?=
+ =?utf-8?B?VnZNd21PL1VWTTA3dWJ3Z21uU3hqMDU5WjVMMkdPYTB4RUZLSHNuUUk3Z25p?=
+ =?utf-8?B?eksrNUNERitWZ24vWWQyVGx1TGpTVkxjWVJYY0NvZTZmTld1RHdxQ2pkNU9U?=
+ =?utf-8?B?MkdDVkFzOW9oTCt6SGhKUU1wUXh3Nyt1NGR4TUFtQkNpQjNycTRVOTVlSzZx?=
+ =?utf-8?B?dEJsV0xoZE5kcVhrT1dPMjBWSkxaZFg3WTZvYnIyVDVOellobEJ2Skl0NC9s?=
+ =?utf-8?B?KzA2UytzbzVZY2N0Z2QzQUpYVncwdFdkWXBaL3NONlViYW5rb2k3Yjd0Q2p4?=
+ =?utf-8?B?dEh3cU5Qd1FNdjA4VWt5UFFXMUlsYks2S1kwbE9QRFVGTlEvVWdWR09qSWdw?=
+ =?utf-8?B?aEUvT2JhdzJBWEJ6aVQrUnUzVm9PbXBJVmdzS1hpaE54YVEzU1h4WllHVTdG?=
+ =?utf-8?B?UUMyQ3ExNGlzSnp2TjQzNS9NM0oxbTdRUTFzbGQxdncxRnZPMTluaFFENTdC?=
+ =?utf-8?B?QnlLVkQxQnFVRlZPMUtyNFF1NW45QVBNU21XdFU4eHk4bllzaG00dWh5bnBw?=
+ =?utf-8?B?UHd6eEFNeGhTcVRhdXd1ZUVCVUpNMUpTekpiblUweHBwNzYwUFlQd09rbFZZ?=
+ =?utf-8?B?bUswdjFUbTNYMFJscTB4K3pxOW1iQkR5Q2pXemN5TmlVK3Y3TG9aNmtsUDJ6?=
+ =?utf-8?B?c2Q4MkFiTmRTZHhhV0lhemx0NjNsVkhsN2llcCtFRE1NUU1YOU5BWmk5ZGhz?=
+ =?utf-8?Q?9lB9xM59M2DKVmnve6O2uTimJ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed9092f2-8d39-4c01-93c3-08da80a506a0
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 23:05:49.6742
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Qj8800Px3hWIPIZxSTKmdoTA1cf/LbUTQq7JsjRckqbz/xQ4tM+4tqDfTOQG1yo6RkV2qLcjxQhdM/JEgE5jbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5048
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds support for PME and ERR interrupts reported by emulated bridge
-(for PME and AER kernel drivers) via new Root Port irq chip as these
-interrupts from PCIe Root Ports are handled by mvebu hardware completely
-separately from INTx and MSI interrupts send by real PCIe devices.
+On 8/17/22 15:50, Jason Gunthorpe wrote:
+> 
+> But why return 0 from the helper function in the first place?
+> 
 
-With this change, kernel PME and AER drivers start working as they can
-acquire required interrupt lines (provided by mvebu rp virtual irq chip).
+The caller is looking for three distinct return code cases: 0, -EAGAIN,
+or some other -errno.  Unless you restructure more, you need all three
+of those cases. The 0 case leads to the caller, __gup_longterm_locked,
+returning nr_pages.
 
-Note that for this support, device tree files has to be properly adjusted
-to provide "interrupts" or "interrupts-extended" property with error
-interrupt source and "interrupt-names" property with "error" string.
+Here is the comment block that I recommended earlier in this thread, that
+documents those cases:
 
-If device tree files do not provide these properties then driver would work
-as before and would not provide interrupts on emulated bridge, like before.
+    https://lore.kernel.org/r/dc8fd102-ba30-d980-bdbb-11f39326103d@nvidia.com
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/pci/controller/pci-mvebu.c | 256 ++++++++++++++++++++++++++---
- 1 file changed, 237 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 54ce5d43b695..e69bdaa8de43 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -56,8 +56,16 @@
- #define PCIE_CONF_DATA_OFF	0x18fc
- #define PCIE_INT_CAUSE_OFF	0x1900
- #define PCIE_INT_UNMASK_OFF	0x1910
-+#define  PCIE_INT_DET_COR		BIT(8)
-+#define  PCIE_INT_DET_NONFATAL		BIT(9)
-+#define  PCIE_INT_DET_FATAL		BIT(10)
-+#define  PCIE_INT_ERR_FATAL		BIT(16)
-+#define  PCIE_INT_ERR_NONFATAL		BIT(17)
-+#define  PCIE_INT_ERR_COR		BIT(18)
- #define  PCIE_INT_INTX(i)		BIT(24+i)
- #define  PCIE_INT_PM_PME		BIT(28)
-+#define  PCIE_INT_DET_MASK		(PCIE_INT_DET_COR | PCIE_INT_DET_NONFATAL | PCIE_INT_DET_FATAL)
-+#define  PCIE_INT_ERR_MASK		(PCIE_INT_ERR_FATAL | PCIE_INT_ERR_NONFATAL | PCIE_INT_ERR_COR)
- #define  PCIE_INT_ALL_MASK		GENMASK(31, 0)
- #define PCIE_CTRL_OFF		0x1a00
- #define  PCIE_CTRL_X1_MODE		0x0001
-@@ -120,9 +128,12 @@ struct mvebu_pcie_port {
- 	struct resource regs;
- 	u8 slot_power_limit_value;
- 	u8 slot_power_limit_scale;
-+	struct irq_domain *rp_irq_domain;
- 	struct irq_domain *intx_irq_domain;
- 	raw_spinlock_t irq_lock;
-+	int error_irq;
- 	int intx_irq;
-+	bool pme_pending;
- };
- 
- static inline void mvebu_writel(struct mvebu_pcie_port *port, u32 val, u32 reg)
-@@ -321,9 +332,19 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- 	/* Clear all interrupt causes. */
- 	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
- 
--	/* Check if "intx" interrupt was specified in DT. */
--	if (port->intx_irq > 0)
--		return;
-+	/*
-+	 * Unmask all error interrupts which are internally generated.
-+	 * They cannot be disabled by SERR# Enable bit in PCI Command register,
-+	 * see Figure 6-3: Pseudo Logic Diagram for Error Message Controls in
-+	 * PCIe base specification.
-+	 * Internally generated mvebu interrupts are reported via mvebu summary
-+	 * interrupt which requires "error" interrupt to be specified in DT.
-+	 */
-+	if (port->error_irq > 0) {
-+		unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-+		unmask |= PCIE_INT_DET_MASK;
-+		mvebu_writel(port, unmask, PCIE_INT_UNMASK_OFF);
-+	}
- 
- 	/*
- 	 * Fallback code when "intx" interrupt was not specified in DT:
-@@ -335,10 +356,12 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- 	 * performance penalty as every PCIe interrupt handler needs to be
- 	 * called when some interrupt is triggered.
- 	 */
--	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
--	unmask |= PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
--		  PCIE_INT_INTX(2) | PCIE_INT_INTX(3);
--	mvebu_writel(port, unmask, PCIE_INT_UNMASK_OFF);
-+	if (port->intx_irq <= 0) {
-+		unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-+		unmask |= PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
-+			  PCIE_INT_INTX(2) | PCIE_INT_INTX(3);
-+		mvebu_writel(port, unmask, PCIE_INT_UNMASK_OFF);
-+	}
- }
- 
- static struct mvebu_pcie_port *mvebu_pcie_find_port(struct mvebu_pcie *pcie,
-@@ -603,11 +626,16 @@ mvebu_pci_bridge_emul_base_conf_read(struct pci_bridge_emul *bridge,
- 	case PCI_INTERRUPT_LINE: {
- 		/*
- 		 * From the whole 32bit register we support reading from HW only
--		 * one bit: PCI_BRIDGE_CTL_BUS_RESET.
-+		 * two bits: PCI_BRIDGE_CTL_BUS_RESET and PCI_BRIDGE_CTL_SERR.
- 		 * Other bits are retrieved only from emulated config buffer.
- 		 */
- 		__le32 *cfgspace = (__le32 *)&bridge->conf;
- 		u32 val = le32_to_cpu(cfgspace[PCI_INTERRUPT_LINE / 4]);
-+		if ((mvebu_readl(port, PCIE_INT_UNMASK_OFF) &
-+		      PCIE_INT_ERR_MASK) == PCIE_INT_ERR_MASK)
-+			val |= PCI_BRIDGE_CTL_SERR << 16;
-+		else
-+			val &= ~(PCI_BRIDGE_CTL_SERR << 16);
- 		if (mvebu_readl(port, PCIE_CTRL_OFF) & PCIE_CTRL_MASTER_HOT_RESET)
- 			val |= PCI_BRIDGE_CTL_BUS_RESET << 16;
- 		else
-@@ -675,6 +703,11 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
- 		break;
- 	}
- 
-+	case PCI_EXP_RTCTL:
-+		*value = (mvebu_readl(port, PCIE_INT_UNMASK_OFF) &
-+			  PCIE_INT_PM_PME) ? PCI_EXP_RTCTL_PMEIE : 0;
-+		break;
-+
- 	case PCI_EXP_RTSTA:
- 		*value = mvebu_readl(port, PCIE_RC_RTSTA);
- 		break;
-@@ -780,6 +813,14 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
- 		break;
- 
- 	case PCI_INTERRUPT_LINE:
-+		if ((mask & (PCI_BRIDGE_CTL_SERR << 16)) && port->error_irq > 0) {
-+			u32 unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-+			if (new & (PCI_BRIDGE_CTL_SERR << 16))
-+				unmask |= PCIE_INT_ERR_MASK;
-+			else
-+				unmask &= ~PCIE_INT_ERR_MASK;
-+			mvebu_writel(port, unmask, PCIE_INT_UNMASK_OFF);
-+		}
- 		if (mask & (PCI_BRIDGE_CTL_BUS_RESET << 16)) {
- 			u32 ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
- 			if (new & (PCI_BRIDGE_CTL_BUS_RESET << 16))
-@@ -838,10 +879,25 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
- 		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
- 		 * is read-only and can be cleared only by writing 0b to the
- 		 * Interrupt Cause RW0C register (PCIE_INT_CAUSE_OFF). So
--		 * clear PME via Interrupt Cause.
-+		 * clear PME via Interrupt Cause and also set port->pme_pending
-+		 * variable to false value to start processing PME interrupts
-+		 * in interrupt handler again.
- 		 */
--		if (new & PCI_EXP_RTSTA_PME)
-+		if (new & PCI_EXP_RTSTA_PME) {
- 			mvebu_writel(port, ~PCIE_INT_PM_PME, PCIE_INT_CAUSE_OFF);
-+			port->pme_pending = false;
-+		}
-+		break;
-+
-+	case PCI_EXP_RTCTL:
-+		if ((mask & PCI_EXP_RTCTL_PMEIE) && port->error_irq > 0) {
-+			u32 unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-+			if (new & PCI_EXP_RTCTL_PMEIE)
-+				unmask |= PCIE_INT_PM_PME;
-+			else
-+				unmask &= ~PCIE_INT_PM_PME;
-+			mvebu_writel(port, unmask, PCIE_INT_UNMASK_OFF);
-+		}
- 		break;
- 
- 	case PCI_EXP_DEVCTL2:
-@@ -924,6 +980,14 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 		bridge_flags |= PCI_BRIDGE_EMUL_NO_IO_FORWARD;
- 	}
- 
-+	/*
-+	 * Interrupts on emulated bridge are supported only when "error"
-+	 * interrupt was specified in DT. Without it emulated bridge cannot
-+	 * emulate interrupts.
-+	 */
-+	if (port->error_irq > 0)
-+		bridge->conf.intpin = PCI_INTERRUPT_INTA;
-+
- 	/*
- 	 * Older mvebu hardware provides PCIe Capability structure only in
- 	 * version 1. New hardware provides it in version 2.
-@@ -1072,6 +1136,26 @@ static const struct irq_domain_ops mvebu_pcie_intx_irq_domain_ops = {
- 	.xlate = irq_domain_xlate_onecell,
- };
- 
-+static struct irq_chip rp_irq_chip = {
-+	.name = "mvebu-rp",
-+};
-+
-+static int mvebu_pcie_rp_irq_map(struct irq_domain *h,
-+				   unsigned int virq, irq_hw_number_t hwirq)
-+{
-+	struct mvebu_pcie_port *port = h->host_data;
-+
-+	irq_set_chip_and_handler(virq, &rp_irq_chip, handle_simple_irq);
-+	irq_set_chip_data(virq, port);
-+
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops mvebu_pcie_rp_irq_domain_ops = {
-+	.map = mvebu_pcie_rp_irq_map,
-+	.xlate = irq_domain_xlate_onecell,
-+};
-+
- static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
- {
- 	struct device *dev = &port->pcie->pdev->dev;
-@@ -1094,10 +1178,72 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
- 		return -ENOMEM;
- 	}
- 
-+	/*
-+	 * When "error" interrupt was not specified in DT then there is no
-+	 * support for interrupts on emulated root bridge. So skip following
-+	 * initialization.
-+	 */
-+	if (port->error_irq <= 0)
-+		return 0;
-+
-+	port->rp_irq_domain = irq_domain_add_linear(NULL, 1,
-+						      &mvebu_pcie_rp_irq_domain_ops,
-+						      port);
-+	if (!port->rp_irq_domain) {
-+		irq_domain_remove(port->intx_irq_domain);
-+		dev_err(dev, "Failed to add Root Port IRQ domain for %s\n", port->name);
-+		return -ENOMEM;
-+	}
-+
- 	return 0;
- }
- 
--static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
-+static irqreturn_t mvebu_pcie_error_irq_handler(int irq, void *arg)
-+{
-+	struct mvebu_pcie_port *port = arg;
-+	struct device *dev = &port->pcie->pdev->dev;
-+	u32 cause, unmask, status;
-+
-+	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
-+	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-+	status = cause & unmask;
-+
-+	/* "error" interrupt handler does not process INTX interrupts */
-+	status &= ~(PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
-+		    PCIE_INT_INTX(2) | PCIE_INT_INTX(3));
-+
-+	/* Process PME interrupt */
-+	if ((status & PCIE_INT_PM_PME) && !port->pme_pending) {
-+		/*
-+		 * Do not clear PME interrupt bit in Cause Register as it
-+		 * invalidates also content of Root Status Register. Instead
-+		 * set port->pme_pending variable to true to indicate that
-+		 * next time PME interrupt should be ignored until variable
-+		 * is back to the false value.
-+		 */
-+		port->pme_pending = true;
-+		if (generic_handle_domain_irq(port->rp_irq_domain, 0) == -EINVAL)
-+			dev_err_ratelimited(dev, "unhandled PME IRQ\n");
-+	}
-+
-+	/* Process ERR interrupt */
-+	if (status & PCIE_INT_ERR_MASK) {
-+		mvebu_writel(port, ~PCIE_INT_ERR_MASK, PCIE_INT_CAUSE_OFF);
-+		if (generic_handle_domain_irq(port->rp_irq_domain, 0) == -EINVAL)
-+			dev_err_ratelimited(dev, "unhandled ERR IRQ\n");
-+	}
-+
-+	/* Process local ERR interrupt */
-+	if (status & PCIE_INT_DET_MASK) {
-+		mvebu_writel(port, ~PCIE_INT_DET_MASK, PCIE_INT_CAUSE_OFF);
-+		if (generic_handle_domain_irq(port->rp_irq_domain, 0) == -EINVAL)
-+			dev_err_ratelimited(dev, "unhandled ERR IRQ\n");
-+	}
-+
-+	return status ? IRQ_HANDLED : IRQ_NONE;
-+}
-+
-+static irqreturn_t mvebu_pcie_intx_irq_handler(int irq, void *arg)
- {
- 	struct mvebu_pcie_port *port = arg;
- 	struct device *dev = &port->pcie->pdev->dev;
-@@ -1108,6 +1254,10 @@ static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
- 	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
- 	status = cause & unmask;
- 
-+	/* "intx" interrupt handler process only INTX interrupts */
-+	status &= PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
-+		  PCIE_INT_INTX(2) | PCIE_INT_INTX(3);
-+
- 	/* Process legacy INTx interrupts */
- 	for (i = 0; i < PCI_NUM_INTX; i++) {
- 		if (!(status & PCIE_INT_INTX(i)))
-@@ -1122,9 +1272,29 @@ static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
- 
- static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
- {
--	/* Interrupt support on mvebu emulated bridges is not implemented yet */
--	if (dev->bus->number == 0)
--		return 0; /* Proper return code 0 == NO_IRQ */
-+	struct mvebu_pcie_port *port;
-+	struct mvebu_pcie *pcie;
-+
-+	if (dev->bus->number == 0) {
-+		/*
-+		 * Each emulated root bridge for every mvebu port has its own
-+		 * Root Port irq chip and irq domain. Argument pin is the INTx
-+		 * pin (1=INTA, 2=INTB, 3=INTC, 4=INTD) and hwirq for function
-+		 * irq_create_mapping() is indexed from zero.
-+		 */
-+		pcie = dev->bus->sysdata;
-+		port = mvebu_pcie_find_port(pcie, dev->bus, PCI_DEVFN(slot, 0));
-+		if (!port)
-+			return 0; /* Proper return code 0 == NO_IRQ */
-+		/*
-+		 * port->rp_irq_domain is available only when "error" interrupt
-+		 * was specified in DT. When is not available then interrupts
-+		 * for emulated root bridge are not provided.
-+		 */
-+		if (port->error_irq <= 0)
-+			return 0; /* Proper return code 0 == NO_IRQ */
-+		return irq_create_mapping(port->rp_irq_domain, pin - 1);
-+	}
- 
- 	return of_irq_parse_and_map_pci(dev, slot, pin);
- }
-@@ -1333,6 +1503,21 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- 			 port->name, child);
- 	}
- 
-+	/*
-+	 * Old DT bindings do not contain "error" interrupt
-+	 * so do not fail probing driver when interrupt does not exist.
-+	 */
-+	port->error_irq = of_irq_get_byname(child, "error");
-+	if (port->error_irq == -EPROBE_DEFER) {
-+		ret = port->error_irq;
-+		goto err;
-+	}
-+	if (port->error_irq <= 0) {
-+		dev_warn(dev, "%s: interrupts on Root Port are unsupported, "
-+			      "%pOF does not contain error interrupt\n",
-+			 port->name, child);
-+	}
-+
- 	reset_gpio = of_get_named_gpio_flags(child, "reset-gpios", 0, &flags);
- 	if (reset_gpio == -EPROBE_DEFER) {
- 		ret = reset_gpio;
-@@ -1538,7 +1723,6 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
- 
- 	for (i = 0; i < pcie->nports; i++) {
- 		struct mvebu_pcie_port *port = &pcie->ports[i];
--		int irq = port->intx_irq;
- 
- 		child = port->dn;
- 		if (!child)
-@@ -1566,7 +1750,7 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
- 			continue;
- 		}
- 
--		if (irq > 0) {
-+		if (port->error_irq > 0 || port->intx_irq > 0) {
- 			ret = mvebu_pcie_init_irq_domain(port);
- 			if (ret) {
- 				dev_err(dev, "%s: cannot init irq domain\n",
-@@ -1577,14 +1761,42 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
- 				mvebu_pcie_powerdown(port);
- 				continue;
- 			}
-+		}
-+
-+		if (port->error_irq > 0) {
-+			ret = devm_request_irq(dev, port->error_irq,
-+					       mvebu_pcie_error_irq_handler,
-+					       IRQF_SHARED | IRQF_NO_THREAD,
-+					       port->name, port);
-+			if (ret) {
-+				dev_err(dev, "%s: cannot register error interrupt handler: %d\n",
-+					port->name, ret);
-+				if (port->intx_irq_domain)
-+					irq_domain_remove(port->intx_irq_domain);
-+				if (port->rp_irq_domain)
-+					irq_domain_remove(port->rp_irq_domain);
-+				pci_bridge_emul_cleanup(&port->bridge);
-+				devm_iounmap(dev, port->base);
-+				port->base = NULL;
-+				mvebu_pcie_powerdown(port);
-+				continue;
-+			}
-+		}
- 
--			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
-+		if (port->intx_irq > 0) {
-+			ret = devm_request_irq(dev, port->intx_irq,
-+					       mvebu_pcie_intx_irq_handler,
- 					       IRQF_SHARED | IRQF_NO_THREAD,
- 					       port->name, port);
- 			if (ret) {
--				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
-+				dev_err(dev, "%s: cannot register intx interrupt handler: %d\n",
- 					port->name, ret);
--				irq_domain_remove(port->intx_irq_domain);
-+				if (port->error_irq > 0)
-+					devm_free_irq(dev, port->error_irq, port);
-+				if (port->intx_irq_domain)
-+					irq_domain_remove(port->intx_irq_domain);
-+				if (port->rp_irq_domain)
-+					irq_domain_remove(port->rp_irq_domain);
- 				pci_bridge_emul_cleanup(&port->bridge);
- 				devm_iounmap(dev, port->base);
- 				port->base = NULL;
-@@ -1722,6 +1934,12 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- 			}
- 			irq_domain_remove(port->intx_irq_domain);
- 		}
-+		if (port->rp_irq_domain) {
-+			int virq = irq_find_mapping(port->rp_irq_domain, 0);
-+			if (virq > 0)
-+				irq_dispose_mapping(virq);
-+			irq_domain_remove(port->rp_irq_domain);
-+		}
- 
- 		/* Free config space for emulated root bridge. */
- 		pci_bridge_emul_cleanup(&port->bridge);
+
+
+thanks,
 -- 
-2.20.1
-
+John Hubbard
+NVIDIA
