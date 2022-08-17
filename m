@@ -2,107 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA77C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E948BC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233792AbiHQH6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48724 "EHLO
+        id S232690AbiHQIDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbiHQH6S (ORCPT
+        with ESMTP id S229624AbiHQIDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:58:18 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F64B82
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:58:07 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id ay12so6328193wmb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=TE0ddFHD8LfA9CzLOTfOGrUsW93MtNgghHykEJcQeAU=;
-        b=UF89YNB5Ar+Cv8g2RRMKZXOxWN0RV3h0JNk+/fqlVOJ8jGUn8lkS8TAnVggtWV8+Ww
-         vh9irmA8T214aXUnBSDvyht4IQU9Wb/e3260kmgPCq2hr4BQ9tq03KuQpKMi/CMy7mVL
-         O4Bc2iYmEGSgWj95uLe1MUIGg1+vymK48Y29iFg7ahGZNsLYS+i4PLFeGrvW8HhIF6Hj
-         B1Jg/VJulwfImuC8otOrbKAC3ka76t3sPTiCEuTGBaC49iwMY1IQfTWLOQF082ssmMoq
-         wg5iWj0Zxes3vGnHVkdGV5jsynGeak+7NRkIALPe5p/O7vJ9PjNmd6Q1kHB5f+2j6G9F
-         fgSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=TE0ddFHD8LfA9CzLOTfOGrUsW93MtNgghHykEJcQeAU=;
-        b=DTslX5NhElvMYpTxAJdrnSyL/q8GdLvy4y7wWUhYxCCzBxJwwhCSFeLWn7AhYqwYCb
-         Z+U8/edr5gicqdwihKJO+c6VtD9TxZXIsLrMujIYAjRsRIV/FWYnjnWK0mM6LRx9ZJQC
-         5Cb5/78lwoQiYz8K5PB3YeTRi8J+jbLap0x5jp0V7ZUQQe6vBemPl1T8ueh8M3GO3kOT
-         lQw2RBOU3fM10TPCK2JKI70fzMoCgAlC7/xAYST9stz3KBcd0tJMyZKdFMAdLpXvGM6p
-         nzQcrbVdF5L0rIs5SQqnu2ktbZc2iJJu60E7WepvanOLr2n51j1kfmpL56w4p7dnpw0i
-         h4PQ==
-X-Gm-Message-State: ACgBeo0DHhxdgb4b9bfrekgX5C+BCfMFlCpiSovJHPTwexR0GKxB2J16
-        KvHiaK5Q2qJMiXib41Lq0kc9zcCVmpw=
-X-Google-Smtp-Source: AA6agR7E7ug/296BAxhWlugRSAMAIHNivornn5qMdNgpgoK493MzgzZui1FRNDO3yeML19DHIePL9Q==
-X-Received: by 2002:a05:600c:a08:b0:3a1:9319:ab78 with SMTP id z8-20020a05600c0a0800b003a19319ab78mr1251613wmp.158.1660723085928;
-        Wed, 17 Aug 2022 00:58:05 -0700 (PDT)
-Received: from gmail.com (195-38-113-151.pool.digikabel.hu. [195.38.113.151])
-        by smtp.gmail.com with ESMTPSA id ay29-20020a05600c1e1d00b003a5fa79005csm1345809wmb.11.2022.08.17.00.58.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 00:58:05 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Wed, 17 Aug 2022 09:58:03 +0200
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Ashok Raj <ashok.raj@intel.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        LKML Mailing List <linux-kernel@vger.kernel.org>,
-        X86-kernel <x86@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Jacon Jun Pan <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v3 3/5] x86/microcode: Avoid any chance of MCE's during
- microcode update
-Message-ID: <Yvyfi9XC8bu0cOG+@gmail.com>
-References: <20220817051127.3323755-1-ashok.raj@intel.com>
- <20220817051127.3323755-4-ashok.raj@intel.com>
- <Yvybq+hYT4tG/yAg@gmail.com>
+        Wed, 17 Aug 2022 04:03:08 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C96A2;
+        Wed, 17 Aug 2022 01:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660723385; x=1692259385;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NR972ITJen90HoEiRrQftltI+Alot7Bl1nWm8R7vdcY=;
+  b=MOmavYttQXBm6nzUqCKn+kjIs3u15PQXCMxTzaik4XY5D3dWOD/kjAVU
+   PEiSYUao7fXohZJ1tFJe+QWU5mFKyswizWU675ulGXXi3Ao+KNyyOax/T
+   RNzwKLpya70SQEIxdkHr83tn3zzvoHe2IreJ/xNZNZm/yI6/AXMo4q43s
+   9zjLLgC04GntVIVsKNqA7dFO4fGd82UUYDkGVFSen6lVylrID8uGN9gTq
+   dHvFmYGRjVFwWClMnqJfEzHDI/q105eQXS9M3/Sy5RBYtrSou+lTQPwec
+   lPysQ0TKK5E+rNaHztOy2uiF/c9pkbR8tDjporQp00dXsYFLL2nB39eQ+
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="109399450"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 01:03:03 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 17 Aug 2022 01:03:03 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 01:02:58 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH 0/5] Make atmel serial driver aware of GCLK
+Date:   Wed, 17 Aug 2022 10:55:13 +0300
+Message-ID: <20220817075517.49575-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yvybq+hYT4tG/yAg@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This series of patches introduces the GCLK as a potential clock source for
+the baudrate generator of UART on sama5d2 SoCs. Unlike the serial mode of
+the USART offered by FLEXCOM, the UART does not provide a fractional part
+that can be added to the clock divisor to obtain a more accurate result,
+which greatly decreases the flexibility available for producing a higher
+variety of baudrates. Now, with the last patch of the series, the driver
+will check for a GCLK in the DT. If provided, whenever `atmel_set_termios`
+is called, unless there is a fractional part, the driver will compare the
+error rate between the desired baudrate and the actual baudrate obtained
+through each of the available clock sources and will choose the clock source
+with the lowest error rate. While at it, convert the DT binding
+for UART/USART to json-schema, update the FLEXCOM binding to reference the
+new UART/USART binding and differentiate between the SPI of USART and the
+SPI of FLEXCOM.
 
-* Ingo Molnar <mingo@kernel.org> wrote:
+The first three patches of this patch series depend on this patch series
+converting atmel-flexcom bindings to json-schema:
+https://lore.kernel.org/all/20220708115619.254073-1-kavyasree.kotagiri@microchip.com/
 
-> > +void mce_set_mcip(void)
-> > +{
-> > +	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0x1);
-> > +}
-> > +
-> > +void mce_clear_mcip(void)
-> > +{
-> > +	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0x0);
-> > +}
-> 
-> Instead of naming new APIs after how they are doing stuff, please name them 
-> after *what* they are doing at the highest level: they disable/enable MCEs.
-> 
-> Ie. I'd suggest something like:
-> 
->      mce_disable()
->      mce_enable()
-> 
-> I'd also suggest to at minimum add a WARN_ON_ONCE() if MSR_IA32_MCG_STATUS 
-> is already 1 when we disable it - because whoever wanted it disabled will 
-> now be surprised by us enabling them again.
+Sergiu Moga (5):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI child node ref
+    binding
+  dt-bindings: mfd: atmel,at91-usart: convert to json-schema
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add USART child node ref
+    binding
+  clk: at91: sama5d2: Add Generic Clocks for UART/USART
+  tty: serial: atmel: Make the driver aware of the existence of GCLK
 
-Also, Boris tells me that writing 0x0 to MSR_IA32_MCG_STATUS apparently 
-shuts the platform down - which is not ideal...
+ .../bindings/mfd/atmel,at91-usart.yaml        | 190 ++++++++++++++++++
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |  18 +-
+ .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
+ drivers/clk/at91/sama5d2.c                    |  10 +
+ drivers/tty/serial/atmel_serial.c             |  52 ++++-
+ drivers/tty/serial/atmel_serial.h             |   1 +
+ 6 files changed, 264 insertions(+), 105 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
 
-Thanks,
+-- 
+2.25.1
 
-	Ingo
