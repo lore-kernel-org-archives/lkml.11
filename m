@@ -2,192 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 894A0C2BB41
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 22:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 132B6C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 22:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232902AbiHQW2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 18:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38628 "EHLO
+        id S242072AbiHQWbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 18:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbiHQW2j (ORCPT
+        with ESMTP id S238139AbiHQWbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 18:28:39 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AF64BD32
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 15:28:36 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id n4so17675290wrp.10
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 15:28:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=o1hj40RfZIutgTtHY6Ei4iwhGh1778mLr0oxD454ZKw=;
-        b=dxQEBsrSOL6uneP8vspbdKN8cBHPLmh476RXn4nJLef2SC2AaP3hEaVfFfI+RNXVBC
-         vgzrUEQdxYMNrJ+jezUDoyob0kbiLE7ORKCdTBLFa2i3RQKy1foqJ61Gs3yaQS61PK99
-         hKCF/kgqBaIHTekyfAfoVByipKAm6EgVGHNqnfh0M6ZBcTluXibNNSDJkKCQJH9N0cWp
-         MaZ/MngfqLuXRrfljnJ/CdzaaBF5y3lB2jjOH9eC3r36yDFw56U7vu6Y6F/AWxpmWg4k
-         +gFmn3dYTFKgVYuqjbtEl0Io2egt9yfZOdljmrlRETUhbMaQg7UXCc4GMk8ygxXXKw4u
-         zrMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=o1hj40RfZIutgTtHY6Ei4iwhGh1778mLr0oxD454ZKw=;
-        b=pL9/ISlthLPEoC5d7J1/C+S31pRZ/SVstE/ELcK2Igv8KWMHUKbjJfv8bQYFEGWEnw
-         L0JohVOonhPrhWddCwtwfzTun/1HJ19OG8miuTXtdgn9iBrImBPvYScdC84pFcjceMUw
-         3gPmCmSUlzBknHBZKJstTj3N4Q8b6IkzQrJrObb9OqnK2asFoWaNx2u5w9hnnIQJL9NQ
-         y+hTa2cz5X6YcIhHxjEJ/rx7Av0rtRAeGftwV+ZG+I3zmfCYdJuA8VliysFeKUcQr8W3
-         b8M4ZZYYL/qKcZTmCydRar9xcWOwGHgIANfi+px8v8utlvYHkAHjZCZO2H4lPcRIG9aE
-         e+Wg==
-X-Gm-Message-State: ACgBeo0iswl0L7jUC9o3kXkdzrX3f4tOVuqymEBCDAZxQCghIdmuMRVV
-        atNaiLvY8KO5hEROmqH52yNX2UMgKwL1vFpKml+oyw==
-X-Google-Smtp-Source: AA6agR7tp4biFjNEHKNs+HqaDuNi3dJzl8FDIEl5tWodRn34g8QXrKQ82nA0862GDnxXcX0/CDLqX7FOZ/emHPTcrpA=
-X-Received: by 2002:a05:6000:11d0:b0:225:1c12:65f8 with SMTP id
- i16-20020a05600011d000b002251c1265f8mr76041wrx.80.1660775315237; Wed, 17 Aug
- 2022 15:28:35 -0700 (PDT)
+        Wed, 17 Aug 2022 18:31:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C3FA1A49;
+        Wed, 17 Aug 2022 15:31:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C60696164A;
+        Wed, 17 Aug 2022 22:31:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6BDEC43470;
+        Wed, 17 Aug 2022 22:31:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660775482;
+        bh=v1FWDWavfkxNH4CEfWDIWKinWv6Npa0K9nHnOM9WMDA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BPJg6ATKxmRDmz3nNiTn8aQbSiyhJ7zrdKGJhW/6HQUFUDxynh4TY88yWpc3BfCHW
+         2rqGvVfgma33lEQDumO6/qVPq9PR2KC+zQp2AbWIo53TWgzQLVU9h4D7p9qkeJt9ng
+         HYUi/N73kgSFKyOqW7EBsIB07scPpKSmTQPIIRw+X+GRM60X43qRMy75YNRttdafy6
+         P/ECrDuL/K+ruigg5ix+uKAiOUIbNnbUlWQEWyFLbKsjm/qrHT0TlcHz3eC/vsDFoI
+         wSeWyOVlM+BaD3VL0UWAPtcuqyhAoJR+12H9TuOgguJtuNZdWv2wVWfnZ42VCgeChp
+         TZR2VkMjtHCpQ==
+Received: by pali.im (Postfix)
+        id 91E1E77A; Thu, 18 Aug 2022 00:31:21 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH 3/6] ARM: dts: armada-xp: Fix assigned-addresses for every PCIe Root Port
+Date:   Thu, 18 Aug 2022 00:30:50 +0200
+Message-Id: <20220817223053.31141-4-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220817223053.31141-1-pali@kernel.org>
+References: <20220817223053.31141-1-pali@kernel.org>
 MIME-Version: 1.0
-References: <20220628220938.3657876-1-yosryahmed@google.com>
- <20220628220938.3657876-2-yosryahmed@google.com> <20220817102408.7b048f198a736f053ced2862@linux-foundation.org>
-In-Reply-To: <20220817102408.7b048f198a736f053ced2862@linux-foundation.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Wed, 17 Aug 2022 15:27:58 -0700
-Message-ID: <CAJD7tkZQ07dZtcTSirj0qLawaE3Ndyn-385m_kL09=gsfO9QwA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>, Huang@google.com,
-        Shaoqin <shaoqin.huang@intel.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 10:24 AM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Tue, 28 Jun 2022 22:09:35 +0000 Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> > We keep track of several kernel memory stats (total kernel memory, page
-> > tables, stack, vmalloc, etc) on multiple levels (global, per-node,
-> > per-memcg, etc). These stats give insights to users to how much memory
-> > is used by the kernel and for what purposes.
-> >
-> > Currently, memory used by kvm mmu is not accounted in any of those
-> > kernel memory stats. This patch series accounts the memory pages
-> > used by KVM for page tables in those stats in a new
-> > NR_SECONDARY_PAGETABLE stat. This stat can be later extended to account
-> > for other types of secondary pages tables (e.g. iommu page tables).
-> >
-> > KVM has a decent number of large allocations that aren't for page
-> > tables, but for most of them, the number/size of those allocations
-> > scales linearly with either the number of vCPUs or the amount of memory
-> > assigned to the VM. KVM's secondary page table allocations do not scale
-> > linearly, especially when nested virtualization is in use.
-> >
-> > >From a KVM perspective, NR_SECONDARY_PAGETABLE will scale with KVM's
-> > per-VM pages_{4k,2m,1g} stats unless the guest is doing something
-> > bizarre (e.g. accessing only 4kb chunks of 2mb pages so that KVM is
-> > forced to allocate a large number of page tables even though the guest
-> > isn't accessing that much memory). However, someone would need to either
-> > understand how KVM works to make that connection, or know (or be told) to
-> > go look at KVM's stats if they're running VMs to better decipher the stats.
-> >
-> > Furthermore, having NR_PAGETABLE side-by-side with NR_SECONDARY_PAGETABLE
-> > is informative. For example, when backing a VM with THP vs. HugeTLB,
-> > NR_SECONDARY_PAGETABLE is roughly the same, but NR_PAGETABLE is an order
-> > of magnitude higher with THP. So having this stat will at the very least
-> > prove to be useful for understanding tradeoffs between VM backing types,
-> > and likely even steer folks towards potential optimizations.
-> >
-> > The original discussion with more details about the rationale:
-> > https://lore.kernel.org/all/87ilqoi77b.wl-maz@kernel.org
-> >
-> > This stat will be used by subsequent patches to count KVM mmu
-> > memory usage.
->
-> Nits and triviata:
->
-> > --- a/Documentation/filesystems/proc.rst
-> > +++ b/Documentation/filesystems/proc.rst
-> > @@ -977,6 +977,7 @@ Example output. You may not have all of these fields.
-> >      SUnreclaim:       142336 kB
-> >      KernelStack:       11168 kB
-> >      PageTables:        20540 kB
-> > +    SecPageTables:         0 kB
-> >      NFS_Unstable:          0 kB
-> >      Bounce:                0 kB
-> >      WritebackTmp:          0 kB
-> > @@ -1085,6 +1086,9 @@ KernelStack
-> >                Memory consumed by the kernel stacks of all tasks
-> >  PageTables
-> >                Memory consumed by userspace page tables
-> > +SecPageTables
-> > +              Memory consumed by secondary page tables, this currently
-> > +           currently includes KVM mmu allocations on x86 and arm64.
->
-> Something happened to the whitespace there.
+BDF of resource in DT assigned-addresses property of Marvell PCIe Root Port
+(PCI-to-PCI bridge) should match BDF in address part in that DT node name
+as specified resource belongs to Marvell PCIe Root Port itself.
 
-Yeah I have the fix for this queued for v7. Thanks!
+Fixes: 9d8f44f02d4a ("arm: mvebu: add PCIe Device Tree informations for Armada XP")
+Fixes: 12b69a599745 ("ARM: mvebu: second PCIe unit of Armada XP mv78230 is only x1 capable")
+Fixes: 2163e61c92d9 ("ARM: mvebu: fix second and third PCIe unit of Armada XP mv78260")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ arch/arm/boot/dts/armada-xp-mv78230.dtsi |  8 ++++----
+ arch/arm/boot/dts/armada-xp-mv78260.dtsi | 16 ++++++++--------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
->
-> > +                          "Node %d SecPageTables:  %8lu kB\n"
-> > ...
-> > +                          nid, K(node_page_state(pgdat, NR_SECONDARY_PAGETABLE)),
->
-> The use of "sec" in the user-facing changes and "secondary" in the
-> programmer-facing changes is irksome.  Can we be consistent?  I'd
-> prefer "secondary" throughout.
->
+diff --git a/arch/arm/boot/dts/armada-xp-mv78230.dtsi b/arch/arm/boot/dts/armada-xp-mv78230.dtsi
+index 3a709ca5ba05..b8d169c4feec 100644
+--- a/arch/arm/boot/dts/armada-xp-mv78230.dtsi
++++ b/arch/arm/boot/dts/armada-xp-mv78230.dtsi
+@@ -107,7 +107,7 @@
+ 
+ 			pcie2: pcie@2,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x44000 0 0x2000>;
++				assigned-addresses = <0x82001000 0 0x44000 0 0x2000>;
+ 				reg = <0x1000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -135,7 +135,7 @@
+ 
+ 			pcie3: pcie@3,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x48000 0 0x2000>;
++				assigned-addresses = <0x82001800 0 0x48000 0 0x2000>;
+ 				reg = <0x1800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -163,7 +163,7 @@
+ 
+ 			pcie4: pcie@4,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x4c000 0 0x2000>;
++				assigned-addresses = <0x82002000 0 0x4c000 0 0x2000>;
+ 				reg = <0x2000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -191,7 +191,7 @@
+ 
+ 			pcie5: pcie@5,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x80000 0 0x2000>;
++				assigned-addresses = <0x82002800 0 0x80000 0 0x2000>;
+ 				reg = <0x2800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+diff --git a/arch/arm/boot/dts/armada-xp-mv78260.dtsi b/arch/arm/boot/dts/armada-xp-mv78260.dtsi
+index 8adbd4df8ee1..febd9d98a44e 100644
+--- a/arch/arm/boot/dts/armada-xp-mv78260.dtsi
++++ b/arch/arm/boot/dts/armada-xp-mv78260.dtsi
+@@ -122,7 +122,7 @@
+ 
+ 			pcie2: pcie@2,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x44000 0 0x2000>;
++				assigned-addresses = <0x82001000 0 0x44000 0 0x2000>;
+ 				reg = <0x1000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -150,7 +150,7 @@
+ 
+ 			pcie3: pcie@3,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x48000 0 0x2000>;
++				assigned-addresses = <0x82001800 0 0x48000 0 0x2000>;
+ 				reg = <0x1800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -178,7 +178,7 @@
+ 
+ 			pcie4: pcie@4,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x4c000 0 0x2000>;
++				assigned-addresses = <0x82002000 0 0x4c000 0 0x2000>;
+ 				reg = <0x2000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -206,7 +206,7 @@
+ 
+ 			pcie5: pcie@5,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x80000 0 0x2000>;
++				assigned-addresses = <0x82002800 0 0x80000 0 0x2000>;
+ 				reg = <0x2800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -234,7 +234,7 @@
+ 
+ 			pcie6: pcie@6,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x84000 0 0x2000>;
++				assigned-addresses = <0x82003000 0 0x84000 0 0x2000>;
+ 				reg = <0x3000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -262,7 +262,7 @@
+ 
+ 			pcie7: pcie@7,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x88000 0 0x2000>;
++				assigned-addresses = <0x82003800 0 0x88000 0 0x2000>;
+ 				reg = <0x3800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -290,7 +290,7 @@
+ 
+ 			pcie8: pcie@8,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x8c000 0 0x2000>;
++				assigned-addresses = <0x82004000 0 0x8c000 0 0x2000>;
+ 				reg = <0x4000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+@@ -318,7 +318,7 @@
+ 
+ 			pcie9: pcie@9,0 {
+ 				device_type = "pci";
+-				assigned-addresses = <0x82000800 0 0x42000 0 0x2000>;
++				assigned-addresses = <0x82004800 0 0x42000 0 0x2000>;
+ 				reg = <0x4800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+-- 
+2.20.1
 
-SecondaryPageTables is too long (unfortunately), it messes up the
-formatting in node_read_meminfo() and meminfo_proc_show(). I would
-prefer "secondary" as well, but I don't know if breaking the format in
-this way is okay.
-
-This is what I mean by breaking the format btw (the numbers become misaligned):
-
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 5ad56a0cd593..4f85750a0f8e 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -433,7 +433,7 @@ static ssize_t node_read_meminfo(struct device *dev,
-                             "Node %d ShadowCallStack:%8lu kB\n"
- #endif
-                             "Node %d PageTables:     %8lu kB\n"
--                            "Node %d SecPageTables:  %8lu kB\n"
-+                            "Node %d SecondaryPageTables:  %8lu kB\n"
-                             "Node %d NFS_Unstable:   %8lu kB\n"
-                             "Node %d Bounce:         %8lu kB\n"
-                             "Node %d WritebackTmp:   %8lu kB\n"
-diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-index 208efd4fa52c..b7166d09a38f 100644
---- a/fs/proc/meminfo.c
-+++ b/fs/proc/meminfo.c
-@@ -115,7 +115,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- #endif
-        show_val_kb(m, "PageTables:     ",
-                    global_node_page_state(NR_PAGETABLE));
--       show_val_kb(m, "SecPageTables:  ",
-+       show_val_kb(m, "SecondaryPageTables:    ",
-                    global_node_page_state(NR_SECONDARY_PAGETABLE));
-
-        show_val_kb(m, "NFS_Unstable:   ", 0);
