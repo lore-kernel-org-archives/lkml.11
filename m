@@ -2,121 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89737C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84446C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240703AbiHQPBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48070 "EHLO
+        id S240710AbiHQPB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240728AbiHQO74 (ORCPT
+        with ESMTP id S240760AbiHQPAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:59:56 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA549C8EF
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:47 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id u6so13815222ljk.8
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Yb2tg6NLcz0SjyT+zhbpZCCAWG7Bnyw4PloKDdxoVAU=;
-        b=O9IpmTeGsRfUPMz27j+jEH2NvGlIBNDkmBVbuH+a3duzD7Nvm+VJggLksU1Hhj6iQ8
-         P32dT5AlsWtFQ4gsYRGZW5ySkgO243UcyYkQwjx1B02Ty5KYD92KGBFLEt9JBCaDHUOi
-         rgYFARGueDV3GAlgTth2gXguhQ7miJfqMVZb6i2vCoBrs4Bvxkx0HS+ysOkNvrOPdsCj
-         St7VQIm+CHYTnK0jqQh8JRbvh3m97ElCkKJvMn0L9xmU42We/Vx7AhnNFViiY8Fdu+RB
-         A31k2UdKD836o7atJ2MXHL31XSHa9HFNsjM8qW/WCKQ6I4pDCi23tulx14h7d96fDdTZ
-         J9Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Yb2tg6NLcz0SjyT+zhbpZCCAWG7Bnyw4PloKDdxoVAU=;
-        b=4iGHgnnk8MaN7ZJ7yK4mQKHgGEdMTG5xnTq9cnH3bl6wu9wFBeQKS90TYtggi5kKVj
-         2UT+idBSsS+xB1Ou/yb8MGKu0to5p1IVUFRlESMoqwh6sD8V/3CewcC7hUik63JPL/HD
-         bkLDvF7vvLioUArMvcD2SWuSxpf2ZO3Qd7NLc3hNoCenQVZdE5DuootQApSnRkiALUfn
-         mLxA7XqnF7cfoe6iryJ8HbKr5PGK1UCxfQaDPf3gxA99smIKeymO0UpBJsXXsWRGRH0P
-         W6j1+7hv4ogD/WoWSrbQN+2wJlkaP7H2vDRy1BBpFpMGwdA7YFtEwFsUH90GWig3A1iY
-         SOqg==
-X-Gm-Message-State: ACgBeo1qSnkm+hixIYEWJ1luengTgNlOTDA3uzHHV5SN0l3ZFuXPZd37
-        bkR3SF2Uejwy3FdWk2w+ZPTweQ==
-X-Google-Smtp-Source: AA6agR6u42GqSLiNsJUdR3VEdFKpwI6tk51BOFLOT5dTAvnyQRXheq32VsAnk7cOVE2ifiCeZyd2Hw==
-X-Received: by 2002:a05:651c:903:b0:25d:e732:6409 with SMTP id e3-20020a05651c090300b0025de7326409mr8089062ljq.314.1660748377004;
-        Wed, 17 Aug 2022 07:59:37 -0700 (PDT)
-Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id u16-20020a05651c131000b0025fdf9eec1dsm2250454lja.111.2022.08.17.07.59.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 07:59:36 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH v2 17/17] ARM: dts: qcom: msm8226: switch TCSR mutex to MMIO
-Date:   Wed, 17 Aug 2022 17:59:01 +0300
-Message-Id: <20220817145901.865977-18-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
-References: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
+        Wed, 17 Aug 2022 11:00:38 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4419D9DB4F;
+        Wed, 17 Aug 2022 07:59:55 -0700 (PDT)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 27HExIXk024020;
+        Wed, 17 Aug 2022 23:59:19 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 27HExIXk024020
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1660748359;
+        bh=FHt2nZrGSCf9qOiD+r5SuwxQICecd3mmE4Ixe0LI74o=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BuLVQoLue5bdPxYZKtA0km06WMwIjeTWGNEH2H5YAPLnANatHAojD52WGxKQ3+e4R
+         /2keW2hRsCybPEitAcPJbQ421et3T3muUqxlKImUFSv+pKkuYBlGf9yzTeLLy8u4c5
+         F8/yeuCshPjE8UPI6a1A+9BjP4u3xWppDFbDIX/sy0TClfKfjQ9xPq79tdse4/TSsh
+         sB56yiD+65uthK/RO55RNqcI7Ny+kOSVVkDDabAXN41//3PtteBTeHeLMddJRvyYJN
+         RKnF/FclCw8YD+szns51WmTWPvos6e3JAwXQ9GNx8RkeoODAdQZAprgAu6YQiZMQuK
+         gsFg+EyfiWJVg==
+X-Nifty-SrcIP: [209.85.221.50]
+Received: by mail-wr1-f50.google.com with SMTP id f8so2832162wru.13;
+        Wed, 17 Aug 2022 07:59:19 -0700 (PDT)
+X-Gm-Message-State: ACgBeo1dVcfZnEZd2/Wgl5vM1t1xW3crEp1jaG5W0Fyp2+40k19vAW9P
+        wy70G0gj+CMidx0zkB23NowNEkFhtd04tItR5Wo=
+X-Google-Smtp-Source: AA6agR6CbTRfX2of9AxOS02diGmGtpMLUScSdMhG/oInVkxzstjB3b5SizwmELRx8+M3XRta/GU+UAO6T4P7zadKzRU=
+X-Received: by 2002:a5d:6d89:0:b0:225:16c2:6816 with SMTP id
+ l9-20020a5d6d89000000b0022516c26816mr4942806wrs.380.1660748357841; Wed, 17
+ Aug 2022 07:59:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220813230928.1260981-1-masahiroy@kernel.org>
+In-Reply-To: <20220813230928.1260981-1-masahiroy@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 17 Aug 2022 23:58:33 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS0jxKzBE454dVB48UEOK4TsfK7skcKNeLNu92XkjuaEQ@mail.gmail.com>
+Message-ID: <CAK7LNAS0jxKzBE454dVB48UEOK4TsfK7skcKNeLNu92XkjuaEQ@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: fix the modules order between drivers and libs
+To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TCSR mutex bindings allow device to be described only with address
-space (so it uses MMIO, not syscon regmap).  This seems reasonable as
-TCSR mutex is actually a dedicated IO address space and it also fixes DT
-schema checks:
+On Sun, Aug 14, 2022 at 8:10 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> Commit b2c885549122 ("kbuild: update modules.order only when contained
+> modules are updated") accidentally changed the modules order.
+>
+> Prior to that commit, the modules order was determined based on
+> vmlinux-dirs, which lists core-y/m, drivers-y/m, libs-y/m, in this order.
+>
+> Now, subdir-modorder lists them in a different order: core-y/m, libs-y/m,
+> drivers-y/m.
+>
+> Presumably, there was no practical issue because the modules in drivers
+> and libs are orthogonal, but there is no reason to have this distortion.
+>
+> Get back to the original order.
+>
+> Fixes: b2c885549122 ("kbuild: update modules.order only when contained modules are updated")
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
 
-  qcom-msm8226-samsung-s3ve3g.dtb: hwlock: 'reg' is a required property
-  qcom-msm8226-samsung-s3ve3g.dtb: hwlock: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/qcom-msm8226.dtsi | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+Applied to linux-kbuild/fixes.
 
-diff --git a/arch/arm/boot/dts/qcom-msm8226.dtsi b/arch/arm/boot/dts/qcom-msm8226.dtsi
-index 0b5effdb269a..efb5d1edc3a8 100644
---- a/arch/arm/boot/dts/qcom-msm8226.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8226.dtsi
-@@ -44,13 +44,6 @@ scm {
- 		};
- 	};
- 
--	tcsr_mutex: hwlock {
--		compatible = "qcom,tcsr-mutex";
--		syscon = <&tcsr_mutex_block 0 0x80>;
--
--		#hwlock-cells = <1>;
--	};
--
- 	reserved-memory {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -508,9 +501,10 @@ rpm_msg_ram: memory@fc428000 {
- 			reg = <0xfc428000 0x4000>;
- 		};
- 
--		tcsr_mutex_block: syscon@fd484000 {
--			compatible = "syscon";
--			reg = <0xfd484000 0x2000>;
-+		tcsr_mutex: hwlock@fd484000 {
-+			compatible = "qcom,msm8226-tcsr-mutex", "qcom,tcsr-mutex";
-+			reg = <0xfd484000 0x1000>;
-+			#hwlock-cells = <1>;
- 		};
- 	};
- 
+
+>
+>  Makefile | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/Makefile b/Makefile
+> index 5f5c43a52455..c4e06e8020f1 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1113,13 +1113,11 @@ vmlinux-alldirs := $(sort $(vmlinux-dirs) Documentation \
+>                      $(patsubst %/,%,$(filter %/, $(core-) \
+>                         $(drivers-) $(libs-))))
+>
+> -subdir-modorder := $(addsuffix modules.order,$(filter %/, \
+> -                       $(core-y) $(core-m) $(libs-y) $(libs-m) \
+> -                       $(drivers-y) $(drivers-m)))
+> -
+>  build-dirs     := $(vmlinux-dirs)
+>  clean-dirs     := $(vmlinux-alldirs)
+>
+> +subdir-modorder := $(addsuffix /modules.order, $(build-dirs))
+> +
+>  # Externally visible symbols (used by link-vmlinux.sh)
+>  KBUILD_VMLINUX_OBJS := $(head-y) $(patsubst %/,%/built-in.a, $(core-y))
+>  KBUILD_VMLINUX_OBJS += $(addsuffix built-in.a, $(filter %/, $(libs-y)))
+> --
+> 2.34.1
+>
+
+
 -- 
-2.34.1
-
+Best Regards
+Masahiro Yamada
