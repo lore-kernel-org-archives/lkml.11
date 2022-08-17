@@ -2,130 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D90FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E79C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236789AbiHQNmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
+        id S239213AbiHQNmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236670AbiHQNmP (ORCPT
+        with ESMTP id S232671AbiHQNms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:42:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24AB7C777
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:42:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55C43B81DBA
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAAD9C433D6;
-        Wed, 17 Aug 2022 13:42:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660743732;
-        bh=kY4vSut8mU6qkjE6ztq6a8eHCDWj/0xM92k0oOxlBLg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=uT6cxCKhhpbhOEo+AUr+JwpDFQ6+88F4/213cDluMv7s8DkDoJI8gc9fH+a/OHyhG
-         lBK94vcSkiJ3/4RaVUrL9c5GZulypHflXlHwJ5KPJwDVWmkX/wJdsOFva3cGH9dLWa
-         1bAcI/ZMvXIZVyQA/X6IeXZhDcq98p55QZu8uWCDh7OKZWHPTmgpf0qBjA6J1jWFhA
-         dwx5BYeytM1dJ2SGMXwyLPGQLRcttoVjnl0LDDMizgBDxjCzHH/lFTgrXwDGIL/3xY
-         tUPibeSBiL1/8HZP666giFKQ8Qrvuqy356L8KGo7qSyKmf0IhUfzScEBJvLdP1d7Z2
-         BKX+tviBwdX+Q==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id E7BF04035A; Wed, 17 Aug 2022 10:42:09 -0300 (-03)
-Date:   Wed, 17 Aug 2022 10:42:09 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+        Wed, 17 Aug 2022 09:42:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA0B89821
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:42:46 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 13:42:42 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1660743763;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sQzBUASEx2+EKkOm7EcUP1VDvcu+McsHElW3WzhxKug=;
+        b=coW9sDQz+uGNhLGxCkfCKWIeB7sImho9tIk4f1notYU7jTv+F7gOqatMqJOsZNfhEsJpHN
+        b366EGF0X3Kx362H7237YmOx3wmJjqrNuowsViCT7kEuAE8KvjLQGJ/60+bdgZdjSKq5WS
+        HjnTtDmEEQAi7gamvogOMYmV0K+PMqWDCk16H2xWVMOO6j1LfaBlJI/XkbANfd7dYxvGbj
+        G98E5/cFWXaGQlz3CzV0G4D7L2A9hWoOjqnvN1jk+JJzho/ZVws1do8fkWIo+qgVCoL5Dg
+        GPS1ScLS/15GHp0AsT6+0ZSSBiM5Gn193rK4UYbv/FcYg+5efBinKsaWWQ8maQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1660743763;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sQzBUASEx2+EKkOm7EcUP1VDvcu+McsHElW3WzhxKug=;
+        b=vYl4h+kFPfBBO3EcE2njZwfygVR2xQ8hivKMpSZbj7fVt2IDvMvPFI/h+D9peus1UhVArv
+        mv0m2Pm9BfU3i5AA==
+From:   "irqchip-bot for Antonio Borneo" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Cc:     Janosch Frank <frankja@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>
-Subject: [PATCH FYI 1/1] tools headers kvm s390: Sync headers with the kernel
- sources
-Message-ID: <YvzwMXzaIzOU4WAY@kernel.org>
+Subject: [irqchip: irq/irqchip-fixes] irqchip/stm32-exti: Remove check on
+ always false condition
+Cc:     kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Antonio Borneo <antonio.borneo@foss.st.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220817125758.5975-1-antonio.borneo@foss.st.com>
+References: <20220817125758.5975-1-antonio.borneo@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <166074376204.401.16260448177061884306.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tldr; Just FYI, I'm carrying this on the perf tools tree.
+The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-- Arnaldo
+Commit-ID:     c3e88d91e40971337d4e7b5250e9e17d3e64238c
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/c3e88d91e40971337d4e7b5250e9e17d3e64238c
+Author:        Antonio Borneo <antonio.borneo@foss.st.com>
+AuthorDate:    Wed, 17 Aug 2022 14:57:58 +02:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Wed, 17 Aug 2022 14:19:48 +01:00
 
-Full explanation:
+irqchip/stm32-exti: Remove check on always false condition
 
-There used to be no copies, with tools/ code using kernel headers
-directly. From time to time tools/perf/ broke due to legitimate kernel
-hacking. At some point Linus complained about such direct usage. Then we
-adopted the current model.
+The field drv_data is assigned during driver's probe, where it's
+already checked to be not NULL.
 
-The way these headers are used in perf are not restricted to just
-including them to compile something.
+Remove the always false check '!host_data->drv_data'.
 
-There are sometimes used in scripts that convert defines into string
-tables, etc, so some change may break one of these scripts, or new MSRs
-may use some different #define pattern, etc.
+This fixes a warning "variable dereferenced before check" detected
+by '0-DAY CI Kernel Test Service'.
 
-E.g.:
-
-  $ ls -1 tools/perf/trace/beauty/*.sh | head -5
-  tools/perf/trace/beauty/arch_errno_names.sh
-  tools/perf/trace/beauty/drm_ioctl.sh
-  tools/perf/trace/beauty/fadvise.sh
-  tools/perf/trace/beauty/fsconfig.sh
-  tools/perf/trace/beauty/fsmount.sh
-  $
-  $ tools/perf/trace/beauty/fadvise.sh
-  static const char *fadvise_advices[] = {
-  	[0] = "NORMAL",
-  	[1] = "RANDOM",
-  	[2] = "SEQUENTIAL",
-  	[3] = "WILLNEED",
-  	[4] = "DONTNEED",
-  	[5] = "NOREUSE",
-  };
-  $
-
-The tools/perf/check-headers.sh script, part of the tools/ build
-process, points out changes in the original files.
-
-So its important not to touch the copies in tools/ when doing changes in
-the original kernel headers, that will be done later, when
-check-headers.sh inform about the change to the perf tools hackers.
-
+Fixes: c297493336b7 ("irqchip/stm32-exti: Simplify irq description table")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/lkml/202208131739.gJvcs9ls-lkp@intel.com/
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220817125758.5975-1-antonio.borneo@foss.st.com
 ---
+ drivers/irqchip/irq-stm32-exti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-To pick the changes in:
-
-  f5ecfee944934757 ("KVM: s390: resetting the Topology-Change-Report")
-
-None of them trigger any changes in tooling, this time this is just to silence
-these perf build warnings:
-
-  Warning: Kernel ABI header at 'tools/arch/s390/include/uapi/asm/kvm.h' differs from latest version at 'arch/s390/include/uapi/asm/kvm.h'
-  diff -u tools/arch/s390/include/uapi/asm/kvm.h arch/s390/include/uapi/asm/kvm.h
-
-Cc: Janosch Frank <frankja@linux.ibm.com>
-Cc: Pierre Morel <pmorel@linux.ibm.com>
-Link: http://lore.kernel.org/lkml/
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/arch/s390/include/uapi/asm/kvm.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/arch/s390/include/uapi/asm/kvm.h b/tools/arch/s390/include/uapi/asm/kvm.h
-index 7a6b14874d65c486..a73cf01a1606671b 100644
---- a/tools/arch/s390/include/uapi/asm/kvm.h
-+++ b/tools/arch/s390/include/uapi/asm/kvm.h
-@@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
- #define KVM_S390_VM_CRYPTO		2
- #define KVM_S390_VM_CPU_MODEL		3
- #define KVM_S390_VM_MIGRATION		4
-+#define KVM_S390_VM_CPU_TOPOLOGY	5
+diff --git a/drivers/irqchip/irq-stm32-exti.c b/drivers/irqchip/irq-stm32-exti.c
+index a73763d..6a3f749 100644
+--- a/drivers/irqchip/irq-stm32-exti.c
++++ b/drivers/irqchip/irq-stm32-exti.c
+@@ -716,7 +716,7 @@ static int stm32_exti_h_domain_alloc(struct irq_domain *dm,
  
- /* kvm attributes for mem_ctrl */
- #define KVM_S390_VM_MEM_ENABLE_CMMA	0
--- 
-2.37.1
-
+ 	irq_domain_set_hwirq_and_chip(dm, virq, hwirq, chip, chip_data);
+ 
+-	if (!host_data->drv_data || !host_data->drv_data->desc_irqs)
++	if (!host_data->drv_data->desc_irqs)
+ 		return -EINVAL;
+ 
+ 	desc_irq = host_data->drv_data->desc_irqs[hwirq];
