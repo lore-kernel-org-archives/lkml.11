@@ -2,105 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6233CC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA322C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240317AbiHQPTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S240371AbiHQPV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbiHQPTc (ORCPT
+        with ESMTP id S232705AbiHQPV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 11:19:32 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BC71274F
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:19:30 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id s36-20020a17090a69a700b001faad0a7a34so2087896pjj.4
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:19:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=2Dzsz0z2prfhgcbdQayKeKRlLfrKQM5D6pSVBtZ7THM=;
-        b=GCmgVkz+4yjg/OIcr2ND13CCDmdSh+WHCUT6HE9iMQmhjE4cFo3stnG1YrZoN7u2jA
-         X50ubaDBe2N1zPHvWHi9l/NTCLsojyti+EbEBmECP0yxN9mvcFwnCZX6U5UqWeZGV4vd
-         UCp9Jj4DkuFnJ2uB+xOIyniJjwYfbdnuS0eTVMFLTlWm6kt96GEZeZSsspDqrubXzuck
-         DUXXm+Jxw/p/0xP9Atph6ZbCIOrc4E7iEKFavcTiP8r0rI29yFs4MdI82C1dJhvpqOGK
-         /2v7aN9fekT9Dl2kwXvNX5ouI+kmQ6XKxIBpmWB8XiS2dvIP6Annb8vwO7R2MwF9gMdK
-         ncag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=2Dzsz0z2prfhgcbdQayKeKRlLfrKQM5D6pSVBtZ7THM=;
-        b=xYkOE1WBNDiT0yD4vVhZ2rx8dGVwgxnTuMVaRsjwUH05eFet9gFFWXiG9Z+AWKhrq9
-         MZuaa5KbL3FyHtHOrgPZw4pSvks5wMhEjvGX6OcrJw3dIlIhxwwSGLp65ZfC6PUnDuYg
-         K/CPHzxj4tRI3G0r2EtrxlOX8vh7ViZhCUw1PjmSPyhiP7D3QUWSBaTBPAeha5p7iFR2
-         TGra6Z1KLoWaiLDV4SmlTgluBwCD66f18IeAtL/oBir5Lq6Xjc//g7LBckVq0q8J5Wap
-         dxi+dKjSL/C7HBWCXHxfYoGL2NUnxF4zzymwKuHsRCY/JVvXzNZ1GQjbG1qreVtzeydv
-         xrlg==
-X-Gm-Message-State: ACgBeo3EQg2F3YwSLL/aMxuPttKMsJI88YDhOwHUMDamYnGIeVguCo9s
-        OReIdeLB+3GQJsDI+wJpjPOqrA==
-X-Google-Smtp-Source: AA6agR6kokDwE6+pMf5BQdL0piGfoMv4TNps5u+H7z2eEXQEoh698ZXAEgsCRmvmL5MAXJWLFaNIWw==
-X-Received: by 2002:a17:903:2589:b0:16d:c26c:d641 with SMTP id jb9-20020a170903258900b0016dc26cd641mr26813781plb.8.1660749570010;
-        Wed, 17 Aug 2022 08:19:30 -0700 (PDT)
-Received: from ?IPV6:2409:8a28:e63:2e90:498e:2d75:1610:f371? ([2409:8a28:e63:2e90:498e:2d75:1610:f371])
-        by smtp.gmail.com with ESMTPSA id x185-20020a6263c2000000b0052dc3796cbfsm10562485pfb.75.2022.08.17.08.19.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 08:19:29 -0700 (PDT)
-Message-ID: <42c6d11d-d68a-e869-375e-550c495be5bb@bytedance.com>
-Date:   Wed, 17 Aug 2022 23:19:18 +0800
+        Wed, 17 Aug 2022 11:21:27 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F159D6BD49;
+        Wed, 17 Aug 2022 08:21:25 -0700 (PDT)
+Received: from localhost.localdomain (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 27HFKaDF001304;
+        Thu, 18 Aug 2022 00:20:37 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 27HFKaDF001304
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1660749637;
+        bh=9QEUpWzXvqIwgbnI6vr2FVCzgDiZT2PDochy4QfM3jU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZqZLGa8oZTVguUdQ0+iEQgmFKg6x2OQzD+J2DAeBLLOaNur7tCzUo6+eDYagwHwIu
+         /Al1vreRhCFr+wBIOpDGMecLXioyosavaOj0od6v3LEXP13UZWjkkDg654H2XarL99
+         Qy9GM+V5pNTZ5mt5RJWMStSF0VaCgAxYw8qI1RdotWZ8kaou674LkLm3rctHg/WPEr
+         rtJJpt9yGqfKfZjV9FGncWO0lXL5eGgBgSHt5Hx1G9nV29SA6t/IapXRpzrhIGDtIM
+         6eUpCRjSZdQXSVt0H17IJ++71WtSDm1xIq4rh4jBklSLi/QNsbrZfo9NEXokYzETdo
+         zNuiiR7cZ9P0Q==
+X-Nifty-SrcIP: [133.32.182.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org
+Cc:     linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: fix wrong use of if_changed_rule
+Date:   Thu, 18 Aug 2022 00:20:26 +0900
+Message-Id: <20220817152027.16928-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [PATCH v2 00/10] sched/psi: some optimization and extension
-Content-Language: en-US
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     hannes@cmpxchg.org, tj@kernel.org, corbet@lwn.net,
-        surenb@google.com, mingo@redhat.com, peterz@infradead.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com
-References: <20220808110341.15799-1-zhouchengming@bytedance.com>
- <20220815132514.GB22640@blackbody.suse.cz>
- <08ec9c4f-80b2-f731-aa8b-fb4e852ece25@bytedance.com>
-In-Reply-To: <08ec9c4f-80b2-f731-aa8b-fb4e852ece25@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/16 22:01, Chengming Zhou wrote:
-> On 2022/8/15 21:25, Michal Koutný wrote:
->> On Mon, Aug 08, 2022 at 07:03:31PM +0800, Chengming Zhou <zhouchengming@bytedance.com> wrote:
->>> This patch series are some optimization and extension for PSI,
->>
->> BTW do you have some numbers/example how much these modifications save
->> when aggregated together?
->>
+The intent for if_changed_rule is to re-run the rule when the command
+line is changed, but this if_changed_rule does not do anything for it.
 
-Sorry about delay...
+$(cmd-check) for this rule is always empty because:
 
-Performance test using mmtests/config-scheduler-perfpipe in /user.slice/user-0.slice/session-4.scope
+ [1] $(cmd_$@) is empty because .processed-schema.json.cmd does not exist
+ [2] $(cmd_$1) is empty because cmd_chkdt is not defined
 
-                                 next                patched       patched/only-leaf
-Min       Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
-1st-qrtle Time        8.90 (   0.00%)        8.58 (   3.63%)        8.05 (   9.58%)
-2nd-qrtle Time        8.94 (   0.00%)        8.61 (   3.65%)        8.09 (   9.50%)
-3rd-qrtle Time        8.99 (   0.00%)        8.65 (   3.75%)        8.15 (   9.35%)
-Max-1     Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
-Max-5     Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
-Max-10    Time        8.84 (   0.00%)        8.55 (   3.20%)        8.04 (   9.05%)
-Max-90    Time        9.04 (   0.00%)        8.67 (   4.10%)        8.18 (   9.51%)
-Max-95    Time        9.04 (   0.00%)        8.68 (   4.03%)        8.20 (   9.26%)
-Max-99    Time        9.07 (   0.00%)        8.73 (   3.82%)        8.25 (   9.11%)
-Max       Time        9.12 (   0.00%)        8.89 (   2.54%)        8.27 (   9.29%)
-Amean     Time        8.95 (   0.00%)        8.62 *   3.67%*        8.11 *   9.43%*
+To address [1], use cmd_and_cmdsave instead of cmd.
+
+To address [2], rename rule_chkdt to rule_mk_schema so that the stem
+parts of cmd_* and rule_* match, like commit 7a0496056064 ("kbuild:
+fix DT binding schema rule to detect command line changes").
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+Another possibility might be to split out yamllint and chk_bindings
+as standalone build rules instead of running them as a side-effect
+of the schema build. (but it it up to Rob's preference)
 
 
-Thanks!
+ Documentation/devicetree/bindings/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/Makefile b/Documentation/devicetree/bindings/Makefile
+index 1eaccf135b30..bb40205689ea 100644
+--- a/Documentation/devicetree/bindings/Makefile
++++ b/Documentation/devicetree/bindings/Makefile
+@@ -46,10 +46,10 @@ quiet_cmd_mk_schema = SCHEMA  $@
+                       $(DT_MK_SCHEMA) -j $(DT_MK_SCHEMA_FLAGS) @$$f > $@ ; \
+ 		      rm -f $$f
+ 
+-define rule_chkdt
++define rule_mk_schema
+ 	$(if $(DT_SCHEMA_LINT),$(call cmd,yamllint),)
+ 	$(call cmd,chk_bindings)
+-	$(call cmd,mk_schema)
++	$(call cmd_and_savecmd,mk_schema)
+ endef
+ 
+ DT_DOCS = $(patsubst $(srctree)/%,%,$(shell $(find_all_cmd)))
+@@ -65,7 +65,7 @@ override DTC_FLAGS := \
+ override DT_CHECKER_FLAGS ?=
+ 
+ $(obj)/processed-schema.json: $(DT_DOCS) $(src)/.yamllint check_dtschema_version FORCE
+-	$(call if_changed_rule,chkdt)
++	$(call if_changed_rule,mk_schema)
+ 
+ always-y += processed-schema.json
+ always-$(CHECK_DT_BINDING) += $(patsubst $(srctree)/$(src)/%.yaml,%.example.dts, $(CHK_DT_DOCS))
+-- 
+2.34.1
+
