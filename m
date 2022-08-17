@@ -2,137 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93382C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EA1C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240618AbiHQRYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 13:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
+        id S235677AbiHQRYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 13:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237745AbiHQRYO (ORCPT
+        with ESMTP id S237745AbiHQRY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 13:24:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3F4A0250;
-        Wed, 17 Aug 2022 10:24:12 -0700 (PDT)
+        Wed, 17 Aug 2022 13:24:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8162FA026F;
+        Wed, 17 Aug 2022 10:24:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 920A6B81E81;
-        Wed, 17 Aug 2022 17:24:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 684EFC433B5;
-        Wed, 17 Aug 2022 17:24:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1660757050;
-        bh=h7rloNmTPwUDXGSYX5u3jVl/NrdFIyTwfIZuYDpyc+s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SCu1HHR6yDn0wowMIHnbsEbhjw3fO1TLcBcRSyKUXhWF/dl/GDPzQvg9LYQvU2YWP
-         jBgUTXdC1VHSy6asKtLxxa4w4uLsVNSoZ57fahkuaNnkeeBRwR6GmBa/lfF6BHegwJ
-         BaN4hOiavyPxE2PiZVXnb/b8vqfCGE1FVzDXR9rk=
-Date:   Wed, 17 Aug 2022 10:24:08 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>, Huang@google.com,
-        Shaoqin <shaoqin.huang@intel.com>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH v6 1/4] mm: add NR_SECONDARY_PAGETABLE to count
- secondary page table uses.
-Message-Id: <20220817102408.7b048f198a736f053ced2862@linux-foundation.org>
-In-Reply-To: <20220628220938.3657876-2-yosryahmed@google.com>
-References: <20220628220938.3657876-1-yosryahmed@google.com>
-        <20220628220938.3657876-2-yosryahmed@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA556126D;
+        Wed, 17 Aug 2022 17:24:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED61DC433C1;
+        Wed, 17 Aug 2022 17:24:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660757065;
+        bh=8IUBrB+1MZ1RU6K14HLmH1UWa9YswW4BC8mMkpv1lg8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Uk33DHdVpYc32yAuX/v119SAuWyEhZ/UhCkJmtLyVwn0wOQmDQAPfOoKi/WQLv2jA
+         d90/Oy5TvrcV1xqClFFFO1TbwdT4d49QyZgc26VZctcc+F85OKE9RqAzzmINKhgB69
+         qNHaSdwIMwurET7dX5JJtzryvhpLyR7N3UBdbEgU=
+Date:   Wed, 17 Aug 2022 19:24:23 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Marco Elver <elver@google.com>
+Cc:     stable@vger.kernel.org, Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Yee Lee <yee.lee@mediatek.com>,
+        Max Schulze <max.schulze@online.de>
+Subject: Re: [PATCH 5.19.y] Revert "mm: kfence: apply kmemleak_ignore_phys on
+ early allocated pool"
+Message-ID: <Yv0kRz2AmDX8jmBW@kroah.com>
+References: <20220816163641.2359996-1-elver@google.com>
+ <CANpmjNP0TMenugBVCqCYLT4AGCTH80RafcmgQRN7X8SzGjoQ6g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANpmjNP0TMenugBVCqCYLT4AGCTH80RafcmgQRN7X8SzGjoQ6g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 22:09:35 +0000 Yosry Ahmed <yosryahmed@google.com> wrote:
-
-> We keep track of several kernel memory stats (total kernel memory, page
-> tables, stack, vmalloc, etc) on multiple levels (global, per-node,
-> per-memcg, etc). These stats give insights to users to how much memory
-> is used by the kernel and for what purposes.
+On Tue, Aug 16, 2022 at 06:42:46PM +0200, Marco Elver wrote:
+> On Tue, 16 Aug 2022 at 18:37, Marco Elver <elver@google.com> wrote:
+> >
+> > This reverts commit 07313a2b29ed1079eaa7722624544b97b3ead84b.
+> >
+> > Commit 0c24e061196c21d5 ("mm: kmemleak: add rbtree and store physical
+> > address for objects allocated with PA") is not yet in 5.19 (but appears
+> > in 6.0). Without 0c24e061196c21d5, kmemleak still stores phys objects
+> > and non-phys objects in the same tree, and ignoring (instead of freeing)
+> > will cause insertions into the kmemleak object tree by the slab
+> > post-alloc hook to conflict with the pool object (see comment).
+> >
+> > Reports such as the following would appear on boot, and effectively
+> > disable kmemleak:
+> >
+> >  | kmemleak: Cannot insert 0xffffff806e24f000 into the object search tree (overlaps existing)
+> >  | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-v8-0815+ #5
+> >  | Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+> >  | Call trace:
+> >  |  dump_backtrace.part.0+0x1dc/0x1ec
+> >  |  show_stack+0x24/0x80
+> >  |  dump_stack_lvl+0x8c/0xb8
+> >  |  dump_stack+0x1c/0x38
+> >  |  create_object.isra.0+0x490/0x4b0
+> >  |  kmemleak_alloc+0x3c/0x50
+> >  |  kmem_cache_alloc+0x2f8/0x450
+> >  |  __proc_create+0x18c/0x400
+> >  |  proc_create_reg+0x54/0xd0
+> >  |  proc_create_seq_private+0x94/0x120
+> >  |  init_mm_internals+0x1d8/0x248
+> >  |  kernel_init_freeable+0x188/0x388
+> >  |  kernel_init+0x30/0x150
+> >  |  ret_from_fork+0x10/0x20
+> >  | kmemleak: Kernel memory leak detector disabled
+> >  | kmemleak: Object 0xffffff806e24d000 (size 2097152):
+> >  | kmemleak:   comm "swapper", pid 0, jiffies 4294892296
+> >  | kmemleak:   min_count = -1
+> >  | kmemleak:   count = 0
+> >  | kmemleak:   flags = 0x5
+> >  | kmemleak:   checksum = 0
+> >  | kmemleak:   backtrace:
+> >  |      kmemleak_alloc_phys+0x94/0xb0
+> >  |      memblock_alloc_range_nid+0x1c0/0x20c
+> >  |      memblock_alloc_internal+0x88/0x100
+> >  |      memblock_alloc_try_nid+0x148/0x1ac
+> >  |      kfence_alloc_pool+0x44/0x6c
+> >  |      mm_init+0x28/0x98
+> >  |      start_kernel+0x178/0x3e8
+> >  |      __primary_switched+0xc4/0xcc
+> >
+> > Reported-by: Max Schulze <max.schulze@online.de>
+> > Signed-off-by: Marco Elver <elver@google.com>
 > 
-> Currently, memory used by kvm mmu is not accounted in any of those
-> kernel memory stats. This patch series accounts the memory pages
-> used by KVM for page tables in those stats in a new
-> NR_SECONDARY_PAGETABLE stat. This stat can be later extended to account
-> for other types of secondary pages tables (e.g. iommu page tables).
+> The discussion is:
 > 
-> KVM has a decent number of large allocations that aren't for page
-> tables, but for most of them, the number/size of those allocations
-> scales linearly with either the number of vCPUs or the amount of memory
-> assigned to the VM. KVM's secondary page table allocations do not scale
-> linearly, especially when nested virtualization is in use.
+> Link: https://lore.kernel.org/all/b33b33bc-2d06-1bcd-2df7-43678962b728@online.de/
 > 
-> >From a KVM perspective, NR_SECONDARY_PAGETABLE will scale with KVM's
-> per-VM pages_{4k,2m,1g} stats unless the guest is doing something
-> bizarre (e.g. accessing only 4kb chunks of 2mb pages so that KVM is
-> forced to allocate a large number of page tables even though the guest
-> isn't accessing that much memory). However, someone would need to either
-> understand how KVM works to make that connection, or know (or be told) to
-> go look at KVM's stats if they're running VMs to better decipher the stats.
-> 
-> Furthermore, having NR_PAGETABLE side-by-side with NR_SECONDARY_PAGETABLE
-> is informative. For example, when backing a VM with THP vs. HugeTLB,
-> NR_SECONDARY_PAGETABLE is roughly the same, but NR_PAGETABLE is an order
-> of magnitude higher with THP. So having this stat will at the very least
-> prove to be useful for understanding tradeoffs between VM backing types,
-> and likely even steer folks towards potential optimizations.
-> 
-> The original discussion with more details about the rationale:
-> https://lore.kernel.org/all/87ilqoi77b.wl-maz@kernel.org
-> 
-> This stat will be used by subsequent patches to count KVM mmu
-> memory usage.
+> > ---
+> >  mm/kfence/core.c | 18 +++++++++---------
+> >  1 file changed, 9 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> > index 6aff49f6b79e..4b5e5a3d3a63 100644
+> > --- a/mm/kfence/core.c
+> > +++ b/mm/kfence/core.c
+> > @@ -603,6 +603,14 @@ static unsigned long kfence_init_pool(void)
+> >                 addr += 2 * PAGE_SIZE;
+> >         }
+> >
+> > +       /*
+> > +        * The pool is live and will never be deallocated from this point on.
+> > +        * Remove the pool object from the kmemleak object tree, as it would
+> > +        * otherwise overlap with allocations returned by kfence_alloc(), which
+> > +        * are registered with kmemleak through the slab post-alloc hook.
+> > +        */
+> > +       kmemleak_free(__kfence_pool);
+> > +
+> >         return 0;
+> >  }
+> >
+> > @@ -615,16 +623,8 @@ static bool __init kfence_init_pool_early(void)
+> >
+> >         addr = kfence_init_pool();
+> >
+> > -       if (!addr) {
+> > -               /*
+> > -                * The pool is live and will never be deallocated from this point on.
+> > -                * Ignore the pool object from the kmemleak phys object tree, as it would
+> > -                * otherwise overlap with allocations returned by kfence_alloc(), which
+> > -                * are registered with kmemleak through the slab post-alloc hook.
+> > -                */
+> > -               kmemleak_ignore_phys(__pa(__kfence_pool));
+> > +       if (!addr)
+> >                 return true;
+> > -       }
+> >
+> >         /*
+> >          * Only release unprotected pages, and do not try to go back and change
+> > --
+> > 2.37.1.595.g718a3a8f04-goog
+> >
 
-Nits and triviata:
+Now queued up, thanks.
 
-> --- a/Documentation/filesystems/proc.rst
-> +++ b/Documentation/filesystems/proc.rst
-> @@ -977,6 +977,7 @@ Example output. You may not have all of these fields.
->      SUnreclaim:       142336 kB
->      KernelStack:       11168 kB
->      PageTables:        20540 kB
-> +    SecPageTables:         0 kB
->      NFS_Unstable:          0 kB
->      Bounce:                0 kB
->      WritebackTmp:          0 kB
-> @@ -1085,6 +1086,9 @@ KernelStack
->                Memory consumed by the kernel stacks of all tasks
->  PageTables
->                Memory consumed by userspace page tables
-> +SecPageTables
-> +              Memory consumed by secondary page tables, this currently
-> +	      currently includes KVM mmu allocations on x86 and arm64.
-
-Something happened to the whitespace there.
-
-> +			     "Node %d SecPageTables:  %8lu kB\n"
-> ...
-> +			     nid, K(node_page_state(pgdat, NR_SECONDARY_PAGETABLE)),
-
-The use of "sec" in the user-facing changes and "secondary" in the
-programmer-facing changes is irksome.  Can we be consistent?  I'd
-prefer "secondary" throughout.
-
+greg k-h
