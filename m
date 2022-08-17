@@ -2,183 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FBAC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F4DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240303AbiHQRoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 13:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        id S240236AbiHQRqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 13:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240028AbiHQRob (ORCPT
+        with ESMTP id S237811AbiHQRqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 13:44:31 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97B5474F2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:44:29 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id mz1so5669580qvb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=J1wG7I7d+b+Gm+VyG0MNfyyylwWfpwl2Cy4EdEXZgmE=;
-        b=awr/Mg1rzWk0nIOZ5LAdsmlvB9rpqeEsKI47+5GLDUuyql/qiF1f5W7HZYKEtY8VJ0
-         y6Hh8hgYrykTPfvBfrehe8urf5MwKprP36ovdrWeff3LtKo8kqyk6w2gZBieOf3tTNWD
-         SUq0FgVkDBQwtmZV9YzwLUxNv8q1P6iQ/tkIye6Bz7B+oHWbZGpR8mIMOkE0Lug3i+gb
-         m/hZb5w223H30yJU642O/yh5ZRfYmxFgZIDIpj+oPIH1Kmcky1eQl31S+Qmthq4TFYd9
-         A02A7GK6C/lUN/2f2d9oAOQXdo3Ogm4vRZyuWz/fm8/HS6Py6umuT91YcTdMLHO0C8Np
-         HH1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=J1wG7I7d+b+Gm+VyG0MNfyyylwWfpwl2Cy4EdEXZgmE=;
-        b=bDAJ3fVf+zOQCoi36HKqN/3aJCLH+IcrhtUx0NmRAnXWwVKd6+DH9GrOmI2Y03XlHs
-         GKWnwzX6cE79Hv5NGQGuddU0SsL3m5p3eO2N4v8Rb1uBzQv2uBOaBXxEZwhTztapd+Kh
-         /k6PxVWynFBdj0PDoOPAW2NQZsDUg/XZCKnhlvKcbvrS8NQmTidfqJSyCVm2osoKNBvl
-         uyGpm5EBmuuBKwrGQlt4he5qQihKvETrla4SrNyqS9Yvt5fZWG7Wei9tf6IRD9xjy3hk
-         eZgRtJLaoPWjhIA7TOxzn2B/bqrZsHCi7mWt91X2CaxfeZBWlJ1aT1nKQO4mCoG5hPQz
-         u8lg==
-X-Gm-Message-State: ACgBeo2Na7AFwDnp7Wl2iDGnSVNtygJ+F+/q61hFaAFOtxyQcV2+ahp1
-        weEYGcUycLrDB25c4EaC6bnvmCP2zUPRBf5u1mE=
-X-Google-Smtp-Source: AA6agR5ouYu6T0TO4FpczS1ogVTlBsnrYrz1mco+wpVp+sdwOgGzu10g6mEv2uT5j38gZ0K4fHcm3P5KlpqF2XpIDsQ=
-X-Received: by 2002:a0c:a9ca:0:b0:492:61ca:7fcc with SMTP id
- c10-20020a0ca9ca000000b0049261ca7fccmr13472552qvb.29.1660758268084; Wed, 17
- Aug 2022 10:44:28 -0700 (PDT)
+        Wed, 17 Aug 2022 13:46:52 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFC85AC5E;
+        Wed, 17 Aug 2022 10:46:49 -0700 (PDT)
+Received: from mail-ej1-f45.google.com ([209.85.218.45]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MTREY-1nuhjf49QS-00Tl7C; Wed, 17 Aug 2022 19:46:48 +0200
+Received: by mail-ej1-f45.google.com with SMTP id uj29so25856532ejc.0;
+        Wed, 17 Aug 2022 10:46:47 -0700 (PDT)
+X-Gm-Message-State: ACgBeo0xVLOdX32DzTidd8O5fsitiaeZQkI/9s6CbACZcF+YP85gO9sq
+        +yuN7BT+wHa1ARVaEMLkghVHNIlveTeBt0JzxKk=
+X-Google-Smtp-Source: AA6agR7P+akdEIVBystZ3tdT1LJBc/Kz2X/p17BDIwuamejB2ijCkX0uATAcgT/myy62wF1uRwHfDAnHQqOrE7z8DJE=
+X-Received: by 2002:a17:907:960f:b0:731:1e3:b198 with SMTP id
+ gb15-20020a170907960f00b0073101e3b198mr17396224ejc.470.1660758407495; Wed, 17
+ Aug 2022 10:46:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <CABXGCsM58-8fxVKAVkwsshg+33B_1_t_WesG160AtVBe1ZvKiw@mail.gmail.com>
- <be6f1ce4-46b1-7a80-230c-b99f203ce8ad@riseup.net> <CABXGCsMFYnE+Wn2EAWuC8DSVj=TVprj6ABZwRK-hXcw-1hnMyw@mail.gmail.com>
- <CABXGCsMpGabZ32j_ObEHa_har2W8M8RWuqnx3d=yJT2NX_ztNg@mail.gmail.com> <20220817160751.moqhebkiuiydraka@mail.igalia.com>
-In-Reply-To: <20220817160751.moqhebkiuiydraka@mail.igalia.com>
-From:   Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Date:   Wed, 17 Aug 2022 22:44:17 +0500
-Message-ID: <CABXGCsOM9An-+EeaGWm0OA1FN2p94=BF210Lhy0tiO6ye9onWQ@mail.gmail.com>
-Subject: Re: [BUG][5.20] refcount_t: underflow; use-after-free
-To:     Melissa Wen <mwen@igalia.com>
-Cc:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+References: <f31b818cf8d682de61c74b133beffcc8a8202478.1660041358.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <f31b818cf8d682de61c74b133beffcc8a8202478.1660041358.git.christophe.leroy@csgroup.eu>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 17 Aug 2022 19:46:30 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3bJVTLZy3HnVvEN8zDgzAMhSUdUkZ5Jd=omNjYJZKA4Q@mail.gmail.com>
+Message-ID: <CAK8P3a3bJVTLZy3HnVvEN8zDgzAMhSUdUkZ5Jd=omNjYJZKA4Q@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Allow user to customise maximum number of GPIOs
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:jLlZYgV6MYmH7PB2PjUXZmuF3KTog82Q/7hiq4glnTCUZJysan5
+ 2D36PBAJJ5Q3/dNEKSD0TdekL5XZozqpWsJt7fBi2ZUKICDvXMw4IXj4sHhGnwAzphVstvT
+ CH1IWRVap+w7s3+fWBFiFhyPseQNpj0Dq7eg3tRayrCRwmBMTLQpcnVhPMHn+FSmpvuvbe0
+ JvO6NU+zr77PyYywVzw5A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:GYWZlLCLJmU=:HvaRNLOOyE2ORoo9woWSl3
+ Q2oI0LikGdV99euy6QTgVr9jW4H9HzZ6KoKzgpfOCzV8SkKm1bMf0S+ccWXXzPrBpZOv9SdPz
+ Vwb0DNpqObRzJzIBedunoG2qjeULP9IfrssldfjTjAMHGEboDy0hngdWmKeCiuTRpgz89NXMw
+ KnetaxI8/jB0uzm4nPDUcT3WwRxmi/JNAQsWUzH7ABdCPngfGFVNrWQr8sFrcazmfhTggKbdV
+ Ot/PQId/q8y2ZouXk+rK0L/sXOUz3DxN8HLzK9fu+4nSoMfHMxQ7xEy53o5f+/8SmABT6lTXm
+ Y63gY7+DGpkiXB+9BQqa37C+53Wkc1e6Tt95VU/xJG14LLHLEgq3zOM72dnvJulC8TxRTnhBW
+ uqe4g5q0MzJ+zIH6adaHJu3xjm3tA7QH7RrTVkQ1CNuTJhCNNIEe1mk2hmrCsYDWpHPNWBj3u
+ Ds7fuyQ2fZoWP2sMa6bOdBwxkPZKTA84fGdZE+x5ivXydRdjW53ww1H0XDtTpL6qbkPV4SITk
+ ylgCNEh4C4FGEJSdpVFhxTAoJVzbbDOgHvNVfIMACNK1+542W3YZowK4WnvvXJtnP1Oyp6uU3
+ ogXzLOOfZQuG7+HoXQRY0yOZXmJKRfbeor5z0GKZ2BeXkwLt81U9XO7jXBuxjNGADIKeJoL5i
+ 2daGKk2dTpyNZLO0jEr2b2t+1mG7DFOgYJIbp7z31sx0uIx5RwAKC9ig9XOHn28yGlBnFT53g
+ mjq1o9qBBu+KxRD3LJ7yWzCRWMDzg9ptkKnqDpeyPW5UPnvNNMJ6p/dn7AIVkn26KquZZbE9r
+ C+a6Ufn8Udbx0rR6KDO5nWuoYFjEyYr2vGTdEAnu8RKxmcTjfdDnULwzscLyw5NmayVmSHhXn
+ ctp1jSAC14Z/95HR4vDw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 9:08 PM Melissa Wen <mwen@igalia.com> wrote:
+On Tue, Aug 9, 2022 at 12:40 PM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
 >
-> Hi Mikhail,
+> At the time being, the default maximum number of GPIOs is set to 512
+> and can only get customised via an architecture specific
+> CONFIG_ARCH_NR_GPIO.
 >
-> IIUC, you got this second user-after-free by applying the first version
-> of Ma=C3=ADra's patch, right? So, that version was adding another unbalan=
-ced
-> unlock to the cs ioctl flow, but it was solved in the latest version,
-> that you can find here: https://patchwork.freedesktop.org/patch/497680/
-> If this is the situation, can you check this last version?
+> The maximum number of GPIOs might be dependent on the number of
+> interface boards and is somewhat independent of architecture.
 >
-> Thanks,
+> Allow the user to select that maximum number outside of any
+> architecture configuration. To enable that, re-define a
+> core CONFIG_ARCH_NR_GPIO for architectures which don't already
+> define one. Guard it with a new hidden CONFIG_ARCH_HAS_NR_GPIO.
 >
-> Melissa
+> Only two architectures will need CONFIG_ARCH_HAS_NR_GPIO: x86 and arm.
+>
+> On arm, do like x86 and set 512 as the default instead of 0, that
+> allows simplifying the logic in asm-generic/gpio.h
+>
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> ---
+>  Documentation/driver-api/gpio/legacy.rst |  2 +-
+>  arch/arm/Kconfig                         |  3 ++-
+>  arch/arm/include/asm/gpio.h              |  1 -
+>  arch/x86/Kconfig                         |  1 +
+>  drivers/gpio/Kconfig                     | 14 ++++++++++++++
+>  include/asm-generic/gpio.h               |  6 ------
+>  6 files changed, 18 insertions(+), 9 deletions(-)
+>
+> diff --git a/Documentation/driver-api/gpio/legacy.rst b/Documentation/driver-api/gpio/legacy.rst
+> index 9b12eeb89170..566b06a584cf 100644
+> --- a/Documentation/driver-api/gpio/legacy.rst
+> +++ b/Documentation/driver-api/gpio/legacy.rst
+> @@ -558,7 +558,7 @@ Platform Support
+>  To force-enable this framework, a platform's Kconfig will "select" GPIOLIB,
+>  else it is up to the user to configure support for GPIO.
+>
+> -It may also provide a custom value for ARCH_NR_GPIOS, so that it better
+> +It may also provide a custom value for CONFIG_ARCH_NR_GPIO, so that it better
+>  reflects the number of GPIOs in actual use on that platform, without
+>  wasting static table space.  (It should count both built-in/SoC GPIOs and
+>  also ones on GPIO expanders.
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 53e6a1da9af5..e55b6560fe4f 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -14,6 +14,7 @@ config ARM
+>         select ARCH_HAS_KCOV
+>         select ARCH_HAS_MEMBARRIER_SYNC_CORE
+>         select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+> +       select ARCH_HAS_NR_GPIO
+>         select ARCH_HAS_PTE_SPECIAL if ARM_LPAE
+>         select ARCH_HAS_PHYS_TO_DMA
+>         select ARCH_HAS_SETUP_DMA_OPS
+> @@ -1243,7 +1244,7 @@ config ARCH_NR_GPIO
+>         default 352 if ARCH_VT8500
+>         default 288 if ARCH_ROCKCHIP
+>         default 264 if MACH_H4700
+> -       default 0
+> +       default 512
 
-With the last version warning "bad unlock balance detected!" was gone,
-but the user-after-free issue remains.
-And again "Workqueue: events drm_sched_entity_kill_jobs_work [gpu_sched]".
+This list should be kept sorted, otherwise you still get e.g. the '264' default
+value. If you have a GPIO extender that provides hardcoded GPIO
+numbers on your machine, there should be a configuration option for
+that driver.
 
-[  297.834779] ------------[ cut here ]------------
-[  297.834818] refcount_t: underflow; use-after-free.
-[  297.834831] WARNING: CPU: 30 PID: 2377 at lib/refcount.c:28
-refcount_warn_saturate+0xba/0x110
-[  297.834838] Modules linked in: uinput rfcomm snd_seq_dummy
-snd_hrtimer nft_objref nf_conntrack_netbios_ns nf_conntrack_broadcast
-nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet
-nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat
-nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables nfnetlink
-qrtr bnep sunrpc binfmt_misc snd_seq_midi snd_seq_midi_event mt76x2u
-mt76x2_common mt76x02_usb mt76_usb mt76x02_lib snd_hda_codec_realtek
-iwlmvm intel_rapl_msr snd_hda_codec_generic snd_hda_codec_hdmi mt76
-vfat fat snd_hda_intel intel_rapl_common mac80211 snd_intel_dspcfg
-snd_intel_sdw_acpi snd_usb_audio snd_hda_codec snd_usbmidi_lib btusb
-edac_mce_amd iwlwifi libarc4 uvcvideo snd_hda_core btrtl snd_rawmidi
-snd_hwdep videobuf2_vmalloc btbcm kvm_amd videobuf2_memops snd_seq
-iwlmei btintel videobuf2_v4l2 eeepc_wmi snd_seq_device
-videobuf2_common btmtk kvm xpad videodev joydev irqbypass snd_pcm
-asus_wmi hid_logitech_hidpp ff_memless cfg80211 bluetooth rapl mc
-[  297.834932]  ledtrig_audio snd_timer sparse_keymap platform_profile
-wmi_bmof snd video pcspkr k10temp i2c_piix4 rfkill soundcore mei
-asus_ec_sensors acpi_cpufreq zram amdgpu drm_ttm_helper ttm
-crct10dif_pclmul crc32_pclmul crc32c_intel iommu_v2 ucsi_ccg gpu_sched
-typec_ucsi drm_buddy ghash_clmulni_intel drm_display_helper ccp igb
-typec sp5100_tco nvme cec nvme_core dca wmi ip6_tables ip_tables fuse
-[  297.834978] Unloaded tainted modules: amd64_edac():1 amd64_edac():1
-amd64_edac():1 amd64_edac():1 amd64_edac():1 amd64_edac():1
-amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 pcc_cpufreq():1
-amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-pcc_cpufreq():1 pcc_cpufreq():1 amd64_edac():1 amd64_edac():1
-pcc_cpufreq():1 pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1
-pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-pcc_cpufreq():1 pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1
-amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 pcc_cpufreq():1
-amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 pcc_cpufreq():1
-amd64_edac():1 pcc_cpufreq():1 amd64_edac():1 amd64_edac():1
-pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-pcc_cpufreq():1 pcc_cpufreq():1 pcc_cpufreq():1 fjes():1
-[  297.835055]  pcc_cpufreq():1 fjes():1 pcc_cpufreq():1 fjes():1
-pcc_cpufreq():1 fjes():1 fjes():1 fjes():1 fjes():1 fjes():1
-[  297.835071] CPU: 30 PID: 2377 Comm: kworker/30:6 Tainted: G
-W    L    -------  ---
-6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
-[  297.835075] Hardware name: System manufacturer System Product
-Name/ROG STRIX X570-I GAMING, BIOS 4403 04/27/2022
-[  297.835078] Workqueue: events drm_sched_entity_kill_jobs_work [gpu_sched=
-]
-[  297.835085] RIP: 0010:refcount_warn_saturate+0xba/0x110
-[  297.835088] Code: 01 01 e8 59 59 6f 00 0f 0b e9 22 46 a5 00 80 3d
-be 7d be 01 00 75 85 48 c7 c7 c0 99 8e aa c6 05 ae 7d be 01 01 e8 36
-59 6f 00 <0f> 0b e9 ff 45 a5 00 80 3d 99 7d be 01 00 0f 85 5e ff ff ff
-48 c7
-[  297.835091] RSP: 0018:ffffbd3506df7e60 EFLAGS: 00010286
-[  297.835095] RAX: 0000000000000026 RBX: ffff961b250cbc28 RCX: 00000000000=
-00000
-[  297.835097] RDX: 0000000000000001 RSI: ffffffffaa8d07a4 RDI: 00000000fff=
-fffff
-[  297.835100] RBP: ffff96276a3f5600 R08: 0000000000000000 R09: ffffbd3506d=
-f7d10
-[  297.835102] R10: 0000000000000003 R11: ffff9627ae2fffe8 R12: ffff96276a3=
-fc800
-[  297.835105] R13: ffff9618c03e6600 R14: ffff96276a3fc805 R15: ffff961b250=
-cbc30
-[  297.835108] FS:  0000000000000000(0000) GS:ffff96276a200000(0000)
-knlGS:0000000000000000
-[  297.835110] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  297.835113] CR2: 0000621001e4a000 CR3: 000000018d958000 CR4: 00000000003=
-50ee0
-[  297.835116] Call Trace:
-[  297.835118]  <TASK>
-[  297.835121]  process_one_work+0x2a0/0x600
-[  297.835133]  worker_thread+0x4f/0x3a0
-[  297.835139]  ? process_one_work+0x600/0x600
-[  297.835142]  kthread+0xf5/0x120
-[  297.835145]  ? kthread_complete_and_exit+0x20/0x20
-[  297.835151]  ret_from_fork+0x22/0x30
-[  297.835166]  </TASK>
-[  297.835168] irq event stamp: 198245
-[  297.835171] hardirqs last  enabled at (198253):
-[<ffffffffa918ce7e>] __up_console_sem+0x5e/0x70
-[  297.835175] hardirqs last disabled at (198260):
-[<ffffffffa918ce63>] __up_console_sem+0x43/0x70
-[  297.835177] softirqs last  enabled at (196454):
-[<ffffffffa9de3a4e>] addrconf_verify_rtnl+0x23e/0x920
-[  297.835182] softirqs last disabled at (196448):
-[<ffffffffa9de3835>] addrconf_verify_rtnl+0x25/0x920
-[  297.835185] ---[ end trace 0000000000000000 ]---
+Which driver is it that needs extra hardcoded GPIO numbers for you?
+Have you tried converting it to use GPIO descriptors so you don't
+need the number assignment?
 
-
-Fill kernel log: https://pastebin.com/zbbY2zDU
-
---=20
-Best Regards,
-Mike Gavrilov.
+        Arnd
