@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAB7C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E437C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238743AbiHQTbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
+        id S241542AbiHQTbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236670AbiHQTbY (ORCPT
+        with ESMTP id S241499AbiHQTb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:31:24 -0400
+        Wed, 17 Aug 2022 15:31:27 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE74AA4062;
-        Wed, 17 Aug 2022 12:31:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCBCA286E;
+        Wed, 17 Aug 2022 12:31:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660764667; x=1692300667;
+  t=1660764669; x=1692300669;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VxhvjPh6nkSaaXjiUDDL88V5dgrbv2n0hTL3lDadRE4=;
-  b=eVgKS3soNJDqUG84ShpkeivGVHnkOuViVDhBGd7HtUb3p3ohaphxFCNq
-   iadIMJ2jNxrKZCmfLvYacVGxrNc67bywiLIgR3cLgaedCO1wh6YsoZuNl
-   KDKUiG95Pxagr+3BEy1bQlr1tfDU49rVSmwwmg0KDRpqb6QoQloD/Svap
-   q7GSwni8WY21WuXK0ipp2r2vKD4OEonuq54q4QDdM8txxaPVdseuFZIv0
-   ayfEGMm+1MEYkloNGSVXRno+1i4fQF3Z/bPncU2nigj+cIDuE5Rf64TOU
-   eqy+bdAvkvfWRDBx+aB+y3LDkR9k2H7A34PGhG0Ob62Fn6YLngb5l3tCI
+  bh=gWfzgwCtIPzOaEO/WMt8rvxoj5RVZzfnHt33edYS4hA=;
+  b=X77KUhazHPSLPle+2kUhfZWsJBtvbWwGpZiCAHOzJeX7fwIaAuqaeOFR
+   OFqbfUVbOzrMY3qwNGQ9gBHi1EAsMhsXv1+IJtHE0e2MRuLbTF4/ga+mQ
+   cY6E+93g+h6AylMwMGi4UTfrCsFwHsxe5N2tkQMIXWTY9xHF9KRBdMxW7
+   K971fJ9yjLxUSWli25cTvXXBe9p0B+3jAbGouiDZjthx4spE2kN+/Cssk
+   ER8av5FzwtJ0zKMYYRN2ZXIR05ibAwmhh3wccjYnaHZc9dE3A6ew7DKIo
+   BvR+Ja6aXHoquU/7sEAe030n9H7zB+4ybc2eNH16zhintmzYWPVWX8FQI
    A==;
 X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="176816615"
+   d="scan'208";a="176816625"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:31:05 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:31:06 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 17 Aug 2022 12:30:54 -0700
+ 15.1.2507.12; Wed, 17 Aug 2022 12:31:03 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:30:53 -0700
+ 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:31:01 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v4 4/8] net: lan966x: Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb
-Date:   Wed, 17 Aug 2022 21:34:45 +0200
-Message-ID: <20220817193449.1673002-5-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 8/8] net: lan966x: Extend MAC to support also lag interfaces.
+Date:   Wed, 17 Aug 2022 21:34:49 +0200
+Message-ID: <20220817193449.1673002-9-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
 References: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
@@ -58,54 +58,293 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb to the
-lan966x_main.h file because they will be needed by the lag driver.
+Extend MAC support to support also lag interfaces:
+1. In case an entry is learned on a port that is part of lag interface,
+   then notify the upper layers that the entry is learned on the bond
+   interface
+2. If a port leaves the bond and the port is the first port in the lag
+   group, then it is required to update all MAC entries to change the
+   destination port.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.h      | 2 ++
- drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c | 6 ++----
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ .../ethernet/microchip/lan966x/lan966x_lag.c  |  26 +++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 104 +++++++++++++++---
+ .../ethernet/microchip/lan966x/lan966x_main.h |   5 +
+ 3 files changed, 119 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+index e214e8e50723..41fa2523d91d 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+@@ -123,8 +123,14 @@ int lan966x_lag_port_join(struct lan966x_port *port,
+ {
+ 	struct lan966x *lan966x = port->lan966x;
+ 	struct net_device *dev = port->dev;
++	u32 lag_id = -1;
++	u32 bond_mask;
+ 	int err;
+ 
++	bond_mask = lan966x_lag_get_mask(lan966x, bond);
++	if (bond_mask)
++		lag_id = __ffs(bond_mask);
++
+ 	port->bond = bond;
+ 	lan966x_lag_update_ids(lan966x);
+ 
+@@ -137,6 +143,12 @@ int lan966x_lag_port_join(struct lan966x_port *port,
+ 
+ 	lan966x_port_stp_state_set(port, br_port_get_stp_state(brport_dev));
+ 
++	if (lan966x_lag_first_port(port->bond, port->dev) &&
++	    lag_id != -1)
++		lan966x_mac_lag_replace_port_entry(lan966x,
++						   lan966x->ports[lag_id],
++						   port);
++
+ 	return 0;
+ 
+ out:
+@@ -149,6 +161,20 @@ int lan966x_lag_port_join(struct lan966x_port *port,
+ void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond)
+ {
+ 	struct lan966x *lan966x = port->lan966x;
++	u32 bond_mask;
++	u32 lag_id;
++
++	if (lan966x_lag_first_port(port->bond, port->dev)) {
++		bond_mask = lan966x_lag_get_mask(lan966x, port->bond);
++		bond_mask &= ~BIT(port->chip_port);
++		if (bond_mask) {
++			lag_id = __ffs(bond_mask);
++			lan966x_mac_lag_replace_port_entry(lan966x, port,
++							   lan966x->ports[lag_id]);
++		} else {
++			lan966x_mac_lag_remove_port_entry(lan966x, port);
++		}
++	}
+ 
+ 	port->bond = NULL;
+ 	lan966x_lag_update_ids(lan966x);
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+index 5893770bfd94..baa3a30c039f 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+@@ -22,6 +22,7 @@ struct lan966x_mac_entry {
+ 	u16 vid;
+ 	u16 port_index;
+ 	int row;
++	bool lag;
+ };
+ 
+ struct lan966x_mac_raw_entry {
+@@ -69,15 +70,14 @@ static void lan966x_mac_select(struct lan966x *lan966x,
+ 	lan_wr(mach, lan966x, ANA_MACHDATA);
+ }
+ 
+-static int __lan966x_mac_learn(struct lan966x *lan966x, int pgid,
+-			       bool cpu_copy,
+-			       const unsigned char mac[ETH_ALEN],
+-			       unsigned int vid,
+-			       enum macaccess_entry_type type)
++static int __lan966x_mac_learn_locked(struct lan966x *lan966x, int pgid,
++				      bool cpu_copy,
++				      const unsigned char mac[ETH_ALEN],
++				      unsigned int vid,
++				      enum macaccess_entry_type type)
+ {
+-	int ret;
++	lockdep_assert_held(&lan966x->mac_lock);
+ 
+-	spin_lock(&lan966x->mac_lock);
+ 	lan966x_mac_select(lan966x, mac, vid);
+ 
+ 	/* Issue a write command */
+@@ -89,7 +89,19 @@ static int __lan966x_mac_learn(struct lan966x *lan966x, int pgid,
+ 	       ANA_MACACCESS_MAC_TABLE_CMD_SET(MACACCESS_CMD_LEARN),
+ 	       lan966x, ANA_MACACCESS);
+ 
+-	ret = lan966x_mac_wait_for_completion(lan966x);
++	return lan966x_mac_wait_for_completion(lan966x);
++}
++
++static int __lan966x_mac_learn(struct lan966x *lan966x, int pgid,
++			       bool cpu_copy,
++			       const unsigned char mac[ETH_ALEN],
++			       unsigned int vid,
++			       enum macaccess_entry_type type)
++{
++	int ret;
++
++	spin_lock(&lan966x->mac_lock);
++	ret = __lan966x_mac_learn_locked(lan966x, pgid, cpu_copy, mac, vid, type);
+ 	spin_unlock(&lan966x->mac_lock);
+ 
+ 	return ret;
+@@ -119,6 +131,16 @@ int lan966x_mac_learn(struct lan966x *lan966x, int port,
+ 	return __lan966x_mac_learn(lan966x, port, false, mac, vid, type);
+ }
+ 
++static int lan966x_mac_learn_locked(struct lan966x *lan966x, int port,
++				    const unsigned char mac[ETH_ALEN],
++				    unsigned int vid,
++				    enum macaccess_entry_type type)
++{
++	WARN_ON(type != ENTRYTYPE_NORMAL && type != ENTRYTYPE_LOCKED);
++
++	return __lan966x_mac_learn_locked(lan966x, port, false, mac, vid, type);
++}
++
+ static int lan966x_mac_forget_locked(struct lan966x *lan966x,
+ 				     const unsigned char mac[ETH_ALEN],
+ 				     unsigned int vid,
+@@ -178,8 +200,9 @@ void lan966x_mac_init(struct lan966x *lan966x)
+ 	INIT_LIST_HEAD(&lan966x->mac_entries);
+ }
+ 
+-static struct lan966x_mac_entry *lan966x_mac_alloc_entry(const unsigned char *mac,
+-							 u16 vid, u16 port_index)
++static struct lan966x_mac_entry *lan966x_mac_alloc_entry(struct lan966x_port *port,
++							 const unsigned char *mac,
++							 u16 vid)
+ {
+ 	struct lan966x_mac_entry *mac_entry;
+ 
+@@ -189,8 +212,9 @@ static struct lan966x_mac_entry *lan966x_mac_alloc_entry(const unsigned char *ma
+ 
+ 	memcpy(mac_entry->mac, mac, ETH_ALEN);
+ 	mac_entry->vid = vid;
+-	mac_entry->port_index = port_index;
++	mac_entry->port_index = port->chip_port;
+ 	mac_entry->row = LAN966X_MAC_INVALID_ROW;
++	mac_entry->lag = port->bond ? true : false;
+ 	return mac_entry;
+ }
+ 
+@@ -269,7 +293,7 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
+ 		goto mac_learn;
+ 	}
+ 
+-	mac_entry = lan966x_mac_alloc_entry(addr, vid, port->chip_port);
++	mac_entry = lan966x_mac_alloc_entry(port, addr, vid);
+ 	if (!mac_entry) {
+ 		spin_unlock(&lan966x->mac_lock);
+ 		return -ENOMEM;
+@@ -278,7 +302,8 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
+ 	list_add_tail(&mac_entry->list, &lan966x->mac_entries);
+ 	spin_unlock(&lan966x->mac_lock);
+ 
+-	lan966x_fdb_call_notifiers(SWITCHDEV_FDB_OFFLOADED, addr, vid, port->dev);
++	lan966x_fdb_call_notifiers(SWITCHDEV_FDB_OFFLOADED, addr, vid,
++				   port->bond ?: port->dev);
+ 
+ mac_learn:
+ 	lan966x_mac_learn(lan966x, port->chip_port, addr, vid, ENTRYTYPE_LOCKED);
+@@ -309,6 +334,50 @@ int lan966x_mac_del_entry(struct lan966x *lan966x, const unsigned char *addr,
+ 	return 0;
+ }
+ 
++void lan966x_mac_lag_replace_port_entry(struct lan966x *lan966x,
++					struct lan966x_port *src,
++					struct lan966x_port *dst)
++{
++	struct lan966x_mac_entry *mac_entry;
++
++	spin_lock(&lan966x->mac_lock);
++	list_for_each_entry(mac_entry, &lan966x->mac_entries, list) {
++		if (mac_entry->port_index == src->chip_port &&
++		    mac_entry->lag) {
++			lan966x_mac_forget_locked(lan966x, mac_entry->mac,
++						  mac_entry->vid,
++						  ENTRYTYPE_LOCKED);
++
++			lan966x_mac_learn_locked(lan966x, dst->chip_port,
++						 mac_entry->mac, mac_entry->vid,
++						 ENTRYTYPE_LOCKED);
++			mac_entry->port_index = dst->chip_port;
++		}
++	}
++	spin_unlock(&lan966x->mac_lock);
++}
++
++void lan966x_mac_lag_remove_port_entry(struct lan966x *lan966x,
++				       struct lan966x_port *src)
++{
++	struct lan966x_mac_entry *mac_entry, *tmp;
++
++	spin_lock(&lan966x->mac_lock);
++	list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries,
++				 list) {
++		if (mac_entry->port_index == src->chip_port &&
++		    mac_entry->lag) {
++			lan966x_mac_forget_locked(lan966x, mac_entry->mac,
++						  mac_entry->vid,
++						  ENTRYTYPE_LOCKED);
++
++			list_del(&mac_entry->list);
++			kfree(mac_entry);
++		}
++	}
++	spin_unlock(&lan966x->mac_lock);
++}
++
+ void lan966x_mac_purge_entries(struct lan966x *lan966x)
+ {
+ 	struct lan966x_mac_entry *mac_entry, *tmp;
+@@ -354,6 +423,7 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 	struct lan966x_mac_entry *mac_entry, *tmp;
+ 	unsigned char mac[ETH_ALEN] __aligned(2);
+ 	struct list_head mac_deleted_entries;
++	struct lan966x_port *port;
+ 	u32 dest_idx;
+ 	u32 column;
+ 	u16 vid;
+@@ -406,9 +476,10 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 		/* Notify the bridge that the entry doesn't exist
+ 		 * anymore in the HW
+ 		 */
++		port = lan966x->ports[mac_entry->port_index];
+ 		lan966x_mac_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE,
+ 				      mac_entry->mac, mac_entry->vid,
+-				      lan966x->ports[mac_entry->port_index]->dev);
++				      port->bond ?: port->dev);
+ 		list_del(&mac_entry->list);
+ 		kfree(mac_entry);
+ 	}
+@@ -440,7 +511,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 			continue;
+ 		}
+ 
+-		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
++		port = lan966x->ports[dest_idx];
++		mac_entry = lan966x_mac_alloc_entry(port, mac, vid);
+ 		if (!mac_entry) {
+ 			spin_unlock(&lan966x->mac_lock);
+ 			return;
+@@ -451,7 +523,7 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 		spin_unlock(&lan966x->mac_lock);
+ 
+ 		lan966x_mac_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
+-				      mac, vid, lan966x->ports[dest_idx]->dev);
++				      mac, vid, port->bond ?: port->dev);
+ 	}
+ }
+ 
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index b02c1c803945..516ed8e9183d 100644
+index 96182ae0df3e..6135d311c407 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -297,6 +297,8 @@ struct lan966x_port {
- extern const struct phylink_mac_ops lan966x_phylink_mac_ops;
- extern const struct phylink_pcs_ops lan966x_phylink_pcs_ops;
- extern const struct ethtool_ops lan966x_ethtool_ops;
-+extern struct notifier_block lan966x_switchdev_nb __read_mostly;
-+extern struct notifier_block lan966x_switchdev_blocking_nb __read_mostly;
- 
- bool lan966x_netdevice_check(const struct net_device *dev);
- 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index d9fc6a9a3da1..d9b3ca5f6214 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -6,8 +6,6 @@
- #include "lan966x_main.h"
- 
- static struct notifier_block lan966x_netdevice_nb __read_mostly;
--static struct notifier_block lan966x_switchdev_nb __read_mostly;
--static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly;
- 
- static void lan966x_port_set_mcast_ip_flood(struct lan966x_port *port,
- 					    u32 pgid_ip)
-@@ -572,11 +570,11 @@ static struct notifier_block lan966x_netdevice_nb __read_mostly = {
- 	.notifier_call = lan966x_netdevice_event,
- };
- 
--static struct notifier_block lan966x_switchdev_nb __read_mostly = {
-+struct notifier_block lan966x_switchdev_nb __read_mostly = {
- 	.notifier_call = lan966x_switchdev_event,
- };
- 
--static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly = {
-+struct notifier_block lan966x_switchdev_blocking_nb __read_mostly = {
- 	.notifier_call = lan966x_switchdev_blocking_event,
- };
+@@ -351,6 +351,11 @@ int lan966x_mac_add_entry(struct lan966x *lan966x,
+ 			  struct lan966x_port *port,
+ 			  const unsigned char *addr,
+ 			  u16 vid);
++void lan966x_mac_lag_replace_port_entry(struct lan966x *lan966x,
++					struct lan966x_port *src,
++					struct lan966x_port *dst);
++void lan966x_mac_lag_remove_port_entry(struct lan966x *lan966x,
++				       struct lan966x_port *src);
+ void lan966x_mac_purge_entries(struct lan966x *lan966x);
+ irqreturn_t lan966x_mac_irq_handler(struct lan966x *lan966x);
  
 -- 
 2.33.0
