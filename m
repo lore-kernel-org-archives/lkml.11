@@ -2,161 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215DFC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6698DC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240607AbiHQQK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S240807AbiHQQLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241013AbiHQQKh (ORCPT
+        with ESMTP id S240936AbiHQQKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:10:37 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7318A7F0A1;
-        Wed, 17 Aug 2022 09:10:36 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id x19so1302790plc.5;
-        Wed, 17 Aug 2022 09:10:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=0w5leDnB9oITFRG2hBeGs/cY0LqF9F4f5ngXhRmBvoA=;
-        b=b1IeAz0squDe+6l615WdkACq4EioqEHcrmbzFC8D4MNW5e68Ip3Dy8d05YiN/kUeTB
-         kinEPW2ff5WzBQV39M2JOikWSmSBxOQNUB4Dabzc5h3d3dCFfsEejtCTE1Fr/IVALdDh
-         xoMbF/J9Egn0X3Ew/hueK/z8Qvu2wrwI2rTmgGlXSdGupbwgwBK+Hzd+6SvPFgry3Iy3
-         rA9G7Xl9K7i1llEA0b/2hcFvwrAHpFnB9enms3gdIDJSTvaIYnep8nZuZnNcb6wLlyQ3
-         Ul1wjpN3Uz6zW9IUtvgcwTFHbPRd0doMQMyedsaY/NVohq5dk5+VBSI6w5ZVxMAnh4q6
-         cazg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=0w5leDnB9oITFRG2hBeGs/cY0LqF9F4f5ngXhRmBvoA=;
-        b=cZPbCIP41g1lz5Abgcd6UmGe7FLgTAV+uCxS4ezHav6eSi+A8lyOr9N+R+TsSfwcug
-         hnbHmLqMs7OeJJUET7Dmj1nqXlyplZBxWzfFLKnEklRbsnovFAlTPewvqF+5LtGZF5sd
-         sUcaYpClWLYvW861Pmjkib5JNnEiB5JIJQl5ss22upTpwd21BzZPi8d+rOSY6tDl/zvO
-         Am35jQxfqUrS69vPnTQviXvavUwftPSeVwnSdhCffa+0+A+tgbrMGbDhSuqXkgPtKt3v
-         Us19p0izydYvyndMsCYaWt1nXknzpUkpDEiDlbUVxB/2ge4vcop0Zqt9yzbMn5lwkkRW
-         ga4A==
-X-Gm-Message-State: ACgBeo3Jbl9wyA8gKzM1Mz6B5Km3gj8CjeCuYaglShpYyHODkGj3KVHh
-        Y1G/WBXXEdMUz3SlBz9VW3w=
-X-Google-Smtp-Source: AA6agR7bLWJiCbr8SemRp/uA9NkzN4Nflo8rWCbGERFDYp+GuS6IK92hxYHxzM4TJSkt20/AYt0m8w==
-X-Received: by 2002:a17:90a:c58e:b0:1f3:1ab5:22ae with SMTP id l14-20020a17090ac58e00b001f31ab522aemr4501736pjt.45.1660752635824;
-        Wed, 17 Aug 2022 09:10:35 -0700 (PDT)
-Received: from localhost ([36.112.203.167])
-        by smtp.gmail.com with ESMTPSA id a15-20020aa795af000000b0052d5e93fcb7sm10658618pfk.191.2022.08.17.09.10.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 09:10:35 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+ffe24b1afbc4cb5ae8fb@syzkaller.appspotmail.com
-Cc:     linux-kernel@vger.kernel.org, reiserfs-devel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, 18801353760@163.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        paskripkin@gmail.com, skhan@linuxfoundation.org,
-        Hawkins Jiawei <yin31149@gmail.com>
-Subject: [PATCH v2] reiserfs: add check in bin_search_in_dir_item()
-Date:   Thu, 18 Aug 2022 00:10:28 +0800
-Message-Id: <20220817161028.8027-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <000000000000bcbb0205e13dc53a@google.com>
-References: <000000000000bcbb0205e13dc53a@google.com>
+        Wed, 17 Aug 2022 12:10:22 -0400
+Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697883A4B8
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:10:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1660752619; x=1692288619;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tGXL1veMClRR6J6COmjOo7zqJDj1I9afT5K0DiyexSs=;
+  b=Xz7nYeL3PSf3lLgiGCeJz9UcofjvxzWAcsr/NlPDXJ9A/UZ7kNpvX9fW
+   XYDkQN6jdTUNXuTI5tr9b4/kYVc6ISfx2J7e7da5c0HQBfpfAcrIfEk6x
+   QVoTmu1fYJbnKO+C7l70+GoxDQ3rSrH1zhZaHoEfHMk1BM282n03kISPm
+   BVa4b2/20GCOZKjrKJEqS35tLrglDtRrF+bWaLA4RkdLJUL3JeGh4rWE8
+   buhtDzZ4WAizHn9u90GzZatyQWDHbKz06MKgjsXk/F4WjtZaccgiNicXx
+   IONrz/3B8PUea7mdFqQokxdFerTNy+9RIqfZi9OnfpG4CM+Fv3ZgHfl+r
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,243,1654531200"; 
+   d="scan'208";a="321047340"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 18 Aug 2022 00:10:18 +0800
+IronPort-SDR: bgHc6JvATVXzyccdnMLLtfMHPvkyzApdZV/NS9qrCodvzvBf774yy9f/rh3MYwydCuqEbeOci+
+ NBBO/qLK9ssMDKeR92oYiSWeyflMgujR/JTAO8eesSc1TY6bDUJc69k8A2p+Sb86MDuK2LRg2Q
+ jWP1+WhAEmy+UuK5qN5fdWultaB4NkzwoQiosVmstmCMTFJ3I8sR7sv705pvorCzYFTnY860Nv
+ La2KMAYc6Rq1kkkWn4UH6SlpEb5GFY791yvMSIi2JqJCI3Aqel8PvlV3xT3ezBhoSwyNCSPDtA
+ j5yvgwR/9zRuLUsSbM6VDFNp
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 17 Aug 2022 08:31:05 -0700
+IronPort-SDR: UjvUO8HsL+dFez2gq+eM9ig0lS5nxJ3LHoiEtgZFiPHKRaBp0Un34yCpzJMPVMgk5gUfboXeuf
+ iFc4up/PH6YS8SSzifXlXHlS7j5rzw/2mlk7DYvN4T3ge2Lacm1DGgtUVzDdYT93tkscQMG7Y+
+ ySAE/b6JFf9nBbhrLxoCVw6PrR2M/rBnT//zPwOhkAklJ/4fWBxpMyW0ZV14ojTmkhthO+rH37
+ Bbr33GX203yHJcQdvRGR96sHUZtsWq2MfburjCMdEn7kmnd7OEr+4W8t6Loa1Sat3JApBmQiPH
+ CD0=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 17 Aug 2022 09:10:19 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4M7CfL25Zyz1Rws9
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:10:18 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1660752617; x=1663344618; bh=tGXL1veMClRR6J6COmjOo7zqJDj1I9afT5K
+        0DiyexSs=; b=m9BkyA42lhKQOlCHS75npA6KAXx1QnGZcXPa+ScENhVWJDJNb7B
+        CA4xAIg2JLIQh1qDtAFUfRAdEgicNU7AzvGl1UX407LVeNHE65d+ytCK6hieUVyP
+        GfegZ1iiJLB6FcIM+/XCOJO7XUf2WX7xe7nJat0qikxM2uttvMxMvTRO3z7r6ERf
+        ywpSS5GyDiYyH5Of0AxXUKuEzNQGyHY+oEQHV1sxk6T1Gk/2q/GT7quFCU/K4TUD
+        dfYtsC3MKMsJlsS/IgqSjBoNzukrcw9g15hSBhwy2cI7TC86JIrtSHtbDD025sK3
+        K8pihhaJ2GB2m9/g249orQLFyIo8N6bv99w==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id mgY6Xd4oulnL for <linux-kernel@vger.kernel.org>;
+        Wed, 17 Aug 2022 09:10:17 -0700 (PDT)
+Received: from [10.11.46.122] (unknown [10.11.46.122])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4M7CfJ44Fbz1RtVk;
+        Wed, 17 Aug 2022 09:10:16 -0700 (PDT)
+Message-ID: <840ce5cf-32d5-d694-cb79-2df871a607c9@opensource.wdc.com>
+Date:   Wed, 17 Aug 2022 09:10:16 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v11 13/13] dm: add power-of-2 target for zoned devices
+ with non power-of-2 zone sizes
+Content-Language: en-US
+To:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
+        snitzer@kernel.org, hch@lst.de, agk@redhat.com
+Cc:     pankydev8@gmail.com, gost.dev@samsung.com, matias.bjorling@wdc.com,
+        hare@suse.de, bvanassche@acm.org, linux-kernel@vger.kernel.org,
+        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
+        jaegeuk@kernel.org, Johannes.Thumshirn@wdc.com,
+        linux-block@vger.kernel.org, Damien Le Moal <damien.lemoal@wdc.com>
+References: <20220816131536.189406-1-p.raghav@samsung.com>
+ <CGME20220816131551eucas1p218faf35348e78a73aaa87d5477ecdb2e@eucas1p2.samsung.com>
+ <20220816131536.189406-14-p.raghav@samsung.com>
+ <30790cae-5440-2447-a8b8-52a57fa16fa5@opensource.wdc.com>
+ <ab3ef674-c453-5b38-80b5-f41dcfed62bb@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <ab3ef674-c453-5b38-80b5-f41dcfed62bb@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reports use-after-free Read as follows:
-------------[ cut here ]------------
-BUG: KASAN: use-after-free in bin_search_in_dir_item fs/reiserfs/namei.c:40 [inline]
-BUG: KASAN: use-after-free in search_by_entry_key+0x81f/0x960 fs/reiserfs/namei.c:165
-Read of size 4 at addr ffff8880715ee014 by task syz-executor352/3611
+On 2022/08/17 0:35, Pankaj Raghav wrote:
+> Hi Damien,
+>>> + */
+>>> +static bool bio_in_emulated_zone_area(struct dm_po2z_target *dmh,
+>>> +				      struct bio *bio, int *offset)
+>>
+>> This function name reads like it is a block layer helper. It mat be less
+>> confucing to keep using the dm_po2z_ prefix for it.
+>>
+> Good point. Even though it is a static function in the same file, it could
+> be confused for a block helper at the caller site.
+>>> +{
+>>> +	/*
+>>> +	 * Read operation on the emulated zone area (between zone capacity
+>>> +	 * and zone size) will fill the bio with zeroes. Any other operation
+> 
+>>> +
+>>> +	return DM_MAPIO_KILL;
+>>> +}
+>>
+> Do you see any more issues apart from the two you pointed out?
 
-CPU: 0 PID: 3611 Comm: syz-executor352 Not tainted 5.19.0-rc1-syzkaller-00263-g1c27f1fc1549 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- bin_search_in_dir_item fs/reiserfs/namei.c:40 [inline]
- search_by_entry_key+0x81f/0x960 fs/reiserfs/namei.c:165
- reiserfs_find_entry.part.0+0x139/0xdf0 fs/reiserfs/namei.c:322
- reiserfs_find_entry fs/reiserfs/namei.c:368 [inline]
- reiserfs_lookup+0x24a/0x490 fs/reiserfs/namei.c:368
- __lookup_slow+0x24c/0x480 fs/namei.c:1701
- lookup_one_len+0x16a/0x1a0 fs/namei.c:2730
- reiserfs_lookup_privroot+0x92/0x280 fs/reiserfs/xattr.c:980
- reiserfs_fill_super+0x21bb/0x2fb0 fs/reiserfs/super.c:2176
- mount_bdev+0x34d/0x410 fs/super.c:1367
- legacy_get_tree+0x105/0x220 fs/fs_context.c:610
- vfs_get_tree+0x89/0x2f0 fs/super.c:1497
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1320/0x1fa0 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
- </TASK>
+nope
 
-The buggy address belongs to the physical page:
-page:ffffea0001c57b80 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x715ee
-flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000000 ffffea0001c57bc8 ffff8880b9a403c0 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as freed
-
-Memory state around the buggy address:
- ffff8880715edf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880715edf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880715ee000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                         ^
- ffff8880715ee080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8880715ee100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-
-The cause is that the value of rbound in bin_search_in_dir_item()
-is out of bounds.
-
-To be more specific, struct buffer_head's b_data field
-contains the entry headers array, according to
-set_de_item_location(). So the array's length should be less
-than the size of b_data, or it may access the invalid memory.
-
-This patch solves it by checking the array's size with b_data's size.
-
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
----
-v2:
-  - rename subject from search_by_entry_key() to bin_search_in_dir_item()
-
- fs/reiserfs/namei.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/fs/reiserfs/namei.c b/fs/reiserfs/namei.c
-index 3d7a35d6a18b..c4c056ffafde 100644
---- a/fs/reiserfs/namei.c
-+++ b/fs/reiserfs/namei.c
-@@ -33,7 +33,11 @@ static int bin_search_in_dir_item(struct reiserfs_dir_entry *de, loff_t off)
- 	int rbound, lbound, j;
- 
- 	lbound = 0;
--	rbound = ih_entry_count(ih) - 1;
-+	if (ih_location(ih) + ih_entry_count(ih) * IH_SIZE >=
-+	    de->de_bh->b_size)
-+		rbound = (de->de_bh->b_size - ih_location(ih)) / IH_SIZE - 1;
-+	else
-+		rbound = ih_entry_count(ih) - 1;
- 
- 	for (j = (rbound + lbound) / 2; lbound <= rbound;
- 	     j = (rbound + lbound) / 2) {
 -- 
-2.25.1
-
+Damien Le Moal
+Western Digital Research
