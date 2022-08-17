@@ -2,100 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4F7C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9519C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238105AbiHQDWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 23:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
+        id S235322AbiHQD33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 23:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiHQDWL (ORCPT
+        with ESMTP id S229667AbiHQD31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 23:22:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA33B6CF59;
-        Tue, 16 Aug 2022 20:22:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660706530; x=1692242530;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=50uJrH1frOVjQHGQ1WfcJhX0UyzOycX3mdLMscZAHKI=;
-  b=FKce/6MeH/h9x9Zv/g5x/1OU4PTXm/1ktIQ1l2iH5KyFEO6G8ZLN8IPH
-   hHb5C/IiitmckD7j70/vu3xmM61Kd+4kbmTCOEoGfxPgPfVMUuhdhfn6z
-   CUlRW6cEn5IpGJtUtT7R//bC6tJ7Ze8596gyRNxSU9OpkOMHWrkLVs1dD
-   U8L/VQbEamwgHMOMm8JOHoCHq7pySOXzpi1FnxZPR/JlYhsKh7IsI12+5
-   uaflNPcDcyCEbLwA18MCVce/kUsSqG65xGFo8jLxmrQ13G0ARl/Ah434Q
-   MfXbtnLsLEqnwZek63ucN8JCzGQHsr9BAKlVIe29isVCs0oWIy6Wsrdhq
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="292384919"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="292384919"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 20:22:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="675473486"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 16 Aug 2022 20:22:09 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oO9dA-0000VE-1r;
-        Wed, 17 Aug 2022 03:22:08 +0000
-Date:   Wed, 17 Aug 2022 11:21:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        linux-doc@vger.kernel.org
-Subject: [intel-tdx:kvm-upstream-workaround 140/308] htmldocs:
- Documentation/virt/kvm/api.rst:1362: WARNING: Literal block ends without a
- blank line; unexpected unindent.
-Message-ID: <202208171109.lCfseeP6-lkp@intel.com>
+        Tue, 16 Aug 2022 23:29:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F027FE77
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 20:29:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660706964;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RR5bzl/FFsvb9EIwHBGZXkpeL0zuQN7q9Hui9bCl8JY=;
+        b=JAoq37S9iXJHlFwhDXXmbAmhiEdOnhMLvjzKYofDRXjRLF6z/yTgLUOaENx9IAyJoqRFuq
+        vFnBRwAb5bwCRG9yRURSVwn1SrQTdeFErlnZOP54Fyjmx60Rl2Z9WT3qUxY0qIRYjbEBKk
+        lP6jf6ssBaXRf1bjJKVTWimJQ02PAkI=
+Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com
+ [209.85.221.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-167-7a4pa-_TM4ONjiTeLeDoWQ-1; Tue, 16 Aug 2022 23:29:23 -0400
+X-MC-Unique: 7a4pa-_TM4ONjiTeLeDoWQ-1
+Received: by mail-vk1-f200.google.com with SMTP id r5-20020a1fa805000000b00378dce47c06so2538579vke.17
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 20:29:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=RR5bzl/FFsvb9EIwHBGZXkpeL0zuQN7q9Hui9bCl8JY=;
+        b=avs3fRIcBxyWtV+VqBt1qLftTBvP/6ufr6cge3d5oNaNDFQj9m2M7DPBXycwkVXyty
+         NPeZkkKNlzK+oCitZE/YZ+do4Du6781I8usrTudD6CJOHki4JtoFDuaFkxWZD09PvBOr
+         IWmjV681YIMNRtCI02yJmVi0d8esT4qsODEl17iV+N/lhKWRCuEUD9qqko8BNlLpGUty
+         M9kMF0QUW8vRQbl+cECsJVy/95ExMgyoH3XrbuJfzBd8zKbbZcEHyKjSSK5CnRjwLwAH
+         iWDWnLIJ8IGMH484hq23pfJjcURntT91CiUyYZ8IKQi5+zYBhDGJ/PftvKNcYpBOznSM
+         995g==
+X-Gm-Message-State: ACgBeo3qvIQK2RzY8ZVnOgRxV4ZrC2V9hmjNGquirGsmRMNUyr9MEBU9
+        xElPIXQ+937ow8ALD1jNOrxtuClyEV/OYYmolkZMGGlOVpwUSU4YC6XE/Ro59A04ls9ELkiZFxU
+        S1InZ6BSa15H8OHbgbB9tXqb0
+X-Received: by 2002:a9f:358c:0:b0:387:9de3:6c8a with SMTP id t12-20020a9f358c000000b003879de36c8amr9875407uad.94.1660706962883;
+        Tue, 16 Aug 2022 20:29:22 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4fcp7kFFEeySED5iDFA+pzHhLU8J+5uKUdwRJl7tWznWLtKxiDNgfeB3BylX7kqYieWkBxzg==
+X-Received: by 2002:a9f:358c:0:b0:387:9de3:6c8a with SMTP id t12-20020a9f358c000000b003879de36c8amr9875398uad.94.1660706962518;
+        Tue, 16 Aug 2022 20:29:22 -0700 (PDT)
+Received: from ?IPv6:2804:1b3:a800:7e7a:dbd2:b312:9b9c:dcb7? ([2804:1b3:a800:7e7a:dbd2:b312:9b9c:dcb7])
+        by smtp.gmail.com with ESMTPSA id n65-20020a1f5944000000b00378fe8518dcsm9828486vkb.51.2022.08.16.20.29.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 20:29:21 -0700 (PDT)
+Message-ID: <e9b456cee5032c62cab6b9a3ab1411196d4d1c3c.camel@redhat.com>
+Subject: Re: [PATCH] KVM: x86: Always enable legacy fp/sse
+From:   Leonardo =?ISO-8859-1?Q?Br=E1s?= <leobras@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, tglx@linutronix.de,
+        linux-kernel@vger.kernel.org, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org
+Date:   Wed, 17 Aug 2022 00:29:17 -0300
+In-Reply-To: <YvwODUu/rdzjzDjk@google.com>
+References: <20220816175936.23238-1-dgilbert@redhat.com>
+         <YvwODUu/rdzjzDjk@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   85c097fdd1667a842a9e75d8f658fc16bd72981a
-commit: bb90daae9d75517eb0fddd87e26149ed7612995a [140/308] KVM: Extend the memslot to support fd-based private memory
-reproduce: make htmldocs
+On Tue, 2022-08-16 at 21:37 +0000, Sean Christopherson wrote:
+> On Tue, Aug 16, 2022, Dr. David Alan Gilbert (git) wrote:
+> > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+> >=20
+> > A live migration under qemu is currently failing when the source
+> > host is ~Nehalem era (pre-xsave) and the destination is much newer,
+> > (configured with a guest CPU type of Nehalem).
+> > QEMU always calls kvm_put_xsave, even on this combination because
+> > KVM_CAP_CHECK_EXTENSION_VM always returns true for KVM_CAP_XSAVE.
+> >=20
+> > When QEMU calls kvm_put_xsave it's rejected by
+> >    fpu_copy_uabi_to_guest_fpstate->
+> >      copy_uabi_to_xstate->
+> >        validate_user_xstate_header
+> >=20
+> > when the validate checks the loaded xfeatures against
+> > user_xfeatures, which it finds to be 0.
+> >=20
+> > I think our initialisation of user_xfeatures is being
+> > too strict here, and we should always allow the base FP/SSE.
+> >=20
+> > Fixes: ad856280ddea ("x86/kvm/fpu: Limit guest user_xfeatures to suppor=
+ted bits of XCR0")
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for fixing this, Dave!
 
-All warnings (new ones prefixed by >>):
+> > bz: https://bugzilla.redhat.com/show_bug.cgi?id=3D2079311
+> >=20
+> > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+> > ---
+> >  arch/x86/kvm/cpuid.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+> > index de6d44e07e34..3b2319cecfd1 100644
+> > --- a/arch/x86/kvm/cpuid.c
+> > +++ b/arch/x86/kvm/cpuid.c
+> > @@ -298,7 +298,8 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcp=
+u *vcpu)
+> >  	guest_supported_xcr0 =3D
+> >  		cpuid_get_supported_xcr0(vcpu->arch.cpuid_entries, vcpu->arch.cpuid_=
+nent);
+> > =20
+> > -	vcpu->arch.guest_fpu.fpstate->user_xfeatures =3D guest_supported_xcr0=
+;
+> > +	vcpu->arch.guest_fpu.fpstate->user_xfeatures =3D guest_supported_xcr0=
+ |
+> > +		XFEATURE_MASK_FPSSE;
+>=20
+> I don't think this is correct.  This will allow the guest to set the SSE =
+bit
+> even when XSAVE isn't supported due to kvm_guest_supported_xcr0() returni=
+ng
+> user_xfeatures.
+>=20
+>   static inline u64 kvm_guest_supported_xcr0(struct kvm_vcpu *vcpu)
+>   {
+> 	return vcpu->arch.guest_fpu.fpstate->user_xfeatures;
+>   }
+>=20
+> I believe the right place to fix this is in validate_user_xstate_header()=
+.  It's
+> reachable if and only if XSAVE is supported in the host, and when XSAVE i=
+s _not_
+> supported, the kernel unconditionally allows FP+SSE.  So it follows that =
+the kernel
+> should also allow FP+SSE when using XSAVE too.  That would also align the=
+ logic
+> with fpu_copy_guest_fpstate_to_uabi(), which fordces the FPSSE flags.  Di=
+tto for
+> the non-KVM save_xstate_epilog().
+>=20
+> Aha!  And fpu__init_system_xstate() ensure the host supports FP+SSE when =
+XSAVE
+> is enabled (knew their had to be a sanity check somewhere).
 
->> Documentation/virt/kvm/api.rst:1362: WARNING: Literal block ends without a blank line; unexpected unindent.
+Thanks for the feedback Sean!
 
-vim +1362 Documentation/virt/kvm/api.rst
+I have near to no experience in this code, and I hope you can help me with =
+a
+question I have, based in Dave's commit message:
 
-  1347	
-  1348	  struct kvm_userspace_memory_region {
-  1349		__u32 slot;
-  1350		__u32 flags;
-  1351		__u64 guest_phys_addr;
-  1352		__u64 memory_size; /* bytes */
-  1353		__u64 userspace_addr; /* start of the userspace allocated memory */
-  1354	  };
-  1355	
-  1356	  struct kvm_userspace_memory_region_ext {
-  1357		struct kvm_userspace_memory_region region;
-  1358		__u64 private_offset;
-  1359		__u32 private_fd;
-  1360		__u32 pad1;
-  1361		__u64 pad2[14];
-> 1362	};
-  1363	
-  1364	  /* for kvm_memory_region::flags */
-  1365	  #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
-  1366	  #define KVM_MEM_READONLY	(1UL << 1)
-  1367	  #define KVM_MEM_PRIVATE		(1UL << 2)
-  1368	
+> > QEMU always calls kvm_put_xsave, even on this combination because
+> > KVM_CAP_CHECK_EXTENSION_VM always returns true for KVM_CAP_XSAVE.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Any particular reason why it always returns true for KVM_CAP_XSAVE, even wh=
+en
+the CPU does not support it?=20
+
+IIUC, if it returns false to this capability, kvm_put_xsave() should never =
+be
+called, and thus it can avoid bug reproduction.=20
+
+Thanks in advance,
+
+Leo
+
+>=20
+> ---
+>  arch/x86/kernel/fpu/xstate.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+> index c8340156bfd2..83b9a9653d47 100644
+> --- a/arch/x86/kernel/fpu/xstate.c
+> +++ b/arch/x86/kernel/fpu/xstate.c
+> @@ -399,8 +399,13 @@ int xfeature_size(int xfeature_nr)
+>  static int validate_user_xstate_header(const struct xstate_header *hdr,
+>  				       struct fpstate *fpstate)
+>  {
+> -	/* No unknown or supervisor features may be set */
+> -	if (hdr->xfeatures & ~fpstate->user_xfeatures)
+> +	/*
+> +	 * No unknown or supervisor features may be set.  Userspace is always
+> +	 * allowed to restore FP+SSE state (XSAVE/XRSTOR are used by the kernel
+> +	 * if and only if FP+SSE are supported in xstate).
+> +	 */
+> +	if (hdr->xfeatures & ~fpstate->user_xfeatures &
+> +	    ~(XFEATURE_MASK_FP | XFEATURE_MASK_SSE))
+>  		return -EINVAL;
+>=20
+>  	/* Userspace must use the uncompacted format */
+>=20
+> base-commit: de3d415edca23831c5d1f24f10c74a715af7efdb
+> --
+>=20
+
