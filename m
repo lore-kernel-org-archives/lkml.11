@@ -2,120 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B45CAC28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84297C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239241AbiHQNeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
+        id S236169AbiHQNe0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239449AbiHQNdc (ORCPT
+        with ESMTP id S239361AbiHQNeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:33:32 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A868F95F;
-        Wed, 17 Aug 2022 06:32:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660743144; x=1692279144;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4dmBBRSG7eMGt8juxKy2hs5MyorJMiVbbfoy6JIX9XY=;
-  b=J30HLQRxAP5Y7+9J/YrkGqugy6BRCwS4rNuBcWvgWxWkd69iQwOPFS9h
-   /nxyRmK51K00UR2DAaTq+yZFbbMi/2i9oATusMp1qnYiPQMY5Uhd2O0P8
-   nEUmueQl1KPMh7MQg14VlPORt+oyMmhIZME+y5vtpM4wlVM2LuivzJUKM
-   WdalFBhisdQTXz0wuW3vXxufSyFbc5j+Z4WrDenbh9wzI2i2QXLtCeVs4
-   PHPweeSz4y5gfjX2b7kPEnuA6JhPIR9mr84adZ/WXMUvAgfgTgexmyuEw
-   v6ExysqknQ9qqQ7j63O6ObpfE32WGO8me34wDZJMYUEnsyMq8ml9xD+vF
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="318500695"
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="318500695"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 06:32:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="583769626"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 06:32:21 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOJ9g-0000yc-29;
-        Wed, 17 Aug 2022 13:32:20 +0000
-Date:   Wed, 17 Aug 2022 21:31:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v8 3/4] pwm: add microchip soft ip corePWM driver
-Message-ID: <202208172150.rEZ2HEYS-lkp@intel.com>
-References: <20220816120829.719749-4-conor.dooley@microchip.com>
+        Wed, 17 Aug 2022 09:34:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0D6B7FB;
+        Wed, 17 Aug 2022 06:34:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0747361381;
+        Wed, 17 Aug 2022 13:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32C0C433D7;
+        Wed, 17 Aug 2022 13:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660743251;
+        bh=VJjaESeTcpR3pNf2yk31v/MAq8krPW3qtCOLglDY3KY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xQAIzIwaUhZUgIkIExJZ1dJBfC04siz7xT8lwtw8St2wQ8R8YzRw14XYLjQrq4sjj
+         erJfG62Pu7m5Sm4b6ScBg6heW1lM9sPMdkDR10hUPyQ0aiNyL/ybiwif8CzZOmOr9R
+         CICFU4nBeI+uJEg2l0G8MibRZXqzPR+v+EzN+Wsg=
+Date:   Wed, 17 Aug 2022 15:34:09 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 0000/1094] 5.18.18-rc2 review
+Message-ID: <YvzuUdrBqGlW880H@kroah.com>
+References: <20220816124604.978842485@linuxfoundation.org>
+ <20220817042445.GC1880847@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220816120829.719749-4-conor.dooley@microchip.com>
+In-Reply-To: <20220817042445.GC1880847@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+On Tue, Aug 16, 2022 at 09:24:45PM -0700, Guenter Roeck wrote:
+> On Tue, Aug 16, 2022 at 02:59:27PM +0200, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.18.18 release.
+> > There are 1094 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Thu, 18 Aug 2022 12:43:14 +0000.
+> > Anything received after that time might be too late.
+> > 
+> Build results:
+> 	total: 154 pass: 154 fail: 0
+> Qemu test results:
+> 	total: 481 pass: 480 fail: 1
+> Failed tests:
+> 	arm:bletchley-bmc:aspeed_g5_defconfig:notests:usb0:net,nic:aspeed-bmc-facebook-bletchley:rootfs
+> 
+> The failing boot test is new and not a concern. I'll see if I can figure
+> out why it fails. If it is too difficult to fix (for example because 5.18
+> simply doesn't support usb on bletchley-bmc), I'll just skip it next time.
+> 
+> Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-I love your patch! Yet something to improve:
+5.18 is only going to be alive for one more week at most, so I wouldn't
+worry too much about this.
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.0-rc1]
-[cannot apply to thierry-reding-pwm/for-next robh/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+thanks!
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Conor-Dooley/Microchip-soft-ip-corePWM-driver/20220816-201744
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220817/202208172150.rEZ2HEYS-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/961e375a245186c8ec2c40e48e5baf40a112f14a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Conor-Dooley/Microchip-soft-ip-corePWM-driver/20220816-201744
-        git checkout 961e375a245186c8ec2c40e48e5baf40a112f14a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/mips/kernel/head.o: in function `kernel_entry':
-   (.ref.text+0xac): relocation truncated to fit: R_MIPS_26 against `start_kernel'
-   init/main.o: in function `set_reset_devices':
-   main.c:(.init.text+0x20): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x30): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `debug_kernel':
-   main.c:(.init.text+0xa4): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0xb4): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `quiet_kernel':
-   main.c:(.init.text+0x128): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x138): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `warn_bootconfig':
-   main.c:(.init.text+0x1ac): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x1bc): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `init_setup':
-   main.c:(.init.text+0x234): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x254): additional relocation overflows omitted from the output
-   mips-linux-ld: drivers/pwm/pwm-microchip-core.o: in function `mchp_core_pwm_enable':
->> pwm-microchip-core.c:(.text.mchp_core_pwm_enable+0x1cc): undefined reference to `__udivdi3'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
