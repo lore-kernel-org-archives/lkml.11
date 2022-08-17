@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21025C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C64C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239630AbiHQNFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
+        id S239644AbiHQNFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239615AbiHQNEj (ORCPT
+        with ESMTP id S239620AbiHQNEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 17 Aug 2022 09:04:39 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F873D5AE
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:04:06 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id w15so13515772ljw.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:04:06 -0700 (PDT)
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92D443332
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:04:14 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id z6so18912019lfu.9
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:04:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=G5Gw9O1HRC2HZ2RUee8k0rPKQP+uhhOAxZLOGmh5CkQ=;
-        b=fJd0a7YMv0ZcjMFd3JlFycpH5vDcvehDTH1dHlGQdq8x9ko4JNTkvGo9ShJOog7mea
-         pZt9h/chVYurKMP2w6zu3EjZw8d+9oRjNnvF3mrYkk+2K1uN7tSN+ppst6Hna71YDNTr
-         g3Yymbw8LIPuqTI1ToLs1kLWnoYnR7tCR6kFOiQAq/VtmQo30GjX2wMQS+Fs0DcNIxaG
-         0W+M2shtPxiUbeSqBBNgEqrsRVFyPIE7DqVbPYOtrZxEg2OCYXh5eZgVqTX5+mpQoe0U
-         U9rkywJHQWN6xxGYl1en/4KuO0lbtNV1nlZdomRFq/43tmyEbvXjRhHRIYJhHa2fj/UQ
-         Q+5w==
+        bh=GGC6/FAtFLtsPec3v0Z//ulLsaLmio7LVXcsIKWCfDM=;
+        b=Jh4Qy9iXI/c1oGXbZ0lnM/OpRok+s+cFSr4oZ/HZf/Wiu4RDv1f090LKWQXlfy2mQR
+         8vfSRgiphbSgHJ3xzY7oaBL+nsNpYIbGQ5estuegJ9wB+r3EbUOVo/+Czc+LLXgO+TN3
+         A5OGKUFN1Ii3mv8HYwxdWOvh9Pi1MazXBN/uX+YK3FyjmtPXKds1PIH9Q7C0fwpHn3mQ
+         tkpzoIfkB5YwAnSZYf5f1q2kSp7fXo5kvFgG+EL0YiE+Tj1qFCwVvaZbFB/cFQpc3/mZ
+         SATiRY3hkH2rApYsAKgOAmGLpPksC2V/uBntzjMrMT18SdNdzu1o/YTbeZhoFY/y/Y2g
+         GFsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=G5Gw9O1HRC2HZ2RUee8k0rPKQP+uhhOAxZLOGmh5CkQ=;
-        b=hgIe+8D80YEjBaUmoGqtKaO8q5LR+kB/KWsbLHI85PZHrJGHkl+/I+WTJVtyh9I3C4
-         AuAZTim8cqFNwGXeQ55rKo/5nPjTh6erenevxcSaQN8z0oWGyvq1ur2uU3jg5nQkqdh2
-         Y3ev3daDrmjZ8q9pQ4dRodzFAmCp2x3C8Vt656+wOsMOgFUpD0oIvKXQBF2qXb/0NDoD
-         XwZdGvGgHdYLW4QbMd1CrzbwbeLJD0E0IhhtKAIi4ERnlsZHcEiaLwfsJpjXWWiBpEBr
-         1V+vcNmxB7VnjQZKDe4TaLf60e8Cq8CdQls9JcoLTlJzf8m5kNIL4vbwuN0qWmbrow3Y
-         D/Ew==
-X-Gm-Message-State: ACgBeo2VfBvxDcV5qta4tkXC+Hr9cBYAsP7R1wJi1YPRrvdmjFcyxK3q
-        Z2Rg5i3cuBSpcNQ4LoXwJhpJIQ==
-X-Google-Smtp-Source: AA6agR5WXQrRTwjt8id+ceIUkD6C8jy56bGansLAj+V88Eet7oi7wGDthsIKYm2iqClkwXLkUy5f/w==
-X-Received: by 2002:a2e:9819:0:b0:25f:dbcd:3ad5 with SMTP id a25-20020a2e9819000000b0025fdbcd3ad5mr8039858ljj.527.1660741444164;
-        Wed, 17 Aug 2022 06:04:04 -0700 (PDT)
+        bh=GGC6/FAtFLtsPec3v0Z//ulLsaLmio7LVXcsIKWCfDM=;
+        b=5L0KXm3wXUMbxb3VD/fR2+akPt8gGaEnMV9kNUth2hpCK0jxWuygOAXv1zUMs8MDHM
+         YDGvFaZrJfkbNGh58aq56Tm57v2PaeVzmvcoQwt+4XXM5RcUvzlyQ+8vOd5qF24BsW1s
+         0p3TB1MhNqJp4IRgXco5VK2yErZGBezfQMUoFS7YYfA58j2fytq805NIIRZC4nYT69oq
+         hMx4BUcpuUXCjyyw1qKh9h5XCxsTkZFhrcdytt9NM3+6b11JfWQjVmO9wEgvFKyTscwk
+         F44Xp7Smbth2/Q9HbgbhXve30eAkK0BmU1W1mgjaOevhwkwcIy/Q6U5hA7SYT7nscOBi
+         uVvQ==
+X-Gm-Message-State: ACgBeo3hAaJsmf+zMwAJyV7YIx6E9l6+rqRqca9ijlf+nMls/lz4oy9G
+        YUi3FZD5v3guqywlLc01pSbanQ==
+X-Google-Smtp-Source: AA6agR7FDblqVQT9gybR5hPpqOJr92pA+VUM4Qhig09FQMQsWhnjjQeFyrRKTjyc7K2GZP4L90Ut5Q==
+X-Received: by 2002:a19:3856:0:b0:491:7b45:7617 with SMTP id d22-20020a193856000000b004917b457617mr5988001lfj.47.1660741449662;
+        Wed, 17 Aug 2022 06:04:09 -0700 (PDT)
 Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id v1-20020ac25601000000b0048b3768d2ecsm1683243lfd.174.2022.08.17.06.04.02
+        by smtp.gmail.com with ESMTPSA id v1-20020ac25601000000b0048b3768d2ecsm1683243lfd.174.2022.08.17.06.04.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 06:04:03 -0700 (PDT)
+        Wed, 17 Aug 2022 06:04:09 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,9 +57,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH v2 10/14] arm64: dts: qcom: sdm845: split TCSR halt regs out of mutex
-Date:   Wed, 17 Aug 2022 16:03:38 +0300
-Message-Id: <20220817130342.568396-11-krzysztof.kozlowski@linaro.org>
+Subject: [RFT PATCH v2 14/14] arm64: dts: qcom: sm8150: switch TCSR mutex to MMIO
+Date:   Wed, 17 Aug 2022 16:03:42 +0300
+Message-Id: <20220817130342.568396-15-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220817130342.568396-1-krzysztof.kozlowski@linaro.org>
 References: <20220817130342.568396-1-krzysztof.kozlowski@linaro.org>
@@ -69,43 +69,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TCSR halt regs are next to TCSR mutex, so before converting the TCSR
-mutex into device with address space, we need to split the halt regs to
-its own syscon device.  This also describes more accurately the devices
-and their IO address space.
+The TCSR mutex bindings allow device to be described only with address
+space (so it uses MMIO, not syscon regmap).  This seems reasonable as
+TCSR mutex is actually a dedicated IO address space and it also fixes DT
+schema checks:
+
+  qcom/sm8150-mtp.dtb: hwlock: 'reg' is a required property
+  qcom/sm8150-mtp.dtb: hwlock: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8150.dtsi | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index f0e286715d1b..21ed14200986 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -2590,7 +2590,12 @@ ipa: ipa@1e40000 {
+diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+index 7d509ecd44da..dc6770391813 100644
+--- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+@@ -585,12 +585,6 @@ scm: scm {
+ 		};
+ 	};
  
- 		tcsr_mutex_regs: syscon@1f40000 {
- 			compatible = "syscon";
--			reg = <0 0x01f40000 0 0x40000>;
-+			reg = <0 0x01f40000 0 0x20000>;
-+		};
-+
-+		tcsr_regs_1: sycon@1f60000 {
-+			compatible = "qcom,sdm845-tcsr", "syscon";
-+			reg = <0 0x01f60000 0 0x20000>;
+-	tcsr_mutex: hwlock {
+-		compatible = "qcom,tcsr-mutex";
+-		syscon = <&tcsr_mutex_regs 0 0x1000>;
+-		#hwlock-cells = <1>;
+-	};
+-
+ 	memory@80000000 {
+ 		device_type = "memory";
+ 		/* We expect the bootloader to fill in the size */
+@@ -2054,9 +2048,10 @@ ipa_virt: interconnect@1e00000 {
+ 			qcom,bcm-voters = <&apps_bcm_voter>;
  		};
  
- 		tlmm: pinctrl@3400000 {
-@@ -3207,7 +3212,7 @@ mss_pil: remoteproc@4080000 {
- 				 <&pdc_reset PDC_MODEM_SYNC_RESET>;
- 			reset-names = "mss_restart", "pdc_reset";
+-		tcsr_mutex_regs: syscon@1f40000 {
+-			compatible = "syscon";
+-			reg = <0x0 0x01f40000 0x0 0x40000>;
++		tcsr_mutex: hwlock@1f40000 {
++			compatible = "qcom,tcsr-mutex";
++			reg = <0 0x01f40000 0 0x20000>;
++			#hwlock-cells = <1>;
+ 		};
  
--			qcom,halt-regs = <&tcsr_mutex_regs 0x23000 0x25000 0x24000>;
-+			qcom,halt-regs = <&tcsr_regs_1 0x3000 0x5000 0x4000>;
- 
- 			power-domains = <&rpmhpd SDM845_CX>,
- 					<&rpmhpd SDM845_MX>,
+ 		remoteproc_slpi: remoteproc@2400000 {
 -- 
 2.34.1
 
