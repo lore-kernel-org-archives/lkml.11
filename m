@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9E3C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B308C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243242AbiHRER6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
+        id S243199AbiHRESC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243157AbiHRERf (ORCPT
+        with ESMTP id S243159AbiHRERf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 00:17:35 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6CE7AB057;
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D02AB068;
         Wed, 17 Aug 2022 21:17:31 -0700 (PDT)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I2hVto018386;
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I4H4CD010221;
         Thu, 18 Aug 2022 04:17:22 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=EHtGBxEEfsfmnWP4PpzyBBgLU2KALug2bILXvp24eh0=;
- b=Qbu0WQDlkHHqMGugLNLo6b1DYYMN3NkGNeNtIV33DE41BagSxGIXQT0hSDxvvtiFM3jV
- px9WUrAnACoSKEo2FW8oyCR1fA2PaPzPuYKdhnDPtTMUfXAPm6kTrt0pJ4oGv9G6k89S
- 2powAwqwevVvz60n+ayX3SRD2p0EtA/hv5/ZLvx08xm3DNNV9Z7+CjJ/pgtsiHgMTWCN
- zL86hOF3hJXZlTXQ3oPxQav0xl7rmZhSvjMN+n/UJnQBtkfLk+suHXIxdt32ygV/2McY
- VT060MntEY5HplxO1iLT3BIFEIS7hkzIBWl2CqfSJdOg2VW807A/NHgPZe0KzyrcTFTK ww== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j08wmgty7-1
+ bh=y5Wja1p/9P93G5DwYgWzDk04yKR4AAF3vxxCF5pAYHk=;
+ b=m0fZfpVDLE6q5XF/etnOObtm7jktzGrcPfLkOMXftwKv2DkqRQCg4LZDStr46GFiF30i
+ 8Lp3PCxeBXraXKzMNVCpyFVO1UFXGbGfDhrXsubOcjp2Rm7t9WFQ8kPEwZV+cgphnfEw
+ O042i4JX6zatcaTv+4qsLIm50BhrcrK9NM/1f0CiNOZ+BUs3RwoSjhp303v7zwvpMhox
+ cqSBWmY9+Bc1LJ/XX4BKAqTttWpmTjd7zt5yrSN0fEkMZqLJE8I4lg8Hc4uL0EsI7l0b
+ PQt8fK441CnNLqXPKZiPVosHTqqtVJoSfqkzepWMzDw5Y+3wsycxMCM9w5iEXoAc0vCq OQ== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j12hhjkr7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 04:17:21 +0000
+        Thu, 18 Aug 2022 04:17:22 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJAf009952
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJl5018189
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 18 Aug 2022 04:17:21 GMT
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 07:58:36 -0700
+ 15.2.986.22; Wed, 17 Aug 2022 07:58:20 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
@@ -51,12 +51,14 @@ CC:     Douglas Anderson <dianders@chromium.org>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
         Andy Gross <agross@kernel.org>,
         Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 4/5] clk: qcom: gpucc-sc7280: Add cx collapse reset support
-Date:   Wed, 17 Aug 2022 20:27:53 +0530
-Message-ID: <20220817202609.v2.4.I5e64ff4b77bb9079eb2edeea8a02585c9e76778f@changeid>
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 1/5] dt-bindings: clk: qcom: Support gpu cx gdsc reset
+Date:   Wed, 17 Aug 2022 20:27:50 +0530
+Message-ID: <20220817202609.v2.1.I68b749219741db01356a42d782f74265d29a2ac3@changeid>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
 References: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
@@ -67,59 +69,44 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: fqdzOf--2robkilEWfzfRDQmP1UYrOk-
-X-Proofpoint-GUID: fqdzOf--2robkilEWfzfRDQmP1UYrOk-
+X-Proofpoint-GUID: N-HfNhZ7wV-EqeKr-8eOr---1VQlCwx3
+X-Proofpoint-ORIG-GUID: N-HfNhZ7wV-EqeKr-8eOr---1VQlCwx3
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- adultscore=0 phishscore=0 malwarescore=0 mlxlogscore=999 impostorscore=0
- clxscore=1015 suspectscore=0 mlxscore=0 spamscore=0 lowpriorityscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180014
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 adultscore=0 suspectscore=0 mlxscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208180014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow a consumer driver to poll for cx gdsc collapse through Reset
-framework.
+Add necessary definitions in gpucc bindings to ensure gpu cx gdsc collapse
+through 'reset' framework for SC7280.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
 
-Changes in v2:
-- Minor update to use the updated custom reset ops implementation
+(no changes since v1)
 
- drivers/clk/qcom/gpucc-sc7280.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ include/dt-bindings/clock/qcom,gpucc-sc7280.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/clk/qcom/gpucc-sc7280.c b/drivers/clk/qcom/gpucc-sc7280.c
-index 9a832f2..d4bc791 100644
---- a/drivers/clk/qcom/gpucc-sc7280.c
-+++ b/drivers/clk/qcom/gpucc-sc7280.c
-@@ -433,12 +433,22 @@ static const struct regmap_config gpu_cc_sc7280_regmap_config = {
- 	.fast_io = true,
- };
+diff --git a/include/dt-bindings/clock/qcom,gpucc-sc7280.h b/include/dt-bindings/clock/qcom,gpucc-sc7280.h
+index 669b23b..843a31b 100644
+--- a/include/dt-bindings/clock/qcom,gpucc-sc7280.h
++++ b/include/dt-bindings/clock/qcom,gpucc-sc7280.h
+@@ -32,4 +32,7 @@
+ #define GPU_CC_CX_GDSC				0
+ #define GPU_CC_GX_GDSC				1
  
-+struct qcom_reset_ops cx_gdsc_reset = {
-+	.reset = gdsc_wait_for_collapse,
-+};
++/* GPU_CC reset IDs */
++#define GPU_CX_COLLAPSE				0
 +
-+static const struct qcom_reset_map gpucc_sc7280_resets[] = {
-+	[GPU_CX_COLLAPSE] = { .ops = &cx_gdsc_reset, .priv = &cx_gdsc },
-+};
-+
- static const struct qcom_cc_desc gpu_cc_sc7280_desc = {
- 	.config = &gpu_cc_sc7280_regmap_config,
- 	.clks = gpu_cc_sc7280_clocks,
- 	.num_clks = ARRAY_SIZE(gpu_cc_sc7280_clocks),
- 	.gdscs = gpu_cc_sc7180_gdscs,
- 	.num_gdscs = ARRAY_SIZE(gpu_cc_sc7180_gdscs),
-+	.resets = gpucc_sc7280_resets,
-+	.num_resets = ARRAY_SIZE(gpucc_sc7280_resets),
- };
- 
- static const struct of_device_id gpu_cc_sc7280_match_table[] = {
+ #endif
 -- 
 2.7.4
 
