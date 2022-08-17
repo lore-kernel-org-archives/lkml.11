@@ -2,99 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7BCC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3583AC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240359AbiHQQle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S240132AbiHQQmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237637AbiHQQl3 (ORCPT
+        with ESMTP id S237506AbiHQQmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:41:29 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AF27CB74;
-        Wed, 17 Aug 2022 09:41:27 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id w19so25531284ejc.7;
-        Wed, 17 Aug 2022 09:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=rNsoClh34rx/3eWm5W2OOBZPW56iIjZI3iAQYDBsTWs=;
-        b=Fg3kShD9pR4kNxNRr0RRAEzvtaGoROTzXzWXbRQ/N91CLXomIxAXPrtyY9wuzmGqxt
-         PpAYP747oAMly9tDUBssvT0/SzL0sMfmiyUdREi922bQ+79YLQQh1pD6d84hz+NVO508
-         9eI6xz4JeRRTVVy2vTIOHEVSTX1twHcchbMm7OD4WsfQwMDDi2fNvWJoVX7QnbvLpdqi
-         K+ITvj0cIT6GIVMiK0Kn4nQarHEVisyChJxGc+GMvVWIpSF43p42fqPGKNKq/RrzjFF1
-         IWhRFrx/jpg6YSPFWsM7+q7EJDZoAGFAa+Or96qn+6wzCA1l1AM5xc21ELT8S9RRMv6K
-         xzKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=rNsoClh34rx/3eWm5W2OOBZPW56iIjZI3iAQYDBsTWs=;
-        b=b2IuYNFZEhGoB8/fNjckgCq+tF45fSQg76Al8QWK3ScQTmuXNMjkT7R/3LSV96okcA
-         WjhUaJ83p2lYS8XxpWwTYpvOrC3Wi74nEHmpleZlFSsuNghzHZ8DT+QSbxeEW2+IBofX
-         gafVrkwo2j4UcrIDYA5IMvfpeUdzsXECcW0Qi8qYG6Cn5IP6L6FtCpJUIKNRcJ8ROzn+
-         PnUNgLvKTOEymcwBiWpLkWEGxcS/LeXyX3ASTbIL61Mw13XLwYuhr1ejZevq9ZcwVOto
-         B/FQG+tvar9V+SGuR33X/BHCLPNLNhMZseLVuTm6qFv3SBna3CMbxsQ/bhIK6mH6dVf3
-         TNpg==
-X-Gm-Message-State: ACgBeo2liMBzcOneKNdw+K3nyH5AIDr+NYJ6vPGhiSqr5dWTPgGNKckj
-        yS/UhH2tpt4t5clnpmA6LnatmFxWxQHFP1+y3fvka7W9
-X-Google-Smtp-Source: AA6agR43/EUtCmpuDIx6Cp4gPaEJ+4+mhJLvg5Xro6mu953BxwhuJ+tFEbrp3F4IZrN+k6uBxNoJnFPAv3V7yphTRTw=
-X-Received: by 2002:a17:907:e8d:b0:730:a4e8:27ed with SMTP id
- ho13-20020a1709070e8d00b00730a4e827edmr16635182ejc.58.1660754485835; Wed, 17
- Aug 2022 09:41:25 -0700 (PDT)
+        Wed, 17 Aug 2022 12:42:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BBD88DFB;
+        Wed, 17 Aug 2022 09:42:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F944B81E25;
+        Wed, 17 Aug 2022 16:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9BBC433D6;
+        Wed, 17 Aug 2022 16:42:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660754568;
+        bh=+wEnZVI2aj40wim23BMsG+ci2KQg9to47RsgHXVHy10=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YpvpIKT4XzsirkSD5uvjCpB+/1pIK+WsuRzW1OyY4JFHJM/UPgkTU0Dyof3gdxlD+
+         N9UeWOT6DqR/F02nr8dTesCV9NATI2TGSUYB/R9tBGzxXPSg7QngOCs5ui5IBs+gJK
+         rLwzJXJaLD1zhLxBAV94ZgMrFc9tma23ROcaLTcjfUc11WtX2f8GtAX3UuppT+RZ9D
+         D/K4io2T2RJfGjy4B2YcPEiR8BzL+YTRRIVdYftQPQGNTKD9lAaaBVMtxJbptx87kx
+         xeTN8Ihpf1nOpMTw7H4aCfYwqI9wj9ciPuFbzK99E0x0QcrXw5JhOlTMGBiJ4wrrEc
+         osemWEeY22khw==
+Received: by pali.im (Postfix)
+        id AAA9C739; Wed, 17 Aug 2022 18:42:45 +0200 (CEST)
+Date:   Wed, 17 Aug 2022 18:42:45 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>,
+        Nick Child <nick.child@ibm.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/5] powerpc/pci: Add config option for using all 256 PCI
+ buses
+Message-ID: <20220817164245.qanxklpavge3shcm@pali>
+References: <20220706104308.5390-1-pali@kernel.org>
+ <20220706104308.5390-6-pali@kernel.org>
+ <20220721222145.rzgthbwoselx2l43@pali>
+ <875yjkb0ht.fsf@mpe.ellerman.id.au>
+ <20220726111001.a2upqf5m5welcla6@pali>
 MIME-Version: 1.0
-References: <20220817130807.68279-1-punit.agrawal@bytedance.com>
-In-Reply-To: <20220817130807.68279-1-punit.agrawal@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 17 Aug 2022 09:41:14 -0700
-Message-ID: <CAADnVQJsDYhNmP6G7O8tVfHZ7rQLeJ4KpwAQweVidny0fgTbyw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Simplify code by using for_each_cpu_wrap()
-To:     Punit Agrawal <punit.agrawal@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220726111001.a2upqf5m5welcla6@pali>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 6:08 AM Punit Agrawal
-<punit.agrawal@bytedance.com> wrote:
->
-> No functional change intended.
+On Tuesday 26 July 2022 13:10:01 Pali Rohár wrote:
+> On Tuesday 26 July 2022 21:02:22 Michael Ellerman wrote:
+> > Pali Rohár <pali@kernel.org> writes:
+> > > On Wednesday 06 July 2022 12:43:08 Pali Rohár wrote:
+> > >> By default on PPC32 are PCI bus numbers unique across all PCI domains.
+> > >> So system could have only 256 PCI buses independently of available
+> > >> PCI domains.
+> > >>
+> > >> This is due to filling DT property pci-OF-bus-map which does not reflect
+> > >> multi-domain setup.
+> > >>
+> > >> On all powerpc platforms except chrp and powermac there is no DT property
+> > >> pci-OF-bus-map anymore and therefore it is possible on non-chrp/powermac
+> > >> platforms to avoid this limitation of maximal number of 256 PCI buses in
+> > >> system even on multi-domain setup.
+> > >>
+> > >> But avoiding this limitation would mean that all PCI and PCIe devices would
+> > >> be present on completely different BDF addresses as every PCI domain starts
+> > >> numbering PCI bueses from zero (instead of the last bus number of previous
+> > >> enumerated PCI domain). Such change could break existing software which
+> > >> expects fixed PCI bus numbers.
+> > >>
+> > >> So add a new config option CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT which
+> > >> enables this change. By default it is disabled. It cause that initial value
+> > >> of hose->first_busno is zero.
+> > >>
+> > >> Signed-off-by: Pali Rohár <pali@kernel.org>
+> > >> ---
+> > >>  arch/powerpc/Kconfig         | 11 +++++++++++
+> > >>  arch/powerpc/kernel/pci_32.c |  6 ++++++
+> > >>  2 files changed, 17 insertions(+)
+> > >>
+> > >> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> > >> index be68c1f02b79..f66084bc1dfe 100644
+> > >> --- a/arch/powerpc/Kconfig
+> > >> +++ b/arch/powerpc/Kconfig
+> > >> @@ -370,6 +370,17 @@ config PPC_DCR
+> > >>  	depends on PPC_DCR_NATIVE || PPC_DCR_MMIO
+> > >>  	default y
+> > >>
+> > >> +config PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
+> > >> +	depends on PPC32
+> > >> +	depends on !PPC_PMAC && !PPC_CHRP
+> > >> +	bool "Assign PCI bus numbers from zero individually for each PCI domain"
+> > >> +	help
+> > >> +	  By default on PPC32 were PCI bus numbers unique across all PCI domains.
+> > >> +	  So system could have only 256 PCI buses independently of available
+> > >> +	  PCI domains. When this option is enabled then PCI bus numbers are
+> > >> +	  PCI domain dependent and each PCI controller on own domain can have
+> > >> +	  256 PCI buses, like it is on other Linux architectures.
+> > >> +
+> > >
+> > > What do you think, would it be possible to set default value of this
+> > > option to enabled?
+> > 
+> > My preference would be to not have the option at all, just make it the
+> > default behaviour. Every new CONFIG option adds more combinations that
+> > need testing, or more likely don't get well tested.
+> > 
+> > But I don't have a good feel for what could break if we turn it on, so
+> > honestly I don't really know.
+> > 
+> > Also I do most of my 32-bit testing on pmacs, which are not affected by
+> > the change.
+> 
+> It is because this change is incompatible with deprecated pci-OF-bus-map
+> which pmac uses. I do not have any pmac box for testing or development,
+> so I let this part as is.
+> 
+> If one day pci-OF-bus-map would be possible to disable on pmac then this
+> pci bus number change can be enabled also for pmac.
 
-?
+Hello! I have created this patch which allows to disable deprecated
+pci-OF-bus-map on powermac and allow to enable this new config option
+PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT also on powermac.
 
-> -       orig_cpu = cpu = raw_smp_processor_id();
-> -       while (1) {
-> +       for_each_cpu_wrap(cpu, cpu_possible_mask, raw_smp_processor_id()) {
->                 struct pcpu_freelist_head *head;
->
->                 head = per_cpu_ptr(s->freelist, cpu);
-> @@ -68,15 +67,10 @@ static inline void ___pcpu_freelist_push_nmi(struct pcpu_freelist *s,
->                         raw_spin_unlock(&head->lock);
->                         return;
->                 }
-> -               cpu = cpumask_next(cpu, cpu_possible_mask);
-> -               if (cpu >= nr_cpu_ids)
-> -                       cpu = 0;
-> -
-> -               /* cannot lock any per cpu lock, try extralist */
-> -               if (cpu == orig_cpu &&
-> -                   pcpu_freelist_try_push_extra(s, node))
-> -                       return;
->         }
-> +
-> +       /* cannot lock any per cpu lock, try extralist */
-> +       pcpu_freelist_try_push_extra(s, node);
+So you can test this option too on your powermac boxes.
 
-This is obviously not equivalent!
+I'm really not sure if that pci-OF-bus-map is required and for which
+platforms or software...
+
+Patch for allowing to disable pci-OF-bus-map is here:
+https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20220817163927.24453-1-pali@kernel.org/
+
+> > So I'll probably take the series as-is, and then we can do some more
+> > widespread testing and possibly flip the default to enabled, and then
+> > maybe remove the option entirely in future.
+> > 
+> > cheers
+> 
+> I have tested it on P2020 board with 3 PCIe devices, each on own bus
+> where each bus is connected to different PCIe controller / domain and it
+> works correctly. Every PCIe device is on bus 1 bus but on different
+> domains.
