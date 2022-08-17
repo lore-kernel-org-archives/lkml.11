@@ -2,94 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88791C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 22:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FEAC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 22:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241762AbiHQWu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 18:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
+        id S229583AbiHQWwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 18:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbiHQWu5 (ORCPT
+        with ESMTP id S231496AbiHQWwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 18:50:57 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA109413E;
-        Wed, 17 Aug 2022 15:50:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9Qanr093bCl86zh2AN5i6wN6MfrVPVouMGxAnr+CKnM=; b=UTD9eEhyQQ3OGxGrBUcvPp4av3
-        rrGD7+s83tFz6AWKk1G/bICltGf80zugXvFGV6PchKnZBXUCX9qlq0Ks7SO9jGkDl3mlvljzKKSye
-        VOa+aeklzqiBgmzBT1+UNePZ7d0kAaAvV291ibodkaJrfKC9lgj7zUT8Yr69Y9y/9H+IOK6RIeNKM
-        eL/jzHhmyr4e1DVlm5i0O1WOaNYfaYHUwo3jc7AWURAn4aLiBXAP/XE4mOrX8lg0kOF4uAu5MPLAc
-        6lDFCd3EJooRwcdAcmfziRNMa5FturXmXRyRgW23/ACgWUjFg36FrUAxeoz83xil+ecbaBzoR/sRQ
-        +nILOSIA==;
-Received: from [179.232.144.59] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oORrt-00Azyy-5W; Thu, 18 Aug 2022 00:50:33 +0200
-Message-ID: <32272fd0-9978-4b8a-ccda-f6b31755350a@igalia.com>
-Date:   Wed, 17 Aug 2022 19:49:44 -0300
+        Wed, 17 Aug 2022 18:52:51 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92CCA0250;
+        Wed, 17 Aug 2022 15:52:49 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HMkSSQ014913;
+        Wed, 17 Aug 2022 22:52:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=3CkJreVjrSgeZEk74TyQB/PsrVK9ZT+3QKeZw0DEaI8=;
+ b=CXGvHrQmco/KnJmSTMO8TckNSJCM0/ytWq2gvqFE5tR3UZitYpDYLmfMFw6iUh3ze/P8
+ KbWQMBhb24qgP2S7Ai926sGSYxIM7reeIF9HqMfRBN/UC1z5wL8zIdf3LXLQizn6/SLZ
+ ZdW1Q1+iDrQpLQCLgBbqVzOd2TvbAWoAb9NgYNAn6qdCQoVkZfLBkWUmlnUm8Aj/YRIW
+ LQTnKq4DD8hHubWxyF4IACU3ieTMypXYK6JqUx+4jeUq8LZDUW6NW5+tlFhGBYixw4Op
+ K9AjZdXq6EhQONEOVUyQOnlIfSFvECGXKW8rqk5BgLCushH1O3I/mmNRbvonktYgvTAJ Hg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j19dpg3gn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 22:52:47 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27HMnloK026173;
+        Wed, 17 Aug 2022 22:52:47 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j19dpg3g6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 22:52:47 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27HMoiUt016850;
+        Wed, 17 Aug 2022 22:52:45 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma04wdc.us.ibm.com with ESMTP id 3hx3k9udac-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 22:52:45 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27HMqifi49742326
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Aug 2022 22:52:45 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DDF9B6A04D;
+        Wed, 17 Aug 2022 22:52:44 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D989D6A054;
+        Wed, 17 Aug 2022 22:52:43 +0000 (GMT)
+Received: from li-2c1e724c-2c76-11b2-a85c-ae42eaf3cb3d.ibm.com.com (unknown [9.160.118.205])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed, 17 Aug 2022 22:52:43 +0000 (GMT)
+From:   Tony Krowiak <akrowiak@linux.ibm.com>
+To:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     jjherne@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
+        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
+        alex.williamson@redhat.com, kwankhede@nvidia.com,
+        fiuczy@linux.ibm.com
+Subject: [PATCH 0/2] s390/vfio-ap: fix two problems discovered in the vfio_ap driver
+Date:   Wed, 17 Aug 2022 18:52:40 -0400
+Message-Id: <20220817225242.188805-1-akrowiak@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     pmladek@suse.com, Dinh Nguyen <dinguyen@kernel.org>,
-        Tony Luck <tony.luck@intel.com>, akpm@linux-foundation.org,
-        bhe@redhat.com, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-edac@vger.kernel.org
-References: <Yv0mCY04heUXsGiC@zn.tnic>
- <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com> <Yv1C0Y25u2IB7PCs@zn.tnic>
- <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com> <Yv1XVRmTXHLhOkER@zn.tnic>
- <c0250075-ec87-189f-52c5-e0520325a015@igalia.com> <Yv1hn2ayPoyKBAj8@zn.tnic>
- <1ee275b3-97e8-4c2b-be88-d50898d17e23@igalia.com> <Yv1lGpisQVFpUOGP@zn.tnic>
- <2f21b91c-4fb0-42f8-0820-a6036405cb29@igalia.com> <Yv1peAdCdn+Qi3xI@zn.tnic>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yv1peAdCdn+Qi3xI@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QgoTigFlPqRoTzluZDWZCrW6C58VFvmG
+X-Proofpoint-ORIG-GUID: OawyeiUl_RsGTzP2pdN7E5wi07IVWXe6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-17_15,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
+ impostorscore=0 bulkscore=0 spamscore=0 clxscore=1011 priorityscore=1501
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208170084
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/08/2022 19:19, Borislav Petkov wrote:
-> On Wed, Aug 17, 2022 at 07:09:26PM -0300, Guilherme G. Piccoli wrote:
->> Again - a matter of a trade-off, a good compromise must be agreed by all
->> parties (kdump maintainers are usually extremely afraid of taking risks
->> to not break kdump).
-> 
-> Right, and logging hw errors from a panic notifier feels simply weird.
-> 
-> x86 has its own, special notifier exactly for that and it is independent
-> from the panic path but it gets run right after the exception raised due
-> to the hw error is done.
-> 
-> Dunno if ARM has such facilities tho...
-> 
-> Thx.
-> 
+Two problems have been discovered with the vfio_ap device driver since the
+hot plug support was recently introduced:
 
-Yeah, MCE stuff right? Not sure for ARM and other architectures as well.
-Cheers,
+1. Attempting to remove a matrix mdev after assigning a duplicate adapter
+   or duplicate domain results in a hang.
 
+2. The queues associated with an adapter or domain being unassigned from
+   the matrix mdev do not get unlinked from it.
 
-Guilherme
+Two patches are provided to resolve these problems.
+
+Tony Krowiak (2):
+  s390/vfio-ap: fix hang during removal of mdev after duplicate
+    assignment
+  s390/vfio-ap: fix unlinking of queues from the mdev
+
+ drivers/s390/crypto/vfio_ap_ops.c | 36 +++++++++++++++++++++++++++----
+ 1 file changed, 32 insertions(+), 4 deletions(-)
+
+-- 
+2.31.1
+
