@@ -2,192 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F77C32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 568B1C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239956AbiHQOLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
+        id S240007AbiHQOLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239999AbiHQOLc (ORCPT
+        with ESMTP id S240019AbiHQOLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:11:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B5C3DBC6
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:11:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660745490;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BkBigNaDlXGP8QLup2qk8r/1tlI8dFIAgIklvPQD/3s=;
-        b=W97e/qSzC0roqAD8jFkxxZRxMNp1U3Diy2JDJHeAYPbTsqvXbnnpg7nd46ZwY6YrYG6mKq
-        N/r08TFiOJBFiJOvKCR5ZkgZHey8c6Yrks/xUbw6RMgfqhBpdc2ORlpYVGHCkhjDNczFpu
-        05M0PrGX3EvgOQmnoY/2BUlczC1TgoY=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-282-FvrVUi3KNxWAqW-h_mwOFg-1; Wed, 17 Aug 2022 10:11:29 -0400
-X-MC-Unique: FvrVUi3KNxWAqW-h_mwOFg-1
-Received: by mail-wr1-f71.google.com with SMTP id x6-20020adfbb46000000b00225260970a9so434688wrg.18
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:11:29 -0700 (PDT)
+        Wed, 17 Aug 2022 10:11:48 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCBD39B8E
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:11:46 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id j5so15492784oih.6
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:11:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=BkBigNaDlXGP8QLup2qk8r/1tlI8dFIAgIklvPQD/3s=;
-        b=HBY+YAjK7OwLMf5q3ki8PHNomNTU/N2V7UMQyorr1IDF9PQeqC6q+3qsY/qX1KfZL6
-         ePCjalN8qMX+5MIypp4ZuzAx7FX3xzV0LKQfTbWp8V8f4CK0oYRI74eBdOOyxF9Y3YON
-         MrJ5j3kh/aodNcOmCESNK/0kYp8EXvV79kt0eYJV9CbGcWTZX4pfiozaqoXKBzae/Qrm
-         /+NaUcl/iN5b82YgINITpfA6vu4Ed2LHmFO9lfv2eqZ6o0ngmjY7D9yWG34rbu+b0IUs
-         nqflgdhl8vnr7dTu8KUBlO5PAlqHJ2KRjUdK6AGo/Mqj+uwIM4Fpogwu/WCKpGAYD02o
-         6WjA==
-X-Gm-Message-State: ACgBeo2AO05SCr4acT+W7nnfKRkacDbMx0DOLV2dehBuNYC0yiEftLEf
-        HE0eQ+VhIXZ3kpQN01/8GZiJE2eiuIVmJ4veQ67Swxxp9nsogBT2kP2pn8R6voys1p64NqJ34YG
-        EJBSlgbAOehM4EYF7s/vrcM/b
-X-Received: by 2002:a5d:648b:0:b0:222:cc32:c292 with SMTP id o11-20020a5d648b000000b00222cc32c292mr13905159wri.463.1660745488133;
-        Wed, 17 Aug 2022 07:11:28 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4lJRlBf20Vlg8kR3ZgHCBt6Y9KmjcitB9u5B1scmYBGIiJ/FHfKW7Eu4BR6iE8qP0uR5Avrw==
-X-Received: by 2002:a5d:648b:0:b0:222:cc32:c292 with SMTP id o11-20020a5d648b000000b00222cc32c292mr13905142wri.463.1660745487810;
-        Wed, 17 Aug 2022 07:11:27 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id x11-20020adff0cb000000b002217e3f41f1sm13104183wro.106.2022.08.17.07.11.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 07:11:27 -0700 (PDT)
-Message-ID: <226aca0a2cc95f57364f330793a2f13446fcf7a0.camel@redhat.com>
-Subject: Re: [PATCH v2 8/9] KVM: x86: lapic does not have to process INIT if
- it is blocked
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        vkuznets@redhat.com
-Date:   Wed, 17 Aug 2022 17:11:25 +0300
-In-Reply-To: <YvwxJzHC5xYnc7CJ@google.com>
-References: <20220811210605.402337-1-pbonzini@redhat.com>
-         <20220811210605.402337-9-pbonzini@redhat.com> <YvwxJzHC5xYnc7CJ@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=4dcyblUn3bURjZBjn5VOr+f2Wy5bXXXMGqJEHlnVqeg=;
+        b=vgJkYBRoA1y9/TAxTexzQ3ItgcluACehbN5mL0DLYADsbFRk5ButB5l3Cq9FWstEno
+         yuyOpgNx3a+b5ctToz/1FLZfYJceaL+QEcX4PK/grESfVaOMd68Aw+WBmIRTrfDdvMem
+         Lupd0f2sVNF8L6hQlTqhdDsX5h/VIY52AcF9LbCFwnzlWDeBLcivW2/e+Q2IQ/B3JRRL
+         BKJzxJcULl1AxF3ZIb1V3WF/njbkYatwssEEtyDbI5ROSWMl+YUkJw4rBQWaYVajwNhH
+         BuUVCER6H1DkUSW/rMHxF2ZcYDKK8WAq9idZwGrTOuo1ttLE3H6aFisx8DtgmIP5K2A+
+         z82g==
+X-Gm-Message-State: ACgBeo1+LktJyPt84UnlsKw0GvWO58X+oXleaY740e95UCzuD+buuot+
+        nyY6jjwLSBjPZPxdtYIFWcogQJDlZI0vCg==
+X-Google-Smtp-Source: AA6agR46NsAAY3zAcs2q5dFzXINPUgZ9rlz60vApp4s/EC52EEmyMfHYc3Rf2JwxTCgjY2E4q/w3rA==
+X-Received: by 2002:a05:6808:e89:b0:33a:315a:eb90 with SMTP id k9-20020a0568080e8900b0033a315aeb90mr1530146oil.162.1660745505181;
+        Wed, 17 Aug 2022 07:11:45 -0700 (PDT)
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com. [209.85.210.42])
+        by smtp.gmail.com with ESMTPSA id eh40-20020a056870f5a800b00101bd4914f9sm2806875oab.43.2022.08.17.07.11.44
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 07:11:44 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id bk13-20020a056830368d00b0063723999f31so9446916otb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:11:44 -0700 (PDT)
+X-Received: by 2002:a81:f47:0:b0:31f:434b:5ee with SMTP id 68-20020a810f47000000b0031f434b05eemr21824312ywp.383.1660745076963;
+ Wed, 17 Aug 2022 07:04:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220816132040.uwirtjm5yr6rdd3q@houat> <CAMuHMdWevP=3af=NneAJEDfOR+sz1thrQEhAQPNGrgitBtLjGA@mail.gmail.com>
+ <20220816141116.5nuszmilqv2exdb3@houat> <CAMuHMdXq_xGPx46bdnUFGDiG4kcgdxtXaRGTucFd3TRq8353dg@mail.gmail.com>
+ <20220816154956.pkdpxmmw27mia5ix@houat> <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
+ <20220817074710.w4c4xwj7edly2b5p@houat> <CAMuHMdXeBakWr6geOWGxnjQYaU9Pi4tRvVFFtubyMJZTT2nPnw@mail.gmail.com>
+ <20220817111454.pn2iltvyo2drebq7@houat> <CAMuHMdU57g1rNoLo65jhLK8mk4YkNEbMz1E7XKWk2dnCxTr=gg@mail.gmail.com>
+ <20220817131854.jwmhqvhfhp77bbr3@houat>
+In-Reply-To: <20220817131854.jwmhqvhfhp77bbr3@houat>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 17 Aug 2022 16:04:24 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXrfH9MArXesfNCvqayiq17u7XaqtSvXTNt4V10=obSHQ@mail.gmail.com>
+Message-ID: <CAMuHMdXrfH9MArXesfNCvqayiq17u7XaqtSvXTNt4V10=obSHQ@mail.gmail.com>
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dom Cobley <dom@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-17 at 00:07 +0000, Sean Christopherson wrote:
-> On Thu, Aug 11, 2022, Paolo Bonzini wrote:
-> > Do not return true from kvm_apic_has_events, and consequently from
-> > kvm_vcpu_has_events, if the vCPU is not going to process an INIT.
-> > 
-> > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> > ---
-> >  arch/x86/include/asm/kvm_host.h | 1 +
-> >  arch/x86/kvm/i8259.c            | 2 +-
-> >  arch/x86/kvm/lapic.h            | 2 +-
-> >  arch/x86/kvm/x86.c              | 5 +++++
-> >  arch/x86/kvm/x86.h              | 5 -----
-> >  5 files changed, 8 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> > index 293ff678fff5..1ce4ebc41118 100644
-> > --- a/arch/x86/include/asm/kvm_host.h
-> > +++ b/arch/x86/include/asm/kvm_host.h
-> > @@ -2042,6 +2042,7 @@ void __user *__x86_set_memory_region(struct kvm *kvm, int id, gpa_t gpa,
-> >                                      u32 size);
-> >  bool kvm_vcpu_is_reset_bsp(struct kvm_vcpu *vcpu);
-> >  bool kvm_vcpu_is_bsp(struct kvm_vcpu *vcpu);
-> > +bool kvm_vcpu_latch_init(struct kvm_vcpu *vcpu);
-> >  
-> >  bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
-> >                              struct kvm_vcpu **dest_vcpu);
-> > diff --git a/arch/x86/kvm/i8259.c b/arch/x86/kvm/i8259.c
-> > index e1bb6218bb96..177555eea54e 100644
-> > --- a/arch/x86/kvm/i8259.c
-> > +++ b/arch/x86/kvm/i8259.c
-> > @@ -29,9 +29,9 @@
-> >  #include <linux/mm.h>
-> >  #include <linux/slab.h>
-> >  #include <linux/bitops.h>
-> > -#include "irq.h"
-> > +#include <linux/kvm_host.h>
-> >  
-> > -#include <linux/kvm_host.h>
-> > +#include "irq.h"
-> >  #include "trace.h"
-> >  
-> >  #define pr_pic_unimpl(fmt, ...)        \
-> > diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
-> > index 117a46df5cc1..12577ddccdfc 100644
-> > --- a/arch/x86/kvm/lapic.h
-> > +++ b/arch/x86/kvm/lapic.h
-> > @@ -225,7 +225,7 @@ static inline bool kvm_vcpu_apicv_active(struct kvm_vcpu *vcpu)
-> >  
-> >  static inline bool kvm_apic_has_events(struct kvm_vcpu *vcpu)
-> >  {
-> > -       return lapic_in_kernel(vcpu) && vcpu->arch.apic->pending_events;
-> > +       return lapic_in_kernel(vcpu) && vcpu->arch.apic->pending_events && !kvm_vcpu_latch_init(vcpu);
-> 
-> Blech, the kvm_apic_has_events() name is awful (as is pending_events), e.g. it
-> really should be kvm_apic_has_pending_sipi_or_init().
+Hi Maxime,
 
-110% agree.
-> 
-> To avoid the odd kvm_vcpu_latch_init() declaration and the long line above, what
-> if we open code this in kvm_vcpu_has_events() like we do for NMI, SMI, etc...?
-> 
-> And as follow-up, I would love to rename kvm_vcpu_latch_init() => kvm_vcpu_init_blocked(),
-> kvm_apic_has_events(), and pending_events.
-> 
-> E.g. for this patch just do:
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 9f11b505cbee..559900736a71 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -12533,7 +12533,8 @@ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
->         if (!list_empty_careful(&vcpu->async_pf.done))
->                 return true;
-> 
-> -       if (kvm_apic_has_events(vcpu))
-> +       /* comment explaning that SIPIs are dropped in this case. */
-> +       if (kvm_apic_has_events(vcpu) && !kvm_vcpu_latch_init(vcpu))
->                 return true;
+On Wed, Aug 17, 2022 at 3:19 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> On Wed, Aug 17, 2022 at 03:05:52PM +0200, Geert Uytterhoeven wrote:
+> > On Wed, Aug 17, 2022 at 1:15 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> > > On Wed, Aug 17, 2022 at 10:35:07AM +0200, Geert Uytterhoeven wrote:
+> > > > On Wed, Aug 17, 2022 at 9:47 AM Maxime Ripard <maxime@cerno.tech> wrote:
+> > > > > On Wed, Aug 17, 2022 at 09:31:18AM +0200, Geert Uytterhoeven wrote:
+> > > > > > On Tue, Aug 16, 2022 at 5:50 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> > > > > > > On Tue, Aug 16, 2022 at 04:43:44PM +0200, Geert Uytterhoeven wrote:
+> > > > > > > > > > > > Either you have to add them here (e.g. "hd720p50" and "hd720p60"), or
+> > > > > > > > > > > > handle them through "@<refresh>".  The latter would impact "[PATCH v1
+> > > > > > > > > > > > 09/35] drm/modes: Move named modes parsing to a separate function", as
+> > > > > > > > > > > > currently a named mode and a refresh rate can't be specified both.
+> > > > > > > > > > >
+> > > > > > > > > > > I think the former would make more sense. It simplifies a bit the
+> > > > > > > > > > > parser, and we're going to use a named mode anyway.
+> > > > > > > > > > >
+> > > > > > > > > > > > As "[PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
+> > > > > > > > > > > > command-line option" uses a separate "tv_mode" option, and not the main
+> > > > > > > > > > > > mode name, I think you want to add them here.
+> > > > > > > > > > >
+> > > > > > > > > > > It's a separate story I think, we could have a named mode hd720p50,
+> > > > > > > > > > > which would be equivalent to 1280x720,tv_mode=hd720p
+> > > > > > > > > >
+> > > > > > > > > > So where's the field rate in "1280x720,tv_mode=hd720p"?
+> > > > > > > > >
+> > > > > > > > > Yeah, sorry I meant 1280x720@50,tv_mode=hd720p
+> > > > > > > >
+> > > > > > > > Above you said "I think the former would make more sense", so that
+> > > > > > > > should be "1280x720,tv_mode=hd720p50"?
+> > > > > > >
+> > > > > > > No, 720p at 50Hz would be either hd720p50 or 1280x720@50,tv_mode=hd720p
+> > > > > > > and 60Hz would be hd720p60 or 1280x720@60,tv_mode=hd720p
+> > > > > >
+> > > > > > I disagree: hd720p50 and hd720p60 are different TV modes.
+> > > > >
+> > > > > I agree, and I don't see how that command-line doesn't express that?
+> > > >
+> > > > Oh, I see what you mean: yes, it expresses that.
+> > > > But it is inconsistent with the NTSC/PAL/SECAM/hd{480,576}[ip] modes,
+> > > > where the TV mode specifies both number of lines and frame rate.
+> > >
+> > > Only if we're using a named mode, and naming is hard :)
+> >
+> > That's not true: "640x480,tv_mode=PAL-N" would give me a mode with
+> > 625 lines and 25 frames/s, "640x480,tv_mode=PAL-M" would give me a
+> > mode with 525 lines and 30 frames/s.
+>
+> In that series, "640x480,tv_mode=PAL-N" would be rejected as invalid:
+>
+> https://lore.kernel.org/dri-devel/20220728-rpi-analog-tv-properties-v1-14-3d53ae722097@cerno.tech/
 
-I personally don't know if I prefer this or the original patch.
+It would become supported once the ideas from thread "[PATCH v1 04/35]
+drm/modes: Introduce 480i and 576i modes" are implemented...
 
+Gr{oetje,eeting}s,
 
+                        Geert
 
-> 
->         if (vcpu->arch.pv.pv_unhalted)
-> 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
-While reviwing this, I noticed that we have this code:
-
-
-static bool svm_apic_init_signal_blocked(struct kvm_vcpu *vcpu)
-{
- struct vcpu_svm *svm = to_svm(vcpu);
-
- /*
- * TODO: Last condition latch INIT signals on vCPU when
- * vCPU is in guest-mode and vmcb12 defines intercept on INIT.
- * To properly emulate the INIT intercept,
- * svm_check_nested_events() should call nested_svm_vmexit()
- * if an INIT signal is pending.
- */
- return !gif_set(svm) ||
- (vmcb_is_intercept(&svm->vmcb->control, INTERCEPT_INIT));
-}
-
-Is this workaround still needed? svm_check_nested_events does check the apic's INIT/SIPI status.
-
-Currently the '.apic_init_signal_blocked' is called from kvm_vcpu_latch_init which itself is
-currently called from kvm_vcpu_latch_init which happens after we would vmexit if INIT is intercepted by nested
-hypervisor.
-
-Best regards,
-	Maxim Levitsky
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
