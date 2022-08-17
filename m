@@ -2,115 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15377C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDB1C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241770AbiHQUNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
+        id S241787AbiHQUNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241783AbiHQUNH (ORCPT
+        with ESMTP id S241757AbiHQUNj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:13:07 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ABDA720A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:49 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso1453035wmb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:49 -0700 (PDT)
+        Wed, 17 Aug 2022 16:13:39 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE32711C14
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:13:36 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id v4so8531683pgi.10
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=bxRxSRmrcbs0t6BbgHEjmeEJnj5+oLNwKov9kosBFsg=;
-        b=bCrCj8WGt3a7+JPz4Wr2qZDF5Ihib0g+F+IXH5UFuOmbFTl/2ohBvo+eaBcG5rFYcE
-         JeBp5CrNuRVupkpwchSLqzMMinELgmyHdlG7Gby4T2KNUmmwkmY7XUGYNJiVa/TD597A
-         NR9XTujvKalhqDbu1Jp4hY/ljxWSHtxlA0sp2QW4RYb2fYdpSN5uFQ9tbNbEHHxHhJER
-         3Dln3DsYHqEvlP6GfiVTVMoP4zR0gzA1F7aJ2ljUx5qSlse+xdciWu7oepRlc27TE07U
-         dPla87qdJukDzfaHBgoyR2rEm4dwdJKxYv2vTJJ/0FlbjQwTvqJM+tRh0qStUKldpQZ8
-         sALg==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=ecAK1b0BGR4BXz6e6ttRl4yIb91x7Nb5bR2E/kWSLHw=;
+        b=jXVV9RG6RKNfj/aJYfUw5290cjSO+bHeeC49GRUXd9iZsYbzUGSM73ZRlDDNkuJZKe
+         M4B8e3fSbz5QPTo91nEi4iTwXcctrjQRgcdvksNueL7yMayrNdbkM3QwZ8MnQz5Lw5w7
+         c0ORLsabFe3Gm+9qrBL3vWG3OG51cAMRGiFfY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=bxRxSRmrcbs0t6BbgHEjmeEJnj5+oLNwKov9kosBFsg=;
-        b=b4idFoXznCz37TC6LnZMpPFYBEgEfyPUcHD5OBXXcTRaMHZy5Gka0iDbpxsaAOy8Ou
-         BrIr1vFLTTXv6BlTrfAMz9wPstXVrG6q2nkZPGSMD4wwGZrp/Sc6qwknkcUAJ/zeEm0H
-         9oWnNmO6RUi8OvtIpou5Eg4XAMvhOWmxvfBastdIMwz5phk1g01icvrQAtCgN+TNFoo6
-         Tk6+8VUZWNJIHNIn+OyNXS740sHmSAHO8KOF4LqbRyZFYS/Sz05aURPRaYrRGMj/+6t1
-         9TzELOYQZCrtapTJhlfVN5Tkz7LH+xce46uuZtkOJiejiUIzlnXlDmPW01uEyc9+oMVX
-         oOpw==
-X-Gm-Message-State: ACgBeo3FD6O7c/vXtEKQzRLpA9AEnKyIvNc7EyCpG145WlFYRMtutLy7
-        kW7uC103V1B2+Hj9kaLXM2Fm6Q==
-X-Google-Smtp-Source: AA6agR74aNlPfmPJlKcC05Y6jx7zXOmB8kg1e0yHZoCDAb3lYxnfuQYXfqqonf1zKIGzDxzQd1NAnQ==
-X-Received: by 2002:a7b:c402:0:b0:3a5:3c7:9741 with SMTP id k2-20020a7bc402000000b003a503c79741mr3131497wmi.72.1660767168134;
-        Wed, 17 Aug 2022 13:12:48 -0700 (PDT)
-Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id i15-20020a05600c354f00b003a5dfd7e9eesm3029371wmq.44.2022.08.17.13.12.46
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=ecAK1b0BGR4BXz6e6ttRl4yIb91x7Nb5bR2E/kWSLHw=;
+        b=jIr2rOQkaQqMTVXbKEfquohH5nbvBMosGyQHj3ITtQR3rzVFH+pmr7yR9DmF80MvZh
+         dJdQRT5V9f5ey+g34WWJU8bzSY3zxk23nW8ZoFHKRwrAuVGzr/iqEVxDkQVDZHavnqwl
+         jsRPDSe1VsE41xuIuZF/wgpInuHUfmmOVu5Vf1z4BRJZEVw1AvjIbmQfDXs6OR+JAFe2
+         Lpe4+1aVfooravWXH7ZSXezry9gOaRiHqJCZd0880xxCvcdwIsd8WEfwideSy1sTqlS6
+         kbVdPl2zeDiUeJXOyBeoTk5KAMijqjeydsxUHmWOh+NQnuzEhpxGgMyMsgS3GejaKMy9
+         T3Vg==
+X-Gm-Message-State: ACgBeo3r9AwUYah9ShZGZ15nsQwBckdBgCxAQMYqW+HxtMfLt1ZxFPkk
+        kWuMkeFLoj/0/8rsUGr3Z8RTlg==
+X-Google-Smtp-Source: AA6agR5R6i7GTzzHrmLNyQaH3JQ2CAz656dADZPSQA9APProw72NMYDNMlfcDbQNYdKhk7GwcgQ/hg==
+X-Received: by 2002:a63:8442:0:b0:429:85db:b351 with SMTP id k63-20020a638442000000b0042985dbb351mr10410526pgd.430.1660767215661;
+        Wed, 17 Aug 2022 13:13:35 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id k29-20020aa79d1d000000b0052bf6789f02sm11235013pfp.178.2022.08.17.13.13.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:12:47 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Anup Patel <anup@brainfault.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Guo Ren <guoren@kernel.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org
-Subject: [NOT FOR INCLUSION v3 4/4] dt-bindings: riscv: isa string bonus content
-Date:   Wed, 17 Aug 2022 21:12:13 +0100
-Message-Id: <20220817201212.990712-5-mail@conchuod.ie>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220817201212.990712-1-mail@conchuod.ie>
-References: <20220817201212.990712-1-mail@conchuod.ie>
+        Wed, 17 Aug 2022 13:13:34 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 13:13:34 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        =?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [PATCH v9 18/27] scripts: add `generate_rust_analyzer.py`
+Message-ID: <202208171313.093606A6B8@keescook>
+References: <20220805154231.31257-1-ojeda@kernel.org>
+ <20220805154231.31257-19-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805154231.31257-19-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Fri, Aug 05, 2022 at 05:42:03PM +0200, Miguel Ojeda wrote:
+> The `generate_rust_analyzer.py` script generates the configuration
+> file (`rust-project.json`) for rust-analyzer.
+> 
+> rust-analyzer is a modular compiler frontend for the Rust language.
+> It provides an LSP server which can be used in editors such as
+> VS Code, Emacs or Vim.
+> 
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 
-**NOT FOR INCLUSION**
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-I figured, sure why not add the strings for version number validation,
-just in case we need them in the future. The commented out string is
-considered by dt-schema to be "not a regex", but regex101 thinks it
-is... Maybe dt-schema does not support named match groups, but they
-are the only way that I could trivially find to make this somewhat
-manageable. Either way, it is permissive so it allows combinations
-of "M", "MpM" & no number.
-
-Not-signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- Documentation/devicetree/bindings/riscv/cpus.yaml | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-index c0e0bc5dce04..38a824453012 100644
---- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-+++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-@@ -80,7 +80,11 @@ properties:
-       insensitive, letters in the riscv,isa string must be all
-       lowercase to simplify parsing.
-     $ref: "/schemas/types.yaml#/definitions/string"
--    pattern: ^rv(?:64|32)imaf?d?q?c?b?v?k?h?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])+)*$
-+    oneOf:
-+      - pattern: ^rv(?:64|32)imaf?d?q?c?b?v?k?h?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])+)*$
-+      - pattern: ^rv(?:64|32)(?:i\d+)(?:m\d+)(?:a\d+)(?:f\d+)?(?:d\d+)?(?:q\d+)?(?:c\d+)?(?:b\d+)?(?:v\d+)?(?:k\d+)?(?:h\d+)?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])+\d+)*$
-+      - pattern: ^rv(?:64|32)(?:i\d+p\d+)(?:m\d+p\d+)(?:a\d+p\d+)(?:f\d+p\d+)?(?:d\d+p\d+)?(?:q\d+p\d+)?(?:c\d+p\d+)?(?:b\d+p\d+)?(?:v\d+p\d+)?(?:k\d+p\d+)?(?:h\d+p\d+)?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])+(?:\d+p\d+))*$
-+#      - pattern: ^rv(?:64|32)(?:i(?<num>(?:\d+|\d+p\d+)?)?)(?:m(?:\k<num>)?)(?:a(?:\k<num>)?)(?:f(?:\k<num>)?)?(?:d(?:\k<num>)?)?(?:q(?:\k<num>)?)?(?:c(?:\k<num>)?)?(?:b(?:\k<num>)?)?(?:v(?:\k<num>)?)?(?:k(?:\k<num>)?)?(?:h(?:\k<num>)?)?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])*(?:\d+|\d+p\d+)?)+$
- 
-   # RISC-V requires 'timebase-frequency' in /cpus, so disallow it here
-   timebase-frequency: false
 -- 
-2.37.1
-
+Kees Cook
