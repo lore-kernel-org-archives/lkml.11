@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF3DC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EA0C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240214AbiHQTHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        id S240837AbiHQTIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237202AbiHQTHP (ORCPT
+        with ESMTP id S240845AbiHQTIW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:07:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D18F85A9D
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:07:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660763234;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5ABSmkuZfQM3Y1mClHJcPhcabJ5jPBDhGKX1+BXsp40=;
-        b=bOpMmpalmxY27DxwQzhs9Ki6RV9jt+Fe5TAKDRZAZz7FvyCCTtzuGiUTSjFaRQwD3OtVsa
-        NSAf3XEkAsUKCbBG7DM8VcvTDyvg0DX/GJ+0YGEH9Q7mIrA7s5Qww+5Q0ME5zxZY5llXYQ
-        MuqdeO0DxdJsY0OgTXNrz7AOZtncng0=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-265-nI-ACOahNYaRdJ0eFFtptQ-1; Wed, 17 Aug 2022 15:07:12 -0400
-X-MC-Unique: nI-ACOahNYaRdJ0eFFtptQ-1
-Received: by mail-qt1-f199.google.com with SMTP id cm10-20020a05622a250a00b003437b745ccdso10786520qtb.18
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:07:12 -0700 (PDT)
+        Wed, 17 Aug 2022 15:08:22 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0294CE02
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:08:18 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id d5so4800764wms.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=J9AXcuae1QkF8XymgwwmSeuKlWD8EIXrIbDt1sXlScQ=;
+        b=tSNSj5QIxzcFFZsjBZqkte5K4qd8QHsBxgo4FBfStGknNza/hdAuB3H0ZpdcYRoBjI
+         nAVWIiu0FdTPjXSwnnNKgU3jswSFnvNQ89bMTLt5PdRfuWoroP5uKEqF89sLBn9jsbsE
+         Pb2OWvMxKj8FeBiDAjD9wn7aTU6JgfFSDPj6Hvnk3YpbU62VpSn0/vr7ato4ki1Ozcyw
+         7WE4+2HcWJgweLrXi/lmm2dduTruonLiAzIT8tS5ixrn/Tqah3VLBFTWzkFOBRR6XObd
+         1SUHyjymosRSLgcmUpub+pOksO6QNFvtmIHUB9w2kbb5V6cMdgMfKwaRyZErvH/YWWB1
+         Khbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=5ABSmkuZfQM3Y1mClHJcPhcabJ5jPBDhGKX1+BXsp40=;
-        b=NEXtl8baXUhQiBhwwBIJjJXNSRJyqrVaLkFWxyO9MbdtKRnKSdTctx1SmoRpujqQkr
-         rihmbBkny1ED6uLADaKnM3sxvWT0han0iIRHMZsD3cy1DZ4izWNPuDkmXEJNPXyLltUV
-         EXF+VdagHTU77w5RVRnCGAvloctv1JOhVJPc/QZ6LLSdsn0PEH7jXiAC6sKNonPfgFd9
-         oyo1GP9DTkpyOPvNVTV67Pf8tFyoEbc0knveBcd/ao7iwrdDJqp+NfpreNrFmSLZsz5V
-         TiZWbp8Gn+9G9mQcctneJEqSbVEwVzMsIYqboO/MKvy4Kvv50FWhgrI6k+pN67OGVKv4
-         VDoQ==
-X-Gm-Message-State: ACgBeo30DYsn6S36Ff7iwj1bm6sGP1ZRWDgdEq12qrjCswBQ5Ul3jb0n
-        XRDr5nFUK6f5oIrBtBjKMcr47I+npNwDCrs1lxViZkZFejR2+8jTegDVJdDwl3l/MZtqHQix8Yx
-        avGn45iHPdh4Dl1DVGG39PHSB
-X-Received: by 2002:ac8:5b15:0:b0:343:6789:193a with SMTP id m21-20020ac85b15000000b003436789193amr23697805qtw.647.1660763232192;
-        Wed, 17 Aug 2022 12:07:12 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7htcPsTa+zO6/5dGIcJF7fto7SLs+oLa5/xcRr6PogKT9KpDCzjPlwU09EoMQTzAndOv0Wtg==
-X-Received: by 2002:ac8:5b15:0:b0:343:6789:193a with SMTP id m21-20020ac85b15000000b003436789193amr23697775qtw.647.1660763231904;
-        Wed, 17 Aug 2022 12:07:11 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id bl26-20020a05620a1a9a00b006b8e63dfffbsm15302093qkb.58.2022.08.17.12.07.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 12:07:11 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 15:07:09 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     huang ying <huang.ying.caritas@gmail.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, Huang Ying <ying.huang@intel.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] mm/migrate_device.c: Copy pte dirty bit to page
-Message-ID: <Yv08XTRv3I5zY4M5@xz-m1.local>
-References: <6e77914685ede036c419fa65b6adc27f25a6c3e9.1660635033.git-series.apopple@nvidia.com>
- <CAC=cRTPGiXWjk=CYnCrhJnLx3mdkGDXZpvApo6yTbeW7+ZGajA@mail.gmail.com>
- <Yvv/eGfi3LW8WxPZ@xz-m1.local>
- <871qtfvdlw.fsf@nvdebian.thelocal>
- <YvxWUY9eafFJ27ef@xz-m1.local>
- <87o7wjtn2g.fsf@nvdebian.thelocal>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=J9AXcuae1QkF8XymgwwmSeuKlWD8EIXrIbDt1sXlScQ=;
+        b=in901JyDKghQLgLlVXImhRKHzuXDW4w+KVrIZWTjSxhcIce2thdIBJaJ35lvahX5Fu
+         Y1fDjMWAp0p3rL4wZ8WloIoODZ4Nf+3axtT6Tu6yi1r8agavYUF4P69vHB7ErHD7Nejf
+         MU75bBUo631lRSq4rlzPI/tCsBNvTHVCI5W2ElS2oir/XWYNFMyaSmJg3d2y1ZgpPbZ8
+         +xDsW0nMvE0KMvRHXf9Pyh2hxRJCU76QUlvSr52ooQCnq7pe0lR1kQNlQl2P1sFpLUfq
+         +ZjeCxFfVTB/2bljptBvjP1rfzc0tZcLbWJPPWPUXQSteTEUE1E/UxXmsruhcinMEj0s
+         aCWA==
+X-Gm-Message-State: ACgBeo3UuTcmEPz1Y7bYlwge1ugf5bWR9tjOsQFgOYkBzjwgCJTwuIiJ
+        kn8uq4D9wbmHLyWysuHoiN+a40S5azTrnA==
+X-Google-Smtp-Source: AA6agR7leKO6iw2GT6Tideh2I6FDNBqzotp1SkL1/uDZyEpzkupUsZNKcKoFbf4WGrKPnrRNlnaS2Q==
+X-Received: by 2002:a05:600c:3516:b0:3a5:c28a:f01d with SMTP id h22-20020a05600c351600b003a5c28af01dmr3106529wmq.165.1660763297354;
+        Wed, 17 Aug 2022 12:08:17 -0700 (PDT)
+Received: from [192.168.2.1] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id z3-20020a05600c0a0300b003a5c2abc412sm3784162wmp.44.2022.08.17.12.08.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 12:08:16 -0700 (PDT)
+Message-ID: <56dbbf30-6c4b-c781-3978-a844bcb88e8f@linaro.org>
+Date:   Wed, 17 Aug 2022 21:08:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87o7wjtn2g.fsf@nvdebian.thelocal>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/1] clocksource/drivers/timer-ti-dm: Fix compile test
+ warning
+Content-Language: en-US
+To:     Tony Lindgren <tony@atomide.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>
+References: <20220815131642.35116-1-tony@atomide.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220815131642.35116-1-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 03:41:16PM +1000, Alistair Popple wrote:
-> My primary concern with batching is ensuring a CPU write after clearing
-> a clean PTE but before flushing the TLB does the "right thing" (ie. faults
-> if the PTE is not present).
+On 15/08/2022 15:16, Tony Lindgren wrote:
+> We can get a warning with COMPILE_TEST enabled for omap_timer_match
+> for 'omap_timer_match' defined but not used.
+> 
+> Fixes: ab0bbef3ae0f ("clocksource/drivers/timer-ti-dm: Make timer selectable for ARCH_K3")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> 
+> ---
+> 
+> Changes since v1:
+> 
+> - Remove of_match_ptr() instead of adding __maybe_unused as suggested by Arnd
 
-Fair enough.  Exactly I have that same concern. But I think Nadav replied
-very recently on this in the previous thread, quotting from him [1]:
+Applied for 6.0-rc, thanks
 
-  I keep not remembering this erratum correctly. IIRC, the erratum says
-  that the access/dirty might be set, but it does not mean that a write is
-  possible after the PTE is cleared (i.e., the dirty/access might be set on
-  the non-present PTE, but the access itself would fail). So it is not an
-  issue in this case - losing A/D would not impact correctness since the
-  access should fail.
 
-I don't really know whether he means this, but I really think the hardware
-should behave like that or otherwise I can't see how it can go right.
-
-Let's assume if after pte cleared the page can still be written, then
-afaict ptep_clear_flush() is not safe either, because fundamentally it is
-two operations happening in sequence, of: (1) ptep_get_and_clear(), and (2)
-conditionally do flush_tlb_page() when needed.
-
-If page can be written with TLB cached but without pte present, what if
-some process writes to memory during step (1) and (2)?  AFAIU that's the
-same question as using raw ptep_get_and_clear() and a batched tlb flush.
-
-IOW, I don't see how a tlb batched solution can be worse than using per-pte
-ptep_clear_flush().  It may enlarge the race window but fundamentally
-(iiuc) they're the same thing here as long as there's no atomic way to both
-"clear pte and flush tlb".
-
-[1] https://lore.kernel.org/lkml/E37036E0-566E-40C7-AD15-720CDB003227@gmail.com/
 
 -- 
-Peter Xu
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
