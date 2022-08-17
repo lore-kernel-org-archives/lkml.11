@@ -2,113 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C78B2C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52534C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235136AbiHQNEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
+        id S236688AbiHQNEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236427AbiHQND4 (ORCPT
+        with ESMTP id S239532AbiHQND7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:03:56 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB9F30F42
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:03:52 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id o2so18950261lfb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=4qwI8r7xcTle/RTrQ0bmgC2r/rDzNq/R01LY3t7eMOs=;
-        b=jyze1ABXKCiIHI0FYhq9qo2XDD6SBhR7tHMg30BbzHmVgJtdEObinYDbnxVjvaJJYl
-         Ult/7SJMggPynHFoPI7TcN+Bp6sRtnx19+HmYZa2qOcP2FNpjXokmMgIcmL5WHirg6Wr
-         Ju852VOsgMbGoklz0YOfBLaXYzV5yiYz+2YTVm9CjUMTS34YJmktecRVq9j8Kfli7b2H
-         68vz+tSvY4V1uZ3jUpQLZs/5FX1FSkCQoNwk96y2oelSHjz9Pm6HVaJhKnAPjEJeq7Gm
-         6vyPgyBekCyyhZjyxP8KDvmMmR5zwsoZhNdWRhrz5YpftGCh1xzlqwBF9XQKtkaIPFPZ
-         bIXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=4qwI8r7xcTle/RTrQ0bmgC2r/rDzNq/R01LY3t7eMOs=;
-        b=UemqACSt2jp2Pr6Omn1rTNvmCwCViUYi04bj9wv4heNhYfseALDqbDyzKUXysMM/Gr
-         KOzVcYTYsC60GccUTqGZnePF+emS7vTkCRvH0Krjh0orOXzz8lcigUvj0r4js4QTW05N
-         0G4LKMr20BA7XzvaWZ4P3MLJDfzwLqaiz4cwIT3AkhLBth8pNfOrEmheMaKHKjFU4Ca1
-         WkzPetdX1g/WoryVQAItC5oNhqYK4e9UUwYjyszctccGaRcZ9622NdNEH0IEffJR67yS
-         pphWHuxz0o/qQSe/xEYyFUenOVnylpS9z+AsUQUz42s+1/SgvljgUEu99wTxqTk8ZsND
-         k8sg==
-X-Gm-Message-State: ACgBeo3J6rgau7yKjzUz92k0ilYDQCeEt5UVLvZjHf4/ESdxZXy1/lIW
-        7hVdp+AP2i4rjYLR2GqAhaC/bg==
-X-Google-Smtp-Source: AA6agR50foDzFuQRZJhXdYMw3M4pyhXPmpcvRx/VXukLnqSaLgQ7YiSlPkYH9iujI7XGct0VKeEMwg==
-X-Received: by 2002:a05:6512:c25:b0:48b:1241:fb9f with SMTP id z37-20020a0565120c2500b0048b1241fb9fmr9134415lfu.74.1660741431051;
-        Wed, 17 Aug 2022 06:03:51 -0700 (PDT)
-Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id v1-20020ac25601000000b0048b3768d2ecsm1683243lfd.174.2022.08.17.06.03.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 06:03:50 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH v2 00/14] arm64: dts: qcom: improvements to TCSR mutex in DTS
-Date:   Wed, 17 Aug 2022 16:03:28 +0300
-Message-Id: <20220817130342.568396-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 17 Aug 2022 09:03:59 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4050C32049;
+        Wed, 17 Aug 2022 06:03:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8tSVbs/LntHCfdjrxtk7ceXw6TPtMo4nIYUkIIRtVa4=; b=TUYGDjo5Eb2C+vokB8lSzbnHTV
+        FxOXCuCCTso8IKA26Dds1MHiVap25aWsBqDfMrSAfdetz5F38Njwrq7LSinw80hTP1RQ8VwP8qy0v
+        7nRsJ9iJd9DpyBqYujIGvKYSJahc/HW6bsUkkcTOydv1t4XrhRac50TnUR6TepqFHAZfx1WHAPaz2
+        9T/QLjxx2nykjKy9HbBQ8OibboBOKmwBLlH4IsSqotH1UU7wt5BZ0CstHJkqDCeYkuT+Ac1jQq+vt
+        MlxLdvXedqGnarZIbn+D2o5PGLGOEVupFFTe7erGNcfxZ4C6okDm8ETszLbb9v3vt4+VyxJftLprh
+        59bIzbvQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oOIht-003I0R-UD; Wed, 17 Aug 2022 13:03:41 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 84568980256; Wed, 17 Aug 2022 15:03:37 +0200 (CEST)
+Date:   Wed, 17 Aug 2022 15:03:37 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Marco Elver <elver@google.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
+        x86@kernel.org, linux-sh@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 11/14] perf/hw_breakpoint: Reduce contention with
+ large number of tasks
+Message-ID: <YvznKYgRKjDRSMkT@worktop.programming.kicks-ass.net>
+References: <20220704150514.48816-1-elver@google.com>
+ <20220704150514.48816-12-elver@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704150514.48816-12-elver@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Jul 04, 2022 at 05:05:11PM +0200, Marco Elver wrote:
+> +static bool bp_constraints_is_locked(struct perf_event *bp)
+> +{
+> +	struct mutex *tsk_mtx = get_task_bps_mutex(bp);
+> +
+> +	return percpu_is_write_locked(&bp_cpuinfo_sem) ||
+> +	       (tsk_mtx ? mutex_is_locked(tsk_mtx) :
+> +			  percpu_is_read_locked(&bp_cpuinfo_sem));
+> +}
 
-Changes since v1
-================
-1. Correct order of compatibles in the binding.
+> @@ -426,18 +521,28 @@ static int modify_bp_slot(struct perf_event *bp, u64 old_type, u64 new_type)
+>   */
+>  int dbg_reserve_bp_slot(struct perf_event *bp)
+>  {
+> -	if (mutex_is_locked(&nr_bp_mutex))
+> +	int ret;
+> +
+> +	if (bp_constraints_is_locked(bp))
+>  		return -1;
+>  
+> -	return __reserve_bp_slot(bp, bp->attr.bp_type);
+> +	/* Locks aren't held; disable lockdep assert checking. */
+> +	lockdep_off();
+> +	ret = __reserve_bp_slot(bp, bp->attr.bp_type);
+> +	lockdep_on();
+> +
+> +	return ret;
+>  }
+>  
+>  int dbg_release_bp_slot(struct perf_event *bp)
+>  {
+> -	if (mutex_is_locked(&nr_bp_mutex))
+> +	if (bp_constraints_is_locked(bp))
+>  		return -1;
+>  
+> +	/* Locks aren't held; disable lockdep assert checking. */
+> +	lockdep_off();
+>  	__release_bp_slot(bp, bp->attr.bp_type);
+> +	lockdep_on();
+>  
+>  	return 0;
+>  }
 
-Description
-===========
-Set of improvements for TCSR mutex to match the bindings after conversion to DT schema.
-
-Tested briefly on SDM845. Please kindly test on other platformss (therefore RFT).
-
-Best regards,
-Krzysztof
-
-Krzysztof Kozlowski (14):
-  dt-bindings: mfd: qcom,tcsr: add SC7x80, SDM845 and MSM8996/8
-  arm64: dts: qcom: msm8996: split TCSR halt regs out of mutex
-  arm64: dts: qcom: msm8996: switch TCSR mutex to MMIO
-  arm64: dts: qcom: msm8998: split TCSR halt regs out of mutex
-  arm64: dts: qcom: msm8998: switch TCSR mutex to MMIO
-  arm64: dts: qcom: sc7180: add missing TCSR syscon compatible
-  arm64: dts: qcom: sc7180: split TCSR halt regs out of mutex
-  arm64: dts: qcom: sc7180: switch TCSR mutex to MMIO
-  arm64: dts: qcom: sc7280: split TCSR halt regs out of mutex
-  arm64: dts: qcom: sdm845: split TCSR halt regs out of mutex
-  arm64: dts: qcom: sdm845: switch TCSR mutex to MMIO
-  arm64: dts: qcom: qcs404: switch TCSR mutex to MMIO
-  arm64: dts: qcom: sdm630: switch TCSR mutex to MMIO
-  arm64: dts: qcom: sm8150: switch TCSR mutex to MMIO
-
- .../devicetree/bindings/mfd/qcom,tcsr.yaml    |  5 ++++
- arch/arm64/boot/dts/qcom/msm8996.dtsi         | 24 ++++++++---------
- arch/arm64/boot/dts/qcom/msm8998.dtsi         | 20 +++++++-------
- arch/arm64/boot/dts/qcom/qcs404.dtsi          | 11 +++-----
- arch/arm64/boot/dts/qcom/sc7180.dtsi          | 26 +++++++++----------
- arch/arm64/boot/dts/qcom/sc7280.dtsi          | 19 +++++++++-----
- arch/arm64/boot/dts/qcom/sdm630.dtsi          | 13 +++-------
- arch/arm64/boot/dts/qcom/sdm845.dtsi          | 20 +++++++-------
- arch/arm64/boot/dts/qcom/sm8150.dtsi          | 13 +++-------
- 9 files changed, 73 insertions(+), 78 deletions(-)
-
--- 
-2.34.1
+Urggghhhh... this is horrible crap. That is, the current code is that
+and this makes it worse :/
 
