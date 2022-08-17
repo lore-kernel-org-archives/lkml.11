@@ -2,127 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A414C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C31C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239923AbiHQNQf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
+        id S239537AbiHQNS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239629AbiHQNP6 (ORCPT
+        with ESMTP id S239661AbiHQNSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:15:58 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59C85926E
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:15:31 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-3246910dac3so229586267b3.12
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:15:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=4x9/R2mHqDBSBsINZoYzu53n4+/x9xPXewr5G0XEr34=;
-        b=Ta7vQAWfgNwLeo8X+pcdJ6JyCnUcaqj1Ews44KLWjJGhgXZv20jGydY8asVvhmMfNz
-         b5Fzq6C/S2NXkgfMPJzpJcfXtNp/XsSJDaSorCNhL1D/nzqkMFU7Du+YXm0LpKulY9IK
-         /76nM6mT8xUUP8UaTC1eN5M2TkbrsohpqC0/E8YxXYpbdWBeaceJ/x8g5odhImXtyrc1
-         qOyIpz90N1Ejyl+l9w55WOS+8npqTm4TRnzX3bA4a2avvsii63eJWYfy6fWyxSZaHQWM
-         Qo0/XLJ6ZGGdQy6n6h+9ZeH4bseaOSQZpSngSXr1oW9GbmtitbnwZya8r8OT9qqDsOW5
-         Pddg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=4x9/R2mHqDBSBsINZoYzu53n4+/x9xPXewr5G0XEr34=;
-        b=MWu4Ma9WPAqJbsXwV9DGM9u+I2qtWql3tCfiGfhurkhE8IT9ohaZDdrvg7yrHrJPe4
-         /ta8XYlFt+bc9sMf9X7fPVm5LWJV5uZh611XAPgdrBr7OU0AwybA/pfCp/P7lldppnXJ
-         4T3UHmNeccJZKlDIbVa/qASr8cc8yndFr16/9x1JdKWGzavGXGXgNtzOEsQCVVbGM0M4
-         ZQWwPxcE9czdchMQiNqZasUzOLiT75VZWWqzUTk0RmykVeOZbvS6XzWUXjqbV6SIEqXn
-         NLfm82fWwOSCDs4Y2k8AEpew/EpwKxWZQvLBuHGU7Om74ilGjaE5+WEyy83S8ggq7sxN
-         fPgA==
-X-Gm-Message-State: ACgBeo3G1RbwsiEOWC7guC3IjchN40CKoeuZ55/7lO1IW31ZCFnCO3Lz
-        vL1VxwkXBl7QViKKVaL7lkmV5h/vVhzFrXNmDHJvRQ==
-X-Google-Smtp-Source: AA6agR4J3cyIT0SWBYaiCeztXduj+LhF+ocuDdNtn7hGLnqyHtxrllFHNLPRhY47QfH++sCFFlwAFNLyvGB5+UaJKNI=
-X-Received: by 2002:a5b:c8b:0:b0:688:ebe9:3d05 with SMTP id
- i11-20020a5b0c8b000000b00688ebe93d05mr12303544ybq.553.1660742130329; Wed, 17
- Aug 2022 06:15:30 -0700 (PDT)
+        Wed, 17 Aug 2022 09:18:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC24295AF6
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:16:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79098B81DC8
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:16:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CEC3C433C1;
+        Wed, 17 Aug 2022 13:16:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660742193;
+        bh=aDRIqa8eaijPVXqeqJfGk+sLeJDArCHTw/EZrUOXu+U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S1RygQVWbvBT+13SzBAlXWjGZQnpI8KQWcpnYrKeJCN/5uLVfnBrrEImG75kqvjrM
+         e0W7Q5WM9rfIeSFsOuhW3Ny/iV/v43ptQ6jPULmhuZnRWuW9GRzbc0y+o9aEQycStE
+         zV9IzyrOAO4nYemVhGInEm3+M5I50MTrFirT6znOqj2Jy3oYcxe+QWd6pnon2EQRqa
+         XhhbeZ9/0wYYz/7S5XYw25LE8L/hBFw6eguFxZmglHqLIqlw/MbFVYh91cl0NP/SNv
+         +MrLBZj6RgD7fqfdXJbxvK72oSol/z7KkbyQPXMj0IgXL7MkENvHCmnz7756iQY+ti
+         8LbCJszxKVdrw==
+Date:   Wed, 17 Aug 2022 14:16:28 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Andrea Righi <andrea.righi@canonical.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: head: rely on CONFIG_RANDOM_TRUST_CPU
+Message-ID: <YvzqLFDuXtDRxilZ@sirena.org.uk>
+References: <20220817094618.67063-1-andrea.righi@canonical.com>
 MIME-Version: 1.0
-References: <20220704150514.48816-1-elver@google.com> <20220704150514.48816-12-elver@google.com>
- <YvznKYgRKjDRSMkT@worktop.programming.kicks-ass.net>
-In-Reply-To: <YvznKYgRKjDRSMkT@worktop.programming.kicks-ass.net>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 17 Aug 2022 15:14:54 +0200
-Message-ID: <CANpmjNN1vv9oDpm1_c99tQKgWVVtXza++u1xcBVeb5mhx5eUHw@mail.gmail.com>
-Subject: Re: [PATCH v3 11/14] perf/hw_breakpoint: Reduce contention with large
- number of tasks
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, linux-sh@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="8H8XdsxnlYFybTHf"
+Content-Disposition: inline
+In-Reply-To: <20220817094618.67063-1-andrea.righi@canonical.com>
+X-Cookie: Use extra care when cleaning on stairs.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 at 15:03, Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Mon, Jul 04, 2022 at 05:05:11PM +0200, Marco Elver wrote:
-> > +static bool bp_constraints_is_locked(struct perf_event *bp)
-> > +{
-> > +     struct mutex *tsk_mtx = get_task_bps_mutex(bp);
-> > +
-> > +     return percpu_is_write_locked(&bp_cpuinfo_sem) ||
-> > +            (tsk_mtx ? mutex_is_locked(tsk_mtx) :
-> > +                       percpu_is_read_locked(&bp_cpuinfo_sem));
-> > +}
->
-> > @@ -426,18 +521,28 @@ static int modify_bp_slot(struct perf_event *bp, u64 old_type, u64 new_type)
-> >   */
-> >  int dbg_reserve_bp_slot(struct perf_event *bp)
-> >  {
-> > -     if (mutex_is_locked(&nr_bp_mutex))
-> > +     int ret;
-> > +
-> > +     if (bp_constraints_is_locked(bp))
-> >               return -1;
-> >
-> > -     return __reserve_bp_slot(bp, bp->attr.bp_type);
-> > +     /* Locks aren't held; disable lockdep assert checking. */
-> > +     lockdep_off();
-> > +     ret = __reserve_bp_slot(bp, bp->attr.bp_type);
-> > +     lockdep_on();
-> > +
-> > +     return ret;
-> >  }
-> >
-> >  int dbg_release_bp_slot(struct perf_event *bp)
-> >  {
-> > -     if (mutex_is_locked(&nr_bp_mutex))
-> > +     if (bp_constraints_is_locked(bp))
-> >               return -1;
-> >
-> > +     /* Locks aren't held; disable lockdep assert checking. */
-> > +     lockdep_off();
-> >       __release_bp_slot(bp, bp->attr.bp_type);
-> > +     lockdep_on();
-> >
-> >       return 0;
-> >  }
->
-> Urggghhhh... this is horrible crap. That is, the current code is that
-> and this makes it worse :/
 
-Heh, yes and when I looked at it I really wanted to see if it can
-change. But from what I can tell, when the kernel debugger is being
-attached, the kernel does stop everything it does and we need the
-horrible thing above to not deadlock. And these dbg_ functions are not
-normally used, so I decided to leave it as-is. Suggestions?
+--8H8XdsxnlYFybTHf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Aug 17, 2022 at 11:46:18AM +0200, Andrea Righi wrote:
+> The CONFIG_ARCH_RANDOM .config option has been removed by
+> commit 9592eef7c16e ("random: remove CONFIG_ARCH_RANDOM").
+>=20
+> Depend on CONFIG_RANDOM_TRUST_CPU to determine whether we can rely on
+> __arm64_rndr() to initialize the seed for kaslr.
+>=20
+> Fixes: 9592eef7c16e ("random: remove CONFIG_ARCH_RANDOM")
+
+> -#ifdef CONFIG_ARCH_RANDOM
+> +#ifdef CONFIG_RANDOM_TRUST_CPU
+>  		 if (!__early_cpu_has_rndr() ||
+>  		     !__arm64_rndr((unsigned long *)&seed))
+>  #endif
+
+I think the sense here would be more that we should just unconditionally
+use RNDR if it's present - previously we'd use the result even if we
+didn't have strong trust in the CPU implementation and I don't see why
+we'd want to change that.
+
+--8H8XdsxnlYFybTHf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL86isACgkQJNaLcl1U
+h9Df7wgAhn45rtL5BTafxsbRFNuND0n6Pq7ioAq/s35QXOWV1WRw4gRfDAaGRS3R
+090kZUquUoRAHIf8IroKI3ZQmI1QG9GcZeOU7jCj4RsDcoWpWru3OUG1gogU3VDd
+w44LtXw6ymbWROWPa5O3bS+/4isQpori6p7FTze1zL2KDrET9iKFKNQcgImVU014
+0gQIkyqy+HmypLsu4MkPO/qXanmTEbQkQyCMnHX8cQgJXkAMaFhFj1EeYzwleHIS
+wTuJsGZ1dzgYjS+p1XCBUYtZpL+sICn1g4BfTsOVDqqKEosg511NM98wLS7883+z
+Rg2ajzZZarO9svnhv1hOIP6pqN3rqA==
+=kiFb
+-----END PGP SIGNATURE-----
+
+--8H8XdsxnlYFybTHf--
