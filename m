@@ -2,176 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF5BC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCBBC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237635AbiHQPY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
+        id S240145AbiHQPY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236896AbiHQPYV (ORCPT
+        with ESMTP id S237833AbiHQPYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 11:24:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B44F474D0
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:24:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0299B81DEB
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 15:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C5BC433D6;
-        Wed, 17 Aug 2022 15:24:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660749856;
-        bh=xTtJjXGNhDWke+LchiMrKqaxAdbT5dOBP8kw/+hqhVo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KSvwHzhIDTxfugXMZn1HGBze0PFIQabONX4VdldMUbsVDCjzEl3ZQ2DQu3Bg26epb
-         MjkpRbqGd1Y+7c7B9fVIWtANKWsERSovMkzP1Cv2E5f52vCsGseKHGqj7X4VHrWY0E
-         mfQwIcKEEUG5VVsSutuy4y5Vfd0rTi+QWqUR03tf33pDhdJBYlaQCgybGwdyGH+2+S
-         wEjrmewHS+Rg5K/RCSA1GTAJ30f+z3GMcBhcLhopcPEwuie3V4jGMoNSH7YaMCOgAH
-         oaWpMX5tGwF38DhIhY2Qw1Me2Fc615ni1r3vS+RjckxCNeNGAjAPhV4XCFBtMTHCHr
-         yiGISl/qT//xA==
-Date:   Wed, 17 Aug 2022 17:24:10 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] binderfs: rework superblock destruction
-Message-ID: <20220817152410.7uhhmumubcead2at@wittgenstein>
-References: <YvzUS/7bd1mm6c/V@kroah.com>
- <20220817130306.96978-1-brauner@kernel.org>
- <Yvz0JkdxXwY8uDyT@ZenIV>
- <20220817140149.pfakskeyxkqcot54@wittgenstein>
- <Yvz44WHBh94IvJt/@ZenIV>
- <20220817145144.mbcbvpepusdvrds4@wittgenstein>
- <Yv0HZ8lxn2m6sUut@ZenIV>
+        Wed, 17 Aug 2022 11:24:53 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04ADB5B7A8;
+        Wed, 17 Aug 2022 08:24:51 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id r14-20020a17090a4dce00b001faa76931beso2132720pjl.1;
+        Wed, 17 Aug 2022 08:24:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=cNb+wPFqXTTnrEsiIhlvkm/VTYFYCj1lwrBVxwMNlw4=;
+        b=g7JiuZ0QYzHlhR63PM427qbq83vL3iY1FyydWZTdX7t2rTDrisImuHcjYkAlFFyOi6
+         SGdJxZgsWGwEhrp4ov+egzakW1EigtK/EvafkvLPpMgoGnaxUx6QmX71qMKDGcQU1AKI
+         bGB9w7JGQur33yZjYUaVo2m6R/Ow9KjNFny5kLH3ntn9CC39OeqB9hb6GsmKF5TFzw2B
+         MAcn+oNcqypAzShKdeFXwc8RtaOR/nHNrv2djVN/o49MiyUPf6yn1rJ4rKFHOqvjI4IK
+         DQ2TsKlcFNtyjr0QonuMxFZm1sO2oxb7ceFolzuAnVZzfhPV9FGizh4+DVE8BK98BsuH
+         T+qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=cNb+wPFqXTTnrEsiIhlvkm/VTYFYCj1lwrBVxwMNlw4=;
+        b=a44p15AJLpTrnJmJ/fu5MpOLVmQ0vGqLYbuUAQ+YZVdxiA/ArE0XLHtL+I1tWfkWaa
+         /ibyQZ+HmQjOoAlOMzkuKZJPYHPR0ypXryikSkIKEKZ8qcnnuH35n1x+DCm8wH9iE9eT
+         BwUCU0Y1GZmXsd644tMtroRFG9NjemrXi/V6gm08v8+w71252p9TYnu76l8mGmQrgSTi
+         yBCveqr8UHguj+L35sG6/nx0nSFn+kt5houvWNsNiXbuAIDI/33mC9TbQPy/Z8cc+hjz
+         cgkPTfDVyt1S4adY4EsLJxfeC6dHJ6yy/zKOgwP1JIr/g7qzFoPtMONB/h4lMq6assPn
+         ZEeA==
+X-Gm-Message-State: ACgBeo3AXWVD1e5lvc1eQY3GUZFXgUhN1wTj/5SdVGfYriN3D5W0qJUQ
+        Uswv32SppFpjrndJmdEfMIM=
+X-Google-Smtp-Source: AA6agR6VSz5H7jgK9fm8v7D0017rD9IG0++yPEfFL63RpX/MelmrPDQlCF6+5CwHOs7r17eAOr89dA==
+X-Received: by 2002:a17:90b:17c5:b0:1f4:f55d:24f3 with SMTP id me5-20020a17090b17c500b001f4f55d24f3mr4284181pjb.109.1660749890494;
+        Wed, 17 Aug 2022 08:24:50 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o14-20020a62f90e000000b005353a676757sm3551135pfh.120.2022.08.17.08.24.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 08:24:48 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 17 Aug 2022 08:24:46 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 0000/1094] 5.18.18-rc2 review
+Message-ID: <20220817152446.GA1205420@roeck-us.net>
+References: <20220816124604.978842485@linuxfoundation.org>
+ <20220817042445.GC1880847@roeck-us.net>
+ <YvzuUdrBqGlW880H@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yv0HZ8lxn2m6sUut@ZenIV>
+In-Reply-To: <YvzuUdrBqGlW880H@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 04:21:11PM +0100, Al Viro wrote:
-> On Wed, Aug 17, 2022 at 04:51:44PM +0200, Christian Brauner wrote:
+On Wed, Aug 17, 2022 at 03:34:09PM +0200, Greg Kroah-Hartman wrote:
+> On Tue, Aug 16, 2022 at 09:24:45PM -0700, Guenter Roeck wrote:
+> > On Tue, Aug 16, 2022 at 02:59:27PM +0200, Greg Kroah-Hartman wrote:
+> > > This is the start of the stable review cycle for the 5.18.18 release.
+> > > There are 1094 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > > 
+> > > Responses should be made by Thu, 18 Aug 2022 12:43:14 +0000.
+> > > Anything received after that time might be too late.
+> > > 
+> > Build results:
+> > 	total: 154 pass: 154 fail: 0
+> > Qemu test results:
+> > 	total: 481 pass: 480 fail: 1
+> > Failed tests:
+> > 	arm:bletchley-bmc:aspeed_g5_defconfig:notests:usb0:net,nic:aspeed-bmc-facebook-bletchley:rootfs
+> > 
+> > The failing boot test is new and not a concern. I'll see if I can figure
+> > out why it fails. If it is too difficult to fix (for example because 5.18
+> > simply doesn't support usb on bletchley-bmc), I'll just skip it next time.
+> > 
+> > Tested-by: Guenter Roeck <linux@roeck-us.net>
 > 
-> > diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-> > index 5c97f48cea91..d7d275ef132f 100644
-> > --- a/arch/s390/hypfs/inode.c
-> > +++ b/arch/s390/hypfs/inode.c
-> > @@ -329,9 +329,8 @@ static void hypfs_kill_super(struct super_block *sb)
-> >  		hypfs_delete_tree(sb->s_root);
-> >  	if (sb_info && sb_info->update_file)
-> >  		hypfs_remove(sb_info->update_file);
-> > -	kfree(sb->s_fs_info);
-> > -	sb->s_fs_info = NULL;
-> >  	kill_litter_super(sb);
-> > +	kfree(sb->s_fs_info);
+> 5.18 is only going to be alive for one more week at most, so I wouldn't
+> worry too much about this.
 > 
-> UAF, that - *sb gets freed by the time you try to fetch sb->s_fs_info...
-> Fetch the pointer first, then destroy the object you've fetched it
-> from, then free what it points to...
 
-Please note the "completely untested" in the draft... ;)
+Ok, I'll just leave it alone.
 
-If you want me to, I can turn this into something serious to review.
-
-> 
-> > diff --git a/fs/devpts/inode.c b/fs/devpts/inode.c
-> > index 4f25015aa534..78a9095e1748 100644
-> > --- a/fs/devpts/inode.c
-> > +++ b/fs/devpts/inode.c
-> > @@ -509,10 +509,10 @@ static void devpts_kill_sb(struct super_block *sb)
-> >  {
-> >  	struct pts_fs_info *fsi = DEVPTS_SB(sb);
-> >  
-> > +	kill_litter_super(sb);
-> >  	if (fsi)
-> >  		ida_destroy(&fsi->allocated_ptys);
-> >  	kfree(fsi);
-> > -	kill_litter_super(sb);
-> >  }
-> >  
-> 
-> That one's fine.
-> 
-> >  static struct file_system_type devpts_fs_type = {
-> > diff --git a/fs/ramfs/inode.c b/fs/ramfs/inode.c
-> > index bc66d0173e33..bff49294e037 100644
-> > --- a/fs/ramfs/inode.c
-> > +++ b/fs/ramfs/inode.c
-> > @@ -280,8 +280,10 @@ int ramfs_init_fs_context(struct fs_context *fc)
-> >  
-> >  static void ramfs_kill_sb(struct super_block *sb)
-> >  {
-> > -	kfree(sb->s_fs_info);
-> > +	struct ramfs_fs_info *fsi = sb->s_fs_info;
-> > +
-> >  	kill_litter_super(sb);
-> > +	kfree(fsi);
-> >  }
-> 
-> Cosmetical, really - see another posting in the same thread.
-> 
-> >  static struct file_system_type ramfs_fs_type = 
-> > diff --git a/security/selinux/selinuxfs.c b/security/selinux/selinuxfs.c
-> > index 8fcdd494af27..fb1dae422d93 100644
-> > --- a/security/selinux/selinuxfs.c
-> > +++ b/security/selinux/selinuxfs.c
-> > @@ -96,9 +96,8 @@ static int selinux_fs_info_create(struct super_block *sb)
-> >  	return 0;
-> >  }
-> >  
-> > -static void selinux_fs_info_free(struct super_block *sb)
-> > +static void selinux_fs_info_free(struct selinux_fs_info *fsi)
-> >  {
-> > -	struct selinux_fs_info *fsi = sb->s_fs_info;
-> >  	int i;
-> >  
-> >  	if (fsi) {
-> > @@ -107,8 +106,7 @@ static void selinux_fs_info_free(struct super_block *sb)
-> >  		kfree(fsi->bool_pending_names);
-> >  		kfree(fsi->bool_pending_values);
-> >  	}
-> > -	kfree(sb->s_fs_info);
-> > -	sb->s_fs_info = NULL;
-> > +	kfree(fsi);
-> >  }
-> >  
-> >  #define SEL_INITCON_INO_OFFSET		0x01000000
-> > @@ -2180,7 +2178,7 @@ static int sel_fill_super(struct super_block *sb, struct fs_context *fc)
-> >  	pr_err("SELinux: %s:  failed while creating inodes\n",
-> >  		__func__);
-> >  
-> > -	selinux_fs_info_free(sb);
-> > +	selinux_fs_info_free(fsi);
-> >  
-> >  	return ret;
-> >  }
-> > @@ -2202,8 +2200,10 @@ static int sel_init_fs_context(struct fs_context *fc)
-> >  
-> >  static void sel_kill_sb(struct super_block *sb)
-> >  {
-> > -	selinux_fs_info_free(sb);
-> > +	struct selinux_fs_info *fsi = sb->s_fs_info;
-> > +
-> >  	kill_litter_super(sb);
-> > +	selinux_fs_info_free(fsi);
-> >  }
-> 
-> A real bug, but an incomplete fix - you've just gotten yourself a double-free;
-> failure in sel_fill_super() has no need to do selinux_fs_info_free() now.
-
-Please note the "completely untested" in the draft... ;)
+Thanks,
+Guenter
