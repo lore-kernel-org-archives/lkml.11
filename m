@@ -2,116 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0765C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A782C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242032AbiHQUbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
+        id S241949AbiHQUec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242016AbiHQUbl (ORCPT
+        with ESMTP id S234720AbiHQUe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:31:41 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67D39DB49;
-        Wed, 17 Aug 2022 13:31:39 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oOPhL-000F88-8X; Wed, 17 Aug 2022 22:31:31 +0200
-Received: from [85.1.206.226] (helo=linux-4.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oOPhK-0009zo-Ty; Wed, 17 Aug 2022 22:31:30 +0200
-Subject: Re: [PATCH 1/2] bpf: Fix 32bit bounds update in ALU64
-To:     Youlin Li <liulin063@gmail.com>, haoluo@google.com
-Cc:     ast@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        kpsingh@kernel.org, sdf@google.com, jolsa@kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <9f954e67-67fc-e3b9-d810-22bfea95d2aa@iogearbox.net>
- <20220810100849.25710-1-liulin063@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5d2addca-10e5-f7a6-9efd-43322eec8347@iogearbox.net>
-Date:   Wed, 17 Aug 2022 22:31:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Wed, 17 Aug 2022 16:34:27 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AEBA98D4
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:34:22 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id x19so1863159plc.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:34:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=+BHAYzDqgDO1dphlleJav81q/W9nIBFp+VkYBEf8vLU=;
+        b=jz3fLzw+fJu0xPnGx+//k5qikpJiVrmGS9ks5o3noNGsc8Uf1MVHQS773VBi7HxOoP
+         MZ6Ip5ai3AKoAuZFpSBu4KsXfgeAKdCvm4aIDXUybYCujl6F8SW9xZaTic3jRc3H2wGA
+         2kdkepAqif71HE0vPPrNQ6MJhpDbQ0B+3unjI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=+BHAYzDqgDO1dphlleJav81q/W9nIBFp+VkYBEf8vLU=;
+        b=jLFobGh1bPUe7lAYOOXS/8kDhyTaTblxejx3Qy5i0geW+30QRgOqkrS58iM0SlM1Px
+         xs/Zfw9Rti9w7m5dCbpLLec3K4+iJi/Fzm+sE3R8HQ9aH8z514neFiH1HiTJKfEndC5q
+         Li4x0lI+7MfS4Sd7bnAPbt9NQf8r5hWe8NuaD2Ac4zVqEXbHBiRdkwyRoWYF9wyIghUb
+         wpkD6Ul3+Ndg/0r5GllG+Frj5hHLO4B7oRiS8fxHxbUzQThKswZSQ1q2dpQGFHcO5Qg6
+         sRWSvlbV8E5jumG3s/4Kd8cXWvWZD8IKOBwn+KBf5j+2pIdUzwplL2BfsjeyCJeyoMQq
+         Hblw==
+X-Gm-Message-State: ACgBeo3jSvfV08yVMwSHrhvXUr/6RKQ1x4kRLjUfYDBF6drx026GwO39
+        wbXxze1Jq6dKYLRCHW3OEnwZMg==
+X-Google-Smtp-Source: AA6agR5DUV06FMuvjpJ+csHMVx0eFv5uqzA4scevJawPGRalm+UHAttaTYitPkt7IE4XMPROHlrxwg==
+X-Received: by 2002:a17:902:ce11:b0:172:6f2c:a910 with SMTP id k17-20020a170902ce1100b001726f2ca910mr16336467plg.156.1660768462179;
+        Wed, 17 Aug 2022 13:34:22 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id l15-20020a17090aaa8f00b001ef9659d711sm1975601pjq.48.2022.08.17.13.34.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 13:34:21 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 13:34:20 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Geoffrey Thomas <geofft@ldpreload.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Maciej Falkowski <m.falkowski@samsung.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>
+Subject: Re: [PATCH v9 06/27] rust: add C helpers
+Message-ID: <202208171331.FAACB5AD8@keescook>
+References: <20220805154231.31257-1-ojeda@kernel.org>
+ <20220805154231.31257-7-ojeda@kernel.org>
+ <202208171240.8B10053B9D@keescook>
+ <CANiq72nR2eAeKrY6v=hnjUjvwfecMsSC6eXTwaei6ecnHjia8g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220810100849.25710-1-liulin063@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26630/Wed Aug 17 09:53:39 2022)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANiq72nR2eAeKrY6v=hnjUjvwfecMsSC6eXTwaei6ecnHjia8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/10/22 12:08 PM, Youlin Li wrote:
-> The commit ("bpf: Do more tight ALU bounds tracking") introduces a bug
-> that fails some selftests.
+On Wed, Aug 17, 2022 at 10:22:37PM +0200, Miguel Ojeda wrote:
+> On Wed, Aug 17, 2022 at 9:44 PM Kees Cook <keescook@chromium.org> wrote:
+> > Given the distaste for ever using BUG()[1], why does this helper exist?
 > 
-> in previous versions of the code, when
-> __reg_combine_64_into_32() was called, the 32bit boundary was
-> completely deduced from the 64bit boundary, so there was a call to
-> __mark_reg32_unbounded() in __reg_combine_64_into_32(). But before
-> adjust_scalar_min_max_vals() calls
-> __reg_combine_64_into_32() , the 32bit bounds are already calculated
-> to some extent, and __mark_reg32_unbounded() will eliminate these
-> information.
-> 
-> Simply remove the call to __reg_combine_64_into_32() and copying a code
-> without __mark_reg32_unbounded() should work.
-> 
-> Before:
->      ./test_verifier 142
->      #142/p bounds check after truncation of non-boundary-crossing range FAIL
->      Failed to load prog 'Permission denied'!
->      invalid access to map value, value_size=8 off=16777215 size=1
->      R0 max value is outside of the allowed memory range
->      verification time 149 usec
->      stack depth 8
->      processed 15 insns (limit 1000000) max_states_per_insn 0
->      total_states 0 peak_states 0 mark_read 0
->      Summary: 0 PASSED, 1 SKIPPED, 1 FAILED
-> 
-> After:
->      ./test_verifier 142
->      #142/p bounds check after truncation of non-boundary-crossing range OK
->      Summary: 1 PASSED, 1 SKIPPED, 0 FAILED
-> 
-> Signed-off-by: Youlin Li <liulin063@gmail.com>
-> ---
->   kernel/bpf/verifier.c | 12 +++++++++++-
->   1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 11d8bb54ba6b..7ea6e0372d62 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -9014,7 +9014,17 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
->   		/* ALU32 ops are zero extended into 64bit register */
->   		zext_32_to_64(dst_reg);
->   	} else {
-> -		__reg_combine_64_into_32(dst_reg);
-> +		if (__reg64_bound_s32(dst_reg->smin_value) &&
-> +		    __reg64_bound_s32(dst_reg->smax_value)) {
-> +			dst_reg->s32_min_value = (s32)dst_reg->smin_value;
-> +			dst_reg->s32_max_value = (s32)dst_reg->smax_value;
-> +		}
-> +		if (__reg64_bound_u32(dst_reg->umin_value) &&
-> +		    __reg64_bound_u32(dst_reg->umax_value)) {
-> +			dst_reg->u32_min_value = (u32)dst_reg->umin_value;
-> +			dst_reg->u32_max_value = (u32)dst_reg->umax_value;
-> +		}
-> +		reg_bounds_sync(dst_reg);
+> We use it exclusively for the Rust panic handler, which does not
+> return (we use fallible operations as much as possible, of course, but
+> we need to provide a panic handler nevertheless).
 
-Hm, this doesn't apply to the bpf tree. Is this on top of your previous patch [0]?
-Please squash both together in that case and resubmit your previous one as a v2.
+Gotcha -- it's for the implicit situations (e.g. -C overflow-checks=on),
+nothing is expected to explicitly call the Rust panic handler?
 
-   [0] https://lore.kernel.org/bpf/9f954e67-67fc-e3b9-d810-22bfea95d2aa@iogearbox.net/
+> Killing the entire machine is definitely too aggressive for some
+> setups/situations, so at some point last year we discussed potential
+> alternatives (e.g. `make_task_dead()` or similar) with, if I recall
+> correctly, Greg. Maybe we want to make it configurable too. We are
+> open to suggestions!
 
-Thanks,
-Daniel
+I suffer the same problems trying to fix C and the old "can never fail"
+interfaces. Mainly we've just been systematically replacing such APIs
+with APIs that return error codes, allowing the error to bubble back up.
+(Which I know is exactly what you've already done with the allocator,
+etc. Yay!)
+
+-Kees
+
+-- 
+Kees Cook
