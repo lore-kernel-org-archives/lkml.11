@@ -2,279 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB04BC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B314C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiHQHCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
+        id S229634AbiHQHCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiHQHCG (ORCPT
+        with ESMTP id S229502AbiHQHC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:02:06 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 00:02:05 PDT
-Received: from us-smtp-delivery-110.mimecast.com (us-smtp-delivery-110.mimecast.com [170.10.129.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4D578BEB
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:02:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=globallogic.com;
-        s=mimecast20210517; t=1660719723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pH7OvNNPsm5VQKGPpzNsRUdrZIopXa5V2ADSxMuiVQs=;
-        b=mERMMUr1Y/Rh6Xobv06ZHhtldZSc5N6BoAeVJg5XDsam/5qR9wOpqwZTogDpLS0S5/Isl9
-        ceshlDgJnUw7QRANYMvdabug0zbnBNnYYMG3EHo5M8fhGgxa9TpoOLRJX/X/BGl0T7f46a
-        KyCSDg7SVyN8JlmGIrJjOWDKwHK4wljYNPHfdy8LZ0PvnLzqFAmik1MsK0cKPCVQ5hXcbU
-        VhRcsVautFCtdRJxbu4dQfKEGv37v51qRq/sO4Ehj2ip5c5AQY5E056h/52zm3wz/dVXH7
-        0fnC0RNNnEffh4SMwXDITlR/jpghNCFT9maNy53yt054t+OqI2zNU6scKcRifg==
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-267-vScHbiWYNuiILC-2SwC5GQ-1; Wed, 17 Aug 2022 03:00:58 -0400
-X-MC-Unique: vScHbiWYNuiILC-2SwC5GQ-1
-Received: by mail-lj1-f198.google.com with SMTP id w21-20020a2e9595000000b0025ec9280923so3827507ljh.8
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:00:58 -0700 (PDT)
+        Wed, 17 Aug 2022 03:02:26 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A141379A48
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:02:22 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id i12-20020a056e021d0c00b002df2d676974so8458290ila.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:02:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=1exQ5qdkhCvVq2PBAzpRU9G+dzwvsJeddbBUdhaFhX8=;
-        b=WlkuI1Q5R1i/LHaTd9X2Xf7cMDuBE9mljfzP1RETFam/y7IO5nyNHK0/8ya/HVZyCF
-         7Fa6qRo8YB+OTdriDuSnPhoudSSE5BDV7935c5h2rU7zG8KdYZNOCFKygXdKI+rmKl+g
-         L0i6dmDHXfFMj8iu+GAVX/npiU+0C4e6hvENylxjpLi66ontvelkxuY2ZTdeXKR1H43w
-         GyPBDFfl0rZVKBuQDOngz4TTHNg5zL+X4oxrz3UGHXV6KmsXAxPzd/8LN5j1z1z9QPY7
-         QY8Q5Y5cufZrspDymbRPOqQjYvz9u8EGfzJyODkKhpKDfJbB0uxXzPul2hA0KDhcmjQ/
-         f/ig==
-X-Gm-Message-State: ACgBeo0qgBIgql4k9CGLXWyy7g5VB5r+vzLciooh5OtkK40+5h+4A5zA
-        L17mlY63jSGcXQYU0Bbb7/rZUjMwp0YUtuf/si5QthDVxm3kdsnCiPPLuD4KrTZgvQywQb0pSUe
-        gp1XQGS5i+Z0xjxqcFeyFtrM=
-X-Received: by 2002:ac2:4562:0:b0:48b:2a91:e59 with SMTP id k2-20020ac24562000000b0048b2a910e59mr8050286lfm.91.1660719657145;
-        Wed, 17 Aug 2022 00:00:57 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6a7nMNBiNK6k+E8U2fEcZfWVKJGSibaw9CkQYQp99t+6R5gMnJO2+WyETeLUoo4et3K4AZng==
-X-Received: by 2002:ac2:4562:0:b0:48b:2a91:e59 with SMTP id k2-20020ac24562000000b0048b2a910e59mr8050281lfm.91.1660719656896;
-        Wed, 17 Aug 2022 00:00:56 -0700 (PDT)
-Received: from localhost.localdomain ([91.245.79.37])
-        by smtp.googlemail.com with ESMTPSA id o18-20020a05651205d200b0048a91266268sm1592278lfo.232.2022.08.17.00.00.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 00:00:56 -0700 (PDT)
-From:   Sviatoslav Peleshko <sviatoslav.peleshko@globallogic.com>
-Cc:     Sviatoslav Peleshko <sviatoslav.peleshko@globallogic.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/i915: Fix random -ENOSPC eviction errors due to locked vma objects
-Date:   Wed, 17 Aug 2022 09:55:41 +0300
-Message-Id: <20220817065541.30101-1-sviatoslav.peleshko@globallogic.com>
-X-Mailer: git-send-email 2.37.1
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=AVy8zYCWjiIYaAwAGw4xq9fAnoGnbLuxa0nQhh+cRCs=;
+        b=6EUIS7Z+4sR3g0mOy+vEillJWtHIAzoLvOdnrJkZQIAeeBeJMwCMSEMUm/e7fl3syL
+         B5EPt40sFvQvhopdWd/rQAvVhsS5LrTg4a7T9htznLM3LbzA5wLWazeIPmnn9R7ndaU9
+         WK+4MZIhxAtZ96Sf7UxqsZIJZWI4DOnXKDtXIoKK88M4yIlE6o0VmkatbHk0lD1IclFn
+         A+HMaZ4+pYIDGj8rlHRx4Ro858CT1xlNb6hC3EXnlSJUci3XEgBBJHyNT2QdE6BlQ42d
+         qaXrZTpZS2oNPW6s9VA9p2Tfozi+3n2qsQM4gnwV3Db15TUA3BJidBSdPJ5/3DEeCgRn
+         zIJg==
+X-Gm-Message-State: ACgBeo09tLULXzacZ05ox2hzUQG5ucP7prq7YgoY5PUo2QADn6UHHjob
+        tHA3fh9jWi/NsEx2G6Ke6EsNxLsEmdxJavLT/tWWQvU5AZ7Y
+X-Google-Smtp-Source: AA6agR6rN7dhNVaxttfrEsOm5NHuRq2p14qzf5syX0piTZG3OQJsWMw/voN29CUtiLfIvSTED5mjAUWS+WLDv+bhtyGbp7TgauI7
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: globallogic.com
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To:     unlisted-recipients:; (no To-header on input)
+X-Received: by 2002:a05:6e02:1c8b:b0:2de:ec44:e139 with SMTP id
+ w11-20020a056e021c8b00b002deec44e139mr10522256ill.215.1660719742003; Wed, 17
+ Aug 2022 00:02:22 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 00:02:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004b320405e66a72cf@google.com>
+Subject: [syzbot] possible deadlock in ext4_writepages
+From:   syzbot <syzbot+c8139688c30ecca75857@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i915_gem_object_trylock we had in the grab_vma() makes it return false
-when the vma->obj is already locked. In this case we'll skip this vma
-during eviction, and eventually might be forced to return -ENOSPC even
-though we could've evicted this vma if we waited for the lock a bit.
+Hello,
 
-To fix this, replace the i915_gem_object_trylock with i915_gem_object_lock.
-And because we have to worry about the potential deadlock now, bubble-up
-the error code, so it will be correctly handled by the WW mechanism.
+syzbot found the following issue on:
 
-This fixes the issue https://gitlab.freedesktop.org/drm/intel/-/issues/6564
+HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16fdc2f3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20bc0b329895d963
+dashboard link: https://syzkaller.appspot.com/bug?extid=c8139688c30ecca75857
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Fixes: 7e00897be8bf ("drm/i915: Add object locking to i915_gem_evict_for_no=
-de and i915_gem_evict_something, v2.")
-Signed-off-by: Sviatoslav Peleshko <sviatoslav.peleshko@globallogic.com>
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c8139688c30ecca75857@syzkaller.appspotmail.com
+
+======================================================
+WARNING: possible circular locking dependency detected
+5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0 Not tainted
+------------------------------------------------------
+syz-executor.1/6130 is trying to acquire lock:
+ffff88814b25cbd8 (&sbi->s_writepages_rwsem){.+.+}-{0:0}, at: ext4_writepages+0x1e7/0x3be0 fs/ext4/inode.c:2687
+
+but task is already holding lock:
+ffff88803dd0ca38 (&sb->s_type->i_mutex_key#7){++++}-{3:3}, at: inode_lock_shared include/linux/fs.h:771 [inline]
+ffff88803dd0ca38 (&sb->s_type->i_mutex_key#7){++++}-{3:3}, at: ext4_dio_read_iter fs/ext4/file.c:63 [inline]
+ffff88803dd0ca38 (&sb->s_type->i_mutex_key#7){++++}-{3:3}, at: ext4_file_read_iter+0x26b/0x740 fs/ext4/file.c:130
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #2 (&sb->s_type->i_mutex_key#7){++++}-{3:3}:
+       lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5666
+       down_read+0x39/0x50 kernel/locking/rwsem.c:1499
+       inode_lock_shared include/linux/fs.h:771 [inline]
+       ext4_bmap+0x55/0x410 fs/ext4/inode.c:3157
+       bmap+0xa1/0xd0 fs/inode.c:1799
+       jbd2_journal_bmap fs/jbd2/journal.c:971 [inline]
+       __jbd2_journal_erase fs/jbd2/journal.c:1784 [inline]
+       jbd2_journal_flush+0x5d0/0xca0 fs/jbd2/journal.c:2490
+       ext4_ioctl_checkpoint fs/ext4/ioctl.c:1082 [inline]
+       __ext4_ioctl fs/ext4/ioctl.c:1586 [inline]
+       ext4_ioctl+0x378a/0x55c0 fs/ext4/ioctl.c:1606
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+-> #1 (&journal->j_checkpoint_mutex){+.+.}-{3:3}:
+       lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5666
+       __mutex_lock_common+0x1de/0x26c0 kernel/locking/mutex.c:603
+       mutex_lock_io_nested+0x43/0x60 kernel/locking/mutex.c:833
+       __jbd2_log_wait_for_space+0x22d/0x790 fs/jbd2/checkpoint.c:110
+       add_transaction_credits+0x936/0xbf0 fs/jbd2/transaction.c:298
+       start_this_handle+0x758/0x1660 fs/jbd2/transaction.c:422
+       jbd2__journal_start+0x2ca/0x5b0 fs/jbd2/transaction.c:520
+       __ext4_journal_start_sb+0x111/0x1d0 fs/ext4/ext4_jbd2.c:105
+       __ext4_journal_start fs/ext4/ext4_jbd2.h:326 [inline]
+       ext4_writepages+0x1181/0x3be0 fs/ext4/inode.c:2810
+       do_writepages+0x3c3/0x690 mm/page-writeback.c:2468
+       filemap_fdatawrite_wbc+0x11e/0x170 mm/filemap.c:388
+       __filemap_fdatawrite_range mm/filemap.c:421 [inline]
+       file_write_and_wait_range+0x1e7/0x2f0 mm/filemap.c:773
+       ext4_sync_file+0x1b0/0x850 fs/ext4/fsync.c:151
+       generic_write_sync include/linux/fs.h:2874 [inline]
+       ext4_buffered_write_iter+0x308/0x3a0 fs/ext4/file.c:277
+       ext4_file_write_iter+0xabb/0x1ae0
+       do_iter_write+0x6f0/0xc50 fs/read_write.c:855
+       iter_file_splice_write+0x830/0xff0 fs/splice.c:686
+       do_splice_from fs/splice.c:764 [inline]
+       direct_splice_actor+0xe6/0x1c0 fs/splice.c:931
+       splice_direct_to_actor+0x4e4/0xc00 fs/splice.c:886
+       do_splice_direct+0x2a0/0x3f0 fs/splice.c:974
+       do_sendfile+0x641/0xfd0 fs/read_write.c:1249
+       __do_sys_sendfile64 fs/read_write.c:1311 [inline]
+       __se_sys_sendfile64+0xfc/0x1e0 fs/read_write.c:1303
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+-> #0 (&sbi->s_writepages_rwsem){.+.+}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain+0x1872/0x6600 kernel/locking/lockdep.c:3829
+       __lock_acquire+0x1292/0x1f60 kernel/locking/lockdep.c:5053
+       lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5666
+       percpu_down_read+0x44/0x190 include/linux/percpu-rwsem.h:51
+       ext4_writepages+0x1e7/0x3be0 fs/ext4/inode.c:2687
+       do_writepages+0x3c3/0x690 mm/page-writeback.c:2468
+       filemap_fdatawrite_wbc+0x11e/0x170 mm/filemap.c:388
+       __filemap_fdatawrite_range mm/filemap.c:421 [inline]
+       filemap_write_and_wait_range+0x1c1/0x2c0 mm/filemap.c:673
+       __iomap_dio_rw+0xb25/0x20e0 fs/iomap/direct-io.c:573
+       iomap_dio_rw+0x42/0xa0 fs/iomap/direct-io.c:690
+       ext4_dio_read_iter fs/ext4/file.c:79 [inline]
+       ext4_file_read_iter+0x595/0x740 fs/ext4/file.c:130
+       call_read_iter include/linux/fs.h:2186 [inline]
+       generic_file_splice_read+0x24e/0x650 fs/splice.c:309
+       do_splice_to fs/splice.c:793 [inline]
+       splice_direct_to_actor+0x41b/0xc00 fs/splice.c:865
+       do_splice_direct+0x2a0/0x3f0 fs/splice.c:974
+       do_sendfile+0x641/0xfd0 fs/read_write.c:1249
+       __do_sys_sendfile64 fs/read_write.c:1317 [inline]
+       __se_sys_sendfile64+0x178/0x1e0 fs/read_write.c:1303
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+other info that might help us debug this:
+
+Chain exists of:
+  &sbi->s_writepages_rwsem --> &journal->j_checkpoint_mutex --> &sb->s_type->i_mutex_key#7
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&sb->s_type->i_mutex_key#7);
+                               lock(&journal->j_checkpoint_mutex);
+                               lock(&sb->s_type->i_mutex_key#7);
+  lock(&sbi->s_writepages_rwsem);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor.1/6130:
+ #0: ffff88814b25a460 (sb_writers#4){.+.+}-{0:0}, at: do_sendfile+0x61c/0xfd0 fs/read_write.c:1248
+ #1: ffff88803dd0ca38 (&sb->s_type->i_mutex_key#7){++++}-{3:3}, at: inode_lock_shared include/linux/fs.h:771 [inline]
+ #1: ffff88803dd0ca38 (&sb->s_type->i_mutex_key#7){++++}-{3:3}, at: ext4_dio_read_iter fs/ext4/file.c:63 [inline]
+ #1: ffff88803dd0ca38 (&sb->s_type->i_mutex_key#7){++++}-{3:3}, at: ext4_file_read_iter+0x26b/0x740 fs/ext4/file.c:130
+
+stack backtrace:
+CPU: 1 PID: 6130 Comm: syz-executor.1 Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x1e3/0x2cb lib/dump_stack.c:106
+ check_noncircular+0x2f9/0x3b0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain+0x1872/0x6600 kernel/locking/lockdep.c:3829
+ __lock_acquire+0x1292/0x1f60 kernel/locking/lockdep.c:5053
+ lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5666
+ percpu_down_read+0x44/0x190 include/linux/percpu-rwsem.h:51
+ ext4_writepages+0x1e7/0x3be0 fs/ext4/inode.c:2687
+ do_writepages+0x3c3/0x690 mm/page-writeback.c:2468
+ filemap_fdatawrite_wbc+0x11e/0x170 mm/filemap.c:388
+ __filemap_fdatawrite_range mm/filemap.c:421 [inline]
+ filemap_write_and_wait_range+0x1c1/0x2c0 mm/filemap.c:673
+ __iomap_dio_rw+0xb25/0x20e0 fs/iomap/direct-io.c:573
+ iomap_dio_rw+0x42/0xa0 fs/iomap/direct-io.c:690
+ ext4_dio_read_iter fs/ext4/file.c:79 [inline]
+ ext4_file_read_iter+0x595/0x740 fs/ext4/file.c:130
+ call_read_iter include/linux/fs.h:2186 [inline]
+ generic_file_splice_read+0x24e/0x650 fs/splice.c:309
+ do_splice_to fs/splice.c:793 [inline]
+ splice_direct_to_actor+0x41b/0xc00 fs/splice.c:865
+ do_splice_direct+0x2a0/0x3f0 fs/splice.c:974
+ do_sendfile+0x641/0xfd0 fs/read_write.c:1249
+ __do_sys_sendfile64 fs/read_write.c:1317 [inline]
+ __se_sys_sendfile64+0x178/0x1e0 fs/read_write.c:1303
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fce42889279
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fce4395e168 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
+RAX: ffffffffffffffda RBX: 00007fce4299c1f0 RCX: 00007fce42889279
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000003
+RBP: 00007fce428e3189 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000010000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fffdba263bf R14: 00007fce4395e300 R15: 0000000000022000
+ </TASK>
+
+
 ---
- drivers/gpu/drm/i915/i915_gem_evict.c | 69 ++++++++++++++++++---------
- 1 file changed, 46 insertions(+), 23 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/gpu/drm/i915/i915_gem_evict.c b/drivers/gpu/drm/i915/i=
-915_gem_evict.c
-index f025ee4fa526..9d43f213f68f 100644
---- a/drivers/gpu/drm/i915/i915_gem_evict.c
-+++ b/drivers/gpu/drm/i915/i915_gem_evict.c
-@@ -55,49 +55,58 @@ static int ggtt_flush(struct intel_gt *gt)
- =09return intel_gt_wait_for_idle(gt, MAX_SCHEDULE_TIMEOUT);
- }
-=20
--static bool grab_vma(struct i915_vma *vma, struct i915_gem_ww_ctx *ww)
-+static int grab_vma(struct i915_vma *vma, struct i915_gem_ww_ctx *ww)
- {
-+=09int ret =3D 0;
-+
- =09/*
- =09 * We add the extra refcount so the object doesn't drop to zero until
- =09 * after ungrab_vma(), this way trylock is always paired with unlock.
- =09 */
- =09if (i915_gem_object_get_rcu(vma->obj)) {
--=09=09if (!i915_gem_object_trylock(vma->obj, ww)) {
-+=09=09ret =3D i915_gem_object_lock(vma->obj, ww);
-+=09=09if (ret)
- =09=09=09i915_gem_object_put(vma->obj);
--=09=09=09return false;
--=09=09}
- =09} else {
- =09=09/* Dead objects don't need pins */
- =09=09atomic_and(~I915_VMA_PIN_MASK, &vma->flags);
- =09}
-=20
--=09return true;
-+=09return ret;
- }
-=20
--static void ungrab_vma(struct i915_vma *vma)
-+static void ungrab_vma(struct i915_vma *vma, struct i915_gem_ww_ctx *ww)
- {
- =09if (dying_vma(vma))
- =09=09return;
-=20
--=09i915_gem_object_unlock(vma->obj);
-+=09if (!ww)
-+=09=09i915_gem_object_unlock(vma->obj);
-+
- =09i915_gem_object_put(vma->obj);
- }
-=20
--static bool
-+static int
- mark_free(struct drm_mm_scan *scan,
- =09  struct i915_gem_ww_ctx *ww,
- =09  struct i915_vma *vma,
- =09  unsigned int flags,
- =09  struct list_head *unwind)
- {
-+=09int err;
-+
- =09if (i915_vma_is_pinned(vma))
--=09=09return false;
-+=09=09return -ENOSPC;
-=20
--=09if (!grab_vma(vma, ww))
--=09=09return false;
-+=09err =3D grab_vma(vma, ww);
-+=09if (err)
-+=09=09return err;
-=20
- =09list_add(&vma->evict_link, unwind);
--=09return drm_mm_scan_add_block(scan, &vma->node);
-+=09if (!drm_mm_scan_add_block(scan, &vma->node))
-+=09=09return -ENOSPC;
-+
-+=09return 0;
- }
-=20
- static bool defer_evict(struct i915_vma *vma)
-@@ -150,6 +159,7 @@ i915_gem_evict_something(struct i915_address_space *vm,
- =09enum drm_mm_insert_mode mode;
- =09struct i915_vma *active;
- =09int ret;
-+=09int err =3D 0;
-=20
- =09lockdep_assert_held(&vm->mutex);
- =09trace_i915_gem_evict(vm, min_size, alignment, flags);
-@@ -210,17 +220,23 @@ i915_gem_evict_something(struct i915_address_space *v=
-m,
- =09=09=09continue;
- =09=09}
-=20
--=09=09if (mark_free(&scan, ww, vma, flags, &eviction_list))
-+=09=09err =3D mark_free(&scan, ww, vma, flags, &eviction_list);
-+=09=09if (!err)
- =09=09=09goto found;
-+=09=09if (err =3D=3D -EDEADLK)
-+=09=09=09break;
- =09}
-=20
- =09/* Nothing found, clean up and bail out! */
- =09list_for_each_entry_safe(vma, next, &eviction_list, evict_link) {
- =09=09ret =3D drm_mm_scan_remove_block(&scan, &vma->node);
- =09=09BUG_ON(ret);
--=09=09ungrab_vma(vma);
-+=09=09ungrab_vma(vma, ww);
- =09}
-=20
-+=09if (err =3D=3D -EDEADLK)
-+=09=09return err;
-+
- =09/*
- =09 * Can we unpin some objects such as idle hw contents,
- =09 * or pending flips? But since only the GGTT has global entries
-@@ -267,7 +283,7 @@ i915_gem_evict_something(struct i915_address_space *vm,
- =09=09=09__i915_vma_pin(vma);
- =09=09} else {
- =09=09=09list_del(&vma->evict_link);
--=09=09=09ungrab_vma(vma);
-+=09=09=09ungrab_vma(vma, ww);
- =09=09}
- =09}
-=20
-@@ -277,17 +293,21 @@ i915_gem_evict_something(struct i915_address_space *v=
-m,
- =09=09__i915_vma_unpin(vma);
- =09=09if (ret =3D=3D 0)
- =09=09=09ret =3D __i915_vma_unbind(vma);
--=09=09ungrab_vma(vma);
-+=09=09ungrab_vma(vma, ww);
- =09}
-=20
- =09while (ret =3D=3D 0 && (node =3D drm_mm_scan_color_evict(&scan))) {
- =09=09vma =3D container_of(node, struct i915_vma, node);
-=20
- =09=09/* If we find any non-objects (!vma), we cannot evict them */
--=09=09if (vma->node.color !=3D I915_COLOR_UNEVICTABLE &&
--=09=09    grab_vma(vma, ww)) {
--=09=09=09ret =3D __i915_vma_unbind(vma);
--=09=09=09ungrab_vma(vma);
-+=09=09if (vma->node.color !=3D I915_COLOR_UNEVICTABLE) {
-+=09=09=09ret =3D grab_vma(vma, ww);
-+=09=09=09if (!ret) {
-+=09=09=09=09ret =3D __i915_vma_unbind(vma);
-+=09=09=09=09ungrab_vma(vma, ww);
-+=09=09=09} else if (ret !=3D -EDEADLK) {
-+=09=09=09=09ret =3D -ENOSPC;
-+=09=09=09}
- =09=09} else {
- =09=09=09ret =3D -ENOSPC;
- =09=09}
-@@ -382,8 +402,11 @@ int i915_gem_evict_for_node(struct i915_address_space =
-*vm,
- =09=09=09break;
- =09=09}
-=20
--=09=09if (!grab_vma(vma, ww)) {
--=09=09=09ret =3D -ENOSPC;
-+=09=09ret =3D grab_vma(vma, ww);
-+=09=09if (ret) {
-+=09=09=09if (ret !=3D -EDEADLK)
-+=09=09=09=09ret =3D -ENOSPC;
-+
- =09=09=09break;
- =09=09}
-=20
-@@ -405,7 +428,7 @@ int i915_gem_evict_for_node(struct i915_address_space *=
-vm,
- =09=09if (ret =3D=3D 0)
- =09=09=09ret =3D __i915_vma_unbind(vma);
-=20
--=09=09ungrab_vma(vma);
-+=09=09ungrab_vma(vma, ww);
- =09}
-=20
- =09return ret;
---=20
-2.37.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
