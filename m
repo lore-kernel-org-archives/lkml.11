@@ -2,117 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB19C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A04E9C28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236793AbiHQNGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
+        id S239166AbiHQNHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235930AbiHQNEk (ORCPT
+        with ESMTP id S239606AbiHQNHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:04:40 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B9633E28
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:04:08 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id w5so18925892lfq.5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:04:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=DqeinnIMS7tnZ1s/F5WbYXe7dS10PhHD2RlaXqtenk4=;
-        b=i0GvDg8TPViBlqsgSYnRwUvswrg91GsMb+QaX4/VEVX2zBTIOPJt4gpUlxkvcXpBvT
-         xK6+oxY6A3mVE05M0AW4zmDifbsfOCNDRjAH70dyD8TJliMxGLVYLN6Vp8u5xera9IT1
-         RoEouXPxXYB4W7DoAzax/1F30Pq2WI3Y7jLZO3h8V5s+C7h9aNwK29gPFeZK58PwrGx/
-         nuQn+j7/AwPxahNDvRsGaG1KtaSXjBkYaa8r57BzaSNVFNE48ryz03CCBznEcwwSdj+6
-         zsFWcsCqStRuqJKbNDFTU+Owsfv2bZZzwNRCDLLV2gvayHioBcyKT8RLkEu4a9wF4Wtd
-         YRUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=DqeinnIMS7tnZ1s/F5WbYXe7dS10PhHD2RlaXqtenk4=;
-        b=5e/8s/TE1RJnKoW9MBTGodxAAVmRhPcXR9Wyozw+sg/XNcYG0/zhedyTIT2CRWQ4N7
-         y4wKyv2UdKfmL4kYHq/xEv5bNWun98hMuK0Yq6Ql8uDkMBBmaca/jRwCwgxkoZRO5EkS
-         BUKaSH+MRm5zzq7MSDlOx7YnpBw/fFzUCn5K9VY8yyoi21kfu0hgBdt4kYUomFM9duBB
-         n48uFt4SEh6eiqAn936uAor43v+C1s33ZuyHnfPw2DBwyFFnu6TuHej2QB76OXj7taZF
-         lyufGJvKYngv7xQ8efdjAXhCV73msAM/v19RGDpMNERJJU3tGdYiuJO2RCGTwrF5sjjY
-         0GJw==
-X-Gm-Message-State: ACgBeo2svZbmFqgUJ2hCc/VOieQIugKmYXOazPw8/6gnbOfgjpzzbm6r
-        oJf4DdKwGCJ5QVOR38rkNs8n1g==
-X-Google-Smtp-Source: AA6agR5TbOLMn+IOpEsiRnErXR+auYE0jmCcgUOl4UbPjLbAdI9ArIKLFXB3SX2CkDNJG+YlZYa+Ug==
-X-Received: by 2002:a05:6512:22ce:b0:48c:190f:5c37 with SMTP id g14-20020a05651222ce00b0048c190f5c37mr8321869lfu.564.1660741448295;
-        Wed, 17 Aug 2022 06:04:08 -0700 (PDT)
-Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id v1-20020ac25601000000b0048b3768d2ecsm1683243lfd.174.2022.08.17.06.04.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 06:04:07 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH v2 13/14] arm64: dts: qcom: sdm630: switch TCSR mutex to MMIO
-Date:   Wed, 17 Aug 2022 16:03:41 +0300
-Message-Id: <20220817130342.568396-14-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817130342.568396-1-krzysztof.kozlowski@linaro.org>
-References: <20220817130342.568396-1-krzysztof.kozlowski@linaro.org>
+        Wed, 17 Aug 2022 09:07:19 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AEA915F3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:05:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660741530; x=1692277530;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=0r/wRpHDY/cJKimAN46sLg8b9MsBF0hryVYD2PnhY/Y=;
+  b=OpJdyNR2bYWw8SkK+futHoY/Y3Eu62ukr3+gskHvdfZije1zGO8uQtwN
+   5dAltjLH7+bb/P6ohjy2TtfS4fe0vVQxPlBVn/mhLVRX29XY1NlmqnOUt
+   Q+l6aAE53habHzyTIZnzHZLAh5c1OcEcVl++AScv42Qb5kBx5utArN05I
+   V1GKQVxaV90LrimxnKKBOrYeqvLJP/g6kS+MeoErLDQmf0uaFOl4MiyDf
+   sEQrBGzXBWdlXR/N0eOHq6O9SdUAsVmjQornzKRbMn5T9X64lzodg+Cxm
+   tSRlMRV94hl7OwXsAkROdaoDBRsKRowpvBrN+7YcKl4BCACMTQa2b7KFd
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="279450522"
+X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
+   d="scan'208";a="279450522"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 06:05:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
+   d="scan'208";a="710542739"
+Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.59])
+  by fmsmga002.fm.intel.com with SMTP; 17 Aug 2022 06:05:14 -0700
+Received: by stinkbox (sSMTP sendmail emulation); Wed, 17 Aug 2022 16:05:13 +0300
+Date:   Wed, 17 Aug 2022 16:05:13 +0300
+From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Karol Herbst <kherbst@redhat.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, rodrigo.vivi@intel.com,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Imre Deak <imre.deak@intel.com>
+Subject: Re: [Intel-gfx] [PATCH] drm/i915: Switch TGL-H DP-IN to dGFX when
+ it's supported
+Message-ID: <YvzniYpjr+PBIa56@intel.com>
+References: <20220816025217.618181-1-kai.heng.feng@canonical.com>
+ <CACO55tt=Op=0E94kK+1M8cDXNCk5Tkc=FMR8=OQFc5ohehjwaw@mail.gmail.com>
+ <CAAd53p49X95MKrTDUq92LuHw3y2i09fUA2HEPzM1EcO8xO97Eg@mail.gmail.com>
+ <CACO55tvgmb4Vog701idDYGuh125S9mjWPXhftxDMZ7hg-nQXBw@mail.gmail.com>
+ <CAAd53p4W9rjmVJcUasy9hb1Yam+846+Oomvc2r9RMNmWeh_=0w@mail.gmail.com>
+ <YvzYGGXils/Gf44d@intel.com>
+ <CAAd53p49zc2G1KutPMUcUBM3_rbCh9_40e0mdtcZKb+C69QL_Q@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAd53p49zc2G1KutPMUcUBM3_rbCh9_40e0mdtcZKb+C69QL_Q@mail.gmail.com>
+X-Patchwork-Hint: comment
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TCSR mutex bindings allow device to be described only with address
-space (so it uses MMIO, not syscon regmap).  This seems reasonable as
-TCSR mutex is actually a dedicated IO address space and it also fixes DT
-schema checks:
+On Wed, Aug 17, 2022 at 08:15:58PM +0800, Kai-Heng Feng wrote:
+> On Wed, Aug 17, 2022 at 7:59 PM Ville Syrjälä
+> <ville.syrjala@linux.intel.com> wrote:
+> 
+> [snipped]
+> 
+> > I had a quick trawl through some Windows stuff for this and
+> > it does seem to do a few extra checks:
+> > - platform must be TGL-H (nothing else has the DPin stuff I guess)
+> > - OpRegion header must indicate dGPU presence
+> 
+> Is the dGPU presence denoted by the return bitmask of
+> INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED
 
-  qcom/sdm636-sony-xperia-ganges-mermaid.dtb: hwlock: 'reg' is a required property
-  qcom/sdm636-sony-xperia-ganges-mermaid.dtb: hwlock: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
+No, there are apparently some extra bits in the OpRegion
+header which we're not currently even decoding.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+> 
+> IIUC the mask 20 won't be set when dGPU is not present.
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index 1bc9091cad2a..40a40d00eae4 100644
---- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -697,9 +697,10 @@ tsens: thermal-sensor@10ae000 {
- 			#thermal-sensor-cells = <1>;
- 		};
- 
--		tcsr_mutex_regs: syscon@1f40000 {
--			compatible = "syscon";
--			reg = <0x01f40000 0x40000>;
-+		tcsr_mutex: hwlock@1f40000 {
-+			compatible = "qcom,tcsr-mutex";
-+			reg = <0x01f40000 0x20000>;
-+			#hwlock-cells = <1>;
- 		};
- 
- 		tlmm: pinctrl@3100000 {
-@@ -2351,12 +2352,6 @@ intc: interrupt-controller@17a00000 {
- 		};
- 	};
- 
--	tcsr_mutex: hwlock {
--		compatible = "qcom,tcsr-mutex";
--		syscon = <&tcsr_mutex_regs 0 0x1000>;
--		#hwlock-cells = <1>;
--	};
--
- 	sound: sound {
- 	};
- 
+Not sure whether that bit would change depending on the dGPU
+presence or not. Windows doesn't seem trust it alone, so either
+it won't change or someone was just extra paranoid.
+
+> 
+> >
+> > Otherwise it does call this DSM uncoditionally on boot/S4 resume
+> > so seems like that is the only really validated configuration.
+> > Although it does seem to explicitly turn off displays prior to
+> > the DSM so that does perhaps indicate that those ports might have
+> > also been enabled via the iGPU by the BIOS. Not sure if disabling
+> > the ports would work correctly after the DSM or not. If not then
+> > the DSM call would need to happen after state readout/sanitization
+> > so that we can shut things down gracefully.
+> >
+> > Additionally after the DSM call it scans the FIA TC live state
+> > bits to check for DPin usage. Looks like its trying to make sure
+> > the driver stops poking at the relevant power wells once in DPin
+> > mode. i915 doesn't check that stuff atm so we might end up
+> > mangling something while the dGPU is driving the port.
+> 
+> Thanks for investigating this. I am not really familiar with other
+> stuffs you mentioned, but I am happy to test any follow-up patch.
+> 
+> Kai-Heng
+> 
+> >
+> > --
+> > Ville Syrjälä
+> > Intel
+
 -- 
-2.34.1
-
+Ville Syrjälä
+Intel
