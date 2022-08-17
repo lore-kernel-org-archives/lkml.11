@@ -2,89 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76BCC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A0EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241764AbiHQUMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        id S241781AbiHQUM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241476AbiHQUMl (ORCPT
+        with ESMTP id S241519AbiHQUMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:12:41 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E795FA61DC
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:40 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id z187so12940366pfb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:40 -0700 (PDT)
+        Wed, 17 Aug 2022 16:12:47 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE49A6C2C
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:45 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso1569346wma.2
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=+WRGNlWofKlOiDjgaSTNb/H9kbNSywL6IxTX7zzIueA=;
-        b=fMRhV1gD0LiWPslIdJd3Oay33CI1Qjzc9fxrxo1rMAcTxyGfF+9i+S4mdI5O7WkvEZ
-         pi/Ze5jSG8mJRZ5c9znxeN8yUWNpDYVrR9pyvY6pVf4TLt8fffmT0CMXEqCcyLCBGZzT
-         feSoTwBjHSuD+PY2QeZCOih3yziojt2d2o8bE=
+        d=conchuod.ie; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=De0s+s/D2rq5b1W85sP7P0sadpD1tyl+4KZh5xfCdFc=;
+        b=VoUCelW9ATsck56Z8Vshz+e5skJfqAaLWP0HlwFo7La/BTrmJH5e8zjyqLvEREwsny
+         wivfEbQBCbsuAwXFwnaTCReVWo48k1o/9NHZ6uWUyyb1QcRZaacS8eYKfW160GvNgdRl
+         tERNO6oWhTlIwX2AAbAEDn9M5mRMpl16CQcmPD1jWSFcupCT4CmqBFX72IKxsy5HNvI6
+         1ofx3JTRa4Gz5oJXqe8j7aHCHkdofi+lsc4O68CTHYD7rM2Dd+IYZB4Y1c4bvN760fwl
+         mqGvxbSv/gH2QOynns+PpVsW5V8qUj2oLo3HbjL3PbdYC6gjSc78t0dyQeNKj8aE5M8n
+         wMLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=+WRGNlWofKlOiDjgaSTNb/H9kbNSywL6IxTX7zzIueA=;
-        b=ZLJJ1lwVKsBbgMP6Gr702HJPj7q/E4x0CK1pTc3K4YPJW34YmF7xykah6ksOHcea65
-         HpBo4ckcIcWRBVdD/Dai9Fs+88ppwypd47BJX2950Eglhto25Xzf157BqjwGovdd3GzB
-         dGMaK2uc52eyp+vpR6qXB6it635O1ZRISQwMsxR7NgMJ0SlIabwz4qCUGwkgc96dpEmZ
-         KFEvqr/O0QU1BbYHBAJUTUZfRDYyyYWk52vD0k1mpVrY8DO+JBRxYXEoIt2JrA/W0sK2
-         8D2YFVWCMu1QAgZXf1u3MbwL/l0HJejrCNaWNcj/N9aadxH5RK4rSmbAsFVFk+sn+Qa5
-         6vKg==
-X-Gm-Message-State: ACgBeo0FxDWQkcNIf63++SGKbm8eJayHypufA1qDjGpzz0i/8pOEtZwM
-        LDfsFS8U/FptWyVNRw9dZPIfDA==
-X-Google-Smtp-Source: AA6agR6zH+/TwyGgpZzTC8h5baBczzUM6S76Zm6Lt7mPjCgTSRD1ONJNatmSLrsIE45J9d/eErae6g==
-X-Received: by 2002:a63:1841:0:b0:429:8268:1fc with SMTP id 1-20020a631841000000b00429826801fcmr10651647pgy.78.1660767160381;
-        Wed, 17 Aug 2022 13:12:40 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h18-20020aa796d2000000b0052d4afc4302sm11215205pfq.175.2022.08.17.13.12.39
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=De0s+s/D2rq5b1W85sP7P0sadpD1tyl+4KZh5xfCdFc=;
+        b=hKa4vXMuq76OzDdwuGp0TB9c2OK/gnZSzpFaJH0lf6JGkAq8s8jHiYwgHuE2shvpnm
+         alZJyqVsna8GmOyTfMOP1UGgsN8GFLeS+L2SUOPx8ntJw6HRyR5R96tdjbUyRrRFhbaa
+         BjemcYs6o3TCHWOLXZNdbUzHlBqDeAOJT8+CEe1cTXlEevNRWB/miBJ5XN9ie7tfKKWu
+         IsvtCpaiackQWB/mcBqldbP15Jfr73jjIKylI87nZeZe0JGti7SnUgF6N4TJo4ON0kAT
+         g5grC9j5t0kC28MVjlTE0j6rKBWzDG6d1cf+Pg7Ru0pJJ3rDM61uSZPIPIDoH/zsQwpr
+         9SQA==
+X-Gm-Message-State: ACgBeo0H81763rpStZ/IpV+wdc9J60oZ1D4k1VPvSGY1rMyuqt6iL1UY
+        ZBh4j8rEK98k8xQWP8c3golmSg==
+X-Google-Smtp-Source: AA6agR5fECZky51OLxj7IyiHwCUh5pSaXNngYTDHiSH2lpDG7XCOjdR0BjCA3TzdeYNFfoayKbBkfg==
+X-Received: by 2002:a05:600c:4f05:b0:3a5:ffec:b6b with SMTP id l5-20020a05600c4f0500b003a5ffec0b6bmr3007577wmq.199.1660767164394;
+        Wed, 17 Aug 2022 13:12:44 -0700 (PDT)
+Received: from henark71.. ([109.76.58.63])
+        by smtp.gmail.com with ESMTPSA id i15-20020a05600c354f00b003a5dfd7e9eesm3029371wmq.44.2022.08.17.13.12.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:12:39 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 13:12:38 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Joe Perches <joe@perches.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH v9 16/27] scripts: checkpatch: enable
- language-independent checks for Rust
-Message-ID: <202208171312.1CB3606F0C@keescook>
-References: <20220805154231.31257-1-ojeda@kernel.org>
- <20220805154231.31257-17-ojeda@kernel.org>
+        Wed, 17 Aug 2022 13:12:43 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Anup Patel <anup@brainfault.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Guo Ren <guoren@kernel.org>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Jessica Clarke <jrtc27@jrtc27.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 3/4] dt-bindings: riscv: add new riscv,isa strings for emulators
+Date:   Wed, 17 Aug 2022 21:12:12 +0100
+Message-Id: <20220817201212.990712-4-mail@conchuod.ie>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220817201212.990712-1-mail@conchuod.ie>
+References: <20220817201212.990712-1-mail@conchuod.ie>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220805154231.31257-17-ojeda@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 05:42:01PM +0200, Miguel Ojeda wrote:
-> Include Rust in the "source code files" category, so that
-> the language-independent tests are checked for Rust too,
-> and teach `checkpatch` about the comment style for Rust files.
-> 
-> This enables the malformed SPDX check, the misplaced SPDX license
-> tag check, the long line checks, the lines without a newline check
-> and the embedded filename check.
-> 
-> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+The QEMU virt and spike machines currently export a riscv,isa string of
+"rv64imafdcsuh",
 
+While the RISC-V foundation has been ratifying a bunch of extenstions
+etc, the kernel has remained relatively static with what hardware is
+supported - but the same is not true of QEMU. Using the virt machine
+and running dt-validate on the dumped dtb fails, partly due to the
+unexpected isa string.
+
+Rather than enumerate the many many possbilities, change the pattern
+to a regex, with the following assumptions:
+- the single letter order is fixed & we don't care about things that
+  can't even do "ima"
+- the standard multi letter extensions are all in a "_z<foo>" format
+  where the first letter of <foo> is a valid single letter extension
+- _s & _h are used for supervisor and hyper visor extensions.
+- after the first two chars, a standard multi letter extension name
+  could be an english   word (ifencei anyone?) so it's not worth
+  restricting the charset
+- vendor ISA extensions begind with _x and have no charset restrictions
+- we don't care about an e extension from an OS pov
+- that attempting to validate the contents of the multiletter extensions
+  with dt-validate beyond the formatting is a futile, massively verbose
+  or unwieldy exercise at best.
+- ima are required
+
+The following limitations also apply:
+- multi letter extension ordering is not enforced. dt-schema does not
+  appear to allow for named match groups, so the resulting regex would
+  be even more of a headache.
+- ditto for the numbered extensions.
+
+Finally, add me as a maintainer of the binding so that when it breaks
+in the future, I can be held responsible!
+
+Reported-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+Palmer, feel free to drop the maintainer addition. I just mostly want
+to clean up my own mess on this when they decide to ratify more
+extensions & this comes back up again.
+---
+ Documentation/devicetree/bindings/riscv/cpus.yaml | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+index 873dd12f6e89..c0e0bc5dce04 100644
+--- a/Documentation/devicetree/bindings/riscv/cpus.yaml
++++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+@@ -9,6 +9,7 @@ title: RISC-V bindings for 'cpus' DT nodes
+ maintainers:
+   - Paul Walmsley <paul.walmsley@sifive.com>
+   - Palmer Dabbelt <palmer@sifive.com>
++  - Conor Dooley <conor@kernel.org>
+ 
+ description: |
+   This document uses some terminology common to the RISC-V community
+@@ -79,9 +80,7 @@ properties:
+       insensitive, letters in the riscv,isa string must be all
+       lowercase to simplify parsing.
+     $ref: "/schemas/types.yaml#/definitions/string"
+-    enum:
+-      - rv64imac
+-      - rv64imafdc
++    pattern: ^rv(?:64|32)imaf?d?q?c?b?v?k?h?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])+)*$
+ 
+   # RISC-V requires 'timebase-frequency' in /cpus, so disallow it here
+   timebase-frequency: false
 -- 
-Kees Cook
+2.37.1
+
