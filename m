@@ -2,126 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3B1C25B0E
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E32C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243330AbiHREWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
+        id S243387AbiHREXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243292AbiHREWH (ORCPT
+        with ESMTP id S243290AbiHREW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:22:07 -0400
+        Thu, 18 Aug 2022 00:22:29 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4FB49B7C;
-        Wed, 17 Aug 2022 21:22:06 -0700 (PDT)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I36qpT028367;
-        Thu, 18 Aug 2022 04:22:03 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F8140BDD;
+        Wed, 17 Aug 2022 21:22:28 -0700 (PDT)
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I3QZ6p003021;
+        Thu, 18 Aug 2022 04:22:23 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=qqT+4JMORJiWnl+lSXm/RleQmX5A8hWU2TJwNATi3Ug=;
- b=QafOA9XyQ9PMuAcGtg95Qo8cUZYYpj61li2g1bz9NwX24OFRQS34u+pqrqqxc2C2RFRx
- UH/sAYtlKK9ejm5YqyJtwudGTb6eKsUuMRbA/dHxpjh+qsNX4tBJABLQxXZRuhR4oDHz
- 5O0hhyqNRLNOU4B4mLUuGZHAWBuPIedSVDxJAaYghxrxp9cCnrGS9wKSlNTgCFyWpb3O
- /wOYpf0QcVX8Wb+ibbsiyTGzxGqSlgJjKvdn0y8gkTTfm0HTzZgA4m+WG+/jEflQj8NK
- ZHMV2xo1gHf7JV/jlrNYNaHBb0prsOcZI5T5+Q7HgmBaerb8mTj7zxrP1BbBAqU/k/Z2 6A== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1d8009ub-1
+ bh=x5l1wkmdsRZBunkWcYFQkbtqD5PkHotLXuooX3FGyRs=;
+ b=NOisLO46QDmPhIQL/1OG+UDW+1gESKDhVdPO8ugLrKmV9RSM72PGdG5huThneO68Ob+X
+ dQT7dyrF5FU7f5+YpXEJt2sODgewHWz6Ov3+B3jGB5hjBx02SxuzltVL566SEXX/PiM0
+ f1urRDiC3l6ZZKIzkMk0mRJhOcvRy7n+p7AoLkfmeLSNApsuLSWmlPAkTaMBpBzexlHl
+ c+DRDkkiwbkyvyvQVRMu6IpbU3nQiGMiqSowDQrGk2LugYyTqMAnArFaV1DOzusewgmI
+ hp8xb2K6lrMdAY31GHoyRot55VI+IFUcDR6cnuy903WUwXU3xc1P0d8aNWfNy2aQ3jLr dg== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j0wynkvev-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 04:22:02 +0000
+        Thu, 18 Aug 2022 04:22:22 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4GwiO025629
+        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HL6j006616
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 04:17:01 GMT
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+        Thu, 18 Aug 2022 04:17:21 GMT
+Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 19:24:12 -0700
-Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 11:24:11 -0700
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
-        <Thinh.Nguyen@synopsys.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <quic_jackp@quicinc.com>, Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH v4 4/9] usb: dwc3: gadget: Continue handling EP0 xfercomplete events
-Date:   Wed, 17 Aug 2022 11:23:54 -0700
-Message-ID: <20220817182359.13550-5-quic_wcheng@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220817182359.13550-1-quic_wcheng@quicinc.com>
-References: <20220817182359.13550-1-quic_wcheng@quicinc.com>
+ 15.2.986.22; Wed, 17 Aug 2022 08:14:45 -0700
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+To:     freedreno <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
+CC:     Matthias Kaehlcke <mka@chromium.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Douglas Anderson <dianders@chromium.org>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "David Airlie" <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 3/7] drm/msm: Correct pm_runtime votes in recover worker
+Date:   Wed, 17 Aug 2022 20:44:16 +0530
+Message-ID: <20220817204224.v4.3.Ib07ecec3d5c17cb0e1efa6fcddaaa019ec2fb556@changeid>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
+References: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: hrHRpWHNm9klBWnCIpdpiTslE0E53ki1
-X-Proofpoint-ORIG-GUID: hrHRpWHNm9klBWnCIpdpiTslE0E53ki1
+X-Proofpoint-ORIG-GUID: n0j97RyrkP2uRAYM-3zclLemqE-wo0Z8
+X-Proofpoint-GUID: n0j97RyrkP2uRAYM-3zclLemqE-wo0Z8
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- malwarescore=0 bulkscore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=548 mlxscore=0 adultscore=0 lowpriorityscore=0 phishscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 adultscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ mlxlogscore=999 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208180014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During soft disconnect, EP0 events are expected to be handled in order to
-allow the controller to successfully move into the halted state.  Since
-__dwc3_gadget_stop() is executed before polling, EP0 has been disabled, and
-events are being blocked.  Allow xfercomplete events to be handled, so that
-cached SETUP packets can be read out from the internal controller memory.
+In the scenario where there is one a single submit which is hung, gpu is
+power collapsed when it is retired. Because of this, by the time we call
+reover(), gpu state would be already clear. Fix this by correctly
+managing the pm runtime votes.
 
-Without doing so, it will lead to endxfer timeouts, which results to
-controller halt failures.
-
-Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
- drivers/usb/dwc3/gadget.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 3b83e3c4b932..aff288b7baeb 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -2721,6 +2721,7 @@ static int __dwc3_gadget_start(struct dwc3 *dwc)
- 	dwc3_gadget_ep0_desc.wMaxPacketSize = cpu_to_le16(512);
+(no changes since v1)
+
+ drivers/gpu/drm/msm/msm_gpu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index e1dd3cc..1945efb 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -398,7 +398,6 @@ static void recover_worker(struct kthread_work *work)
+ 	/* Record the crash state */
+ 	pm_runtime_get_sync(&gpu->pdev->dev);
+ 	msm_gpu_crashstate_capture(gpu, submit, comm, cmd);
+-	pm_runtime_put_sync(&gpu->pdev->dev);
  
- 	dep = dwc->eps[0];
-+	dep->flags = 0;
- 	ret = __dwc3_gadget_ep_enable(dep, DWC3_DEPCFG_ACTION_INIT);
- 	if (ret) {
- 		dev_err(dwc->dev, "failed to enable %s\n", dep->name);
-@@ -2728,6 +2729,7 @@ static int __dwc3_gadget_start(struct dwc3 *dwc)
+ 	kfree(cmd);
+ 	kfree(comm);
+@@ -446,6 +445,8 @@ static void recover_worker(struct kthread_work *work)
+ 		}
  	}
  
- 	dep = dwc->eps[1];
-+	dep->flags = 0;
- 	ret = __dwc3_gadget_ep_enable(dep, DWC3_DEPCFG_ACTION_INIT);
- 	if (ret) {
- 		dev_err(dwc->dev, "failed to enable %s\n", dep->name);
-@@ -3599,11 +3601,12 @@ static void dwc3_endpoint_interrupt(struct dwc3 *dwc,
- 	dep = dwc->eps[epnum];
++	pm_runtime_put_sync(&gpu->pdev->dev);
++
+ 	mutex_unlock(&gpu->lock);
  
- 	if (!(dep->flags & DWC3_EP_ENABLED)) {
--		if (!(dep->flags & DWC3_EP_TRANSFER_STARTED))
-+		if ((epnum > 1) && !(dep->flags & DWC3_EP_TRANSFER_STARTED))
- 			return;
- 
- 		/* Handle only EPCMDCMPLT when EP disabled */
--		if (event->endpoint_event != DWC3_DEPEVT_EPCMDCMPLT)
-+		if ((event->endpoint_event != DWC3_DEPEVT_EPCMDCMPLT) &&
-+			!(epnum <= 1 && event->endpoint_event == DWC3_DEPEVT_XFERCOMPLETE))
- 			return;
- 	}
- 
+ 	msm_gpu_retire(gpu);
+-- 
+2.7.4
+
