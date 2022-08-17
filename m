@@ -2,94 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08427C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A73BCC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233332AbiHQIzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 04:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
+        id S233851AbiHQIzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiHQIzF (ORCPT
+        with ESMTP id S234827AbiHQIzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 04:55:05 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6314C78BCD;
-        Wed, 17 Aug 2022 01:55:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660726504; x=1692262504;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CTKtDOyB60/QGOd7TsvIyNY16TNwoiQhsBzxyF3hBas=;
-  b=OpLfnuGcvvDzpbmnETUMJ3+U2+hJCpZQSLy5taYbfZxBO/fGMrIl3iKR
-   fplH8F6evRqnnE2pL67jFLTC4oA6xEdqdKHvCu24Ib8E5qjbRtxmLkJkA
-   SvGYjT03AgSczj0fEX975zwDJ5XiZZKJvPewSzkGZguAMZOvC0/Jn2zgG
-   Dks3JgvEkmGFECr+/23+V7MApWGW3Me/x0x6/o+X2FY1m/aN5w4/eeg6T
-   XrxxqYWZJwvU0GSIlwNDqqlMM6aKCx3gNLOdC5oD5+RVhB9ERDCyNQ7py
-   5P7szJw0JzY4FavbFE/n2xZ6t2CKs4f3mlzg5ZOYYw9ToD2eaw6rzEuiN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="378734610"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="378734610"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:55:01 -0700
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="667519870"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.49.3])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:54:58 -0700
-Message-ID: <b42344bc-86f6-9047-b015-88ef3b58a619@intel.com>
-Date:   Tue, 16 Aug 2022 23:48:22 +0300
+        Wed, 17 Aug 2022 04:55:33 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB81078BCD;
+        Wed, 17 Aug 2022 01:55:32 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id 2so260988pll.0;
+        Wed, 17 Aug 2022 01:55:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=QMW64EnUhAM3fb/FOLJApJo2idS3sY65uejC0k2Z3qs=;
+        b=LQ2AFKVyFma74B+9htyjmznvbfRPRnZLlV/vJ/foDCuBbipC/NLRNHJ23ZQTSer6X4
+         o9M4ZYKS6kwdvQ86BhGBEWIluCEEK21Z4UPzw/qDfRApKMBKiZ8eSCrAKvrmfH8GSA9t
+         tOJDTIuXcFqUS9yFM57ySvdGjzCpIAXXFZJVj2yPeyLNDcEZiwFY8tvvflUnL1AzhvX6
+         TGd+BRvon3Dnn8Yawepllh+7mhuRvHlB1l+O3WC7H5gJsgSkpuSAfFa7jYVlx1iUDNsD
+         bjGOchBVY1pbO9+e+gmYhjPvCazqKIHx/ArtUwzge1aG3UnZ9+qPKv6+yLNeYvWbTg1m
+         xpZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=QMW64EnUhAM3fb/FOLJApJo2idS3sY65uejC0k2Z3qs=;
+        b=dMerLhKmNoy4+KvEFWq5Md9bdnGOy2u7OYpJWgg7UKAtES2gmHVVQnUBTgFOVP4LNc
+         Pkz686n9lCB4W6G4NJQ4HSeUvRjqFzbk1VCAraEs96JZgcyl+drl5mSZ6UmbFaiTjv5D
+         5cWaCO/1HZ8lPGk5b40Z23wdbI38cWW0TikK9h0L/RDhEGOF/d7Cw/rhlTgAALiipdhy
+         fXnsFmsKU386C0M3KSN19qvPF02+iN5KTmjP72zjOWc9/uk5+cdyiXLzkAppMtnmVX7X
+         VRDZuP+qb+JGdGNn2HhAuqj9IhcuaYlwMprK2HES33wWY5sX//QFGN1Bc+rwTlS82ynW
+         FX5Q==
+X-Gm-Message-State: ACgBeo2Tx8wV4kHHlz6HMU4FholC7CPnJTLudOiCYigtjdoU4kn0Pmwq
+        knwOx2NV23OAThUfBUMLz0U=
+X-Google-Smtp-Source: AA6agR4b2hPRJE7HpZslHS98/W1cBrlQnEt1QfHEHV9DuQXzbwcnHh7xLYHsYR5KfdYpnG1L5uY+hA==
+X-Received: by 2002:a17:902:7d86:b0:170:a752:cbd1 with SMTP id a6-20020a1709027d8600b00170a752cbd1mr25696348plm.17.1660726532284;
+        Wed, 17 Aug 2022 01:55:32 -0700 (PDT)
+Received: from localhost ([36.112.86.8])
+        by smtp.gmail.com with ESMTPSA id bj7-20020a17090b088700b001fabc3da687sm389347pjb.51.2022.08.17.01.55.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 01:55:31 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     syzbot+ffe24b1afbc4cb5ae8fb@syzkaller.appspotmail.com
+Cc:     linux-kernel@vger.kernel.org, reiserfs-devel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, yin31149@gmail.com,
+        18801353760@163.com, paskripkin@gmail.com,
+        skhan@linuxfoundation.org
+Subject: [PATCH] reiserfs: add check in search_by_entry_key()
+Date:   Wed, 17 Aug 2022 16:55:11 +0800
+Message-Id: <20220817085512.75936-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <000000000000bcbb0205e13dc53a@google.com>
+References: <000000000000bcbb0205e13dc53a@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: perf tools man pages on the web
-Content-Language: en-US
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>
-References: <cecae74c-6bb2-d7da-bce3-35772b6e3f8c@intel.com>
- <CAP-5=fXJtRVKuPA_xpa=jBzq66y5JMv+jmr1GFNzh-zQ-7j5QA@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <CAP-5=fXJtRVKuPA_xpa=jBzq66y5JMv+jmr1GFNzh-zQ-7j5QA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/08/22 17:56, Ian Rogers wrote:
-> On Mon, Aug 15, 2022 at 5:05 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->>
->> Hi
->>
->> I notice man pages on man7.org e.g.
->>
->>         https://www.man7.org/linux/man-pages/man1/perf.1.html
->>
->> do not get updated every release, and I wondered if the perf tools
->> man pages should also be under:
->>
->>         https://docs.kernel.org/tools/index.html
->>
->> Thoughts?
-> 
-> Sounds good to me. I'm assuming it would be some kind of build step
-> that would take the man pages and add them to what linux-doc needs?
-> 
-> Fwiw, there has been some effort to try to improve the wiki:
-> https://perf.wiki.kernel.org/index.php/Main_Page
-> For example, the useful links are now broken apart and have more
-> links, there is a work-in-progress glossary. Perhaps there can be some
-> guidance on what to capture and where.
+Syzkaller reports use-after-free Read as follows:
+------------[ cut here ]------------
+BUG: KASAN: use-after-free in bin_search_in_dir_item fs/reiserfs/namei.c:40 [inline]
+BUG: KASAN: use-after-free in search_by_entry_key+0x81f/0x960 fs/reiserfs/namei.c:165
+Read of size 4 at addr ffff8880715ee014 by task syz-executor352/3611
 
-Speaking of the wiki, anyone know how to change the
-"Set $wgLogo to the URL path to your own logo image." image?
+CPU: 0 PID: 3611 Comm: syz-executor352 Not tainted 5.19.0-rc1-syzkaller-00263-g1c27f1fc1549 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ bin_search_in_dir_item fs/reiserfs/namei.c:40 [inline]
+ search_by_entry_key+0x81f/0x960 fs/reiserfs/namei.c:165
+ reiserfs_find_entry.part.0+0x139/0xdf0 fs/reiserfs/namei.c:322
+ reiserfs_find_entry fs/reiserfs/namei.c:368 [inline]
+ reiserfs_lookup+0x24a/0x490 fs/reiserfs/namei.c:368
+ __lookup_slow+0x24c/0x480 fs/namei.c:1701
+ lookup_one_len+0x16a/0x1a0 fs/namei.c:2730
+ reiserfs_lookup_privroot+0x92/0x280 fs/reiserfs/xattr.c:980
+ reiserfs_fill_super+0x21bb/0x2fb0 fs/reiserfs/super.c:2176
+ mount_bdev+0x34d/0x410 fs/super.c:1367
+ legacy_get_tree+0x105/0x220 fs/fs_context.c:610
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1497
+ do_new_mount fs/namespace.c:3040 [inline]
+ path_mount+0x1320/0x1fa0 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+ </TASK>
+
+The buggy address belongs to the physical page:
+page:ffffea0001c57b80 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x715ee
+flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000000 ffffea0001c57bc8 ffff8880b9a403c0 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+
+Memory state around the buggy address:
+ ffff8880715edf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880715edf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8880715ee000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                         ^
+ ffff8880715ee080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8880715ee100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+The root cause is that the value of rbound in bin_search_in_dir_item()
+is out of bounds.
+
+To be more specific, struct buffer_head's b_data field
+contains the directory entry headers array, according to
+set_de_item_location(). So the array's length should be less
+than the size of b_data, or it may access the invalid memory.  
+This patch solves it by comparing the array's size with b_data's size.
+
+Reported-by: syzbot+ffe24b1afbc4cb5ae8fb@syzkaller.appspotmail.com
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+---
+ fs/reiserfs/namei.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/fs/reiserfs/namei.c b/fs/reiserfs/namei.c
+index 3d7a35d6a18b..c4c056ffafde 100644
+--- a/fs/reiserfs/namei.c
++++ b/fs/reiserfs/namei.c
+@@ -33,7 +33,11 @@ static int bin_search_in_dir_item(struct reiserfs_dir_entry *de, loff_t off)
+ 	int rbound, lbound, j;
+ 
+ 	lbound = 0;
+-	rbound = ih_entry_count(ih) - 1;
++	if (ih_location(ih) + ih_entry_count(ih) * IH_SIZE >=
++	    de->de_bh->b_size)
++		rbound = (de->de_bh->b_size - ih_location(ih)) / IH_SIZE - 1;
++	else
++		rbound = ih_entry_count(ih) - 1;
+ 
+ 	for (j = (rbound + lbound) / 2; lbound <= rbound;
+ 	     j = (rbound + lbound) / 2) {
+-- 
+2.25.1
+
