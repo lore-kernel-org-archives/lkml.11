@@ -2,214 +2,594 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88848C2BB41
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA78C32773
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241598AbiHQTwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
+        id S241605AbiHQTx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237162AbiHQTwl (ORCPT
+        with ESMTP id S241614AbiHQTxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:52:41 -0400
-Received: from sonic317-20.consmr.mail.gq1.yahoo.com (sonic317-20.consmr.mail.gq1.yahoo.com [98.137.66.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDF6A50D2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:52:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1660765959; bh=aNpaajDx4kX8zr86sAmhiT2IrTfZbWGWQAhfpprPp/I=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=AU6qFav/fhUhehef0h/O625y2c2NZ2TnjWjGHcH2MHH101w2B/0gYTr/umzxmtHfsVZEordOPSGtrT6NLQv47lvhouPxrU8H2NdvCZ6AYzOPvGMwKVYE8WrA4D3Pq5vpKX1CvsXV7tz20CVED8Bq+Ust7AErTJcu/5mtA5ESPePVq65AANnmR/kx4ubFwxzYxaJbSmQ3jlO3A6ZJPd4/l09uwSFhzrCAahYsw5OgfNDjDDYnMAWEEHYZGoiJq7eUiPpai95tpuKlrJrtLiN4hHbboEu/NGOG1pRy9sofhvYWR/DrXNIZii+MkObs8SYFaSsPOfTuMBpuOVNEqe6jfQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1660765959; bh=EslBBgODz1saw4EldiZPHBdTQwIiRE8K0jO6H1cCpKB=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=UvLMJu/3Iy9xiJFtWGBV0muyxNaK/7ShhGLzJU7KUZsndYh4qnh7vBzwgQpYYA8rxAgW+gb02mTGO0TDqA75db59EgKu1jXCKeMmc9s1a9oCQGt0rTbqB+45syKS/XPhYlJay9HGIoZJa4os5o3658StQ64Hxml/gpsLBkk1rBphLn13haGHv+9NpPdPplOUFaRzuwr3jgXrn6LrXGI+/TA8Na5GLI4FmvEUb6J3b3M31qDr0QMaJhjUgFZ374NWfsbeABigSMnHyzcrdwhMpd2KjYzz2m7X/F/oX6LdycoGuLNuQ3THDKBKA8g6SHx0p+bFd+E3qoEod/lzmS399A==
-X-YMail-OSG: i2Z3B8AVM1lxyJCebRbfGq97V1iWfSeZUIBqh2dmAQ9leFJizajjzzZtPElifBf
- bcGMmJzoCg22TNusU1jQPUkmKozTFIRwMI4Rh1pX1PgOZr81Vul3fohRVRG4aa._3XDhrTy.m5y.
- I9sPZ5Jpo0dkUyobd5LCpIm1vSCa0wzKNkkSP7KPf7no0SGolwtwI72wLitcFiSshy6ot9HtjYqc
- nHRt7XHYqhpJtfg29p._PYoEEz.MsKvx_y7g9OIvAE_N38p.EsYkNYifxmMedSesDbfR3niy8TgV
- _GA.IIWslnXihNgR11HX4_sKOieYbo64mAJbJLBty5.3C9OJ422HHVT0c8wFYak5xMtyOYx9M59k
- PSD89fJSzGmshL7eUvhTB7rfsIIAEncxBs5ZvokSnSKoKtwSmXlTr61ZLteJpK8FiWFYXeaxroE4
- tDu6xc_hvKWW4TIviCIimdxI8G86_RNOnfrHecA6ayyfH.AOTZ2HTbMMdnN2WGhf5F4o9eqTCQ86
- UbXVppEduiKR0Jrz5dqIzViNhYHa0OF4s_O1_3r2P7vrsrbvHRV_15y4tmxzmHPUESvzkGejJ_KT
- 140TBPKphlXPPOFzae1JSjdALHHCV44KzarFl7GSduvjwkjBWa__HsjZoCbdiYm5LGN21d.ASPLV
- uABSYrc_u.2HjsMg90b7Iam2ci5CicsWF6Ce5rdADEuXg_pKf1wBCORynHqqf.rHLxeb3NMJZ_u0
- 3xdqKN1R_ixlyujdskYLw6RH14DIbKLixcGyfenBgjRnawoI5NDeJXNNkARjlWkNYFtRrNg1duCV
- Q5UvxSZ7HOLv9r4zLBbRVYflnaUgPqul5zUq.LUpw3ZjbdvlxFYgFC0gdPKuH6XV0IhZveQ3J0uC
- epZFnfHq4Bo8hPrVMajLH94u0z4okaWaJni5mO6B52cCBOZqkz3faskK3OXVGlFa6MrfYYtXAU2x
- VEJvvn2sZQshV5Cr2nVhORgYg4ixTa8ys_1Rh5K11I4.C_trU49Zc.czbMSljwSZZxkfxDXA4CEY
- tgJnH4hXhA3Vqt8XU4RgI1OJxMDYb7mdT79A2CTurKpHz9Gt_qsJVTQ6uzcRvVIRixsVKE1lwDge
- 4jir8NxXFrrdsEemjYI8z0Mg1sELEKx1dYP1.AAiRJKJbnuENfwHadUt7dUZuWm_QUaEn15k668f
- 8V58mPytTkDMA9Jllo.Ntqja_nXT7fw4US9YhDT0emaMsLh9eS4tz9dSmotzqpPAOBOnAX_JNk2g
- xlyCtJc7bIKgHuPFJmV_2rkJPJSZqJujA_zlF8uTguOe5C052Lbzi0SzmfO0DbesFxN0O8FqMz4H
- Rb5iq0zSuIGus.4zSC6Npo.8.xl61.1jojg3AZTlYwLokkWarLpPXj.N0j21gqahV_a17cy4vDSP
- pS2ZCYcYAtIvfjm0n96WPIa3yRqhLAvjrnX7SQDU3qnfZOhIp2wXhZGzKsLs.K0pSzY9r8a3ZTFE
- EQisb7nWFGBsMYHTMRkW.Kqq7n_XDgdppqAvw_P5I12aND3l5QP8on61do1o2HuGjyqmJp3AFlQk
- _Nttfft11159AjXnNRVYSOHUALKrWdZ3aaORHDk3LWSobuc9mZZoOjWcmxpAejd3mynjX3NOJYWI
- jetuhVcCjl6mSgKDDJOC0aww20MWIeP_n_RKLsh9bXpCzhAX4jS0_eZjnwxmzg9tiO6EBVQDvHGu
- OSZJdujwJ48YA45za5tj1OY062UsqfONfLX5VeJLmHmYw9_uqHG6ZM.5xc5nrfoH3zXk0cE_P6T2
- wcv6yUwbIVWEKNnCJZ49RiZuTfXsEWb.7FbA7EWxMiaO3R5bmBgVo3S8C9HiCi4fUoBzi.WyD6sI
- cLB0IJVQF6yRvEZJC1covL_zcMo3GVEx3c4MdIqW3SLndpLGIq3PDgGjl2Q1NjSvcKFaIfrdXelS
- MhK5afUDdqLNFHr3iH4Ux5iQokPv4ugEkiAsW8xSu4HizZlCnVsha
-X-Sonic-MF: <brchuckz@aim.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.gq1.yahoo.com with HTTP; Wed, 17 Aug 2022 19:52:39 +0000
-Received: by hermes--production-bf1-7586675c46-4c6gr (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 660c0aeddb8529668be74dc9b984d7fa;
-          Wed, 17 Aug 2022 19:52:36 +0000 (UTC)
-Message-ID: <11781d7e-d9de-f889-ff57-9d26d92ada44@netscape.net>
-Date:   Wed, 17 Aug 2022 15:52:34 -0400
+        Wed, 17 Aug 2022 15:53:46 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1201C93B
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:53:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660766013; x=1692302013;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8orXyyxCBtLLgcnJj9tTm6hfXgvhuN9NRJc8uabrmEk=;
+  b=F94ysfiLVpcw+6ydNFt4ge78JitSAWUQNET9MWtkvTNCZDHO108tOAAC
+   ZJbdDm5zt1bOAGExKMZNWoudi0wH2HHMcCs/zFaT4nMPwDuQVYwvOhgtd
+   nE1Tn8bz7ApyWxzhPkkBnvqf5NJs/lj+b//TLY358Rbp0nG32bYiLJNvH
+   f5LoiPUc5QTitEVUG59zfJRSEPNRfz/HGk7jeksIBc5J3qPr/Uz6bujXJ
+   fBIL/+yQoJCLEqSldGLRxwb4RKpeSKvlErSfGuUKrgAttUXeMdfYYQBEo
+   Ym1v22N87HLS9WMAvtBfjeVDyowjBBkTogfSmFNEqDggLwzuONLqmE6O1
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="354331681"
+X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
+   d="scan'208";a="354331681"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 12:53:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
+   d="scan'208";a="935504196"
+Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 17 Aug 2022 12:53:31 -0700
+Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOP6Y-0001He-1h;
+        Wed, 17 Aug 2022 19:53:30 +0000
+Date:   Thu, 18 Aug 2022 03:53:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [broonie-regmap:for-next 4/4] include/asm-generic/io.h:187:18:
+ error: redefinition of 'readb'
+Message-ID: <202208180333.1pfLpmaj-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] perf scripts python: Let script to be python2 compliant
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Alan Bartlett <ajb@elrepo.org>, Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-perf-users@vger.kernel.org, ElRepo <contact@elrepo.org>,
-        Akemi Yagi <toracat@elrepo.org>, Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel@vger.kernel.org
-References: <20220725104220.1106663-1-leo.yan@linaro.org>
- <Yt68AZA2VV9d02xZ@kernel.org>
- <CA+_WhHyZZC=3gtzetEAQQrjtGujHmY5azwtQNZEc90gyOAwUDg@mail.gmail.com>
- <CAP-5=fWiNdnEawdj_3ExCrcwRSnRxeV8=8RhA6pwbw_bJdPJFg@mail.gmail.com>
- <YuBDw/+7McESS05X@kernel.org>
- <CAP-5=fV4+KeGcyyODTNjS01dw1iTXpFyaLXwZ8nBkek+NHL37w@mail.gmail.com>
-From:   Chuck Zmudzinski <brchuckz@netscape.net>
-In-Reply-To: <CAP-5=fV4+KeGcyyODTNjS01dw1iTXpFyaLXwZ8nBkek+NHL37w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.20560 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/26/22 4:43 PM, Ian Rogers wrote:
-> On Tue, Jul 26, 2022 at 12:43 PM Arnaldo Carvalho de Melo
-> <acme@kernel.org> wrote:
-> >
-> > Em Tue, Jul 26, 2022 at 10:52:31AM -0700, Ian Rogers escreveu:
-> > > On Tue, Jul 26, 2022 at 9:57 AM Alan Bartlett <ajb@elrepo.org> wrote:
-> > > >
-> > > > On Mon, 25 Jul 2022 at 16:51, Arnaldo Carvalho de Melo <acme@kernel.org> wrote:
-> > > > >
-> > > > > Em Mon, Jul 25, 2022 at 06:42:20PM +0800, Leo Yan escreveu:
-> > > > > > The mainline kernel can be used for relative old distros, e.g. RHEL 7.
-> > > > > > The distro doesn't upgrade from python2 to python3, this causes the
-> > > > > > building error that the python script is not python2 compliant.
-> > > > > >
-> > > > > > To fix the building failure, this patch changes from the python f-string
-> > > > > > format to traditional string format.
-> > > > >
-> > > > > Thanks, applied.
-> > > > >
-> > > > > - Arnaldo
-> > > >
-> > > > Leo / Arnaldo,
-> > > >
-> > > > Applying the patch on top of -5.19-rc8 fixes the problem that we (the
-> > > > ELRepo Project) experienced when attempting to build on RHEL7.
-> > > >
-> > > > So --
-> > > >
-> > > > Tested-by: Alan Bartlett <ajb@elrepo.org>
-> > > >
-> > > > Hopefully you will get it to Linus in time for -5.19 GA.
-> >
-> > > So I'm somewhat concerned about perf supporting unsupported
-> > > distributions and this holding the code base back. RHEL7 was launched
-> > > 8 years ago (June 10, 2014) and full support ended 3 years ago (August
-> > > 6, 2019) [1]. Currently RHEL7 is in "Maintenance Support or
-> > > Maintenance Support 2" phase which is defined to mean [2]:
-> > >
-> > > ```
-> > > During the Maintenance Support Phase for Red Hat Enterprise Linux
-> > > Version 8 & 9, and Maintenance Support 2 Phase for Red Hat Enterprise
-> > > Linux version 7, Red Hat defined Critical and Important impact
-> > > Security Advisories (RHSAs) and selected (at Red Hat discretion)
-> > > Urgent Priority Bug Fix Advisories (RHBAs) may be released as they
-> > > become available. Other errata advisories may be delivered as
-> > > appropriate.
-> > >
-> > > New functionality and new hardware enablement are not planned for
-> > > availability in the Maintenance Support (RHEL 8 & 9) Phase and
-> > > Maintenance Support 2 (RHEL 7) Phase.
-> > > ```
-> > >
-> > > >From this definition, why would RHEL7 pick up a new perf tool? I don't
-> > > think they would and as such we don't need to worry about supporting
-> > > it. RHEL8 defaults to python 3 and full support ends for it next year.
-> > > Let's set the bar at RHEL8 and not worry about RHEL7 breakages like
-> > > this in future. I think the bar for caring should be "will the distro
-> > > pick up our code", if we don't do this then we're signing up to not
-> > > allowing tools to update for 10 years! If someone is building a kernel
-> > > and perf tool on RHEL7 then they should be signing up to also deal
-> > > with tool chain issues, which in this case can mean installing
-> > > python3.
-> >
-> > In this specific supporting things that people report using, like was
-> > done in this case, isn't such a big problem.
->
-> So there are linters will fire for this code and say it is not
-> pythonic. It is only a linter warning vs asking to support an 8 year
-> old out of support distribution. There are other cases, such as
-> improving the C code structure, where we've failed to land changes
-> because of build errors on old distributions. This could indicate perf
-> code is wrong or the distribution is wrong. I'm saying that if we
-> believe in the perf code being correct and the distribution is out of
-> support, then we should keep the perf code as-is and the issue is one
-> for user of the out-of-support distribution.
->
-> > Someone reported a problem in a system they used, the author of the code
-> > in question posted a patch allowing perf to be used in such old systems,
-> > doesn't get in the way of newer systems, small patch, merged, life goes
-> > on.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
+head:   81c0386c1376da54f05d6916936db5220df9f97d
+commit: 81c0386c1376da54f05d6916936db5220df9f97d [4/4] regmap: mmio: Support accelerared noinc operations
+config: hexagon-randconfig-r035-20220815 (https://download.01.org/0day-ci/archive/20220818/202208180333.1pfLpmaj-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git/commit/?id=81c0386c1376da54f05d6916936db5220df9f97d
+        git remote add broonie-regmap https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git
+        git fetch --no-tags broonie-regmap for-next
+        git checkout 81c0386c1376da54f05d6916936db5220df9f97d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon prepare
 
-Considering the proposed patch, can you be sure that replacing the
-f-string format with the legacy format won't cause a regression for
-some python3 user somewhere when this hits the real world? Even
-if it does not cause a regression today, as new versions and features
-are added to python3, can you be sure none of those new features
-will depend on the upgrade from the legacy format to the f-string
-format here to work properly? So many regressions happen because
-the people who write patches cannot possibly foresee how their
-patch is going to affect the millions of Linux users out there, but still
-they are certain it will not cause a regression somewhere. So how
-can the chances that this patch will cause a regression be minimized?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-It seems to me for this to be suitable for the Linux kernel, the
-default should be to use the modern python3 format and only
-enable python2 compatibility via a sysctl setting and/or kernel boot
-option for those who are still using python2. There should be no
-change to the behavior of the kernel for users who have upgraded
-to python3. But I don't see any such consideration for python3
-users in this patch.
+All errors (new ones prefixed by >>):
 
->
-> Right, but we're setting a precedent for supporting out of support
-> distributions. If we can say "life goes on" can we land this *current*
-> Debian fix?
-> https://lore.kernel.org/lkml/20220629034007.332804-1-irogers@google.com/
->
-> > Sometimes some organizations are stuck with some distro till they can go
-> > thru re-certifications, bidding for new hardware, whatever, and then
-> > they want to continue using the latest perf on those systems because
-> > they want to benefit from new features we're working on that work on
-> > such systems. If the cost is small, like in this case, I see no problems
-> > to have perf working on such older systems.
->
-> So there's no problem with perf working on old systems. The issue is
-> supporting 10 year old unsupported build infrastructure. The fact that
-> the build infrastructure is unsupported means we need to carry all the
-> fixes in the tools tree and that can mean doing some questionably sane
-> things, like supporting python 2 (end of life for 2.5 years) on RHEL7
-> (end of full support 3 years ago). RHEL8 still has a year of support,
-> so great test that. RHEL7 then fix your tools and perf will work for
-> you - where fix means "rpm -i python3", hardly a huge chore.
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:187:18: error: redefinition of 'readb'
+   static inline u8 readb(const volatile void __iomem *addr)
+                    ^
+   include/asm-generic/io.h:186:15: note: expanded from macro 'readb'
+   #define readb readb
+                 ^
+   arch/hexagon/include/asm/io.h:83:18: note: previous definition is here
+   static inline u8 readb(const volatile void __iomem *addr)
+                    ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:202:19: error: redefinition of 'readw'
+   static inline u16 readw(const volatile void __iomem *addr)
+                     ^
+   include/asm-generic/io.h:201:15: note: expanded from macro 'readw'
+   #define readw readw
+                 ^
+   arch/hexagon/include/asm/io.h:94:19: note: previous definition is here
+   static inline u16 readw(const volatile void __iomem *addr)
+                     ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:217:19: error: redefinition of 'readl'
+   static inline u32 readl(const volatile void __iomem *addr)
+                     ^
+   include/asm-generic/io.h:216:15: note: expanded from macro 'readl'
+   #define readl readl
+                 ^
+   arch/hexagon/include/asm/io.h:105:19: note: previous definition is here
+   static inline u32 readl(const volatile void __iomem *addr)
+                     ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:249:20: error: redefinition of 'writeb'
+   static inline void writeb(u8 value, volatile void __iomem *addr)
+                      ^
+   include/asm-generic/io.h:248:16: note: expanded from macro 'writeb'
+   #define writeb writeb
+                  ^
+   arch/hexagon/include/asm/io.h:122:20: note: previous definition is here
+   static inline void writeb(u8 data, volatile void __iomem *addr)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:261:20: error: redefinition of 'writew'
+   static inline void writew(u16 value, volatile void __iomem *addr)
+                      ^
+   include/asm-generic/io.h:260:16: note: expanded from macro 'writew'
+   #define writew writew
+                  ^
+   arch/hexagon/include/asm/io.h:132:20: note: previous definition is here
+   static inline void writew(u16 data, volatile void __iomem *addr)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:273:20: error: redefinition of 'writel'
+   static inline void writel(u32 value, volatile void __iomem *addr)
+                      ^
+   include/asm-generic/io.h:272:16: note: expanded from macro 'writel'
+   #define writel writel
+                  ^
+   arch/hexagon/include/asm/io.h:143:20: note: previous definition is here
+   static inline void writel(u32 data, volatile void __iomem *addr)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+>> include/asm-generic/io.h:690:20: error: conflicting types for 'insb'
+   static inline void insb(unsigned long addr, void *buffer, unsigned int count)
+                      ^
+   include/asm-generic/io.h:689:14: note: expanded from macro 'insb'
+   #define insb insb
+                ^
+   arch/hexagon/include/asm/io.h:248:20: note: previous definition is here
+   static inline void insb(unsigned long port, void *buffer, int count)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+>> include/asm-generic/io.h:698:20: error: conflicting types for 'insw'
+   static inline void insw(unsigned long addr, void *buffer, unsigned int count)
+                      ^
+   include/asm-generic/io.h:697:14: note: expanded from macro 'insw'
+   #define insw insw
+                ^
+   arch/hexagon/include/asm/io.h:259:20: note: previous definition is here
+   static inline void insw(unsigned long port, void *buffer, int count)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   arch/hexagon/include/asm/io.h:39:38: note: expanded from macro 'readsw'
+   #define readsw(p, d, l) __raw_readsw(p, d, l)
+                                        ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:706:20: error: conflicting types for 'insl'
+   static inline void insl(unsigned long addr, void *buffer, unsigned int count)
+                      ^
+   include/asm-generic/io.h:705:14: note: expanded from macro 'insl'
+   #define insl insl
+                ^
+   arch/hexagon/include/asm/io.h:270:20: note: previous definition is here
+   static inline void insl(unsigned long port, void *buffer, int count)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   arch/hexagon/include/asm/io.h:42:40: note: expanded from macro 'readsl'
+   #define readsl(p, d, l)   __raw_readsl(p, d, l)
+                                          ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:714:20: error: conflicting types for 'outsb'
+   static inline void outsb(unsigned long addr, const void *buffer,
+                      ^
+   include/asm-generic/io.h:713:15: note: expanded from macro 'outsb'
+   #define outsb outsb
+                 ^
+   arch/hexagon/include/asm/io.h:281:20: note: previous definition is here
+   static inline void outsb(unsigned long port, const void *buffer, int count)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> include/asm-generic/io.h:723:20: error: conflicting types for 'outsw'
+   static inline void outsw(unsigned long addr, const void *buffer,
+                      ^
+   include/asm-generic/io.h:722:15: note: expanded from macro 'outsw'
+   #define outsw outsw
+                 ^
+   arch/hexagon/include/asm/io.h:291:20: note: previous definition is here
+   static inline void outsw(unsigned long port, const void *buffer, int count)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   arch/hexagon/include/asm/io.h:40:40: note: expanded from macro 'writesw'
+   #define writesw(p, d, l) __raw_writesw(p, d, l)
+                                          ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:732:20: error: conflicting types for 'outsl'
+   static inline void outsl(unsigned long addr, const void *buffer,
+                      ^
+   include/asm-generic/io.h:731:15: note: expanded from macro 'outsl'
+   #define outsl outsl
+                 ^
+   arch/hexagon/include/asm/io.h:301:20: note: previous definition is here
+   static inline void outsl(unsigned long port, const void *buffer, int count)
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   arch/hexagon/include/asm/io.h:43:41: note: expanded from macro 'writesl'
+   #define writesl(p, d, l)  __raw_writesl(p, d, l)
+                                           ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:1003:29: error: redefinition of 'virt_to_phys'
+   static inline unsigned long virt_to_phys(volatile void *address)
+                               ^
+   include/asm-generic/io.h:1002:22: note: expanded from macro 'virt_to_phys'
+   #define virt_to_phys virt_to_phys
+                        ^
+   arch/hexagon/include/asm/io.h:49:29: note: previous definition is here
+   static inline unsigned long virt_to_phys(volatile void *address)
+                               ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:1011:21: error: redefinition of 'phys_to_virt'
+   static inline void *phys_to_virt(unsigned long address)
+                       ^
+   include/asm-generic/io.h:1010:22: note: expanded from macro 'phys_to_virt'
+   #define phys_to_virt phys_to_virt
+                        ^
+   arch/hexagon/include/asm/io.h:58:21: note: previous definition is here
+   static inline void *phys_to_virt(unsigned long address)
+                       ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:1182:20: error: redefinition of 'memset_io'
+   static inline void memset_io(volatile void __iomem *addr, int value,
+                      ^
+   include/asm-generic/io.h:1173:19: note: expanded from macro 'memset_io'
+   #define memset_io memset_io
+                     ^
+   arch/hexagon/include/asm/io.h:191:20: note: previous definition is here
+   static inline void memset_io(volatile void __iomem *addr, int value,
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:1199:20: error: conflicting types for 'memcpy_fromio'
+   static inline void memcpy_fromio(void *buffer,
+                      ^
+   include/asm-generic/io.h:1190:23: note: expanded from macro 'memcpy_fromio'
+   #define memcpy_fromio memcpy_fromio
+                         ^
+   arch/hexagon/include/asm/io.h:179:20: note: previous definition is here
+   static inline void memcpy_fromio(void *dst, const volatile void __iomem *src,
+                      ^
+   In file included from arch/hexagon/kernel/asm-offsets.c:15:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:311:
+>> include/asm-generic/io.h:1217:20: error: conflicting types for 'memcpy_toio'
+   static inline void memcpy_toio(volatile void __iomem *addr, const void *buffer,
+                      ^
+   include/asm-generic/io.h:1208:21: note: expanded from macro 'memcpy_toio'
+   #define memcpy_toio memcpy_toio
+                       ^
+   arch/hexagon/include/asm/io.h:185:20: note: previous definition is here
+   static inline void memcpy_toio(volatile void __iomem *dst, const void *src,
+                      ^
+   12 warnings and 17 errors generated.
+   make[2]: *** [scripts/Makefile.build:117: arch/hexagon/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1207: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:222: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
-In large projects, going from python2 to 3 probably involves
-a bit more than doing just that and expecting everything to work.
-That said, large projects should have the resources to upgrade
-to python3 on "old" enterprise systems. So I more or less agree
-with Ian here.
 
-Regards,
+vim +/readb +187 include/asm-generic/io.h
 
-Chuck
+cd24834130ac65 Jan Glauber        2012-11-29  179  
+9216efafc52ff9 Thierry Reding     2014-10-01  180  /*
+9216efafc52ff9 Thierry Reding     2014-10-01  181   * {read,write}{b,w,l,q}() access little endian memory and return result in
+9216efafc52ff9 Thierry Reding     2014-10-01  182   * native endianness.
+9216efafc52ff9 Thierry Reding     2014-10-01  183   */
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  184  
+9216efafc52ff9 Thierry Reding     2014-10-01  185  #ifndef readb
+9216efafc52ff9 Thierry Reding     2014-10-01  186  #define readb readb
+9216efafc52ff9 Thierry Reding     2014-10-01 @187  static inline u8 readb(const volatile void __iomem *addr)
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  188  {
+032d59e1cde9dd Sinan Kaya         2018-04-05  189  	u8 val;
+032d59e1cde9dd Sinan Kaya         2018-04-05  190  
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  191  	log_read_mmio(8, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  192  	__io_br();
+032d59e1cde9dd Sinan Kaya         2018-04-05  193  	val = __raw_readb(addr);
+abbbbc83a210e9 Will Deacon        2019-02-22  194  	__io_ar(val);
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  195  	log_post_read_mmio(val, 8, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  196  	return val;
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  197  }
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  198  #endif
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  199  
+9216efafc52ff9 Thierry Reding     2014-10-01  200  #ifndef readw
+9216efafc52ff9 Thierry Reding     2014-10-01  201  #define readw readw
+9216efafc52ff9 Thierry Reding     2014-10-01 @202  static inline u16 readw(const volatile void __iomem *addr)
+9216efafc52ff9 Thierry Reding     2014-10-01  203  {
+032d59e1cde9dd Sinan Kaya         2018-04-05  204  	u16 val;
+032d59e1cde9dd Sinan Kaya         2018-04-05  205  
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  206  	log_read_mmio(16, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  207  	__io_br();
+c1d55d50139bea Stafford Horne     2020-07-29  208  	val = __le16_to_cpu((__le16 __force)__raw_readw(addr));
+abbbbc83a210e9 Will Deacon        2019-02-22  209  	__io_ar(val);
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  210  	log_post_read_mmio(val, 16, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  211  	return val;
+9216efafc52ff9 Thierry Reding     2014-10-01  212  }
+7dc59bdde70633 GuanXuetao         2011-02-22  213  #endif
+7dc59bdde70633 GuanXuetao         2011-02-22  214  
+9216efafc52ff9 Thierry Reding     2014-10-01  215  #ifndef readl
+9216efafc52ff9 Thierry Reding     2014-10-01  216  #define readl readl
+9216efafc52ff9 Thierry Reding     2014-10-01 @217  static inline u32 readl(const volatile void __iomem *addr)
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  218  {
+032d59e1cde9dd Sinan Kaya         2018-04-05  219  	u32 val;
+032d59e1cde9dd Sinan Kaya         2018-04-05  220  
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  221  	log_read_mmio(32, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  222  	__io_br();
+c1d55d50139bea Stafford Horne     2020-07-29  223  	val = __le32_to_cpu((__le32 __force)__raw_readl(addr));
+abbbbc83a210e9 Will Deacon        2019-02-22  224  	__io_ar(val);
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  225  	log_post_read_mmio(val, 32, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  226  	return val;
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  227  }
+9216efafc52ff9 Thierry Reding     2014-10-01  228  #endif
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  229  
+9216efafc52ff9 Thierry Reding     2014-10-01  230  #ifdef CONFIG_64BIT
+9216efafc52ff9 Thierry Reding     2014-10-01  231  #ifndef readq
+9216efafc52ff9 Thierry Reding     2014-10-01  232  #define readq readq
+9216efafc52ff9 Thierry Reding     2014-10-01  233  static inline u64 readq(const volatile void __iomem *addr)
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  234  {
+032d59e1cde9dd Sinan Kaya         2018-04-05  235  	u64 val;
+032d59e1cde9dd Sinan Kaya         2018-04-05  236  
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  237  	log_read_mmio(64, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  238  	__io_br();
+032d59e1cde9dd Sinan Kaya         2018-04-05  239  	val = __le64_to_cpu(__raw_readq(addr));
+abbbbc83a210e9 Will Deacon        2019-02-22  240  	__io_ar(val);
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  241  	log_post_read_mmio(val, 64, addr, _THIS_IP_);
+032d59e1cde9dd Sinan Kaya         2018-04-05  242  	return val;
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  243  }
+9216efafc52ff9 Thierry Reding     2014-10-01  244  #endif
+9216efafc52ff9 Thierry Reding     2014-10-01  245  #endif /* CONFIG_64BIT */
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  246  
+9216efafc52ff9 Thierry Reding     2014-10-01  247  #ifndef writeb
+9216efafc52ff9 Thierry Reding     2014-10-01  248  #define writeb writeb
+9216efafc52ff9 Thierry Reding     2014-10-01 @249  static inline void writeb(u8 value, volatile void __iomem *addr)
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  250  {
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  251  	log_write_mmio(value, 8, addr, _THIS_IP_);
+755bd04aaf4bf7 Sinan Kaya         2018-04-05  252  	__io_bw();
+9216efafc52ff9 Thierry Reding     2014-10-01  253  	__raw_writeb(value, addr);
+755bd04aaf4bf7 Sinan Kaya         2018-04-05  254  	__io_aw();
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  255  	log_post_write_mmio(value, 8, addr, _THIS_IP_);
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  256  }
+9216efafc52ff9 Thierry Reding     2014-10-01  257  #endif
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  258  
+9216efafc52ff9 Thierry Reding     2014-10-01  259  #ifndef writew
+9216efafc52ff9 Thierry Reding     2014-10-01  260  #define writew writew
+9216efafc52ff9 Thierry Reding     2014-10-01 @261  static inline void writew(u16 value, volatile void __iomem *addr)
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  262  {
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  263  	log_write_mmio(value, 16, addr, _THIS_IP_);
+755bd04aaf4bf7 Sinan Kaya         2018-04-05  264  	__io_bw();
+c1d55d50139bea Stafford Horne     2020-07-29  265  	__raw_writew((u16 __force)cpu_to_le16(value), addr);
+755bd04aaf4bf7 Sinan Kaya         2018-04-05  266  	__io_aw();
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  267  	log_post_write_mmio(value, 16, addr, _THIS_IP_);
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  268  }
+9216efafc52ff9 Thierry Reding     2014-10-01  269  #endif
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  270  
+9216efafc52ff9 Thierry Reding     2014-10-01  271  #ifndef writel
+9216efafc52ff9 Thierry Reding     2014-10-01  272  #define writel writel
+9216efafc52ff9 Thierry Reding     2014-10-01 @273  static inline void writel(u32 value, volatile void __iomem *addr)
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  274  {
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  275  	log_write_mmio(value, 32, addr, _THIS_IP_);
+755bd04aaf4bf7 Sinan Kaya         2018-04-05  276  	__io_bw();
+c1d55d50139bea Stafford Horne     2020-07-29  277  	__raw_writel((u32 __force)__cpu_to_le32(value), addr);
+755bd04aaf4bf7 Sinan Kaya         2018-04-05  278  	__io_aw();
+210031971cdd25 Sai Prakash Ranjan 2022-05-18  279  	log_post_write_mmio(value, 32, addr, _THIS_IP_);
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  280  }
+9216efafc52ff9 Thierry Reding     2014-10-01  281  #endif
+3f7e212df82ca0 Arnd Bergmann      2009-05-13  282  
+
+:::::: The code at line 187 was first introduced by commit
+:::::: 9216efafc52ff99e9351ef60de5fcafc2bc8adb6 asm-generic/io.h: Reconcile I/O accessor overrides
+
+:::::: TO: Thierry Reding <treding@nvidia.com>
+:::::: CC: Thierry Reding <treding@nvidia.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
