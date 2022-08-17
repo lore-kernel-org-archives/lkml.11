@@ -2,132 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95023C32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F3D3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238081AbiHQBI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 21:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
+        id S235882AbiHQBMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 21:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiHQBIy (ORCPT
+        with ESMTP id S236922AbiHQBMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 21:08:54 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF8088DE9;
-        Tue, 16 Aug 2022 18:08:52 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M6qf65dL5z4x1P;
-        Wed, 17 Aug 2022 11:08:46 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1660698528;
-        bh=LUg/enxzkpqUwdu5NRFRjdbpN+QIjNkxosjH6GUlvB0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=tC0D2NVixMDh1YGScBwc6a2ih9tplXBai56rzLH+RVkz0zt5ILrFyRwQ2jF2yjZ6b
-         a69lzDHtzjYnVIUpINVLh9WSYTS/wGx+T9xCOW76RaK6Q96b2Q4bKAWt+FyKcRkLLC
-         eC2KhGLq58DoGv41lkPrGbc3Cx+ICr38pEg1cje63UyVUF/TSA/foaOO9nbEVkKtMO
-         sFZXy57uLff7SJg74bACWA6ty/jU2a15t/j5CD1w1k0kdh9Mrj0dWn5h39TDNR+xgY
-         dixoWqJygVIr1vnpo9/cXr/MBd6YhbpZd/+QSFbYv+WOc0qr/fgiYSJz8H9ObT9B3r
-         Q7CinQEWNsiVg==
-Date:   Wed, 17 Aug 2022 11:08:45 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Lee Jones <lee@kernel.org>, Wolfram Sang <wsa@the-dreams.de>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: linux-next: manual merge of the mfd tree with the i2c tree
-Message-ID: <20220817110845.768796fa@canb.auug.org.au>
+        Tue, 16 Aug 2022 21:12:38 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F5E90810
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:12:37 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id d71so10726715pgc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:12:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=IQqOeOHFCBfDNqFiPFtHTz2iG/+I6d7AdQ+Jlb2zqWc=;
+        b=eRLga/ew2mwW/xZzX/BChS+LiLoI5DOBLdj+vF/UBkyaxgfq75XnYSRio4eiI6iCzL
+         w/jgqFQ1wsj7Nxp4zkMUCZSpuzn2MvKRlFN+SK2MZ3RI7oENrIaNba8cAYnNWHtSeyH4
+         iV/qpBmzUzuswAd88P2sY4vob45SviTYAQV+LfPxmcf15yiCJzgXbEEoIECMe40/twa8
+         Gq95wv7raIT7cgQYeSRr0/k4TJur+qc37dDktEYxKQZqn2sxID6kyc3PDIfrIoYQomr5
+         1k1R1Fl0xSl8HSwPbPQYXqHHvma4PpJqeKRgnV8Qq6rK1bA1WQsu13Ors2flpnHeRzwE
+         k5tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=IQqOeOHFCBfDNqFiPFtHTz2iG/+I6d7AdQ+Jlb2zqWc=;
+        b=TDD690upcGRRhLXeL9MwdRB/YbGOfocAK+Kdv+AP3/shucj+75NIfPQvCWk/Mj0w8m
+         BtR19/aG4QQuJyAujmK46/QHhB+cpT47ILCKNYntRDyRjmSzZhmL4mjmoqcpTvRDTrzM
+         Adqsw7zlaXXMddZf5sjpogi3yDXoN+pobi3U9GovuEicC9FrESWjYGOy70zeyM5sqF4o
+         QlY9jh73Txvvvxooz5a3lY9cKjLNwHk6KFoQ+WwXhxrXbJJ1g9flLWhB/aP6yDiLgXCu
+         OEFP0ehX0+RN/JOI5XMZQdvVLI7ecFSVrW82nKGHH2ffVeKPEE8eDIrlOwZ637s4yWej
+         cALA==
+X-Gm-Message-State: ACgBeo18sN8h1OLP0D165lXGOUuEhObVHJh5/kXRXIEfjNoX/2CK+7BF
+        yQ8oH9v+wKDGWAmWaTaSATpsBA==
+X-Google-Smtp-Source: AA6agR5kDiAkPbnRjr+14CDqrypjIhm5qym7KSIqHqudrFG886p9g3GBKwUogbIFus+aEKXvwAxqzA==
+X-Received: by 2002:a05:6a00:a82:b0:530:2f3c:ec99 with SMTP id b2-20020a056a000a8200b005302f3cec99mr23481411pfl.53.1660698756595;
+        Tue, 16 Aug 2022 18:12:36 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:df29:644b:8119:e30a])
+        by smtp.gmail.com with ESMTPSA id je22-20020a170903265600b0016cd74e5f87sm6296plb.240.2022.08.16.18.12.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 18:12:36 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 18:12:30 -0700
+From:   Isaac Manjarres <isaacmanjarres@google.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
+Message-ID: <YvxAfiSOrzy7/c1J@google.com>
+References: <20220815211919.2028890-1-isaacmanjarres@google.com>
+ <20220816042507.GB1108868@roeck-us.net>
+ <YvsoYzIhOtX9DOi2@google.com>
+ <20220816111311.GC1108868@roeck-us.net>
+ <YvvQOBk9T3J1uX8k@google.com>
+ <20220817010559.GA1880847@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/DRPU39zWXUo8_apUTt2Sg2m";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817010559.GA1880847@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/DRPU39zWXUo8_apUTt2Sg2m
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Aug 16, 2022 at 06:05:59PM -0700, Guenter Roeck wrote:
+> On Tue, Aug 16, 2022 at 10:13:28AM -0700, Isaac Manjarres wrote:
+> > On Tue, Aug 16, 2022 at 04:13:11AM -0700, Guenter Roeck wrote:
+> > > On Mon, Aug 15, 2022 at 10:17:23PM -0700, Isaac Manjarres wrote:
+> > > > On Mon, Aug 15, 2022 at 09:25:07PM -0700, Guenter Roeck wrote:
+> > > > > > v1 -> v2:
+> > > > > > - Fixed the logic in __driver_attach() to allow a driver to continue
+> > > > > >   attempting to match and bind with devices in case of any error, not
+> > > > > >   just probe deferral.
+> > > > > > 
+> > > > > > Guenter,
+> > > > > > 
+> > > > > > Can you please give test this patch to make sure it still works for you?
+> > > > > > 
+> > > > > 
+> > > > > Not as well as v1. I still see the clk crash with versatileab, and imx25-pdk
+> > > > > emulations now stall during boot when trying to boot from usb.
+> > > > > 
+> > > > > Guenter
+> > > > Thanks for trying the patch out. This patch isn't meant to fix the clk
+> > > > crash that you mentioned on another thread. I had made the following patch for
+> > > > that: https://lore.kernel.org/lkml/YvqTvuqSll30Rv2k@google.com/. Have
+> > > > you been able to give that a shot yet? If not can you please test with the
+> > > > patch in this e-mail and that patch?
+> > > > 
+> > > 
+> > > No, sorry, I missed that one. It does not apply, though - it is whitespace
+> > > corrupted. I tried to fix it up, but that failed.
+> > 
+> > When applying the patch, can you please try with
+> > git apply --ignore-whitespace ? That worked for me.
+> 
+> Ok, that worked. With the above patch, the problems with sx1 and versatileab
+> are gone.
 
-Hi all,
+Good to hear! Thanks for testing that patch out.
+> However, imx25-pdk fails to shut down when booting from usb
+> drive. I cross checked that this does not happen without the above patch.
+> 
+> Guenter
 
-Today's linux-next merge of the mfd tree got a conflict in:
+Can you please share the following for your imx25-pdk environment?
+qemu commandline, defconfig, dtb, and baseline kernel commit you're
+using for testing.
 
-  drivers/mfd/intel_soc_pmic_core.c
-
-between commit:
-
-  ed5c2f5fd10d ("i2c: Make remove callback return void")
-
-from the i2c tree and commit:
-
-  8a8cf3dc6419 ("mfd: intel_soc_pmic_crc: Merge Intel PMIC core to crc")
-
-from the mfd tree.
-
-I fixed it up (I removed the file and added the following merge fix patch)
-and can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
-=46rom 9c5f9919c71c84b77d607e6a27b65c1c37462a3f Mon Sep 17 00:00:00 2001
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 17 Aug 2022 10:12:19 +1000
-Subject: [PATCH] mfd: fix up for "i2c: Make remove callback return void"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/mfd/intel_soc_pmic_crc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_=
-crc.c
-index 40f14a0c0790..b1548a933dc3 100644
---- a/drivers/mfd/intel_soc_pmic_crc.c
-+++ b/drivers/mfd/intel_soc_pmic_crc.c
-@@ -214,14 +214,12 @@ static int crystal_cove_i2c_probe(struct i2c_client *=
-i2c)
- 	return ret;
- }
-=20
--static int crystal_cove_i2c_remove(struct i2c_client *i2c)
-+static void crystal_cove_i2c_remove(struct i2c_client *i2c)
- {
- 	/* remove crc-pwm lookup table */
- 	pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
-=20
- 	mfd_remove_devices(&i2c->dev);
--
--	return 0;
- }
-=20
- static void crystal_cove_shutdown(struct i2c_client *i2c)
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/DRPU39zWXUo8_apUTt2Sg2m
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL8P50ACgkQAVBC80lX
-0Gzq4wf/QztN08zVCiShRljmxwW4rRNRYJqSHa6Txnc+3cePSDD8K4tDgZwFpsiC
-aBKyw3EZoesuzHMab8b22Jg5qYGbBnRheGon+yp/URDsedVNgIS5e3Yh4CfGRG+N
-rEYlf4B/B2MWSBGqrurU9rKsrKgQPLFur9Pog8X+ujnR7jybkkSr3V8IxXofg9AZ
-Un3Lz4+wV2P5TYkiXDI4F/Hzq0xvYR5DxlThnkIms488z15+AnWRKmyY1oxl1cw7
-bNtk6jgfcaeZzzPD88hMNRM4zm8fl/Wt+XEzDqK0ReRjDuWXP5EcT3kO9Y2+RgmU
-QWEm8sHKX1BM7p73CmO2GX78CQQfgw==
-=DZAc
------END PGP SIGNATURE-----
-
---Sig_/DRPU39zWXUo8_apUTt2Sg2m--
+Thanks,
+Isaac
