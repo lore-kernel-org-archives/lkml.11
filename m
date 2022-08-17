@@ -2,104 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCBBC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B626C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240145AbiHQPY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        id S240209AbiHQP0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237833AbiHQPYx (ORCPT
+        with ESMTP id S235568AbiHQP0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 11:24:53 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04ADB5B7A8;
-        Wed, 17 Aug 2022 08:24:51 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id r14-20020a17090a4dce00b001faa76931beso2132720pjl.1;
-        Wed, 17 Aug 2022 08:24:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=cNb+wPFqXTTnrEsiIhlvkm/VTYFYCj1lwrBVxwMNlw4=;
-        b=g7JiuZ0QYzHlhR63PM427qbq83vL3iY1FyydWZTdX7t2rTDrisImuHcjYkAlFFyOi6
-         SGdJxZgsWGwEhrp4ov+egzakW1EigtK/EvafkvLPpMgoGnaxUx6QmX71qMKDGcQU1AKI
-         bGB9w7JGQur33yZjYUaVo2m6R/Ow9KjNFny5kLH3ntn9CC39OeqB9hb6GsmKF5TFzw2B
-         MAcn+oNcqypAzShKdeFXwc8RtaOR/nHNrv2djVN/o49MiyUPf6yn1rJ4rKFHOqvjI4IK
-         DQ2TsKlcFNtyjr0QonuMxFZm1sO2oxb7ceFolzuAnVZzfhPV9FGizh4+DVE8BK98BsuH
-         T+qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=cNb+wPFqXTTnrEsiIhlvkm/VTYFYCj1lwrBVxwMNlw4=;
-        b=a44p15AJLpTrnJmJ/fu5MpOLVmQ0vGqLYbuUAQ+YZVdxiA/ArE0XLHtL+I1tWfkWaa
-         /ibyQZ+HmQjOoAlOMzkuKZJPYHPR0ypXryikSkIKEKZ8qcnnuH35n1x+DCm8wH9iE9eT
-         BwUCU0Y1GZmXsd644tMtroRFG9NjemrXi/V6gm08v8+w71252p9TYnu76l8mGmQrgSTi
-         yBCveqr8UHguj+L35sG6/nx0nSFn+kt5houvWNsNiXbuAIDI/33mC9TbQPy/Z8cc+hjz
-         cgkPTfDVyt1S4adY4EsLJxfeC6dHJ6yy/zKOgwP1JIr/g7qzFoPtMONB/h4lMq6assPn
-         ZEeA==
-X-Gm-Message-State: ACgBeo3AXWVD1e5lvc1eQY3GUZFXgUhN1wTj/5SdVGfYriN3D5W0qJUQ
-        Uswv32SppFpjrndJmdEfMIM=
-X-Google-Smtp-Source: AA6agR6VSz5H7jgK9fm8v7D0017rD9IG0++yPEfFL63RpX/MelmrPDQlCF6+5CwHOs7r17eAOr89dA==
-X-Received: by 2002:a17:90b:17c5:b0:1f4:f55d:24f3 with SMTP id me5-20020a17090b17c500b001f4f55d24f3mr4284181pjb.109.1660749890494;
-        Wed, 17 Aug 2022 08:24:50 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id o14-20020a62f90e000000b005353a676757sm3551135pfh.120.2022.08.17.08.24.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 08:24:48 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 17 Aug 2022 08:24:46 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 0000/1094] 5.18.18-rc2 review
-Message-ID: <20220817152446.GA1205420@roeck-us.net>
-References: <20220816124604.978842485@linuxfoundation.org>
- <20220817042445.GC1880847@roeck-us.net>
- <YvzuUdrBqGlW880H@kroah.com>
+        Wed, 17 Aug 2022 11:26:32 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA315EDC2;
+        Wed, 17 Aug 2022 08:26:30 -0700 (PDT)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M7BZ61jJJz67Hfl;
+        Wed, 17 Aug 2022 23:21:34 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 17:26:28 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 16:26:26 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <damien.lemoal@opensource.wdc.com>, <oliver.sang@intel.com>
+CC:     <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <martin.petersen@oracle.com>,
+        <hch@lst.de>, John Garry <john.garry@huawei.com>
+Subject: [RFT PATCH] ata: libata: Set __ATA_BASE_SHT max_sectors
+Date:   Wed, 17 Aug 2022 23:20:08 +0800
+Message-ID: <1660749608-62897-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvzuUdrBqGlW880H@kroah.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 03:34:09PM +0200, Greg Kroah-Hartman wrote:
-> On Tue, Aug 16, 2022 at 09:24:45PM -0700, Guenter Roeck wrote:
-> > On Tue, Aug 16, 2022 at 02:59:27PM +0200, Greg Kroah-Hartman wrote:
-> > > This is the start of the stable review cycle for the 5.18.18 release.
-> > > There are 1094 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > > 
-> > > Responses should be made by Thu, 18 Aug 2022 12:43:14 +0000.
-> > > Anything received after that time might be too late.
-> > > 
-> > Build results:
-> > 	total: 154 pass: 154 fail: 0
-> > Qemu test results:
-> > 	total: 481 pass: 480 fail: 1
-> > Failed tests:
-> > 	arm:bletchley-bmc:aspeed_g5_defconfig:notests:usb0:net,nic:aspeed-bmc-facebook-bletchley:rootfs
-> > 
-> > The failing boot test is new and not a concern. I'll see if I can figure
-> > out why it fails. If it is too difficult to fix (for example because 5.18
-> > simply doesn't support usb on bletchley-bmc), I'll just skip it next time.
-> > 
-> > Tested-by: Guenter Roeck <linux@roeck-us.net>
-> 
-> 5.18 is only going to be alive for one more week at most, so I wouldn't
-> worry too much about this.
-> 
+Commit 0568e6122574 ("ata: libata-scsi: cap ata_device->max_sectors
+according to shost->max_sectors") inadvertently capped the max_sectors
+value for some SATA disks to a value which is lower than we would want.
 
-Ok, I'll just leave it alone.
+For a device which supports LBA48, we would previously have request queue
+max_sectors_kb and max_hw_sectors_kb values of 1280 and 32767 respectively.
 
-Thanks,
-Guenter
+For AHCI controllers, the value chosen for shost max sectors comes from
+the minimum of the SCSI host default max sectors in
+SCSI_DEFAULT_MAX_SECTORS (1024) and the shost DMA device mapping limit.
+
+This means that we would now set the max_sectors_kb and max_hw_sectors_kb
+values for a disk which supports LBA48 at 512, ignoring DMA mapping limit.
+
+As report by Oliver at [0], this caused a performance regression.
+
+Fix by picking a large enough max sectors value for ATA host controllers
+such that we don't needlessly reduce max_sectors_kb for LBA48 disks.
+
+[0] https://lore.kernel.org/linux-ide/YvsGbidf3na5FpGb@xsang-OptiPlex-9020/T/#m22d9fc5ad15af66066dd9fecf3d50f1b1ef11da3
+
+Fixes: 0568e6122574 ("ata: libata-scsi: cap ata_device->max_sectors according to shost->max_sectors")
+Reported-by: Oliver Sang <oliver.sang@intel.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+
+diff --git a/include/linux/libata.h b/include/linux/libata.h
+index 0269ff114f5a..698032e5ef2d 100644
+--- a/include/linux/libata.h
++++ b/include/linux/libata.h
+@@ -1382,7 +1382,8 @@ extern const struct attribute_group *ata_common_sdev_groups[];
+ 	.proc_name		= drv_name,			\
+ 	.slave_destroy		= ata_scsi_slave_destroy,	\
+ 	.bios_param		= ata_std_bios_param,		\
+-	.unlock_native_capacity	= ata_scsi_unlock_native_capacity
++	.unlock_native_capacity	= ata_scsi_unlock_native_capacity,\
++	.max_sectors		= ATA_MAX_SECTORS_LBA48
+ 
+ #define ATA_SUBBASE_SHT(drv_name)				\
+ 	__ATA_BASE_SHT(drv_name),				\
+-- 
+2.35.3
+
