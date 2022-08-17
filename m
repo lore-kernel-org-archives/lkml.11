@@ -2,148 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F7DEC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA72C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239275AbiHQXCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 19:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
+        id S242083AbiHQXDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 19:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231939AbiHQXC2 (ORCPT
+        with ESMTP id S229572AbiHQXDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 19:02:28 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9603AB431
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:02:27 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id d4-20020a056e02214400b002df95f624a4so69159ilv.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:02:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=c/rQLSmXLwRKxJTLqW1KzsFCcUKlOv5n8qILVlbyfVg=;
-        b=NTsdPxqiIXX+4PGLj2zdzFB0x4QrjTv68MpdClgNPKuTeOJzzbVStJrKxVAANnbH2Z
-         RkKEVdnbmJs9bf8cq7GOHTXkCi7paT1n/Tgdb++aW7aLg8QhS2zkX5EJS0Pc4GUKeO+g
-         elFPtRxjzCndnyuqvz0cIKg81ZnApEt8o9rdWfT1zmmIFWkVrBf+DrpemHCxh6zhRQ9e
-         NJk/D+iFb0cqUKxPb/7l2oLs1WFu8Swn/hRlRv4lnB4+IfLyo+Yj4xowZKK4wmwGhxN2
-         erO81qV/c8VU5c0nRXRCJZ0Ert5l2I8vOfXebVefnQIDcZ5TeiFOtRuPRc3WCBaOoea3
-         clJA==
-X-Gm-Message-State: ACgBeo3UbKRBvdtDzhbgbRKpo8Uh9W5zlTBeTMUviCYhSR5xXzcVcSHp
-        XMbFr1BrfKif0h0lBIP5gZT3hWmkbqFm3AD3gdnNbEO3UDIj
-X-Google-Smtp-Source: AA6agR5iI2f9Ufx/WobvSwWnDRuUxAfNpxSjHbC2yunNdq7MP8Dy2WrZ+eDs3x31Qas+d6XryP9vkzYcVbvR8CifII9S78th+LZx
+        Wed, 17 Aug 2022 19:03:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E48A50F6;
+        Wed, 17 Aug 2022 16:03:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93C10B81FBD;
+        Wed, 17 Aug 2022 23:03:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F84CC433D6;
+        Wed, 17 Aug 2022 23:03:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660777414;
+        bh=1MR315QnADwsilPIFFMT06JsmqGYa2wV+d693CoceVc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=S5V4hGf981y0IeA4JPZAHR2kr6hDH38wWliHwNqfI2dfWphyATDz5Qk/MZFirD7BX
+         nSItPRpmr/FpVPFdAwaIi17YuCagg7a6tuqcuS4Zn1brmsBRUzw4LeiaoFw8n8yVRu
+         iwF3PW7JvO+bXDpmburJ981bqJQ0U/RirF28o6jM7QvF0xIBEY3LmgLCmbOjIR0nBp
+         xsHlU3UvOd7QTvazuqhCxvqDlJBoKUw8nKoiJE253QeHrpu+omMAXbvLbXrmziqvXx
+         6jT0p3R0QQDJomvO0jCcrvdWiKk4KEUbEzziplFe03WpX/mwQVawpYj3qHuuIboPXy
+         Pd4ZOodfM1LJw==
+Received: by pali.im (Postfix)
+        id 58E9277A; Thu, 18 Aug 2022 01:03:31 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 0/4] PCI: mvebu: Add support for error interrupt
+Date:   Thu, 18 Aug 2022 01:00:32 +0200
+Message-Id: <20220817230036.817-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1522:b0:2e5:9e3c:a7c8 with SMTP id
- i2-20020a056e02152200b002e59e3ca7c8mr177092ilu.237.1660777347272; Wed, 17 Aug
- 2022 16:02:27 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 16:02:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d5d86405e677dbd2@google.com>
-Subject: [syzbot] KASAN: vmalloc-out-of-bounds Write in find_lock_entries
-From:   syzbot <syzbot+e498ebacfd2fd78cf7b2@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, hverkuil-cisco@xs4all.nl,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, mchehab@kernel.org, ming.qian@nxp.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        willy@infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+PCI mvebu error interrupt source is triggered for non-INTx event.
+So e.g. when AER or PME event occurs.
 
-syzbot found the following issue on:
+This patch series adds support for reporting AER and PME interrupts on
+Marvell PCIe Root Ports which allows use to kernel AER and PME drivers.
 
-HEAD commit:    6c8f479764eb Add linux-next specific files for 20220809
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11b5b2f3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a5ae8cfa8d7075d1
-dashboard link: https://syzkaller.appspot.com/bug?extid=e498ebacfd2fd78cf7b2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=127f650d080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1290f485080000
+Without this change kernel AER and PME drivers do not work at all.
 
-The issue was bisected to:
+DT bindings for this support is currently provided only for Kirkwood and
+Dove platforms as other new mvebu SoCs requires extension to armada IRQ
+driver, which is currently disallowed.
 
-commit 39ad84e911c5c0e1593f3652325d279692817188
-Author: Ming Qian <ming.qian@nxp.com>
-Date:   Wed Apr 27 09:25:58 2022 +0000
+Without new DTS files, pci-mvebu.c driver acts as before this change,
+there is no AER and PME kernel support.
 
-    media: imx-jpeg: Don't fill the description field in struct v4l2_fmtdesc
+I have tested this change on Armada 385 board (with additional changes
+to A385 DTS files and IRQ driver, not included there) and AER interrupt
+is delivered to kernel AER driver correctly.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14e8bd97080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16e8bd97080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12e8bd97080000
+Pali Rohár (4):
+  dt-bindings: PCI: mvebu: Update information about error interrupt
+  PCI: mvebu: Implement support for interrupts on emulated bridge
+  ARM: dts: kirkwood: Add definitions for PCIe error interrupts
+  ARM: dts: dove: Add definitions for PCIe error interrupts
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e498ebacfd2fd78cf7b2@syzkaller.appspotmail.com
-Fixes: 39ad84e911c5 ("media: imx-jpeg: Don't fill the description field in struct v4l2_fmtdesc")
+ .../devicetree/bindings/pci/mvebu-pci.txt     |   1 +
+ arch/arm/boot/dts/dove.dtsi                   |   8 +-
+ arch/arm/boot/dts/kirkwood-6192.dtsi          |   4 +-
+ arch/arm/boot/dts/kirkwood-6281.dtsi          |   4 +-
+ arch/arm/boot/dts/kirkwood-6282.dtsi          |   8 +-
+ arch/arm/boot/dts/kirkwood-98dx4122.dtsi      |   4 +-
+ drivers/pci/controller/pci-mvebu.c            | 256 ++++++++++++++++--
+ 7 files changed, 252 insertions(+), 33 deletions(-)
 
-ntfs3: loop0: RAW NTFS volume: Filesystem size 0.00 Gb > volume size 0.00 Gb. Mount in read-only
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in find_lock_entries+0xb75/0xc50 mm/filemap.c:2114
-Write of size 8 at addr ffffc9000acd0160 by task syz-executor364/6015
+-- 
+2.20.1
 
-CPU: 0 PID: 6015 Comm: syz-executor364 Not tainted 5.19.0-next-20220809-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x59/0x719 mm/kasan/report.c:433
- kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
- find_lock_entries+0xb75/0xc50 mm/filemap.c:2114
- truncate_inode_pages_range+0x185/0x1510 mm/truncate.c:364
- ntfs_evict_inode+0x16/0xa0 fs/ntfs3/inode.c:1741
- evict+0x2ed/0x6b0 fs/inode.c:665
- iput_final fs/inode.c:1748 [inline]
- iput.part.0+0x55d/0x810 fs/inode.c:1774
- iput+0x58/0x70 fs/inode.c:1764
- ntfs_fill_super+0x2309/0x37f0 fs/ntfs3/super.c:1278
- get_tree_bdev+0x440/0x760 fs/super.c:1323
- vfs_get_tree+0x89/0x2f0 fs/super.c:1530
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1326/0x1e20 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fa8608bbffa
-Code: 48 c7 c2 c0 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff eb d2 e8 a8 00 00 00 0f 1f 84 00 00 00 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc2b8551a8 EFLAGS: 00000286 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007ffc2b855200 RCX: 00007fa8608bbffa
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc2b8551c0
-RBP: 00007ffc2b8551c0 R08: 00007ffc2b855200 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000286 R12: 0000000020000e78
-R13: 0000000000000003 R14: 0000000000000004 R15: 0000000000000085
- </TASK>
-
-The buggy address belongs to the virtual mapping at
- [ffffc9000acc8000, ffffc9000acd1000) created by:
- kernel_clone+0xe7/0xab0 kernel/fork.c:2675
-
-Memory state around the buggy address:
- ffffc9000acd0000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc9000acd0080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->ffffc9000acd0100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                                                       ^
- ffffc9000acd0180: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc9000acd0200: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
