@@ -2,198 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2402AC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 287ABC32773
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:16:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231374AbiHQHLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
+        id S231480AbiHQHQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238210AbiHQHK6 (ORCPT
+        with ESMTP id S229644AbiHQHQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:10:58 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA615F12E
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:10:57 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id D6AC632009E5;
-        Wed, 17 Aug 2022 03:10:53 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 17 Aug 2022 03:10:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1660720253; x=1660806653; bh=laRdnBlp/A
-        KdzXhxZ6ikA/I/fj0TfNOX8Qq0MpgtGA4=; b=mkHrcLQv9kwRzaSTMeCrq3a2gc
-        zwRnZ+BzFe2ZJejAQp7kgTim0+5rfwdVNfBdcYPa382/hUGAn0Hi+Cj/MFgWrCg7
-        zp7oLvMI0yX/1rHQdaZijL+p7cDQ5eXXpyACwlz5jVsJyg/wiBxX8JeX3AjuTxiL
-        elLXQBZKDjwsEMYJyU2gr5/XM1/FEodcUV4LW6vam9HziLNNjpBmNsYNjyYCUOZE
-        Efh3FkzkO0nBGuiim3sNxIe5FJ/Qo/suO/vBWFfwcuqmGppIing3wOn/KK98w1bv
-        3PyVxapBYzLCclLA6Wx+3velUavLK/QBu4Xhjc+0i4xNrdgLcUWO3fwJYVgA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660720253; x=1660806653; bh=laRdnBlp/AKdzXhxZ6ikA/I/fj0T
-        fNOX8Qq0MpgtGA4=; b=REGd6+Nh+vADaA77lZaf1ehl8LPCoUZ94b+VXb5aFyOg
-        8BoL+5Fg0qeqOeHZuOcv6t0ZOupkyh4+0uUU9kUbsFYn7W6i10gQmCtOYLVD7M3o
-        03gB1ltTI/0IoMparfxNOEA5XnqB49VOTCsfxHDlywOLciuDR3SYBtEGsHi7+gBJ
-        QO55+NFyH3kOoH8Agdas6P0XTRL6kctcVg+UD4cIIOlIkgPMBWZO3OVqSNM+Uclj
-        Z0PhcZ/rsT0N4O2RUSu3OOOqbR2tKkmsrNNlGc1C66KQ3euGRlS2Nugr7Y4LQ/H7
-        /8YD9nnBPmS2N+DNG9yrRrql7qAVwXR8MBdrVa8u2Q==
-X-ME-Sender: <xms:fJT8YsunaTRk4PVQUaYfxHWfxr_ltZZh8bMlHXGNws9lVtptOJOdTA>
-    <xme:fJT8Ypfv1j6oM92DRjlpoQlpYb0IlL4iaxR8jkOQyjQ6wJ302sSgO92AqfsmmXA85
-    A4mXF9Ih2on5If6VW8>
-X-ME-Received: <xmr:fJT8YnwFWqVGX5ZEaj0rWWdvrvNTnT46X2UTztsVCCwytXoEd4VYgb9tBg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehhedguddukecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgig
-    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
-    grthhtvghrnheptdelkeejiedufedvhfeiffetlefhiedvleeigfeiuefghfdvleeiffej
-    ieegteejnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgv
-    tghh
-X-ME-Proxy: <xmx:fJT8YvMpdSMhrP0nHzpvuWGNiSSI60AT9XrlUOlJd8jPda4dBbq5NA>
-    <xmx:fJT8Ys_y2v4uctcwKCCF0MGnn67HhMseMwJtXvqlSV3Mwmts2GA2hw>
-    <xmx:fJT8YnX4GRPyTjVAYp3N8VHN6gwM2R4QV7jWpCZrxBdx3Wbjg440LA>
-    <xmx:fZT8YpONR8VrSPSNxff-555AVHGxHHP5Nafx0XPheEFevfFUt9RocA>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 17 Aug 2022 03:10:52 -0400 (EDT)
-Date:   Wed, 17 Aug 2022 09:10:48 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        torvalds@linux-foundation.org
-Subject: Re: drm warning with mainline due to 467e30171b5b ("drm/vc4: hdmi:
- Move HDMI reset to pm_resume")
-Message-ID: <20220817071048.4v66zky5qysn45wq@houat>
-References: <YvvHK2zb1lbm2baU@debian>
+        Wed, 17 Aug 2022 03:16:28 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2095.outbound.protection.outlook.com [40.107.93.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A986B66E;
+        Wed, 17 Aug 2022 00:16:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jXy/SYsGvRy/2uLY9ALq2MkWx/hiOIPRoSfdO2agS6ol4i2OOI+gdEc9lkK1MD/lArFSKutaPYM7ASMHqFrbqAv8vkI92MYCnSaaRNIH6x51Dqurp44Sc8fhmaZYolsCf/hEXURip9rvJCXlzPE7YfB7SoU0JHRjvPyoZOC8U8Mvoq9vLlhP9x3ulH5St9ada7lQFcnK8LsCuOm6lXAMaVpddWfyhFELNe7qRmGzkTcvIhbsC1rPyXMs/i2Zra7uki5qT3xMKKIIZMLZk2LZOpkR8cL5tr0KifIDQFulKXrl4G8DvjrpEFeIcd1SpIIBnICb4Avbv4xXXWRaclBi+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R8A8efsndowdMBNoJsnkZ1LEc/rTlAmrxqdPIq1X66E=;
+ b=c1yG3nDAV9Fl6UMawxASRBPifUSKbmMHoiJIPJ/XXKQiq+hqp+tJIk0Vi9gVsBM+R9/gjUEn9nn01e0XraShhGw6R6MJLXaSxKUQsL2MmmIkuo3bHGYkm2Cs3JnuXwWT9iVI34ehqVQGdRHuvorILaQ32qNx6ziDuMvFEOfe/De3CHGG7yIX9bGef+/c31Xb2ysJkI463U52ClwNpTJNSLogU2ABHJLaFjB3BpAIU6auRX+AN6+ul16SFjQpl9efHsyMlf/pIhCVBRHdK/3xLkYNtqxBntZFeHomKG/gf8wKa5isUaVWTuueSmlwi1CTv5vEqLQWh5UdRKxi/WpxQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R8A8efsndowdMBNoJsnkZ1LEc/rTlAmrxqdPIq1X66E=;
+ b=be5uzltkeCvcDvTakVEdvHiFDbg2CF5NzTowrL6VyeMFLwecQojYZEWOdlVl8ZTN5b3em2AgqykGEVRgrKAjMDTVqrQK9WS+k0lkO3lxeOskFQM+M7ED3/z7EYQB35dgoROLuuinPdOyKa+ASKTmn8Fe8A7/uW59l1rnZUmcVKk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
+ BL0PR01MB5300.prod.exchangelabs.com (2603:10b6:208:78::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5504.17; Wed, 17 Aug 2022 07:16:24 +0000
+Received: from SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::2c79:3341:5ae5:7d26]) by SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::2c79:3341:5ae5:7d26%9]) with mapi id 15.20.5525.010; Wed, 17 Aug 2022
+ 07:16:24 +0000
+From:   Quan Nguyen <quan@os.amperecomputing.com>
+To:     Quan Nguyen <quan@os.amperecomputing.com>,
+        openbmc@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        Open Source Submission <patches@amperecomputing.com>
+Cc:     Phong Vo <phong@os.amperecomputing.com>,
+        thang@os.amperecomputing.com
+Subject: [PATCH v3 0/2] Add device tree for Ampere's Mt. Mitchell BMC
+Date:   Wed, 17 Aug 2022 14:15:37 +0700
+Message-Id: <20220817071539.176110-1-quan@os.amperecomputing.com>
+X-Mailer: git-send-email 2.35.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0044.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::8) To SJ0PR01MB7282.prod.exchangelabs.com
+ (2603:10b6:a03:3f2::24)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="syrev3cbrffj2yu7"
-Content-Disposition: inline
-In-Reply-To: <YvvHK2zb1lbm2baU@debian>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9082b829-1814-47e9-bdfe-08da8020647d
+X-MS-TrafficTypeDiagnostic: BL0PR01MB5300:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Edt/F8MGtnsvrSXtPm4+f9gHbac/GsVBKnwJM+tkWFyo41cQWWNgsqTGevurDMD8rukmZNA8ae7XBkn+B2bwmiSUAydCsV8BJFHMxgHtmKePPEo1GNcVe1NbIFvfn0nX8seTAA432hpw4ek1wwEmOsb9xIIrmRffAjtA6UZlKL2uHPSJmDlVdmX+gxdmmXQ60IFTHOaopN8ofgTTTHyUM/UCAgu7utw56FqXPDqAYZPQZ3YEZrIs5oVvEB79WpYr0rUS8FNY9qNcu4KzUY3Gcu2bzrNd1/j7x1RBO3nPe+uiZQ9kIwL8wa0nZL/gD0+IW21f0z0Do9iOJtQ6krsnx6ZFtEGhoNHcWlP2n1QK++MU9FdLJKmgDqVfy8Q2/SJ59GIdbxv9K4EG/j4xVmbREJyKq+lGZYLmoTo8/+fObPcyFfNXY23BG+6ATyIzO9tmghYj460fLq0tYaeRo8H546/viAtXi9e9Cqj1trJwozx6d9UiWsNocDKbP/VriAsh6ioq03aSnEjwugEO5cWxZJEHEJrGpAZK+SS6ZR+ciAEehgw2HiZTIfst1wWLfTvORaP76HmxiAlw5812GZIe4qKwnupkwxBUQTYN9ipIcZRUamxIaSrdk89NXMuWa+d8dxaqzm+3zA5ihA3H/3Hzf5OUy01X8a574E6ayBPhp6C5XAQNO76PLcwCedpUGu2Jzk9gMzK/A0HMite8WfCfl//CFzlOnWiO2V31ZvY+wWcWeleeFO6BlOZXo2iy9w6UXs9GpJ92LI3dWCa9Ro5pMclBWt0teEy0Y9TODlcjAtfGWppw2ec+zAiXPUd18SQT
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(39850400004)(396003)(366004)(6666004)(52116002)(6506007)(6512007)(26005)(110136005)(86362001)(316002)(41300700001)(6486002)(38350700002)(38100700002)(478600001)(186003)(921005)(107886003)(83380400001)(66574015)(8936002)(4326008)(5660300002)(7416002)(2616005)(66946007)(66476007)(66556008)(8676002)(2906002)(1076003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?B196IkUKRtLm8DhoRf0GnEC1fuF2rGQDqMs/Ll1Z9HRMTPFY0zdpeV/Q/ZCS?=
+ =?us-ascii?Q?f8KulHL/KqIq/v3iWdKjUVnlC06NwZpqquudslPJMOnTdo3d7j4sZfNwqwuC?=
+ =?us-ascii?Q?8zwWPFnsCIH7xQ0pExPeEcyjvo4whQf8P85z+kmhPKMHHYG+Hmj2o48y5wDi?=
+ =?us-ascii?Q?hbKejCizWqbfpJUP1N2hB+ulil5phdFcHbptpXrGjc349SKvsjs36AYqCC+A?=
+ =?us-ascii?Q?qjhaWI9sDYSmSJdw/Q9ZvNAIaMZzWzZ5ZFHT+BD3aJu93BvPcI9Bps837ahh?=
+ =?us-ascii?Q?AdsvEPmnLqEXgMQw37gUycYUC6cTnDm0s3ghPzGsNTEcLM+ega7T0Rp8aj0m?=
+ =?us-ascii?Q?BDo75uVmsqg1BB8WyZOq44YrytmDCZOnP+KaHEKFgMHP37ILCvEz+4cKCAPZ?=
+ =?us-ascii?Q?ZtU6KbgtvwS3WaAKbWBE6mX+gWALeCEzYLnI2qawklwYdX2VeRot4xkZ+ySr?=
+ =?us-ascii?Q?ld4gSCgJ2kl9pXTYlDVLIJkbbMEJ0yfs5N+AuwzH6P1uAJRQQDUaLItrWfkn?=
+ =?us-ascii?Q?lsZiSLUyqsk4bPeby12A4+T29nOYlXMVhkHVaENicAqV2vV5u8KN8vXQQlON?=
+ =?us-ascii?Q?4v5wm1hpAJ0qV8jX+GoeUvf/H82875jKhuEomVqjCO/UQuTMv0j4+9NEVDD9?=
+ =?us-ascii?Q?tZLuAyqW1jqhQdXxAv7XeR0j7joeo1dfCJAwh4SI2ABh0bcn/h5N6eG9Kcos?=
+ =?us-ascii?Q?ypRixP8AyspllFE+3OXATfQ2vlpAOym4Zrr4EFGSr0KaXHaiL1XbySSQ+zNL?=
+ =?us-ascii?Q?V1hnGiq86dtKh7E5FtCxLpKTVCZCi6cF98Z90NIveQxM+FoxxHoMErPfcRkU?=
+ =?us-ascii?Q?+HL3EZBZRBuA1QbK6UeV2EjryPH8fEwPEUAQmjOOinv5V3u2Xw0z9uPkWspJ?=
+ =?us-ascii?Q?DJtzglHQpSrQhQFcYl7m5lbo+9tgvE3/gzdfxX8HBldYJrCvWRzH5tlIPhVs?=
+ =?us-ascii?Q?rH3YXtEaSgywvrAaYBHCcK2b/NOXXvxsXyLsfoHbq2KZ0xMu6705JhHN0CZJ?=
+ =?us-ascii?Q?rgPfe801pX/hhxJcdq0K1mIduxcd3BOdckrPnI01+VBAetlIOkoS2qgHZ1S7?=
+ =?us-ascii?Q?9YvTEsQSL6KRtaWjipQEj1dm8/mO5fEQI4O4ElDuOWvV7w+svLjbY3xBegEu?=
+ =?us-ascii?Q?h/yNUK2Cr8RnS28uS2xN7levUgu9HPyVItuhGu4uipkDw+h0eT7aAAda79oU?=
+ =?us-ascii?Q?YTp+HhfQSj7dwEQ55Rgp6pVEeGI1mm885GRPPOcuQ/OKYvjh0iAKnEuJqURk?=
+ =?us-ascii?Q?bTWY+GFN9r6I7Bn6WHquBr38waDBOTKZly2FZynTVFeVSHOo9ofezktFzkSC?=
+ =?us-ascii?Q?WZ1rRPhedH/aqWpM3dMDSCTHWxKV/0Mpq7BDCw3a6En7fqqOoArljnXWfK/b?=
+ =?us-ascii?Q?82BGXYzijggA3CTi/PrEf3hpB0ZalyxsFtAPK2F7GGAQNC78YatvLagIERXq?=
+ =?us-ascii?Q?RzVl5eLo0f+vsYRKBwOB0VQjtAUSc26i2PXXzL69+zLXfMHkvd34e0tknqev?=
+ =?us-ascii?Q?m9v47x4mQIx8PBuyPiEEXrz3R88/tt4mIN9eXWUvWuVAagXgkz2HLSftIR7B?=
+ =?us-ascii?Q?24uYKBsc6bTOScPjNaOmayLoetYy3KK4e3R7jqu/NoFBoZUJ0Ab1H2PmHDOd?=
+ =?us-ascii?Q?EA7vH5+BuLTYfTpgd2sgpTs=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9082b829-1814-47e9-bdfe-08da8020647d
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 07:16:24.3207
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /OJgk9d7CADwl/sv8YZMstX07ybe2e34Y8tFvd+/tOK7hWTZEJLMqqs5qVj8Ghkp7lcyQ3cXYzyOJu6AFr5EAEtFZL1+SYaNEzFWHlbX6FA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR01MB5300
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The Mt. Mitchell BMC is an ASPEED AST2600-based BMC for the Mt. Mitchell
+hardware reference platform with AmpereOne(TM) processor.
 
---syrev3cbrffj2yu7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+v3 :
+  + Change adc-i2c node to generic adc node               [Krzysztof]
+  + Remove unused status property in adc node             [Krzysztof]
+  + Remove trailing blank line at the end of file         [Krzysztof]
+  + Fix alphabetical order in dt-binding documentation    [Krzysztof]
+  + Remove the wrong comment on vga_memory nodes             [Andrew]
+  + Remove gpio-keys                                         [Andrew]
+  + Remove the line-name for bmc-debug-mode, eth-phy-rst-n,
+    eth-phy-int-n, bmc-salt12-s0-ssif-n, fpga-program-b,
+    bmc-uart-cts1, bmc-spi-fm-boot-abr-pd, emmc-rst-n gpios  [Andrew]
+  + Update line-name for hs-csout-prochot, s1-spi-auth-fail-n  [Quan]
+  + Add line-name [s0|s1]-heartbeat                            [Quan]
 
-Hi,
+v2 :
+  + Add Ampere Mt. Mitchell BMC compatible                [Krzysztof]
+  + Remove bootargs                                       [Krzysztof]
+  + Fix gpio-keys nodes name to conform with device tree binding
+  documents                                               [Krzysztof]
+  + Fix some nodes to use generic name                    [Krzysztof]
+  + Remove unnecessary blank line                         [Krzysztof]
+  + Fix typo "LTC" to "LLC" in license info and corrected license
+  info to GPL-2.0-only
 
-On Tue, Aug 16, 2022 at 05:34:51PM +0100, Sudip Mukherjee (Codethink) wrote:
-> Not sure if it has been reported but the mainline kernel shows a drm warn=
-ing
-> on RPI4B.
->=20
-> [   14.821276] WARNING: CPU: 3 PID: 187 at drivers/gpu/drm/vc4/vc4_hdmi_r=
-egs.h:487 vc5_hdmi_reset+0x1f8/0x240 [vc4]
-> [   14.837288] Modules linked in: hci_uart btqca btrtl btbcm btintel btsd=
-io(+) bluetooth bcm2835_v4l2(C) bcm2835_mmal_vchiq(C) videobuf2_vmalloc vid=
-eobuf2_memops videobuf2_v4l2 videobuf2_common brcmfmac videodev brcmutil vc=
-4(+) ecdh_generic ecc drm_display_helper mc raspberrypi_hwmon cec crct10dif=
-_ce drm_cma_helper cfg80211 dwc2 udc_core i2c_brcmstb roles snd_bcm2835(C) =
-drm_kms_helper pwm_bcm2835 drm xhci_pci xhci_pci_renesas snd_soc_core phy_g=
-eneric ac97_bus snd_pcm_dmaengine snd_pcm snd_timer snd fb_sys_fops syscopy=
-area sysfillrect sysimgblt uio_pdrv_genirq uio aes_neon_bs aes_neon_blk
-> [   14.889917] CPU: 3 PID: 187 Comm: systemd-udevd Tainted: G         C  =
-       6.0.0-rc1-568035b01cfb #1
-> [   14.899355] Hardware name: Raspberry Pi 4 Model B (DT)
-> [   14.904561] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYP=
-E=3D--)
-> [   14.911620] pc : vc5_hdmi_reset+0x1f8/0x240 [vc4]
-> [   14.916433] lr : vc5_hdmi_reset+0x38/0x240 [vc4]
-> [   14.921151] sp : ffff80000a85b640
-> [   14.923079] uart-pl011 fe201000.serial: no DMA platform data
-> [   14.924504] x29: ffff80000a85b640 x28: 0000000000000000 x27: ffff00005=
-6626080
-> [   14.937472] x26: ffff80000128e2d8 x25: ffff80000128e988 x24: 000000000=
-0000000
-> [   14.944708] x23: ffff000040a58000 x22: ffff0000fb832978 x21: ffff00005=
-6626c90
-> [   14.951944] x20: 0000000000000000 x19: ffff000056626080 x18: 000000000=
-0000014
-> [   14.959180] x17: 00000000e6b317d8 x16: 00000000c03e2fab x15: 000000000=
-02ffc4a
-> [   14.966416] x14: 0000000000000000 x13: 0000000000000010 x12: 010101010=
-1010101
-> [   14.973650] x11: ff7f7f7f7f7f7f7f x10: ffff840003584d5b x9 : ffff80000=
-1276518
-> [   14.980886] x8 : 0101010101010101 x7 : 0000000000000000 x6 : ffff00004=
-0e5d140
-> [   14.988120] x5 : 0000000000000000 x4 : ffff80000a85b580 x3 : 000000000=
-0000000
-> [   14.995355] x2 : 0000000000000001 x1 : 0000000000000002 x0 : ffff80000=
-12901c0
-> [   15.002591] Call trace:
-> [   15.005063]  vc5_hdmi_reset+0x1f8/0x240 [vc4]
-> [   15.009514]  vc4_hdmi_runtime_resume+0x74/0x2dc [vc4]
-> [   15.014671]  vc4_hdmi_bind+0x22c/0xa40 [vc4]
-> [   15.019038]  component_bind_all+0x114/0x264
-> [   15.023293]  vc4_drm_bind+0x160/0x2a4 [vc4]
-> [   15.027565]  try_to_bring_up_aggregate_device+0x1e4/0x2d0
-> [   15.033044]  component_master_add_with_match+0xcc/0x110
-> [   15.038340]  vc4_platform_drm_probe+0xc4/0xfc [vc4]
-> [   15.043327]  platform_probe+0x74/0xd0
-> [   15.047037]  really_probe+0xc8/0x3ec
-> [   15.050662]  __driver_probe_device+0x84/0x190
-> [   15.055079]  driver_probe_device+0x44/0x100
-> [   15.059318]  __driver_attach+0xd8/0x1d0
-> [   15.063206]  bus_for_each_dev+0x7c/0xe0
-> [   15.067090]  driver_attach+0x30/0x3c
-> [   15.070711]  bus_add_driver+0x188/0x244
-> [   15.074595]  driver_register+0x84/0x140
-> [   15.078482]  __platform_driver_register+0x34/0x40
-> [   15.083247]  vc4_drm_register+0x5c/0x1000 [vc4]
-> [   15.087881]  do_one_initcall+0x50/0x2bc
-> [   15.091770]  do_init_module+0x50/0x1f0
-> [   15.095569]  load_module+0x1a28/0x1fa0
-> [   15.099366]  __do_sys_finit_module+0xac/0x12c
-> [   15.103779]  __arm64_sys_finit_module+0x2c/0x40
-> [   15.108368]  invoke_syscall+0x50/0x120
-> [   15.112166]  el0_svc_common.constprop.0+0x6c/0x1b4
-> [   15.117021]  do_el0_svc+0x38/0xcc
-> [   15.120378]  el0_svc+0x30/0xd0
-> [   15.123472]  el0t_64_sync_handler+0x11c/0x150
-> [   15.127886]  el0t_64_sync+0x1a0/0x1a4
-> [   15.131595] ---[ end trace 0000000000000000 ]---
->=20
-> git bisect pointed to 467e30171b5b ("drm/vc4: hdmi: Move HDMI reset to pm=
-_resume")
-> and reverting this commit has fixed the warning.
->=20
-> I will be happy to test any patch or provide any extra log if needed.
+Quan Nguyen (2):
+  dt-bindings: arm: aspeed: document Ampere Mt.Mitchell BMC compatibles
+  ARM: dts: aspeed: Add device tree for Ampere's Mt. Mitchell BMC
 
-We have fixes for this in drm-misc-next that have missed the cut for the
-merge window:
+ .../bindings/arm/aspeed/aspeed.yaml           |   1 +
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/aspeed-bmc-ampere-mtmitchell.dts | 546 ++++++++++++++++++
+ 3 files changed, 548 insertions(+)
+ create mode 100644 arch/arm/boot/dts/aspeed-bmc-ampere-mtmitchell.dts
 
-https://lore.kernel.org/all/20220629123510.1915022-38-maxime@cerno.tech/
-https://lore.kernel.org/all/20220629123510.1915022-39-maxime@cerno.tech/
+-- 
+2.35.1
 
-If it fixes it for you, I'll apply it to drm-misc-fixes
-
-Maxime
-
---syrev3cbrffj2yu7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYvyUeAAKCRDj7w1vZxhR
-xVljAPwIUirFXxRRs/16RZ5KPNnH+unroKvCpl+RZ0WfiZW4PwEAssoQDV4JHtEX
-j6GdyVRYCPay+w7bVerJiu88EbUGIQY=
-=EjE/
------END PGP SIGNATURE-----
-
---syrev3cbrffj2yu7--
