@@ -2,94 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96449C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED03C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233769AbiHQJak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 05:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        id S234727AbiHQJam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 05:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbiHQJac (ORCPT
+        with ESMTP id S234589AbiHQJai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 05:30:32 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DDA5A824;
-        Wed, 17 Aug 2022 02:30:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=B1hmJLzhgp+cCdKeDExeQqbkP18e8HhH601vV+E1w50=;
-        b=SXOXeg0hXtXaVqOOnK5acOIEm8TnPQJxV5wFYx4mSwxEoLkg1SF2ceF0q4XC8E52IuKOWgzTwwff8
-         GXTaypsIplyq9skK2OOme1XHNtGh9+gJV1UxKQo+3L9t/Lq2uSIJLBY49eqtcriHlkoZcEdBjbmWcu
-         ywLD1UhtAxKNTjM5C7gkkbThg2UK/T8Z71T8oQSFrNdtfzLNoEmDJ37EJi3KeANAfYrg2aGL0OGeog
-         +scBNcI0UVRdRncwg6FI0JZ2Z3VSWAp7+nvaDALG5h11YNccmhAErBJ6Vrn28g1/gAZE9wBWO8P2/2
-         uxcrEJA9EVm5WQYjGWz8OK2aq8vhlOA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000014,0.007457)], BW: [Enabled, t: (0.000014,0.000001)], RTDA: [Enabled, t: (0.074159), Hit: No, Details: v2.41.0; Id: 15.52kaaj.1gali6mdc.ev6o; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([92.100.85.134])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 17 Aug 2022 12:29:55 +0300
-Date:   Wed, 17 Aug 2022 12:04:13 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, dg@emlix.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v6 1/2] fpga: ecp5-spi: add Lattice ECP5 FPGA manager
-Message-ID: <20220817090413.ywf7wescwj2manif@x260>
-References: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
- <20220815132157.8083-2-i.bornyakov@metrotek.ru>
- <Yvr6SY5WGXlYiLig@yilunxu-OptiPlex-7050>
- <20220816045841.irhr5vigemdqknaw@x260>
- <Yvs0jieXsyzhn8q9@yilunxu-OptiPlex-7050>
+        Wed, 17 Aug 2022 05:30:38 -0400
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54315A824;
+        Wed, 17 Aug 2022 02:30:37 -0700 (PDT)
+Received: by mail-qt1-f174.google.com with SMTP id cr9so9956458qtb.13;
+        Wed, 17 Aug 2022 02:30:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=5akdc5q8OTZh41BRXQ6ueXN+MBAsEQyZP/YjElcO8FE=;
+        b=Ao7etct2jPsOO6PHSHBf0/De4GNGHNC1bzQ5nRNc2NcckuB8eHOjbjOn106RFG4n0e
+         sr/3OiQ0K1aP2/yqq+KAw3MuK+5GJWK5YLCjS2tNxPFx8TTKo9w33snG1KliXjzLOHBK
+         V8xKGtQrCO6K8NYB53liZKyFaZnk+jFkjvrA3CvezN91/gq/IRktigfYeenszRxFGAuv
+         avONSN2ogjDNgrCzpUEAFj1V49hd+nYQZVDAK3/T/qCJn3erNw3fcjZXyXB+MdUSYmHR
+         cK6D6/zYxtQLvunaRRRA0OExkWj5uwLIhtyRnsjcfg6l1ptLgU2V+bumJwopRj02S+4R
+         ynSw==
+X-Gm-Message-State: ACgBeo0XGvpPEqk+BpYRCERozo9LPRlSI3XOMXQkR4N94UE+Su1GUvN5
+        +LO/YW1xj6MLet7lEjYF7d3P6zOiPyOQ7A==
+X-Google-Smtp-Source: AA6agR75wkMzjymVQi/umHde2bRdVhNH/oEzu2yj9HscihiWd4t6QmZZ1rv75XG2KZ6mQ4kPLbYj1Q==
+X-Received: by 2002:a05:622a:1116:b0:31e:d8e4:ac30 with SMTP id e22-20020a05622a111600b0031ed8e4ac30mr21796777qty.660.1660728636684;
+        Wed, 17 Aug 2022 02:30:36 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id l23-20020a37f917000000b006b97151d2b3sm14056322qkj.67.2022.08.17.02.30.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 02:30:36 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-32fd97c199fso191646627b3.6;
+        Wed, 17 Aug 2022 02:30:36 -0700 (PDT)
+X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
+ r1-20020a5b06c1000000b00669a7c34c33mr18433198ybq.543.1660728636000; Wed, 17
+ Aug 2022 02:30:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yvs0jieXsyzhn8q9@yilunxu-OptiPlex-7050>
+References: <20220815111708.22302-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220816174150.GA2428940-robh@kernel.org>
+In-Reply-To: <20220816174150.GA2428940-robh@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 17 Aug 2022 11:30:23 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWgfGgNGmj88z=Md5RAL8CHxTKj6ywsGwS2HN-vHKMq+w@mail.gmail.com>
+Message-ID: <CAMuHMdWgfGgNGmj88z=Md5RAL8CHxTKj6ywsGwS2HN-vHKMq+w@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: soc: renesas: Move renesas.yaml from arm to soc
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 02:09:18PM +0800, Xu Yilun wrote:
-> On 2022-08-16 at 07:58:41 +0300, Ivan Bornyakov wrote:
-> > On Tue, Aug 16, 2022 at 10:00:41AM +0800, Xu Yilun wrote:
-> > > On 2022-08-15 at 16:21:56 +0300, Ivan Bornyakov wrote:
-> > > > Add support to the FPGA manager for programming Lattice ECP5 FPGA over
-> > > > slave SPI interface with .bit formatted uncompressed bitstream image.
-> > > 
-> > > Not sure if something is missed.
-> > > 
-> > > https://lore.kernel.org/all/20220729145757.GA2601292@yilunxu-OptiPlex-7050/
-> > > 
-> > > I was considering if a generic driver for lattice slave SPI sysCONFIG
-> > > interface could be introduced. From machxo2 & ecp5 Programming Usage
-> > > Guide, or others in this series, they basically use the same reconfigure
-> > > interface & protocol.
-> > > 
-> > > Thanks,
-> > > Yilun
-> > > 
-> > 
-> > I only have HW with ECP5, can't vouch for the rest.
-> 
-> I understand your concern, but having separate drivers for the same IP on
-> different boards makes the maintaining harder.
-> 
-> We don't have to make everything fine, but start with machxo2 and ecp5
-> first. If the change affects machxo2, other people may help.
-> 
-> Thanks,
-> Yilun
-> 
+Hi Rob,
 
-Hi, Yilun.
+On Tue, Aug 16, 2022 at 7:41 PM Rob Herring <robh@kernel.org> wrote:
+> On Mon, Aug 15, 2022 at 12:17:08PM +0100, Lad Prabhakar wrote:
+> > renesas.yaml lists out all the Renesas SoC's and the platforms/EVK's which
+> > is either ARM32/ARM64. It would rather make sense if we move renesas.yaml
+> > to the soc/renesas folder instead. This is in preparation for adding a new
+> > SoC (RZ/Five) from Renesas which is based on RISC-V.
+>
+> Please post this as part of the above.
+>
+> bindings/soc/ is just a dumping ground for stuff that doesn't fit
+> anywhere. We've mostly cleaned bindings/arm/ of that, so I don't really
 
-To clear things out, considering what Daniel said in
-https://lore.kernel.org/linux-fpga/20220816074216.GA31706@homes.emlix.com/
-you still don't want separate ECP5 driver, or this v6 is OK and review
-continues?
+Note that the target of this move is not .../bindings/soc/, but
+.../bindings/soc/renesas/, so it's a bit less of a dumping ground.
+Perhaps this is also a good opportunity to split renesas.yaml per
+family or product group
+(renesas,{rmobile,rcar-gen[1234],rza,rzg,rzn,...}.yaml?
+A fine-grained split may cause headaches with RZ/G2UL and RZ/Five
+sharing the same SoC Base, but a coarse-grained split keeping all RZ/G
+(after all RZ/Five is part of RZ/G) or even all RZ series together should work.
 
+> want to start that again. I would propose bindings/board/ instead if we
+> move in this direction.
+
+.../bindings/board has the issue with the same boards used with
+multiple pin-compatible SoCs, SiPs, and SoMs.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
