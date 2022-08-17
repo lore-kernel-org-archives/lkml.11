@@ -2,116 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8D6C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AD8C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239115AbiHQLxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 07:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        id S239148AbiHQLy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 07:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbiHQLx3 (ORCPT
+        with ESMTP id S236324AbiHQLyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 07:53:29 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39DF6DEFE;
-        Wed, 17 Aug 2022 04:53:25 -0700 (PDT)
-Received: from pwmachine.localnet (85-170-37-153.rev.numericable.fr [85.170.37.153])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 7AE06213B620;
-        Wed, 17 Aug 2022 04:53:23 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7AE06213B620
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1660737204;
-        bh=guH8y5jLjdbgCVWwxETH/SVdTiebIYChnq1hy4g1F+E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGt0vt4bAB41b7jk2M7M4mq5m/iaNiKmjiVOafdLaAWJY2oah+vjeFZBKpFQGG+KL
-         S0s3e3wnWEb/FEJJoXZu94v3gVYecCafOh39CXL1x+MeieNl3jgqwVXklG7wX3b5Nc
-         tDiVn0BXPP8gFzho+8stOgZrGPF3wcmTwzd5zpC0=
-From:   Francis Laniel <flaniel@linux.microsoft.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     linux-security-module@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        James Morris <jmorris@namei.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:BPF [MISC]" <bpf@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 0/2] Add capabilities file to securityfs
-Date:   Wed, 17 Aug 2022 13:53:21 +0200
-Message-ID: <4420381.LvFx2qVVIh@pwmachine>
-In-Reply-To: <CAHC9VhTmgMfzc+QY8kr+BYQyd_5nEis0Y632w4S2_PGudTRT7g@mail.gmail.com>
-References: <20220725124123.12975-1-flaniel@linux.microsoft.com> <CAHC9VhTmgMfzc+QY8kr+BYQyd_5nEis0Y632w4S2_PGudTRT7g@mail.gmail.com>
+        Wed, 17 Aug 2022 07:54:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D18501B4;
+        Wed, 17 Aug 2022 04:54:23 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id CF479201B7;
+        Wed, 17 Aug 2022 11:54:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1660737261; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rm8JEW/rIpBp4i/6Owi2Iji64ulIai4y9uLFGtCpOBA=;
+        b=hKkVXPJiBiQFS8b7QVhOX4+28k2oSDhXJVTO47zQOtYJ0z/Ow1orIVYID0P6wXesFungW7
+        fmTHzwFYkjsh7nRXpW9prkzkIf8eIp3/aeN/Er6LHxSwUcvLGWU8g9LsUlR5QscQCXHYxo
+        DnIYtFdB+HwUtavwnESO5r9v415UkCI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1660737261;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rm8JEW/rIpBp4i/6Owi2Iji64ulIai4y9uLFGtCpOBA=;
+        b=vWyxR/SHYYfgDsRdknJ7ivO45nsMCiTE1l4jWdy6yKQO7PELmEH86Oh6PyozdI5oWhEbcy
+        Dffwd97uuLPbCcBw==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 6DD432C197;
+        Wed, 17 Aug 2022 11:54:21 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 900AFA066B; Wed, 17 Aug 2022 13:54:20 +0200 (CEST)
+Date:   Wed, 17 Aug 2022 13:54:20 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     jack@suse.cz, axboe@kernel.dk, paolo.valente@linaro.org,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next 2/3] block, bfq: remove useless checking in
+ bfq_put_queue()
+Message-ID: <20220817115420.dmzldiybx5xs4wqf@quack3>
+References: <20220816015631.1323948-1-yukuai1@huaweicloud.com>
+ <20220816015631.1323948-3-yukuai1@huaweicloud.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816015631.1323948-3-yukuai1@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi.
+On Tue 16-08-22 09:56:30, Yu Kuai wrote:
+> From: Yu Kuai <yukuai3@huawei.com>
+> 
+> 'bfqq->bfqd' is ensured to set in bfq_init_queue(), and it will never
+> change afterwards.
+> 
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
+Looks good. Feel free to add:
 
-Le mardi 16 ao=FBt 2022, 23:59:41 CEST Paul Moore a =E9crit :
-> On Mon, Jul 25, 2022 at 8:42 AM Francis Laniel
->=20
-> <flaniel@linux.microsoft.com> wrote:
-> > Hi.
-> >=20
-> > First, I hope you are fine and the same for your relatives.
->=20
-> Hi Francis :)
->=20
-> > A solution to this problem could be to add a way for the userspace to a=
-sk
-> > the kernel about the capabilities it offers.
-> > So, in this series, I added a new file to securityfs:
-> > /sys/kernel/security/capabilities.
-> > The goal of this file is to be used by "container world" software to kn=
-ow
-> > kernel capabilities at run time instead of compile time.
->=20
-> ...
->=20
-> > The kernel already exposes the last capability number under:
-> > /proc/sys/kernel/cap_last_cap
->=20
-> I'm not clear on why this patchset is needed, why can't the
-> application simply read from "cap_last_cap" to determine what
-> capabilities the kernel supports?
+Reviewed-by: Jan Kara <jack@suse.cz>
 
-When you capabilities with, for example, docker, you will fill capabilities=
-=20
-like this:
-docker run --rm --cap-add SYS_ADMIN debian:latest echo foo
-As a consequence, the "echo foo" will be run with CAP_SYS_ADMIN set.
+								Honza
 
-Sadly, each time a new capability is added to the kernel, it means "contain=
-er=20
-stack" software should add a new string corresponding to the number of the=
-=20
-capabilities [1].
-
-The solution I propose would lead to "container stack" software to get rid =
-of=20
-such an array and to test at runtime, if the name provided by user on the=20
-command line matches the name of a capability known by the kernel.
-If it is the case, the number associated to the capability will be get by=20
-"container stack" code to be used as argument of capset() system call.
-
-The advantage of this solution is that it would reduce the time taken betwe=
-en=20
-a new capability added to the kernel (e.g. CAP_BPF) and the time users can =
-use=20
-it.
-More generally, a solution to this problem would be a way for the kernel to=
-=20
-expose the capabilities it knows.
-
-Do not hesitate to ask for clarification if I was not clear.
-
-
-Best regards.
-=2D--
-[1] https://github.com/containerd/containerd/blob/
-1a078e6893d07fec10a4940a5664fab21d6f7d1e/pkg/cap/cap_linux.go#L135
-
-
+> ---
+>  block/bfq-iosched.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+> index c740b41fe0a4..f39067389b2b 100644
+> --- a/block/bfq-iosched.c
+> +++ b/block/bfq-iosched.c
+> @@ -5255,9 +5255,7 @@ void bfq_put_queue(struct bfq_queue *bfqq)
+>  	struct hlist_node *n;
+>  	struct bfq_group *bfqg = bfqq_group(bfqq);
+>  
+> -	if (bfqq->bfqd)
+> -		bfq_log_bfqq(bfqq->bfqd, bfqq, "put_queue: %p %d",
+> -			     bfqq, bfqq->ref);
+> +	bfq_log_bfqq(bfqq->bfqd, bfqq, "put_queue: %p %d", bfqq, bfqq->ref);
+>  
+>  	bfqq->ref--;
+>  	if (bfqq->ref)
+> @@ -5321,7 +5319,7 @@ void bfq_put_queue(struct bfq_queue *bfqq)
+>  		hlist_del_init(&item->woken_list_node);
+>  	}
+>  
+> -	if (bfqq->bfqd && bfqq->bfqd->last_completed_rq_bfqq == bfqq)
+> +	if (bfqq->bfqd->last_completed_rq_bfqq == bfqq)
+>  		bfqq->bfqd->last_completed_rq_bfqq = NULL;
+>  
+>  	kmem_cache_free(bfq_pool, bfqq);
+> -- 
+> 2.31.1
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
