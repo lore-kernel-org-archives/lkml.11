@@ -2,115 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FCA2C32773
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DEBC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241926AbiHQUaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
+        id S242020AbiHQUbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241546AbiHQUaL (ORCPT
+        with ESMTP id S242011AbiHQUbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:30:11 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B158CA98D3;
-        Wed, 17 Aug 2022 13:30:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gmQnAmGV0yJc75So19A4rCEM0sxOrtpi2lPtl/yZEKg=; b=JbxSHZNkdEfXBjQmNN5rGI/OwF
-        aDS9BIivkV6Mz0U7oNRPgqlNWDVZdLBMvEK4or9u9F8CpZ5/lmyGvOdyHUqzk4Kh84BZ1Ai2cRMRD
-        vRNg+I2f2MTS9wNKgf2+L1eylZSYzBG8FVmKwjEVZr3Abn8CZwSze+D2Mc3LB6zWfML8DYXrq/ZGT
-        1/olIIKBFpL2TAcYS/ecLPQiAHkbNzplNDHKUFna7C8OmeLHDWlIf+QXwfuHY4TWlgfiCPbeUINau
-        SS3JJRVVPRad1gggN43ntHtkqkkToLbF5W+SUlu4GnmHAFHo3SXxacXlIAjO3QLNNZ2MpkOMtU/L6
-        RAAUvXTA==;
-Received: from [179.232.144.59] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oOPfe-00AvIf-BO; Wed, 17 Aug 2022 22:29:46 +0200
-Message-ID: <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com>
-Date:   Wed, 17 Aug 2022 17:28:34 -0300
+        Wed, 17 Aug 2022 16:31:25 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FBDA8CC3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:31:23 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id 12so12919181pga.1
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:31:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=/ZIBwdh7AZy1tlqpLcM+wJiYIr87DkwAsg5KZRoqj68=;
+        b=Ruh/m0QpeWGCsAuDQ9vLgMeMnPwUDhrl9zrtFVQhUKHT651SheClw0ZDbbdAkAoW1i
+         AWWwQTcmm7HgmZLKUbhe1zerjeL6tQndwX0YQvzXZaPS3qkGhMCJQ5MVId2fX3yigKC0
+         EkEKImheXVwahv1KCIpsBcpCFuOAVPe3Csobg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=/ZIBwdh7AZy1tlqpLcM+wJiYIr87DkwAsg5KZRoqj68=;
+        b=N1uw810gQNpel6l8P4SDg+lTdp//mBIciOvtbsN6SJkd/+cd1/w9XTtP0vIe7/Yyw/
+         Mh7ErRZWY1VdQxqURlMr2EFBZD99GfU9nxCEQbr4w/vnZiUD2r0KPqRf0bDfcgAh5l9a
+         4qTGOBwPneo432IxP+/WqlIVWn0LHeu7pMJnICYz2FQXV7HdjSEtImKa8HgCxGnFOoax
+         1ZGIXrrshBky3wFclNJIiLh6e0M4lQuyrBrfL4cITIaELIHOJYdr4mCwJ5VAoPpP5ayE
+         xSrZ+wkKxbSxzUufRFMsF+WcN4uQstWRWAo4tNkPUj0YN920S/4j+ZksifLSKkz4Dzgq
+         wFUg==
+X-Gm-Message-State: ACgBeo0lUR9JVhJaafLhPixMrffVYRkojfcEa9rxrV40inXph9IfNwJj
+        8+EvwiXVSnIauoW4qdujAIP5jw==
+X-Google-Smtp-Source: AA6agR65FRhlhXg+iyS9uiPMyxhif0H2qZvkrI2JMX3wGGKR0i72/DbE/1rC0DSvM0UBXh9VWHpySQ==
+X-Received: by 2002:a63:4f24:0:b0:429:aee9:f59a with SMTP id d36-20020a634f24000000b00429aee9f59amr6255932pgb.180.1660768282990;
+        Wed, 17 Aug 2022 13:31:22 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e6-20020a056a0000c600b00528c7f6f4dcsm10895421pfj.52.2022.08.17.13.31.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 13:31:22 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 13:31:21 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Boqun Feng <boqun.feng@gmail.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: Re: [PATCH v9 03/27] kallsyms: add static relationship between
+ `KSYM_NAME_LEN{,_BUFFER}`
+Message-ID: <202208171330.BB5B081D1@keescook>
+References: <20220805154231.31257-1-ojeda@kernel.org>
+ <20220805154231.31257-4-ojeda@kernel.org>
+ <202208171238.80053F8C@keescook>
+ <Yv1GmvZlpMopwZTi@boqun-archlinux>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-edac@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Tony Luck <tony.luck@intel.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com> <Yv0mCY04heUXsGiC@zn.tnic>
- <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com> <Yv1C0Y25u2IB7PCs@zn.tnic>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yv1C0Y25u2IB7PCs@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yv1GmvZlpMopwZTi@boqun-archlinux>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/08/2022 16:34, Borislav Petkov wrote:
-> [...]
+On Wed, Aug 17, 2022 at 12:50:50PM -0700, Boqun Feng wrote:
+> On Wed, Aug 17, 2022 at 12:39:48PM -0700, Kees Cook wrote:
+> > On Fri, Aug 05, 2022 at 05:41:48PM +0200, Miguel Ojeda wrote:
+> > > This adds a static assert to ensure `KSYM_NAME_LEN_BUFFER`
+> > > gets updated when `KSYM_NAME_LEN` changes.
+> > > 
+> > > The relationship used is one that keeps the new size (512+1)
+> > > close to the original buffer size (500).
+> > > 
+> > > Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+> > > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> > > Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+> > > ---
+> > >  scripts/kallsyms.c | 6 +++++-
+> > >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> > > index f3c5a2623f71..f543b1c4f99f 100644
+> > > --- a/scripts/kallsyms.c
+> > > +++ b/scripts/kallsyms.c
+> > > @@ -33,7 +33,11 @@
+> > >  #define KSYM_NAME_LEN		128
+> > >  
+> > >  /* A substantially bigger size than the current maximum. */
+> > > -#define KSYM_NAME_LEN_BUFFER	499
+> > > +#define KSYM_NAME_LEN_BUFFER	512
+> > > +_Static_assert(
+> > > +	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
+> > > +	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
+> > > +);
+> > 
+> > Why not just make this define:
+> > 
+> > #define KSYM_NAME_LEN_BUFFER (KSYM_NAME_LEN * 4)
+> > 
+> > ? If there's a good reason not it, please put it in the commit log.
+> > 
 > 
-> What is "the failure risk for kdump"?
+> Because KSYM_NAME_LEN_BUFFER is used as a string by stringify() in
+> fscanf(), defining it as (KSYM_NAME_LEN * 4) will produce a string
 > 
-> Some of the notifiers which run before kdump might fail and thus prevent
-> the machine from kdumping?
->
-
-Exactly; some notifiers could break the machine and prevent a successful
-kdump. The EDAC one is consider medium risk, due to invasive operations
-(register readings on panic situation).
-
-
-> [...] 
-> My question stands: if kdump is loaded and the s10_edac_dberr_handler()
-> does not read the the fatal errors and they don't get shown in dmesg
-> before the machine panics, how do you intend to show that information to
-> the user?
+> 	"128 * 4"
 > 
-> Because fatal errors are something you absolutely wanna show, at least,
-> in dmesg!
+> after stringify() and that doesn't work with fscanf().
+
+Ah yeah. Thanks!
+
+> Miguel, maybe we can add something below in the commit log?
 > 
-> I don't think you can "read" the errors from vmcore - they need to be
-> read from the hw registers before the machine dies.
-> 
+> `KSYM_NAME_LEN_BUFFER` cannot be defined as an expression, because it
+> gets stringified in the fscanf() format. Therefore a _Static_assert() is
+> needed.
 
-My understanding is the same as yours, i.e., this is not possible to
-collect from vmcore, it requires register reading. But again: if you
-kdump your machine today, you won't collect this information, patch
-changed nothing in that regard.
+Yeah, please add a source comment for that. :)
 
-The one thing it changes is that you'd skip the altera register dump if
-kdump is set AND you managed to also set "crash_kexec_post_notifiers".
-
-In case you / Dinh / Tony disagrees with the patch, it's fine and we can
-discard it, but then this notifier couldn't run early in the refactor we
-are doing, it'd postponed to run later. This are is full of trade-offs,
-we just need to choose what compromise solution is preferred by the
-majority of developers =)
-
-Cheers,
-
-
-Guilherme
+-- 
+Kees Cook
