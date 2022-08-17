@@ -2,97 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A21D9C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EFDC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241545AbiHQTlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
+        id S241557AbiHQTl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241660AbiHQTkg (ORCPT
+        with ESMTP id S241580AbiHQTk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:40:36 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69738A4B3A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:40:35 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98b0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b0:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C36101EC0230;
-        Wed, 17 Aug 2022 21:40:29 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1660765229;
+        Wed, 17 Aug 2022 15:40:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C6AA5C57
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:40:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660765219;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=44GACs/e0WleSjvrDsLYa/d5aVKDfRJalm17EdZtIGw=;
-        b=b/QFgs/QzwtnLR2Oj1km1LH2suhnkYt09N2b/jgWEHTjmpaU8vZL3EEaa51cbdbev4Nybi
-        7sFZWtVmAgxSp4Do+dTJkjF93aSkow6BpXcX+y1tid9bfeHoYLKlq4ajIc/PXWwRTv7/Cf
-        cAZBEZslpeOmqwtJfHUxeMpYTRgG4+Q=
-Date:   Wed, 17 Aug 2022 21:40:29 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Saurabh Sengar <ssengar@linux.microsoft.com>
-Cc:     ssengar@microsoft.com, mikelley@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, peterz@infradead.org, tim.c.chen@linux.intel.com,
-        will@kernel.org, song.bao.hua@hisilicon.com,
-        suravee.suthikulpanit@amd.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86/cacheinfo: Don't use cpu_llc_shared_map for
- !CONFIG_SMP
-Message-ID: <Yv1ELaWHbRfvdt/p@zn.tnic>
-References: <1660148115-302-1-git-send-email-ssengar@linux.microsoft.com>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=arx/gNMaBWSMzIFnbDvjSVEfRTMKGfLtAKbqa9ATj4s=;
+        b=fHPJczi2aW/guvebqxBt5P53jFXoQYyRckr352YheGkY7MbjnH5H3qKvbVoU4f+C6uVWok
+        A4zxfvXyyf0PRzWm59y6oLnOXmcuACujmlAgUw9KM9surTmVWnutDND3yMJj034aaxs2tK
+        yNq/oEQguowVoaO2XPIhWvTZa7mtDP4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-8b0LozJWNseAMn9KpgE_Yg-1; Wed, 17 Aug 2022 15:40:16 -0400
+X-MC-Unique: 8b0LozJWNseAMn9KpgE_Yg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 25F49805B9A;
+        Wed, 17 Aug 2022 19:40:14 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.18.168])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D356C492CA5;
+        Wed, 17 Aug 2022 19:40:12 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        hersen wu <hersenxs.wu@amd.com>, Roman Li <Roman.Li@amd.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Hangyu Hua <hbh25y@gmail.com>, He Ying <heying24@huawei.com>,
+        Dave Airlie <airlied@redhat.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Fernando Ramos <greenfoo@u92.eu>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC v4 09/17] drm/display/dp_mst: Don't open code modeset checks for releasing time slots
+Date:   Wed, 17 Aug 2022 15:38:38 -0400
+Message-Id: <20220817193847.557945-10-lyude@redhat.com>
+In-Reply-To: <20220817193847.557945-1-lyude@redhat.com>
+References: <20220817193847.557945-1-lyude@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1660148115-302-1-git-send-email-ssengar@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 09:15:15AM -0700, Saurabh Sengar wrote:
-> cpu_llc_shared_map is always declared and defined, but populated in
-> arch/x86/kernel/smpboot.c which only builds for CONFIG_SMP=y. For
-> UniProcessor builds this mask is never populated and hence invalid.
-> Current code doesn't handle the case of AMD UniProcessor correctly,
+I'm not sure why, but at the time I originally wrote the find/release time
+slot helpers I thought we should avoid keeping modeset tracking out of the
+MST helpers. In retrospect though there's no actual good reason to do
+this, and the logic has ended up being identical across all the drivers
+using the helpers. Also, it needs to be fixed anyway so we don't break
+things when going atomic-only with MST.
 
-What is "AMD UniProcessor"?
+So, let's just move this code into drm_dp_atomic_release_time_slots() and
+stop open coding it.
 
-> which results "shared_cpu_map" and "shared_cpu_list" files missing from
-> sysfs entries for l3 cache. This patch fixes this issue.
-
-What issue exactly?
-
-What is the real life use case for this?
-
-> This code used to work because of a another bug in 'cpumask_next',
-> where in the CONFIG_SMP=n case the cpumask_next() ignores empty mask
-> that results as if CPU 0 was set. This bug in 'cpumask_next' was fixed by
-> following commit, which exposes the cpu_llc_shared_map bug.
-> 
-> b81dce77ced ("cpumask: Fix invalid uniprocessor mask assumption")
-> 
-> Fixes: 2b83809a5e ("x86/cpu/amd: Derive L3 shared_cpu_map from cpu_llc_shared_mask")
-
-Add
-
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
 ---
-[core]
-        abbrev = 12
+ .../display/amdgpu_dm/amdgpu_dm_mst_types.c   | 29 +++----------------
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 21 ++++++++++++--
+ drivers/gpu/drm/i915/display/intel_dp_mst.c   | 24 +--------------
+ drivers/gpu/drm/nouveau/dispnv50/disp.c       | 21 --------------
+ 4 files changed, 23 insertions(+), 72 deletions(-)
 
-[alias]
-        one = show -s --pretty='format:%h (\"%s\")'
----
-
-to your git .config so that when you do
-
-$ git one <commit id>
-
-you can get the proper formatting and abbreviated sha1 for commits.
-
-Thx.
-
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
+index 655d63b20b33..7a0d6cfa77f5 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
+@@ -447,34 +447,13 @@ dm_dp_mst_detect(struct drm_connector *connector,
+ }
+ 
+ static int dm_dp_mst_atomic_check(struct drm_connector *connector,
+-				struct drm_atomic_state *state)
++				  struct drm_atomic_state *state)
+ {
+-	struct drm_connector_state *new_conn_state =
+-			drm_atomic_get_new_connector_state(state, connector);
+-	struct drm_connector_state *old_conn_state =
+-			drm_atomic_get_old_connector_state(state, connector);
+ 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
+-	struct drm_crtc_state *new_crtc_state;
+-	struct drm_dp_mst_topology_mgr *mst_mgr;
+-	struct drm_dp_mst_port *mst_port;
++	struct drm_dp_mst_topology_mgr *mst_mgr = &aconnector->mst_port->mst_mgr;
++	struct drm_dp_mst_port *mst_port = aconnector->port;
+ 
+-	mst_port = aconnector->port;
+-	mst_mgr = &aconnector->mst_port->mst_mgr;
+-
+-	if (!old_conn_state->crtc)
+-		return 0;
+-
+-	if (new_conn_state->crtc) {
+-		new_crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
+-		if (!new_crtc_state ||
+-		    !drm_atomic_crtc_needs_modeset(new_crtc_state) ||
+-		    new_crtc_state->enable)
+-			return 0;
+-		}
+-
+-	return drm_dp_atomic_release_time_slots(state,
+-						mst_mgr,
+-						mst_port);
++	return drm_dp_atomic_release_time_slots(state, mst_mgr, mst_port);
+ }
+ 
+ static const struct drm_connector_helper_funcs dm_dp_mst_connector_helper_funcs = {
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index d701e5b819b8..aa6dcd9ff6a5 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4473,14 +4473,29 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+ {
+ 	struct drm_dp_mst_topology_state *topology_state;
+ 	struct drm_dp_mst_atomic_payload *payload;
+-	struct drm_connector_state *conn_state;
++	struct drm_connector_state *old_conn_state, *new_conn_state;
++
++	old_conn_state = drm_atomic_get_old_connector_state(state, port->connector);
++	if (!old_conn_state->crtc)
++		return 0;
++
++	/* If the CRTC isn't disabled by this state, don't release it's payload */
++	new_conn_state = drm_atomic_get_new_connector_state(state, port->connector);
++	if (new_conn_state->crtc) {
++		struct drm_crtc_state *crtc_state =
++			drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
++
++		if (!crtc_state ||
++		    !drm_atomic_crtc_needs_modeset(crtc_state) ||
++		    crtc_state->enable)
++			return 0;
++	}
+ 
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+ 	if (IS_ERR(topology_state))
+ 		return PTR_ERR(topology_state);
+ 
+-	conn_state = drm_atomic_get_old_connector_state(state, port->connector);
+-	topology_state->pending_crtc_mask |= drm_crtc_mask(conn_state->crtc);
++	topology_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
+ 
+ 	payload = drm_atomic_get_mst_payload_state(topology_state, port);
+ 	if (WARN_ON(!payload)) {
+diff --git a/drivers/gpu/drm/i915/display/intel_dp_mst.c b/drivers/gpu/drm/i915/display/intel_dp_mst.c
+index 1cebbc51d8fa..1b067cd73261 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp_mst.c
++++ b/drivers/gpu/drm/i915/display/intel_dp_mst.c
+@@ -308,13 +308,10 @@ intel_dp_mst_atomic_check(struct drm_connector *connector,
+ 			  struct drm_atomic_state *_state)
+ {
+ 	struct intel_atomic_state *state = to_intel_atomic_state(_state);
+-	struct drm_connector_state *new_conn_state =
+-		drm_atomic_get_new_connector_state(&state->base, connector);
+ 	struct drm_connector_state *old_conn_state =
+ 		drm_atomic_get_old_connector_state(&state->base, connector);
+ 	struct intel_connector *intel_connector =
+ 		to_intel_connector(connector);
+-	struct drm_crtc *new_crtc = new_conn_state->crtc;
+ 	struct drm_dp_mst_topology_mgr *mgr;
+ 	int ret;
+ 
+@@ -326,27 +323,8 @@ intel_dp_mst_atomic_check(struct drm_connector *connector,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!old_conn_state->crtc)
+-		return 0;
+-
+-	/* We only want to free VCPI if this state disables the CRTC on this
+-	 * connector
+-	 */
+-	if (new_crtc) {
+-		struct intel_crtc *crtc = to_intel_crtc(new_crtc);
+-		struct intel_crtc_state *crtc_state =
+-			intel_atomic_get_new_crtc_state(state, crtc);
+-
+-		if (!crtc_state ||
+-		    !drm_atomic_crtc_needs_modeset(&crtc_state->uapi) ||
+-		    crtc_state->uapi.enable)
+-			return 0;
+-	}
+-
+ 	mgr = &enc_to_mst(to_intel_encoder(old_conn_state->best_encoder))->primary->dp.mst_mgr;
+-	ret = drm_dp_atomic_release_time_slots(&state->base, mgr, intel_connector->port);
+-
+-	return ret;
++	return drm_dp_atomic_release_time_slots(&state->base, mgr, intel_connector->port);
+ }
+ 
+ static void clear_act_sent(struct intel_encoder *encoder,
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
+index c55af5d78ea2..5669c8d747d7 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
++++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
+@@ -1255,27 +1255,6 @@ nv50_mstc_atomic_check(struct drm_connector *connector,
+ {
+ 	struct nv50_mstc *mstc = nv50_mstc(connector);
+ 	struct drm_dp_mst_topology_mgr *mgr = &mstc->mstm->mgr;
+-	struct drm_connector_state *new_conn_state =
+-		drm_atomic_get_new_connector_state(state, connector);
+-	struct drm_connector_state *old_conn_state =
+-		drm_atomic_get_old_connector_state(state, connector);
+-	struct drm_crtc_state *crtc_state;
+-	struct drm_crtc *new_crtc = new_conn_state->crtc;
+-
+-	if (!old_conn_state->crtc)
+-		return 0;
+-
+-	/* We only want to free VCPI if this state disables the CRTC on this
+-	 * connector
+-	 */
+-	if (new_crtc) {
+-		crtc_state = drm_atomic_get_new_crtc_state(state, new_crtc);
+-
+-		if (!crtc_state ||
+-		    !drm_atomic_crtc_needs_modeset(crtc_state) ||
+-		    crtc_state->enable)
+-			return 0;
+-	}
+ 
+ 	return drm_dp_atomic_release_time_slots(state, mgr, mstc->port);
+ }
 -- 
-Regards/Gruss,
-    Boris.
+2.37.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
