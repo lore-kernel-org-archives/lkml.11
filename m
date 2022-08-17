@@ -2,86 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01958C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0D0C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiHQLMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 07:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57600 "EHLO
+        id S234906AbiHQLN3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 07:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233689AbiHQLMJ (ORCPT
+        with ESMTP id S233689AbiHQLNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 07:12:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E35676772
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 04:12:08 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D7CD6113E;
-        Wed, 17 Aug 2022 04:12:08 -0700 (PDT)
-Received: from [10.57.13.141] (unknown [10.57.13.141])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 315443F67D;
-        Wed, 17 Aug 2022 04:12:07 -0700 (PDT)
-Message-ID: <4f5e43ca-c02a-07bd-0c8e-1a90be49fec9@arm.com>
-Date:   Wed, 17 Aug 2022 12:12:03 +0100
+        Wed, 17 Aug 2022 07:13:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14862BFB
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 04:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660734802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=W+sLLaeBE1j3XYvvfHj8CIQYnxXwO6PchoTlAGo5JNoJfOc4FdMl3+sl3GnYg0QJI95BHy
+        31wZ36RB5giJ1Zi1nDvyMvybWBR1zikG80xq6iDexQKirVbYe0Y4TIzpOcEOr+EZPXTBjV
+        XlPE/UsHk1TukmW35H/jA675KcQH/JU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-154-yFvDoMJANbaLo_1uqfzEaA-1; Wed, 17 Aug 2022 07:13:03 -0400
+X-MC-Unique: yFvDoMJANbaLo_1uqfzEaA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E0C3C29DD9B4;
+        Wed, 17 Aug 2022 11:13:01 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BD893403340;
+        Wed, 17 Aug 2022 11:13:01 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] Preparation for fd-based guest private memory
+Date:   Wed, 17 Aug 2022 07:12:58 -0400
+Message-Id: <20220817111258.1778067-1-pbonzini@redhat.com>
+In-Reply-To: <20220816125322.1110439-1-chao.p.peng@linux.intel.com>
+References: 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 2/3] iova: Remove magazine BUG_ON() checks
-Content-Language: en-GB
-To:     John Garry <john.garry@huawei.com>, joro@8bytes.org,
-        will@kernel.org
-Cc:     iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <1660730984-30333-1-git-send-email-john.garry@huawei.com>
- <1660730984-30333-3-git-send-email-john.garry@huawei.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1660730984-30333-3-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-17 11:09, John Garry wrote:
-> Two of the magazine helpers have BUG_ON() checks, as follows:
-> - iova_magazine_pop() - here we ensure that the mag is not empty. However we
->    already ensure that in the only caller, __iova_rcache_get().
-> - iova_magazine_push() - here we ensure that the mag is not full. However
->    we already ensure that in the only caller, __iova_rcache_insert().
-> 
-> As described, the two bug checks are pointless so drop them.
+Queued, thanks.
 
-In some ways it's logical to have assertions to make sure that callers 
-*are* already checking so as not to call incorrectly. However I'm 
-inclined to agree that this particular case is very niche, with little 
-chance of any new callers being added, so they're not offering much 
-value, especially on performance-critical paths.
+Paolo
 
-Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->   drivers/iommu/iova.c | 4 ----
->   1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 580fdf669922..8aece052ce72 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -694,8 +694,6 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->   	int i;
->   	unsigned long pfn;
->   
-> -	BUG_ON(iova_magazine_empty(mag));
-> -
->   	/* Only fall back to the rbtree if we have no suitable pfns at all */
->   	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
->   		if (i == 0)
-> @@ -710,8 +708,6 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->   
->   static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
->   {
-> -	BUG_ON(iova_magazine_full(mag));
-> -
->   	mag->pfns[mag->size++] = pfn;
->   }
->   
