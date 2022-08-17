@@ -2,355 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EA3C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16107C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236062AbiHQM3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
+        id S239446AbiHQMbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235468AbiHQM3W (ORCPT
+        with ESMTP id S233642AbiHQMbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:29:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422B04D26C;
-        Wed, 17 Aug 2022 05:29:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6F3260EFA;
-        Wed, 17 Aug 2022 12:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60D14C433D6;
-        Wed, 17 Aug 2022 12:29:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660739360;
-        bh=0myKy//ZOH7CI7YHAQxN5AfgVgQSEUW5JZy5L4GGJjE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h1vEHDIENirfCK/NDQCzyZdKPJ4QeeT4pahqJyiKJ9fz4A3sDIvwTX5hbegzC2aeV
-         oRouL+EEAzQIWNuUJU1Yj/4y6P/zi+H2K4CSsULGtx8WjkAxEv+2RuyShJAPdusF1s
-         kbF1iU9CXB71txZhR5MxB9aJkRpYHp2DakfFfBbPSmHr6HNyAz/vBM9phqcPPT0cL6
-         OcHMXzwk0YGWL1NhxF18lEgaiW8Kb10aoTZxeeJruH9rvXpS9Lt8esnxBS4AbQgADq
-         OkQvFIsUJTRF4pe39oU+tUwQGg9IfHlDeHnUi8cB9cMj/vy7+90SWuPkoVp5BOWih6
-         2wmBaj98puyig==
-Date:   Wed, 17 Aug 2022 14:29:15 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     =?utf-8?B?5aSp6LWQ5byg?= <zhangtianci.1997@bytedance.com>
-Cc:     Amir Goldstein <amir73il@gmail.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
+        Wed, 17 Aug 2022 08:31:12 -0400
+Received: from mail.itouring.de (mail.itouring.de [IPv6:2a01:4f8:a0:4463::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F4B83F0C;
+        Wed, 17 Aug 2022 05:31:11 -0700 (PDT)
+Received: from tux.applied-asynchrony.com (p5ddd78be.dip0.t-ipconnect.de [93.221.120.190])
+        by mail.itouring.de (Postfix) with ESMTPSA id 14C27103762;
+        Wed, 17 Aug 2022 14:31:10 +0200 (CEST)
+Received: from [192.168.100.221] (hho.applied-asynchrony.com [192.168.100.221])
+        by tux.applied-asynchrony.com (Postfix) with ESMTP id C18A5F01600;
+        Wed, 17 Aug 2022 14:31:09 +0200 (CEST)
+Subject: Re: stalling IO regression since linux 5.12, through 5.18
+To:     Chris Murphy <lists@colorremedies.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Jens Axboe <axboe@kernel.dk>, Jan Kara <jack@suse.cz>,
+        Paolo Valente <paolo.valente@linaro.org>
+Cc:     Linux-RAID <linux-raid@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
-        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Subject: Re: [External] Re: [PATCH] ovl: Do not override fsuid and fsgid in
- ovl_link()
-Message-ID: <20220817122915.k6aps55sjr4hnm5j@wittgenstein>
-References: <20220817034559.44936-1-zhangtianci.1997@bytedance.com>
- <CAOQ4uxgrkPYBkZG--70s4PnUiT0ht=GdWrrm+aY4ZHoZjZrWAw@mail.gmail.com>
- <CAP4dvsfqxEGJtQgSdfN+nxbyMAdm2rj_tmUeqXc8syPyK98MHA@mail.gmail.com>
- <CAOQ4uxhD0an61z5wArn=uRsXF7+_3soNgPB7ikp2HYX8nQGkCg@mail.gmail.com>
- <CAOQ4uxj_XhC51yS0QCoo8kYWmMxm1XQH4bhoSMZReUd7nc2UFA@mail.gmail.com>
- <20220817102722.wny7x5iwf62edpkd@wittgenstein>
- <20220817102951.xnvesg3a7rbv576x@wittgenstein>
- <CAP4dvscpm2FyuJ6gqZz=32ffrN9BORaa=Q0grPEgB+KUXbJniw@mail.gmail.com>
- <20220817115638.2etj6ruuutjurgjv@wittgenstein>
+        Josef Bacik <josef@toxicpanda.com>
+References: <e38aa76d-6034-4dde-8624-df1745bb17fc@www.fastmail.com>
+ <YvPvghdv6lzVRm/S@localhost.localdomain>
+ <2220d403-e443-4e60-b7c3-d149e402c13e@www.fastmail.com>
+ <cb1521d5-8b07-48d8-8b88-ca078828cf69@www.fastmail.com>
+ <ad78a32c-7790-4e21-be9f-81c5848a4953@www.fastmail.com>
+ <e36fe80f-a33b-4750-b593-3108ba169611@www.fastmail.com>
+ <CAEzrpqe3rRTvH=s+-aXTtupn-XaCxe0=KUe_iQfEyHWp-pXb5w@mail.gmail.com>
+ <d48c7e95-e21e-dcdc-a776-8ae7bed566cb@kernel.dk>
+ <61e5ccda-a527-4fea-9850-91095ffa91c4@www.fastmail.com>
+ <4995baed-c561-421d-ba3e-3a75d6a738a3@www.fastmail.com>
+ <dcd8beea-d2d9-e692-6e5d-c96b2d29dfd1@suse.com>
+ <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
+ <7c830487-95a6-b008-920b-8bc4a318f10a@applied-asynchrony.com>
+ <8b361f8e-cc4f-466c-90f0-031a43436af2@www.fastmail.com>
+From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+Organization: Applied Asynchrony, Inc.
+Message-ID: <6eece869-5cab-57b6-6f8f-98eaf65a742f@applied-asynchrony.com>
+Date:   Wed, 17 Aug 2022 14:31:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <8b361f8e-cc4f-466c-90f0-031a43436af2@www.fastmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220817115638.2etj6ruuutjurgjv@wittgenstein>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 01:56:43PM +0200, Christian Brauner wrote:
-> On Wed, Aug 17, 2022 at 07:36:44PM +0800, 天赐张 wrote:
-> > On Wed, Aug 17, 2022 at 6:29 PM Christian Brauner <brauner@kernel.org> wrote:
-> > >
-> > > On Wed, Aug 17, 2022 at 12:27:27PM +0200, Christian Brauner wrote:
-> > > > On Wed, Aug 17, 2022 at 12:55:22PM +0300, Amir Goldstein wrote:
-> > > > > On Wed, Aug 17, 2022 at 12:53 PM Amir Goldstein <amir73il@gmail.com> wrote:
-> > > > > >
-> > > > > > On Wed, Aug 17, 2022 at 12:11 PM 天赐张 <zhangtianci.1997@bytedance.com> wrote:
-> > > > > > >
-> > > > > > > On Wed, Aug 17, 2022 at 3:36 PM Amir Goldstein <amir73il@gmail.com> wrote:
-> > > > > > > >
-> > > > > > > > On Wed, Aug 17, 2022 at 6:49 AM Zhang Tianci
-> > > > > > > > <zhangtianci.1997@bytedance.com> wrote:
-> > > > > > > > >
-> > > > > > > > > ovl_link() did not create a new inode after commit
-> > > > > > > > > 51f7e52dc943 ("ovl: share inode for hard link"), so
-> > > > > > > > > in ovl_create_or_link() we should not override cred's
-> > > > > > > > > fsuid and fsgid when called by ovl_link().
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Zhang Tianci <zhangtianci.1997@bytedance.com>
-> > > > > > > > > Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-> > > > > > > > > ---
-> > > > > > > > >  fs/overlayfs/dir.c | 4 ++--
-> > > > > > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-> > > > > > > > > index 6b03457f72bb..568d338032db 100644
-> > > > > > > > > --- a/fs/overlayfs/dir.c
-> > > > > > > > > +++ b/fs/overlayfs/dir.c
-> > > > > > > > > @@ -595,9 +595,9 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
-> > > > > > > > >         err = -ENOMEM;
-> > > > > > > > >         override_cred = prepare_creds();
-> > > > > > > > >         if (override_cred) {
-> > > > > > > > > -               override_cred->fsuid = inode->i_uid;
-> > > > > > > > > -               override_cred->fsgid = inode->i_gid;
-> > > > > > > > >                 if (!attr->hardlink) {
-> > > > > > > > > +                       override_cred->fsuid = inode->i_uid;
-> > > > > > > > > +                       override_cred->fsgid = inode->i_gid;
-> > > > > > > > >                         err = security_dentry_create_files_as(dentry,
-> > > > > > > > >                                         attr->mode, &dentry->d_name, old_cred,
-> > > > > > > > >                                         override_cred);
-> > > > > > > > > --
-> > > > > > > >
-> > > > > > > > This change looks incorrect.
-> > > > > > > > Unless I am missing something, fsuid/fsgid still need to
-> > > > > > > > be overridden for calling link() on underlying fs.
-> > > > > > > > What made you do this change?
-> > > > > > > >
-> > > > > > > > Thanks,
-> > > > > > > > Amir.
-> > > > > > >
-> > > > > > > Hi Amir,
-> > > > > > >
-> > > > > > > I ran into an error when I tested overlay on fuse:
-> > > > > > >   $ mkdir /lower /fuse /merge
-> > > > > > >   $ mount -t fuse /fuse
-> > > > > > >   $ mkdir /fuse/upper /fuse/work
-> > > > > > >   $ mount -t overlay /merge -o lowerdir=/lower,upperdir=/fuse/upper,workdir=work
-> > > > > > >   $ touch /merge/file
-> > > > > > >   $ chown bin.bin /merge/file // the file's caller becomes "bin"
-> > > > > > >   $ ln /merge/file /merge/lnkfile
-> > > > > > >
-> > > > > > > Then I got an error(EACCES) because fuse daemon checks the link()'s
-> > > > > > > caller is "bin", it denied this request.
-> > > > > > > I browsed the changing history of ovl_link(). There are two key commits:
-> > > > > > > The first is commit bb0d2b8ad296 ("ovl: fix sgid on directory") which
-> > > > > > > overrides the cred's fsuid/fsgid using the new inode. The new inode's
-> > > > > > > owner is initialized by inode_init_owner(), and inode->fsuid is
-> > > > > > > assigned to the current user. So the override fsuid becomes the
-> > > > > > > current user. We know link() is actually modifying the directory, so
-> > > > > > > the caller must have the MAY_WRITE permission on the directory. The
-> > > > > > > current caller may should have this permission. I think this is
-> > > > > > > acceptable to use the caller's fsuid(But I still feel a little
-> > > > > > > conflicted with the overlay's design).
-> > > > > > > The second is commit 51f7e52dc943 ("ovl: share inode for hard link")
-> > > > > > > which removed the inode creation in ovl_link(). This commit move
-> > > > > > > inode_init_owner() into ovl_create_object(), so the ovl_link() just
-> > > > > > > give the old inode to ovl_create_or_link(). Then the override fsuid
-> > > > > > > becomes the old inode's fsuid, neither the caller nor the overlay's
-> > > > > > > creator! So I think this is incorrect.
-> > > > > > > I think the link() should be like unlink(), overlay fs should just use
-> > > > > > > the creator cred to do underlying fs's operations.
-> > > > > > >
-> > > > > >
-> > > > > > I see. The reproducer and explanation belong in the commit message.
-> > > > > >
-> > > > > > Your argument makes sense to me, but CC Christian to make
-> > > > > > sure I am not missing anything related to ACLs and what not.
-> > > > >
-> > > > > Once again with correct email address...
-> > > >
-> > > > So we have:
-> > > >
-> > > > ovl_create_object()
-> > > > -> ovl_override_creds(ovl_sb)
-> > > > -> ovl_new_inode()
-> > > >    -> inode_init_owner()
-> > > >       {
-> > > >               inode->i_uid = current_fsuid();
-> > > >               inode->i_gid = current_fsgid();
-> > 
-> > In inode_init_owner(), the inode->i_gid may inherit from parent dir.
-> > And this is the main purpose of the commit bb0d2b8ad296 ("ovl: fix
-> > sgid on directory").
-> > 
-> > > >       }
-> > > > -> ovl_create_or_link(inode, ...)
-> > > > -> prepare_creds() // Copy of caller's creds
-> > >
-> > > s/caller's/creator's/
-> > >
-> > > > {
-> > > >         override_creds->fsuid = inode->i_uid;
-> > > >         override_creds->fsgid = inode->i_gid;
-> > > > }
-> > > > -> revert_creds()
-> > > >
-> > > > which afaict means that the mounter's credentials are used apart from
-> > > > the fs{g,u}id which is taken from inode->i_{g,u}id which should
-> > > > correspond to current_fs{g,u}id().
-> > > >
-> > > > The commit that is pointed out in the patch
-> > > > 51f7e52dc943 ("ovl: share inode for hard link")
-> > > > seems to have broken that assumption.
-> > > >
-> > > > Given that the intention was to use the creator's creds _with the
-> > > > caller's fs{g,u}id_ wouldn't it make more sense to simply ensure that
-> > > > the caller's fs{g,u}id are always used instead of using the full
-> > > > creator's creds just for the link operation? So something like this
-> > > > (untested):
-> > > >
-> > > > diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-> > > > index 6b03457f72bb..4a3ee16a6d70 100644
-> > > > --- a/fs/overlayfs/dir.c
-> > > > +++ b/fs/overlayfs/dir.c
-> > > > @@ -575,6 +575,9 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
-> > > >         const struct cred *old_cred;
-> > > >         struct cred *override_cred;
-> > > >         struct dentry *parent = dentry->d_parent;
-> > > > +       /* Retrieve caller's fs{g,u}id before we override creds below. */
-> > > > +       kuid_t caller_fsuid = current_fsuid();
-> > > > +       kgid_t caller_fsgid = current_fsgid();
-> > > >
-> > > >         err = ovl_copy_up(parent);
-> > > >         if (err)
-> > > > @@ -595,8 +598,8 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
-> > > >         err = -ENOMEM;
-> > > >         override_cred = prepare_creds();
-> > > >         if (override_cred) {
-> > > > -               override_cred->fsuid = inode->i_uid;
-> > > > -               override_cred->fsgid = inode->i_gid;
-> > > > +               override_cred->fsuid = caller_fsuid;
-> > > > +               override_cred->fsgid = caller_fsgid;
-> > 
-> > So the override_cred->fsgid should be inode->i_gid if the inode is a new inode.
-> > 
-> > > >                 if (!attr->hardlink) {
-> > > >                         err = security_dentry_create_files_as(dentry,
-> > > >                                         attr->mode, &dentry->d_name, old_cred,
-> > 
-> > So your meaning should be like this:
-> > 
-> > diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-> > index 6b03457f72bb..9aead6ddc071 100644
-> > --- a/fs/overlayfs/dir.c
-> > +++ b/fs/overlayfs/dir.c
-> > @@ -575,6 +575,8 @@ static int ovl_create_or_link(struct dentry
-> > *dentry, struct inode *inode,
-> >         const struct cred *old_cred;
-> >         struct cred *override_cred;
-> >         struct dentry *parent = dentry->d_parent;
-> > +       kuid_t caller_fsuid = current_fsuid();
-> > +       kgid_t caller_fsgid = current_fsgid();
-> > 
-> >         err = ovl_copy_up(parent);
-> >         if (err)
-> > @@ -595,9 +597,9 @@ static int ovl_create_or_link(struct dentry
-> > *dentry, struct inode *inode,
-> >         err = -ENOMEM;
-> >         override_cred = prepare_creds();
-> >         if (override_cred) {
-> > -               override_cred->fsuid = inode->i_uid;
-> > -               override_cred->fsgid = inode->i_gid;
-> >                 if (!attr->hardlink) {
-> > +                       override_cred->fsuid = inode->i_uid;
-> > +                       override_cred->fsgid = inode->i_gid;
-> >                         err = security_dentry_create_files_as(dentry,
-> >                                         attr->mode, &dentry->d_name, old_cred,
-> >                                         override_cred);
-> > @@ -605,6 +607,9 @@ static int ovl_create_or_link(struct dentry
-> > *dentry, struct inode *inode,
-> >                                 put_cred(override_cred);
-> >                                 goto out_revert_creds;
-> >                         }
-> > +               } else {
-> > +                       override_cred->fsuid = caller_fsuid;
-> > +                       override_cred->fsgid = caller_fsgid;
-> >                 }
-> >                 put_cred(override_creds(override_cred));
-> >                 put_cred(override_cred);
+On 2022-08-17 13:57, Chris Murphy wrote:
 > 
-> Hah, wait. I had a pretty obvious braino when I did that. I forgot to
-> account for setgid handling in inode_init_owner(). Let me take another
-> close look...
+> 
+> On Wed, Aug 17, 2022, at 5:52 AM, Holger Hoffstätte wrote:
+>> On 2022-08-16 17:34, Chris Murphy wrote:
+>>>
+>>> On Tue, Aug 16, 2022, at 11:25 AM, Nikolay Borisov wrote:
+>>>> How about changing the scheduler either mq-deadline or noop, just
+>>>> to see if this is also reproducible with a different scheduler. I
+>>>> guess noop would imply the blk cgroup controller is going to be
+>>>> disabled
+>>>
+>>> I already reported on that: always happens with bfq within an hour or
+>>> less. Doesn't happen with mq-deadline for ~25+ hours. Does happen
+>>> with bfq with the above patches removed. Does happen with
+>>> cgroup.disabled=io set.
+>>>
+>>> Sounds to me like it's something bfq depends on and is somehow
+>>> becoming perturbed in a way that mq-deadline does not, and has
+>>> changed between 5.11 and 5.12. I have no idea what's under bfq that
+>>> matches this description.
+>>
+>> Chris, just a shot in the dark but can you try the patch from
+>>
+>> https://lore.kernel.org/linux-block/20220803121504.212071-1-yukuai1@huaweicloud.com/
+>>
+>> on top of something more recent than 5.12? Ideally 5.19 where it applies
+>> cleanly.
+> 
+> The problem doesn't reliably reproduce on 5.19. A patch for 5.12..5.18 would be much more testable.
 
-Ok, so if we look at all the callchains:
+If you look at the changes to sbitmap at:
 
-(1) .create = ovl_create()
-    -> ovl_create_object()
-       -> ovl_create_or_link()
-   
-(2) .mkdir = ovl_mkdir()
-    -> ovl_create_object()
-       -> ovl_create_or_link()
-   
-(3) .mknod = ovl_mknod()
-    -> ovl_create_object()
-       -> ovl_create_or_link()
-   
-(4) .symlink = ovl_symlink()
-    -> ovl_create_object()
-       -> ovl_create_or_link()
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/lib/sbitmap.c
 
-(5) .link = ovl_link()
-     -> ovl_create_or_link()
+you'll find that they are relatively recent, so Yukai's patch will probably also apply
+to 5.18 - I don't know. Also look at the most recent commit which mentions
+"Checking free bits when setting the target bits. Otherwise, it may reuse the busying bits."
 
-we see that (1) to (4) set the caller's fs{g,u}id to the
-inode->i_{g,u}id. That was instantiated by inode_init_owner(). This will
-be current_fs{g,u}id() of the caller unless the directory the file is
-created in was setgid in which case inode->i_gid can be different from
-current_fsgid().
+Reusing the busy bits sounds "not great" either and (AFAIU) may also be a cause for
+lost wakeups, but I'm sure Jan and Ming know all that better than me.
 
-So iiuc, taking the inode->i_{g,u}id is done to get fsgid set to
-inode->i_gid when the parent directory is setgid.
+Especially Jan's suggestions re. disabling BFQ cgroup support is probably the easiest
+thing to try first. What you're observing may not have a single root cause, and even if
+it does, it might not be where we suspect.
 
-But for (5) the inode->i_{g,u}id should be irrelevant because it's a
-hardlink and so we should just use the caller's fs{g,u}id. So with all
-that in mind we should be doing:
-
-diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-index 6b03457f72bb..74b3813eda47 100644
---- a/fs/overlayfs/dir.c
-+++ b/fs/overlayfs/dir.c
-@@ -646,6 +646,8 @@ static int ovl_create_object(struct dentry *dentry, int mode, dev_t rdev,
-        inode_init_owner(&init_user_ns, inode, dentry->d_parent->d_inode, mode);
-        attr.mode = inode->i_mode;
-
-+       attr.fsuid = inode->i_uid;
-+       attr.fsgid = inode->i_gid;
-        err = ovl_create_or_link(dentry, inode, &attr, false);
-        /* Did we end up using the preallocated inode? */
-        if (inode != d_inode(dentry))
-@@ -702,6 +704,7 @@ static int ovl_link(struct dentry *old, struct inode *newdir,
- {
-        int err;
-        struct inode *inode;
-+       struct ovl_cattr attr;
-
-        err = ovl_want_write(old);
-        if (err)
-@@ -728,9 +731,12 @@ static int ovl_link(struct dentry *old, struct inode *newdir,
-        inode = d_inode(old);
-        ihold(inode);
-
--       err = ovl_create_or_link(new, inode,
--                       &(struct ovl_cattr) {.hardlink = ovl_dentry_upper(old)},
--                       ovl_type_origin(old));
-+       attr = (struct ovl_cattr){
-+               .hardlink = ovl_dentry_upper(old),
-+               .fsuid = current_fsuid(),
-+               .fsgid = current_fsgid(),
-+       };
-+       err = ovl_create_or_link(new, inode, &attr, ovl_type_origin(old));
-        if (err)
-                iput(inode);
-
-diff --git a/fs/overlayfs/overlayfs.h b/fs/overlayfs/overlayfs.h
-index 87759165d32b..85043123a103 100644
---- a/fs/overlayfs/overlayfs.h
-+++ b/fs/overlayfs/overlayfs.h
-@@ -655,6 +655,8 @@ struct ovl_cattr {
-        umode_t mode;
-        const char *link;
-        struct dentry *hardlink;
-+       kuid_t fsuid;
-+       kgid_t fsgid;
- };
-
- #define OVL_CATTR(m) (&(struct ovl_cattr) { .mode = (m) })
-
-Using the full creator's credentials for just hardlinks seems odd to me
-when all creation requests use the caller's fs{g,u}id...
+-h
