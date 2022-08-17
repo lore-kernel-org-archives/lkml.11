@@ -2,85 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537C3C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBEB4C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241555AbiHQU4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
+        id S241745AbiHQU4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233797AbiHQU4A (ORCPT
+        with ESMTP id S241536AbiHQU4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:56:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D2FA7231
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660769758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UCPQMtqG0VB+k5U8mjKK0NLp4lpMVU6Bz0wA0P8dEHU=;
-        b=eY3BJdf2qBFDcCwQ8UpRrpOhitEvmBmjiCNtAX46l4lCKvZSYG/h0rnjEtRuJR5TSKprA/
-        FajRB4zkMBzRsPtQoVVS84B0DcMCGHlCWcL7szlSO98rCIwp6oZerK2OrTkxs55jVvdLVk
-        D+c0jnezGhGyLoyazW1u7WNnTWszRQo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-bPj_UI21ODiyJxAyER130Q-1; Wed, 17 Aug 2022 16:55:53 -0400
-X-MC-Unique: bPj_UI21ODiyJxAyER130Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B45B6802E5D;
-        Wed, 17 Aug 2022 20:55:52 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A05EAC15BB3;
-        Wed, 17 Aug 2022 20:55:50 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220816164435.0558ef94@kernel.org>
-References: <20220816164435.0558ef94@kernel.org> <20220816103452.479281-1-yin31149@gmail.com> <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk> <804153.1660684606@warthog.procyon.org.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     dhowells@redhat.com, Hawkins Jiawei <yin31149@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        bpf@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>
-Subject: Re: [PATCH] net: Fix suspicious RCU usage in bpf_sk_reuseport_detach()
+        Wed, 17 Aug 2022 16:56:32 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52B2A74EA;
+        Wed, 17 Aug 2022 13:56:30 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1F3C8200259;
+        Wed, 17 Aug 2022 22:56:29 +0200 (CEST)
+Received: from smtp.na-rdc02.nxp.com (usphx01srsp001v.us-phx01.nxp.com [134.27.49.11])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CC89020025B;
+        Wed, 17 Aug 2022 22:56:28 +0200 (CEST)
+Received: from right.am.freescale.net (right.am.freescale.net [10.81.116.134])
+        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id D3A264060D;
+        Wed, 17 Aug 2022 13:56:26 -0700 (MST)
+From:   Li Yang <leoyang.li@nxp.com>
+To:     Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     Li Yang <leoyang.li@nxp.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-binding: i2c-imx: add SoC specific compatible strings for layerscape
+Date:   Wed, 17 Aug 2022 15:56:22 -0500
+Message-Id: <20220817205623.22104-1-leoyang.li@nxp.com>
+X-Mailer: git-send-email 2.25.1.377.g2d2118b
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3974012.1660769749.1@warthog.procyon.org.uk>
-Date:   Wed, 17 Aug 2022 21:55:49 +0100
-Message-ID: <3974013.1660769749@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
+Add chip specific compatible strings for layerscape platforms to make it
+possible to do SoC specific fix-ups in the driver.
 
-> I like your version because it documents what the lock protecting this
-> field is. 
-> 
-> In fact should we also add && sock_owned_by_user(). Martin, WDYT? Would
-> that work for reuseport? Jakub S is fixing l2tp to hold the socket lock
-> while setting this field, yet most places take the callback lock...
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
+---
+ Documentation/devicetree/bindings/i2c/i2c-imx.yaml | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-So how do you want to proceed?  My first version of the patch with
-sock_owned_by_user()?
-
-David
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-imx.yaml b/Documentation/devicetree/bindings/i2c/i2c-imx.yaml
+index 01720e338b4c..85ee1282d6d2 100644
+--- a/Documentation/devicetree/bindings/i2c/i2c-imx.yaml
++++ b/Documentation/devicetree/bindings/i2c/i2c-imx.yaml
+@@ -18,6 +18,17 @@ properties:
+       - const: fsl,imx1-i2c
+       - const: fsl,imx21-i2c
+       - const: fsl,vf610-i2c
++      - items:
++          - enum:
++              - fsl,ls1012a-i2c
++              - fsl,ls1021a-i2c
++              - fsl,ls1028a-i2c
++              - fsl,ls1043a-i2c
++              - fsl,ls1046a-i2c
++              - fsl,ls1088a-i2c
++              - fsl,ls208xa-i2c
++              - fsl,lx2160a-i2c
++          - const: fsl,vf610-i2c
+       - items:
+           - const: fsl,imx35-i2c
+           - const: fsl,imx1-i2c
+-- 
+2.37.1
 
