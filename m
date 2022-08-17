@@ -2,163 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A31F3C32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E516C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241150AbiHQQtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S241172AbiHQQt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241002AbiHQQtK (ORCPT
+        with ESMTP id S241181AbiHQQth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:49:10 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A19B2ED68
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:49:01 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id q6-20020a17090a1b0600b001f558bbb924so1124633pjq.3
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:49:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=6fi31d4oZFoiAlastJlr4uk2tud8gMSfIkLdTl5R4Po=;
-        b=G6j6HwTSiblMTLD+qy/eK+MFUxGp81drgLLb6HCNJxAB8kfdio9xzGsQPZXkzx1yD/
-         f1i1B8dgDjaWt5f1m3rAwltz6vxpIdt85v7IziML9SHAnslSWa62rNYQWxFSNemcsli9
-         1q56ph3nHqVm89d8urWS8CuZaceQWEi8B8b/qJGVSvosPuPK8qCQN4T4wSKvb//9lkx9
-         zN83+N34psHqYCzpRUF/t8TiqCmss6FGJegeMqdytyzJROeA63ns60PgXTf++4+MH1Vp
-         OiSL+oIwQhlxp/jcZTlptzlZlAHxXUfdrauMbl1ABU6HJPs7nP1E46Zhasxm4Gc4saSR
-         U8hg==
+        Wed, 17 Aug 2022 12:49:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D6259274
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660754974;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/1ipQ5oQZFUN9YfGsBUkFyNrn9BZ6I7shHodgrk8s0Y=;
+        b=Yv/wf5iwER4NXZKqycipmy1JG1mDoh7OhYbihIPASOuTqeqsh9ZfEoZ8ksSRMIT5TiDJRT
+        KfCFAypos07DfrymDaDj3L+NfxHUJ8Vut6QbfOUicp5xPJjc9lq+TSZvmsKoaem20PAeqG
+        hvBya1EmshfgMzWY8U+Fc0gHh1tIqE4=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-413-tn3FEFwyPpqW1VBJvEn96A-1; Wed, 17 Aug 2022 12:49:31 -0400
+X-MC-Unique: tn3FEFwyPpqW1VBJvEn96A-1
+Received: by mail-ej1-f71.google.com with SMTP id js11-20020a17090797cb00b00730d73eac83so3141100ejc.19
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:49:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=6fi31d4oZFoiAlastJlr4uk2tud8gMSfIkLdTl5R4Po=;
-        b=hL79CShK0ecoQw/k3vCjHvZcN+wgd/4FA8lAMz2DHX3nBlyhzPnkyRxE9Fu8YvkeZw
-         x2Z9oG/V/YOKxYJ1XLEj8/faOysiZRSp0rlcn5PfyZVt6u9pQ/8DCCkIpAL3F6jMLPco
-         PoYkBraRgO+jdqFcBHVVmpoo4zrjS6Iy7rugAnGRJd6gQi65g4TiNik/j72ke/UGaBky
-         pOQkxUpMUTbsf2N8+SIM2AyL8c5uaW4j8KCXBFJ5NhtZO5BsXzexjH2LHhivwy3/ABj0
-         6n72sUXndwYg0YpMCUJ7/ooRw8IsJOfv/BsisWNauhtP8IZqJoG8YDMedQn2QlclKeka
-         rfzw==
-X-Gm-Message-State: ACgBeo3RLzD+RjmcgJp0ur85R0c9C1TOWRMdrSK8x+xp+XYf6V+0+u0B
-        l/0xtLrUbzn6QKjce7KbBns1qz70P2RTEFc=
-X-Google-Smtp-Source: AA6agR6BoEu8ZqNocP5kwKnBOuHffos9GZHKSREHvPSsPi4apunzh92jlUDI6Q6uAnuks6uBbKSAG8Ngm42Ejcg2
-X-Received: from joefradley-custom-96.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:831])
- (user=joefradley job=sendgmr) by 2002:a05:6a00:1d2a:b0:535:2aea:e8ea with
- SMTP id a42-20020a056a001d2a00b005352aeae8eamr8927987pfx.29.1660754940093;
- Wed, 17 Aug 2022 09:49:00 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 09:48:49 -0700
-In-Reply-To: <20220817164851.3574140-1-joefradley@google.com>
-Message-Id: <20220817164851.3574140-2-joefradley@google.com>
-Mime-Version: 1.0
-References: <20220817164851.3574140-1-joefradley@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH 1/2] kunit: add kunit.enable to enable/disable KUnit test
-From:   Joe Fradley <joefradley@google.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Brendan Higgins <brendan.higgins@linux.dev>,
-        David Gow <davidgow@google.com>
-Cc:     Joe Fradley <joefradley@google.com>, kernel-team@android.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=/1ipQ5oQZFUN9YfGsBUkFyNrn9BZ6I7shHodgrk8s0Y=;
+        b=ufXt33laSmVzrUnliQ6Yj9TPiFPcrTX+nYOeos0q+rtOLBdONUuoGdRfL3esiCTC+O
+         jglMlOqUmeDTJc9mbaU+3V3NX/a50TEYwzSaPc8KVTdfEuFWxye6mN7mLXFtmzNrbuBv
+         XLL4LyRKelNXrey/bv6I5rFq0JgBO7DTzmTfE5OoaKZpXVTvTLjNncD5spA9yaEhJ0dF
+         A+T+Tp5xMVkdcj9J6pgEqaOOmmdZAiTKj+wassjJwl63z8arpsOK5qf3JcIabOk1zqsz
+         J1JcOtB4pxeLF/Q1fUWVMyQPYs9lmCnRNAn3HbRk29g9c0xptDNgs3gtJIteJY4ziZfa
+         KIaw==
+X-Gm-Message-State: ACgBeo37/Y2vmqVYdhIRGZmPJYWyGiQpkUMGA+JiLRZ0qNSSJt2MB/7A
+        yEr+Yd4Grt8xwY/De53iLXLg0y4Wlas8Ap8ESoietRbrJuQUaSX3U1qBUw58mntzUTLKaEj/5Ck
+        MmQd0X2JLw8qqXaNr7AuevBCc
+X-Received: by 2002:a17:907:28d6:b0:731:100c:8999 with SMTP id en22-20020a17090728d600b00731100c8999mr17172348ejc.210.1660754970462;
+        Wed, 17 Aug 2022 09:49:30 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7MrOYH1NnxHco479ZJzy2zL+mc4tH6RAgfWX0tYEUKApZKrUDtPkzquVyBCD6/hlYsBWXJmw==
+X-Received: by 2002:a17:907:28d6:b0:731:100c:8999 with SMTP id en22-20020a17090728d600b00731100c8999mr17172340ejc.210.1660754970221;
+        Wed, 17 Aug 2022 09:49:30 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id u4-20020a50eac4000000b0043ba7df7a42sm11094531edp.26.2022.08.17.09.49.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 09:49:29 -0700 (PDT)
+Message-ID: <69d0b2c3-0c14-83c8-0913-4ee163f9c1df@redhat.com>
+Date:   Wed, 17 Aug 2022 18:49:21 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 2/9] KVM: x86: remove return value of kvm_vcpu_block
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        mlevitsk@redhat.com, vkuznets@redhat.com
+References: <20220811210605.402337-1-pbonzini@redhat.com>
+ <20220811210605.402337-3-pbonzini@redhat.com> <Yvwpb6ofD1S+Rqk1@google.com>
+ <78616cf8-2693-72cc-c2cc-5a849116ffc7@redhat.com>
+ <Yv0aHXcmuivyJDXw@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yv0aHXcmuivyJDXw@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the kunit.enable module parameter that will need to be
-set to true in addition to KUNIT being enabled for KUnit tests to run.
-The default value is true giving backwards compatibility. However, for
-the production+testing use case the new config option
-KUNIT_ENABLE_DEFAULT_DISABLED can be enabled to default kunit.enable to
-false requiring the tester to opt-in by passing kunit.enable=1 to
-the kernel.
+On 8/17/22 18:41, Sean Christopherson wrote:
+> On Wed, Aug 17, 2022, Paolo Bonzini wrote:
+>> On 8/17/22 01:34, Sean Christopherson wrote:
+>>> Isn't freeing up the return from kvm_vcpu_check_block() unnecessary?  Can't we
+>>> just do:
+>>>
+>>> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+>>> index 9f11b505cbee..ccb9f8bdeb18 100644
+>>> --- a/arch/x86/kvm/x86.c
+>>> +++ b/arch/x86/kvm/x86.c
+>>> @@ -10633,7 +10633,7 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
+>>>                   if (hv_timer)
+>>>                           kvm_lapic_switch_to_hv_timer(vcpu);
+>>>
+>>> -               if (!kvm_check_request(KVM_REQ_UNHALT, vcpu))
+>>> +               if (!kvm_arch_vcpu_runnable(vcpu))
+>>>                           return 1;
+>>>           }
+>>>
+>>>
+>>> which IMO is more intuitive and doesn't require reworking halt-polling (again).
+>>
+>> This was my first idea indeed.  However I didn't like calling
+>> kvm_arch_vcpu_runnable() again and "did it schedule()" seemed to be a less
+>> interesting result from kvm_vcpu_block() (and in fact kvm_vcpu_halt() does
+>> not bother passing it up the return chain).
+> 
+> The flip side of calling kvm_arch_vcpu_runnable() again is that KVM will immediately
+> wake the vCPU if it becomes runnable after kvm_vcpu_check_block().  The edge cases
+> where the vCPU becomes runnable late are unlikely to truly matter in practice, but
+> on the other hand manually re-checking kvm_arch_vcpu_runnable() means KVM gets both
+> cases "right" (waited=true iff vCPU actually waited, vCPU awakened ASAP), whereas
+> squishing the information into the return of kvm_vcpu_check_block() means KVM gets
+> both cases "wrong" (waited=true even if schedule() was never called, vCPU left in
+> a non-running state even though it's runnable).
+> 
+> My only hesitation with calling kvm_arch_vcpu_runnable() again is that it could be
+> problematic if KVM somehow managed to consume the event that caused kvm_vcpu_has_events()
+> to return true, but I don't see how that could happen without it being a KVM bug.
 
-Signed-off-by: Joe Fradley <joefradley@google.com>
----
- .../admin-guide/kernel-parameters.txt         |  6 ++++++
- lib/kunit/Kconfig                             |  8 ++++++++
- lib/kunit/test.c                              | 20 +++++++++++++++++++
- 3 files changed, 34 insertions(+)
+No, I agree that it cannot happen, and especially so after getting rid 
+of the kvm_check_nested_events() call in kvm_arch_vcpu_runnable().
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d7f30902fda0..ab4c7d133c38 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -2436,6 +2436,12 @@
- 			0: force disabled
- 			1: force enabled
- 
-+	kunit.enable=	[KUNIT] Enable executing KUnit tests. Requires
-+			CONFIG_KUNIT to be set to be fully enabled. The
-+			default value can be overridden to disabled via
-+			KUNIT_ENABLE_DEFAULT_DISABLED.
-+			Default is 1 (enabled)
-+
- 	kvm.ignore_msrs=[KVM] Ignore guest accesses to unhandled MSRs.
- 			Default is 0 (don't ignore, but inject #GP)
- 
-diff --git a/lib/kunit/Kconfig b/lib/kunit/Kconfig
-index 0b5dfb001bac..5d6db58dbe9b 100644
---- a/lib/kunit/Kconfig
-+++ b/lib/kunit/Kconfig
-@@ -59,4 +59,12 @@ config KUNIT_ALL_TESTS
- 
- 	  If unsure, say N.
- 
-+config KUNIT_ENABLE_DEFAULT_DISABLED
-+	bool "Require boot parameter to enable KUnit test execution"
-+	help
-+	  Sets the default value of the kernel parameter kunit.enable to 0
-+	  (disabled). This means to fully enable kunit, config KUNIT needs
-+	  to be enabled along with `kunit.enable=1` passed to the kernel. This
-+	  allows KUnit to be opt-in at boot time.
-+
- endif # KUNIT
-diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-index b73d5bb5c473..e6f98e16e8ae 100644
---- a/lib/kunit/test.c
-+++ b/lib/kunit/test.c
-@@ -54,6 +54,17 @@ void __kunit_fail_current_test(const char *file, int line, const char *fmt, ...)
- EXPORT_SYMBOL_GPL(__kunit_fail_current_test);
- #endif
- 
-+/*
-+ * Enable KUnit tests to run.
-+ */
-+#ifdef CONFIG_KUNIT_ENABLE_DEFAULT_DISABLED
-+static bool enable_param;
-+#else
-+static bool enable_param = true;
-+#endif
-+module_param_named(enable, enable_param, bool, 0);
-+MODULE_PARM_DESC(enable, "Enable KUnit tests to run");
-+
- /*
-  * KUnit statistic mode:
-  * 0 - disabled
-@@ -590,6 +601,12 @@ int __kunit_test_suites_init(struct kunit_suite * const * const suites, int num_
- {
- 	unsigned int i;
- 
-+	if (!enable_param && num_suites > 0) {
-+		pr_info("kunit: deactivated, cannot load %s\n",
-+			suites != NULL && suites[0] != NULL ? suites[0]->name : "NULL");
-+		return -EPERM;
-+	}
-+
- 	for (i = 0; i < num_suites; i++) {
- 		kunit_init_suite(suites[i]);
- 		kunit_run_tests(suites[i]);
-@@ -607,6 +624,9 @@ void __kunit_test_suites_exit(struct kunit_suite **suites, int num_suites)
- {
- 	unsigned int i;
- 
-+	if (!enable_param)
-+		return;
-+
- 	for (i = 0; i < num_suites; i++)
- 		kunit_exit_suite(suites[i]);
- 
--- 
-2.37.1.595.g718a3a8f04-goog
+I'll reorder the patches and apply your suggestion.
+
+Paolo
 
