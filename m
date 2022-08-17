@@ -2,87 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F29C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D31EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234757AbiHQIO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 04:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39598 "EHLO
+        id S235047AbiHQIPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234681AbiHQIOj (ORCPT
+        with ESMTP id S234589AbiHQIOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 17 Aug 2022 04:14:39 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F109356C2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 01:14:27 -0700 (PDT)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9F74D4F5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 01:14:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660724067; x=1692260067;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xA3pyXfIFhFP4Vu6qdyg1TVHtuRZcvgrznJgmVfN9v4=;
-  b=jp3UELyZWp/4f5U2UdL5qCTvP02nOZ9OXplAIcI2K5UDh8WetKctF/Cv
-   IsdSQYVYhtyEQUVIt9ZSbB3dAkgSWz/7H71HUMdlZh7ZF7x4Xs6lmmR0S
-   uwcIMsyNNkNxR+UJxio4xUPVyCHJFrwvA/9wOsHDugZGvemuS1RRp6DG1
-   jmtocp9gbLsZotes+vMK2ZyFOG/NCJg0AgW45CXp+loVtXGFJyIh+7qTc
-   X+I9D/SoOceTv9O9ERTfwqWjLQgg/EO8bUeLqPC8EWWMR1+1nGjTjAtUw
-   5Snm4h40EXYV40Sl1R8NGpkNJGMvwJlGqKJoSK3h0C/JBvyhj2OFCFheA
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="272202848"
+  t=1660724068; x=1692260068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=DKaFW9nCQZCfgbnugNhK3BHbzcTIAzrfbLSevgdOECU=;
+  b=hOJLViGJDeG0qBsrnrzllQvV86KvQYgUKIdQaTeYo1JOKXpXCHlZgvBf
+   d1JpoC0HHwa/4cSm4shQEdMH3dyPHzhXp1XALW9uYHHfJWnLUNmwy3dOa
+   BX7urKtZJ6WEiCi/6UQcbHQBIKCNnaP+Wt83G+ao6ZirdmctS0BAOONR4
+   zq6tMZe2F2b73evJWWnCagyVQBQY84a9PQR81QSgNmn+sROXGqEC1J/k4
+   TT0jM0VXHDkNTqKJTEbb9I+nMDakm94eqQF7lnjRPC2L7X52Nmievp9fh
+   T77Nh/VKjup1uhrWxX+ssy6cSC3TPx1aMz9qn+3a1sUhpQAbDM2UZT4Zl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293228809"
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="272202848"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:16 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="293228809"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:27 -0700
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="696689612"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 17 Aug 2022 01:14:15 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOEBq-0000j2-1E;
-        Wed, 17 Aug 2022 08:14:14 +0000
-Date:   Wed, 17 Aug 2022 16:13:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [intel-tdx:guest-unaccepted-memory 11/14] ld.lld: error: undefined
- symbol: arch_kexec_load
-Message-ID: <202208171435.ZwLactew-lkp@intel.com>
+   d="scan'208";a="583668098"
+Received: from yhuang6-mobl1.sh.intel.com ([10.238.6.172])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:25 -0700
+From:   Huang Ying <ying.huang@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Oscar Salvador <osalvador@suse.de>, Zi Yan <ziy@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>
+Subject: [PATCH -V3 3/8] migrate_pages(): fix THP failure counting for -ENOMEM
+Date:   Wed, 17 Aug 2022 16:14:03 +0800
+Message-Id: <20220817081408.513338-4-ying.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220817081408.513338-1-ying.huang@intel.com>
+References: <20220817081408.513338-1-ying.huang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git guest-unaccepted-memory
-head:   86fb61d5824802e1b7c4c8eb1b34029024f52ee6
-commit: 820c5c338451079677510d4183ba5d5dc314c030 [11/14] x86: Disable kexec if system has unaccepted memory
-config: x86_64-randconfig-a015-20220815 (https://download.01.org/0day-ci/archive/20220817/202208171435.ZwLactew-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/820c5c338451079677510d4183ba5d5dc314c030
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-unaccepted-memory
-        git checkout 820c5c338451079677510d4183ba5d5dc314c030
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+In unmap_and_move(), if the new THP cannot be allocated, -ENOMEM will
+be returned, and migrate_pages() will try to split the THP unless
+"reason" is MR_NUMA_MISPLACED (that is, nosplit == true).  But when
+nosplit == true, the THP migration failure will not be counted.  This
+is incorrect.  So in this patch, the THP migration failure will be
+counted for -ENOMEM regardless of nosplit is true or false.  The
+nr_failed counting isn't fixed because it's not used.  Added some
+comments for it per Baolin's suggestion.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Yang Shi <shy828301@gmail.com>
+---
+ mm/migrate.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-All errors (new ones prefixed by >>):
-
->> ld.lld: error: undefined symbol: arch_kexec_load
-   >>> referenced by kexec.c:198 (kernel/kexec.c:198)
-   >>>               vmlinux.o:(__x64_sys_kexec_load)
-   >>> referenced by kexec_file.c:332 (kernel/kexec_file.c:332)
-   >>>               vmlinux.o:(__x64_sys_kexec_file_load)
-
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 19a9b26af7e2..ae55f08e72ce 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -1494,11 +1494,11 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 				/*
+ 				 * When memory is low, don't bother to try to migrate
+ 				 * other pages, just exit.
+-				 * THP NUMA faulting doesn't split THP to retry.
+ 				 */
+-				if (is_thp && !nosplit) {
++				if (is_thp) {
+ 					nr_thp_failed++;
+-					if (!try_split_thp(page, &thp_split_pages)) {
++					/* THP NUMA faulting doesn't split THP to retry. */
++					if (!nosplit && !try_split_thp(page, &thp_split_pages)) {
+ 						nr_thp_split++;
+ 						goto retry;
+ 					}
+@@ -1514,6 +1514,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 				 * the caller otherwise the page refcnt will be leaked.
+ 				 */
+ 				list_splice_init(&thp_split_pages, from);
++				/* nr_failed isn't updated for not used */
+ 				nr_thp_failed += thp_retry;
+ 				goto out;
+ 			case -EAGAIN:
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
