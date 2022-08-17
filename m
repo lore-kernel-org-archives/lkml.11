@@ -2,115 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E916DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A65C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240489AbiHQO7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
+        id S240548AbiHQO7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240402AbiHQO6u (ORCPT
+        with ESMTP id S240502AbiHQO7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:58:50 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCA85A3FB;
-        Wed, 17 Aug 2022 07:58:49 -0700 (PDT)
-Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M79y93FCHz67Cqn;
-        Wed, 17 Aug 2022 22:53:53 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 16:58:47 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 15:58:44 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <jinpu.wang@cloud.ionos.com>, <damien.lemoal@opensource.wdc.com>,
-        <yangxingui@huawei.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <hare@suse.de>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 5/6] scsi: hisi_sas: Add SATA_DISK_ERR bit handling for v3 hw
-Date:   Wed, 17 Aug 2022 22:52:13 +0800
-Message-ID: <1660747934-60059-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
-References: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
+        Wed, 17 Aug 2022 10:59:15 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DF29C2FA
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:08 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id w5so19339019lfq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=nqoG1yhM2ZD2KWz/cISZ6B5gSZS3UuZJ4kxzkxidfbI=;
+        b=W3dy3bUfTDt+wr0+mrpt4DVBxYq1UDItV6ctuIh5M1CXUG73/3+AwOJmQb42X9Gl+x
+         hvLGccKgPfU33TFDpZfo8CsZaMsD38NMPIsWOBF1pa9nnFtXVUBp4hPV6GaYOrKmaxhz
+         pgSPJtLex/IS3Eargd+0bUfX6EbmFaQivxXrDfnxhhrDp+ODK74+vq7jvkBteGZpXovx
+         VGqcG6whXM0+D3i4pSMJwmy6gKDLROLidwZ65ANWXVipyy/Ys/o2UE3RgAzFITw1EIa3
+         XCc9duYNqjJTmqtI1jvTj3zLJWdjC5yZd+bUOXGG/QGjVO61z9EpOiem/fBij+E6naAa
+         TWUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=nqoG1yhM2ZD2KWz/cISZ6B5gSZS3UuZJ4kxzkxidfbI=;
+        b=Fd+M0T0e2zOZAJ60/Yr7wpsTzeWP/OvfKDFjz+1UsoSRIVd2ZnYq81zbQ3wnKrZ8re
+         1spL0XyTRPpxMyeNiCKDIltAXklJRHVMoBMjGnRARnholGWYyU8cfp4L51rj+v41CagD
+         tDZEkahtG04v4pBPSzcjRetyJ1qBrsPbXJ3UdcIZN/cifA974jamZohtD2BcYQAs4KwO
+         3nVzkJAb7MwSrqXXndqqvAEwENHXw+48UDnvpGrHPn33MzBblg+egzD0S3VwS8DkbBD5
+         vEgs1jUOghFp3Kl38aiGOgPS+6w2NyyN4d2k2fakYKjuWKrQ2PI2UPV4Hxq3Dli+oQBB
+         OWLA==
+X-Gm-Message-State: ACgBeo23gQSkPJVXTbmMyxEUGLkucUsV5HobWWe5BcebDaBjscZlTmNw
+        GI+35N0pN1d/3c/tQtNfFBgHzw==
+X-Google-Smtp-Source: AA6agR64IdMKc1h9750+v59tJg/5Q1MhXoTf5xJk63JM8bghSuULQ+Pbe2wwsxcwfb4yai1WKzvr1Q==
+X-Received: by 2002:a05:6512:3b24:b0:492:8424:fba0 with SMTP id f36-20020a0565123b2400b004928424fba0mr5412317lfv.126.1660748346827;
+        Wed, 17 Aug 2022 07:59:06 -0700 (PDT)
+Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
+        by smtp.gmail.com with ESMTPSA id u16-20020a05651c131000b0025fdf9eec1dsm2250454lja.111.2022.08.17.07.59.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 07:59:06 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RFT PATCH v2 01/17] dt-bindings: mfd: qcom,tcsr: drop simple-mfd from IPQ6018
+Date:   Wed, 17 Aug 2022 17:58:45 +0300
+Message-Id: <20220817145901.865977-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
+References: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xingui Yang <yangxingui@huawei.com>
+Commit 7677ed11e9fa ("dt-bindings: mfd: qcom,tcsr: Convert to dtschema")
+converted bindings to DT schema literally - including the
+qcom,tcsr-ipq6018 expecting syscon and simple-mfd.  Such configuration
+is not used in DTS and there is no actual need of it.  The TCSR block is
+purely configuration block and should not have children.  Any child
+device should be simply moved outside of TCSR syscon block.
 
-When CQ header dw3 SATA_DISK_ERR is set it means this SATA disk is in error
-state and the current IPTT is invalid. An invalid IPTT does not correspond
-to any slot.
-
-In this scenario, new I/Os that delivered to disk will be rejected by the,
-controller and all I/Os remained on the disk should be aborted, which we
-add here with the sas_ata_device_link_abort() call.
-
-Signed-off-by: Xingui Yang <yangxingui@huawei.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/mfd/qcom,tcsr.yaml    | 40 +++++++++----------
+ 1 file changed, 18 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index efe8c5be5870..86db4e19beed 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -423,6 +423,8 @@
- #define CMPLT_HDR_DEV_ID_OFF		16
- #define CMPLT_HDR_DEV_ID_MSK		(0xffff << CMPLT_HDR_DEV_ID_OFF)
- /* dw3 */
-+#define CMPLT_HDR_SATA_DISK_ERR_OFF	16
-+#define CMPLT_HDR_SATA_DISK_ERR_MSK	(0x1 << CMPLT_HDR_SATA_DISK_ERR_OFF)
- #define CMPLT_HDR_IO_IN_TARGET_OFF	17
- #define CMPLT_HDR_IO_IN_TARGET_MSK	(0x1 << CMPLT_HDR_IO_IN_TARGET_OFF)
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
+index e1c4936a0352..5d7f4ac21a8d 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
+@@ -15,28 +15,24 @@ description:
  
-@@ -2384,14 +2386,30 @@ static irqreturn_t  cq_thread_v3_hw(int irq_no, void *p)
- 	while (rd_point != wr_point) {
- 		struct hisi_sas_complete_v3_hdr *complete_hdr;
- 		struct device *dev = hisi_hba->dev;
--		u32 dw1;
-+		u32 dw0, dw1, dw3;
- 		int iptt;
+ properties:
+   compatible:
+-    oneOf:
+-      - items:
+-          - enum:
+-              - qcom,msm8998-tcsr
+-              - qcom,sc7180-tcsr
+-              - qcom,sc7280-tcsr
+-              - qcom,sdm845-tcsr
+-              - qcom,tcsr-apq8064
+-              - qcom,tcsr-apq8084
+-              - qcom,tcsr-ipq8064
+-              - qcom,tcsr-mdm9615
+-              - qcom,tcsr-msm8660
+-              - qcom,tcsr-msm8916
+-              - qcom,tcsr-msm8953
+-              - qcom,tcsr-msm8960
+-              - qcom,tcsr-msm8974
+-              - qcom,tcsr-msm8996
+-          - const: syscon
+-      - items:
+-          - const: qcom,tcsr-ipq6018
+-          - const: syscon
+-          - const: simple-mfd
++    items:
++      - enum:
++          - qcom,msm8998-tcsr
++          - qcom,sc7180-tcsr
++          - qcom,sc7280-tcsr
++          - qcom,sdm845-tcsr
++          - qcom,tcsr-apq8064
++          - qcom,tcsr-apq8084
++          - qcom,tcsr-ipq6018
++          - qcom,tcsr-ipq8064
++          - qcom,tcsr-mdm9615
++          - qcom,tcsr-msm8660
++          - qcom,tcsr-msm8916
++          - qcom,tcsr-msm8953
++          - qcom,tcsr-msm8960
++          - qcom,tcsr-msm8974
++          - qcom,tcsr-msm8996
++      - const: syscon
  
- 		complete_hdr = &complete_queue[rd_point];
-+		dw0 = le32_to_cpu(complete_hdr->dw0);
- 		dw1 = le32_to_cpu(complete_hdr->dw1);
-+		dw3 = le32_to_cpu(complete_hdr->dw3);
- 
- 		iptt = dw1 & CMPLT_HDR_IPTT_MSK;
--		if (likely(iptt < HISI_SAS_COMMAND_ENTRIES_V3_HW)) {
-+		if (unlikely((dw0 & CMPLT_HDR_CMPLT_MSK) == 0x3) &&
-+			     (dw3 & CMPLT_HDR_SATA_DISK_ERR_MSK)) {
-+			int device_id = (dw1 & CMPLT_HDR_DEV_ID_MSK) >>
-+					CMPLT_HDR_DEV_ID_OFF;
-+			struct hisi_sas_itct *itct =
-+				&hisi_hba->itct[device_id];
-+			struct hisi_sas_device *sas_dev =
-+				&hisi_hba->devices[device_id];
-+			struct domain_device *device = sas_dev->sas_device;
-+
-+			dev_err(dev, "erroneous completion disk err dev id=%d sas_addr=0x%llx CQ hdr: 0x%x 0x%x 0x%x 0x%x\n",
-+				device_id, itct->sas_addr, dw0, dw1,
-+				complete_hdr->act, dw3);
-+			sas_ata_device_link_abort(device);
-+		} else if (likely(iptt < HISI_SAS_COMMAND_ENTRIES_V3_HW)) {
- 			slot = &hisi_hba->slot_info[iptt];
- 			slot->cmplt_queue_slot = rd_point;
- 			slot->cmplt_queue = queue;
+   reg:
+     maxItems: 1
 -- 
-2.35.3
+2.34.1
 
