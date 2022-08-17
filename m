@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B40C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A70BEC32772
 	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240666AbiHQPAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        id S240768AbiHQPAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240632AbiHQO7n (ORCPT
+        with ESMTP id S240502AbiHQO7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:59:43 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FF59C2D5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:39 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id l10so13810663lje.7
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:38 -0700 (PDT)
+        Wed, 17 Aug 2022 10:59:19 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866439D112
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:11 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id x9so13797069ljj.13
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Xww6smUMHoeYSoc1lrk/iGogtyIyA10+5kx+EaqITKI=;
-        b=v0XDgmiFEtxbqVRDDUqUBttsebolgBYwHgrXkx0Tx8hPhM9WQgOfwc/HSI+G51Bfxj
-         TQcO6KWWotkYjWp+ZLDNu5WWr2+atQeQS48Z53BHXAq2oiMz3RCAS7ouySBVO9m/ri0p
-         Wms21S0NhpRe5BlfbjFzH0xxYk4mAq1aHznV4ox0b7XVL1//qOb0J0JWmOsoSu+JY2KM
-         ghOK6Xywsn2Uwm6ylOxjEm7wo5Qs4QREJ3weLmPYLtHe6Qoq03Un0JCGm1YkT603qdNK
-         AI4As4IfpFhc7oURYVRsTdJIFhoo3qCzZYwfaKar9jqPfSoFu1FjCKlP8Z0g77k0dqrn
-         8kvw==
+        bh=RKK4m4MCCq64LxUXkLOTw73ZVqUkcy/RE/8uvhmqgxo=;
+        b=IY2F2WY5LulUEfMl8pnbjnodz0OLDI3eZ1AziXAjbAQWbzU6xuoVY8La3gPZU8+hmy
+         lJqSEsX5OL8ohlMqNite+F665bvQG9r06vdw5rhdwNvuinaaiGPCQYrzvk+GsbyGic2d
+         CUBwljTpr5pKyecn6o23E0k4vvxmazb7qX9R4ew8SBo4gZHRM3Di3lEUwrP5CiQieXka
+         ZN2mPaLAZB30bZ0fypLLlxZVjI9Y6DR4Llv+b22n23s5nmmWTx70Ify3+KqHscxAoRWN
+         y7AY5pEr+tLVysnr9x404gcP2TWK+2ZcRtHAf+1qsp8+vnyyAMDwCvsatXEtJMQMnidX
+         9Q3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Xww6smUMHoeYSoc1lrk/iGogtyIyA10+5kx+EaqITKI=;
-        b=VlmeRaLs5R5KcLAFGHun75qP5/CBDnljKrqIB4Ud+3Rju0KZ2N/Om/hbeorWtRbkpL
-         qCQ6CCobvoY8Al3CKL7Q6mfG9pvA9IyXLFeumC54gJqef58nqN6OTzPq6wgTj6ok5URp
-         sVolNGA3M+ZrmZd5RmXPWjMGZP8t+3OTFui+B4VLsI6W5ryOkY68P/AryGJaE1F6D1fc
-         ymzHNox/UrLpy3u3owVsy5HO1bf1zXxNVcCDik3T4CrEWwhKIIzx56cyFglgGDaqoF8q
-         U18FUHngCPF6lDvs1WCIkMiyG5e0r8RpqLI/XFjZmVW7tq0UZfmV9qv4l8bhm55IX2bj
-         IFuQ==
-X-Gm-Message-State: ACgBeo0aExp6i/eLh9GBIZmVAuD/Uaa2dan19vcG/jHoeiNoRkFwn1hd
-        3izid8J6cbZpGpyRFCLaNYeZoQ==
-X-Google-Smtp-Source: AA6agR6iHKmxXU8jQKrE7CRXGI40EzMSzceG4CYUze4zIhOglZun4/vtH9PWDoXDRFDhLbNFvVD3Ug==
-X-Received: by 2002:a2e:9056:0:b0:25d:64c0:27b1 with SMTP id n22-20020a2e9056000000b0025d64c027b1mr8442493ljg.396.1660748365597;
-        Wed, 17 Aug 2022 07:59:25 -0700 (PDT)
+        bh=RKK4m4MCCq64LxUXkLOTw73ZVqUkcy/RE/8uvhmqgxo=;
+        b=4/XNeRJ1md26RJwXNLotB293iQUNqOPl7/PWIZecDJkxv8YlrA9DRhMFKUzxuxUdJj
+         3tNEsu8ti4R4cTlTM9Bq5yNvh0YC9q5p+3b2vJKrW2zIP6MDIgfIgN/hnoDzVwY1opKr
+         zrAeqKbJOusUpoxnZ8tgQWS2RRuq0ArPQw4rirDg8zzzuUdcBXT9oF2UY3SNDqljQs05
+         oSZkfdKISGw/C446A0FOkmZsRPIHok0H0oPPpoWAeljp40DcqczZOVfcH9LzuIr4N04X
+         EIhSgN1DaaXFX6kkqnJodyyDCS2GQGNhWxrcm3jL2hVo9WNbf92sb2zJmCJg5Yb/Hbf0
+         GRvw==
+X-Gm-Message-State: ACgBeo1NFYpgNoYPhhX+EVxFaXtqcAWyASvKO60CJ3iHl5oBR3FgUbIu
+        igrIc0o3XOcYWcVPFuEOVMiwog==
+X-Google-Smtp-Source: AA6agR5Rt0U1dJbKg6azMFGsfw2nDfRxDbP5HL8FlqQsn4keUHJr+9tphNKS09xTJiY/ACRHSw4+Yg==
+X-Received: by 2002:a2e:b8d1:0:b0:25f:f4fb:357 with SMTP id s17-20020a2eb8d1000000b0025ff4fb0357mr7813198ljp.66.1660748349215;
+        Wed, 17 Aug 2022 07:59:09 -0700 (PDT)
 Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id u16-20020a05651c131000b0025fdf9eec1dsm2250454lja.111.2022.08.17.07.59.23
+        by smtp.gmail.com with ESMTPSA id u16-20020a05651c131000b0025fdf9eec1dsm2250454lja.111.2022.08.17.07.59.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 07:59:24 -0700 (PDT)
+        Wed, 17 Aug 2022 07:59:08 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,9 +60,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH v2 11/17] ARM: dts: qcom: msm8974: add missing TCSR syscon compatible
-Date:   Wed, 17 Aug 2022 17:58:55 +0300
-Message-Id: <20220817145901.865977-12-krzysztof.kozlowski@linaro.org>
+Subject: [RFT PATCH v2 02/17] dt-bindings: mfd: qcom,tcsr: add QCS404
+Date:   Wed, 17 Aug 2022 17:58:46 +0300
+Message-Id: <20220817145901.865977-3-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
 References: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
@@ -72,26 +72,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TCSR syscon node should come with dedicated compatible.
+Document new QCS404 TCSR compatible.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/qcom-msm8974.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 8baca2a77717..90a6d4b7605c 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1234,7 +1234,7 @@ tcsr_mutex_block: syscon@fd484000 {
- 		};
- 
- 		tcsr: syscon@fd4a0000 {
--			compatible = "syscon";
-+			compatible = "qcom,tcsr-msm8974", "syscon";
- 			reg = <0xfd4a0000 0x10000>;
- 		};
- 
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
+index 5d7f4ac21a8d..87b173ad9710 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
+@@ -18,6 +18,7 @@ properties:
+     items:
+       - enum:
+           - qcom,msm8998-tcsr
++          - qcom,qcs404-tcsr
+           - qcom,sc7180-tcsr
+           - qcom,sc7280-tcsr
+           - qcom,sdm845-tcsr
 -- 
 2.34.1
 
