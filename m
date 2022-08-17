@@ -2,128 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF00C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 00:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DA7C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 00:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237877AbiHQAAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 20:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S237897AbiHQAG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 20:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237137AbiHQAAL (ORCPT
+        with ESMTP id S232411AbiHQAG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 20:00:11 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1524E92F52;
-        Tue, 16 Aug 2022 17:00:10 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 16 Aug 2022 20:06:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC345D0F5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 17:06:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660694812;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p4aPAnVSr6FBk5QXVZnMKCLLXwxKwvTNDlLlqNRSqJg=;
+        b=AHAlDQ3gOb8MuxsvbY+3zLCHMLV+CzSJ2WSCWh8flPHGkO1oZAU/zncwXje5AUTV8htW7u
+        zbs0E7cDYL0UKhh3xbX0zctMDsAUscpb3nPMRuymjBOeJ6TXott07O6hejrCRPFz4J3QRH
+        T8n1POYGtArTPcOfycQnif2zwX4YIto=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-42-8Y_WoPEjP3KCyIOPNMhIEg-1; Tue, 16 Aug 2022 20:06:49 -0400
+X-MC-Unique: 8Y_WoPEjP3KCyIOPNMhIEg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M6p6w0nC9z4x1N;
-        Wed, 17 Aug 2022 10:00:08 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1660694408;
-        bh=o7nfJCUbCDgKqfrYEc24OxV82lJ1rSI15PYwGv+3BAQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Ku3iI3GSn7/QgiAlR0Vnj75bbKpb+FbHu/nYWwJ2Mw01O/vE7QJNPqiOOT6KOS4J5
-         G8j+zZPmoQ+a4SaGf5TS6Ty4NTzlMR3UbAngKBVu3GCB5wUv2se+v6us8e2wHjhyF8
-         TKWf529mahGVOfTxdspjtp1BSFTJjPQl+CF6wyc0xuFveKKS9pxEOlLR6WBIKSk94v
-         10LcoMoRuYPFipe84i3FEVwlQaXbCrDZuFstLAbDB7nr+PeKVJo7znUyQ3s7Wx7FXD
-         Pjs/hJYgBqtfFpN44FHbJT6unVb7WwD/tnvSWxJr9EehBw/HbLpsSpW/wwhw/7qOle
-         wm2LjVNvsXShA==
-Date:   Wed, 17 Aug 2022 10:00:07 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Eddie James <eajames@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>, Wolfram Sang <wsa@kernel.org>
-Subject: linux-next: build failure after merge of the input tree
-Message-ID: <20220817100007.2827652a@canb.auug.org.au>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C9862185A79C;
+        Wed, 17 Aug 2022 00:06:48 +0000 (UTC)
+Received: from [10.64.54.16] (vpn2-54-16.bne.redhat.com [10.64.54.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 504862166B26;
+        Wed, 17 Aug 2022 00:06:43 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [KVM] e923b0537d: kernel-selftests.kvm.rseq_test.fail
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Oliver Upton <oliver.upton@linux.dev>,
+        Andrew Jones <andrew.jones@linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com, xudong.hao@intel.com,
+        regressions@lists.linux.dev
+References: <Yvn60W/JpPO8URLY@xsang-OptiPlex-9020>
+ <Yvq9wzXNF4ZnlCdk@google.com>
+ <5034abb9-e176-d480-c577-1ec5dd47182b@redhat.com>
+ <9bfeae26-b4b1-eedb-6cbd-b4f9f1e1cc55@redhat.com>
+ <YvwYxeE4vc/Srbil@google.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <d8290cbe-5d87-137a-0633-0ff5c69d57b0@redhat.com>
+Date:   Wed, 17 Aug 2022 10:06:41 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/iZ5Mw3rLKR8TPHOWY2DaPOQ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <YvwYxeE4vc/Srbil@google.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/iZ5Mw3rLKR8TPHOWY2DaPOQ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Sean,
 
-Hi all,
+On 8/17/22 8:23 AM, Sean Christopherson wrote:
+> On Tue, Aug 16, 2022, Gavin Shan wrote:
+>> On 8/16/22 3:02 PM, Gavin Shan wrote:
+>>> On 8/16/22 7:42 AM, Sean Christopherson wrote:
+>>>> On Mon, Aug 15, 2022, kernel test robot wrote:
+>>>>> commit: e923b0537d28e15c9d31ce8b38f810b325816903 ("KVM: selftests: Fix target thread to be migrated in rseq_test")
+>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>>
+>>>> ...
+>>>>
+>>>>> # selftests: kvm: rseq_test
+>>>>> # ==== Test Assertion Failure ====
+>>>>> #   rseq_test.c:278: i > (NR_TASK_MIGRATIONS / 2)
+>>>>> #   pid=49599 tid=49599 errno=4 - Interrupted system call
+>>>>> #      1    0x000000000040265d: main at rseq_test.c:278
+>>>>> #      2    0x00007fe44eed07fc: ?? ??:0
+>>>>> #      3    0x00000000004026d9: _start at ??:?
+>>>>> #   Only performed 23174 KVM_RUNs, task stalled too much?
+>>>>> #
+>>>>> not ok 56 selftests: kvm: rseq_test # exit=254
+>>>>
+>>>> ...
+>>>>
+>>>>> # Automatically generated file; DO NOT EDIT.
+>>>>> # Linux/x86_64 5.19.0-rc6 Kernel Configuration
+>>>>> #
+>>>>> CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-3) 11.3.0"
+>>>>> CONFIG_CC_IS_GCC=y
+>>>>> CONFIG_GCC_VERSION=110300
+>>>>> CONFIG_CLANG_VERSION=0
+>>>>> CONFIG_AS_IS_GNU=y
+>>>>> CONFIG_AS_VERSION=23800
+>>>>> CONFIG_LD_IS_BFD=y
+>>>>> CONFIG_LD_VERSION=23800
+>>>>> CONFIG_LLD_VERSION=0
+>>>>
+>>>> Assuming 23800 == 2.38, this is a known issue.
+>>>>
+>>>> https://lore.kernel.org/all/20220810104114.6838-1-gshan@redhat.com
+>>>>
+>>>
+>>> It's probably different story this time.
+> 
+> Doh, if I had bothered to actually look at the error message...
+> 
 
-After merging the input tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+Ok :)
 
-drivers/input/misc/ibm-panel.c:195:19: error: initialization of 'void (*)(s=
-truct i2c_client *)' from incompatible pointer type 'int (*)(struct i2c_cli=
-ent *)' [-Werror=3Dincompatible-pointer-types]
-  195 |         .remove =3D ibm_panel_remove,
-      |                   ^~~~~~~~~~~~~~~~
-drivers/input/misc/ibm-panel.c:195:19: note: (near initialization for 'ibm_=
-panel_driver.remove')
+>>> The assert is triggered because of the following instructions. I would
+>>> guess the reason is vcpu thread has been running on CPU where we has high
+>>> CPU load. In this case, the vcpu thread can't be run in time. More
+>>> specific, the vcpu thread can't be run in the 1 - 10us time window, which
+>>> is specified by the migration worker (thread).
+>>>
+>>>       TEST_ASSERT(i > (NR_TASK_MIGRATIONS / 2),
+>>>                   "Only performed %d KVM_RUNs, task stalled too much?\n", i);
+>>>
+>>> I think we need to improve the handshake mechanism between the vcpu thread
+>>> and migration worker. In current implementation, the handshake is done through
+>>> the atomic counter. The mechanism is simple enough, but vcpu thread can miss
+>>> the aforementioned time window. Another issue is the test case much more time
+>>> than expected to finish.
+> 
+> There's not really an expected time to finish.  The original purpose of the test
+> is to trigger a kernel race condition, so it's a balance between letting the test
+> run long enough to have some confidence that the kernel is bug free, and not running
+> so long that it wastes time.
+> 
 
-Caused by commit
+Yeah, I was thinking of it. It's why I'm not 100% sure for my proposal, to have
+full synchronization.
 
-  95331e91e9da ("Input: Add IBM Operation Panel driver")
+>>> Sean, if you think it's reasonable, I can figure out something to do:
+>>>
+>>> - Reuse the atomic counter for a full synchronization between these two
+>>>     threads. Something like below:
+>>>
+>>>     #define RSEQ_TEST_STATE_RUN_VCPU       0     // vcpu_run()
+>>>     #define RSEQ_TEST_STATE_MIGRATE        1     // sched_setaffinity()
+>>>     #define RSEQ_TEST_STATE_CHECK          2     // Check rseq.cpu_id and get_cpu()
+>>>
+>>>     The atomic counter is reset to RSEQ_TEST_STATE_RUN_VCPU after RSEQ_TEST_STATE_RUN_VCPU
+> 
+> Again, because one of the primary goals is to ensure the kernel is race free, the
+> test should avoid full synchronization.
+> 
 
-interacting with commit
+Ok.
 
-  ed5c2f5fd10d ("i2c: Make remove callback return void")
+>>>
+>>> - Reduce NR_TASK_MIGRATIONS from 100000 to num_of_online_cpus(). With this,
+>>>     less time is needed to finish the test case.
+>>>
+>>
+>> I'm able to recreate the issue on my local arm64 system.
+>>
+>> - From the source code, the iteration count is changed from 100000 to 1000
+>> - Only CPU#0 and CPU#1 are exposed in calc_min_max_cpu, meaning other CPUs
+>>    are cleared from @possible_mask
+>> - Run some CPU bound task on CPU#0 and CPU#1
+>>    # while true; do taskset -c 0 ./a; done
+>>    # while true; do taskset -c 1 ./a; done
+>> - Run 'rseq_test' and hit the issue
+> 
+> At this point, this isn't a test bug.  The test is right to complain that it didn't
+> provide the coverage it's supposed to provide.
+> 
+> If the bot failure is a one-off, my preference is to leave things as-is for now.
+> If the failure is an ongoing issue, then we probably need to understand why the
+> bot is failing.
+> 
 
-from v6.0-rc1.
+Yeah, the system for the coverage was likely having high CPU loads, which is similar
+to my (simulated) environment. I usually have my system being idle when running the
+coverage test cases. I didn't hit this specific failure before.
 
-I have applied the following merge fix patch for today:
+Lets leave it as of being. We can improve if needed in future :)
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 17 Aug 2022 09:54:11 +1000
-Subject: [PATCH] Input: fix up for "i2c: Make remove callback return void"
+Thanks,
+Gavin
 
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/input/misc/ibm-panel.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/input/misc/ibm-panel.c b/drivers/input/misc/ibm-panel.c
-index 54c657cd7809..094bcdb568f1 100644
---- a/drivers/input/misc/ibm-panel.c
-+++ b/drivers/input/misc/ibm-panel.c
-@@ -174,11 +174,9 @@ static int ibm_panel_probe(struct i2c_client *client,
- 	return 0;
- }
-=20
--static int ibm_panel_remove(struct i2c_client *client)
-+static void ibm_panel_remove(struct i2c_client *client)
- {
- 	i2c_slave_unregister(client);
--
--	return 0;
- }
-=20
- static const struct of_device_id ibm_panel_match[] =3D {
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/iZ5Mw3rLKR8TPHOWY2DaPOQ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL8L4cACgkQAVBC80lX
-0Gz+tQf/QcSV9ow+tD/z+OEozAvtm7HBkbXdWERWqXwOcVuQHObSXD1HvOsVBrBx
-D5j6LY+AR0tBvNpBcWc3zTmz4ZtVOrf4vEdywNvsmVP8xTbGCftsPf9PRUhzem99
-yNFF1PIw0aTdiBy8lfMcgccgKBVELWjOmPywssyY03GhzYaFwa2H37n0cxSyAto7
-NpWfHV236+4tqIyu6Ft4jNHvzSUeBNvrqwYzfmG3aW7+AOUU8UqG90H056OFF2mL
-Z8p3L60MUloZOYqKtcXVQ5Zkd5XwOkxUAKGBhfZHzdkt5ZSMTcGUu1cBdAE2nm3Y
-7o5swplBma6zyPVvdFM9nw/a/rxqlA==
-=uOxh
------END PGP SIGNATURE-----
-
---Sig_/iZ5Mw3rLKR8TPHOWY2DaPOQ--
