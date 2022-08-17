@@ -2,53 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF21C2BB41
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7579AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241288AbiHQTaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
+        id S241378AbiHQTbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238432AbiHQTau (ORCPT
+        with ESMTP id S232618AbiHQTbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:30:50 -0400
+        Wed, 17 Aug 2022 15:31:03 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFC35B042;
-        Wed, 17 Aug 2022 12:30:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD56796FD8;
+        Wed, 17 Aug 2022 12:31:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660764648; x=1692300648;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tyTSNq5F9hK0d+h8MFDvRwJmttjYl2ZU/nazL7KLnpw=;
-  b=twHEcr3ZwpUmwVuqFDnAZmhUbeH6HfEqhm7ld+LebaOaMHRQGPkYmkwJ
-   +L59dHFuBw3cCfpH6xSkuLhQmFJrSX4mznxR2hLJCVJi9xAbMloikeJFI
-   TdF6BDOUl7y9yqiQIu0NcThP6r6hje81dS7KfhAZvPAjVsxbWZfw4Tue7
-   CHmhEYX/KPo3q9YcpdlXJJIWH8il2Y7ZCuVO7VOTjkmEsItUSQGoOA8ri
-   4JlOKRzYVzPgrG71euBC4TznqZRdEXsxc/rM6u3QISrGCezTT1zDVEyud
-   90YrgttDozgtNOYAZpY8xi8Enj0LCl8ZKZze4X6+aZIbW01hhTO7eWyY1
-   A==;
+  t=1660764662; x=1692300662;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZBIS9vf0JNugI6BuLOu53/aRY/vdyAbuzLRAWzcdQdw=;
+  b=csXKEEKbRiAhoenyrc/tSedA84c3PuRxiDh/ds697xjGdrLcQfwmZFfx
+   VRKtQK7CYm4Qy/oS9lSlCWpFQBzlZOkMf4EPOiXtQsH//qojAg3ITk3Cc
+   PnPlOWUgHENZL1W4OBdZJ++P6ONjH5GtqbRA3QhjOCEX7MCZv6nIeKJef
+   6fRthFlyVIQ380eGGm+nq0fo+v3zqQ9UPcrU0TKKP1jJJ0zgN6hG3lBAO
+   Yl9fMRyubZSTMxQJllJ4wovw7+TXX6QSMECb3AiweKtKmz16b8B2oe8tY
+   1hERvxAcoM3jsnf4g8xttHI4g0gerIJe0NajZdzjYuMW+cQG13p8gLudq
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="176816539"
+   d="scan'208";a="176816594"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:30:46 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:31:02 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 17 Aug 2022 12:30:46 -0700
+ 15.1.2507.12; Wed, 17 Aug 2022 12:30:48 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:30:43 -0700
+ 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:30:46 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v4 0/8] net: lan966x: Add lag support
-Date:   Wed, 17 Aug 2022 21:34:41 +0200
-Message-ID: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 1/8] net: lan966x: Add registers used to configure lag interfaces
+Date:   Wed, 17 Aug 2022 21:34:42 +0200
+Message-ID: <20220817193449.1673002-2-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+References: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -56,51 +58,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add lag support for lan966x.
-First 4 patches don't do any changes to the current behaviour, they
-just prepare for lag support. While the rest is to add the lag support.
+Add the registers used by lan966x to configure the lag interface.
 
-v3->v4:
-- aggregation configuration is global for all bonds, so make sure that
-  there can't be enabled multiple configurations at the same time
-- return error faster from lan966x_foreign_bridging_check, don't
-  continue the search if the error is seen already
-- flush fdb workqueue when a port leaves a bridge or lag.
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-v2->v3:
-- return error code from 'switchdev_bridge_port_offload()'
-- fix lan966x_foreign_dev_check(), it was missing lag support
-- remove lan966x_lag_mac_add_entry and lan966x_mac_del_entry as
-  they are not needed
-- fix race conditions when accessing port->bond
-- move FDB entries when a new port joins the lag if it has a lower
-
-v1->v2:
-- fix the LAG PGIDs when ports go down, in this way is not
-  needed anymore the last patch of the series.
-
-Horatiu Vultur (8):
-  net: lan966x: Add registers used to configure lag interfaces
-  net: lan966x: Split lan966x_fdb_event_work
-  net: lan966x: Flush fdb workqueue when port is leaving a bridge.
-  net: lan966x: Expose lan966x_switchdev_nb and
-    lan966x_switchdev_blocking_nb
-  net: lan966x: Extend lan966x_foreign_bridging_check
-  net: lan966x: Add lag support for lan966x
-  net: lan966x: Extend FDB to support also lag
-  net: lan966x: Extend MAC to support also lag interfaces.
-
- .../net/ethernet/microchip/lan966x/Kconfig    |   1 +
- .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
- .../ethernet/microchip/lan966x/lan966x_fdb.c  | 155 +++++---
- .../ethernet/microchip/lan966x/lan966x_lag.c  | 363 ++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_mac.c  | 104 ++++-
- .../ethernet/microchip/lan966x/lan966x_main.h |  39 ++
- .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
- .../microchip/lan966x/lan966x_switchdev.c     | 138 +++++--
- 8 files changed, 741 insertions(+), 106 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+index 8265ad89f0bc..69eedff28ce3 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+@@ -363,6 +363,51 @@ enum lan966x_target {
+ #define ANA_PFC_CFG_FC_LINK_SPEED_GET(x)\
+ 	FIELD_GET(ANA_PFC_CFG_FC_LINK_SPEED, x)
+ 
++/*      ANA:COMMON:AGGR_CFG */
++#define ANA_AGGR_CFG              __REG(TARGET_ANA, 0, 1, 31232, 0, 1, 552, 0, 0, 1, 4)
++
++#define ANA_AGGR_CFG_AC_RND_ENA                  BIT(6)
++#define ANA_AGGR_CFG_AC_RND_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_RND_ENA, x)
++#define ANA_AGGR_CFG_AC_RND_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_RND_ENA, x)
++
++#define ANA_AGGR_CFG_AC_DMAC_ENA                 BIT(5)
++#define ANA_AGGR_CFG_AC_DMAC_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_DMAC_ENA, x)
++#define ANA_AGGR_CFG_AC_DMAC_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_DMAC_ENA, x)
++
++#define ANA_AGGR_CFG_AC_SMAC_ENA                 BIT(4)
++#define ANA_AGGR_CFG_AC_SMAC_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_SMAC_ENA, x)
++#define ANA_AGGR_CFG_AC_SMAC_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_SMAC_ENA, x)
++
++#define ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA         BIT(3)
++#define ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA, x)
++#define ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA, x)
++
++#define ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA           BIT(2)
++#define ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA, x)
++#define ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA, x)
++
++#define ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA           BIT(1)
++#define ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA, x)
++#define ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA, x)
++
++#define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA           BIT(0)
++#define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA_SET(x)\
++	FIELD_PREP(ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA, x)
++#define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA_GET(x)\
++	FIELD_GET(ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA, x)
++
+ /*      CHIP_TOP:CUPHY_CFG:CUPHY_PORT_CFG */
+ #define CHIP_TOP_CUPHY_PORT_CFG(r) __REG(TARGET_CHIP_TOP, 0, 1, 16, 0, 1, 20, 8, r, 2, 4)
+ 
 -- 
 2.33.0
 
