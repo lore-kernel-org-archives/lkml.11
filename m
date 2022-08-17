@@ -2,212 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A709C32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5386DC32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241044AbiHQRZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 13:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
+        id S240971AbiHQR1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 13:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240928AbiHQRZ3 (ORCPT
+        with ESMTP id S238035AbiHQR1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 13:25:29 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75690A027A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:25:27 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id c2so4181490plo.3
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:25:27 -0700 (PDT)
+        Wed, 17 Aug 2022 13:27:09 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8360A031C;
+        Wed, 17 Aug 2022 10:27:08 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w3so18417484edc.2;
+        Wed, 17 Aug 2022 10:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=hCq/PjmSnq52qccJMB90RFwBUsMpXeagX4qGypLdhpE=;
-        b=N+IfMHTiYpzIYImT/JuopWNwNg0E5yvxwVTEC9c6MmClUGnC9KcfKMEifeWWKRuCs8
-         Hfu7xQBaDGkdxYyA5V2MvL58ZSxm9uuiFx8OcdQYvG+L/XuBtg0QYic626WZ/EIkvi/Y
-         zRTr/XkBZjfkcA2UvpwGOMR4cVVR123Yh57MrF7Rt21E51/NstgwgEyKGoqqK1pdPZZJ
-         a/LzBTbn9NBFQZqAGFqNKbo2QQISCol3wXodUq2HfrZ08WNNpnHC7UgGZ1Q2zhmA0I4t
-         yD00nK/Mi2lahqjKQNgGruxHPv9i+lTKYKbSyAG+ZlATGLDw4WBC0hjdu1bDSN0ogqcu
-         xJCw==
+        bh=wZI3tld/QNucTFtbrUt7UlOI+G9nC5bXjdIDXeunuuU=;
+        b=o9/QqRtP0PXeKhucl+cs0Ac5sNYNh7KvuMZec5/liF8Tue6Vm/HbH0jenXByiQlbQh
+         2VxgIaZXbP7YS6TYVqSMMNLokE5fXNlgpSsriwyMt/NtieyPKITQd/7LTskuwP5rXG4n
+         fM7ykT6iqS27mztynRBaQj6/C65TJet2NA8NV2ja34zTvxYErfnV3HneRLzgXj+XG9oo
+         yYp99phiV/9Jjzkm7+55lKvnPoYblEXnUyh9LBfOjIRYtHnf7Z0U0whEYJUUqGDl0yUV
+         lV6CODOH4srpX/EbTx/Lcd/NNUeRv41GBeloSlq3isKIKwJmTuHNvXJUTBovIuHqrPoB
+         Ul1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=hCq/PjmSnq52qccJMB90RFwBUsMpXeagX4qGypLdhpE=;
-        b=LUZzOelQHNwCox/XihQvQNVDDWMb+qeDbkq/HxQUogFk+E/5dov+cc2PVQ3GtTW2Ie
-         /7i7J71eA6noHz+GGArc2HEDoIuZXHDKpEtjm4vZzL6wylreRqK0YVgoe1FEGUsReeOb
-         F12hGFVrOwJBZBYJYmzhvnljTuqxXaohqyRBuoEFQXyegpNHzRc25YFGMBohxJGYYvAN
-         qfJbQmi5eLYwM/7ygZxNjhscwAG0bcmHKykbNwpj3faflRNIXP7BPedIzCl1kU38UZEd
-         l4ZUNFvk1YH/74dJScneggV5SIuYqWbG8j5e7c9bCQcVgu6zEN38BBeCDxwL21xDKolx
-         hDBw==
-X-Gm-Message-State: ACgBeo09fGzCUtnUDKzqmtOkIYNfT4DR2s4SJ20vIBhdThm+UwrkJFZB
-        YUpDnoNhj9w5j3ehMyZ18q+04Q==
-X-Google-Smtp-Source: AA6agR5lJPZ9ZFvM9kMHy1/peLxDJomZHuK4R1AVa5To+hXepZOQ5IsT2+6KY2aa42EWY7qTsMkVfA==
-X-Received: by 2002:a17:90a:68ce:b0:1f4:db83:1eea with SMTP id q14-20020a17090a68ce00b001f4db831eeamr4793245pjj.55.1660757126353;
-        Wed, 17 Aug 2022 10:25:26 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id j5-20020a170902da8500b0016be834d54asm140624plx.306.2022.08.17.10.25.25
+        bh=wZI3tld/QNucTFtbrUt7UlOI+G9nC5bXjdIDXeunuuU=;
+        b=1slrIbZzfAXL3g1KIPeHvWcaNdVX0R4LcWzXV3VRQy7R43WWxsOKGhwClvfKKhSHdY
+         27V8kZxYb6k32h+srQ4ZbhWnSMttMEAGxrswZ0Fg8/dGxVrU6yZ1OUWV+/OUTUNkLT38
+         MHDahOTz2+JlKfQ9k4yD23u55bSqkD73M3BL4m1S0SwP5gG++WtedYOm+iiIZcxCO1Z4
+         +cjVsr9rJozEhzGIE2tcunOS0RO+QNFdi8NioNMx65VczDTPGcQ7Y1ZPfJPhiFhmSUVH
+         5BsLulDr1uKSVQuxFjQ0zVVDauUf8fGS40z62EiEtBzspzVzwUwnBi4wMJg+9VPppjYb
+         o3Vw==
+X-Gm-Message-State: ACgBeo1PdewGvVgOCk8esEEXxESiV+kJP9g9NfjakiNq2PHKePGXm1/f
+        5Xoi1PFzOY4BKb9TgSjjJ58=
+X-Google-Smtp-Source: AA6agR5XbwlsjSwC7+Y/qAB6qjRysLq5+bXTKf0VLMQ7e9XSIqBIOCpgjiU7bmwKesvqXCNbSOEsAg==
+X-Received: by 2002:a05:6402:3304:b0:43e:8623:c402 with SMTP id e4-20020a056402330400b0043e8623c402mr24187784eda.200.1660757227343;
+        Wed, 17 Aug 2022 10:27:07 -0700 (PDT)
+Received: from skbuf ([188.26.184.170])
+        by smtp.gmail.com with ESMTPSA id mu8-20020a1709068a8800b00730860b6c43sm7103646ejc.173.2022.08.17.10.27.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 10:25:25 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 17:24:22 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vipin Sharma <vipinsh@google.com>
-Cc:     dmatlack@google.com, pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: selftests: Run dirty_log_perf_test on specific cpus
-Message-ID: <Yv0kRhSjSqz0i0lG@google.com>
-References: <20220817152956.4056410-1-vipinsh@google.com>
+        Wed, 17 Aug 2022 10:27:06 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 20:27:04 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] net: dsa: bcm_sf2: Utilize PHYLINK for all
+ ports
+Message-ID: <20220817172704.ne3cwqcfzplt2pgp@skbuf>
+References: <20220815175009.2681932-1-f.fainelli@gmail.com>
+ <20220817085414.53eca40f@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220817152956.4056410-1-vipinsh@google.com>
+In-Reply-To: <20220817085414.53eca40f@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022, Vipin Sharma wrote:
-> Add command line options to run the vcpus and the main process on the
-> specific cpus on a host machine. This is useful as it provides
-> options to analyze performance based on the vcpus and dirty log worker
-> locations, like on the different numa nodes or on the same numa nodes.
-
-The two options should probably be separate patches, they are related but still
-two very distinct changes.
-
-> Signed-off-by: Vipin Sharma <vipinsh@google.com>
-> Suggested-by: David Matlack <dmatlack@google.com>
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
+On Wed, Aug 17, 2022 at 08:54:14AM -0700, Jakub Kicinski wrote:
+> On Mon, 15 Aug 2022 10:50:07 -0700 Florian Fainelli wrote:
+> > Hi all,
+> > 
+> > This patch series has the bcm_sf2 driver utilize PHYLINK to configure
+> > the CPU port link parameters to unify the configuration and pave the way
+> > for DSA to utilize PHYLINK for all ports in the future.
+> > 
+> > Tested on BCM7445 and BCM7278
 > 
-> This is based on the discussion at
-> https://lore.kernel.org/lkml/20220801151928.270380-1-vipinsh@google.com/
+> Last call for reviews..
 
-This can and should be captured in the changelog proper:
-
-  Link: https://lore.kernel.org/lkml/20220801151928.270380-1-vipinsh@google.com
-
-> @@ -348,12 +353,74 @@ static void run_test(enum vm_guest_mode mode, void *arg)
->  	perf_test_destroy_vm(vm);
->  }
->  
-> +static int parse_num(const char *num_str)
-> +{
-> +	int num;
-> +	char *end_ptr;
-> +
-> +	errno = 0;
-> +	num = (int)strtol(num_str, &end_ptr, 10);
-> +	TEST_ASSERT(num_str != end_ptr && *end_ptr == '\0',
-> +		    "Invalid number string.\n");
-> +	TEST_ASSERT(errno == 0, "Conversion error: %d\n", errno);
-
-Is the paranoia truly necessary?  What happens if parse_cpu_list() simply uses
-atoi() and is passed garbage?
-
-> +
-> +	return num;
-> +}
-> +
-> +static int parse_cpu_list(const char *arg)
-> +{
-> +	char delim[2] = ",";
-> +	char *cpu, *cpu_list;
-> +	int i = 0, cpu_num;
-> +
-> +	cpu_list = strdup(arg);
-> +	TEST_ASSERT(cpu_list, "Low memory\n");
-
-Heh, probably a little less than "low".  Just be literal and let the user figure
-out why the allocation failed instead.
-
-        TEST_ASSERT(cpu_list, "strdup() allocation failed\n");
-
-> +
-> +	cpu = strtok(cpu_list, delim);
-> +	while (cpu) {
-> +		cpu_num = parse_num(cpu);
-> +		TEST_ASSERT(cpu_num >= 0, "Invalid cpu number: %d\n", cpu_num);
-> +		vcpu_to_lcpu_map[i++] = cpu_num;
-> +		cpu = strtok(NULL, delim);
-> +	}
-> +
-> +	free(cpu_list);
-
-The tokenization and parsing is nearly identical between parse_cpu_list() and
-assign_dirty_log_perf_test_cpu().  The code can be made into a common helper by
-passing in the destination, e.g.
-
-static int parse_cpu_list(const char *arg, cpu_set_t *cpuset, int *vcpu_map)
-{
-	const char delim[] = ",";
-	char *cpustr, *cpu_list;
-	int i = 0, cpu;
-
-	TEST_ASSERT(!!cpuset ^ !!vcpu_map);
-
-	cpu_list = strdup(arg);
-	TEST_ASSERT(cpu_list, "Low memory\n");
-
-	cpustr = strtok(cpu_list, delim);
-	while (cpustr) {
-		cpu = atoi(cpustr);
-		TEST_ASSERT(cpu >= 0, "Invalid cpu number: %d\n", cpu);
-		if (vcpu_map)
-			vcpu_to_lcpu_map[i++] = cpu_num;
-		else
-			CPU_SET(cpu_num, cpuset);
-		cpu = strtok(NULL, delim);
-	}
-
-	free(cpu_list);
-
-	return i;
-}
-
-> @@ -383,6 +450,26 @@ static void help(char *name)
->  	backing_src_help("-s");
->  	printf(" -x: Split the memory region into this number of memslots.\n"
->  	       "     (default: 1)\n");
-> +	printf(" -c: Comma separated values of the logical CPUs which will run\n"
-> +	       "     the vCPUs. Number of values should be equal to the number\n"
-> +	       "     of vCPUs.\n\n"
-> +	       "     Example: ./dirty_log_perf_test -v 3 -c 22,43,1\n"
-> +	       "     This means that the vcpu 0 will run on the logical cpu 22,\n"
-> +	       "     vcpu 1 on the logical cpu 43 and vcpu 2 on the logical cpu 1.\n"
-> +	       "     (default: No cpu mapping)\n\n");
-> +	printf(" -d: Comma separated values of the logical CPUs on which\n"
-> +	       "     dirty_log_perf_test will run. Without -c option, all of\n"
-> +	       "     the vcpus and main process will run on the cpus provided here.\n"
-> +	       "     This option also accepts a single cpu. (default: No cpu mapping)\n\n"
-> +	       "     Example 1: ./dirty_log_perf_test -v 3 -c 22,43,1 -d 101\n"
-> +	       "     Main application thread will run on logical cpu 101 and\n"
-> +	       "     vcpus will run on the logical cpus 22, 43 and 1\n\n"
-> +	       "     Example 2: ./dirty_log_perf_test -v 3 -d 101\n"
-> +	       "     Main application thread and vcpus will run on the logical\n"
-> +	       "     cpu 101\n\n"
-> +	       "     Example 3: ./dirty_log_perf_test -v 3 -d 101,23,53\n"
-> +	       "     Main application thread and vcpus will run on logical cpus\n"
-> +	       "     101, 23 and 53.\n");
->  	puts("");
->  	exit(0);
->  }
-
-> @@ -455,6 +550,13 @@ int main(int argc, char *argv[])
->  		}
->  	}
->  
-
-I wonder if we should make -c and -d mutually exclusive.  Tweak -c to include the
-application thread, i.e. TEST_ASSERT(nr_lcpus == nr_vcpus+1) and require 1:1 pinning
-for all tasks.  E.g. allowing "-c ..., -d 0,1,22" seems unnecessary.
-
-> +	if (nr_lcpus != -1) {
-> +		TEST_ASSERT(nr_lcpus == nr_vcpus,
-> +			    "Number of vCPUs (%d) are not equal to number of logical cpus provided (%d).",
-> +			    nr_vcpus, nr_lcpus);
-> +		p.vcpu_to_lcpu = vcpu_to_lcpu_map;
-> +	}
-> +
->  	TEST_ASSERT(p.iterations >= 2, "The test should have at least two iterations");
->  
->  	pr_info("Test iterations: %"PRIu64"\n",	p.iterations);
+My review is: let's see what breaks...
