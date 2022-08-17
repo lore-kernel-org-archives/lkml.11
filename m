@@ -2,119 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E65FEC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76BCC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241538AbiHQUMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
+        id S241764AbiHQUMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241467AbiHQUMl (ORCPT
+        with ESMTP id S241476AbiHQUMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 17 Aug 2022 16:12:41 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE6666A4B
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E795FA61DC
         for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:40 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id s23so7153266wmj.4
+Received: by mail-pf1-x432.google.com with SMTP id z187so12940366pfb.12
         for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:12:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=vuO3cD7vHfOoM26qaFlIa3/qXvWH4JaTB3axSBEJPBw=;
-        b=QNqHEQCbHfRVGS+tAMiAeZUZwHbBaHSl0+l3elr57UhAo9n9y5kVxNnKfpGR3/bFaK
-         +0au1CDmSpQEpc+SU4gk9DT+bLflPHiKU7I8q8oQr7K+iXIJMVRPppzrl+EdG1CICueI
-         mETGyBRKdR/0jUMOQefFZwBRXS0F6IVfTdGwBMcn+/W4tOLw5o3k++yjoq0kYu6PUOu8
-         zPeHvkIN/+xOD7MPCo5mJihWLZw9Ayb2dZz9D3SYCFb7mSsm+ctbY/v+37Sk2BkryeRN
-         +keBV6AYTGq3C5eSUKwO2Ih+l7MLpNlzPwmWLNs+G4q0F/Ce1V4BLVEMj+kApmgnT9U8
-         jwKw==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=+WRGNlWofKlOiDjgaSTNb/H9kbNSywL6IxTX7zzIueA=;
+        b=fMRhV1gD0LiWPslIdJd3Oay33CI1Qjzc9fxrxo1rMAcTxyGfF+9i+S4mdI5O7WkvEZ
+         pi/Ze5jSG8mJRZ5c9znxeN8yUWNpDYVrR9pyvY6pVf4TLt8fffmT0CMXEqCcyLCBGZzT
+         feSoTwBjHSuD+PY2QeZCOih3yziojt2d2o8bE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=vuO3cD7vHfOoM26qaFlIa3/qXvWH4JaTB3axSBEJPBw=;
-        b=7XhQVlrMXqnpPFvl60lfO/k9H4JW3Ak16q5XCjsMlkPUgBuIdoSS8dPPdxLMnqhuWJ
-         BSARKZz2RpBfEtgHh7fjbTkY8yFrE/6e+S1wqyJvQXtdADzU+H5l+zGtw4en/SgA+w34
-         jlVy0tu2CLjD905Qo5+69QsSaff6WrtEe+6jaq5+klpmE9nJcMH6t7c9f6j5tzI9rsDE
-         7a5+25JZP4wCN6gZ/D/S8qXA50yH7GvsVKm4VyJtsdg4eWjVULvzSnx1jac7NtuMuGg2
-         z11Rd07f55RtqsCP42W5dIkOdnm/TGJ9qXoIuM6bfS25sMglQUEzKXiuS33SZHuHSlZu
-         bFiw==
-X-Gm-Message-State: ACgBeo2JVSitQNgTqWcIpamjK0HayL+9FrNpVmrTk/bpv5QVSAHoq03l
-        hSsTIKBgurIhQ1xehQ6v3HWNMg==
-X-Google-Smtp-Source: AA6agR4uxolucIHZMbESqZVNmKY0bzNzoYEESejDuTjDSWvejaLJaV19DGDusJCVom1LcN9XAiM6Ow==
-X-Received: by 2002:a1c:7407:0:b0:3a5:b81b:c5c5 with SMTP id p7-20020a1c7407000000b003a5b81bc5c5mr3038616wmc.144.1660767160200;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=+WRGNlWofKlOiDjgaSTNb/H9kbNSywL6IxTX7zzIueA=;
+        b=ZLJJ1lwVKsBbgMP6Gr702HJPj7q/E4x0CK1pTc3K4YPJW34YmF7xykah6ksOHcea65
+         HpBo4ckcIcWRBVdD/Dai9Fs+88ppwypd47BJX2950Eglhto25Xzf157BqjwGovdd3GzB
+         dGMaK2uc52eyp+vpR6qXB6it635O1ZRISQwMsxR7NgMJ0SlIabwz4qCUGwkgc96dpEmZ
+         KFEvqr/O0QU1BbYHBAJUTUZfRDYyyYWk52vD0k1mpVrY8DO+JBRxYXEoIt2JrA/W0sK2
+         8D2YFVWCMu1QAgZXf1u3MbwL/l0HJejrCNaWNcj/N9aadxH5RK4rSmbAsFVFk+sn+Qa5
+         6vKg==
+X-Gm-Message-State: ACgBeo0FxDWQkcNIf63++SGKbm8eJayHypufA1qDjGpzz0i/8pOEtZwM
+        LDfsFS8U/FptWyVNRw9dZPIfDA==
+X-Google-Smtp-Source: AA6agR6zH+/TwyGgpZzTC8h5baBczzUM6S76Zm6Lt7mPjCgTSRD1ONJNatmSLrsIE45J9d/eErae6g==
+X-Received: by 2002:a63:1841:0:b0:429:8268:1fc with SMTP id 1-20020a631841000000b00429826801fcmr10651647pgy.78.1660767160381;
         Wed, 17 Aug 2022 13:12:40 -0700 (PDT)
-Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id i15-20020a05600c354f00b003a5dfd7e9eesm3029371wmq.44.2022.08.17.13.12.38
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id h18-20020aa796d2000000b0052d4afc4302sm11215205pfq.175.2022.08.17.13.12.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 17 Aug 2022 13:12:39 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Anup Patel <anup@brainfault.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Guo Ren <guoren@kernel.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 2/4] dt-bindings: interrupt-controller: sifive,plic: add legacy riscv compatible
-Date:   Wed, 17 Aug 2022 21:12:11 +0100
-Message-Id: <20220817201212.990712-3-mail@conchuod.ie>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220817201212.990712-1-mail@conchuod.ie>
-References: <20220817201212.990712-1-mail@conchuod.ie>
+Date:   Wed, 17 Aug 2022 13:12:38 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        Joe Perches <joe@perches.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH v9 16/27] scripts: checkpatch: enable
+ language-independent checks for Rust
+Message-ID: <202208171312.1CB3606F0C@keescook>
+References: <20220805154231.31257-1-ojeda@kernel.org>
+ <20220805154231.31257-17-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805154231.31257-17-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Fri, Aug 05, 2022 at 05:42:01PM +0200, Miguel Ojeda wrote:
+> Include Rust in the "source code files" category, so that
+> the language-independent tests are checked for Rust too,
+> and teach `checkpatch` about the comment style for Rust files.
+> 
+> This enables the malformed SPDX check, the misplaced SPDX license
+> tag check, the long line checks, the lines without a newline check
+> and the embedded filename check.
+> 
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 
-While "real" hardware might not use the compatible string "riscv,plic0"
-it is present in the driver & QEMU uses it for automatically generated
-virt machine dtbs. To avoid dt-validate problems with QEMU produced
-dtbs, such as the following, add it to the binding.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-riscv-virt.dtb: plic@c000000: compatible: 'oneOf' conditional failed, one must be fixed:
-        'sifive,plic-1.0.0' is not one of ['sifive,fu540-c000-plic', 'starfive,jh7100-plic', 'canaan,k210-plic']
-        'sifive,plic-1.0.0' is not one of ['allwinner,sun20i-d1-plic']
-        'sifive,plic-1.0.0' was expected
-        'thead,c900-plic' was expected
-riscv-virt.dtb: plic@c000000: '#address-cells' is a required property
-
-Reported-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml     | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-index 92e0f8c3eff2..99e01f4d0a69 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-@@ -66,6 +66,11 @@ properties:
-           - enum:
-               - allwinner,sun20i-d1-plic
-           - const: thead,c900-plic
-+      - items:
-+          - const: sifive,plic-1.0.0
-+          - const: riscv,plic0
-+        deprecated: true
-+        description: For the QEMU virt machine only
- 
-   reg:
-     maxItems: 1
 -- 
-2.37.1
-
+Kees Cook
