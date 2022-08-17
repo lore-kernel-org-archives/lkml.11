@@ -2,69 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F8CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99846C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239957AbiHQOAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48564 "EHLO
+        id S239812AbiHQOAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239776AbiHQN7c (ORCPT
+        with ESMTP id S239977AbiHQOAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:59:32 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F9E98585;
-        Wed, 17 Aug 2022 06:59:27 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 6A93C1008B393;
-        Wed, 17 Aug 2022 21:59:00 +0800 (CST)
+        Wed, 17 Aug 2022 10:00:30 -0400
+X-Greylist: delayed 513 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 07:00:21 PDT
+Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B1F8E0CB
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:00:21 -0700 (PDT)
 Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 4D4982032D480;
-        Wed, 17 Aug 2022 21:59:00 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id HhqxGr9Oea1E; Wed, 17 Aug 2022 21:59:00 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id D7C482009BEA0;
-        Wed, 17 Aug 2022 21:58:47 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC v2 7/7] virtio: annouce VIRTIO_F_IN_ORDER support
-Date:   Wed, 17 Aug 2022 21:57:18 +0800
-Message-Id: <20220817135718.2553-8-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
+        by srv6.fidu.org (Postfix) with ESMTP id 04DB8C800A0;
+        Wed, 17 Aug 2022 15:51:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        tuxedocomputers.com; h=content-transfer-encoding:mime-version
+        :x-mailer:message-id:date:date:subject:subject:from:from; s=
+        default; t=1660744306; x=1662558707; bh=zoHsmsgSZr0s6jBD9pNOl5vz
+        YbJscvUXnCuoXg5kmOg=; b=dreyaintOjFe5bNZydKdOy5dmYQ6nHVY7Up3DV8y
+        7AhCxhrfzqdrbFSdAeMsdvrJVzBJP7oGmp21okHBsyyqCqaVhUZBs6F7MZpCdZ/z
+        sG5d8/yvvrOMZXQYiChrK1ovSiS+VxPQde1hszcNNQbeYzjyhnnqa+IUimD0k4jU
+        yyo=
+X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
+Received: from srv6.fidu.org ([127.0.0.1])
+        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
+        with LMTP id T08H7Kkwsf5V; Wed, 17 Aug 2022 15:51:46 +0200 (CEST)
+Received: from wsembach-tuxedo.fritz.box (p200300E37f47c3007DCC1c82f3790F7a.dip0.t-ipconnect.de [IPv6:2003:e3:7f47:c300:7dcc:1c82:f379:f7a])
+        (Authenticated sender: wse@tuxedocomputers.com)
+        by srv6.fidu.org (Postfix) with ESMTPA id B0184C8009B;
+        Wed, 17 Aug 2022 15:51:46 +0200 (CEST)
+From:   Werner Sembach <wse@tuxedocomputers.com>
+To:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: hda/realtek: Add quirk for Clevo NS50PU, NS70PU
+Date:   Wed, 17 Aug 2022 15:51:44 +0200
+Message-Id: <20220817135144.34103-1-wse@tuxedocomputers.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order feature is supported by default in virtio.
+From: Christoffer Sandberg <cs@tuxedo.de>
 
-Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Fixes headset microphone detection on Clevo NS50PU and NS70PU.
+
+Signed-off-by: Christoffer Sandberg <cs@tuxedo.de>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: <stable@vger.kernel.org>
 ---
- drivers/virtio/virtio_ring.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/pci/hda/patch_realtek.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 143184ebb5a1..50aa361abd65 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2416,6 +2416,8 @@ void vring_transport_features(struct virtio_device *vdev)
- 			break;
- 		case VIRTIO_F_ORDER_PLATFORM:
- 			break;
-+		case VIRTIO_F_IN_ORDER:
-+			break;
- 		default:
- 			/* We don't understand this bit. */
- 			__virtio_clear_bit(vdev, i);
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index fd630d62b5a0..fceac608214e 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9389,6 +9389,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x7717, "Clevo NS70PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
 -- 
-2.17.1
+2.34.1
 
