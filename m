@@ -2,118 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9537C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 05:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C054EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 05:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238576AbiHQFlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 01:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
+        id S238582AbiHQFl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 01:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238574AbiHQFlJ (ORCPT
+        with ESMTP id S238574AbiHQFlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 01:41:09 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5E273912
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 22:41:07 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id p184so6562442iod.6
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 22:41:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=LtiOQ+mkHG3cwstCPu63k81uDm+Tw39gJQT7l7BfDLA=;
-        b=Ath3yvPoCbvg61Letpy3d0PqozWLwwe9AmUmHNCgOgQ+HJySqSJYFKiqdif9aAzbwC
-         /0Fvf2ynY2zf4g364t39yCZiiLQX+Phj0RXTS41kp9aWAtRs2vqSNGPh3LROO1A8e1SG
-         GIVawD3lxyeB+YewQwmkRQBwFKZafkYi0BkZS/MBkSs01TJqnGTc7q6o2FM9JQKCzy+6
-         as58x35inJKn+OzcxYhDGWcvUHnKQBuNzOof7OCnTatdp0aUq2IsTm+m5Fo/mYAZdiHc
-         mJND3g5enXtfobike48Sxz4zmTyGD4D4yyKankC8sW2T4cbIIyOpWONzuFh+aUZXvPHC
-         x+RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=LtiOQ+mkHG3cwstCPu63k81uDm+Tw39gJQT7l7BfDLA=;
-        b=Kd+QN9hzyTQvAHTzsS8O1bF9Pi4unVWt5REvzf87CIm2qZSZaf8JqYlbnW3Ce6IJKA
-         5WPWlUlCSvZCr+K05ifq5L5Vcs4D6i0j5hYMnkFlVRXrUdfe4wETuTea7N+s4LbpNOQg
-         D5ICEcbRrH469OZ7HPCExBqJA901zeqfCAuZ9Lg31WeHX/dUCChtAk8VXW/97JbQm5/8
-         KeZpgx6S7NoVwrQtVOs5uYdXZZugDMNCGgyYRDyUn/WQozZd6AR7VQt5jwTGv+VZqj57
-         GA47+GzQR6W3TYKEODQJGqcN9AsAw/ELslt7gu5fVS5GdStUe7PB1v4LYGN5kFGLK1V0
-         ZyEA==
-X-Gm-Message-State: ACgBeo0SHukgEZ7TLntp2XLDiG2MwobctNWaJbHfoaqZ38MrkXl3EusV
-        3ezj9y5XRhNWscxuZMPlEr9tw+y+hXvtjW9tyJlr4g==
-X-Google-Smtp-Source: AA6agR6AuZldJfYBgZvu76/kZ6GrmloyUKbLwieemg3QzOLxFXNzU9ClV/Ucl0lnavczFuLrZ/rBfRuoxtOlgv6iSPc=
-X-Received: by 2002:a05:6638:d45:b0:343:2ae6:e39a with SMTP id
- d5-20020a0566380d4500b003432ae6e39amr11419090jak.139.1660714866198; Tue, 16
- Aug 2022 22:41:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220816070311.89186-1-marcan@marcan.st> <20220816140423.GC11202@willie-the-truck>
- <c545705f-ee7e-4442-ebfc-64a3baca2836@marcan.st> <20220816173654.GA11766@willie-the-truck>
- <CABdtJHt_3TKJVLhLiYMcBtvyA_DwaNapv1xHVeDdQH7cAC6YWw@mail.gmail.com> <CAHk-=wh3dCn5a4fZuJ7cewJoG9Vrm9xSOShiwgC6MA9=yJvXPg@mail.gmail.com>
-In-Reply-To: <CAHk-=wh3dCn5a4fZuJ7cewJoG9Vrm9xSOShiwgC6MA9=yJvXPg@mail.gmail.com>
-From:   Jon Nettleton <jon@solid-run.com>
-Date:   Wed, 17 Aug 2022 07:40:29 +0200
-Message-ID: <CABdtJHuwGQ1Vj+HVfkhp=JN_hsFjJeK0-nfj+Ys1LXZrTKUaZg@mail.gmail.com>
-Subject: Re: [PATCH] locking/atomic: Make test_and_*_bit() ordered on failure
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Will Deacon <will@kernel.org>, Hector Martin <marcan@marcan.st>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>, Tejun Heo <tj@kernel.org>,
-        jirislaby@kernel.org, Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Asahi Linux <asahi@lists.linux.dev>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 17 Aug 2022 01:41:51 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0C277570
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 22:41:39 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 31AE41A1A83;
+        Wed, 17 Aug 2022 07:41:38 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id EC0291A1A2E;
+        Wed, 17 Aug 2022 07:41:37 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 71091180031E;
+        Wed, 17 Aug 2022 13:41:36 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_sai: Remove unnecessary FIFO reset in ISR
+Date:   Wed, 17 Aug 2022 13:24:27 +0800
+Message-Id: <1660713867-26921-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 8:02 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Aug 16, 2022 at 10:49 AM Jon Nettleton <jon@solid-run.com> wrote:
-> >
-> > It is moot if Linus has already taken the patch, but with a stock
-> > kernel config I am
-> > still seeing a slight performance dip but only ~1-2% in the specific
-> > tests I was running.
->
-> It would be interesting to hear if you can pinpoint in the profiles
-> where the time is spent.
->
-> It might be some random place that really doesn't care about ordering
-> at all, and then we could easily rewrite _that_ particular case to do
-> the unordered test explicitly, ie something like
->
-> -        if (test_and_set_bit()) ...
-> +       if (test_bit() || test_and_set_bit()) ...
->
-> or even introduce an explicitly unordered "test_and_set_bit_relaxed()" thing.
->
->                  Linus
+The FIFO reset drops the words in the FIFO, which may cause
+channel swap when SAI module is running, especially when the
+DMA speed is low. So it is not good to do FIFO reset in ISR,
+then remove the operation.
 
-This is very interesting, the additional performance overhead doesn't seem
-to be coming from within the kernel but from userspace. Comparing patched
-and unpatched kernels I am seeing more cycles being taken up by glibc
-atomics like __aarch64_cas4_acq  and __aarch64_ldadd4_acq_rel.
+Fixes: e2681a1bf5ae ("ASoC: fsl_sai: Add isr to deal with error flag")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_sai.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-I need to test further to see if there is less effect on a system with
-less cores,
-This is a 16-core Cortex-A72, it is possible this is less of an issue on 4 core
-A72's and A53's.
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index d430eece1d6b..a7fa6f0bf83d 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -114,11 +114,8 @@ static irqreturn_t fsl_sai_isr(int irq, void *devid)
+ 	if (flags & FSL_SAI_CSR_SEF)
+ 		dev_dbg(dev, "isr: Tx Frame sync error detected\n");
+ 
+-	if (flags & FSL_SAI_CSR_FEF) {
++	if (flags & FSL_SAI_CSR_FEF)
+ 		dev_dbg(dev, "isr: Transmit underrun detected\n");
+-		/* FIFO reset for safety */
+-		xcsr |= FSL_SAI_CSR_FR;
+-	}
+ 
+ 	if (flags & FSL_SAI_CSR_FWF)
+ 		dev_dbg(dev, "isr: Enabled transmit FIFO is empty\n");
+@@ -148,11 +145,8 @@ static irqreturn_t fsl_sai_isr(int irq, void *devid)
+ 	if (flags & FSL_SAI_CSR_SEF)
+ 		dev_dbg(dev, "isr: Rx Frame sync error detected\n");
+ 
+-	if (flags & FSL_SAI_CSR_FEF) {
++	if (flags & FSL_SAI_CSR_FEF)
+ 		dev_dbg(dev, "isr: Receive overflow detected\n");
+-		/* FIFO reset for safety */
+-		xcsr |= FSL_SAI_CSR_FR;
+-	}
+ 
+ 	if (flags & FSL_SAI_CSR_FWF)
+ 		dev_dbg(dev, "isr: Enabled receive FIFO is full\n");
+-- 
+2.34.1
 
--Jon
