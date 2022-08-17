@@ -2,242 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2789C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E493C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241987AbiHQUen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56626 "EHLO
+        id S241996AbiHQUfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241945AbiHQUei (ORCPT
+        with ESMTP id S241999AbiHQUfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:34:38 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AC6A98D6
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:34:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660768477; x=1692304477;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NZBwv6qSD3S9lLwAdPwsfuroic2uiLUrwUjxG30xUS0=;
-  b=BwKKd9q+XullHi9v0zymcb2QkZ57ammuhJtbnK6vOJpQRdODlDP9moRp
-   KjcRUrXjbi4cgZXo7XI3ANhXuzss/cWO0tYRhZIXURkWINjpzC9zsP0og
-   fQARFf/qCacCaQbAyx8tUGbMhbARb+Xpeep62XquUd8BBCWTpIZ5peQ/e
-   P4sXQ2TlyTSoTwSreAcqt1ghyr742gGxbcq7qEqLfFoE+3LzDXqsJPUTq
-   caxuPST0zz9NKfCtFUTzaWwcXmA7zgIu+Ke8V2tgfRG3KdcnJW0SwlFyC
-   NVLYyKbkcL1YILpf6jYlLu/D7vF35Bb1wig/V841XOQt3no0onRPUbVuD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="291350793"
-X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="291350793"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 13:34:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="675784000"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Aug 2022 13:34:34 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOPkI-0001Jo-0C;
-        Wed, 17 Aug 2022 20:34:34 +0000
-Date:   Thu, 18 Aug 2022 04:34:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
-Subject: security/selinux/selinuxfs.c:2093:6: warning: variable 'fsi' is used
- uninitialized whenever 'if' condition is true
-Message-ID: <202208180442.9ncBZM8u-lkp@intel.com>
+        Wed, 17 Aug 2022 16:35:18 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FD2AA3C3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:35:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KY6hNaf+af7kUilT/pJdyesjGHF9H2Su4EO21pzu9IE5GE8eZX92V7mkTcJUw0Rd8A/vhuTbkchfhbbnMqOqf0Wf1DpCKXLc9uNhztl0eKlwIoV8E6QA1ivRckACx/HwIWYDv5p6ZRbK/PHWp/ExEu9RlEx9wVvl5zAZgtvA3B4gbxbSo/paz+2osS36SfngddZ7e7dSZFWJ38D9+x5IPsL6bHHX/IWWN3KNBY49ncmlFV/r29gVZx5zPAYy1qwzhgJVNB/FrYBTMCHwApQsHV2/JSEWznqqHBf+WSJWR0TLCZeO9JDNpvLxDdw/brWtJzVmen9BvMvWvEhcgMPgBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XUNp77XI4N/1ISnqWFd9LaLp99YGxqaqrpB9jD61VXg=;
+ b=oFO8aX0Y0VK+sNt0VafIWtjogFdwhIwKPhRKAS9qGJzR1kqGIOKPMBRM1VHNbdXEzMC8kGYNZuw0MKENcIrOF3d/myGNE4ddm/0QJdP5s68muj9x6JYx4kDRoItLajv/FpZJCfCGLHn9t8FjtnFf2PTnjjbyKuD6GpvwZM7u0zLZBL3bZUOHjVwj/0Ko6Ui2rKmuJJco5+IIU5R/2oxdOQCgrRTeSKHdi+DGaPDNqjmdaM2txh87+CxV8hxY9Ati+kVQgLjRQeE3SARmRXDhES890Gr3GZxmzSHAXaeGIdfOh29O4m2Bq8gQ1YItK0d60bRl6mLMjqamohPUh1jBLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XUNp77XI4N/1ISnqWFd9LaLp99YGxqaqrpB9jD61VXg=;
+ b=LTCtw7JbvtXuoxM2zraSMLurlmpPgCX1KaaxMHMFqwr3yjAIrMll73jPUkX1ItxE9cNW3P8/jnvsq+OyYuIOjgHVn3F38ZRSDriRdNgAXovhGfhZfDP7zN9J1uEK+LIcQWcHxtGxgTOdyeEVnhylSy7IZVgULSRRnG9qLY95wchte+tnoHD++WBNi+5p+O9dS/wVhrkjCXz1qk+NCGN1u5EaTqPyF1mf1WJdjxcJqwsCgigfT431vETBgYez+0sUHonbruZh6tJfAxhEXV7URJ+1ytkccMSgFEMlSKNQ3DWEW7nkajO8b49i2z+rOmp7rlElmrKkY9Tu5Eg589yG/A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
+ by MN2PR12MB3870.namprd12.prod.outlook.com (2603:10b6:208:166::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Wed, 17 Aug
+ 2022 20:35:14 +0000
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5]) by BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::508d:221c:9c9e:e1a5%9]) with mapi id 15.20.5525.011; Wed, 17 Aug 2022
+ 20:35:14 +0000
+Message-ID: <de9a3db9-6130-fe07-88ec-7e728ff5701c@nvidia.com>
+Date:   Wed, 17 Aug 2022 13:35:12 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 2/2] mm/gup.c: Refactor
+ check_and_migrate_movable_pages()
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Alistair Popple <apopple@nvidia.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>
+References: <487960bf67c7273ff5606c76f73bb51271bc7b90.1660269441.git-series.apopple@nvidia.com>
+ <6b61e9bf7c65f78524db32ba3e65a7eb6b8a76a0.1660269441.git-series.apopple@nvidia.com>
+ <YvpxOyrDBUHagpC6@nvidia.com> <87edxgvixy.fsf@nvdebian.thelocal>
+ <Yvt/hZYfSvlCbU02@nvidia.com> <87wnb7tycb.fsf@nvdebian.thelocal>
+ <YvzaXeRox/9fqfdW@nvidia.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <YvzaXeRox/9fqfdW@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0159.namprd03.prod.outlook.com
+ (2603:10b6:a03:338::14) To BY5PR12MB4130.namprd12.prod.outlook.com
+ (2603:10b6:a03:20b::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d0c0d8c7-347c-460d-cc87-08da808ffd6a
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3870:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XrxCu/VAWCeYEsVEVMpctjjHKtYK+FXP5z4nbkGHhaatgt+CLhIJXayjAYvpx0xcsvW8Xwxl90R5x5eR9GDXswhu40sJ6lKAD5kYJI6VNB4iJtyTWeEbw+0LFqziZJZkz/wSwSBDbevn+MYku0KmJtCbIV0hiXnGDJk9pWr7u0vQE8xlR1oZtC157op6yXmaQnAnk5V+f5DOurWcXY37tPi57P7052uT+NWB5YEj2Q1KjUMK3gA+j2DoGXXkmpldRimCJrFUW09fJHOBwMEbJUSGW/Cr1yrOPW3+Wo6ibZ5OriBmmX7qBWwF6zS8Sy1Yy+mKKqX31h3dtHm3OnZIk4tA0r5fUIUxdrYWG27IMxDrd9Hnvpd+gpFxPjlJ2Frcx4nngL/QO+eXtU6Seaypm1Hc1M6pVThQmc7xWuxe1CWuCBPdFcJEesCZhAopcRxRoMSu/LYjTOOCSoh2IVlX9JEm9sYF7wPQuLnLNt1i2XmH9GKW5jnKVSIolzVnAnQuD2FG+KbTT4udoiBX4y1jc+gSANwwis/hJQBEaRCMVFumSfwPcYhYxC6kTTsZ+6yCgzp1YdlsJdjwxHda/XCr5AZduwNhkdo5xYYPaniThsF6nSy9sk4slhGFbwQru+ibK6FOZoGTUKxYEFRNaASVnZFGQY3pq2PX2RBiGbZH31OlPKZYD+66OZmsvGFSR2GHKoJrGCMvoOv7s5ocuteQ0Y+s3g1JALOtFAXYtuiEqtsUZnj8nzdFfe12QHwDqChMhG1TzfcO+Hw8vX7lH0mwXXSU6ZZE0agdA2+Ryr4Q4v8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(366004)(346002)(376002)(396003)(186003)(31686004)(86362001)(2906002)(6506007)(53546011)(478600001)(31696002)(2616005)(26005)(36756003)(6512007)(6486002)(41300700001)(83380400001)(6636002)(5660300002)(316002)(54906003)(110136005)(66476007)(66556008)(8676002)(66946007)(4326008)(38100700002)(7416002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UWJtTUdxNWpEclJQWFJoZE9NZDZXSzBzZjhxSmZ2aHk1dk5TcmUxZnNzcnJD?=
+ =?utf-8?B?Q1QveTUzWGZXOFl1R3daMDdVVWJVOVlmWXphbkhraHhtNzUwblVqOUhIZmFa?=
+ =?utf-8?B?Y0JOcU5ZN2FxcExJYU5Gc2JiQUZhRTdrRkxHelFiTWJaYitaVnhhOHUrZE41?=
+ =?utf-8?B?K1A1aVF1TXhPVjk5a05HbGxBT1V2TG16T2JwRjVmVllrOTIyc056SEtrZXc0?=
+ =?utf-8?B?MEtlNER3REgyQ3ZYQklWSGFNQW1peEswaDdqOGNib1ZLS3ZaSUZrc2JIb3RY?=
+ =?utf-8?B?dUdMbzVMSnBzZVYrM0lZZEZ1MERLUVhITmNwTkhNakFPK3ZubUFXTDdJOUxx?=
+ =?utf-8?B?M2h5QUNCdzE4bEFIWm9YZkFiODRCRjNKUXN1SkpLUEhoKzlqWUJFYmJ4dmZz?=
+ =?utf-8?B?cEVWMTdkWmM5T3NsZEx1MTlTTnRpMEhUMCtzcjRNRUljSjkwc04wa0dMbzI3?=
+ =?utf-8?B?QjUzNDVLWXE4NkZNUWp4T1FyR3hZNzB3U29GYjY3bEZ3UGU1cTVwb3FiRzc4?=
+ =?utf-8?B?R3RIeUFPUmtNNUdKTVA2SXBYWFNLR050NUFGV1VyNXVRN1NlWFZWNm9JbTdL?=
+ =?utf-8?B?andDWVZGVXlRM2hydnZCZEJnK1hoSXpNcmZxTFRUclVJNkd3YnhJTUtocllQ?=
+ =?utf-8?B?N0x4cGNKc2VCTHRjZnJIaHpZSUJtMkdCUS9qUTFZTWNCVXVsVW1MV0RSTE5V?=
+ =?utf-8?B?VGN4ZldKWlMrelpEQ0ozN1drUUNwRDdWZjVzdXYycTdSSmNOVTgrc2lzQnN3?=
+ =?utf-8?B?L1Y3VS9jRU5oYzVEZ25sTWJkVENXUnhRQnExM3MydFZjN1hnVUczY0drRkJC?=
+ =?utf-8?B?VG9CaXVkWjlwUVhmZExSdzVTRll5SkZxdEQ5SGRWanVaVUg3T2xkQm5URmgy?=
+ =?utf-8?B?b1BrYkVMckFlVlkrdlg2bXVLZ1JYTU5FOFBRZW1WTkl0T25YM0l0bkdIMDda?=
+ =?utf-8?B?Q3hqU0ZlSXZHazk0QTZSQ1FKVTZwMVdkNmxKMm00ay9ZSS9IOUF4bmU3VVdV?=
+ =?utf-8?B?S2VZb2FZMkFxa0g0YUQwaitQK2RPUmtLbVlnd2oxNmN6Rk1lYktJNDVBV2tG?=
+ =?utf-8?B?UitoMjB3eDdPYVNIcFJjcjZiYXVKRGN5bHpra0dXMEVXUldaMnRQazNnWUUv?=
+ =?utf-8?B?cHQrWm82Ny9rTlBKNGdVcVBwQzRBSGFQdW9OcFFEbTZ4M1ZyWUNwb0d2cmFX?=
+ =?utf-8?B?TWMrS0xiSUtyMHcwa1BlT0ZqdFJOQUZVQmxLb0pGRW9FeVZHVmdyRUJTR2pW?=
+ =?utf-8?B?YklLQXhHdlNYS3ZNenZLZndBUng3dDE5dUJWMzVnckQxM1VYL1AxYXNyRXRp?=
+ =?utf-8?B?MzBIME8yTnQ0MWx4WjcxeDBDNXRQTHpBMnNvUUs1Zk5BV0UybzVic3IyZmFL?=
+ =?utf-8?B?Qi8yc3hpQ3pMR0ZSUE9BTEp0eXoyZmNwZGFza3VWUUZXdGRjTW9RS0NxMmdT?=
+ =?utf-8?B?b2hWbVQ1V1VpVHdlM3hsM1Q3bHdiQkVibFh2UmhnYlZWT0pxQVB6ZjFzbDBZ?=
+ =?utf-8?B?WGVQODRNVHY1dDQrdVdFK3Y5R2dVd2lqSDl3T1hJcHk3d1cvNnIzcVdUbnRH?=
+ =?utf-8?B?UmRGQjVwZkJ2alZOSDFpUFNSY1BJNEsydklrYnMrajdmUXo5VVF0MjFkc0tp?=
+ =?utf-8?B?RXZVS2hOZmZPSEVrNzBXQytGL1FjdkJTNyt0WFB3Nlhqc2RQWnJrSWdHRnZm?=
+ =?utf-8?B?aWR6Qkt4d0JCTU9IaFNaa1VKcGt6SWN6N085VDBXVE1McTFrdkd6dmoyNmFy?=
+ =?utf-8?B?VHFkYVRyc0tSVGw3NERUSUhicXFXZlB2Z3hSQzZ4bGIrdzBCbFkrOFdLV3Bq?=
+ =?utf-8?B?SkpOQXFvckpPK2VQSldYQ1dOYUp0bmRIRUhoUEtCS3JCeUt4M1RvWkF5WkpL?=
+ =?utf-8?B?SUN4RGkxVWN0T1V4MEM1aC90MzJ0MWRLVnk1WDFyUGJpc3J5ejluRkJUR1Qw?=
+ =?utf-8?B?c2NwSHZTUGRCczhCdTJuU0srdXB3eC9jZFF2ODBvdHZGeHpXbk5kSnhGYSsr?=
+ =?utf-8?B?VFNGaUhUYVhuOWxLSVVxTnVodUxzMXd0d2tlTXFxU3lGTFB6S0gzYWRaWmVm?=
+ =?utf-8?B?VlNUZkhidUlpcHlLOUR0WnVyNzF3bVRQRjdFVlp6OFdsbUU5N2ZQLzZHaFI3?=
+ =?utf-8?Q?WW2+xlX7jfFjIUUUgqytArdgB?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0c0d8c7-347c-460d-cc87-08da808ffd6a
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 20:35:14.8547
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HSMA8TZkIalG+FVcgjbLJHaZktr9yW7VUTCbn/d7rNmswqNF6Cyp75TalNN7JEBuZPvXcZeStYdcg3Rg5ADFQA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3870
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220817-225425/Dongliang-Mu/drivers-binderfs-fix-memory-leak-in-binderfs_fill_super/20220812-212646
-head:   592368c18a257eccb1c2de5eca89421a0a333a34
-commit: 592368c18a257eccb1c2de5eca89421a0a333a34 binderfs: rework superblock destruction
-date:   6 hours ago
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220818/202208180442.9ncBZM8u-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/592368c18a257eccb1c2de5eca89421a0a333a34
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220817-225425/Dongliang-Mu/drivers-binderfs-fix-memory-leak-in-binderfs_fill_super/20220812-212646
-        git checkout 592368c18a257eccb1c2de5eca89421a0a333a34
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash security/selinux/
+On 8/17/22 05:09, Jason Gunthorpe wrote:
+>>> if (!ret) == if (ret != 0)
+>>
+>> Huh? Unless I'm misinterpretting you or am really behind on coffee
+>> if (!ret) is equivalent to if (ret == 0), not if (ret != 0).
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Although the !ret idiom is a huge, huge part of kernel coding practice,
+it also adds a slight bit of unnecessary mental translation (go ahead,
+flame me hard, I know I'm asking for it...but...see above, after all.
+Pixels have been spilt working through it).
 
-All warnings (new ones prefixed by >>):
+And also...
 
->> security/selinux/selinuxfs.c:2093:6: warning: variable 'fsi' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (ret)
-               ^~~
-   security/selinux/selinuxfs.c:2181:23: note: uninitialized use occurs here
-           selinux_fs_info_free(fsi);
-                                ^~~
-   security/selinux/selinuxfs.c:2093:2: note: remove the 'if' if its condition is always false
-           if (ret)
-           ^~~~~~~~
-   security/selinux/selinuxfs.c:2089:6: warning: variable 'fsi' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (ret)
-               ^~~
-   security/selinux/selinuxfs.c:2181:23: note: uninitialized use occurs here
-           selinux_fs_info_free(fsi);
-                                ^~~
-   security/selinux/selinuxfs.c:2089:2: note: remove the 'if' if its condition is always false
-           if (ret)
-           ^~~~~~~~
-   security/selinux/selinuxfs.c:2059:29: note: initialize the variable 'fsi' to silence this warning
-           struct selinux_fs_info *fsi;
-                                      ^
-                                       = NULL
-   2 warnings generated.
+> 
+> Oh Dear, maybe I am still a bit jetlagged
+> 
+> Regardless, it is confusingly written :)
+> 
+
+...this is a slightly tricky and unusual error case, so it helps to be
+extra clear by comparing against zero, and even adding a few short comments.
+
+How's this look to you:
+
+	collected = collect_longterm_unpinnable_pages(&movable_page_list,
+						      nr_pages, pages);
+	if (collected == 0)
+		return 0;
+
+	ret = migrate_longterm_unpinnable_pages(&movable_page_list, nr_pages,
+						pages);
+
+	/* If we got here, we have some unpinnable pages... */
+
+	if (ret == 0) {
+		/*
+		 * ...and we successfully migrated those pages. Which means that
+		 * the caller should retry the operation now.
+		 */
+		ret = -EAGAIN;
+	}
+
+	return ret;
 
 
-vim +2093 security/selinux/selinuxfs.c
-
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2056  
-920f50b2a44bbc5 David Howells       2019-03-25  2057  static int sel_fill_super(struct super_block *sb, struct fs_context *fc)
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2058  {
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2059  	struct selinux_fs_info *fsi;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2060  	int ret;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2061  	struct dentry *dentry;
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2062  	struct inode *inode;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2063  	struct inode_security_struct *isec;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2064  
-cda37124f4e95ad Eric Biggers        2017-03-25  2065  	static const struct tree_descr selinux_files[] = {
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2066  		[SEL_LOAD] = {"load", &sel_load_ops, S_IRUSR|S_IWUSR},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2067  		[SEL_ENFORCE] = {"enforce", &sel_enforce_ops, S_IRUGO|S_IWUSR},
-ce9982d048bb498 Stephen Smalley     2005-11-08  2068  		[SEL_CONTEXT] = {"context", &transaction_ops, S_IRUGO|S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2069  		[SEL_ACCESS] = {"access", &transaction_ops, S_IRUGO|S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2070  		[SEL_CREATE] = {"create", &transaction_ops, S_IRUGO|S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2071  		[SEL_RELABEL] = {"relabel", &transaction_ops, S_IRUGO|S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2072  		[SEL_USER] = {"user", &transaction_ops, S_IRUGO|S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2073  		[SEL_POLICYVERS] = {"policyvers", &sel_policyvers_ops, S_IRUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2074  		[SEL_COMMIT_BOOLS] = {"commit_pending_bools", &sel_commit_bools_ops, S_IWUSR},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2075  		[SEL_MLS] = {"mls", &sel_mls_ops, S_IRUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2076  		[SEL_DISABLE] = {"disable", &sel_disable_ops, S_IWUSR},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2077  		[SEL_MEMBER] = {"member", &transaction_ops, S_IRUGO|S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2078  		[SEL_CHECKREQPROT] = {"checkreqprot", &sel_checkreqprot_ops, S_IRUGO|S_IWUSR},
-3f12070e27b4a21 Eric Paris          2007-09-21  2079  		[SEL_REJECT_UNKNOWN] = {"reject_unknown", &sel_handle_unknown_ops, S_IRUGO},
-3f12070e27b4a21 Eric Paris          2007-09-21  2080  		[SEL_DENY_UNKNOWN] = {"deny_unknown", &sel_handle_unknown_ops, S_IRUGO},
-119041672592d18 KaiGai Kohei        2010-09-14  2081  		[SEL_STATUS] = {"status", &sel_handle_status_ops, S_IRUGO},
-72e8c8593f8fdb9 Eric Paris          2012-02-16  2082  		[SEL_POLICY] = {"policy", &sel_policy_ops, S_IRUGO},
-f9df6458218f4fe Andrew Perepechko   2015-12-24  2083  		[SEL_VALIDATE_TRANS] = {"validatetrans", &sel_transition_ops,
-f9df6458218f4fe Andrew Perepechko   2015-12-24  2084  					S_IWUGO},
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2085  		/* last one */ {""}
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2086  	};
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2087  
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2088  	ret = selinux_fs_info_create(sb);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2089  	if (ret)
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2090  		goto err;
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2091  
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2092  	ret = simple_fill_super(sb, SELINUX_MAGIC, selinux_files);
-^1da177e4c3f415 Linus Torvalds      2005-04-16 @2093  	if (ret)
-161ce45a8a34ba8 James Morris        2006-03-22  2094  		goto err;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2095  
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2096  	fsi = sb->s_fs_info;
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2097  	fsi->bool_dir = sel_make_dir(sb->s_root, BOOL_DIR_NAME, &fsi->last_ino);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2098  	if (IS_ERR(fsi->bool_dir)) {
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2099  		ret = PTR_ERR(fsi->bool_dir);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2100  		fsi->bool_dir = NULL;
-161ce45a8a34ba8 James Morris        2006-03-22  2101  		goto err;
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2102  	}
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2103  
-161ce45a8a34ba8 James Morris        2006-03-22  2104  	ret = -ENOMEM;
-b77a493b1dc8010 Eric Paris          2010-11-23  2105  	dentry = d_alloc_name(sb->s_root, NULL_FILE_NAME);
-b77a493b1dc8010 Eric Paris          2010-11-23  2106  	if (!dentry)
-161ce45a8a34ba8 James Morris        2006-03-22  2107  		goto err;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2108  
-161ce45a8a34ba8 James Morris        2006-03-22  2109  	ret = -ENOMEM;
-b77a493b1dc8010 Eric Paris          2010-11-23  2110  	inode = sel_make_inode(sb, S_IFCHR | S_IRUGO | S_IWUGO);
-7e4237faa7213c1 nixiaoming          2018-08-05  2111  	if (!inode) {
-7e4237faa7213c1 nixiaoming          2018-08-05  2112  		dput(dentry);
-161ce45a8a34ba8 James Morris        2006-03-22  2113  		goto err;
-7e4237faa7213c1 nixiaoming          2018-08-05  2114  	}
-b77a493b1dc8010 Eric Paris          2010-11-23  2115  
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2116  	inode->i_ino = ++fsi->last_ino;
-80788c229116b28 Casey Schaufler     2018-09-21  2117  	isec = selinux_inode(inode);
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2118  	isec->sid = SECINITSID_DEVNULL;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2119  	isec->sclass = SECCLASS_CHR_FILE;
-420591128cb2062 Andreas Gruenbacher 2016-11-10  2120  	isec->initialized = LABEL_INITIALIZED;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2121  
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2122  	init_special_inode(inode, S_IFCHR | S_IRUGO | S_IWUGO, MKDEV(MEM_MAJOR, 3));
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2123  	d_add(dentry, inode);
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2124  
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2125  	dentry = sel_make_dir(sb->s_root, "avc", &fsi->last_ino);
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2126  	if (IS_ERR(dentry)) {
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2127  		ret = PTR_ERR(dentry);
-161ce45a8a34ba8 James Morris        2006-03-22  2128  		goto err;
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2129  	}
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2130  
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2131  	ret = sel_make_avc_files(dentry);
-bcb62828e3e8c81 Christian Göttsche  2022-01-25  2132  	if (ret)
-bcb62828e3e8c81 Christian Göttsche  2022-01-25  2133  		goto err;
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2134  
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2135  	dentry = sel_make_dir(sb->s_root, "ss", &fsi->last_ino);
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2136  	if (IS_ERR(dentry)) {
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2137  		ret = PTR_ERR(dentry);
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2138  		goto err;
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2139  	}
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2140  
-66f8e2f03c02e81 Jeff Vander Stoep   2019-11-22  2141  	ret = sel_make_ss_files(dentry);
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2142  	if (ret)
-161ce45a8a34ba8 James Morris        2006-03-22  2143  		goto err;
-f0ee2e467ffa68c James Carter        2007-04-04  2144  
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2145  	dentry = sel_make_dir(sb->s_root, "initial_contexts", &fsi->last_ino);
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2146  	if (IS_ERR(dentry)) {
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2147  		ret = PTR_ERR(dentry);
-f0ee2e467ffa68c James Carter        2007-04-04  2148  		goto err;
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2149  	}
-f0ee2e467ffa68c James Carter        2007-04-04  2150  
-f0ee2e467ffa68c James Carter        2007-04-04  2151  	ret = sel_make_initcon_files(dentry);
-f0ee2e467ffa68c James Carter        2007-04-04  2152  	if (ret)
-f0ee2e467ffa68c James Carter        2007-04-04  2153  		goto err;
-f0ee2e467ffa68c James Carter        2007-04-04  2154  
-613ba18798ac3cf Daniel Burgener     2020-08-19  2155  	fsi->class_dir = sel_make_dir(sb->s_root, CLASS_DIR_NAME, &fsi->last_ino);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2156  	if (IS_ERR(fsi->class_dir)) {
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2157  		ret = PTR_ERR(fsi->class_dir);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2158  		fsi->class_dir = NULL;
-3bb56b25dbe0a4b Paul Moore          2008-01-29  2159  		goto err;
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2160  	}
-3bb56b25dbe0a4b Paul Moore          2008-01-29  2161  
-613ba18798ac3cf Daniel Burgener     2020-08-19  2162  	fsi->policycap_dir = sel_make_dir(sb->s_root, POLICYCAP_DIR_NAME,
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2163  					  &fsi->last_ino);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2164  	if (IS_ERR(fsi->policycap_dir)) {
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2165  		ret = PTR_ERR(fsi->policycap_dir);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2166  		fsi->policycap_dir = NULL;
-3bb56b25dbe0a4b Paul Moore          2008-01-29  2167  		goto err;
-a1c2aa1e86a25e7 Al Viro             2012-03-18  2168  	}
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2169  
-02a52c5c8c3b8cb Stephen Smalley     2020-08-07  2170  	ret = sel_make_policycap(fsi);
-02a52c5c8c3b8cb Stephen Smalley     2020-08-07  2171  	if (ret) {
-02a52c5c8c3b8cb Stephen Smalley     2020-08-07  2172  		pr_err("SELinux: failed to load policy capabilities\n");
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2173  		goto err;
-02a52c5c8c3b8cb Stephen Smalley     2020-08-07  2174  	}
-02a52c5c8c3b8cb Stephen Smalley     2020-08-07  2175  
-b77a493b1dc8010 Eric Paris          2010-11-23  2176  	return 0;
-161ce45a8a34ba8 James Morris        2006-03-22  2177  err:
-f8b69a5f00ee0a8 peter enderborg     2018-06-12  2178  	pr_err("SELinux: %s:  failed while creating inodes\n",
-744ba35e455b0d5 Eric Paris          2008-04-17  2179  		__func__);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2180  
-592368c18a257ec Christian Brauner   2022-08-17  2181  	selinux_fs_info_free(fsi);
-0619f0f5e36f12e Stephen Smalley     2018-03-20  2182  
-b77a493b1dc8010 Eric Paris          2010-11-23  2183  	return ret;
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2184  }
-^1da177e4c3f415 Linus Torvalds      2005-04-16  2185  
-
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+John Hubbard
+NVIDIA
