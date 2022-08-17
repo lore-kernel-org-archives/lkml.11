@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1393CC2BB41
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2A9C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241520AbiHQUGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        id S240871AbiHQUGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241717AbiHQUF6 (ORCPT
+        with ESMTP id S241723AbiHQUGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:05:58 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7625A833
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:05:56 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id bs25so17431532wrb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:05:56 -0700 (PDT)
+        Wed, 17 Aug 2022 16:06:04 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DD85A2C7
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:06:02 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id u14so2864702wrq.9
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:06:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=De0s+s/D2rq5b1W85sP7P0sadpD1tyl+4KZh5xfCdFc=;
-        b=CqamtgAe1cozn3E5KYzIR0JSvcCAa1Xfs2dPgBcx+0TIqlYpaQ31CAGtekwFrEq3/w
-         +lY37IADJw7hcSFmTZ5af/FF/BWp/lzVufrxeKGzDhuXY3/lmzb7Y/GcUmt+NJ/1dWRF
-         No5gZ+j+hFAHBwcOmgNIM0KteUxW83ESCVJCDvMNCkbHKNu4Fp44M0F8HZ5m4YVcrYE5
-         gVv1hRa6fQlU4jn/uVxGBskyzHAK1X3lsTkVsg7wg+nHs6RGCiW+b8g6A1EAMAB44MnL
-         JLobl0GZbdVudwNjFMsjiMjZJn3PJPDXAw2MQGt1Z7ETNOFJguNN9qrdd954ctHWf0up
-         IktQ==
+        bh=1R6UrF0Wsbj6EmcSlPWRzTAwonFDames2nGAVyANWlQ=;
+        b=AeJIiHm9h3I/Eov20f5hm9jFdNKZoOB4Jm6+CCfujHehef2vYBlAHYHSx5/YrlWtGy
+         uwOBvhI96+/wdxcUYt/7toPQmj4t0R7CoZ7AyNypy40Yp4pB0wOibbFOUSqHZ/xHuZY+
+         a5AbbRHn5YtRY0D0gKPtmjm/2hkhkJrpqVZ72vi2GO26mLW9PDvv9Bybx4U6HbVZQ509
+         m8j1y5HSVzo5McL0PRSHDvNJfP4bGBEOmQ7YHJDmQ4AVZxCcIjWIUTSURamn6zVm0hYx
+         tZIvcSQZwjZOSNVtG4bAxh1Ql8CBw+SvPUU8vlL66yaGZadxHsoKbpUfyorMa/vTna1L
+         QXzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=De0s+s/D2rq5b1W85sP7P0sadpD1tyl+4KZh5xfCdFc=;
-        b=2kAXLhA5tFnpF/9Q9iDwxFS5fTPO3EwNTzA204VMa/J3OW1v+sbiobst2LAVddZrJZ
-         yKqi9Ecn2xYrTQmaaOb+phfHEQwzuCz+Tn/zZqpwtTk+0mUONt/j9AO+WpPYu2awITuV
-         vwWxNRvEeVVQ8CGsDhqAvqNrv9VS3q0Wa/Fb7mnWTopb3HCCgWGa5t7S0AOHNYOkOw9v
-         ObmFSrLkl7edvN42HRuiq+p+E/fV7gQw4fRWa70deipmnD3XiRH/QM/ZZPmHnm+5R2qC
-         yVTjLGBpK6zgNykDCniLtDBjT2qU05Pnjjy6Wzwkbc3PHtlnttl42sF74R8AHOOiGHmR
-         UC1w==
-X-Gm-Message-State: ACgBeo0wd/1rfoIthlwWRN/qygrtOQAMsDPY9um8EWUVexuZJPloyyT3
-        GfUrA6PYqc+IOpAfQM+zXcUV5g==
-X-Google-Smtp-Source: AA6agR50pEUBEksxLhbytcIwiO8h9Uinjt+PuB3e09bA3J6AK1dzbXoEiGaehAaijDuEftMP10HEjg==
-X-Received: by 2002:a5d:534e:0:b0:225:2c0b:9b08 with SMTP id t14-20020a5d534e000000b002252c0b9b08mr750530wrv.136.1660766754709;
-        Wed, 17 Aug 2022 13:05:54 -0700 (PDT)
+        bh=1R6UrF0Wsbj6EmcSlPWRzTAwonFDames2nGAVyANWlQ=;
+        b=khuJnxHYIxVHWmsNbZS4Gq9g45gonCGvlrxep+GgDBZLI7/kw4SAt7zb7xted6pW6F
+         JW/aWgJPFgMpY63SLUXaMDch3ueAQSjiJYrPuGjUbPiqNsyJyha9SHulpypUqgDslxVE
+         4LKoMOLXB0NvTbxisNTD7edhGQsw1Yi60vijedX3pITQXxDdBmN8STJa2UApCGyqbMvk
+         CNFGxWciT3FDFQhPDJVt0RfWt5QS95oI0/nNArdpvZIhinktbO8gQBS7yEt+RNtdA4x5
+         y9DFDODmxBb3M6VMJvl3gMzTDw7Q1X8XnWRz8UAeuEcFEKpnR11YUTFnyQ04zgFtrs93
+         bpkQ==
+X-Gm-Message-State: ACgBeo3rOnvNDHx5Qityt3AFrHCg/fcqW1zSWcBRuxfvfuLN0iUGZ1Sx
+        tEBFK7uErtBZwjyUAMa5/Fclig==
+X-Google-Smtp-Source: AA6agR5ISPAA2r8H4343y7nQ1xvi4vK0fSr9VzDNPaY5Bb1ElOubBSAalLLrbPfbH95opdbBSj6WkQ==
+X-Received: by 2002:a5d:67c7:0:b0:225:210b:21a4 with SMTP id n7-20020a5d67c7000000b00225210b21a4mr3350305wrw.677.1660766760597;
+        Wed, 17 Aug 2022 13:06:00 -0700 (PDT)
 Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id i133-20020a1c3b8b000000b003a531c7aa66sm3400883wma.1.2022.08.17.13.05.52
+        by smtp.gmail.com with ESMTPSA id i133-20020a1c3b8b000000b003a531c7aa66sm3400883wma.1.2022.08.17.13.05.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:05:53 -0700 (PDT)
+        Wed, 17 Aug 2022 13:05:59 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -66,9 +66,9 @@ Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH 3/4] dt-bindings: riscv: add new riscv,isa strings for emulators
-Date:   Wed, 17 Aug 2022 21:05:22 +0100
-Message-Id: <20220817200531.988850-4-mail@conchuod.ie>
+Subject: [PATCH v2 1/4] dt-bindings: timer: sifive,clint: add legacy riscv compatible
+Date:   Wed, 17 Aug 2022 21:05:25 +0100
+Message-Id: <20220817200531.988850-7-mail@conchuod.ie>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220817200531.988850-1-mail@conchuod.ie>
 References: <20220817200531.988850-1-mail@conchuod.ie>
@@ -80,75 +80,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-The QEMU virt and spike machines currently export a riscv,isa string of
-"rv64imafdcsuh",
+While "real" hardware might not use the compatible string "riscv,clint0"
+it is present in the driver & QEMU uses it for automatically generated
+virt machine dtbs. To avoid dt-validate problems with QEMU produced
+dtbs, such as the following, add it to the binding.
 
-While the RISC-V foundation has been ratifying a bunch of extenstions
-etc, the kernel has remained relatively static with what hardware is
-supported - but the same is not true of QEMU. Using the virt machine
-and running dt-validate on the dumped dtb fails, partly due to the
-unexpected isa string.
-
-Rather than enumerate the many many possbilities, change the pattern
-to a regex, with the following assumptions:
-- the single letter order is fixed & we don't care about things that
-  can't even do "ima"
-- the standard multi letter extensions are all in a "_z<foo>" format
-  where the first letter of <foo> is a valid single letter extension
-- _s & _h are used for supervisor and hyper visor extensions.
-- after the first two chars, a standard multi letter extension name
-  could be an english   word (ifencei anyone?) so it's not worth
-  restricting the charset
-- vendor ISA extensions begind with _x and have no charset restrictions
-- we don't care about an e extension from an OS pov
-- that attempting to validate the contents of the multiletter extensions
-  with dt-validate beyond the formatting is a futile, massively verbose
-  or unwieldy exercise at best.
-- ima are required
-
-The following limitations also apply:
-- multi letter extension ordering is not enforced. dt-schema does not
-  appear to allow for named match groups, so the resulting regex would
-  be even more of a headache.
-- ditto for the numbered extensions.
-
-Finally, add me as a maintainer of the binding so that when it breaks
-in the future, I can be held responsible!
+riscv-virt.dtb: clint@2000000: compatible:0: 'sifive,clint0' is not one of ['sifive,fu540-c000-clint', 'starfive,jh7100-clint', 'canaan,k210-clint']
 
 Reported-by: Rob Herring <robh@kernel.org>
 Link: https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
-Palmer, feel free to drop the maintainer addition. I just mostly want
-to clean up my own mess on this when they decide to ratify more
-extensions & this comes back up again.
----
- Documentation/devicetree/bindings/riscv/cpus.yaml | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ .../bindings/timer/sifive,clint.yaml           | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-index 873dd12f6e89..c0e0bc5dce04 100644
---- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-+++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-@@ -9,6 +9,7 @@ title: RISC-V bindings for 'cpus' DT nodes
- maintainers:
-   - Paul Walmsley <paul.walmsley@sifive.com>
-   - Palmer Dabbelt <palmer@sifive.com>
-+  - Conor Dooley <conor@kernel.org>
+diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+index e64f46339079..bbad24165837 100644
+--- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
++++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+@@ -22,12 +22,18 @@ description:
  
- description: |
-   This document uses some terminology common to the RISC-V community
-@@ -79,9 +80,7 @@ properties:
-       insensitive, letters in the riscv,isa string must be all
-       lowercase to simplify parsing.
-     $ref: "/schemas/types.yaml#/definitions/string"
--    enum:
--      - rv64imac
--      - rv64imafdc
-+    pattern: ^rv(?:64|32)imaf?d?q?c?b?v?k?h?(?:(?:_[zsh][imafdqcbvksh]|_x)(?:[a-z])+)*$
+ properties:
+   compatible:
+-    items:
+-      - enum:
+-          - sifive,fu540-c000-clint
+-          - starfive,jh7100-clint
+-          - canaan,k210-clint
+-      - const: sifive,clint0
++    oneOf:
++      - items:
++          - enum:
++              - sifive,fu540-c000-clint
++              - starfive,jh7100-clint
++              - canaan,k210-clint
++          - const: sifive,clint0
++      - items:
++          - const: sifive,clint0
++          - const: riscv,clint0
++        deprecated: true
++        description: For the QEMU virt machine only
  
-   # RISC-V requires 'timebase-frequency' in /cpus, so disallow it here
-   timebase-frequency: false
+     description:
+       Should be "<vendor>,<chip>-clint" and "sifive,clint<version>".
 -- 
 2.37.1
 
