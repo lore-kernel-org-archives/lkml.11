@@ -2,190 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 174C1C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064E8C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232080AbiHQHj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
+        id S231220AbiHQHko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232259AbiHQHjw (ORCPT
+        with ESMTP id S233008AbiHQHkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:39:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DCD6612F
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660721991; x=1692257991;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=O2prMHo1uFUt8qVKG22DJhsF1BbKx+65kFhimQDXHM4=;
-  b=jGI+17WOVAO7sXD+UZVj1XVn3z8LK3TYr0oVCQaqiloK359iR+U1Oon9
-   VcLsxS3nJebFj1fGXFk2dRRVQ22JdpMVCBHBGSr5O5n+fpwBXSuixDWoq
-   IND26iHEOo2PUAw2e65XnIEVyszB8ireCv8hueD9zE9wHEpl10JD6m/Yt
-   oqu2NjIxlqszqUjJ7o8cZbymA0Cm3YLLb/NLu2R4luGWl/Sx5RtnlajLx
-   FO3EWsJTP3adVHqHX9fPM6HLbBTFxSG9/7SOS9OFAXtD68YckgT9odRXT
-   JCEe00q3/liPm6dIzBYnLIUhACDz8qaUe82TCcd+xtehwxbzwEWSVU9v8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="289998971"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="289998971"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 00:39:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="583657975"
-Received: from shbuild999.sh.intel.com ([10.239.147.181])
-  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 00:39:46 -0700
-From:   Feng Tang <feng.tang@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     paulmck@kernel.org, rui.zhang@intel.com, len.brown@intel.com,
-        tim.c.chen@intel.com, Feng Tang <feng.tang@intel.com>
-Subject: [PATCH v4] x86/tsc: Add option to force frequency recalibration with HW timer
-Date:   Wed, 17 Aug 2022 15:40:18 +0800
-Message-Id: <20220817074018.10930-1-feng.tang@intel.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 17 Aug 2022 03:40:35 -0400
+Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1977C74B9B
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:40:34 -0700 (PDT)
+Received: by mail-vs1-f52.google.com with SMTP id d126so12381484vsd.13
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:40:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=EmmYkaITTcx08DyrSAVVZyC+XHKGDlOn1xahJdmIIc4=;
+        b=m0b3wUMISKj761W0KkkigKSH1N+y6AT+He7FM3Wp4Mi5hSje1UFRigHOI7Ed+E2FTs
+         lqtYHB9QQZ4bar3Xwp+u9WemMAepwq9OxJYudtC2w/lV+aTDNoafm9cJMUB4Uy7ebsKS
+         odTh3Odf0J4ADD3j6jRJgb45Z+BiLMPyqMIW2itLeiMZuyCfDZ9RWXz9/3/VDuw6TR6Y
+         Y6x+wYudoB5hAopC81ag0z2nohvuuGp4z8CDBHE4Ey5wch+0tx6YW/9CmH10PN9oN8LB
+         /2MDYAhdKKl/FuNS0e0PAtIHru8zJYkn/4JmsPfRn6pgf23N5hw6wye3j/t2FutinXBA
+         Pt7A==
+X-Gm-Message-State: ACgBeo0kRbFlYkJolSI+9wKFGPzzggvWOFMQDpLi25SpufQ7ZeRQOEH9
+        ygVMCewIrbAglNUk/PwAN1EkGRtSDpq9gA==
+X-Google-Smtp-Source: AA6agR4cX38V4P561M6HRPTNiQIJb8PMCj5LRhJZ0L1sy5LXHepMum6yZmkFLhkeooaf7kTe0afqYg==
+X-Received: by 2002:a05:6102:e59:b0:38a:a0e4:269a with SMTP id p25-20020a0561020e5900b0038aa0e4269amr10485132vst.30.1660722032922;
+        Wed, 17 Aug 2022 00:40:32 -0700 (PDT)
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
+        by smtp.gmail.com with ESMTPSA id g3-20020a056102244300b003885a2f7a36sm8241591vss.5.2022.08.17.00.40.32
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 00:40:32 -0700 (PDT)
+Received: by mail-ua1-f41.google.com with SMTP id 5so4883208uay.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:40:32 -0700 (PDT)
+X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
+ r1-20020a5b06c1000000b00669a7c34c33mr18128602ybq.543.1660721552542; Wed, 17
+ Aug 2022 00:32:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <CAMuHMdWYo7M44uLNhTmJenGDreGALBZ9E48oyBDEeAuL=0h=dw@mail.gmail.com>
+ <20220816132040.uwirtjm5yr6rdd3q@houat> <CAMuHMdWevP=3af=NneAJEDfOR+sz1thrQEhAQPNGrgitBtLjGA@mail.gmail.com>
+ <20220816141116.5nuszmilqv2exdb3@houat> <CAMuHMdXq_xGPx46bdnUFGDiG4kcgdxtXaRGTucFd3TRq8353dg@mail.gmail.com>
+ <20220816154956.pkdpxmmw27mia5ix@houat> <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
+In-Reply-To: <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 17 Aug 2022 09:32:20 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWGwPjpsNZhcNwtCgjt9qYfPUb6eaX2q3fE2n0n8uYwhg@mail.gmail.com>
+Message-ID: <CAMuHMdWGwPjpsNZhcNwtCgjt9qYfPUb6eaX2q3fE2n0n8uYwhg@mail.gmail.com>
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dom Cobley <dom@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel assumes that the TSC frequency which is provided by the
-hardware / firmware via MSRs or CPUID(0x15) is correct after applying
-a few basic consistency checks. This disables the TSC recalibration
-against HPET or PM timer.
+On Wed, Aug 17, 2022 at 9:31 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Tue, Aug 16, 2022 at 5:50 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> > On Tue, Aug 16, 2022 at 04:43:44PM +0200, Geert Uytterhoeven wrote:
+> > > > > > > Either you have to add them here (e.g. "hd720p50" and "hd720p60"), or
+> > > > > > > handle them through "@<refresh>".  The latter would impact "[PATCH v1
+> > > > > > > 09/35] drm/modes: Move named modes parsing to a separate function", as
+> > > > > > > currently a named mode and a refresh rate can't be specified both.
+> > > > > >
+> > > > > > I think the former would make more sense. It simplifies a bit the
+> > > > > > parser, and we're going to use a named mode anyway.
+> > > > > >
+> > > > > > > As "[PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
+> > > > > > > command-line option" uses a separate "tv_mode" option, and not the main
+> > > > > > > mode name, I think you want to add them here.
+> > > > > >
+> > > > > > It's a separate story I think, we could have a named mode hd720p50,
+> > > > > > which would be equivalent to 1280x720,tv_mode=hd720p
+> > > > >
+> > > > > So where's the field rate in "1280x720,tv_mode=hd720p"?
+> > > >
+> > > > Yeah, sorry I meant 1280x720@50,tv_mode=hd720p
+> > >
+> > > Above you said "I think the former would make more sense", so that
+> > > should be "1280x720,tv_mode=hd720p50"?
+> >
+> > No, 720p at 50Hz would be either hd720p50 or 1280x720@50,tv_mode=hd720p
+> > and 60Hz would be hd720p60 or 1280x720@60,tv_mode=hd720p
+>
+> I disagree: hd720p50 and hd720p60 are different TV modes.
+> Treating them the same would be similar to treating unmodulated (e.g.
+> component) PAL-N (25 frames/s) and PAL-M (30 frames/s) the same.
 
-As a result there is no mechanism to validate that frequency in cases
-where a firmware or hardware defect is suspected. And there was case
-that some user used atomic clock to measure the TSC frequency and
-reported an inaccuracy issue, which was later fixed in firmware.
+IIRC from my PS3 -Linux days, not all HD(-Ready) TVs supported both
+hd720p50 and hd720p60.
 
-Add an option 'recalibrate' for 'tsc' kernel parameter to force the
-tsc freq recalibration with HPET or PM timer, and warn if the deviation
-from previous value is more than about 500 PPM, which provides a way 
-to verify the data from hardware / firmware.
+Gr{oetje,eeting}s,
 
-There is no functional change to existing work flow.
+                        Geert
 
-[Thanks tglx for helping improving the commit log] 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
----
-Changelog:
-
-  since v3:
-    * add some real world case into commit log
-    * rebase against v6.0-rc1
-
-  since v2:
-    * revise the option description in kernel-parameters.txt
-    * rebase against v5.19-rc2
-
-  since v1:
-    * refine commit log to state clearly the problem and intention
-      of the patch by copying Thomas' words.
-
- .../admin-guide/kernel-parameters.txt         |  4 +++
- arch/x86/kernel/tsc.c                         | 34 ++++++++++++++++---
- 2 files changed, 34 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d7f30902fda0..4924256592d9 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6302,6 +6302,10 @@
- 			in situations with strict latency requirements (where
- 			interruptions from clocksource watchdog are not
- 			acceptable).
-+			[x86] recalibrate: force to do frequency recalibration
-+			with a HW timer (HPET or PM timer) for systems whose
-+			TSC frequency comes from HW or FW through MSR or CPUID(0x15),
-+			and warn if the difference is more than 500 ppm.
- 
- 	tsc_early_khz=  [X86] Skip early TSC calibration and use the given
- 			value instead. Useful when the early TSC frequency discovery
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index cafacb2e58cc..5cf62a58754a 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -48,6 +48,8 @@ static DEFINE_STATIC_KEY_FALSE(__use_tsc);
- 
- int tsc_clocksource_reliable;
- 
-+static int __read_mostly tsc_force_recalibrate;
-+
- static u32 art_to_tsc_numerator;
- static u32 art_to_tsc_denominator;
- static u64 art_to_tsc_offset;
-@@ -303,6 +305,8 @@ static int __init tsc_setup(char *str)
- 		mark_tsc_unstable("boot parameter");
- 	if (!strcmp(str, "nowatchdog"))
- 		no_tsc_watchdog = 1;
-+	if (!strcmp(str, "recalibrate"))
-+		tsc_force_recalibrate = 1;
- 	return 1;
- }
- 
-@@ -1374,6 +1378,25 @@ static void tsc_refine_calibration_work(struct work_struct *work)
- 	else
- 		freq = calc_pmtimer_ref(delta, ref_start, ref_stop);
- 
-+	/* Will hit this only if tsc_force_recalibrate has been set */
-+	if (boot_cpu_has(X86_FEATURE_TSC_KNOWN_FREQ)) {
-+
-+		/* Warn if the deviation exceeds 500 ppm */
-+		if (abs(tsc_khz - freq) > (tsc_khz >> 11)) {
-+			pr_warn("Warning: TSC freq calibrated by CPUID/MSR differs from what is calibrated by HW timer, please check with vendor!!\n");
-+			pr_info("Previous calibrated TSC freq:\t %lu.%03lu MHz\n",
-+				(unsigned long)tsc_khz / 1000,
-+				(unsigned long)tsc_khz % 1000);
-+		}
-+
-+		pr_info("TSC freq recalibrated by [%s]:\t %lu.%03lu MHz\n",
-+			hpet ? "HPET" : "PM_TIMER",
-+			(unsigned long)freq / 1000,
-+			(unsigned long)freq % 1000);
-+
-+		return;
-+	}
-+
- 	/* Make sure we're within 1% */
- 	if (abs(tsc_khz - freq) > tsc_khz/100)
- 		goto out;
-@@ -1407,8 +1430,10 @@ static int __init init_tsc_clocksource(void)
- 	if (!boot_cpu_has(X86_FEATURE_TSC) || !tsc_khz)
- 		return 0;
- 
--	if (tsc_unstable)
--		goto unreg;
-+	if (tsc_unstable) {
-+		clocksource_unregister(&clocksource_tsc_early);
-+		return 0;
-+	}
- 
- 	if (boot_cpu_has(X86_FEATURE_NONSTOP_TSC_S3))
- 		clocksource_tsc.flags |= CLOCK_SOURCE_SUSPEND_NONSTOP;
-@@ -1421,9 +1446,10 @@ static int __init init_tsc_clocksource(void)
- 		if (boot_cpu_has(X86_FEATURE_ART))
- 			art_related_clocksource = &clocksource_tsc;
- 		clocksource_register_khz(&clocksource_tsc, tsc_khz);
--unreg:
- 		clocksource_unregister(&clocksource_tsc_early);
--		return 0;
-+
-+		if (!tsc_force_recalibrate)
-+			return 0;
- 	}
- 
- 	schedule_delayed_work(&tsc_irqwork, 0);
--- 
-2.27.0
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
