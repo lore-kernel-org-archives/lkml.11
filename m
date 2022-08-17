@@ -2,149 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E576C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13862C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236634AbiHQN7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
+        id S239841AbiHQN7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239884AbiHQN7V (ORCPT
+        with ESMTP id S239805AbiHQN7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:59:21 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6527589917;
-        Wed, 17 Aug 2022 06:59:11 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 9A62A1008B38F;
-        Wed, 17 Aug 2022 21:58:48 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 052AA2009BEAD;
-        Wed, 17 Aug 2022 21:58:48 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 9ZmfqEkD5H1c; Wed, 17 Aug 2022 21:58:47 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id EB8352009BEA0;
-        Wed, 17 Aug 2022 21:58:35 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC v2 6/7] virtio: in order support for virtio_ring
-Date:   Wed, 17 Aug 2022 21:57:17 +0800
-Message-Id: <20220817135718.2553-7-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
+        Wed, 17 Aug 2022 09:59:23 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDE797D50
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:59:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=H3k3eKgkc5W/rypnQlEYEwtVCCUR+mQYx2LOi4yW/+Q=; b=cm+td3tAk+z+UeZIKGm2BQimMI
+        G68sGwut1or1CrTRAdKSz9+i/NBYOcukgv5qMQoudP6zHuZvF7BaDfO3CVW9MBl7SNy3ULF1PpFC0
+        izh2TY1oV6zthDLFaEKiKTMbW7nfE/P59wHmKyFWNtaVqZkeDnUzmFZGRpFxJx6gCYexKAXnIcX8g
+        Mhcg0Bu8EGhE7s4W+3KliLVYwnPDxy2ZMibHVKqMNJwTQPJeJYVMExqs+/kixoqpLUGIa/4VRByNG
+        ElenP+Webex1t6HqquAEYHcg1xFgNNbL3m52J/yJYdoMvr/tFmVAKlh9jpyrGGrpalFZO4IwZO8dO
+        TwQU4yzQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oOJZW-005Nio-RP;
+        Wed, 17 Aug 2022 13:59:02 +0000
+Date:   Wed, 17 Aug 2022 14:59:02 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] binderfs: rework superblock destruction
+Message-ID: <Yvz0JkdxXwY8uDyT@ZenIV>
+References: <YvzUS/7bd1mm6c/V@kroah.com>
+ <20220817130306.96978-1-brauner@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817130306.96978-1-brauner@kernel.org>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If in order feature negotiated, we can skip the used ring to get
-buffer's desc id sequentially.
+On Wed, Aug 17, 2022 at 03:03:06PM +0200, Christian Brauner wrote:
 
-Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
----
- drivers/virtio/virtio_ring.c | 53 ++++++++++++++++++++++++++++++------
- 1 file changed, 45 insertions(+), 8 deletions(-)
+> +static void binderfs_kill_super(struct super_block *sb)
+> +{
+> +	struct binderfs_info *info = sb->s_fs_info;
+> +
+> +	if (info && info->ipc_ns)
+> +		put_ipc_ns(info->ipc_ns);
+> +
+> +	kfree(info);
+> +	kill_litter_super(sb);
+> +}
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 1c1b3fa376a2..143184ebb5a1 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -144,6 +144,9 @@ struct vring_virtqueue {
- 			/* DMA address and size information */
- 			dma_addr_t queue_dma_addr;
- 			size_t queue_size_in_bytes;
-+
-+			/* In order feature batch begin here */
-+			u16 next_desc_begin;
- 		} split;
- 
- 		/* Available for packed ring */
-@@ -702,8 +705,13 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
- 	}
- 
- 	vring_unmap_one_split(vq, i);
--	vq->split.desc_extra[i].next = vq->free_head;
--	vq->free_head = head;
-+	/* In order feature use desc in order,
-+	 * that means, the next desc will always be free
-+	 */
-+	if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
-+		vq->split.desc_extra[i].next = vq->free_head;
-+		vq->free_head = head;
-+	}
- 
- 	/* Plus final descriptor */
- 	vq->vq.num_free++;
-@@ -745,7 +753,7 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 	void *ret;
--	unsigned int i;
-+	unsigned int i, j;
- 	u16 last_used;
- 
- 	START_USE(vq);
-@@ -764,11 +772,38 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
- 	/* Only get used array entries after they have been exposed by host. */
- 	virtio_rmb(vq->weak_barriers);
- 
--	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
--	i = virtio32_to_cpu(_vq->vdev,
--			vq->split.vring.used->ring[last_used].id);
--	*len = virtio32_to_cpu(_vq->vdev,
--			vq->split.vring.used->ring[last_used].len);
-+	if (virtio_has_feature(_vq->vdev, VIRTIO_F_IN_ORDER)) {
-+		/* Skip used ring and get used desc in order*/
-+		i = vq->split.next_desc_begin;
-+		j = i;
-+		/* Indirect only takes one descriptor in descriptor table */
-+		while (!vq->indirect && (vq->split.desc_extra[j].flags & VRING_DESC_F_NEXT))
-+			j = (j + 1) % vq->split.vring.num;
-+		/* move to next */
-+		j = (j + 1) % vq->split.vring.num;
-+		/* Next buffer will use this descriptor in order */
-+		vq->split.next_desc_begin = j;
-+		if (!vq->indirect) {
-+			*len = vq->split.desc_extra[i].len;
-+		} else {
-+			struct vring_desc *indir_desc =
-+				vq->split.desc_state[i].indir_desc;
-+			u32 indir_num = vq->split.desc_extra[i].len, buffer_len = 0;
-+
-+			if (indir_desc) {
-+				for (j = 0; j < indir_num / sizeof(struct vring_desc); j++)
-+					buffer_len += indir_desc[j].len;
-+			}
-+
-+			*len = buffer_len;
-+		}
-+	} else {
-+		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-+		i = virtio32_to_cpu(_vq->vdev,
-+				    vq->split.vring.used->ring[last_used].id);
-+		*len = virtio32_to_cpu(_vq->vdev,
-+				       vq->split.vring.used->ring[last_used].len);
-+	}
- 
- 	if (unlikely(i >= vq->split.vring.num)) {
- 		BAD_RING(vq, "id %u out of range\n", i);
-@@ -2236,6 +2271,8 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
- 	vq->split.avail_flags_shadow = 0;
- 	vq->split.avail_idx_shadow = 0;
- 
-+	vq->split.next_desc_begin = 0;
-+
- 	/* No callback?  Tell other side not to bother us. */
- 	if (!callback) {
- 		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
--- 
-2.17.1
+Other way round, please - shut the superblock down, *then*
+free the objects it'd been using.  IOW,
 
+	struct binderfs_info *info = sb->s_fs_info;
+
+	kill_litter_super(sb);
+
+	if (info && info->ipc_ns)
+		put_ipc_ns(info->ipc_ns);
+
+	kfree(info);
