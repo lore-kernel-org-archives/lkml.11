@@ -2,68 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C34C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D37DFC32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237940AbiHQCbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 22:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        id S238161AbiHQCeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 22:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238139AbiHQCbo (ORCPT
+        with ESMTP id S238100AbiHQCeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 22:31:44 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF46999B7B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:31:43 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660703502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nlTzxQqE79Q9RIB87dn43uL+LcDuOAdW5kHAEE4gy6Y=;
-        b=nxffWsIkVsRMwm8+MLmB1eInSqSCenUn1OL2lHjSZ2nOUF1nvW860KUZQLwxLTWwbj/DqV
-        lZaWwAHxmI+ynG7yXWoI1ehTWxeklbr7T+FFjnrtyCx6hva+YLt/sBInMBR1ch30Hp3V56
-        uH3eVsEhviSym7raqyBosK2Guc5np70=
+        Tue, 16 Aug 2022 22:34:16 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1981550054
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:34:15 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6sRs3dvMzXdNr;
+        Wed, 17 Aug 2022 10:30:01 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 10:34:12 +0800
+Subject: Re: [PATCH v6 2/2] mm: fix the handling Non-LRU pages returned by
+ follow_page
+To:     Haiyue Wang <haiyue.wang@intel.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
+        <apopple@nvidia.com>, <ying.huang@intel.com>,
+        <songmuchun@bytedance.com>, <naoya.horiguchi@linux.dev>,
+        <alex.sierra@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>
+References: <20220812084921.409142-1-haiyue.wang@intel.com>
+ <20220816022102.582865-1-haiyue.wang@intel.com>
+ <20220816022102.582865-3-haiyue.wang@intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <f9bb1faf-3e09-2db4-5210-4cea09654452@huawei.com>
+Date:   Wed, 17 Aug 2022 10:34:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/6] mm/hugetlb: fix WARN_ON(!kobj) in
- sysfs_create_group()
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Muchun Song <muchun.song@linux.dev>
-In-Reply-To: <20220816130553.31406-3-linmiaohe@huawei.com>
-Date:   Wed, 17 Aug 2022 10:31:07 +0800
-Cc:     Andrew Morton <akpm@linux-foundation.org>, mike.kravetz@oracle.com,
-        Muchun Song <songmuchun@bytedance.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <AA374889-2C8B-4D8B-9542-A760267F00E4@linux.dev>
-References: <20220816130553.31406-1-linmiaohe@huawei.com>
- <20220816130553.31406-3-linmiaohe@huawei.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220816022102.582865-3-haiyue.wang@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022/8/16 10:21, Haiyue Wang wrote:
+> The handling Non-LRU pages returned by follow_page() jumps directly, it
+> doesn't call put_page() to handle the reference count, since 'FOLL_GET'
+> flag for follow_page() has get_page() called. Fix the zone device page
+> check by handling the page reference count correctly before returning.
+> 
+> And as David reviewed, "device pages are never PageKsm pages". Drop this
+> zone device page check for break_ksm().
+> 
+> Fixes: 3218f8712d6b ("mm: handling Non-LRU pages returned by vm_normal_pages")
+> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+> Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
 
+Thanks for your fixing. LGTM with one nit below. But I have no strong opinion on it.
+So with or without fixing below nit:
 
-> On Aug 16, 2022, at 21:05, Miaohe Lin <linmiaohe@huawei.com> wrote:
->=20
-> If sysfs_create_group() fails with hstate_attr_group, hstate_kobjs[hi]
-> will be set to NULL. Then it will be passed to sysfs_create_group() if
-> h->demote_order !=3D 0 thus triggering WARN_ON(!kobj) check. Fix this =
-by
-> making sure hstate_kobjs[hi] !=3D NULL when calling =
-sysfs_create_group.
->=20
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-It=E2=80=99s better to add a Fixes tag here.
+> ---
+>  mm/huge_memory.c |  4 ++--
+>  mm/ksm.c         | 12 +++++++++---
+>  mm/migrate.c     | 19 ++++++++++++-------
+>  3 files changed, 23 insertions(+), 12 deletions(-)
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 8a7c1b344abe..b2ba17c3dcd7 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -2963,10 +2963,10 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
+>  		/* FOLL_DUMP to ignore special (like zero) pages */
+>  		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
+>  
+> -		if (IS_ERR_OR_NULL(page) || is_zone_device_page(page))
+> +		if (IS_ERR_OR_NULL(page))
+>  			continue;
+>  
+> -		if (!is_transparent_hugepage(page))
+> +		if (is_zone_device_page(page) || !is_transparent_hugepage(page))
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+!is_transparent_hugepage should already do the work here? IIRC, zone_device_page can't be
+a transhuge page anyway. And only transparent_hugepage is cared here.
 
-Thanks.
+Thanks,
+Miaohe Lin
 
