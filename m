@@ -2,846 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1616BC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BE9C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbiHQHHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S238156AbiHQHIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiHQHHt (ORCPT
+        with ESMTP id S238672AbiHQHIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:07:49 -0400
-X-Greylist: delayed 347 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 00:07:38 PDT
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32736558E2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:07:37 -0700 (PDT)
-X-MailGates: (compute_score:DELIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(27766:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Wed, 17 Aug 2022 15:04:13 +0800 (CST)
-From:   Qin Jian <qinjian@cqplus1.com>
-To:     sboyd@kernel.org
-Cc:     mturquette@baylibre.com, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH] clk: Add Sunplus SP7021 clock driver
-Date:   Wed, 17 Aug 2022 15:01:13 +0800
-Message-Id: <20220817070113.415971-1-qinjian@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
+        Wed, 17 Aug 2022 03:08:19 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5875465DB;
+        Wed, 17 Aug 2022 00:08:16 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4M6zb90tcqzKwq8;
+        Wed, 17 Aug 2022 15:06:45 +0800 (CST)
+Received: from [10.174.176.117] (unknown [10.174.176.117])
+        by APP3 (Coremail) with SMTP id _Ch0CgDHoDnXk_xiOOiuAQ--.23666S2;
+        Wed, 17 Aug 2022 15:08:11 +0800 (CST)
+Subject: Re: KASAN: slab-out-of-bounds Read in
+ __htab_map_lookup_and_delete_batch
+To:     Hao Sun <sunhao.th@gmail.com>, bpf@vger.kernel.org
+References: <CACkBjsbuxaR6cv0kXJoVnBfL9ZJXjjoUcMpw_Ogc313jSrg14A@mail.gmail.com>
+From:   Hou Tao <houtao@huaweicloud.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, martin.lau@linux.dev,
+        andrii@kernel.org, yhs@fb.com, song@kernel.org,
+        john.fastabend@gmail.com, sdf@google.com, jolsa@kernel.org,
+        kpsingh@kernel.org, haoluo@google.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Message-ID: <54b435bf-c710-a6b9-4855-9a29e099eab8@huaweicloud.com>
+Date:   Wed, 17 Aug 2022 15:08:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <CACkBjsbuxaR6cv0kXJoVnBfL9ZJXjjoUcMpw_Ogc313jSrg14A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-CM-TRANSID: _Ch0CgDHoDnXk_xiOOiuAQ--.23666S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Aw1UJrWfAr15Gr18Gr1fXrb_yoW3ZFW5pF
+        n5GrWxWr40qrykA3yxJr1kAryxZF43A3WUGr97WFyrZ3Wftw1jqr1vqr9Fgr1akr4FyF13
+        ArnrtrWFvw1UJaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvIb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7Mxk0xIA0c2IE
+        e2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
+        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q
+        6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
+        kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
+        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
+        9x07UWE__UUUUU=
+X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clock driver for Sunplus SP7021 SoC.
+Hi,
 
-Signed-off-by: Qin Jian <qinjian@cqplus1.com>
----
- MAINTAINERS                  |   1 +
- drivers/clk/Kconfig          |  10 +
- drivers/clk/Makefile         |   1 +
- drivers/clk/clk-sp7021.c     | 713 +++++++++++++++++++++++++++++++++++
- include/linux/clk-provider.h |  18 +
- 5 files changed, 743 insertions(+)
- create mode 100644 drivers/clk/clk-sp7021.c
+On 8/16/2022 8:13 AM, Hao Sun wrote:
+> Hello,
+>
+> Last email was not formatted correctly, resend it here. The following
+> crash can be triggered on:
+>
+> HEAD commit: ffcf9c5700e4  x86: link vdso and boot
+> git tree: upstream
+> console output: https://pastebin.com/raw/ngeVmgpK
+> kernel config: https://pastebin.com/raw/3JYdi5mp
+> C reproducer: https://paste.ubuntu.com/p/D2sz87PQ4k/
+>
+> ==================================================================
+> BUG: KASAN: slab-out-of-bounds in instrument_copy_to_user
+> include/linux/instrumented.h:118 [inline]
+> BUG: KASAN: slab-out-of-bounds in _copy_to_user lib/usercopy.c:32 [inline]
+> BUG: KASAN: slab-out-of-bounds in _copy_to_user+0x9c/0xc0 lib/usercopy.c:26
+> Read of size 54 at addr ffff8881055c0100 by task syz-executor382/8357
+Have not run the reproducer yet (due to network access restriction of our
+company), just skim through __htab_map_lookup_and_delete_batch() and found that
+the following code snippet is suspicious:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8a5012ba6..d7c875ac6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2883,6 +2883,7 @@ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
- F:	arch/arm/boot/dts/sunplus-sp7021*.dts*
- F:	arch/arm/configs/sp7021_*defconfig
- F:	arch/arm/mach-sunplus/
-+F:	drivers/clk/clk-sp7021.c
- F:	drivers/irqchip/irq-sp7021-intc.c
- F:	drivers/reset/reset-sunplus.c
- F:	include/dt-bindings/clock/sunplus,sp7021-clkc.h
-diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
-index 48f8f4221..134919446 100644
---- a/drivers/clk/Kconfig
-+++ b/drivers/clk/Kconfig
-@@ -428,6 +428,16 @@ config COMMON_CLK_K210
- 	help
- 	  Support for the Canaan Kendryte K210 RISC-V SoC clocks.
- 
-+config COMMON_CLK_SP7021
-+	tristate "Clock driver for Sunplus SP7021 SoC"
-+	depends on SOC_SP7021 || COMPILE_TEST
-+	default SOC_SP7021
-+	help
-+	  This driver supports the Sunplus SP7021 SoC clocks.
-+	  It implements SP7021 PLLs/gate.
-+	  Not all features of the PLL are currently supported
-+	  by the driver.
-+
- source "drivers/clk/actions/Kconfig"
- source "drivers/clk/analogbits/Kconfig"
- source "drivers/clk/baikal-t1/Kconfig"
-diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
-index d5db170d3..2979675a5 100644
---- a/drivers/clk/Makefile
-+++ b/drivers/clk/Makefile
-@@ -65,6 +65,7 @@ obj-$(CONFIG_COMMON_CLK_SI5351)		+= clk-si5351.o
- obj-$(CONFIG_COMMON_CLK_SI514)		+= clk-si514.o
- obj-$(CONFIG_COMMON_CLK_SI544)		+= clk-si544.o
- obj-$(CONFIG_COMMON_CLK_SI570)		+= clk-si570.o
-+obj-$(CONFIG_COMMON_CLK_SP7021)		+= clk-sp7021.o
- obj-$(CONFIG_COMMON_CLK_STM32F)		+= clk-stm32f4.o
- obj-$(CONFIG_COMMON_CLK_STM32H7)	+= clk-stm32h7.o
- obj-$(CONFIG_COMMON_CLK_STM32MP157)	+= clk-stm32mp1.o
-diff --git a/drivers/clk/clk-sp7021.c b/drivers/clk/clk-sp7021.c
-new file mode 100644
-index 000000000..c11f32a97
---- /dev/null
-+++ b/drivers/clk/clk-sp7021.c
-@@ -0,0 +1,713 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/*
-+ * Copyright (C) Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+#include <linux/module.h>
-+#include <linux/clk-provider.h>
-+#include <linux/of.h>
-+#include <linux/bitfield.h>
-+#include <linux/slab.h>
-+#include <linux/io.h>
-+#include <linux/err.h>
-+#include <linux/platform_device.h>
-+#include <dt-bindings/clock/sunplus,sp7021-clkc.h>
-+
-+/* speical div_width values for PLLTV/PLLA */
-+#define DIV_TV		33
-+#define DIV_A		34
-+
-+/* PLLTV parameters */
-+enum {
-+	SEL_FRA,
-+	SDM_MOD,
-+	PH_SEL,
-+	NFRA,
-+	DIVR,
-+	DIVN,
-+	DIVM,
-+	P_MAX
-+};
-+
-+#define MASK_SEL_FRA	GENMASK(1, 1)
-+#define MASK_SDM_MOD	GENMASK(2, 2)
-+#define MASK_PH_SEL	GENMASK(4, 4)
-+#define MASK_NFRA	GENMASK(12, 6)
-+#define MASK_DIVR	GENMASK(8, 7)
-+#define MASK_DIVN	GENMASK(7, 0)
-+#define MASK_DIVM	GENMASK(14, 8)
-+
-+/* HIWORD_MASK FIELD_PREP */
-+#define HWM_FIELD_PREP(mask, value)		\
-+({						\
-+	u32 _m = mask;				\
-+	(_m << 16) | FIELD_PREP(_m, value);	\
-+})
-+
-+struct sp_pll {
-+	struct clk_hw hw;
-+	void __iomem *reg;
-+	spinlock_t lock;	/* lock for reg */
-+	int div_shift;
-+	int div_width;
-+	int pd_bit;		/* power down bit idx */
-+	int bp_bit;		/* bypass bit idx */
-+	unsigned long brate;	/* base rate, TODO: replace brate with muldiv */
-+	u32 p[P_MAX];		/* for hold PLLTV/PLLA parameters */
-+};
-+
-+#define to_sp_pll(_hw)	container_of(_hw, struct sp_pll, hw)
-+
-+struct sp_clk_gate_info {
-+	u16	reg;		/* reg_index_shift */
-+	u16	ext_parent;	/* parent is extclk */
-+};
-+
-+static const struct sp_clk_gate_info sp_clk_gates[] = {
-+	{ 0x02 },
-+	{ 0x05 },
-+	{ 0x06 },
-+	{ 0x07 },
-+	{ 0x09 },
-+	{ 0x0b, 1 },
-+	{ 0x0f, 1 },
-+	{ 0x14 },
-+	{ 0x15 },
-+	{ 0x16 },
-+	{ 0x17 },
-+	{ 0x18, 1 },
-+	{ 0x19, 1 },
-+	{ 0x1a, 1 },
-+	{ 0x1b, 1 },
-+	{ 0x1c, 1 },
-+	{ 0x1d, 1 },
-+	{ 0x1e },
-+	{ 0x1f, 1 },
-+	{ 0x20 },
-+	{ 0x21 },
-+	{ 0x22 },
-+	{ 0x23 },
-+	{ 0x24 },
-+	{ 0x25 },
-+	{ 0x26 },
-+	{ 0x2a },
-+	{ 0x2b },
-+	{ 0x2d },
-+	{ 0x2e },
-+	{ 0x30 },
-+	{ 0x31 },
-+	{ 0x32 },
-+	{ 0x33 },
-+	{ 0x3d },
-+	{ 0x3e },
-+	{ 0x3f },
-+	{ 0x42 },
-+	{ 0x44 },
-+	{ 0x4b },
-+	{ 0x4c },
-+	{ 0x4d },
-+	{ 0x4e },
-+	{ 0x4f },
-+	{ 0x50 },
-+	{ 0x55 },
-+	{ 0x60 },
-+	{ 0x61 },
-+	{ 0x6a },
-+	{ 0x73 },
-+	{ 0x86 },
-+	{ 0x8a },
-+	{ 0x8b },
-+	{ 0x8d },
-+	{ 0x8e },
-+	{ 0x8f },
-+	{ 0x90 },
-+	{ 0x92 },
-+	{ 0x93 },
-+	{ 0x95 },
-+	{ 0x96 },
-+	{ 0x97 },
-+	{ 0x98 },
-+	{ 0x99 },
-+};
-+
-+#define _M		1000000UL
-+#define F_27M		(27 * _M)
-+
-+/*********************************** PLL_TV **********************************/
-+
-+/* TODO: set proper FVCO range */
-+#define FVCO_MIN	(100 * _M)
-+#define FVCO_MAX	(200 * _M)
-+
-+#define F_MIN		(FVCO_MIN / 8)
-+#define F_MAX		(FVCO_MAX)
-+
-+static long plltv_integer_div(struct sp_pll *clk, unsigned long freq)
-+{
-+	/* valid m values: 27M must be divisible by m */
-+	static const u32 m_table[] = {
-+		1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32
-+	};
-+	u32 m, n, r;
-+	unsigned long fvco, nf;
-+	long ret;
-+
-+	freq = clamp(freq, F_MIN, F_MAX);
-+
-+	/* DIVR 0~3 */
-+	for (r = 0; r <= 3; r++) {
-+		fvco = freq << r;
-+		if (fvco <= FVCO_MAX)
-+			break;
-+	}
-+
-+	/* DIVM */
-+	for (m = 0; m < ARRAY_SIZE(m_table); m++) {
-+		nf = fvco * m_table[m];
-+		n = nf / F_27M;
-+		if ((n * F_27M) == nf)
-+			break;
-+	}
-+	m = m_table[m];
-+
-+	if (!m) {
-+		ret = -EINVAL;
-+		goto err_not_found;
-+	}
-+
-+	/* save parameters */
-+	clk->p[SEL_FRA] = 0;
-+	clk->p[DIVR]    = r;
-+	clk->p[DIVN]    = n;
-+	clk->p[DIVM]    = m;
-+
-+	return freq;
-+
-+err_not_found:
-+	pr_err("%s: %s freq:%lu not found a valid setting\n",
-+	       __func__, clk_hw_get_name(&clk->hw), freq);
-+
-+	return ret;
-+}
-+
-+/* parameters for PLLTV fractional divider */
-+static const u32 pt[][5] = {
-+	/* conventional fractional */
-+	{
-+		1,			/* factor */
-+		5,			/* 5 * p0 (nint) */
-+		1,			/* 1 * p0 */
-+		F_27M,			/* F_27M / p0 */
-+		1,			/* p0 / p2 */
-+	},
-+	/* phase rotation */
-+	{
-+		10,			/* factor */
-+		54,			/* 5.4 * p0 (nint) */
-+		2,			/* 0.2 * p0 */
-+		F_27M / 10,		/* F_27M / p0 */
-+		5,			/* p0 / p2 */
-+	},
-+};
-+
-+static const u32 sdm_mod_vals[] = { 91, 55 };
-+
-+static long plltv_fractional_div(struct sp_pll *clk, unsigned long freq)
-+{
-+	u32 m, r;
-+	u32 nint, nfra;
-+	u32 df_quotient_min = 210000000;
-+	u32 df_remainder_min = 0;
-+	unsigned long fvco, nf, f, fout = 0;
-+	int sdm, ph;
-+
-+	freq = clamp(freq, F_MIN, F_MAX);
-+
-+	/* DIVR 0~3 */
-+	for (r = 0; r <= 3; r++) {
-+		fvco = freq << r;
-+		if (fvco <= FVCO_MAX)
-+			break;
-+	}
-+	f = F_27M >> r;
-+
-+	/* PH_SEL */
-+	for (ph = ARRAY_SIZE(pt) - 1; ph >= 0; ph--) {
-+		const u32 *pp = pt[ph];
-+
-+		/* SDM_MOD */
-+		for (sdm = 0; sdm < ARRAY_SIZE(sdm_mod_vals); sdm++) {
-+			u32 mod = sdm_mod_vals[sdm];
-+
-+			/* DIVM 1~32 */
-+			for (m = 1; m <= 32; m++) {
-+				u32 df; /* diff freq */
-+				u32 df_quotient, df_remainder;
-+
-+				nf = fvco * m;
-+				nint = nf / pp[3];
-+
-+				if (nint < pp[1])
-+					continue;
-+				if (nint > pp[1])
-+					break;
-+
-+				nfra = (((nf % pp[3]) * mod * pp[4]) + (F_27M / 2)) / F_27M;
-+				if (nfra) {
-+					u32 df0 = f * (nint + pp[2]) / pp[0];
-+					u32 df1 = f * (mod - nfra) / mod / pp[4];
-+
-+					df = df0 - df1;
-+				} else {
-+					df = f * (nint) / pp[0];
-+				}
-+
-+				df_quotient  = df / m;
-+				df_remainder = ((df % m) * 1000) / m;
-+
-+				if (freq > df_quotient) {
-+					df_quotient  = freq - df_quotient - 1;
-+					df_remainder = 1000 - df_remainder;
-+				} else {
-+					df_quotient = df_quotient - freq;
-+				}
-+
-+				if (df_quotient_min > df_quotient ||
-+				    (df_quotient_min == df_quotient &&
-+				    df_remainder_min > df_remainder)) {
-+					/* found a closer freq, save parameters */
-+					clk->p[SEL_FRA] = 1;
-+					clk->p[SDM_MOD] = sdm;
-+					clk->p[PH_SEL]  = ph;
-+					clk->p[NFRA]    = nfra;
-+					clk->p[DIVR]    = r;
-+					clk->p[DIVM]    = m;
-+
-+					fout = df / m;
-+					df_quotient_min = df_quotient;
-+					df_remainder_min = df_remainder;
-+				}
-+			}
-+		}
-+	}
-+
-+	if (!fout) {
-+		pr_err("%s: %s freq:%lu not found a valid setting\n",
-+		       __func__, clk_hw_get_name(&clk->hw), freq);
-+		return -EINVAL;
-+	}
-+
-+	return fout;
-+}
-+
-+static long plltv_div(struct sp_pll *clk, unsigned long freq)
-+{
-+	if (freq % 100)
-+		return plltv_fractional_div(clk, freq);
-+
-+	return plltv_integer_div(clk, freq);
-+}
-+
-+static int plltv_set_rate(struct sp_pll *clk)
-+{
-+	unsigned long flags;
-+	u32 r0, r1, r2;
-+
-+	r0  = BIT(clk->bp_bit + 16);
-+	r0 |= HWM_FIELD_PREP(MASK_SEL_FRA, clk->p[SEL_FRA]);
-+	r0 |= HWM_FIELD_PREP(MASK_SDM_MOD, clk->p[SDM_MOD]);
-+	r0 |= HWM_FIELD_PREP(MASK_PH_SEL, clk->p[PH_SEL]);
-+	r0 |= HWM_FIELD_PREP(MASK_NFRA, clk->p[NFRA]);
-+
-+	r1  = HWM_FIELD_PREP(MASK_DIVR, clk->p[DIVR]);
-+
-+	r2  = HWM_FIELD_PREP(MASK_DIVN, clk->p[DIVN] - 1);
-+	r2 |= HWM_FIELD_PREP(MASK_DIVM, clk->p[DIVM] - 1);
-+
-+	spin_lock_irqsave(&clk->lock, flags);
-+	writel(r0, clk->reg);
-+	writel(r1, clk->reg + 4);
-+	writel(r2, clk->reg + 8);
-+	spin_unlock_irqrestore(&clk->lock, flags);
-+
-+	return 0;
-+}
-+
-+/*********************************** PLL_A ***********************************/
-+
-+/* from Q628_PLLs_REG_setting.xlsx */
-+static const struct {
-+	u32 rate;
-+	u32 regs[5];
-+} pa[] = {
-+	{
-+		.rate = 135475200,
-+		.regs = {
-+			0x4801,
-+			0x02df,
-+			0x248f,
-+			0x0211,
-+			0x33e9
-+		}
-+	},
-+	{
-+		.rate = 147456000,
-+		.regs = {
-+			0x4801,
-+			0x1adf,
-+			0x2490,
-+			0x0349,
-+			0x33e9
-+		}
-+	},
-+	{
-+		.rate = 196608000,
-+		.regs = {
-+			0x4801,
-+			0x42ef,
-+			0x2495,
-+			0x01c6,
-+			0x33e9
-+		}
-+	},
-+};
-+
-+static int plla_set_rate(struct sp_pll *clk)
-+{
-+	const u32 *pp = pa[clk->p[0]].regs;
-+	unsigned long flags;
-+	int i;
-+
-+	spin_lock_irqsave(&clk->lock, flags);
-+	for (i = 0; i < ARRAY_SIZE(pa->regs); i++)
-+		writel(0xffff0000 | pp[i], clk->reg + (i * 4));
-+	spin_unlock_irqrestore(&clk->lock, flags);
-+
-+	return 0;
-+}
-+
-+static long plla_round_rate(struct sp_pll *clk, unsigned long rate)
-+{
-+	int i = ARRAY_SIZE(pa);
-+
-+	while (--i) {
-+		if (rate >= pa[i].rate)
-+			break;
-+	}
-+	clk->p[0] = i;
-+
-+	return pa[i].rate;
-+}
-+
-+/********************************** SP_PLL ***********************************/
-+
-+static long sp_pll_calc_div(struct sp_pll *clk, unsigned long rate)
-+{
-+	u32 fbdiv;
-+	u32 max = 1 << clk->div_width;
-+
-+	fbdiv = DIV_ROUND_CLOSEST(rate, clk->brate);
-+	if (fbdiv > max)
-+		fbdiv = max;
-+
-+	return fbdiv;
-+}
-+
-+static long sp_pll_round_rate(struct clk_hw *hw, unsigned long rate,
-+			      unsigned long *prate)
-+{
-+	struct sp_pll *clk = to_sp_pll(hw);
-+	long ret;
-+
-+	if (rate == *prate) {
-+		ret = *prate; /* bypass */
-+	} else if (clk->div_width == DIV_A) {
-+		ret = plla_round_rate(clk, rate);
-+	} else if (clk->div_width == DIV_TV) {
-+		ret = plltv_div(clk, rate);
-+		if (ret < 0)
-+			ret = *prate;
-+	} else {
-+		ret = sp_pll_calc_div(clk, rate) * clk->brate;
-+	}
-+
-+	return ret;
-+}
-+
-+static unsigned long sp_pll_recalc_rate(struct clk_hw *hw,
-+					unsigned long prate)
-+{
-+	struct sp_pll *clk = to_sp_pll(hw);
-+	u32 reg = readl(clk->reg);
-+	unsigned long ret;
-+
-+	if (reg & BIT(clk->bp_bit)) {
-+		ret = prate; /* bypass */
-+	} else if (clk->div_width == DIV_A) {
-+		ret = pa[clk->p[0]].rate;
-+	} else if (clk->div_width == DIV_TV) {
-+		u32 m, r, reg2;
-+
-+		r = FIELD_GET(MASK_DIVR, readl(clk->reg + 4));
-+		reg2 = readl(clk->reg + 8);
-+		m = FIELD_GET(MASK_DIVM, reg2) + 1;
-+
-+		if (reg & MASK_SEL_FRA) {
-+			/* fractional divider */
-+			u32 sdm  = FIELD_GET(MASK_SDM_MOD, reg);
-+			u32 ph   = FIELD_GET(MASK_PH_SEL, reg);
-+			u32 nfra = FIELD_GET(MASK_NFRA, reg);
-+			const u32 *pp = pt[ph];
-+			unsigned long r0, r1;
-+
-+			ret = prate >> r;
-+			r0  = ret * (pp[1] + pp[2]) / pp[0];
-+			r1  = ret * (sdm_mod_vals[sdm] - nfra) / sdm_mod_vals[sdm] / pp[4];
-+			ret = (r0 - r1) / m;
-+		} else {
-+			/* integer divider */
-+			u32 n = FIELD_GET(MASK_DIVN, reg2) + 1;
-+
-+			ret = (prate / m * n) >> r;
-+		}
-+	} else {
-+		u32 fbdiv = ((reg >> clk->div_shift) & ((1 << clk->div_width) - 1)) + 1;
-+
-+		ret = clk->brate * fbdiv;
-+	}
-+
-+	return ret;
-+}
-+
-+static int sp_pll_set_rate(struct clk_hw *hw, unsigned long rate,
-+			   unsigned long prate)
-+{
-+	struct sp_pll *clk = to_sp_pll(hw);
-+	unsigned long flags;
-+	u32 reg;
-+
-+	reg = BIT(clk->bp_bit + 16); /* HIWORD_MASK */
-+
-+	if (rate == prate) {
-+		reg |= BIT(clk->bp_bit); /* bypass */
-+	} else if (clk->div_width == DIV_A) {
-+		return plla_set_rate(clk);
-+	} else if (clk->div_width == DIV_TV) {
-+		return plltv_set_rate(clk);
-+	} else if (clk->div_width) {
-+		u32 fbdiv = sp_pll_calc_div(clk, rate);
-+		u32 mask = GENMASK(clk->div_shift + clk->div_width - 1, clk->div_shift);
-+
-+		reg |= mask << 16;
-+		reg |= ((fbdiv - 1) << clk->div_shift) & mask;
-+	}
-+
-+	spin_lock_irqsave(&clk->lock, flags);
-+	writel(reg, clk->reg);
-+	spin_unlock_irqrestore(&clk->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int sp_pll_enable(struct clk_hw *hw)
-+{
-+	struct sp_pll *clk = to_sp_pll(hw);
-+
-+	writel(BIT(clk->pd_bit + 16) | BIT(clk->pd_bit), clk->reg);
-+
-+	return 0;
-+}
-+
-+static void sp_pll_disable(struct clk_hw *hw)
-+{
-+	struct sp_pll *clk = to_sp_pll(hw);
-+
-+	writel(BIT(clk->pd_bit + 16), clk->reg);
-+}
-+
-+static int sp_pll_is_enabled(struct clk_hw *hw)
-+{
-+	struct sp_pll *clk = to_sp_pll(hw);
-+
-+	return readl(clk->reg) & BIT(clk->pd_bit);
-+}
-+
-+static const struct clk_ops sp_pll_ops = {
-+	.enable = sp_pll_enable,
-+	.disable = sp_pll_disable,
-+	.is_enabled = sp_pll_is_enabled,
-+	.round_rate = sp_pll_round_rate,
-+	.recalc_rate = sp_pll_recalc_rate,
-+	.set_rate = sp_pll_set_rate
-+};
-+
-+static const struct clk_ops sp_pll_sub_ops = {
-+	.enable = sp_pll_enable,
-+	.disable = sp_pll_disable,
-+	.is_enabled = sp_pll_is_enabled,
-+	.recalc_rate = sp_pll_recalc_rate,
-+};
-+
-+static struct clk_hw *sp_pll_register(struct device *dev, const char *name,
-+				      const struct clk_parent_data *parent_data,
-+				      void __iomem *reg, int pd_bit, int bp_bit,
-+				      unsigned long brate, int shift, int width,
-+				      unsigned long flags)
-+{
-+	struct sp_pll *pll;
-+	struct clk_hw *hw;
-+	struct clk_init_data initd = {
-+		.name = name,
-+		.parent_data = parent_data,
-+		.ops = (bp_bit >= 0) ? &sp_pll_ops : &sp_pll_sub_ops,
-+		.num_parents = 1,
-+		.flags = flags,
-+	};
-+	int ret;
-+
-+	pll = devm_kzalloc(dev, sizeof(*pll), GFP_KERNEL);
-+	if (!pll)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pll->hw.init = &initd;
-+	pll->reg = reg;
-+	pll->pd_bit = pd_bit;
-+	pll->bp_bit = bp_bit;
-+	pll->brate = brate;
-+	pll->div_shift = shift;
-+	pll->div_width = width;
-+	spin_lock_init(&pll->lock);
-+
-+	hw = &pll->hw;
-+	ret = devm_clk_hw_register(dev, hw);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	return hw;
-+}
-+
-+#define PLLA_CTL	(pll_base + 0x1c)
-+#define PLLE_CTL	(pll_base + 0x30)
-+#define PLLF_CTL	(pll_base + 0x34)
-+#define PLLTV_CTL	(pll_base + 0x38)
-+
-+static int sp7021_clk_probe(struct platform_device *pdev)
-+{
-+	static const u32 sp_clken[] = {
-+		0x67ef, 0x03ff, 0xff03, 0xfff0, 0x0004, /* G0.1~5  */
-+		0x0000, 0x8000, 0xffff, 0x0040, 0x0000, /* G0.6~10 */
-+	};
-+	static struct clk_parent_data pd_ext, pd_sys, pd_e;
-+	struct device *dev = &pdev->dev;
-+	void __iomem *clk_base, *pll_base, *sys_base;
-+	struct clk_hw_onecell_data *clk_data;
-+	struct clk_hw **hws;
-+	int i;
-+
-+	clk_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (!clk_base)
-+		return -ENXIO;
-+	pll_base = devm_platform_ioremap_resource(pdev, 1);
-+	if (!pll_base)
-+		return -ENXIO;
-+	sys_base = devm_platform_ioremap_resource(pdev, 2);
-+	if (!sys_base)
-+		return -ENXIO;
-+
-+	/* enable default clks */
-+	for (i = 0; i < ARRAY_SIZE(sp_clken); i++)
-+		writel((sp_clken[i] << 16) | sp_clken[i], clk_base + i * 4);
-+
-+	clk_data = devm_kzalloc(dev, struct_size(clk_data, hws, CLK_MAX),
-+				GFP_KERNEL);
-+	if (!clk_data)
-+		return -ENOMEM;
-+
-+	hws = clk_data->hws;
-+	pd_ext.index = 0;
-+
-+	/* PLLs */
-+	hws[PLL_A] = sp_pll_register(dev, "plla", &pd_ext, PLLA_CTL,
-+				     11, 12, 27000000, 0, DIV_A, 0);
-+	if (IS_ERR(hws[PLL_A]))
-+		return PTR_ERR(hws[PLL_A]);
-+
-+	hws[PLL_E] = sp_pll_register(dev, "plle", &pd_ext, PLLE_CTL,
-+				     6, 2, 50000000, 0, 0, 0);
-+	if (IS_ERR(hws[PLL_E]))
-+		return PTR_ERR(hws[PLL_E]);
-+	pd_e.hw = hws[PLL_E];
-+	hws[PLL_E_2P5] = sp_pll_register(dev, "plle_2p5", &pd_e, PLLE_CTL,
-+					 13, -1, 2500000, 0, 0, 0);
-+	if (IS_ERR(hws[PLL_E_2P5]))
-+		return PTR_ERR(hws[PLL_E_2P5]);
-+	hws[PLL_E_25] = sp_pll_register(dev, "plle_25", &pd_e, PLLE_CTL,
-+					12, -1, 25000000, 0, 0, 0);
-+	if (IS_ERR(hws[PLL_E_25]))
-+		return PTR_ERR(hws[PLL_E_25]);
-+	hws[PLL_E_112P5] = sp_pll_register(dev, "plle_112p5", &pd_e, PLLE_CTL,
-+					   11, -1, 112500000, 0, 0, 0);
-+	if (IS_ERR(hws[PLL_E_112P5]))
-+		return PTR_ERR(hws[PLL_E_112P5]);
-+
-+	hws[PLL_F] = sp_pll_register(dev, "pllf", &pd_ext, PLLF_CTL,
-+				     0, 10, 13500000, 1, 4, 0);
-+	if (IS_ERR(hws[PLL_F]))
-+		return PTR_ERR(hws[PLL_F]);
-+
-+	hws[PLL_TV] = sp_pll_register(dev, "plltv", &pd_ext, PLLTV_CTL,
-+				      0, 15, 27000000, 0, DIV_TV, 0);
-+	if (IS_ERR(hws[PLL_TV]))
-+		return PTR_ERR(hws[PLL_TV]);
-+	hws[PLL_TV_A] = devm_clk_hw_register_divider(dev, "plltv_a", "plltv", 0,
-+						     PLLTV_CTL + 4, 5, 1,
-+						     CLK_DIVIDER_POWER_OF_TWO,
-+						     &to_sp_pll(hws[PLL_TV])->lock);
-+	if (IS_ERR(hws[PLL_TV_A]))
-+		return PTR_ERR(hws[PLL_TV_A]);
-+
-+	/* system clock, should not be disabled */
-+	hws[PLL_SYS] = sp_pll_register(dev, "pllsys", &pd_ext, sys_base,
-+				       10, 9, 13500000, 0, 4, CLK_IS_CRITICAL);
-+	if (IS_ERR(hws[PLL_SYS]))
-+		return PTR_ERR(hws[PLL_SYS]);
-+	pd_sys.hw = hws[PLL_SYS];
-+
-+	/* gates */
-+	for (i = 0; i < ARRAY_SIZE(sp_clk_gates); i++) {
-+		char name[10];
-+		u32 j = sp_clk_gates[i].reg;
-+		struct clk_parent_data *pd = sp_clk_gates[i].ext_parent ? &pd_ext : &pd_sys;
-+
-+		sprintf(name, "%02d_0x%02x", i, j);
-+		hws[i] = devm_clk_hw_register_gate_parent_data(dev, name, pd, 0,
-+							       clk_base + (j >> 4) * 4,
-+							       j & 0x0f,
-+							       CLK_GATE_HIWORD_MASK,
-+							       NULL);
-+		if (IS_ERR(hws[i]))
-+			return PTR_ERR(hws[i]);
-+	}
-+
-+	clk_data->num = CLK_MAX;
-+	return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get, clk_data);
-+}
-+
-+static const struct of_device_id sp7021_clk_dt_ids[] = {
-+	{ .compatible = "sunplus,sp7021-clkc" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, sp7021_clk_dt_ids);
-+
-+static struct platform_driver sp7021_clk_driver = {
-+	.probe  = sp7021_clk_probe,
-+	.driver = {
-+		.name = "sp7021-clk",
-+		.of_match_table = sp7021_clk_dt_ids,
-+	},
-+};
-+module_platform_driver(sp7021_clk_driver);
-+
-+MODULE_AUTHOR("Sunplus Technology");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Clock driver for Sunplus SP7021 SoC");
-diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-index 1615010aa..672866c3e 100644
---- a/include/linux/clk-provider.h
-+++ b/include/linux/clk-provider.h
-@@ -567,6 +567,24 @@ struct clk *clk_register_gate(struct device *dev, const char *name,
- 	__devm_clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL, \
- 			       NULL, (flags), (reg), (bit_idx),		      \
- 			       (clk_gate_flags), (lock))
-+/**
-+ * devm_clk_hw_register_gate_parent_data - register a gate clock with the
-+ * clock framework
-+ * @dev: device that is registering this clock
-+ * @name: name of this clock
-+ * @parent_data: parent clk data
-+ * @flags: framework-specific flags for this clock
-+ * @reg: register address to control gating of this clock
-+ * @bit_idx: which bit in the register controls gating of this clock
-+ * @clk_gate_flags: gate-specific flags for this clock
-+ * @lock: shared register lock for this clock
-+ */
-+#define devm_clk_hw_register_gate_parent_data(dev, name, parent_data, flags,  \
-+					      reg, bit_idx, clk_gate_flags,   \
-+					      lock)                           \
-+	__devm_clk_hw_register_gate((dev), NULL, (name), NULL, NULL,	      \
-+				    (parent_data), (flags), (reg), (bit_idx), \
-+				    (clk_gate_flags), (lock))
- void clk_unregister_gate(struct clk *clk);
- void clk_hw_unregister_gate(struct clk_hw *hw);
- int clk_gate_is_enabled(struct clk_hw *hw);
+        /* do not grab the lock unless need it (bucket_cnt > 0). */
+        if (locked) {
+                ret = htab_lock_bucket(htab, b, batch, &flags);
+                if (ret)
+                        goto next_batch;
+        }
 
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.33.1
+If htab_lock_bucket() fails, it should reset bucket_cnt to zero, else next_batch
+will try to read key_size * bucket_cnt bytes from keys and may lead to
+out-of-bound read. Will try to get the reproducer and to ensure or pinpoint the
+root cause.
+
+> CPU: 1 PID: 8357 Comm: syz-executor382 Not tainted
+> 5.19.0-13666-gffcf9c5700e4-dirty #15
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.13.0-1ubuntu1.1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0x57/0x7d lib/dump_stack.c:106
+>  print_address_description mm/kasan/report.c:317 [inline]
+>  print_report.cold+0xe5/0x66d mm/kasan/report.c:433
+>  kasan_report+0x8a/0x1b0 mm/kasan/report.c:495
+>  check_region_inline mm/kasan/generic.c:183 [inline]
+>  kasan_check_range+0x13b/0x190 mm/kasan/generic.c:189
+>  instrument_copy_to_user include/linux/instrumented.h:118 [inline]
+>  _copy_to_user lib/usercopy.c:32 [inline]
+>  _copy_to_user+0x9c/0xc0 lib/usercopy.c:26
+>  copy_to_user include/linux/uaccess.h:160 [inline]
+>  __htab_map_lookup_and_delete_batch+0x1169/0x1cf0 kernel/bpf/hashtab.c:1809
+>  bpf_map_do_batch+0x2d6/0x590 kernel/bpf/syscall.c:4498
+>  __sys_bpf+0x1193/0x48b0 kernel/bpf/syscall.c:5014
+>  __do_sys_bpf kernel/bpf/syscall.c:5058 [inline]
+>  __se_sys_bpf kernel/bpf/syscall.c:5056 [inline]
+>  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5056
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> RIP: 0033:0x7f797e7e5b9d
+> Code: c3 e8 97 2a 00 00 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 89 f8 48
+> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+> 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f797e76ad78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> RAX: ffffffffffffffda RBX: 00007f797e87a2d0 RCX: 00007f797e7e5b9d
+> RDX: 0000000000000038 RSI: 0000000020000680 RDI: 0000000000000019
+> RBP: 00007f797e84700c R08: 00007f797e76b700 R09: 0000000000000000
+> R10: 00007f797e76b700 R11: 0000000000000246 R12: 00007f797e87a2d8
+> R13: 00007f797e87a2dc R14: 00000000200014c0 R15: 00007f797e846008
+>  </TASK>
+>
+> Allocated by task 8357:
+>  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>  kasan_set_track mm/kasan/common.c:45 [inline]
+>  set_alloc_info mm/kasan/common.c:437 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:516 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:475 [inline]
+>  __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
+>  kasan_kmalloc include/linux/kasan.h:234 [inline]
+>  __kmalloc_node+0x1e9/0x360 mm/slub.c:4472
+>  kvmalloc include/linux/slab.h:750 [inline]
+>  kvmalloc_array include/linux/slab.h:768 [inline]
+>  __htab_map_lookup_and_delete_batch+0x538/0x1cf0 kernel/bpf/hashtab.c:1680
+>  bpf_map_do_batch+0x2d6/0x590 kernel/bpf/syscall.c:4498
+>  __sys_bpf+0x1193/0x48b0 kernel/bpf/syscall.c:5014
+>  __do_sys_bpf kernel/bpf/syscall.c:5058 [inline]
+>  __se_sys_bpf kernel/bpf/syscall.c:5056 [inline]
+>  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5056
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> The buggy address belongs to the object at ffff8881055c0100
+>  which belongs to the cache kmalloc-64 of size 64
+> The buggy address is located 0 bytes inside of
+>  64-byte region [ffff8881055c0100, ffff8881055c0140)
+>
+> The buggy address belongs to the physical page:
+> page:ffffea0004157000 refcount:1 mapcount:0 mapping:0000000000000000
+> index:0x0 pfn:0x1055c0
+> flags: 0x57ff00000000200(slab|node=1|zone=2|lastcpupid=0x7ff)
+> raw: 057ff00000000200 0000000000000000 dead000000000122 ffff888010c42640
+> raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask
+> 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 6756, tgid 6756
+> (syz-executor382), ts 131529364832, free_ts 131498233118
+>  set_page_owner include/linux/page_owner.h:31 [inline]
+>  post_alloc_hook mm/page_alloc.c:2525 [inline]
+>  prep_new_page+0x2c6/0x350 mm/page_alloc.c:2532
+>  get_page_from_freelist+0xae9/0x3a80 mm/page_alloc.c:4283
+>  __alloc_pages+0x321/0x710 mm/page_alloc.c:5515
+>  alloc_slab_page mm/slub.c:1824 [inline]
+>  allocate_slab mm/slub.c:1969 [inline]
+>  new_slab+0x246/0x3a0 mm/slub.c:2029
+>  ___slab_alloc+0xa50/0x1060 mm/slub.c:3031
+>  __slab_alloc.isra.0+0x4d/0xa0 mm/slub.c:3118
+>  slab_alloc_node mm/slub.c:3209 [inline]
+>  __kmalloc_node+0x2ed/0x360 mm/slub.c:4468
+>  kmalloc_node include/linux/slab.h:623 [inline]
+>  __vmalloc_area_node mm/vmalloc.c:3012 [inline]
+>  __vmalloc_node_range+0x30a/0xf70 mm/vmalloc.c:3196
+>  alloc_thread_stack_node kernel/fork.c:312 [inline]
+>  dup_task_struct kernel/fork.c:977 [inline]
+>  copy_process+0x4069/0x6660 kernel/fork.c:2087
+>  kernel_clone+0xba/0xba0 kernel/fork.c:2673
+>  __do_sys_clone+0xa1/0xe0 kernel/fork.c:2807
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> page last free stack trace:
+>  reset_page_owner include/linux/page_owner.h:24 [inline]
+>  free_pages_prepare mm/page_alloc.c:1449 [inline]
+>  free_pcp_prepare+0x5ab/0xd00 mm/page_alloc.c:1499
+>  free_unref_page_prepare mm/page_alloc.c:3380 [inline]
+>  free_unref_page+0x19/0x410 mm/page_alloc.c:3476
+>  __tlb_remove_table arch/x86/include/asm/tlb.h:34 [inline]
+>  __tlb_remove_table_free mm/mmu_gather.c:114 [inline]
+>  tlb_remove_table_rcu+0x6e/0xb0 mm/mmu_gather.c:169
+>  rcu_do_batch kernel/rcu/tree.c:2245 [inline]
+>  rcu_core+0x785/0x1720 kernel/rcu/tree.c:2505
+>  __do_softirq+0x1d0/0x908 kernel/softirq.c:571
+>
+> Memory state around the buggy address:
+>  ffff8881055c0000: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+>  ffff8881055c0080: 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc
+>> ffff8881055c0100: 00 00 00 00 00 05 fc fc fc fc fc fc fc fc fc fc
+>                                   ^
+>  ffff8881055c0180: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>  ffff8881055c0200: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> ==================================================================
+> .
 
