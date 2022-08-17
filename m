@@ -2,401 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53749C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE59C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237340AbiHQO4x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
+        id S239929AbiHQO6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbiHQO4t (ORCPT
+        with ESMTP id S231552AbiHQO6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:56:49 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366399C2D7;
-        Wed, 17 Aug 2022 07:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660748208; x=1692284208;
-  h=from:to:subject:date:message-id:mime-version;
-  bh=VTwBsNwj6Dbt5KB9ZiGqeiw6UCqNzCKZGsj4aNmBrhk=;
-  b=Ia9Ng3IGc+qJDrY2R58xwU7yJPyhB0stVDLiIp74VfrXkyv+xrG84RaK
-   YiWPq5Rk7Yk0m4VdVTOhohEoBxqSdh9vxsIY7/QSNlQ1yBTr087EaNj4I
-   LjJaL+vsrLjj44SDygHaiqzWB2RHkUPdjKKO0SXCQ/UQqIFylTSPkkmSI
-   wgn9snZTIoBn0aJ2+OR7+GvVCQIzV9K9JJ17qq56FtJS2oU3fitSum99i
-   228jhtagJ56bi/2+rSiayHeh27Z69rpfm2sJrMLiHo6ofVEN4bVfu8uSU
-   S83eTRMJ95f5cd8M8m1OyLkjWdWu41sig9cw28QSfMPbCITwrUY8QW3lF
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="169711797"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 07:56:46 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+        Wed, 17 Aug 2022 10:58:35 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A20F2F64D;
+        Wed, 17 Aug 2022 07:58:34 -0700 (PDT)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M79xt2j7bz67MfB;
+        Wed, 17 Aug 2022 22:53:38 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 16:58:32 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 17 Aug 2022 07:56:46 -0700
-Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 07:56:45 -0700
-From:   Jerry Ray <jerry.ray@microchip.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Jerry Ray" <jerry.ray@microchip.com>
-Subject: [linux][PATCH] dts: arm: at91: Add SAMA5D3-EDS Board
-Date:   Wed, 17 Aug 2022 09:56:45 -0500
-Message-ID: <20220817145645.32327-1-jerry.ray@microchip.com>
-X-Mailer: git-send-email 2.17.1
+ 15.1.2375.24; Wed, 17 Aug 2022 15:58:29 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <jinpu.wang@cloud.ionos.com>, <damien.lemoal@opensource.wdc.com>,
+        <yangxingui@huawei.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <hare@suse.de>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2 0/6] libsas and drivers: NCQ error handling
+Date:   Wed, 17 Aug 2022 22:52:08 +0800
+Message-ID: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds 1 file - base device tree for SAMA5D3-EDS board.
+As reported in [0], the pm8001 driver NCQ error handling more or less
+duplicates what libata does in link error handling, as follows:
+- abort all commands
+- do autopsy with read log ext 10 command
+- reset the target to recover
 
-The SAMA5D3-EDS board is an Ethernet Development Platform allowing for
-evaluating many Microchip ethernet switch and PHY products.  Various
-daughter cards can connect up via an RGMII connector or an RMII connector.
+Indeed for the hisi_sas driver we want to add similar handling for NCQ
+errors.
 
-The EDS board is not intended for stand-alone use and has no ethernet
-capabilities when no daughter board is connected.  As such, this device
-tree is intended to be used with a DT overlay defining the add-on board.
-To better ensure consistency, some items are defined here as a form of
-documentation so that all add-on overlays will use the same terms.
+This series add a new libsas API - sas_ata_device_link_abort() - to handle
+host NCQ errors, and fixes up pm8001 and hisi_sas drivers to use it. As
+mentioned in the pm8001 changeover patch, I would prefer a better place to
+locate the SATA ABORT command (rather that nexus reset callback).
 
-Google search keywords: "Microchip SAMA5D3-EDS"
+Damien kindly tested the v1 series for pm8001, but any further pm8001
+testing would be appreciated as I have since tweaked
+sas_ata_device_link_abort(). This is because the pm8001 driver hangs on my
+arm64 machine read log ext10 command.
 
-Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
----
- arch/arm/boot/dts/at91-sama5d3_eds.dts | 314 +++++++++++++++++++++++++
- 1 file changed, 314 insertions(+)
- create mode 100644 arch/arm/boot/dts/at91-sama5d3_eds.dts
+Finally with these changes we can make the libsas task alloc/free APIs
+private, which they should always have been.
 
-diff --git a/arch/arm/boot/dts/at91-sama5d3_eds.dts b/arch/arm/boot/dts/at91-sama5d3_eds.dts
-new file mode 100644
-index 000000000000..b7f0e200f7cb
---- /dev/null
-+++ b/arch/arm/boot/dts/at91-sama5d3_eds.dts
-@@ -0,0 +1,314 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * at91-sama5d3_eds.dts - Device Tree file for the SAMA5D3 Ethernet
-+ *    Development System board.
-+ *
-+ *  Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+ *		  2022 Jerry Ray <jerry.ray@microchip.com>
-+ */
-+/dts-v1/;
-+#include "sama5d36.dtsi"
-+
-+/ {
-+	model = "SAMA5D3 Ethernet Development System";
-+	compatible = "atmel,sama5d3-xplained", "atmel,sama5d3", "atmel,sama5";
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	clocks {
-+		slow_xtal {
-+			clock-frequency = <32768>;
-+		};
-+
-+		main_xtal {
-+			clock-frequency = <12000000>;
-+		};
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_key_gpio>;
-+
-+		button-3 {
-+			label = "PB_USER";
-+			gpios = <&pioE 29 GPIO_ACTIVE_LOW>;
-+			linux,code = <0x104>;
-+			wakeup-source;
-+		};
-+	};
-+
-+	memory@20000000 {
-+		reg = <0x20000000 0x10000000>;
-+	};
-+
-+	regulators: regulators {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		vcc_3v3_reg: BUCK_REG1 {
-+			compatible = "regulator-fixed";
-+			regulator-name = "VCC_3V3";
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3300000>;
-+			regulator-always-on;
-+		};
-+
-+		vcc_2v5_reg: LDO_REG2 {
-+			compatible = "regulator-fixed";
-+			regulator-name = "VCC_2V5";
-+			regulator-min-microvolt = <2500000>;
-+			regulator-max-microvolt = <2500000>;
-+			regulator-always-on;
-+			vin-supply = <&vcc_3v3_reg>;
-+		};
-+
-+		vcc_1v8_reg: LDO_REG3 {
-+			compatible = "regulator-fixed";
-+			regulator-name = "VCC_1V8";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-always-on;
-+			vin-supply = <&vcc_3v3_reg>;
-+		};
-+
-+		vcc_1v2_reg: BUCK_REG4 {
-+			compatible = "regulator-fixed";
-+			regulator-name = "VCC_1V2";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-always-on;
-+		};
-+
-+		vcc_mmc0_reg: fixedregulator_mmc0 {
-+			compatible = "regulator-fixed";
-+			regulator-name = "mmc0-card-supply";
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3300000>;
-+			regulator-always-on;
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&pinctrl_vcc_mmc0_reg_gpio>;
-+			gpio = <&pioE 2 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+};
-+
-+&can0 {
-+	status = "okay";
-+};
-+
-+&dbgu {
-+	status = "okay";
-+};
-+
-+&ebi {
-+	pinctrl-0 = <&pinctrl_ebi_nand_addr>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	nand_controller: nand-controller {
-+		status = "okay";
-+
-+		nand@3 {
-+			reg = <0x3 0x0 0x2>;
-+			atmel,rb = <0>;
-+			nand-bus-width = <8>;
-+			nand-ecc-mode = "hw";
-+			nand-ecc-strength = <4>;
-+			nand-ecc-step-size = <512>;
-+			nand-on-flash-bbt;
-+			label = "atmel_nand";
-+
-+			partitions {
-+				compatible = "fixed-partitions";
-+				#address-cells = <1>;
-+				#size-cells = <1>;
-+
-+				at91bootstrap@0 {
-+					label = "at91bootstrap";
-+					reg = <0x0 0x40000>;
-+				};
-+
-+				bootloader@40000 {
-+					label = "bootloader";
-+					reg = <0x40000 0xc0000>;
-+				};
-+
-+				bootloaderenvred@100000 {
-+					label = "bootloader env redundant";
-+					reg = <0x100000 0x40000>;
-+				};
-+
-+				bootloaderenv@140000 {
-+					label = "bootloader env";
-+					reg = <0x140000 0x40000>;
-+				};
-+
-+				dtb@180000 {
-+					label = "device tree";
-+					reg = <0x180000 0x80000>;
-+				};
-+
-+				kernel@200000 {
-+					label = "kernel";
-+					reg = <0x200000 0x600000>;
-+				};
-+
-+				rootfs@800000 {
-+					label = "rootfs";
-+					reg = <0x800000 0x0f800000>;
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+&i2c0 {
-+	pinctrl-0 = <&pinctrl_i2c0_pu>;
-+	status = "okay";
-+};
-+
-+&i2c1 {
-+	status = "okay";
-+};
-+
-+&i2c2 {
-+	dmas = <0>, <0>;	/* Do not use DMA for i2c2 */
-+	pinctrl-0 = <&pinctrl_i2c2_pu>;
-+	status = "okay";
-+};
-+
-+&mmc0 {
-+	pinctrl-0 = <&pinctrl_mmc0_clk_cmd_dat0 &pinctrl_mmc0_dat1_3
-+			&pinctrl_mmc0_dat4_7 &pinctrl_mmc0_cd>;
-+	vmmc-supply = <&vcc_mmc0_reg>;
-+	vqmmc-supply = <&vcc_3v3_reg>;
-+	status = "okay";
-+	slot@0 {
-+		reg = <0>;
-+		bus-width = <8>;
-+		cd-gpios = <&pioE 0 GPIO_ACTIVE_LOW>;
-+	};
-+};
-+
-+&pinctrl {
-+	board {
-+		pinctrl_i2c0_pu: i2c0_pu {
-+			atmel,pins =
-+				<AT91_PIOA 30 AT91_PERIPH_A AT91_PINCTRL_PULL_UP>,
-+				<AT91_PIOA 31 AT91_PERIPH_A AT91_PINCTRL_PULL_UP>;
-+		};
-+
-+		pinctrl_i2c2_pu: i2c2_pu {
-+			atmel,pins =
-+				<AT91_PIOA 18 AT91_PERIPH_B AT91_PINCTRL_PULL_UP>,
-+				<AT91_PIOA 19 AT91_PERIPH_B AT91_PINCTRL_PULL_UP>;
-+		};
-+
-+		pinctrl_key_gpio: key_gpio_0 {
-+			atmel,pins =
-+				<AT91_PIOE 29 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
-+		};
-+
-+		pinctrl_mmc0_cd: mmc0_cd {
-+			atmel,pins =
-+				<AT91_PIOE 0 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
-+		};
-+
-+		pinctrl_spi0_cs: spi0_cs_default {
-+			atmel,pins =
-+				<AT91_PIOD 13 AT91_PERIPH_GPIO AT91_PINCTRL_NONE
-+				 AT91_PIOD 16 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
-+		};
-+
-+		pinctrl_spi1_cs: spi1_cs_default {
-+			atmel,pins = <AT91_PIOC 25 AT91_PERIPH_GPIO AT91_PINCTRL_NONE
-+				      AT91_PIOC 28 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
-+		};
-+
-+		pinctrl_usba_vbus: usba_vbus {
-+			atmel,pins =
-+				<AT91_PIOE 9 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
-+		};
-+
-+		pinctrl_usb_default: usb_default {
-+			atmel,pins =
-+				<AT91_PIOE 3 AT91_PERIPH_GPIO AT91_PINCTRL_NONE
-+				 AT91_PIOE 4 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
-+		};
-+
-+		pinctrl_vcc_mmc0_reg_gpio: vcc_mmc0_reg_gpio_default {
-+			atmel,pins = <AT91_PIOE 2 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP>;
-+		};
-+
-+		/* Reserved for reset signal to the RGMII connector. */
-+		pinctrl_rgmii_rstn: rgmii_rstn {
-+			atmel,pins =
-+				<AT91_PIOD 18 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
-+		};
-+
-+		/* Reserved for an interrupt line from the RMII and RGMII connectors. */
-+		pinctrl_spi_irqn: spi_irqn {
-+			atmel,pins =
-+				<AT91_PIOB 28 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
-+		};
-+
-+		/* Reserved for VBUS fault interrupt. */
-+		pinctrl_vbusfault_irqn: vbusfault_irqn {
-+			atmel,pins =
-+				<AT91_PIOE 5 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
-+		};
-+	};
-+};
-+
-+&spi0 {
-+	pinctrl-names = "default", "cs";
-+	pinctrl-1 = <&pinctrl_spi0_cs>;
-+	cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
-+	status = "okay";
-+};
-+
-+&spi1 {
-+	pinctrl-names = "default", "cs";
-+	pinctrl-1 = <&pinctrl_spi1_cs>;
-+	cs-gpios = <&pioC 25 0>, <0>, <0>, <&pioC 28 0>;
-+	status = "okay";
-+};
-+
-+&tcb0 {
-+	timer0: timer@0 {
-+		compatible = "atmel,tcb-timer";
-+		reg = <0>;
-+	};
-+
-+	timer1: timer@1 {
-+		compatible = "atmel,tcb-timer";
-+		reg = <1>;
-+	};
-+};
-+
-+&usb0 {
-+	atmel,vbus-gpio = <&pioE 9 GPIO_ACTIVE_HIGH>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usba_vbus>;
-+	status = "okay";
-+};
-+
-+&usb1 {
-+	atmel,vbus-gpio = <0
-+			   &pioE 3 GPIO_ACTIVE_HIGH
-+			   &pioE 4 GPIO_ACTIVE_HIGH
-+			  >;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usb_default>;
-+	num-ports = <3>;
-+	status = "okay";
-+};
-+
-+&usb2 {
-+	status = "okay";
-+};
+Based on v6.0-rc1
+
+[0] https://lore.kernel.org/linux-scsi/8fb3b093-55f0-1fab-81f4-e8519810a978@huawei.com/
+
+Changes since v1:
+- Rename sas_ata_link_abort() -> sas_ata_device_link_abort()
+- Set EH RESET flag in sas_ata_device_link_abort()
+- Add Jack's Ack tags
+- Rebase
+
+John Garry (5):
+  scsi: pm8001: Modify task abort handling for SATA task
+  scsi: libsas: Add sas_ata_device_link_abort()
+  scsi: pm8001: Use sas_ata_device_link_abort() to handle NCQ errors
+  scsi: hisi_sas: Don't issue ATA softreset in hisi_sas_abort_task()
+  scsi: libsas: Make sas_{alloc, alloc_slow, free}_task() private
+
+Xingui Yang (1):
+  scsi: hisi_sas: Add SATA_DISK_ERR bit handling for v3 hw
+
+ drivers/scsi/hisi_sas/hisi_sas_main.c  |   5 +-
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |  22 ++-
+ drivers/scsi/libsas/sas_ata.c          |  11 ++
+ drivers/scsi/libsas/sas_init.c         |   3 -
+ drivers/scsi/libsas/sas_internal.h     |   4 +
+ drivers/scsi/pm8001/pm8001_hwi.c       | 194 +++++++------------------
+ drivers/scsi/pm8001/pm8001_sas.c       |  13 ++
+ drivers/scsi/pm8001/pm8001_sas.h       |   8 +-
+ drivers/scsi/pm8001/pm80xx_hwi.c       | 177 ++--------------------
+ include/scsi/libsas.h                  |   4 -
+ include/scsi/sas_ata.h                 |   5 +
+ 11 files changed, 133 insertions(+), 313 deletions(-)
+
 -- 
-2.17.1
+2.35.3
 
