@@ -2,130 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064E8C2BB41
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A00C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231220AbiHQHko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
+        id S232452AbiHQHlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233008AbiHQHkf (ORCPT
+        with ESMTP id S232401AbiHQHlg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:40:35 -0400
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1977C74B9B
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:40:34 -0700 (PDT)
-Received: by mail-vs1-f52.google.com with SMTP id d126so12381484vsd.13
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:40:34 -0700 (PDT)
+        Wed, 17 Aug 2022 03:41:36 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8991077E9B
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:41:35 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id k16so34987wrx.11
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:41:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=cfWAzcpM/c9VSIt9fGXv336fh+Ou5eQgnJm6z+Ssrss=;
+        b=l8hBfK1CUrSh99WjnOBrRRMw3g93SMcGZvMAXE0rk2bb15hle73e2eqHstSggSajGl
+         b0Wox5mTsbbkhiTABAS/qmBFYdwU1KSsQXOtyLnhb07mnPLAWwSrK0/Crqn66dU+rvRd
+         olxj7Om5HknowH3sqtlMFh0mqjprOssCF9+YVh9zpB9KeWIKWmur/9RYBeHZbJiHrRFP
+         mLgEP8UW9Lff0PsjCIbwHL8tTfBe2RmXOZAj7nasEeFJQhkwvpSRrWKn1/Ehgzu1/jWl
+         wm/EDz8KWUEWCUZyY9B7KM68i3FZAN9KVzyh4F1nmHWxKG4JmmTJJ5f6GQ9mEtxygB1Z
+         xljg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=EmmYkaITTcx08DyrSAVVZyC+XHKGDlOn1xahJdmIIc4=;
-        b=m0b3wUMISKj761W0KkkigKSH1N+y6AT+He7FM3Wp4Mi5hSje1UFRigHOI7Ed+E2FTs
-         lqtYHB9QQZ4bar3Xwp+u9WemMAepwq9OxJYudtC2w/lV+aTDNoafm9cJMUB4Uy7ebsKS
-         odTh3Odf0J4ADD3j6jRJgb45Z+BiLMPyqMIW2itLeiMZuyCfDZ9RWXz9/3/VDuw6TR6Y
-         Y6x+wYudoB5hAopC81ag0z2nohvuuGp4z8CDBHE4Ey5wch+0tx6YW/9CmH10PN9oN8LB
-         /2MDYAhdKKl/FuNS0e0PAtIHru8zJYkn/4JmsPfRn6pgf23N5hw6wye3j/t2FutinXBA
-         Pt7A==
-X-Gm-Message-State: ACgBeo0kRbFlYkJolSI+9wKFGPzzggvWOFMQDpLi25SpufQ7ZeRQOEH9
-        ygVMCewIrbAglNUk/PwAN1EkGRtSDpq9gA==
-X-Google-Smtp-Source: AA6agR4cX38V4P561M6HRPTNiQIJb8PMCj5LRhJZ0L1sy5LXHepMum6yZmkFLhkeooaf7kTe0afqYg==
-X-Received: by 2002:a05:6102:e59:b0:38a:a0e4:269a with SMTP id p25-20020a0561020e5900b0038aa0e4269amr10485132vst.30.1660722032922;
-        Wed, 17 Aug 2022 00:40:32 -0700 (PDT)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id g3-20020a056102244300b003885a2f7a36sm8241591vss.5.2022.08.17.00.40.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 00:40:32 -0700 (PDT)
-Received: by mail-ua1-f41.google.com with SMTP id 5so4883208uay.5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:40:32 -0700 (PDT)
-X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
- r1-20020a5b06c1000000b00669a7c34c33mr18128602ybq.543.1660721552542; Wed, 17
- Aug 2022 00:32:32 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=cfWAzcpM/c9VSIt9fGXv336fh+Ou5eQgnJm6z+Ssrss=;
+        b=QjJDZfWbWcAf8YI+qfjhiZEQq9ycfwvQJSPIZ8fsT2lPsoMRr0C1OezpK1zFgk03PJ
+         D5w9sf0ou179Ph4eTWUvk8yZ/XDWmtjs9cBy6YrwunLk7Wy8tE9yGwBt6X2apyG5vRmc
+         uITWLlGt7ht+tjB7i3sBa1eG17Mutt0Ss7TqUY56dQa8VBJwV6/jvmv2aWd4Q4E3TMHA
+         K3fzNuf15jQfosuCzaofXuZQxancRmEbdm7udfkMVw7cHLyZB10zIWM6VN+Q6PGJpw+9
+         0vREypD9S67FtZc/kkogMCLnGwcX+5PdbkZeMqxEI7FX81w3Mqyf5JHqDMpEruk9jVtJ
+         pZ0A==
+X-Gm-Message-State: ACgBeo1D55Zzhwo5PiaAgVDl6HjGdU+VhXcBoqx3nM8pwjoQV803HXcN
+        BHI2MZGuk5sC5bzi580STOY=
+X-Google-Smtp-Source: AA6agR65iobCpxR3N4kmCJGLt6GvCI024JXd/RuPlAjTGsq/VUPA2SqD+2rJyOy22jiCng61vm2/5w==
+X-Received: by 2002:a5d:64aa:0:b0:21e:be27:6dfb with SMTP id m10-20020a5d64aa000000b0021ebe276dfbmr13825274wrp.456.1660722094077;
+        Wed, 17 Aug 2022 00:41:34 -0700 (PDT)
+Received: from gmail.com (195-38-113-151.pool.digikabel.hu. [195.38.113.151])
+        by smtp.gmail.com with ESMTPSA id o12-20020a05600c4fcc00b003a5f2cc2f1dsm1176949wmq.42.2022.08.17.00.41.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 00:41:33 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Wed, 17 Aug 2022 09:41:31 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Ashok Raj <ashok.raj@intel.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        LKML Mailing List <linux-kernel@vger.kernel.org>,
+        X86-kernel <x86@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jacon Jun Pan <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v3 3/5] x86/microcode: Avoid any chance of MCE's during
+ microcode update
+Message-ID: <Yvybq+hYT4tG/yAg@gmail.com>
+References: <20220817051127.3323755-1-ashok.raj@intel.com>
+ <20220817051127.3323755-4-ashok.raj@intel.com>
 MIME-Version: 1.0
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
- <CAMuHMdWYo7M44uLNhTmJenGDreGALBZ9E48oyBDEeAuL=0h=dw@mail.gmail.com>
- <20220816132040.uwirtjm5yr6rdd3q@houat> <CAMuHMdWevP=3af=NneAJEDfOR+sz1thrQEhAQPNGrgitBtLjGA@mail.gmail.com>
- <20220816141116.5nuszmilqv2exdb3@houat> <CAMuHMdXq_xGPx46bdnUFGDiG4kcgdxtXaRGTucFd3TRq8353dg@mail.gmail.com>
- <20220816154956.pkdpxmmw27mia5ix@houat> <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
-In-Reply-To: <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 17 Aug 2022 09:32:20 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWGwPjpsNZhcNwtCgjt9qYfPUb6eaX2q3fE2n0n8uYwhg@mail.gmail.com>
-Message-ID: <CAMuHMdWGwPjpsNZhcNwtCgjt9qYfPUb6eaX2q3fE2n0n8uYwhg@mail.gmail.com>
-Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817051127.3323755-4-ashok.raj@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 9:31 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Tue, Aug 16, 2022 at 5:50 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> > On Tue, Aug 16, 2022 at 04:43:44PM +0200, Geert Uytterhoeven wrote:
-> > > > > > > Either you have to add them here (e.g. "hd720p50" and "hd720p60"), or
-> > > > > > > handle them through "@<refresh>".  The latter would impact "[PATCH v1
-> > > > > > > 09/35] drm/modes: Move named modes parsing to a separate function", as
-> > > > > > > currently a named mode and a refresh rate can't be specified both.
-> > > > > >
-> > > > > > I think the former would make more sense. It simplifies a bit the
-> > > > > > parser, and we're going to use a named mode anyway.
-> > > > > >
-> > > > > > > As "[PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
-> > > > > > > command-line option" uses a separate "tv_mode" option, and not the main
-> > > > > > > mode name, I think you want to add them here.
-> > > > > >
-> > > > > > It's a separate story I think, we could have a named mode hd720p50,
-> > > > > > which would be equivalent to 1280x720,tv_mode=hd720p
-> > > > >
-> > > > > So where's the field rate in "1280x720,tv_mode=hd720p"?
-> > > >
-> > > > Yeah, sorry I meant 1280x720@50,tv_mode=hd720p
-> > >
-> > > Above you said "I think the former would make more sense", so that
-> > > should be "1280x720,tv_mode=hd720p50"?
-> >
-> > No, 720p at 50Hz would be either hd720p50 or 1280x720@50,tv_mode=hd720p
-> > and 60Hz would be hd720p60 or 1280x720@60,tv_mode=hd720p
->
-> I disagree: hd720p50 and hd720p60 are different TV modes.
-> Treating them the same would be similar to treating unmodulated (e.g.
-> component) PAL-N (25 frames/s) and PAL-M (30 frames/s) the same.
 
-IIRC from my PS3 -Linux days, not all HD(-Ready) TVs supported both
-hd720p50 and hd720p60.
+* Ashok Raj <ashok.raj@intel.com> wrote:
 
-Gr{oetje,eeting}s,
+> When a microcode update is in progress, several instructions and MSR's can
+> be patched by the update. During the update in progress, touching any of
+> the resources being patched could result in unpredictable results. If
+> thread0 is doing the update and thread1 happens to get a MCE, the handler
+> might read an MSR that's being patched.
+> 
+> In order to have predictable behavior, to avoid this scenario we set the MCIP in
+> all threads. Since MCE's can't be nested, HW will automatically promote to
+> shutdown condition.
+> 
+> After the update is completed, MCIP flag is cleared. The system is going to
+> shutdown anyway, since the MCE could be a fatal error, or even recoverable
+> errors in kernel space are treated as unrecoverable.
+> 
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> ---
+>  arch/x86/include/asm/mce.h           |  4 ++++
+>  arch/x86/kernel/cpu/mce/core.c       |  9 +++++++++
+>  arch/x86/kernel/cpu/microcode/core.c | 11 +++++++++++
+>  3 files changed, 24 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/mce.h b/arch/x86/include/asm/mce.h
+> index cc73061e7255..2aef6120e23f 100644
+> --- a/arch/x86/include/asm/mce.h
+> +++ b/arch/x86/include/asm/mce.h
+> @@ -207,12 +207,16 @@ void mcheck_cpu_init(struct cpuinfo_x86 *c);
+>  void mcheck_cpu_clear(struct cpuinfo_x86 *c);
+>  int apei_smca_report_x86_error(struct cper_ia_proc_ctx *ctx_info,
+>  			       u64 lapic_id);
+> +extern void mce_set_mcip(void);
+> +extern void mce_clear_mcip(void);
+>  #else
+>  static inline int mcheck_init(void) { return 0; }
+>  static inline void mcheck_cpu_init(struct cpuinfo_x86 *c) {}
+>  static inline void mcheck_cpu_clear(struct cpuinfo_x86 *c) {}
+>  static inline int apei_smca_report_x86_error(struct cper_ia_proc_ctx *ctx_info,
+>  					     u64 lapic_id) { return -EINVAL; }
+> +static inline void mce_set_mcip(void) {}
+> +static inline void mce_clear_mcip(void) {}
+>  #endif
+>  
+>  void mce_setup(struct mce *m);
+> diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+> index 2c8ec5c71712..72b49d95bb3b 100644
+> --- a/arch/x86/kernel/cpu/mce/core.c
+> +++ b/arch/x86/kernel/cpu/mce/core.c
+> @@ -402,6 +402,15 @@ static noinstr void mce_wrmsrl(u32 msr, u64 v)
+>  		     : : "c" (msr), "a"(low), "d" (high) : "memory");
+>  }
+>  
+> +void mce_set_mcip(void)
+> +{
+> +	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0x1);
+> +}
+> +
+> +void mce_clear_mcip(void)
+> +{
+> +	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0x0);
+> +}
 
-                        Geert
+Instead of naming new APIs after how they are doing stuff, please name them 
+after *what* they are doing at the highest level: they disable/enable MCEs.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Ie. I'd suggest something like:
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+     mce_disable()
+     mce_enable()
+
+I'd also suggest to at minimum add a WARN_ON_ONCE() if MSR_IA32_MCG_STATUS 
+is already 1 when we disable it - because whoever wanted it disabled will 
+now be surprised by us enabling them again.
+
+> +	/*
+> +	 * Its dangerous to let MCE while microcode update is in progress.
+
+s/let MCE while
+ /let MCEs execute while
+
+> +	 * Its extremely rare and even if happens they are fatal errors.
+> +	 * But reading patched areas before the update is complete can be
+> +	 * leading to unpredictable results. Setting MCIP will guarantee
+
+s/can be leading to
+ /can lead to
+
+> +	 * the platform is taken to reset predictively.
+
+What does 'the platform is taken to reset predictively' mean?
+
+Did you mean 'predictibly'/'reliably'?
+
+> +	 */
+> +	mce_set_mcip();
+>  	/*
+>  	 * On an SMT system, it suffices to load the microcode on one sibling of
+>  	 * the core because the microcode engine is shared between the threads.
+> @@ -457,6 +466,7 @@ static int __reload_late(void *info)
+>  	 * loading attempts happen on multiple threads of an SMT core. See
+>  	 * below.
+>  	 */
+> +
+>  	if (cpumask_first(topology_sibling_cpumask(cpu)) == cpu)
+>  		apply_microcode_local(&err);
+>  	else
+
+Spurious newline added?
+
+Thanks,
+
+	Ingo
