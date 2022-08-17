@@ -2,73 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40125C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FF4C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240946AbiHQQOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
+        id S241067AbiHQQOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240995AbiHQQN4 (ORCPT
+        with ESMTP id S241037AbiHQQOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:13:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F1CA0317;
-        Wed, 17 Aug 2022 09:13:23 -0700 (PDT)
+        Wed, 17 Aug 2022 12:14:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54380A1D2B
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:13:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F116DB81E35;
-        Wed, 17 Aug 2022 16:13:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8B8AC433D6;
-        Wed, 17 Aug 2022 16:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660752799;
-        bh=kXQNLS4CwMPiKcaeiXiEF6+1NRLEt3k8IA9vim983Jk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JneOmSwu4MkndSGmEfBm3JLuf37aATz+WYX+zZsypRYYknRqAJ4SwUBJvm8MkDAZt
-         asHwG4f/EkA3SkrE6HqOooxFTzSZ7XBq+76dkp+GdcLGETSAqGRE9F14gk5IjU0qm1
-         C6MVy5Bw+GIaSlNoEbg+/INn01IpTXb4gWJcTOBweniK6YkExd1EHIAeqPJY3aw7Ju
-         wu38BHQawUkfJbpggxqxYzgMQzmlXQvChYrPyBqQiSGnzEcBrZJk2j6gg1xfeWiz5y
-         xldRSPkjfV16eSB2gWrLQqi+fHxVkPRv0Q6BH1yU3tdtPsugFqR3/BZuos3bK9I+2J
-         nHlJ4M7fGLOhA==
-From:   guoren@kernel.org
-To:     xianting.tian@linux.alibaba.com, palmer@dabbelt.com,
-        heiko@sntech.de, guoren@kernel.org, conor.dooley@microchip.com
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, liaochang1@huawei.com,
-        mick@ics.forth.gr, jszhang@kernel.org,
-        Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V2 0/2] riscv: kexec: Fixup crash_save percpu and machine_kexec_mask_interrupts
-Date:   Wed, 17 Aug 2022 12:12:56 -0400
-Message-Id: <20220817161258.748836-1-guoren@kernel.org>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B74A615B5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26E96C433C1;
+        Wed, 17 Aug 2022 16:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1660752805;
+        bh=UO87XP+ReSVdtQ6h8DT0P8BuiG4W3/3FE7FMrL/Zy+Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IdqD6Qz8QH3d2NEbROstkxmEr4nGM4RAHuIsbVgLlZdNX5n015TUD2yOBaHycElf3
+         4gb8E3lbfmJDdLObaeAQnEa2aP+kIJk9Ck9wmUt0ZlUJbeJ5JEdTahjMFXYESc7Qlm
+         2STO6uywM50nmhw0zkfxm04rH8717OintFdKxfOk=
+Date:   Wed, 17 Aug 2022 09:13:24 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Kassey Li <quic_yingangl@quicinc.com>
+Cc:     vbabka@kernel.org, minchan@kernel.org, vbabka@suse.cz,
+        iamjoonsoo.kim@lge.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH v8] mm/page_owner.c: add llseek for page_owner
+Message-Id: <20220817091324.59afdb143b6330974f4e9e4c@linux-foundation.org>
+In-Reply-To: <20220816020748.18040-1-quic_yingangl@quicinc.com>
+References: <20220816020748.18040-1-quic_yingangl@quicinc.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Tue, 16 Aug 2022 10:07:48 +0800 Kassey Li <quic_yingangl@quicinc.com> wrote:
 
-Current riscv kexec can't crash_save percpu states and disable
-interrupts properly. The patch series fix them, make kexec work correct.
+> There is usage to dump a given cma region page_owner
+> instead of all page's.
 
-Changes in v2:
- - Add Fixes tags
- - Remove extern from bool smp_crash_stop_failed(void)
+So... dump all the pages and then parse out the ones you're interested in?
 
-v1: https://lore.kernel.org/linux-riscv/20220816012701.561435-1-guoren@kernel.org/
-
-Guo Ren (2):
-  riscv: kexec: Disable all interrupts in kexec crash path
-  riscv: kexec: Fixup crash_smp_send_stop with percpu crash_save_cpu
-
- arch/riscv/include/asm/smp.h      |  6 +++
- arch/riscv/kernel/machine_kexec.c | 44 +++++++++++----
- arch/riscv/kernel/smp.c           | 89 ++++++++++++++++++++++++++++++-
- 3 files changed, 126 insertions(+), 13 deletions(-)
-
--- 
-2.36.1
+Presumably this is too slow and presumably you have a use case in which
+this operation needs speeding up?  If so, please fully describe all of
+this in the changelog.  If not then please fully still describe the
+reasons for making this change.
 
