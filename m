@@ -2,78 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D20FC32773
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 180A6C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238419AbiHQDAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 23:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39246 "EHLO
+        id S238444AbiHQDBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 23:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbiHQDAS (ORCPT
+        with ESMTP id S238382AbiHQDBT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 23:00:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691EA97502;
-        Tue, 16 Aug 2022 20:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F205961052;
-        Wed, 17 Aug 2022 03:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C37EC433B5;
-        Wed, 17 Aug 2022 03:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660705216;
-        bh=2VvHPIodg8nw507llDtxxCr8pEw1EcE5E0uRtB2pSvE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EYUMzFT9mvxbYdPDFbLVmHqj/E+YJ34BCWtoEGOR531NnP5Mak1ZTvwWL8gQ4VZhp
-         vjenjvcWp1DKHi17Di6F8luxLeQHFXRaUpsN4FyqiImONIy/Ti8JOp/qfEBX0vasRc
-         u9YzK6ize+vwxv/08YVtxOpzIoVca2FduJK2VCBr+0xMZ226wHkmdjxnt6MtY7WdRU
-         7vWbZGS2totlKGTIwLBW6MT/9FtDBJr+RacTwOlu2jFPNq+yk0Qu84Fuj8+6qMrgs2
-         3iNe7YHWVDc8fiOYFFljNjB+Or7uDfoXS8uDmlxnk6dmGrQu9cEdLz5PmpMcWd+9Tv
-         eIjIDPIlZzQpw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 303D7E2A053;
-        Wed, 17 Aug 2022 03:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 16 Aug 2022 23:01:19 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 551139A949;
+        Tue, 16 Aug 2022 20:01:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=sLR7L
+        vrKYMgqFhsvENwXYBmFgc0bVIRbOis3wqnwhzw=; b=E9pFZYZXOu/FCV4FWOSRF
+        3M97U4cXU3qNTIFq5DwXnqTCyN7uhmnzUpIgx7KURZtXf6DIPH1YPyf+TXac6Iut
+        YbsQF6ZPwalkKkpTHdbtB8jTxnSz9FtB3vG6EexEN0zsCuyyOT2U1EqtkrADGV7u
+        RuxIfpSCtONZTsdUm+BSYU=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp2 (Coremail) with SMTP id GtxpCgD3swajWfximOSZWA--.17366S2;
+        Wed, 17 Aug 2022 10:59:49 +0800 (CST)
+From:   Jiangshan Yi <13667453960@163.com>
+To:     tytso@mit.edu, adilger.kernel@dilger.ca
+Cc:     lczerner@redhat.com, lkp@intel.com, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiangshan Yi <yijiangshan@kylinos.cn>
+Subject: [PATCH v4] fs/ext4: replace ternary operator with min()/max() and min_t()
+Date:   Wed, 17 Aug 2022 10:59:28 +0800
+Message-Id: <20220817025928.612851-1-13667453960@163.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: sched: delete unused input parameter in
- qdisc_create
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166070521619.25002.11604488986992513415.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Aug 2022 03:00:16 +0000
-References: <20220815061023.51318-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220815061023.51318-1-shaozhengchao@huawei.com>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
+X-CM-TRANSID: GtxpCgD3swajWfximOSZWA--.17366S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxGFWxCw4UCw1rZw17CF17Jrb_yoW5Aw1UpF
+        n3CF18GFWru348uayIgr4UZw15W3WkG3y7XryY9r1UWFWqqFyxtrn8Kr1jvF1FgrWkZ34j
+        qFW0kr1UJwnIkrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jU_-PUUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/1tbiyAVg+1p7HaIJdgAAs3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Jiangshan Yi <yijiangshan@kylinos.cn>
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Fix the following coccicheck warning:
 
-On Mon, 15 Aug 2022 14:10:23 +0800 you wrote:
-> The input parameter p is unused in qdisc_create. Delete it.
-> 
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
->  net/sched/sch_api.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+fs/ext4/inline.c:183: WARNING opportunity for min().
+fs/ext4/extents.c:2631: WARNING opportunity for max().
+fs/ext4/extents.c:2632: WARNING opportunity for min().
+fs/ext4/extents.c:5559: WARNING opportunity for max().
+fs/ext4/super.c:6908: WARNING opportunity for min().
 
-Here is the summary with links:
-  - [net-next] net: sched: delete unused input parameter in qdisc_create
-    https://git.kernel.org/netdev/net-next/c/cfc111d5391d
+min()/max() and min_t() macro is defined in include/linux/minmax.h.
+It avoids multiple evaluations of the arguments when non-constant and
+performs strict type-checking.
 
-You are awesome, thank you!
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Lukas Czerner <lczerner@redhat.com>
+Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+---
+ fs/ext4/extents.c | 8 +++-----
+ fs/ext4/inline.c  | 3 +--
+ fs/ext4/super.c   | 3 +--
+ 3 files changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+index c148bb97b527..37321aecd878 100644
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -2628,9 +2628,8 @@ ext4_ext_rm_leaf(handle_t *handle, struct inode *inode,
+ 			  unwritten, ex_ee_len);
+ 		path[depth].p_ext = ex;
+ 
+-		a = ex_ee_block > start ? ex_ee_block : start;
+-		b = ex_ee_block+ex_ee_len - 1 < end ?
+-			ex_ee_block+ex_ee_len - 1 : end;
++		a = max(ex_ee_block, start);
++		b = min(ex_ee_block + ex_ee_len - 1, end);
+ 
+ 		ext_debug(inode, "  border %u:%u\n", a, b);
+ 
+@@ -5557,8 +5556,7 @@ static int ext4_insert_range(struct file *file, loff_t offset, loff_t len)
+ 	 * ee_start_lblk to shift extents
+ 	 */
+ 	ret = ext4_ext_shift_extents(inode, handle,
+-		ee_start_lblk > offset_lblk ? ee_start_lblk : offset_lblk,
+-		len_lblk, SHIFT_RIGHT);
++		max(ee_start_lblk, offset_lblk), len_lblk, SHIFT_RIGHT);
+ 
+ 	up_write(&EXT4_I(inode)->i_data_sem);
+ 	if (IS_SYNC(inode))
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index a4fbe825694b..2b42ececa46d 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -180,8 +180,7 @@ static int ext4_read_inline_data(struct inode *inode, void *buffer,
+ 
+ 	BUG_ON(len > EXT4_I(inode)->i_inline_size);
+ 
+-	cp_len = len < EXT4_MIN_INLINE_DATA_SIZE ?
+-			len : EXT4_MIN_INLINE_DATA_SIZE;
++	cp_len = min_t(unsigned int, len, EXT4_MIN_INLINE_DATA_SIZE);
+ 
+ 	raw_inode = ext4_raw_inode(iloc);
+ 	memcpy(buffer, (void *)(raw_inode->i_block), cp_len);
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 9a66abcca1a8..55649efc3eec 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6905,8 +6905,7 @@ static ssize_t ext4_quota_read(struct super_block *sb, int type, char *data,
+ 		len = i_size-off;
+ 	toread = len;
+ 	while (toread > 0) {
+-		tocopy = sb->s_blocksize - offset < toread ?
+-				sb->s_blocksize - offset : toread;
++		tocopy = min_t(unsigned long, sb->s_blocksize - offset, toread);
+ 		bh = ext4_bread(NULL, inode, blk, 0);
+ 		if (IS_ERR(bh))
+ 			return PTR_ERR(bh);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.27.0
 
+
+No virus found
+		Checked by Hillstone Network AntiVirus
 
