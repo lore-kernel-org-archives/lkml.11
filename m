@@ -2,133 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5776C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D20FC32773
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237611AbiHQC7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 22:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38542 "EHLO
+        id S238419AbiHQDAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 23:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiHQC7t (ORCPT
+        with ESMTP id S238055AbiHQDAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 22:59:49 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9B29675B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:59:48 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id u133so10968822pfc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:59:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc;
-        bh=/tO4DCm3u+0w3PVCkx0WyWuvz7PYFu5oe9lMYDeyNbw=;
-        b=NyIpz72DIbP7xVNP6HW4NhNaME+eghGBdleag4Y6re9LujRPjzRxwNUk8xAIsgzoYH
-         H7Z1iYadfvRv7oicq2E/hUUmXDm90hf6a/+PNjoZ+9BYHj5ZEuNK/LR4MkhUR8eaDCiQ
-         o66HO8YymT9y/X/PFc1bUL6mCk5HCB0xm/F/lxzv1XnLDGv59zzaMLtLQLT+EbNdLyER
-         y+ZvhtxWbevjSV/15sajJ6ixVlPNC46sfbAF9pBeBvURpxbTqTHztk0h9x7bsZL0/vQh
-         RW1T2cyRm9agwl+hbj9CI/WwLNG+UDrFPl/j26rA4/ui4bUMeaSp3fl/pD1ZqnksFmaH
-         WP3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc;
-        bh=/tO4DCm3u+0w3PVCkx0WyWuvz7PYFu5oe9lMYDeyNbw=;
-        b=xyDNnnu5lmaF2xQMG0ZU/Hbz9evf4PlZgBDJRoMkfCkjEr3YHqvwiib2jajq4NgMFu
-         gsWK316zUQccsmFERrsR2xnrv042DkZQs/6VrlDRiCM1LyB4aGYxI3Qjlp7/zq8Wu2xW
-         zgxbmoy9OjCvDCDQVMe0P3PyKluTXbQMzFWfOr3cQOEgcZzTpbwsg0RY5U5atfUlEzkf
-         gw+eyMAHuoLwGMGfUXXg6r/hpTE+doCjoDiZrtJKcTlSgOgHsVr05yTvWv7zdqw510qw
-         wgPH6/f8C3LNZBxGN8EG1owkGBS3IVOMdmg/ORJCxPt3gx8+ADHDnmBZlwOXQg11fCXs
-         TkXA==
-X-Gm-Message-State: ACgBeo0iaS0OqajNXFHIGJ9TvFMqNVSc/ktoah7xsI/kjOJuOC0eLpHd
-        horK+DlqklS1OCe5MQ0B/3I=
-X-Google-Smtp-Source: AA6agR4nUscc8bnOCJT3ZxVy5m1K/hVbp4yo7ytPZPRRQp1Xt43/bBv312f9Q2ycjDJlssKfTNPwOg==
-X-Received: by 2002:a05:6a00:16cb:b0:52b:cc59:9468 with SMTP id l11-20020a056a0016cb00b0052bcc599468mr23397196pfc.46.1660705187829;
-        Tue, 16 Aug 2022 19:59:47 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id z7-20020aa79587000000b00528c22fbb45sm9472021pfj.141.2022.08.16.19.59.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 19:59:47 -0700 (PDT)
-Message-ID: <62fc59a3.a70a0220.b9a52.01f3@mx.google.com>
-X-Google-Original-Message-ID: <20220817025945.GA84631@cgel.zte@gmail.com>
-Date:   Wed, 17 Aug 2022 02:59:45 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     akpm@linux-foundation.org, tj@kernel.org, axboe@kernel.dk,
-        vdavydov.dev@gmail.com, ran.xiaokai@zte.com.cn, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, cgel <cgel@zte.com.cn>,
-        Peter Zijlstra <peterz@infradead.org>, yang.yang29@zte.com.cn
-Subject: Re: [RFC PATCH 1/2] psi: introduce memory.pressure.stat
-References: <20220801004205.1593100-1-ran.xiaokai@zte.com.cn>
- <Yup+W/EFzkfSqRnW@cmpxchg.org>
+        Tue, 16 Aug 2022 23:00:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691EA97502;
+        Tue, 16 Aug 2022 20:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F205961052;
+        Wed, 17 Aug 2022 03:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C37EC433B5;
+        Wed, 17 Aug 2022 03:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660705216;
+        bh=2VvHPIodg8nw507llDtxxCr8pEw1EcE5E0uRtB2pSvE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EYUMzFT9mvxbYdPDFbLVmHqj/E+YJ34BCWtoEGOR531NnP5Mak1ZTvwWL8gQ4VZhp
+         vjenjvcWp1DKHi17Di6F8luxLeQHFXRaUpsN4FyqiImONIy/Ti8JOp/qfEBX0vasRc
+         u9YzK6ize+vwxv/08YVtxOpzIoVca2FduJK2VCBr+0xMZ226wHkmdjxnt6MtY7WdRU
+         7vWbZGS2totlKGTIwLBW6MT/9FtDBJr+RacTwOlu2jFPNq+yk0Qu84Fuj8+6qMrgs2
+         3iNe7YHWVDc8fiOYFFljNjB+Or7uDfoXS8uDmlxnk6dmGrQu9cEdLz5PmpMcWd+9Tv
+         eIjIDPIlZzQpw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 303D7E2A053;
+        Wed, 17 Aug 2022 03:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yup+W/EFzkfSqRnW@cmpxchg.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: sched: delete unused input parameter in
+ qdisc_create
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166070521619.25002.11604488986992513415.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Aug 2022 03:00:16 +0000
+References: <20220815061023.51318-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220815061023.51318-1-shaozhengchao@huawei.com>
+To:     shaozhengchao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 09:55:39AM -0400, Johannes Weiner wrote:
-> On Mon, Aug 01, 2022 at 12:42:04AM +0000, cgel.zte@gmail.com wrote:
-> > From: cgel <cgel@zte.com.cn>
-> > 
-> > For now psi memory pressure account for all the mem stall in the
-> > system, And didnot provide a detailed information why the stall
-> > happens. This patch introduce a cgroupu knob memory.pressure.stat,
-> > it tells the detailed stall information of all memory events and it
-> > format and the corresponding proc interface.
-> > 
-> > for the cgroup, add memory.pressure.stat and it shows:
-> > kswapd: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> > direct reclaim: avg10=0.00 avg60=0.00 avg300=0.12 total=42356
-> > kcompacted: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> > direct compact: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> > cgroup reclaim: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> > workingset thrashing:   avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> > 
-> > for the system wide, a proc file introduced as pressure/memory_stat
-> > and the format is the same as the cgroup interface.
-> > 
-> > With this detaled information, for example, if the system is stalled
-> > because of kcompacted, compaction_proactiveness can be promoted so
-> > pro-compaction can be involved earlier.
-> > 
-> > Signed-off-by: cgel <cgel@zte.com.cn>
-> 
-> > @@ -64,9 +91,11 @@ struct psi_group_cpu {
-> >  
-> >  	/* Aggregate pressure state derived from the tasks */
-> >  	u32 state_mask;
-> > +	u32 state_memstall;
-> >  
-> >  	/* Period time sampling buckets for each state of interest (ns) */
-> >  	u32 times[NR_PSI_STATES];
-> > +	u32 times_mem[PSI_MEM_STATES];
-> 
-> This doubles the psi cache footprint on every context switch, wakeup,
-> sleep, etc. in the scheduler. You're also adding more branches to
-> those same paths. It'll measurably affect everybody who is using psi.
-> 
-> Yet, in the years of using psi in production myself, I've never felt
-> the need for what this patch provides. There are event counters for
-> everything that contributes to pressure, and it's never been hard to
-> rootcause spikes. There are also things like bpftrace that let you
-> identify who is stalling for how long in order to do one-off tuning
-> and systems introspection.
-> 
-We think this patch is not for rootcause spikes, it's for automatic optimize
-memory besides oomd, especially for sysctl adjustment. For example if we see
-much pressure of direct reclaim the automatic optimize program might turn up
-watermark_scale_factor.
-The base idea is that this patch gives user a brief UI to know what kind of
-memory pressure the system is suffering, and to optimize the system in a fine
-grain. It could provide data for user to adjust watermark_boost_factor,
-extfrag_threshold, compaction_proactiveness,transparent_hugepage/defrag,
-swappiness, vfs_cache_pressure, madvise(), which may not easy for to do
-before.
+Hello:
 
-It's not easy for automatic optimize program to use tools likes bpftrace or
-ftrace to do this.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-While we may use CONFIG_PSI_XX or bootparam to turn on/off this patch to avoid
-additional footprint for user who not need this.
+On Mon, 15 Aug 2022 14:10:23 +0800 you wrote:
+> The input parameter p is unused in qdisc_create. Delete it.
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  net/sched/sch_api.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+
+Here is the summary with links:
+  - [net-next] net: sched: delete unused input parameter in qdisc_create
+    https://git.kernel.org/netdev/net-next/c/cfc111d5391d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
