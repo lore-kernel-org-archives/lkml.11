@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D158C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1671C32771
 	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239855AbiHQNP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        id S239873AbiHQNPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239061AbiHQNOm (ORCPT
+        with ESMTP id S239781AbiHQNOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:14:42 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A064F693
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:14:36 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id z6so18949485lfu.9
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:14:36 -0700 (PDT)
+        Wed, 17 Aug 2022 09:14:50 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C3A51A0C
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:14:38 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id bx38so13501538ljb.10
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:14:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=xXYhGBIEDADNPaF7FntsO5+CaYiCK5EMt2dAgswIP/E=;
-        b=rfesmkR/Z2XkW9U5Ai2BIS8LVP73UN+425tKrx0cDTW1zqLqT2gXDM078/lW9QV2yI
-         sQG6qAJgYSZUG457LxgdNYYIuMkNQq2Za3JQy/YETZEYWpLvm37fPk9RtQlnG4X0V0dK
-         TW066pA7XnpEPtQ1VV1538t+W8+9k4l5WpTNDQpglqG1FRuGBVvBFp43qjaB5IH8sBf7
-         /JQ9csPnIN4J6v5N5ljLmSk3hCycOvauDqM6gBbkoyOqFswbH9BgtcKwiiWVJ1VwyGT3
-         KUGbmquXwocSJD4TjlGNAOvzw4v7tG5i7B5vjjJoCY+NAtYpaFy0pSVR5FvRuRxWlByI
-         tFiQ==
+        bh=uXLJl3ZPkfkVvmcRHOHOBnFdkGCya/Ew5ljctJGYsvo=;
+        b=LThxqa07rs/MPV48N0w8kXoiodIcyMBUsQNqxCs/gH3PFDrVGh4PWvL+NXQ+nCb57O
+         wAz+p0MPwvBqAaSenCoapEcgKSxAK4WxYxuOY8y7fN5OQ/on66T8Pn0htKijnE8VlOGk
+         t92RgTzAKkzFe9Mf7ynXFlzG8NlkoNhFLWb3mtkbw3jK4KQiqRiC2bbnWGiHNXGgZ1UV
+         hy3cRXR3fILbUgxgXio6ZFXJz/lf3m6FYOqW9wHLkTA5PON0V19ZEyj1HIomI5hx0vpT
+         7af9bPe3+VsZ6kxSFqSUmdDjv9Ive3oZ1ezAvw9PSQkJNqngxlD3PEvXXkMTgq5WGR7y
+         Sd6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=xXYhGBIEDADNPaF7FntsO5+CaYiCK5EMt2dAgswIP/E=;
-        b=LaaGZ9zpj62xUqABPfBr6HNRUQaM6pFgBOXC6+P4fa0xnqndpmCzbWl4DIO+kZYP/x
-         /WMNV8lXcu6gepAriktjL8KRLZ9nx7j5a6ifrgcTCEHzSC/johd4GslUTDwArsTlXjBc
-         XLC87wfRPWvSoeeQFCLp5xTiCvKQkV7XRpT8F5lMANCGEzSZSDI4/YuxWSTWVpBsmC8I
-         sNzmHKbcoTzrMo+5qf9Lx2NzK0XlP8JHRIeBxkiL8VlRoRQG+U7Urjj4qB8uQxwYG09X
-         U+MZudKSo3AJ2f6VjlKhwXToIBAr+q7EeZQMjkmlYSKawRwUD8uLiCp5P7xI0ZYthhVH
-         HXOg==
-X-Gm-Message-State: ACgBeo2l+MYtezPizbNQLG5GdtGfXLz+HUSHlwpHwei3sEjKs9E/l9yY
-        fY/tvLG0misqbe2Mw+lzLeUodg==
-X-Google-Smtp-Source: AA6agR6PDcGKSl5yiOIktlWZ0jUH6eEYd3ChNN0RAz7S7jfXE61WPqYwgJ808qhJjFJUkBaxmtwcow==
-X-Received: by 2002:a05:6512:2611:b0:478:da8f:e2d8 with SMTP id bt17-20020a056512261100b00478da8fe2d8mr8444745lfb.460.1660742074843;
-        Wed, 17 Aug 2022 06:14:34 -0700 (PDT)
+        bh=uXLJl3ZPkfkVvmcRHOHOBnFdkGCya/Ew5ljctJGYsvo=;
+        b=dj+HDbw7ajQeybR7bbfSW4GEMZSf4KK1tJf5yOANpbFSiAahmUlhRUKAaWoS86loP5
+         DMxhniAQnezN0lTd+If0QZVJgUgR3mttgNevg7sOFi2j14VBysUliE647e6sI77Op/14
+         gIE8wEnARlqT0qAXahAkcHsISmEJ5GhOP/THz9HAf2lVZJgonTA+xqstXNnv2QC7kOO1
+         bMNTRTQ+tUa9xBhbBibd1mPGUUgrULq7PYEtJ1uPrlKArI7aET6QwIXBiXe3SYcSHxWm
+         RRFnyBorkeGJNMBa/s16+AFFnEUKyj2Yz/DEzaJUh/8QsS8uxufUogQwKHYUheonqYt9
+         eW2w==
+X-Gm-Message-State: ACgBeo0XRZ+Dd/XfJAXTDyy9UkuTFieXy/XFlxf0DgqhoLhW12rPmYs3
+        UETftIY6PYQ5SZ8io+WILBnNXg==
+X-Google-Smtp-Source: AA6agR4jh/QK3ONB9rVZSBJuYOsHWZBBWf+scOCDnCRRh0UN+NM4NdTkZ2qEXGMavvmupaishF7GOw==
+X-Received: by 2002:a05:651c:2212:b0:25e:cc38:a1dc with SMTP id y18-20020a05651c221200b0025ecc38a1dcmr8545043ljq.359.1660742077891;
+        Wed, 17 Aug 2022 06:14:37 -0700 (PDT)
 Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id k1-20020a2ea261000000b0026182f31aa0sm1411307ljm.1.2022.08.17.06.14.33
+        by smtp.gmail.com with ESMTPSA id k1-20020a2ea261000000b0026182f31aa0sm1411307ljm.1.2022.08.17.06.14.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 06:14:34 -0700 (PDT)
+        Wed, 17 Aug 2022 06:14:37 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,9 +60,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH 09/12] ARM: dts: qcom: msm8974: split TCSR halt regs out of mutex
-Date:   Wed, 17 Aug 2022 16:14:12 +0300
-Message-Id: <20220817131415.714340-10-krzysztof.kozlowski@linaro.org>
+Subject: [RFT PATCH 11/12] ARM: dts: qcom: apq8084: switch TCSR mutex to MMIO
+Date:   Wed, 17 Aug 2022 16:14:14 +0300
+Message-Id: <20220817131415.714340-12-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220817131415.714340-1-krzysztof.kozlowski@linaro.org>
 References: <20220817131415.714340-1-krzysztof.kozlowski@linaro.org>
@@ -72,130 +72,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TCSR halt regs are next to TCSR mutex, so before converting the TCSR
-mutex into device with address space, we need to split the halt regs to
-its own syscon device.  This also describes more accurately the devices
-and their IO address space.
+The TCSR mutex bindings allow device to be described only with address
+space (so it uses MMIO, not syscon regmap).  This seems reasonable as
+TCSR mutex is actually a dedicated IO address space and it also fixes DT
+schema checks:
+
+  qcom-apq8084-mtp.dtb: hwlock: 'reg' is a required property
+  qcom-apq8084-mtp.dtb: hwlock: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/qcom-apq8074-dragonboard.dts        |  2 +-
- .../boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts   |  2 +-
- arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi |  2 +-
- arch/arm/boot/dts/qcom-msm8974.dtsi                   | 11 ++++++++---
- arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts   |  2 +-
- arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts    |  2 +-
- .../qcom-msm8974pro-sony-xperia-shinano-castor.dts    |  2 +-
- 7 files changed, 14 insertions(+), 9 deletions(-)
+ arch/arm/boot/dts/qcom-apq8084.dtsi | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
-index 3051a861ff0c..2709a99e5c4c 100644
---- a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
-+++ b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
-@@ -38,7 +38,7 @@ &otg {
- 	status = "okay";
+diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
+index 72f9255855a1..5e07255fe5ea 100644
+--- a/arch/arm/boot/dts/qcom-apq8084.dtsi
++++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
+@@ -383,14 +383,9 @@ gcc: clock-controller@fc400000 {
+ 			reg = <0xfc400000 0x4000>;
+ 		};
  
- 	phys = <&usb_hs2_phy>;
--	phy-select = <&tcsr 0xb000 1>;
-+	phy-select = <&tcsr_2 0xb000 1>;
- 	extcon = <&smbb>, <&usb_id>;
- 	vbus-supply = <&chg_otg>;
- 	hnp-disable;
-diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-index ec5d340562b6..5fd94dd6a427 100644
---- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-@@ -251,7 +251,7 @@ &otg {
- 	status = "okay";
- 
- 	phys = <&usb_hs1_phy>;
--	phy-select = <&tcsr 0xb000 0>;
-+	phy-select = <&tcsr_2 0xb000 0>;
- 
- 	extcon = <&charger>, <&usb_id>;
- 	vbus-supply = <&usb_otg_vbus>;
-diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-index 5a70683d9103..118b231f3137 100644
---- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-@@ -136,7 +136,7 @@ &otg {
- 	status = "okay";
- 
- 	phys = <&usb_hs1_phy>;
--	phy-select = <&tcsr 0xb000 0>;
-+	phy-select = <&tcsr_2 0xb000 0>;
- 	extcon = <&smbb>, <&usb_id>;
- 	vbus-supply = <&chg_otg>;
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 0a9f252c88a7..4b602410d72a 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1189,7 +1189,7 @@ remoteproc_mss: remoteproc@fc880000 {
- 			resets = <&gcc GCC_MSS_RESTART>;
- 			reset-names = "mss_restart";
- 
--			qcom,halt-regs = <&tcsr_mutex_block 0x1180 0x1200 0x1280>;
-+			qcom,halt-regs = <&tcsr_1 0x180 0x200 0x280>;
- 
- 			qcom,smem-states = <&modem_smp2p_out 0>;
- 			qcom,smem-state-names = "stop";
-@@ -1230,10 +1230,15 @@ smd-edge {
- 
- 		tcsr_mutex_block: syscon@fd484000 {
- 			compatible = "syscon";
+-		tcsr_mutex_regs: syscon@fd484000 {
+-			compatible = "syscon";
 -			reg = <0xfd484000 0x2000>;
+-		};
+-
+-		tcsr_mutex: hwlock {
+-			compatible = "qcom,tcsr-mutex";
+-			syscon = <&tcsr_mutex_regs 0 0x80>;
++		tcsr_mutex: hwlock@fd484000 {
++			compatible = "qcom,apq8084-tcsr-mutex", "qcom,tcsr-mutex";
 +			reg = <0xfd484000 0x1000>;
+ 			#hwlock-cells = <1>;
  		};
- 
--		tcsr: syscon@fd4a0000 {
-+		tcsr_1: syscon@fd485000 {
-+			compatible = "qcom,msm8974-tcsr", "syscon";
-+			reg = <0xfd485000 0x1000>;
-+		};
-+
-+		tcsr_2: syscon@fd4a0000 {
- 			compatible = "qcom,msm8974-tcsr", "syscon";
- 			reg = <0xfd4a0000 0x10000>;
- 		};
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
-index ff6e0066768b..c264d17e0953 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
-@@ -89,7 +89,7 @@ &otg {
- 	status = "okay";
- 
- 	phys = <&usb_hs1_phy>;
--	phy-select = <&tcsr 0xb000 0>;
-+	phy-select = <&tcsr_2 0xb000 0>;
- 	extcon = <&smbb>, <&usb_id>;
- 	vbus-supply = <&chg_otg>;
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
-index 983e10c3d863..2691a6dbbb8b 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
-@@ -379,7 +379,7 @@ &otg {
- 	status = "okay";
- 
- 	phys = <&usb_hs1_phy>;
--	phy-select = <&tcsr 0xb000 0>;
-+	phy-select = <&tcsr_2 0xb000 0>;
- 
- 	hnp-disable;
- 	srp-disable;
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-index 3f45f5c5d37b..d2bef3896c82 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-@@ -216,7 +216,7 @@ &otg {
- 	status = "okay";
- 
- 	phys = <&usb_hs1_phy>;
--	phy-select = <&tcsr 0xb000 0>;
-+	phy-select = <&tcsr_2 0xb000 0>;
- 	extcon = <&smbb>, <&usb_id>;
- 	vbus-supply = <&chg_otg>;
  
 -- 
 2.34.1
