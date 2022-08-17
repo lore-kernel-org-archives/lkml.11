@@ -2,158 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9996C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B149FC2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237202AbiHQUsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42408 "EHLO
+        id S238368AbiHQUxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiHQUsm (ORCPT
+        with ESMTP id S231736AbiHQUxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:48:42 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CF7A50F8
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:48:40 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id c39so4139521edf.0
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:48:40 -0700 (PDT)
+        Wed, 17 Aug 2022 16:53:40 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F7D7B1FE
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:53:40 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so3050879pjf.2
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:53:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=+Cti20S/WWpY7aspWrYZ4xE3P/s0O+PHZV22YRy/CUE=;
-        b=RUY2d9i5bIklJBMGlj1kJOw47zUbEvxdY1V+2zngZZk1/gVeOIgKDiz2urgv4l6Cpa
-         4SgbFJshe0t5ZmI808R5aNZoUHqzHaqN3nRZzuaTWbgKyuf30NRCp7q12AdrmxbnSCT3
-         Hum1AaJKsg24YJxa3NlN8SEYHrrLmnQp1xJAM=
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=copKnaXkpj/PrdXoSUh50plMYt2cxJb8zNQUI1sfapA=;
+        b=dCyKrDnHffHMPE6zwy+Q7dZ4Ubotg1BDm/dOjNXU/xI1BiYUerO9CRhZwdkqtfaDm7
+         XuOuyklex7q/EQ97Mr53rpTjNcyZaxALRxHbZcvyVcZJyeUILr2vBugIjYSrPAcrQ3o1
+         6d97ejy4FAbxM5nlOxJ8ps6SvtF6vhR9EOXwpY3XG84CHpL+XhWhu8InRN4uq21dG3K8
+         X+sMP2EcHvZmKNr9B+RdIlOLpqnfoF7HH6WfoFJU3ObgkKBLPYng7+/Uh9qAtDk4MBzo
+         1NOo+3PS4V1QvalfN62tSNBgtWn3rvXRcZ22j/f9IGuH/Q09QcCFQBDZKkhlsx6fKPCt
+         lkoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+Cti20S/WWpY7aspWrYZ4xE3P/s0O+PHZV22YRy/CUE=;
-        b=vcqtl1H/7f74Q+ypcx2XV1/V/QzWi9hrQK3U/EcoAIs7Y6A40l4P+LQ/zJa1rNERxZ
-         BCZpQwOMnQkAxcBUDUh7Hr+14eImHrJ8/QoDArW4+55vJQeRyXWAf1pZmIje8A+Daw89
-         AycuskVqIZFEEm6xndz5ZgtUffJHBh8go2hySFvtUwLRYItcuE+I0dE9hgmDhDa8p3TI
-         xAytQsLgjIWEMDvRcV4pWRWmXt2WksIrPLLNqFCOMuWxnTyGVsRUMBse5cawAyKUgiPE
-         tIrpUJKP+kMfpqALTZadNC894qmEhxTIYaAvPLGwKNs2fp1saDFL5S6iArPM40nhHXw6
-         Y5Kw==
-X-Gm-Message-State: ACgBeo2VTSvSTre4JfOFaFUJH64c6r9bY2HYndYFdkqCNhnk62CYi2q2
-        wlSaSmnqp9Vi99dfYVDQuXgOjGkui8KOl/uq
-X-Google-Smtp-Source: AA6agR6GMfRcLA5TRI5TWMgcz8dnidDsnYaMYcCMqgWFvEnaKgR8VKOEKziQlffCWhtfV7qAChE3ew==
-X-Received: by 2002:a05:6402:510c:b0:43e:305c:a4d1 with SMTP id m12-20020a056402510c00b0043e305ca4d1mr23775977edd.35.1660769318676;
-        Wed, 17 Aug 2022 13:48:38 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id op9-20020a170906bce900b0072b810897desm7242568ejb.105.2022.08.17.13.48.37
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 13:48:37 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id r16so8288857wrm.6
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:48:37 -0700 (PDT)
-X-Received: by 2002:a05:6000:1564:b0:225:17e4:4084 with SMTP id
- 4-20020a056000156400b0022517e44084mr5308854wrz.617.1660769317514; Wed, 17 Aug
- 2022 13:48:37 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=copKnaXkpj/PrdXoSUh50plMYt2cxJb8zNQUI1sfapA=;
+        b=uf0/SfEpFAzleiSyNs1/0Km91mTqjISYguus00xEOX5iC9HoqubMqiGE1UtwIJ1YZ9
+         QBcbibwTQA+ZGqwExlHpW4XU8v0/BKKSLJzzLwQ7AsMIONDvA726oMzzCS5kY+BUi9im
+         Ir7xNxYJunXcZoSsr6XXDCNvVjXi9/wlO76k01+lust4o1XmO+pde6G1JEufX1ouZCjv
+         X/qkrYrzkcZffoTMF6K67756gvKvJEyAoUQCujq0yhlXa9pR1CqpOlSDddevQKWG7vj8
+         HUQ55QskXhv3c+9KdS1m7qOXmwkaR6vFwRNNIkEfyi4MgMt/omyw1AXjE63dIRk4kzT1
+         hgTg==
+X-Gm-Message-State: ACgBeo3sZmaMlnsBkw/6Z8OHB95yyLthqqEex9baffuJN/tsKKHjO0p4
+        bK+oCRi2ZE5SPOhuuCP2Tit74w==
+X-Google-Smtp-Source: AA6agR7DXTKxmlIOqf0As2iSnVOles3hsHy0jPA3gsCK/wFyUdb62hdy8Gjnx++fqfYpJi/mCskauw==
+X-Received: by 2002:a17:90a:ab8d:b0:1fa:af75:e4ed with SMTP id n13-20020a17090aab8d00b001faaf75e4edmr5600179pjq.119.1660769619374;
+        Wed, 17 Aug 2022 13:53:39 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id b10-20020a170903228a00b0016be596c8afsm322533plh.282.2022.08.17.13.53.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 13:53:38 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 20:53:35 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     syzbot <syzbot+8d24abd02cd4eb911bbd@syzkaller.appspotmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in kvm_dev_ioctl
+Message-ID: <Yv1VT2SPrfTQhlrV@google.com>
+References: <bb50f7ae-0670-fe7d-c7d7-10036aba13f4@redhat.com>
+ <000000000000b4d88605e675a71c@google.com>
 MIME-Version: 1.0
-References: <20220706191442.1150634-1-swboyd@chromium.org> <CAD=FV=UrYCwm2ByN_5EN3fq-ayMJNjmWfJ5sooRy51ZiCoMcjA@mail.gmail.com>
- <CAF6AEGt_J6f1T+-6KtyCrUJrY2fh7Sz10L1AV1FSe8hueGREtQ@mail.gmail.com> <CAD=FV=W+VWtpTKAoyQpYMFteZy8iYB7-o=ACqkjr7YX7uCxZvg@mail.gmail.com>
-In-Reply-To: <CAD=FV=W+VWtpTKAoyQpYMFteZy8iYB7-o=ACqkjr7YX7uCxZvg@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 17 Aug 2022 13:48:25 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W9Gr9MyCg2rsKaA-ssSi5e3W5zO9sC56At+ceN4A2XtA@mail.gmail.com>
-Message-ID: <CAD=FV=W9Gr9MyCg2rsKaA-ssSi5e3W5zO9sC56At+ceN4A2XtA@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/dsi: Set panel orientation when directly connected
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        Sean Paul <sean@poorly.run>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000b4d88605e675a71c@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Aug 17, 2022, syzbot wrote:
+> > On 8/17/22 16:30, syzbot wrote:
+> > #syz dup: BUG: unable to handle kernel paging request in 
+> 
+> can't find the dup bug
 
-On Wed, Jul 20, 2022 at 3:42 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Wed, Jul 20, 2022 at 1:46 PM Rob Clark <robdclark@gmail.com> wrote:
-> >
-> > On Fri, Jul 8, 2022 at 8:25 AM Doug Anderson <dianders@chromium.org> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On Wed, Jul 6, 2022 at 12:14 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> > > >
-> > > > Set the panel orientation in drm when the panel is directly connected,
-> > > > i.e. we're not using an external bridge. The external bridge case is
-> > > > already handled by the panel bridge code, so we only update the path we
-> > > > take when the panel is directly connected/internal. This silences a
-> > > > warning splat coming from __drm_mode_object_add() on Wormdingler boards.
-> > > >
-> > > > Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> > > > Cc: Douglas Anderson <dianders@chromium.org>
-> > > > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> > > > ---
-> > > >
-> > > > This relies on commit 5e41b01a7808 ("drm/panel: Add an API to allow drm
-> > > > to set orientation from panel") which is in drm-misc
-> > > >
-> > > >  drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 ++
-> > > >  1 file changed, 2 insertions(+)
-> > >
-> > > I don't personally have objections to this, but (to my understanding)
-> > > "the future" is that everyone should use panel_bridge. If we made the
-> > > move to panel_bridge today then we wouldn't need to do this. In
-> > > general I think panel_bridge would end up letting us delete a bunch of
-> > > code...
-> > >
-> > > See commit 4e5763f03e10 ("drm/bridge: ti-sn65dsi86: Wrap panel with
-> > > panel-bridge") for when this was done by ti-sn65dsi86.
-> > >
-> > > Then again, I spent a small amount of time looking into this and it's
-> > > definitely non-trivial. Still likely worthwhile, but not worth
-> > > blocking a tiny fix like this. It also should be fairly obvious that
-> > > we should delete this when we switch to panel_bridge.
-> > >
-> > > Thus:
-> > >
-> > > Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> > >
-> > > I'll assume that we'll just snooze this commit until drm-misc-next
-> > > merges into a tree that msm-next is based on, which will probably be
-> > > the next -rc1. If desired and Acked I could land this in
-> > > drm-misc-next, but it's probably not worth it?
-> >
-> > if you want to land this patch via drm-misc, which might be the
-> > easier/faster route, then:
-> >
-> > Acked-by: Rob Clark <robdclark@gmail.com>
->
-> As per discussion on IRC, I'm not going to apply this to drm-misc-next.
->
-> Given where we are in the cycle landing in drm-misc-next means it
-> won't be in mainline for a couple versions and I suspect that'll cause
-> merge conflicts with Dmitry's series [1]. ...and, of course, if
-> Dmitry's series lands then we don't even need ${SUBJECT} patch...
->
-> So I think the plan is:
->
-> 1. Snooze waiting for the next -rc1 since
-> drm_connector_set_orientation_from_panel() won't be in mainline until
-> then.
->
-> 2. If Dmitry's series looks like a long way off, we could land
-> ${SUBJECT} patch in msm-next as a stopgap fix.
->
->
-> [1] https://lore.kernel.org/r/20220711094320.368062-5-dmitry.baryshkov@linaro.org/
+Heh, it's always some mundane detail.
 
-Just checking up. What's the latest thinking here? Do we want to land
-Stephen's change as a stopgap?
-drm_connector_set_orientation_from_panel() is available in v6.0-rc1.
-
--Doug
+#syz dup: BUG: unable to handle kernel paging request in kvm_arch_hardware_enable
