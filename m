@@ -2,122 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 016FEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC6EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238012AbiHQBFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 21:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
+        id S238111AbiHQBGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 21:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237509AbiHQBE6 (ORCPT
+        with ESMTP id S238078AbiHQBGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 21:04:58 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1DD7C1AE
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:04:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660698298; x=1692234298;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=mfUla04m6g9OuMl10lBVITDIZq8OhojlyKzQdm/DDNg=;
-  b=HgxK5ToIH3gbqf2GFZSTc2V2BwvZV9KFooBlyj1UL9DUwPKuivW9kgLP
-   8777qFF7WL88HIl/rZchxyNxnurPIhgY2kRP7sSnzEdvKggsVAK3LjRbC
-   ns5mGLDUXInkCmon9IXWAGzegiNOR6FkTZwSnx7HBjuDcVy3JQ+euvg/y
-   zw0MOgz7wmCblW/VKkVLu6NQtJY5GTjl7fQ4fxLfrjBiGdD7YwmYtOsc7
-   lbVpkRHnxbmRUEPx0FTefbCyVO6xzfqIoXLH2jJeiuCsZA0M1AkdrQoZF
-   mnEgWN/+tesclCmu/HeVamQ9H0Ix69tg53As2L9RQ+K6ChHRI/DLlm/OF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="378660378"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="378660378"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 18:02:18 -0700
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="696581283"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 18:02:14 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Bharata B Rao <bharata@amd.com>
-Cc:     huang ying <huang.ying.caritas@gmail.com>,
-        Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        <linux-mm@kvack.org>, <akpm@linux-foundation.org>,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        "Dan Williams" <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, <jvgediya.oss@gmail.com>
-Subject: Re: [PATCH v14 04/10] mm/demotion/dax/kmem: Set node's abstract
- distance to MEMTIER_DEFAULT_DAX_ADISTANCE
-In-Reply-To: <57a091a5-a78f-7977-3413-11260501f8c0@amd.com> (Bharata B. Rao's
-        message of "Tue, 16 Aug 2022 20:15:55 +0530")
-References: <20220812055710.357820-1-aneesh.kumar@linux.ibm.com>
-        <20220812055710.357820-5-aneesh.kumar@linux.ibm.com>
-        <87wnbacjsh.fsf@yhuang6-desk2.ccr.corp.intel.com>
-        <cd1c13ee-6fc3-bde8-96f9-8c3c93441275@linux.ibm.com>
-        <CAC=cRTMZZ9bqyC7pnxD1zUWqfBiQ9U7im+8EYa_8GVK8iA7HXQ@mail.gmail.com>
-        <e5fbaf30-1f97-63de-a9a5-2ae5359120ff@amd.com>
-        <CAC=cRTO=+zdKGHRMLpzg2PfJ2rPSQL+xoqA5sAkafaaTYHPr+w@mail.gmail.com>
-        <57a091a5-a78f-7977-3413-11260501f8c0@amd.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Wed, 17 Aug 2022 09:02:04 +0800
-Message-ID: <877d37d6nn.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        Tue, 16 Aug 2022 21:06:06 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B9180EA4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:06:04 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id g18so2215300pju.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:06:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=QTO5LFk5DPH2+BEtFS5IyQK8KQFw5ow5IIpLWWVQtw0=;
+        b=J09656TvhsCnHWhJqnVh70bxKuWE2WqRwTHHzxSmayp+NDr3Qk9c65N15oqGniot9J
+         BCJQJVQ0FF3yDVyIH/Ha8UgMtGfmi5WHkNWGqqeSmmvg9lCWTQpY7s0yaBr7ytwktcOG
+         mllGiFVstNwmyB1+g4k91f1UzCVCOJYalxph1CEZWfE750Fqeyc27F1xJegoimce+Zch
+         8P9wPMtn6kiM0z+t4DWRMNmWFeuQEypBwj16Iuu56ARTMmhNvfh35u+tg4ZPur5Iwqxs
+         ngrBmfwp8+/H9mxHwdLzuW8bpuK+y2oMI78/ifI2G53QVkgsPt6zaf9u6V1NqXtTLoJ5
+         OsFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=QTO5LFk5DPH2+BEtFS5IyQK8KQFw5ow5IIpLWWVQtw0=;
+        b=qb/R4yuwf7yX7lOJm4VD0CZkMXzxf7T7VNy+9QhcNodzpwaIAYsUHG/gqK/djHTQAf
+         STO/2KZnlKDFkDPE9M2ohZTzvstcTk+ICMB0sPNpjFmAoep6aqDxcPVl7NHrfNSicr3B
+         EXTHRoH8ZQT/oseJL73rm79+aMvYHQ/G4sKau2RZ+03+qHLNjy3QsETC2tK1XmK8fxlY
+         ruaOdlwszHt81pK3j83fAPGhL99Dst47ebAEEAv16YDE9jQAbL7W2KzfyYE6aznhQftb
+         2pjwt19VeurUDQDobLVHDCXS1h85cdmNe0YI42ikG8PpnKa21agA6X9GCIa/XTWX4m6/
+         mcwg==
+X-Gm-Message-State: ACgBeo1ROmJrnCyM63N8lQfAfMZuHKGI1UMhG7+Bb8vDY28ROYtCmV93
+        7pEuFBVVMd3PtmaGOhPcihc=
+X-Google-Smtp-Source: AA6agR6HjNH0ADvKypN2sZi7Vm41eZLw0nWmMcKudGwuxMJbIehTBoh8CCvcBKYyCwcXUs4JJcyclg==
+X-Received: by 2002:a17:902:e885:b0:16e:c85b:e3bd with SMTP id w5-20020a170902e88500b0016ec85be3bdmr24791965plg.63.1660698363917;
+        Tue, 16 Aug 2022 18:06:03 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k23-20020aa79737000000b0052ac99c2c1csm9090888pfg.83.2022.08.16.18.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 18:06:01 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 16 Aug 2022 18:05:59 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Isaac Manjarres <isaacmanjarres@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
+Message-ID: <20220817010559.GA1880847@roeck-us.net>
+References: <20220815211919.2028890-1-isaacmanjarres@google.com>
+ <20220816042507.GB1108868@roeck-us.net>
+ <YvsoYzIhOtX9DOi2@google.com>
+ <20220816111311.GC1108868@roeck-us.net>
+ <YvvQOBk9T3J1uX8k@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvvQOBk9T3J1uX8k@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bharata B Rao <bharata@amd.com> writes:
+On Tue, Aug 16, 2022 at 10:13:28AM -0700, Isaac Manjarres wrote:
+> On Tue, Aug 16, 2022 at 04:13:11AM -0700, Guenter Roeck wrote:
+> > On Mon, Aug 15, 2022 at 10:17:23PM -0700, Isaac Manjarres wrote:
+> > > On Mon, Aug 15, 2022 at 09:25:07PM -0700, Guenter Roeck wrote:
+> > > > > v1 -> v2:
+> > > > > - Fixed the logic in __driver_attach() to allow a driver to continue
+> > > > >   attempting to match and bind with devices in case of any error, not
+> > > > >   just probe deferral.
+> > > > > 
+> > > > > Guenter,
+> > > > > 
+> > > > > Can you please give test this patch to make sure it still works for you?
+> > > > > 
+> > > > 
+> > > > Not as well as v1. I still see the clk crash with versatileab, and imx25-pdk
+> > > > emulations now stall during boot when trying to boot from usb.
+> > > > 
+> > > > Guenter
+> > > Thanks for trying the patch out. This patch isn't meant to fix the clk
+> > > crash that you mentioned on another thread. I had made the following patch for
+> > > that: https://lore.kernel.org/lkml/YvqTvuqSll30Rv2k@google.com/. Have
+> > > you been able to give that a shot yet? If not can you please test with the
+> > > patch in this e-mail and that patch?
+> > > 
+> > 
+> > No, sorry, I missed that one. It does not apply, though - it is whitespace
+> > corrupted. I tried to fix it up, but that failed.
+> 
+> When applying the patch, can you please try with
+> git apply --ignore-whitespace ? That worked for me.
 
-> On 8/16/2022 1:56 PM, huang ying wrote:
-> <snip>
->>>>
->>>> If my understanding were correct, you are suggesting to use a kind of
->>>> logarithmic mapping from latency to abstract distance?  That is,
->>>>
->>>>   abstract_distance = log2(latency)
->>>>
->>>> While I am suggesting to use a kind of linear mapping from latency to
->>>> abstract distance.  That is,
->>>>
->>>>   abstract_distance = C * latency
->>>>
->>>> I think that linear mapping is easy to understand.
->>>>
->>>> Are there some good reasons to use logarithmic mapping?
->>>
->>> Also, what is the recommendation for using bandwidth measure which
->>> may be available from HMAT for CXL memory? How is bandwidth going
->>> to influence the abstract distance?
->> 
->> This is a good question.
->> 
->> Per my understanding, latency stands for idle latency by default.  But
->> in practice, the latency under some reasonable memory accessing
->> throughput is the "real" latency.  So the memory with lower bandwidth
->> should have a larger abstract distance than the memory with higher
->> bandwidth even if the idle latency is the same.  But I don't have a
->> perfect formula to combine idle latency and bandwidth into abstract
->> distance.  One possibility is to increase abstract distance if the
->> bandwidth of the memory is much lower than that of DRAM.
->
-> So if the firmware/platforms differ in their definition of latency and
-> bandwidth (like idle vs real value etc) in the firmware tables
-> (like HMAT), then the low level drivers (like ACPI) would have to be
-> aware of these and handle the conversion from latency and bw to
-> abstract distance correctly?
+Ok, that worked. With the above patch, the problems with sx1 and versatileab
+are gone. However, imx25-pdk fails to shut down when booting from usb
+drive. I cross checked that this does not happen without the above patch.
 
-One possible way to make this a little easier is that we plan to add a
-knob (as user space interface via sysfs) for each memory type, so that
-the default abstract distance can be offset.  If so, at least we have
-way to deal with difference in firmware/platforms.
-
-Best Regards,
-Huang, Ying
+Guenter
