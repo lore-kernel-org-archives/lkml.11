@@ -2,101 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26375C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECAEC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241514AbiHQTfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52074 "EHLO
+        id S239760AbiHQTgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241506AbiHQTfU (ORCPT
+        with ESMTP id S241495AbiHQTgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:35:20 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60352F10;
-        Wed, 17 Aug 2022 12:34:47 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98b0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b0:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4CFEB1EC0230;
-        Wed, 17 Aug 2022 21:34:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1660764882;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=1Rh8+/Ir/HWVaSZXutajiwYFkwurpOA/MHY+NMaBjxs=;
-        b=Jd1PX9kZRcNSw8+wGtMkcTz1uxwQoiFDMeJcOBbCsfgsS/ppmOJVaFWhACWZBRC8SWFuXf
-        dDheftx78DZKMY27r4f2TuqDeOVN1yTvEzhMKxM+xZJ7a3wUIkdjs3yXleorPHPenOphKo
-        aWCyAr6mU/8LtCODdObw+jqfRCppjys=
-Date:   Wed, 17 Aug 2022 21:34:41 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-edac@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Tony Luck <tony.luck@intel.com>
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump
- is loaded
-Message-ID: <Yv1C0Y25u2IB7PCs@zn.tnic>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com>
- <Yv0mCY04heUXsGiC@zn.tnic>
- <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com>
+        Wed, 17 Aug 2022 15:36:40 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6840039B84
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:36:36 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id y141so12876685pfb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=DwQ4nsxbFKRBGX51s8IXcm7jc9sOynsnepHYnZvK+q8=;
+        b=dDflZWLDwgLNEUqS2QSEf+EU9QySzBzklxHNtjMI6KEmn6Qm4yhXCaw+IjQWz0+EwN
+         8dhgPlIueNI1tSl2rnGUbdr64cP3OayomPrD6oFw+uYC11PPeERBIAp8IzdvOOJ+cf6/
+         /duC6UT3tzWyZkS281siFpZEZ4LqAen6po3cs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=DwQ4nsxbFKRBGX51s8IXcm7jc9sOynsnepHYnZvK+q8=;
+        b=dddc+/Go290dlvfbKGHasGcYjL4Pb93ZT0xVBf476qa2sLrqRpgpWdWsAtYN0Z/9HV
+         F2/tx7Cra1lfqtSCALVdlIQMi6Kj+G4z6xv270OBTBE+L5J7/mV1bd51Tw+nw2UeDFIu
+         OWHDnUvPU0DT+XsCLZqDLpBDPGl2EB5jG/lgKR3bK5j7zWv3sTN0uMIANshAOtZDYhL3
+         j8ixPQbwx8jf1Iv43PMv2pDJ51iLQ0/btEeeQRDwrbowNj98P4KVGkiQDOalXjxs9Gz+
+         8jKs7Qzsu9DcoDqpnxK0Sw84Qo6sU0nY1Z/Acs3UhKbET328ZDHHrzqc/pRH4aKn/fM2
+         jlyw==
+X-Gm-Message-State: ACgBeo1HyT3PgBBKksL8n/Els99u18tt3IwcnEIywHNRMBpaiZl/mpzR
+        vdsDLYm7gVmhTuAAKsqHw6mwBg==
+X-Google-Smtp-Source: AA6agR45Grj5WNJlJ+fDipgaBkC5y4R4JfAofjvtsISis6BMpiiepj37XY/6B9DM7K6AjAsyVP/0IA==
+X-Received: by 2002:a63:8b44:0:b0:41c:df4c:7275 with SMTP id j65-20020a638b44000000b0041cdf4c7275mr23312562pge.434.1660764995806;
+        Wed, 17 Aug 2022 12:36:35 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id k8-20020a17090a658800b001f55dda84b3sm1917520pjj.22.2022.08.17.12.36.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 12:36:34 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 12:36:33 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Konstantin Shelekhin <k.shelekhin@yadro.com>
+Cc:     ojeda@kernel.org, boqun.feng@gmail.com, gregkh@linuxfoundation.org,
+        jarkko@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        rust-for-linux@vger.kernel.org, torvalds@linux-foundation.org
+Subject: Re: [PATCH v9 01/27] kallsyms: use `sizeof` instead of hardcoded size
+Message-ID: <202208171235.52D14C2A@keescook>
+References: <20220805154231.31257-2-ojeda@kernel.org>
+ <Yu2cYShT1h8gquW8@yadro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com>
+In-Reply-To: <Yu2cYShT1h8gquW8@yadro.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 03:45:30PM -0300, Guilherme G. Piccoli wrote:
-> But happens that in the refactor we are proposing [0], some notifiers
-> should run before the kdump. We are basically putting some ordering in
-> the way notifiers are executed, while documenting this properly and with
-> the goal of not increasing the failure risk for kdump.
+On Sat, Aug 06, 2022 at 01:40:33AM +0300, Konstantin Shelekhin wrote:
+> > diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> > index f18e6dfc68c5..52f5488c61bc 100644
+> > --- a/scripts/kallsyms.c
+> > +++ b/scripts/kallsyms.c
+> > @@ -206,7 +206,7 @@ static struct sym_entry *read_symbol(FILE *in)
+> >  
+> >  	rc = fscanf(in, "%llx %c %499s\n", &addr, &type, name);
+> >  	if (rc != 3) {
+> > -		if (rc != EOF && fgets(name, 500, in) == NULL)
+> > +		if (rc != EOF && fgets(name, sizeof(name), in) == NULL)
+> >  			fprintf(stderr, "Read error or end of file.\n");
+> >  		return NULL;
+> >  	}
+> 
+> Might be another nit, but IMO it's better to use ARRAY_SIZE() here.
 
-What is "the failure risk for kdump"?
+I'm not sure I see a benefit for char arrays. It'll produce the same
+result, and the tradition for string functions is to use sizeof().
+*shrug*
 
-Some of the notifiers which run before kdump might fail and thus prevent
-the machine from kdumping?
+Either way:
 
-> This patch is useful so we can bring the altera EDAC notifier to run
-> earlier while not increasing the risk on kdump - this operation is a bit
-> "delicate" to happen in the panic scenario. The origin of this patch was
-> a discussion with Tony/Peter [1], guess we can call it a "compromise
-> solution".
-
-My question stands: if kdump is loaded and the s10_edac_dberr_handler()
-does not read the the fatal errors and they don't get shown in dmesg
-before the machine panics, how do you intend to show that information to
-the user?
-
-Because fatal errors are something you absolutely wanna show, at least,
-in dmesg!
-
-I don't think you can "read" the errors from vmcore - they need to be
-read from the hw registers before the machine dies.
-
-Thx.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Kees Cook
