@@ -2,180 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA0EC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA446C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240374AbiHQSRY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
+        id S238058AbiHQSSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240795AbiHQSRS (ORCPT
+        with ESMTP id S237352AbiHQSSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:17:18 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330C998CA5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:17:17 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id bx38so14292648ljb.10
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:17:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=0Mv5jQ8hRqokFuTzuLGQ2+4HMm4gXf4KWrwhyD1wz0c=;
-        b=o8RUy/jSIMwh4sAkv2mej0jQFwK5rKnhv/VJzW+EIi6nn/iKf8ijgOH1HwiIYsCnPj
-         qiD0yjs8OOsiqMjg7Tz+Fzjcqfev/69am+6UAE1nmdDRcRQkUB5t1gbVmOfh7t6MOaFM
-         xCAic4M5ANXNdecfH74Y2ngj5M6FPihUWCPn621rIfuQbz444WN+JyQ7I4uSyeG52uNn
-         ms1WC+zXAxDU8uF5RaSxeTp4hUyBKlvzQZoqCNh6Gw2rJbpv6peVHa9iUuuRQtTAKJ1+
-         KZKbErsHDGAANOpEGaMwGM2wM4+36GUmd5z2LVFfx0GR2B+KfEdAXnpV+hYDSifqCVHG
-         aoBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=0Mv5jQ8hRqokFuTzuLGQ2+4HMm4gXf4KWrwhyD1wz0c=;
-        b=IMqFKz1by2he0Zt9cppttKP1PSXlA09Dmy5PtGD/fvanHvYS8d8SB+JC7gDlUpT1Yq
-         BC5KbSuO9HQwx9AjQ2erC9WdXUC2rVrFuhu/3t2iW+nO/6sQjNU7hj0asfHUKN/x379A
-         GIJ3fVR9Q48dU2+4nfpVoqmPNiePkNskAD9w2QcYC/NP7Lnm+OUEfOMxGKKpYw6uvQI7
-         Nvfda27JVKG6FiVGkydUo8ray7VhYscmk/XmjTMXZY/u3mT48TqXeDJsUAB/LJh8x2uE
-         SUrqT6+S9jTCRPjiRvyImCv0gP2RXE8Xigx+XeAUK+shngeK3sbCNq8WKhnNSmtQYW2N
-         rJFA==
-X-Gm-Message-State: ACgBeo0UZFeEBE6J7DFzC4Ixcg9S7xvOVrV+dMSrjXxVKiPdroz57jlB
-        3kc3//hIpxK9rLuiuOuvXwJaV6nU0CTE/cr2NgarEg==
-X-Google-Smtp-Source: AA6agR5KIO8bHZ8lbPtaNNKPJwuv1GQFMl4w/Fu5FDzI/yobfzH9duSxiXQQ+ANJhp08iVUWx5o9GKseHPMLTTC8agE=
-X-Received: by 2002:a2e:8606:0:b0:25e:51c1:4cfe with SMTP id
- a6-20020a2e8606000000b0025e51c14cfemr8677689lji.33.1660760235102; Wed, 17 Aug
- 2022 11:17:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220817152956.4056410-1-vipinsh@google.com> <Yv0kRhSjSqz0i0lG@google.com>
-In-Reply-To: <Yv0kRhSjSqz0i0lG@google.com>
-From:   Vipin Sharma <vipinsh@google.com>
-Date:   Wed, 17 Aug 2022 11:16:37 -0700
-Message-ID: <CAHVum0fT7zJ0qj39xG7OnAObBqeBiz_kAp+chsh9nFytosf9Yg@mail.gmail.com>
-Subject: Re: [PATCH] KVM: selftests: Run dirty_log_perf_test on specific cpus
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     dmatlack@google.com, pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 17 Aug 2022 14:18:33 -0400
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AEB25C79;
+        Wed, 17 Aug 2022 11:18:33 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7124A580F8C;
+        Wed, 17 Aug 2022 14:18:32 -0400 (EDT)
+Received: from imap50 ([10.202.2.100])
+  by compute3.internal (MEProxy); Wed, 17 Aug 2022 14:18:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        colorremedies.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660760312; x=
+        1660763912; bh=GTnimwUywZDBseYTSOsg41R9INlAe7lXIxbkXU7vY1s=; b=r
+        bdxUS2VrJ6gpO0Z28L+c5OAHuCB1ceXz1gqGsVC5IldclpPrwj6TpjZuEy/Zrwjy
+        aXT2KJpxK1fkxIUevzBWnXaAMFS7tfHyV3pC8as9YZjREVzT/SHNVRqUEynBZhJW
+        mUdMNWj1+LniYUUzD0Br+0vf+QLUfbv3VxcCTbtJE+VdnuWuGtdrL3Rs/YoyXGgq
+        Q2AORZbGfywgYKpFCrSXy3OcfPMTmFshW3kEIDpposIlvTFS9h6APUxNwI8oTPzj
+        LfWoJTwRH/qAM8IiqOOmSb00xrPx2EsRMEpT/ze0M6+aw8W9pXEx70zpe7lk5b4k
+        L6B0qNSfQxImQr55t+e9A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660760312; x=1660763912; bh=GTnimwUywZDBseYTSOsg41R9INlA
+        e7lXIxbkXU7vY1s=; b=2Rl7zFXmWgn0czl5UPtrtnH+aANzKZgVzCLaMyCYcgjm
+        Lz8MDxaenLZq7NyKm+HSw4hsCZttZDHaPwdBRtfJEpOJm0qXG8LCOx7p0Sp4CsGf
+        7raw1v7OFOCBNCjI+sehEC95oER8tjydKRiZTAOv1s5sPYvNyUbIJyvuSwedawFz
+        fsTWkmWN2ggPq5HVPyOQiFSWVxzZWZkENpe0t39rmNJJGeAzdUg/wOefrI6eDlQF
+        /hgWliitU5nwPPqiyscmaQogoG0KlzuuRwm6he9fsl3YZDuUaYGRpfCmPNqVmrvc
+        E8xq7VldKuBqHNns2UZyci0rgVNam7tcukVDh2F3YA==
+X-ME-Sender: <xms:-DD9Yg9sNxzKCMPe7l6Um1kdwVHX0sKOAeL9op3vi4iP-RmojigHcA>
+    <xme:-DD9YouYeLbHfKAOSr1uPd1Ipv5PUjBngFwoXbfrFNWH1qGbmRCiE-24qRJmjy9Mu
+    _cfx_XiM8j0FhSp5Vc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedguddvfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdev
+    hhhrihhsucfouhhrphhhhidfuceolhhishhtshestgholhhorhhrvghmvgguihgvshdrtg
+    homheqnecuggftrfgrthhtvghrnhepgfdvueektdefgfefgfdtleffvdeileetgfefuddt
+    ffelueeiveeiveekhedtheeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheplhhishhtshestgholhhorhhrvghmvgguihgvshdrtghomh
+X-ME-Proxy: <xmx:-DD9YmAt6ivivrL6LPVu4JaEycUJKuFd_nS-fbqH1Ax9gxXpH-XBtg>
+    <xmx:-DD9Ygf-3HDX4UNi0jzWuYHNbjMcZVmkti0TuMwjHtGMrQv_oi8fJQ>
+    <xmx:-DD9YlM3ChdRbmo4vvcwtaLXHPN5ySyeucR7qp8D1DdA4I7xRjBq_g>
+    <xmx:-DD9YhDzI9sU9KMNE9KG27QrngZxtQXM7cRnWGvzdvoINCnJwRAAEQ>
+Feedback-ID: i06494636:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 24D4A1700083; Wed, 17 Aug 2022 14:18:32 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
+Mime-Version: 1.0
+Message-Id: <e4c260da-2df7-49a3-a8dc-1d3fc7ca12a0@www.fastmail.com>
+In-Reply-To: <20220817181554.znqljc6mmci45ukd@quack3>
+References: <61e5ccda-a527-4fea-9850-91095ffa91c4@www.fastmail.com>
+ <4995baed-c561-421d-ba3e-3a75d6a738a3@www.fastmail.com>
+ <dcd8beea-d2d9-e692-6e5d-c96b2d29dfd1@suse.com>
+ <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
+ <7c830487-95a6-b008-920b-8bc4a318f10a@applied-asynchrony.com>
+ <20220817114933.66c4g4xjsi4df2tg@quack3>
+ <85a141ae-56a7-4dcd-b75a-04be4b276b3a@www.fastmail.com>
+ <20220817163059.kigrvdfmxfswmhls@quack3>
+ <f6f899a5-97e2-460f-ad73-73d4b5e38eb6@www.fastmail.com>
+ <51cd43f9-ab6b-4dd6-814f-e0c1ace3143c@www.fastmail.com>
+ <20220817181554.znqljc6mmci45ukd@quack3>
+Date:   Wed, 17 Aug 2022 14:18:01 -0400
+From:   "Chris Murphy" <lists@colorremedies.com>
+To:     "Jan Kara" <jack@suse.cz>
+Cc:     =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        "Nikolay Borisov" <nborisov@suse.com>,
+        "Jens Axboe" <axboe@kernel.dk>,
+        "Paolo Valente" <paolo.valente@linaro.org>,
+        Linux-RAID <linux-raid@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Josef Bacik" <josef@toxicpanda.com>
+Subject: Re: stalling IO regression since linux 5.12, through 5.18
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 10:25 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> > +static int parse_num(const char *num_str)
-> > +{
-> > +     int num;
-> > +     char *end_ptr;
-> > +
-> > +     errno = 0;
-> > +     num = (int)strtol(num_str, &end_ptr, 10);
-> > +     TEST_ASSERT(num_str != end_ptr && *end_ptr == '\0',
-> > +                 "Invalid number string.\n");
-> > +     TEST_ASSERT(errno == 0, "Conversion error: %d\n", errno);
->
-> Is the paranoia truly necessary?  What happens if parse_cpu_list() simply uses
-> atoi() and is passed garbage?
 
-On error atoi() returns 0, which is also a valid logical cpu number.
-We need error checking here to make sure that the user really wants
-cpu 0 and it was not a mistake in typing.
-I was thinking of using parse_num API for other places as well instead
-of atoi() in dirty_log_perf_test.
 
-> > +
-> > +     cpu = strtok(cpu_list, delim);
-> > +     while (cpu) {
-> > +             cpu_num = parse_num(cpu);
-> > +             TEST_ASSERT(cpu_num >= 0, "Invalid cpu number: %d\n", cpu_num);
-> > +             vcpu_to_lcpu_map[i++] = cpu_num;
-> > +             cpu = strtok(NULL, delim);
-> > +     }
-> > +
-> > +     free(cpu_list);
->
-> The tokenization and parsing is nearly identical between parse_cpu_list() and
-> assign_dirty_log_perf_test_cpu().  The code can be made into a common helper by
-> passing in the destination, e.g.
->
-> static int parse_cpu_list(const char *arg, cpu_set_t *cpuset, int *vcpu_map)
-> {
->         const char delim[] = ",";
->         char *cpustr, *cpu_list;
->         int i = 0, cpu;
->
->         TEST_ASSERT(!!cpuset ^ !!vcpu_map);
->
->         cpu_list = strdup(arg);
->         TEST_ASSERT(cpu_list, "Low memory\n");
->
->         cpustr = strtok(cpu_list, delim);
->         while (cpustr) {
->                 cpu = atoi(cpustr);
->                 TEST_ASSERT(cpu >= 0, "Invalid cpu number: %d\n", cpu);
->                 if (vcpu_map)
->                         vcpu_to_lcpu_map[i++] = cpu_num;
->                 else
->                         CPU_SET(cpu_num, cpuset);
->                 cpu = strtok(NULL, delim);
->         }
->
->         free(cpu_list);
->
->         return i;
-> }
->
+On Wed, Aug 17, 2022, at 2:15 PM, Jan Kara wrote:
 
-Yeah, it was either my almost duplicate functions or have the one
-function do two things via if-else.  I am not happy with both
-approaches.
+> OK, if this indeed passes then b6e68ee82585 ("blk-mq: Improve performance
+> of non-mq IO schedulers with multiple HW queues") might be what's causing
+> issues (although I don't know how yet...).
 
-I think I will pass an integer array which this parsing function will
-fill up and return an int denoting how many elements were filled. The
-caller then can use the array as they wish, to copy it in
-vcpu_to_lcpu_map or cpuset.
+I can revert it from 5.12.0 and try. Let me know which next test is preferred :)
 
-> > @@ -383,6 +450,26 @@ static void help(char *name)
-> >       backing_src_help("-s");
-> >       printf(" -x: Split the memory region into this number of memslots.\n"
-> >              "     (default: 1)\n");
-> > +     printf(" -c: Comma separated values of the logical CPUs which will run\n"
-> > +            "     the vCPUs. Number of values should be equal to the number\n"
-> > +            "     of vCPUs.\n\n"
-> > +            "     Example: ./dirty_log_perf_test -v 3 -c 22,43,1\n"
-> > +            "     This means that the vcpu 0 will run on the logical cpu 22,\n"
-> > +            "     vcpu 1 on the logical cpu 43 and vcpu 2 on the logical cpu 1.\n"
-> > +            "     (default: No cpu mapping)\n\n");
-> > +     printf(" -d: Comma separated values of the logical CPUs on which\n"
-> > +            "     dirty_log_perf_test will run. Without -c option, all of\n"
-> > +            "     the vcpus and main process will run on the cpus provided here.\n"
-> > +            "     This option also accepts a single cpu. (default: No cpu mapping)\n\n"
-> > +            "     Example 1: ./dirty_log_perf_test -v 3 -c 22,43,1 -d 101\n"
-> > +            "     Main application thread will run on logical cpu 101 and\n"
-> > +            "     vcpus will run on the logical cpus 22, 43 and 1\n\n"
-> > +            "     Example 2: ./dirty_log_perf_test -v 3 -d 101\n"
-> > +            "     Main application thread and vcpus will run on the logical\n"
-> > +            "     cpu 101\n\n"
-> > +            "     Example 3: ./dirty_log_perf_test -v 3 -d 101,23,53\n"
-> > +            "     Main application thread and vcpus will run on logical cpus\n"
-> > +            "     101, 23 and 53.\n");
-> >       puts("");
-> >       exit(0);
-> >  }
->
-> > @@ -455,6 +550,13 @@ int main(int argc, char *argv[])
-> >               }
-> >       }
-> >
->
-> I wonder if we should make -c and -d mutually exclusive.  Tweak -c to include the
-> application thread, i.e. TEST_ASSERT(nr_lcpus == nr_vcpus+1) and require 1:1 pinning
-> for all tasks.  E.g. allowing "-c ..., -d 0,1,22" seems unnecessary.
->
 
-One downside I can think of will be if we add some worker threads
-which are not vcpus then all of those threads will end up running on a
-single cpu unless we edit this parsing logic again.
-
-Current implementation gives vcpus special treatment via -c and for
-the whole application via -d. This gives good separation of concerns
-via flags.
+-- 
+Chris Murphy
