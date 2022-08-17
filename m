@@ -2,377 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1FD4C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB73AC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239396AbiHQM6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
+        id S239505AbiHQM7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239449AbiHQM6p (ORCPT
+        with ESMTP id S239276AbiHQM7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:58:45 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0926EDFFC
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:58:44 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-333b049f231so117013287b3.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=qzxdSQjjr02NBRetfQSUQv3rkuh4VIDYpy88ZPp5xBM=;
-        b=E7rtnd+DR6cTcHjkqxluug76p8YoqApiuug4tu2rRcILNlkwHO4z7YKiPepRMxxA73
-         jgwMZDQqcPw8agl99ghzM5r2MPty4ekN/fqu25mto1vRdPlQumpKUMdy7MKIXbh9ebNO
-         sqZdgLfKAFwfvnfKpjOWYSqwuCuC0mmLtum+vghVwVclt3S2+1k6aQoMoHV4SqNeDLWg
-         3hCgC8Csngfgk55pn9Vy2F9aeACbwF3LJg5zjCNmxtsM3GOkMey3wxIOPqMIxEvTmxlN
-         dtvRQ8V3J3hicYfXZlbc1jRwNDcHA5hwMw4XN0i5jWgDc7glW75kHcKl8rB08E9J5em6
-         u/Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=qzxdSQjjr02NBRetfQSUQv3rkuh4VIDYpy88ZPp5xBM=;
-        b=cG9ZHLG0xd0IjYFPylywiL6fnN1xGPvsxR96Maa+rKfgehghqUrGtWuH7R4Me72UCt
-         A44i8tdMdgoiTqJ2JFLHi++lvR2rpl8sR41oUSjI4JCh7fsDevAL28H+lGKUMMbJyodZ
-         9mjHhpEEYYCAKTL4Jr9eWDZoYzHYNj3Zxge19p5VOA7CCkPpAKxwUo/CxEHWVzRq3SFv
-         tf0zm1GDKhwZjd/zZcLalODoCUGGJVEXeUw/FOYgFEhnORYtkB1BVL+vFzkyKnzXE1+W
-         ekFBf4gclPBqtVpKosvpCqx0Ds/Klof5/GBUdgdHgptwbGn0r/s90fRjXJtx5h/LoGjU
-         U3fQ==
-X-Gm-Message-State: ACgBeo12D7Z+kQ28wO+AJRruYTtSq50n/NLDGVs+dR3SezbT2QIKma4i
-        X3IJ+5dWvdvBRgGOBUIO3CYfZl8Rl/EUvsxmJ5r8Ow==
-X-Google-Smtp-Source: AA6agR6/spMZUXWUu+x/T84e+GPEtXdjsLH/1QjPg8nGTT9i7O7lZfD+wJYAmGvghJpJA4+gVHWO0QV9hKWCF9xAqoY=
-X-Received: by 2002:a25:b849:0:b0:67b:93e9:2acc with SMTP id
- b9-20020a25b849000000b0067b93e92accmr20186718ybm.241.1660741123124; Wed, 17
- Aug 2022 05:58:43 -0700 (PDT)
+        Wed, 17 Aug 2022 08:59:05 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103D617057
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:59:02 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HCYcdS007849;
+        Wed, 17 Aug 2022 14:58:24 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=KNZl0X08yaVQSxf6OQMI9RKfqIUKh/weq3c89Z5IdgY=;
+ b=23XUq7dghBYzUh+of21349Uk3dkMDdnW6WZrdP1Dr639I2ADKo8lhZ0ZC3qLzTmscP2t
+ UV0uIPPQwh10ZXtjtDhRG+WkuMaBr39UGSWVHNUTzTLPgVycOWLpOrKJfSrLcQv2WmB2
+ ALhkAcLoZeYWMiFXOzLevPMK5vuPzissS9HBRHaYqLSP1gIMDNLLDR+tjTumNgCwCyKZ
+ QY9BJkDpqqrSAqvqKyZgGJ2IkbHERK6HG7QG4rTYLK8vk9rp+QxYdxsAI/CKwSy92+sQ
+ K5ZWBP03NwCA8jE+weti9dKMTie/kYMRiDPKKzH+RT7U2jX49rrF18HPzeFGB0tLxAYs AA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hx2uhn37p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 14:58:24 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0872E10002A;
+        Wed, 17 Aug 2022 14:58:23 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 02977231533;
+        Wed, 17 Aug 2022 14:58:23 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 17 Aug
+ 2022 14:58:22 +0200
+From:   Antonio Borneo <antonio.borneo@foss.st.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Antonio Borneo <antonio.borneo@foss.st.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] irqchip/stm32-exti: Remove check on always false condition
+Date:   Wed, 17 Aug 2022 14:57:58 +0200
+Message-ID: <20220817125758.5975-1-antonio.borneo@foss.st.com>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <202208131739.gJvcs9ls-lkp@intel.com>
+References: <202208131739.gJvcs9ls-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220810015636.3865248-1-zhangsong34@huawei.com>
- <b62804cb-2b60-a534-5096-56785a1940bd@bytedance.com> <e2c9eccc-dd86-16e9-c43e-8415f99f413e@huawei.com>
- <13a7a412-5e2e-6ef8-acd6-a761aad66c3a@bytedance.com> <6ae319c0-e6ed-4aad-64b8-d3f6cbea688d@huawei.com>
-In-Reply-To: <6ae319c0-e6ed-4aad-64b8-d3f6cbea688d@huawei.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 17 Aug 2022 14:58:31 +0200
-Message-ID: <CAKfTPtAcEstoqC+9-y9ubaXDSGbfLdMhFboMPn433QNPD114dQ@mail.gmail.com>
-Subject: Re: [PATCH v2] sched/fair: Introduce priority load balance to reduce
- interference from IDLE tasks
-To:     "zhangsong (J)" <zhangsong34@huawei.com>
-Cc:     Abel Wu <wuyun.abel@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-17_08,2022-08-16_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 at 04:53, zhangsong (J) <zhangsong34@huawei.com> wrote:
->
->
-> On 2022/8/15 19:03, Abel Wu wrote:
->
-> On 8/10/22 3:34 PM, zhangsong (J) Wrote:
->
-> Thanks for your reply !
->
-> On 2022/8/10 12:02, Abel Wu wrote:
->
-> Hi Zhang Song,
->
-> On 8/10/22 9:56 AM, zhangsong Wrote:
->
-> For co-location with NORMAL and IDLE tasks, when CFS trigger load balance,
-> it is reasonable to prefer migrating NORMAL(Latency Sensitive) tasks from
-> the busy src CPU to dst CPU, and migrating IDLE tasks lastly.
->
->
-> Considering the large weight difference between normal and idle tasks,
-> does the re-ordering really change things? It would be helpful if you
-> can offer more detailed info.
->
-> Please consider the situation that CPU A has several normal tasks and hundreds of idle tasks
-> while CPU B is idle, and CPU B needs to pull some tasks from CPU A, but the cfs_tasks in CPU A
-> are not in order of priority, and the max number of pulling tasks depends on env->loop_max,
-> which value is sysctl_sched_nr_migrate, i.e. 32.
->
->
-> The case you elaborated above is really rare, the only possibility I
-> can imagine is that all these tasks are affined to one single cpu and
-> suddenly remove the affinity constrain. Otherwise, the load balancing
-> including wakeup cpu selection logic will make things right.
->
->
-> Yes, this is usually a corner case, but suppose that some non-idle tasks bounds to CPU 1-2
->
-> and idle tasks bounds to CPU 0-1, so CPU 1 may has many idle tasks and some non-idle
->
-> tasks while idle tasks on CPU 1 can not be pulled to CPU 2, when trigger load balance if
->
-> CPU 2 should pull some tasks from CPU 1, the bad result is idle tasks of CPU 1 cannot be
->
-> migrated and non-idle tasks also cannot be migrated in case of env->loop_max constraint.
+The field drv_data is assigned during driver's probe, where it's
+already checked to be not NULL.
 
-env->loop_max adds a break but load_balance will continue with next
-tasks so it also tries to pull your non idle task at the end after
-several breaks.
+Remove the always false check '!host_data->drv_data'.
 
->
-> This will cause non-idle  tasks cannot achieve  more CPU utilization.
+This fixes a warning "variable dereferenced before check" detected
+by '0-DAY CI Kernel Test Service'.
 
-Your problem is not linked to IDLE vs NORMAL tasks but to the large
-number of pinned tasks that can't migrate on CPU2. You can end with
-the same behavior without using IDLE tasks but only NORMAL tasks.
+Fixes: c297493336b7 ("irqchip/stm32-exti: Simplify irq description table")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/lkml/202208131739.gJvcs9ls-lkp@intel.com/
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+---
+ drivers/irqchip/irq-stm32-exti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> The testcase is below:
->
-> 1) 1000 idle tasks bounds to CPU 0-1 and 10 non-idle tasks bounds to CPU 1-2
->
-> 2) Get non-idle tasks performance metrics with perf tool
->
->
-> Without this patch:
->
->           6,930.88 msec cpu-clock                 #    1.385 CPUs utilized
->             21,458      context-switches          #    0.003 M/sec
->                  1      cpu-migrations            #    0.000 K/sec
->                  0      page-faults               #    0.000 K/sec
->     13,761,631,912      cycles                    #    1.986 GHz
->      6,646,844,169      instructions              #    0.48  insn per cycle
->      2,188,053,035      branches                  #  315.696 M/sec
->          1,690,507      branch-misses             #    0.08% of all branches
->
->        5.002701004 seconds time elapsed
->
->
-> With this patch:
->
->           8,103.47 msec cpu-clock                 #    1.620 CPUs utilized
->             25,358      context-switches          #    0.003 M/sec
->                318      cpu-migrations            #    0.039 K/sec
->                  0      page-faults               #    0.000 K/sec
->     15,707,367,741      cycles                    #    1.938 GHz
->      7,618,354,166      instructions              #    0.49  insn per cycle
->      2,506,951,511      branches                  #  309.367 M/sec
->          2,017,301      branch-misses             #    0.08% of all branches
->
->        5.002151474 seconds time elapsed
->
->
->
-> From above test result comparsion, we can see that non-idle tasks CPU utilization can improve 10%+.
->
->
->
-> We now cannot guarantee that CPU B can pull a certain number of normal tasks instead of idle tasks
-> from the waiting queue of CPU A, so It is necessary to divide cfs_tasks into two different lists
-> and ensure that tasks in none-idle list can be migrated first.
->
->
-> Yes, there is no guarantee. And I think your problem is valid (although
-> rare), while turning cfs_tasks into weight-sorted might be helpful?
->
->
-> I think turning cfs_tasks into weight-sorted may be more complex, this will
->
-> change current data structure of cfs_tasks, it will be less helpful.
->
-> Thanks a lot.
->
->
->
->
-> ...
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -3034,6 +3034,21 @@ static inline void update_scan_period(struct task_struct *p, int new_cpu)
->     #endif /* CONFIG_NUMA_BALANCING */
->   +#ifdef CONFIG_SMP
-> +static void
-> +adjust_rq_cfs_tasks(void (*list_op)(struct list_head *, struct list_head *),
-> +    struct rq *rq,
-> +    struct sched_entity *se)
-> +{
-> +    struct cfs_rq *cfs_rq = cfs_rq_of(se);
-> +
-> +    if (task_has_idle_policy(task_of(se)) || tg_is_idle(cfs_rq->tg))
->
->
-> The tg_is_idle() doesn't have hierarchical judgement on parent task
-> groups, while rq->cfs{,_idle}_tasks is rq wide. Say A->B where tgA
-> is idle and tgB isn't, a task from B will be added to the non-idle
-> list, is this what you want?
->
-> The tg_is_idle is used to check whether the task group of se is idle.
-> I think it is unlikely that the parent group is idle but the child group is none-idle.
-> If it happens, the current load balance policy yet not be affected.
->
->
-> It's quite common that an idle group contains several non-idle groups,
-> and it is so designed. In this case with your patch, tgB's tasks will
-> be wrongly put to the rq->cfs_tasks list.
->
->
-> OK, I agree it, this task idle judgement may be modified to below:
->
-> static int task_h_idle(struct task_struct *p)
-> {
->     struct sched_entity *se = &p->se;
->
->     if (task_has_idle_policy(p))
->         return 1;
->
->     for_each_sched_entity(se)
->         if (cfs_rq_is_idle(cfs_rq_of(se)))
->             return 1;
->
->     return 0;
-> }
->
->
-> What do you think of above modify?
->
->
->
->
-> + (*list_op)(&se->group_node, &rq->cfs_idle_tasks);
-> +    else
-> +        (*list_op)(&se->group_node, &rq->cfs_tasks);
-> +}
-> +#endif
-> +
->   static void
->   account_entity_enqueue(struct cfs_rq *cfs_rq, struct sched_entity *se)
->   {
-> @@ -3043,7 +3058,7 @@ account_entity_enqueue(struct cfs_rq *cfs_rq, struct sched_entity *se)
->           struct rq *rq = rq_of(cfs_rq);
->             account_numa_enqueue(rq, task_of(se));
-> -        list_add(&se->group_node, &rq->cfs_tasks);
-> +        adjust_rq_cfs_tasks(list_add, rq, se);
->       }
->   #endif
->       cfs_rq->nr_running++;
-> @@ -7465,7 +7480,7 @@ done: __maybe_unused;
->        * the list, so our cfs_tasks list becomes MRU
->        * one.
->        */
-> -    list_move(&p->se.group_node, &rq->cfs_tasks);
-> +    adjust_rq_cfs_tasks(list_move, rq, &p->se);
->   #endif
->         if (hrtick_enabled_fair(rq))
-> @@ -7788,6 +7803,9 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
->       if (unlikely(task_has_idle_policy(p)))
->           return 0;
->   +    if (tg_is_idle(cfs_rq_of(&p->se)->tg))
-> +        return 0;
-> +
->
->
-> Same as above. But I am not sure this is the right way to do it. We
-> still want to maintain policy behavior inside an idle task group.
->
-> Actually, we do not change the policy behavior of idle task group.
-> We only want to ensure migration prioritily when load balance
-> pulling/pushing tasks between CPUs.
->
->
-> But the tasks from idle tg could still be SCHED_NORMAL.
->
->
-> Yes you are right, please see above reply.
->
->
->
->
->       /* SMT siblings share cache */
->       if (env->sd->flags & SD_SHARE_CPUCAPACITY)
->           return 0;
-> @@ -7800,6 +7818,11 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
->                &p->se == cfs_rq_of(&p->se)->last))
->           return 1;
->   +    /* Preempt sched idle cpu do not consider migration cost */
-> +    if (cpus_share_cache(env->src_cpu, env->dst_cpu) &&
-> +        sched_idle_cpu(env->dst_cpu))
-> +        return 0;
-> +
->       if (sysctl_sched_migration_cost == -1)
->           return 1;
->   @@ -7990,11 +8013,14 @@ static void detach_task(struct task_struct *p, struct lb_env *env)
->   static struct task_struct *detach_one_task(struct lb_env *env)
->   {
->       struct task_struct *p;
-> +    struct list_head *tasks = &env->src_rq->cfs_tasks;
-> +    int loop = 0;
->
->
-> Maybe a boolean variable is enough (and more readable)?
->
-> Thanks,
-> Abel
->
-> OK, let me think more about how to define it an appropriate variable.
->
->
-> lockdep_assert_rq_held(env->src_rq);
->   +again:
->       list_for_each_entry_reverse(p,
-> -            &env->src_rq->cfs_tasks, se.group_node) {
-> +            tasks, se.group_node) {
->           if (!can_migrate_task(p, env))
->               continue;
->   @@ -8009,6 +8035,10 @@ static struct task_struct *detach_one_task(struct lb_env *env)
->           schedstat_inc(env->sd->lb_gained[env->idle]);
->           return p;
->       }
-> +    if (++loop == 1) {
-> +        tasks = &env->src_rq->cfs_idle_tasks;
-> +        goto again;
-> +    }
->       return NULL;
->   }
->   @@ -8026,6 +8056,7 @@ static int detach_tasks(struct lb_env *env)
->       unsigned long util, load;
->       struct task_struct *p;
->       int detached = 0;
-> +    int loop = 0;
->         lockdep_assert_rq_held(env->src_rq);
->   @@ -8041,6 +8072,7 @@ static int detach_tasks(struct lb_env *env)
->       if (env->imbalance <= 0)
->           return 0;
->   +again:
->       while (!list_empty(tasks)) {
->           /*
->            * We don't want to steal all, otherwise we may be treated likewise,
-> @@ -8142,6 +8174,11 @@ static int detach_tasks(struct lb_env *env)
->           list_move(&p->se.group_node, tasks);
->       }
->   +    if (env->imbalance > 0 && ++loop == 1) {
-> +        tasks = &env->src_rq->cfs_idle_tasks;
-> +        goto again;
-> +    }
-> +
->       /*
->        * Right now, this is one of only two places we collect this stat
->        * so we can safely collect detach_one_task() stats here rather
-> @@ -11643,7 +11680,7 @@ static void set_next_task_fair(struct rq *rq, struct task_struct *p, bool first)
->            * Move the next running task to the front of the list, so our
->            * cfs_tasks list becomes MRU one.
->            */
-> -        list_move(&se->group_node, &rq->cfs_tasks);
-> +        adjust_rq_cfs_tasks(list_move, rq, se);
->       }
->   #endif
->   diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> index e26688d387ae..accb4eea9769 100644
-> --- a/kernel/sched/sched.h
-> +++ b/kernel/sched/sched.h
-> @@ -1068,6 +1068,7 @@ struct rq {
->       int            online;
->         struct list_head cfs_tasks;
-> +    struct list_head cfs_idle_tasks;
->         struct sched_avg    avg_rt;
->       struct sched_avg    avg_dl;
->
-> .
->
-> .
+diff --git a/drivers/irqchip/irq-stm32-exti.c b/drivers/irqchip/irq-stm32-exti.c
+index a73763d475f0..6a3f7498ea8e 100644
+--- a/drivers/irqchip/irq-stm32-exti.c
++++ b/drivers/irqchip/irq-stm32-exti.c
+@@ -716,7 +716,7 @@ static int stm32_exti_h_domain_alloc(struct irq_domain *dm,
+ 
+ 	irq_domain_set_hwirq_and_chip(dm, virq, hwirq, chip, chip_data);
+ 
+-	if (!host_data->drv_data || !host_data->drv_data->desc_irqs)
++	if (!host_data->drv_data->desc_irqs)
+ 		return -EINVAL;
+ 
+ 	desc_irq = host_data->drv_data->desc_irqs[hwirq];
+
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.25.1
+
