@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1804C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE139C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241631AbiHQTmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38866 "EHLO
+        id S241644AbiHQTmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241380AbiHQTkC (ORCPT
+        with ESMTP id S241702AbiHQTkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:40:02 -0400
+        Wed, 17 Aug 2022 15:40:47 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E677A4B3A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:40:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C292A50E9
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:40:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660765199;
+        s=mimecast20190719; t=1660765244;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZBOqHQ+0wLuoWsigkrWi4WtzQUueoCKnZQINx3aEaTo=;
-        b=ifjIqYrVFZq7YqbRLP9HrbVpimR/yC7W0x1qkF/NekIvDywTLVbWxvU7H4pb6KHaTWDyf6
-        U1WS63G7zIXsXdRISo/EIx8qak9oAddrz46gra4Us/MSjgUsQPYEHon52VfzpHUCILUlco
-        ySIL4KFWsH5SzD46DUI8Bs6unDoDgZg=
+        bh=Lwx8PaWh6vygwU1UFyt3KfAFGt9fHxhNC+ENd2udmJQ=;
+        b=JUWfKSDv1pLxhEmJiHWXoHeNTRaqDjWK6d6ICWyevvGU4zPf8CNEUfi+xiD0hoo++thQN3
+        p2VlOt3o73F20br/jdLqfjj3Kw0Bg2fvB9uMGfVpuR/SQyiecNY9gjQUzvnNjd/pbR+LWZ
+        dX9x/MKDlmuAICL2TRg7nWx+lkQZcmg=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-367-WmbKvWhNNMiZHd5UoOVWfg-1; Wed, 17 Aug 2022 15:39:56 -0400
-X-MC-Unique: WmbKvWhNNMiZHd5UoOVWfg-1
+ us-mta-341-Ud7XGgcCPoq0YbT_jcJUOQ-1; Wed, 17 Aug 2022 15:40:39 -0400
+X-MC-Unique: Ud7XGgcCPoq0YbT_jcJUOQ-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EA5B285A584;
-        Wed, 17 Aug 2022 19:39:49 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F9FE8032FB;
+        Wed, 17 Aug 2022 19:40:38 +0000 (UTC)
 Received: from emerald.redhat.com (unknown [10.22.18.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A394492CA4;
-        Wed, 17 Aug 2022 19:39:49 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8FCB2492C3B;
+        Wed, 17 Aug 2022 19:40:37 +0000 (UTC)
 From:   Lyude Paul <lyude@redhat.com>
 To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
         amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
@@ -50,12 +50,11 @@ Cc:     Wayne Lin <Wayne.Lin@amd.com>,
         Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
         Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC v4 06/17] drm/display/dp_mst: Add some missing kdocs for atomic MST structs
-Date:   Wed, 17 Aug 2022 15:38:35 -0400
-Message-Id: <20220817193847.557945-7-lyude@redhat.com>
+Subject: [RFC v4 14/17] drm/display/dp_mst: Drop all ports from topology on CSNs before queueing link address work
+Date:   Wed, 17 Aug 2022 15:38:43 -0400
+Message-Id: <20220817193847.557945-15-lyude@redhat.com>
 In-Reply-To: <20220817193847.557945-1-lyude@redhat.com>
 References: <20220817193847.557945-1-lyude@redhat.com>
 MIME-Version: 1.0
@@ -66,8 +65,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we're about to start adding some stuff here, we may as well fill in
-any missing documentation that we forgot to write.
+We want to start cutting down on all of the places that we use port
+validation, so that ports may be removed from the topology as quickly as
+possible to minimize the number of errors we run into as a result of being
+out of sync with the current topology status. This isn't a very typical
+scenario and I don't think I've ever even run into it - but since the next
+commit is going to make some changes to payload updates depending on their
+hotplug status I think it's a probably good idea to take precautions.
+
+Let's do this with CSNs by moving some code around so that we only queue
+link address probing work at the end of handling all CSNs - allowing us to
+make sure we drop as many topology references as we can beforehand.
 
 Signed-off-by: Lyude Paul <lyude@redhat.com>
 Cc: Wayne Lin <Wayne.Lin@amd.com>
@@ -79,60 +87,65 @@ Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Sean Paul <sean@poorly.run>
 Acked-by: Jani Nikula <jani.nikula@intel.com>
 ---
- include/drm/display/drm_dp_mst_helper.h | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 9cdd2def56a1..3b155ad3eee4 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -542,7 +542,14 @@ struct drm_dp_payload {
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index 97e8f8a83ed4..a5460cadf2c8 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -2509,7 +2509,7 @@ drm_dp_mst_handle_link_address_port(struct drm_dp_mst_branch *mstb,
+ 	return ret;
+ }
  
- #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
+-static void
++static int
+ drm_dp_mst_handle_conn_stat(struct drm_dp_mst_branch *mstb,
+ 			    struct drm_dp_connection_status_notify *conn_stat)
+ {
+@@ -2522,7 +2522,7 @@ drm_dp_mst_handle_conn_stat(struct drm_dp_mst_branch *mstb,
  
-+/**
-+ * struct drm_dp_mst_atomic_payload - Atomic state struct for an MST payload
-+ *
-+ * The primary atomic state structure for a given MST payload. Stores information like current
-+ * bandwidth allocation, intended action for this payload, etc.
-+ */
- struct drm_dp_mst_atomic_payload {
-+	/** @port: The MST port assigned to this payload */
- 	struct drm_dp_mst_port *port;
+ 	port = drm_dp_get_port(mstb, conn_stat->port_number);
+ 	if (!port)
+-		return;
++		return 0;
  
- 	/**
-@@ -551,16 +558,32 @@ struct drm_dp_mst_atomic_payload {
- 	 * the immediate downstream DP Rx
- 	 */
- 	int time_slots;
-+	/** @pbn: The payload bandwidth for this payload */
- 	int pbn;
-+	/** @dsc_enabled: Whether or not this payload has DSC enabled */
- 	bool dsc_enabled;
+ 	if (port->connector) {
+ 		if (!port->input && conn_stat->input_port) {
+@@ -2575,8 +2575,7 @@ drm_dp_mst_handle_conn_stat(struct drm_dp_mst_branch *mstb,
+ 
+ out:
+ 	drm_dp_mst_topology_put_port(port);
+-	if (dowork)
+-		queue_work(system_long_wq, &mstb->mgr->work);
++	return dowork;
+ }
+ 
+ static struct drm_dp_mst_branch *drm_dp_get_mst_branch_device(struct drm_dp_mst_topology_mgr *mgr,
+@@ -4060,7 +4059,7 @@ drm_dp_mst_process_up_req(struct drm_dp_mst_topology_mgr *mgr,
+ 	struct drm_dp_mst_branch *mstb = NULL;
+ 	struct drm_dp_sideband_msg_req_body *msg = &up_req->msg;
+ 	struct drm_dp_sideband_msg_hdr *hdr = &up_req->hdr;
+-	bool hotplug = false;
++	bool hotplug = false, dowork = false;
+ 
+ 	if (hdr->broadcast) {
+ 		const u8 *guid = NULL;
+@@ -4083,11 +4082,14 @@ drm_dp_mst_process_up_req(struct drm_dp_mst_topology_mgr *mgr,
+ 
+ 	/* TODO: Add missing handler for DP_RESOURCE_STATUS_NOTIFY events */
+ 	if (msg->req_type == DP_CONNECTION_STATUS_NOTIFY) {
+-		drm_dp_mst_handle_conn_stat(mstb, &msg->u.conn_stat);
++		dowork = drm_dp_mst_handle_conn_stat(mstb, &msg->u.conn_stat);
+ 		hotplug = true;
+ 	}
+ 
+ 	drm_dp_mst_topology_put_mstb(mstb);
 +
-+	/** @next: The list node for this payload */
- 	struct list_head next;
- };
- 
-+/**
-+ * struct drm_dp_mst_topology_state - DisplayPort MST topology atomic state
-+ *
-+ * This struct represents the atomic state of the toplevel DisplayPort MST manager
-+ */
- struct drm_dp_mst_topology_state {
-+	/** @base: Base private state for atomic */
- 	struct drm_private_state base;
-+
-+	/** @payloads: The list of payloads being created/destroyed in this state */
- 	struct list_head payloads;
-+	/** @mgr: The topology manager */
- 	struct drm_dp_mst_topology_mgr *mgr;
-+
-+	/** @total_avail_slots: The total number of slots this topology can handle (63 or 64) */
- 	u8 total_avail_slots;
-+	/** @start_slot: The first usable time slot in this topology (1 or 0) */
- 	u8 start_slot;
- };
++	if (dowork)
++		queue_work(system_long_wq, &mgr->work);
+ 	return hotplug;
+ }
  
 -- 
 2.37.1
