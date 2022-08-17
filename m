@@ -2,87 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77AC6C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D60EEC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241286AbiHQR64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 13:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
+        id S241064AbiHQSDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241138AbiHQR6h (ORCPT
+        with ESMTP id S230025AbiHQSC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 13:58:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBC514031
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:58:33 -0700 (PDT)
+        Wed, 17 Aug 2022 14:02:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897D48A7D0;
+        Wed, 17 Aug 2022 11:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A9BEB81EB2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 17:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B6DC433C1;
-        Wed, 17 Aug 2022 17:58:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E30D8CE1E3D;
+        Wed, 17 Aug 2022 18:02:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C69EC433C1;
+        Wed, 17 Aug 2022 18:02:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660759111;
-        bh=UpT4SalvdR4WLHrTMa64BzqEXdI87jktLxsOmXVkBLY=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=dizlNlSHnqSb77WBJl/5tPzb7TdvXznK+wgOnFVnPEKrHiWylmVO4lSL433VO4nso
-         31lXFICtbxogVBHaPRBJQ7kjKBJyqVFDsRFhPenJ9YpzaJ62WdCMv4YbEErsMiL2pS
-         76Z1z+Ts9HQzrt/9438UTadj65IkOxztvmt+RH8XxbRcqMDP1yhUiG4indE3SUp00N
-         KpF8luZd87cYiRAvj/F9XOLGyzZsi229+fhZVi7wkLG15FdgZQh5pD9O37fF90YKN8
-         6lNtOWQYa5HuqGx3m110yUG6MUEjzwWOFm4vobuX6nXN98py3CWOYoLGiejJxdtYme
-         digLIlTvqDGJw==
-From:   Mark Brown <broonie@kernel.org>
-To:     perex@perex.cz, shengjiu.wang@gmail.com, tiwai@suse.com,
-        lgirdwood@gmail.com, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        festevam@gmail.com, Xiubo.Lee@gmail.com,
-        alsa-devel@alsa-project.org, nicoleotsuka@gmail.com
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-In-Reply-To: <1660713867-26921-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1660713867-26921-1-git-send-email-shengjiu.wang@nxp.com>
-Subject: Re: [PATCH] ASoC: fsl_sai: Remove unnecessary FIFO reset in ISR
-Message-Id: <166075910858.598125.7538229649159844439.b4-ty@kernel.org>
-Date:   Wed, 17 Aug 2022 18:58:28 +0100
+        s=k20201202; t=1660759373;
+        bh=wsEZUarWfOAbXbr/WU8jbErUqxQi3eDq6VQAPp1GO50=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JgJLvbAYyFnyYiPb5HohTYes+B1H/tI739OH/BMKasP/tDlw8iwnhG7VLcr2WDF6R
+         ZklT2iWQOXHe1sJw7jRSZmmhPStj3mYMSexuzbdepowQgCigeaJGR8gIJGahIoc2My
+         e3hByENNgGj/HpV5Ae25QhhgzRGdJX+bX7Saupuujek7+KbkcEGl5xro3BCvevAGWK
+         UqAi43PcmwV7axQtBRSwhbue3sL5Uwjzvez9Cyhl24lbB+RaqDUe2e+w4Gdz5oNLdc
+         Ykb/KIu/aZuxjry1/O0s+/171JcwguxK5ea3gIIahtQSVtoGzcBTuZUlqG43AguYtn
+         iHIfSKk3yuY5w==
+Message-ID: <8048714f47f19944a95a8703086069369bb7193e.camel@kernel.org>
+Subject: Re: [PATCH] locks: Fix dropped call to ->fl_release_private()
+From:   Jeff Layton <jlayton@kernel.org>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 17 Aug 2022 14:02:51 -0400
+In-Reply-To: <166075758809.3532462.13307935588777587536.stgit@warthog.procyon.org.uk>
+References: <166075758809.3532462.13307935588777587536.stgit@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-fe10a
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 13:24:27 +0800, Shengjiu Wang wrote:
-> The FIFO reset drops the words in the FIFO, which may cause
-> channel swap when SAI module is running, especially when the
-> DMA speed is low. So it is not good to do FIFO reset in ISR,
-> then remove the operation.
-> 
-> 
+On Wed, 2022-08-17 at 18:33 +0100, David Howells wrote:
+> Prior to commit 4149be7bda7e, sys_flock() would allocate the file_lock
+> struct it was going to use to pass parameters, call ->flock() and then ca=
+ll
+> locks_free_lock() to get rid of it - which had the side effect of calling
+> locks_release_private() and thus ->fl_release_private().
+>=20
+> With commit 4149be7bda7e, however, this is no longer the case: the struct
+> is now allocated on the stack, and locks_free_lock() is no longer called =
+-
+> and thus any remaining private data doesn't get cleaned up either.
+>=20
+> This causes afs flock to cause oops.  Kasan catches this as a UAF by the
+> list_del_init() in afs_fl_release_private() for the file_lock record
+> produced by afs_fl_copy_lock() as the original record didn't get delisted=
+.
+> It can be reproduced using the generic/504 xfstest.
+>=20
+> Fix this by reinstating the locks_release_private() call in sys_flock().
+> I'm not sure if this would affect any other filesystems.  If not, then th=
+e
+> release could be done in afs_flock() instead.
+>=20
+> Fixes: 4149be7bda7e ("fs/lock: Don't allocate file_lock in flock_make_loc=
+k().")
+> cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> cc: Chuck Lever <chuck.lever@oracle.com>
+> cc: Jeff Layton <jlayton@kernel.org>
+> cc: Marc Dionne <marc.dionne@auristor.com>
+> cc: linux-afs@lists.infradead.org
+> cc: linux-fsdevel@vger.kernel.org
+> ---
+>=20
+>  fs/locks.c |    5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/fs/locks.c b/fs/locks.c
+> index c266cfdc3291..f2d5aca782c6 100644
+> --- a/fs/locks.c
+> +++ b/fs/locks.c
+> @@ -2116,7 +2116,7 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned i=
+nt, cmd)
+> =20
+>  	error =3D security_file_lock(f.file, fl.fl_type);
+>  	if (error)
+> -		goto out_putf;
+> +		goto out_release;
 
-Applied to
+It probably doesn't hurt anything, but I don't think it's necessary to
+call locks_release_private if the ->flock op was never called.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+> =20
+>  	can_sleep =3D !(cmd & LOCK_NB);
+>  	if (can_sleep)
+> @@ -2128,7 +2128,8 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned i=
+nt, cmd)
+>  					    &fl);
+>  	else
+>  		error =3D locks_lock_file_wait(f.file, &fl);
+> -
+> +out_release:
+> +	locks_release_private(&fl);
+^^^
+I think we just need the above line.
 
-Thanks!
+>   out_putf:
+>  	fdput(f);
+> =20
+>=20
+>=20
 
-[1/1] ASoC: fsl_sai: Remove unnecessary FIFO reset in ISR
-      commit: cb225ac125a9c82889f4796a6092dd0bed39720a
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+--=20
+Jeff Layton <jlayton@kernel.org>
