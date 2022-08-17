@@ -2,248 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AC6C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9E3C28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243237AbiHRERz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        id S243242AbiHRER6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243128AbiHRERd (ORCPT
+        with ESMTP id S243157AbiHRERf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:17:33 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E2B9E2FA;
-        Wed, 17 Aug 2022 21:17:30 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I1Zob7014519;
+        Thu, 18 Aug 2022 00:17:35 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6CE7AB057;
+        Wed, 17 Aug 2022 21:17:31 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I2hVto018386;
         Thu, 18 Aug 2022 04:17:22 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=YP7jiQx6nRcEHsk8HlT10x8CfIauhO1O6L4cwHWK7K0=;
- b=aeMXC1cbmIrCgZc8757XkusqSqL4IuWMhAG5h376GT0mDPY9h0fZ2FY8tEIPXVKCIxXP
- N1Q4RFqXcHUHgJT6b9TOIwdRAb2Ou+4vgu5K2hhe/AB30t2oTjbwMYJW8nSbYZp4u5oV
- J4aVB+7OSeB4LRo1AzNMc1OqLM5uqCrZw0MYUNxviNJAnpDF5Rz8B7lAPHSVVrRP3q7i
- Habg8cjBkuBENb85GendJ/Y9c9u2Llm5Vtr+Cl+IOayn1hHhaxdY41tfjEuIkqpEMZA+
- zvl31/pRjkze9K+3IXvrWnY5xOdfVI5NScHaw2ij+0Z+evkfWcKbNs67bsDOjh9TtRhE Yg== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j181xhcqb-1
+ bh=EHtGBxEEfsfmnWP4PpzyBBgLU2KALug2bILXvp24eh0=;
+ b=Qbu0WQDlkHHqMGugLNLo6b1DYYMN3NkGNeNtIV33DE41BagSxGIXQT0hSDxvvtiFM3jV
+ px9WUrAnACoSKEo2FW8oyCR1fA2PaPzPuYKdhnDPtTMUfXAPm6kTrt0pJ4oGv9G6k89S
+ 2powAwqwevVvz60n+ayX3SRD2p0EtA/hv5/ZLvx08xm3DNNV9Z7+CjJ/pgtsiHgMTWCN
+ zL86hOF3hJXZlTXQ3oPxQav0xl7rmZhSvjMN+n/UJnQBtkfLk+suHXIxdt32ygV/2McY
+ VT060MntEY5HplxO1iLT3BIFEIS7hkzIBWl2CqfSJdOg2VW807A/NHgPZe0KzyrcTFTK ww== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j08wmgty7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 04:17:22 +0000
+        Thu, 18 Aug 2022 04:17:21 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJP9012622
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJAf009952
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 18 Aug 2022 04:17:21 GMT
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 08:15:00 -0700
+ 15.2.986.22; Wed, 17 Aug 2022 07:58:36 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
         Rob Clark <robdclark@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
-CC:     Matthias Kaehlcke <mka@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Douglas Anderson <dianders@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC:     Douglas Anderson <dianders@chromium.org>,
+        <krzysztof.kozlowski@linaro.org>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
-        Wang Qing <wangqing@vivo.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 6/7] drm/msm/a6xx: Improve gpu recovery sequence
-Date:   Wed, 17 Aug 2022 20:44:19 +0530
-Message-ID: <20220817204224.v4.6.Idf2ba51078e87ae7ceb75cc77a5bd4ff2bd31eab@changeid>
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 4/5] clk: qcom: gpucc-sc7280: Add cx collapse reset support
+Date:   Wed, 17 Aug 2022 20:27:53 +0530
+Message-ID: <20220817202609.v2.4.I5e64ff4b77bb9079eb2edeea8a02585c9e76778f@changeid>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
+In-Reply-To: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
+References: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: yBh9KR3pSlT3BWf62zgLbNbVbLV5HzYP
-X-Proofpoint-ORIG-GUID: yBh9KR3pSlT3BWf62zgLbNbVbLV5HzYP
+X-Proofpoint-ORIG-GUID: fqdzOf--2robkilEWfzfRDQmP1UYrOk-
+X-Proofpoint-GUID: fqdzOf--2robkilEWfzfRDQmP1UYrOk-
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 clxscore=1015 impostorscore=0 mlxlogscore=973 spamscore=0
- lowpriorityscore=0 adultscore=0 phishscore=0 suspectscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ adultscore=0 phishscore=0 malwarescore=0 mlxlogscore=999 impostorscore=0
+ clxscore=1015 suspectscore=0 mlxscore=0 spamscore=0 lowpriorityscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208180014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can do a few more things to improve our chance at a successful gpu
-recovery, especially during a hangcheck timeout:
-1. Halt CP and GMU core
-2. Do RBBM GBIF HALT sequence
-3. Do a soft reset of GPU core
+Allow a consumer driver to poll for cx gdsc collapse through Reset
+framework.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
-(no changes since v1)
+Changes in v2:
+- Minor update to use the updated custom reset ops implementation
 
- drivers/gpu/drm/msm/adreno/a6xx.xml.h |  4 ++
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 77 +++++++++++++++++++++--------------
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c |  7 ++++
- 3 files changed, 58 insertions(+), 30 deletions(-)
+ drivers/clk/qcom/gpucc-sc7280.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx.xml.h b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
-index b03e2c4..beea4a7 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx.xml.h
-+++ b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
-@@ -1413,6 +1413,10 @@ static inline uint32_t REG_A6XX_RBBM_PERFCTR_RBBM_SEL(uint32_t i0) { return 0x00
+diff --git a/drivers/clk/qcom/gpucc-sc7280.c b/drivers/clk/qcom/gpucc-sc7280.c
+index 9a832f2..d4bc791 100644
+--- a/drivers/clk/qcom/gpucc-sc7280.c
++++ b/drivers/clk/qcom/gpucc-sc7280.c
+@@ -433,12 +433,22 @@ static const struct regmap_config gpu_cc_sc7280_regmap_config = {
+ 	.fast_io = true,
+ };
  
- #define REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL			0x00000011
++struct qcom_reset_ops cx_gdsc_reset = {
++	.reset = gdsc_wait_for_collapse,
++};
++
++static const struct qcom_reset_map gpucc_sc7280_resets[] = {
++	[GPU_CX_COLLAPSE] = { .ops = &cx_gdsc_reset, .priv = &cx_gdsc },
++};
++
+ static const struct qcom_cc_desc gpu_cc_sc7280_desc = {
+ 	.config = &gpu_cc_sc7280_regmap_config,
+ 	.clks = gpu_cc_sc7280_clocks,
+ 	.num_clks = ARRAY_SIZE(gpu_cc_sc7280_clocks),
+ 	.gdscs = gpu_cc_sc7180_gdscs,
+ 	.num_gdscs = ARRAY_SIZE(gpu_cc_sc7180_gdscs),
++	.resets = gpucc_sc7280_resets,
++	.num_resets = ARRAY_SIZE(gpucc_sc7280_resets),
+ };
  
-+#define REG_A6XX_RBBM_GBIF_HALT					0x00000016
-+
-+#define REG_A6XX_RBBM_GBIF_HALT_ACK				0x00000017
-+
- #define REG_A6XX_RBBM_WAIT_FOR_GPU_IDLE_CMD			0x0000001c
- #define A6XX_RBBM_WAIT_FOR_GPU_IDLE_CMD_WAIT_GPU_IDLE		0x00000001
- 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index 9f76f5b..db05942 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -869,9 +869,47 @@ static void a6xx_gmu_rpmh_off(struct a6xx_gmu *gmu)
- 		(val & 1), 100, 1000);
- }
- 
-+#define GBIF_CLIENT_HALT_MASK             BIT(0)
-+#define GBIF_ARB_HALT_MASK                BIT(1)
-+
-+static void a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
-+{
-+	struct msm_gpu *gpu = &adreno_gpu->base;
-+
-+	if (!a6xx_has_gbif(adreno_gpu)) {
-+		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0xf);
-+		spin_until((gpu_read(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL1) &
-+								0xf) == 0xf);
-+		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0);
-+
-+		return;
-+	}
-+
-+	/* Halt the gx side of GBIF */
-+	gpu_write(gpu, REG_A6XX_RBBM_GBIF_HALT, 1);
-+	spin_until(gpu_read(gpu, REG_A6XX_RBBM_GBIF_HALT_ACK) & 1);
-+
-+	/* Halt new client requests on GBIF */
-+	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_CLIENT_HALT_MASK);
-+	spin_until((gpu_read(gpu, REG_A6XX_GBIF_HALT_ACK) &
-+			(GBIF_CLIENT_HALT_MASK)) == GBIF_CLIENT_HALT_MASK);
-+
-+	/* Halt all AXI requests on GBIF */
-+	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_ARB_HALT_MASK);
-+	spin_until((gpu_read(gpu,  REG_A6XX_GBIF_HALT_ACK) &
-+			(GBIF_ARB_HALT_MASK)) == GBIF_ARB_HALT_MASK);
-+
-+	/* The GBIF halt needs to be explicitly cleared */
-+	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
-+}
-+
- /* Force the GMU off in case it isn't responsive */
- static void a6xx_gmu_force_off(struct a6xx_gmu *gmu)
- {
-+	struct a6xx_gpu *a6xx_gpu = container_of(gmu, struct a6xx_gpu, gmu);
-+	struct adreno_gpu *adreno_gpu = &a6xx_gpu->base;
-+	struct msm_gpu *gpu = &adreno_gpu->base;
-+
- 	/* Flush all the queues */
- 	a6xx_hfi_stop(gmu);
- 
-@@ -883,6 +921,15 @@ static void a6xx_gmu_force_off(struct a6xx_gmu *gmu)
- 
- 	/* Make sure there are no outstanding RPMh votes */
- 	a6xx_gmu_rpmh_off(gmu);
-+
-+	/* Halt the gmu cm3 core */
-+	gmu_write(gmu, REG_A6XX_GMU_CM3_SYSRESET, 1);
-+
-+	a6xx_bus_clear_pending_transactions(adreno_gpu);
-+
-+	/* Reset GPU core blocks */
-+	gpu_write(gpu, REG_A6XX_RBBM_SW_RESET_CMD, 1);
-+	udelay(100);
- }
- 
- static void a6xx_gmu_set_initial_freq(struct msm_gpu *gpu, struct a6xx_gmu *gmu)
-@@ -1010,36 +1057,6 @@ bool a6xx_gmu_isidle(struct a6xx_gmu *gmu)
- 	return true;
- }
- 
--#define GBIF_CLIENT_HALT_MASK             BIT(0)
--#define GBIF_ARB_HALT_MASK                BIT(1)
--
--static void a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
--{
--	struct msm_gpu *gpu = &adreno_gpu->base;
--
--	if (!a6xx_has_gbif(adreno_gpu)) {
--		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0xf);
--		spin_until((gpu_read(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL1) &
--								0xf) == 0xf);
--		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0);
--
--		return;
--	}
--
--	/* Halt new client requests on GBIF */
--	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_CLIENT_HALT_MASK);
--	spin_until((gpu_read(gpu, REG_A6XX_GBIF_HALT_ACK) &
--			(GBIF_CLIENT_HALT_MASK)) == GBIF_CLIENT_HALT_MASK);
--
--	/* Halt all AXI requests on GBIF */
--	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_ARB_HALT_MASK);
--	spin_until((gpu_read(gpu,  REG_A6XX_GBIF_HALT_ACK) &
--			(GBIF_ARB_HALT_MASK)) == GBIF_ARB_HALT_MASK);
--
--	/* The GBIF halt needs to be explicitly cleared */
--	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
--}
--
- /* Gracefully try to shut down the GMU and by extension the GPU */
- static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
- {
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 0ec4fcd..a9335bc 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -920,6 +920,10 @@ static int hw_init(struct msm_gpu *gpu)
- 	/* Make sure the GMU keeps the GPU on while we set it up */
- 	a6xx_gmu_set_oob(&a6xx_gpu->gmu, GMU_OOB_GPU_SET);
- 
-+	/* Clear GBIF halt in case GX domain was not collapsed */
-+	if (a6xx_has_gbif(adreno_gpu))
-+		gpu_write(gpu, REG_A6XX_RBBM_GBIF_HALT, 0);
-+
- 	gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_CNTL, 0);
- 
- 	/*
-@@ -1205,6 +1209,9 @@ static void a6xx_recover(struct msm_gpu *gpu)
- 	if (hang_debug)
- 		a6xx_dump(gpu);
- 
-+	/* Halt SQE first */
-+	gpu_write(gpu, REG_A6XX_CP_SQE_CNTL, 3);
-+
- 	/*
- 	 * Turn off keep alive that might have been enabled by the hang
- 	 * interrupt
+ static const struct of_device_id gpu_cc_sc7280_match_table[] = {
 -- 
 2.7.4
 
