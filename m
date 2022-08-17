@@ -2,161 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE4BC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E692C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240344AbiHQQlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
+        id S239742AbiHQQl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238112AbiHQQlI (ORCPT
+        with ESMTP id S237637AbiHQQl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:41:08 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E3D8287F
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:41:06 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so2489494pjl.0
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:41:06 -0700 (PDT)
+        Wed, 17 Aug 2022 12:41:26 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7771B80486
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:41:25 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id l64so12443455pge.0
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:41:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=+ikgV9j3l03eb081Wbda2p4MulJ7Ue+5+L1IC0y+zRw=;
-        b=Xm3zYn0XXhcqlUm6XwtiUXKvfhHNTJlwJ5rOGOdeIAENS+HTDHR8MoC+gv0BJ6FfGD
-         jW7eeUJEVwESibuvPt/A4l7PtNTXBTNMXGGO44s25K9ny7C8mmfzN9gPZN9CMoF95Lee
-         3by231uAWxez9zWEhzG+ANfWtvjh6CGyhTTZ3GZk7/jqwz4GsVpY6GSqdZAWLGaQozGv
-         M4RpuwhTP4UwCdNo+eMqiXcVD0ixxSJTKdcVqzX6rLjWQ5JV8+nlZ9fB8CMZZZ+TqazC
-         DUeJQabE9GlXzf+rwmAt43fAXtP5vatJCMn8wgXYiKZER8aE4lYobMMod8nyWa3oOnFY
-         qTcQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc;
+        bh=E/WUK+EZH+G0Nw5v/ljN7mHurJREvywoLwk9357cYts=;
+        b=QV0UY/uZ3/+BP4P7a0dFEFwVmciILKHs4TU5cmEfG1tE90r34b3s9+fEParsMlHGc2
+         8XfQWKtT9heb9WvMsFl7z+zrNUuDq6Cd/CAQbXOfhJRcB9rWyZ6RhvXozwqW4ZAWgwaT
+         SwYi3P9KRVzToEJ5zVbudzLztm/58IkXdTYrLcIC3hJklClAG51tUioGYIeDVvrkKnEr
+         s8vXgZrPTt/86Jwhbpqe1A7box4ggkTbxxaw7cL9NadbvNR5jjnAfpNaFIMtWi5eyZiV
+         793GmFXjiZzsXMx3j+025J01vDbsIYJKYvAU7hbuRn11anqbCAmp4racBmgO52bd3j6v
+         My2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=+ikgV9j3l03eb081Wbda2p4MulJ7Ue+5+L1IC0y+zRw=;
-        b=CsCezurmezfEovZ86mnr/hx6yiwxStfszsJrRjAbPNV62VMNYD1vJxo7tNrSXHdwqM
-         yaVjqXDJqsIc94Ocusz1Q3XLiMS3D6LCPUKQpoOwPs8vXxlVw6HY1R544nYHt+KUWS9+
-         ffy0uosyqjrzFbZVkOF5CeG2SdzKo37pBtIMP2ZJxY6cbeHwJBqByXkOnnXcLyir6x9J
-         nk1rwI3omwuudi4wqjdquntyQTcnEfke9gt9fE+c1G8eIVInSAsyh9LOcoxS+0UB+nEw
-         ljqEBe/goN5rE/h1nRiXOdZ5sSxsqaR+0EfnvL4P6l4qeb8DCHEwvOAXFq8bB9v2+ygo
-         9ZNQ==
-X-Gm-Message-State: ACgBeo2C4hf4CrJcqXLAtEJ7vTFrDp6AcKRuMEirIXtYRzvsb+1VjoJs
-        KhpJKDPZztlLjwslPJkqZnPLuA==
-X-Google-Smtp-Source: AA6agR5bKAhFJJYgDr81IUOVX+n51nW4MVPub70A4/x+j2SHk2CJkiB9rNZ00QaD5XiSVlzNhahDxw==
-X-Received: by 2002:a17:90b:4c8d:b0:1f5:29ef:4a36 with SMTP id my13-20020a17090b4c8d00b001f529ef4a36mr4688702pjb.127.1660754466127;
-        Wed, 17 Aug 2022 09:41:06 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id f8-20020a170902684800b001728ac8af94sm111593pln.248.2022.08.17.09.41.05
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc;
+        bh=E/WUK+EZH+G0Nw5v/ljN7mHurJREvywoLwk9357cYts=;
+        b=ADsuK0PGit/zBSUiMnkwbDiJ1be+PDtLIr68MaZtSH6cQfeSY0RV9bhw7IrTwJmWLJ
+         qHH5e7xCjGoXDm5nABkO2k9IdZruJtv6hEQo//khzSi4hIyI7OOLA7qNyzKlF78CDt1L
+         MfWRu6EOU5/TaPPKtbRKddh9zbn9W/uN4XNql7k+h2pot6GN/dklU1LFwgAfjiqrkDFB
+         2XCh55BJ7HBgMs34kQWeJ48imzVHdql6P/OnNSZH+5nHkopc62vod+CPqa0TBhAGylWQ
+         IMaRYc6VpeqwB6rmQpbHTNRTwQVmrgoR2r0xgsa3umu0wlD5/Gd9RCuUQwW+ThuMfRpm
+         sntA==
+X-Gm-Message-State: ACgBeo2pqPtfNANkJ4nJ3M18bKY0AlAYdB8ajj8VUL8YICJ6GJEEZCzH
+        SR9PafDlc8cms37kAjO6v20=
+X-Google-Smtp-Source: AA6agR5k841QvYSAxdV0srqkofV2AdZNo8z+Mjy79oVSvGKsGJg7/WnvCwzgIujBR2NKr1k6nZ6q7Q==
+X-Received: by 2002:a05:6a00:2991:b0:52e:b387:b3c6 with SMTP id cj17-20020a056a00299100b0052eb387b3c6mr26542622pfb.11.1660754484741;
+        Wed, 17 Aug 2022 09:41:24 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
+        by smtp.gmail.com with ESMTPSA id k8-20020a170902c40800b0017297a6b39dsm110042plk.265.2022.08.17.09.41.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 09:41:05 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 16:41:01 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        mlevitsk@redhat.com, vkuznets@redhat.com
-Subject: Re: [PATCH v2 2/9] KVM: x86: remove return value of kvm_vcpu_block
-Message-ID: <Yv0aHXcmuivyJDXw@google.com>
-References: <20220811210605.402337-1-pbonzini@redhat.com>
- <20220811210605.402337-3-pbonzini@redhat.com>
- <Yvwpb6ofD1S+Rqk1@google.com>
- <78616cf8-2693-72cc-c2cc-5a849116ffc7@redhat.com>
+        Wed, 17 Aug 2022 09:41:24 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 17 Aug 2022 06:41:22 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Vasily Averin <vvs@openvz.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        gregkh@linuxfoundation.org, hannes@cmpxchg.org, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, mhocko@suse.com, shakeelb@google.com,
+        songmuchun@bytedance.com, viro@zeniv.linux.org.uk
+Subject: Re: [RFC PATCH] memcg: adjust memcg for new cgroup allocations
+Message-ID: <Yv0aMqMIafD7cOQX@slm.duckdns.org>
+References: <62188f37-f816-08e9-cdd5-8df23131746d@openvz.org>
+ <45a04b75-d61b-4c7a-7169-c971995a6049@openvz.org>
+ <20220817091728.GA23229@blackbody.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <78616cf8-2693-72cc-c2cc-5a849116ffc7@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220817091728.GA23229@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022, Paolo Bonzini wrote:
-> On 8/17/22 01:34, Sean Christopherson wrote:
-> > Isn't freeing up the return from kvm_vcpu_check_block() unnecessary?  Can't we
-> > just do:
-> > 
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index 9f11b505cbee..ccb9f8bdeb18 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -10633,7 +10633,7 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
-> >                  if (hv_timer)
-> >                          kvm_lapic_switch_to_hv_timer(vcpu);
-> > 
-> > -               if (!kvm_check_request(KVM_REQ_UNHALT, vcpu))
-> > +               if (!kvm_arch_vcpu_runnable(vcpu))
-> >                          return 1;
-> >          }
-> > 
-> > 
-> > which IMO is more intuitive and doesn't require reworking halt-polling (again).
+Hello,
+
+On Wed, Aug 17, 2022 at 11:17:28AM +0200, Michal Koutný wrote:
+> On Wed, Aug 17, 2022 at 10:42:40AM +0300, Vasily Averin <vvs@openvz.org> wrote:
+> > However, now we want to enable accounting for some other cgroup-related
+> > resources called from cgroup_mkdir. We would like to guarantee that
+> > all new accounted allocation will be charged to the same memory cgroup.
 > 
-> This was my first idea indeed.  However I didn't like calling
-> kvm_arch_vcpu_runnable() again and "did it schedule()" seemed to be a less
-> interesting result from kvm_vcpu_block() (and in fact kvm_vcpu_halt() does
-> not bother passing it up the return chain).
+> Here's my point -- the change in the referenced patch applied to memory
+> controller hierarchies. This extension applies to any hierarchy that can
+> create groups, namely, a hierarchy without memory controller too. There
+> mem_cgroup_from_cgroup falls back to the root memcg (on a different
+> hierarchy).
+> 
+> If the purpose is to prevent unlimited creation of cgroup objects, the
+> root memcg is by principle unlimited, so it's just for accounting.
+> 
+> But I understand the purpose is to have everything under one roof,
+> unless the object lifetime is not bound to that owning memcg. Should
+> memory-less hierarchies be treated specially?
 
-The flip side of calling kvm_arch_vcpu_runnable() again is that KVM will immediately
-wake the vCPU if it becomes runnable after kvm_vcpu_check_block().  The edge cases
-where the vCPU becomes runnable late are unlikely to truly matter in practice, but
-on the other hand manually re-checking kvm_arch_vcpu_runnable() means KVM gets both
-cases "right" (waited=true iff vCPU actually waited, vCPU awakened ASAP), whereas
-squishing the information into the return of kvm_vcpu_check_block() means KVM gets
-both cases "wrong" (waited=true even if schedule() was never called, vCPU left in
-a non-running state even though it's runnable).
+At least from my POV, as long as cgroup1 is not being regressed, we want to
+make decisions which make the best long term sense. We surely can
+accommodate cgroup1 as long as the added complexity is minimal but the bar
+is pretty high there. cgroup1 has been in maintenance mode for years now and
+even the basic delegation model isn't well established in cgroup1, so if we
+end up accounting everything in the root cgroup for most of cgroup1
+hierarchies, that sounds fine to me.
 
-My only hesitation with calling kvm_arch_vcpu_runnable() again is that it could be
-problematic if KVM somehow managed to consume the event that caused kvm_vcpu_has_events()
-to return true, but I don't see how that could happen without it being a KVM bug.
+Thanks.
 
-Ah, and if we do go with the explicit check, it should come with a comment to call
-out that KVM needs to return up the stack, e.g.
-
-		/*
-		 * If KVM stopped blocking the vCPU but the vCPU is still not
-		 * runnable, then there is a pending host event of some kind,
-		 * e.g. a pending signal.  Return up the stack to service the
-		 * pending event without changing the vCPU's activity state.
-		 */
-		if (!kvm_arch_vcpu_runnable(vcpu))
-			return 1;
-
-so that we don't end combining the checks into:
-
-	while (!kvm_arch_vcpu_runnable(vcpu)) {
-		/*
-		 * Switch to the software timer before halt-polling/blocking as
-		 * the guest's timer may be a break event for the vCPU, and the
-		 * hypervisor timer runs only when the CPU is in guest mode.
-		 * Switch before halt-polling so that KVM recognizes an expired
-		 * timer before blocking.
-		 */
-		hv_timer = kvm_lapic_hv_timer_in_use(vcpu);
-		if (hv_timer)
-			kvm_lapic_switch_to_sw_timer(vcpu);
-
-		kvm_vcpu_srcu_read_unlock(vcpu);
-		if (vcpu->arch.mp_state == KVM_MP_STATE_HALTED)
-			kvm_vcpu_halt(vcpu);
-		else
-			kvm_vcpu_block(vcpu);
-		kvm_vcpu_srcu_read_lock(vcpu);
-
-		if (hv_timer)
-			kvm_lapic_switch_to_hv_timer(vcpu);
-	}
-
-which looks sane, but would mean KVM never bounces out to handle whatever event
-needs handling.
-
-Side topic, usage of kvm_apic_accept_events() appears to be broken (though nothing
-can trigger the bug).  If kvm_apic_accept_events() were to return an -errno, then
-kvm_arch_vcpu_ioctl_run() would return '0' to userspace without updating
-vcpu->run->exit_reason.  I think an easy fix is to drop the return value entirely
-and then WARN if kvm_check_nested_events() returns something other than -EBUSY.
-
-	if (is_guest_mode(vcpu)) {
-		r = kvm_check_nested_events(vcpu);
-		if (r < 0) {
-			WARN_ON_ONCE(r != -EBUSY);
-			return;
-		}
-
-
+-- 
+tejun
