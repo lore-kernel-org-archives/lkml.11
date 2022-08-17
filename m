@@ -2,141 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D49C8C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4020BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 03:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238525AbiHQDOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 23:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50016 "EHLO
+        id S235578AbiHQDQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 23:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiHQDOA (ORCPT
+        with ESMTP id S229569AbiHQDQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 23:14:00 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7629D5D113;
-        Tue, 16 Aug 2022 20:13:52 -0700 (PDT)
-X-UUID: f38c1a2bf4f148fe9c7f0f10077d1e83-20220817
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=DxniUy+/X99gAlGwCbWLlenlcjZNB+qTT48tMczTJeM=;
-        b=jSsti5YQoBF3UZa4UiISJl+jMVgBi1Nu/koitx69bT3MU9bD2KFMui9Z6TwxDxAcxhmXBf5j1eY0GLvl1sRRc0bKS8JzQV1UpAddojxyvr85cEDGjKpZOVEb9J9XhJpZwVCKaRVB0UJobEB3SAfb67KP4N1PZsecC2DrdxPgnvg=;
-X-CID-UNFAMILIAR: 1
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:e91c9c94-4efe-4b2a-9d01-d22d81e4bf30,OB:10,
-        LOB:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:2,SF:54,FILE:0,BULK:0,RULE:Relea
-        se_Ham,ACTION:release,TS:56
-X-CID-INFO: VERSION:1.1.10,REQID:e91c9c94-4efe-4b2a-9d01-d22d81e4bf30,OB:10,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:2,SF:54,FILE:0,BULK:0,RULE:Release
-        _HamU,ACTION:release,TS:56
-X-CID-META: VersionHash:84eae18,CLOUDID:d1a3e29c-da39-4e3b-a854-56c7d2111b46,C
-        OID:0dbe88b70084,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:11|1,File:nil,Bulk:40,QS:nil,BEC:nil,COL:0
-X-UUID: f38c1a2bf4f148fe9c7f0f10077d1e83-20220817
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <jianjun.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 588178327; Wed, 17 Aug 2022 11:13:48 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 17 Aug 2022 11:13:47 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Wed, 17 Aug 2022 11:13:46 +0800
-Message-ID: <e330820facd95af02e491bffd41aa9f468d8751e.camel@mediatek.com>
-Subject: Re: [PATCH v4] dt-bindings: PCI: mediatek-gen3: Add support for
- MT8188 and MT8195
-From:   Jianjun Wang <jianjun.wang@mediatek.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Ryder Lee <ryder.lee@mediatek.com>, <Rex-BC.Chen@mediatek.com>,
-        <TingHan.Shen@mediatek.com>, <Liju-clr.Chen@mediatek.com>,
-        <Jian.Yang@mediatek.com>
-Date:   Wed, 17 Aug 2022 11:13:46 +0800
-In-Reply-To: <20220802120624.19258-1-jianjun.wang@mediatek.com>
-References: <20220802120624.19258-1-jianjun.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 16 Aug 2022 23:16:04 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89993760D1
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 20:16:02 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6tN50yYCzXdXd;
+        Wed, 17 Aug 2022 11:11:49 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 11:16:00 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 17 Aug
+ 2022 11:15:59 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <richard@nod.at>, <miquel.raynal@bootlin.com>, <vigneshr@ti.com>,
+        <s.hauer@pengutronix.de>
+CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH v2] ubi: fastmap: Add fastmap control support for 'UBI_IOCATT' ioctl
+Date:   Wed, 17 Aug 2022 11:27:35 +0800
+Message-ID: <20220817032735.1247249-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maintainers,
+[1] suggests that fastmap is suitable for large flash devices. Module
+parameter 'fm_autoconvert' is a coarse grained switch to enable all
+ubi devices to generate fastmap, which may turn on fastmap even for
+small flash devices.
 
-Gentle ping for this patch, if there is anything I need to modify,
-please kindly let me know.
+This patch imports a new field 'disable_fm' in struct 'ubi_attach_req'
+to support following situations by ioctl 'UBI_IOCATT'.
+ [old functions]
+ A. Disable 'fm_autoconvert': Disbable fastmap for all ubi devices
+ B. Enable 'fm_autoconvert': Enable fastmap for all ubi devices
+ [new function]
+ C. Enable 'fm_autoconvert', set 'disable_fm' for given device: Don't
+    create new fastmap and do full scan (existed fastmap will be
+    destroyed) for the given ubi device.
 
-Thanks.
+A simple test case in [2].
 
-On Tue, 2022-08-02 at 20:06 +0800, Jianjun Wang wrote:
-> MT8188 and MT8195 are ARM platform SoCs with the same PCIe IP as
-> MT8192.
-> 
-> Also add new clock name "peri_mem" since the MT8188 and MT8195 use
-> clock
-> "peri_mem" instead of "top_133m".
-> 
-> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
-> ---
-> Changes in v4:
-> Remove "items" for "mediatek,mt8192-pcie" since it only have one
-> item.
-> 
-> Changes in v3:
-> Use enum property to add the new clock name.
-> 
-> Changes in v2:
-> Merge two patches into one.
-> ---
->  .../devicetree/bindings/pci/mediatek-pcie-gen3.yaml | 13
-> +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pci/mediatek-pcie-
-> gen3.yaml b/Documentation/devicetree/bindings/pci/mediatek-pcie-
-> gen3.yaml
-> index 0499b94627ae..c00be39af64e 100644
-> --- a/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
-> +++ b/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
-> @@ -48,7 +48,13 @@ allOf:
->  
->  properties:
->    compatible:
-> -    const: mediatek,mt8192-pcie
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt8188-pcie
-> +              - mediatek,mt8195-pcie
-> +          - const: mediatek,mt8192-pcie
-> +      - const: mediatek,mt8192-pcie
->  
->    reg:
->      maxItems: 1
-> @@ -84,7 +90,9 @@ properties:
->        - const: tl_96m
->        - const: tl_32k
->        - const: peri_26m
-> -      - const: top_133m
-> +      - enum:
-> +          - top_133m        # for MT8192
-> +          - peri_mem        # for MT8188/MT8195
->  
->    assigned-clocks:
->      maxItems: 1
-> @@ -126,6 +134,7 @@ required:
->    - interrupts
->    - ranges
->    - clocks
-> +  - clock-names
->    - '#interrupt-cells'
->    - interrupt-controller
->  
+[1] http://www.linux-mtd.infradead.org/doc/ubi.html#L_fastmap
+[2] https://bugzilla.kernel.org/show_bug.cgi?id=216278
+
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+---
+ v1->v2:
+   Make value assignment method more resonable between bool and integer
+   types.
+ drivers/mtd/ubi/build.c     | 14 ++++++++++----
+ drivers/mtd/ubi/cdev.c      |  2 +-
+ drivers/mtd/ubi/ubi.h       |  3 ++-
+ include/uapi/mtd/ubi-user.h |  8 +++++++-
+ 4 files changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/mtd/ubi/build.c b/drivers/mtd/ubi/build.c
+index a32050fecabf..a901f8edfa41 100644
+--- a/drivers/mtd/ubi/build.c
++++ b/drivers/mtd/ubi/build.c
+@@ -807,6 +807,7 @@ static int autoresize(struct ubi_device *ubi, int vol_id)
+  * @ubi_num: number to assign to the new UBI device
+  * @vid_hdr_offset: VID header offset
+  * @max_beb_per1024: maximum expected number of bad PEB per 1024 PEBs
++ * @disable_fm: whether disable fastmap
+  *
+  * This function attaches MTD device @mtd_dev to UBI and assign @ubi_num number
+  * to the newly created UBI device, unless @ubi_num is %UBI_DEV_NUM_AUTO, in
+@@ -814,11 +815,15 @@ static int autoresize(struct ubi_device *ubi, int vol_id)
+  * automatically. Returns the new UBI device number in case of success and a
+  * negative error code in case of failure.
+  *
++ * If @disable_fm is true, ubi doesn't create new fastmap even the module param
++ * 'fm_autoconvert' is set, and existed old fastmap will be destroyed after
++ * doing full scanning.
++ *
+  * Note, the invocations of this function has to be serialized by the
+  * @ubi_devices_mutex.
+  */
+ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
+-		       int vid_hdr_offset, int max_beb_per1024)
++		       int vid_hdr_offset, int max_beb_per1024, bool disable_fm)
+ {
+ 	struct ubi_device *ubi;
+ 	int i, err;
+@@ -921,7 +926,7 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
+ 		UBI_FM_MIN_POOL_SIZE);
+ 
+ 	ubi->fm_wl_pool.max_size = ubi->fm_pool.max_size / 2;
+-	ubi->fm_disabled = !fm_autoconvert;
++	ubi->fm_disabled = (!fm_autoconvert || disable_fm) ? 1 : 0;
+ 	if (fm_debug)
+ 		ubi_enable_dbg_chk_fastmap(ubi);
+ 
+@@ -962,7 +967,7 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
+ 	if (!ubi->fm_buf)
+ 		goto out_free;
+ #endif
+-	err = ubi_attach(ubi, 0);
++	err = ubi_attach(ubi, disable_fm ? 1 : 0);
+ 	if (err) {
+ 		ubi_err(ubi, "failed to attach mtd%d, error %d",
+ 			mtd->index, err);
+@@ -1242,7 +1247,8 @@ static int __init ubi_init(void)
+ 
+ 		mutex_lock(&ubi_devices_mutex);
+ 		err = ubi_attach_mtd_dev(mtd, p->ubi_num,
+-					 p->vid_hdr_offs, p->max_beb_per1024);
++					 p->vid_hdr_offs, p->max_beb_per1024,
++					 false);
+ 		mutex_unlock(&ubi_devices_mutex);
+ 		if (err < 0) {
+ 			pr_err("UBI error: cannot attach mtd%d\n",
+diff --git a/drivers/mtd/ubi/cdev.c b/drivers/mtd/ubi/cdev.c
+index cc9a28cf9d82..0680ba82255b 100644
+--- a/drivers/mtd/ubi/cdev.c
++++ b/drivers/mtd/ubi/cdev.c
+@@ -1041,7 +1041,7 @@ static long ctrl_cdev_ioctl(struct file *file, unsigned int cmd,
+ 		 */
+ 		mutex_lock(&ubi_devices_mutex);
+ 		err = ubi_attach_mtd_dev(mtd, req.ubi_num, req.vid_hdr_offset,
+-					 req.max_beb_per1024);
++					 req.max_beb_per1024, !!req.disable_fm);
+ 		mutex_unlock(&ubi_devices_mutex);
+ 		if (err < 0)
+ 			put_mtd_device(mtd);
+diff --git a/drivers/mtd/ubi/ubi.h b/drivers/mtd/ubi/ubi.h
+index 078112e23dfd..947d17e1e434 100644
+--- a/drivers/mtd/ubi/ubi.h
++++ b/drivers/mtd/ubi/ubi.h
+@@ -937,7 +937,8 @@ int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
+ 
+ /* build.c */
+ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
+-		       int vid_hdr_offset, int max_beb_per1024);
++		       int vid_hdr_offset, int max_beb_per1024,
++		       bool disable_fm);
+ int ubi_detach_mtd_dev(int ubi_num, int anyway);
+ struct ubi_device *ubi_get_device(int ubi_num);
+ void ubi_put_device(struct ubi_device *ubi);
+diff --git a/include/uapi/mtd/ubi-user.h b/include/uapi/mtd/ubi-user.h
+index b69e9ba6742b..dcb179de4358 100644
+--- a/include/uapi/mtd/ubi-user.h
++++ b/include/uapi/mtd/ubi-user.h
+@@ -247,6 +247,7 @@ enum {
+  * @vid_hdr_offset: VID header offset (use defaults if %0)
+  * @max_beb_per1024: maximum expected number of bad PEB per 1024 PEBs
+  * @padding: reserved for future, not used, has to be zeroed
++ * @disable_fm: whether disable fastmap
+  *
+  * This data structure is used to specify MTD device UBI has to attach and the
+  * parameters it has to use. The number which should be assigned to the new UBI
+@@ -281,13 +282,18 @@ enum {
+  * eraseblocks for new bad eraseblocks, but attempts to use available
+  * eraseblocks (if any). The accepted range is 0-768. If 0 is given, the
+  * default kernel value of %CONFIG_MTD_UBI_BEB_LIMIT will be used.
++ *
++ * If @disable_fm is not zero, ubi doesn't create new fastmap even the module
++ * param 'fm_autoconvert' is set, and existed old fastmap will be destroyed
++ * after doing full scanning.
+  */
+ struct ubi_attach_req {
+ 	__s32 ubi_num;
+ 	__s32 mtd_num;
+ 	__s32 vid_hdr_offset;
+ 	__s16 max_beb_per1024;
+-	__s8 padding[10];
++	__s8 disable_fm;
++	__s8 padding[9];
+ };
+ 
+ /*
+-- 
+2.31.1
 
