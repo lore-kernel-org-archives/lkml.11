@@ -2,205 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51655C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A462C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242035AbiHQUfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
+        id S242005AbiHQUj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241986AbiHQUfQ (ORCPT
+        with ESMTP id S238164AbiHQUjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:35:16 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5CEAA3E5;
-        Wed, 17 Aug 2022 13:35:14 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id q39-20020a056830442700b0063889adc0ddso9216795otv.1;
-        Wed, 17 Aug 2022 13:35:14 -0700 (PDT)
+        Wed, 17 Aug 2022 16:39:54 -0400
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58319BB71;
+        Wed, 17 Aug 2022 13:39:53 -0700 (PDT)
+Received: by mail-vs1-xe30.google.com with SMTP id c3so14309433vsc.6;
+        Wed, 17 Aug 2022 13:39:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=gxYbz4vgkJrv2ZDG6l+fEiYODdiBDS379CnGFFAEQCA=;
-        b=Uf8/JMbJrj//7ezxkLb/aOXHNfyJLkuRC5MHSWStBXI5zX+Ljl+T4G26MZfdmT1tUi
-         +oeuYc/4J7ElSoHOITcjQmHHNZ0zB4Iy7OwLx+YyLIQweEfcsND7lCCAZSmi8i5C8vw9
-         po0DE79mAnRSmOOjCV/ixl2HQZc3Da7CEuVmlR5GKJkGwdDuqqbBeIkO4KfOLKyJzPFp
-         je0dwtAPPYsg2UrjWkl3DIcBtXtC5rcJWvqu+HZVhlySw6WuSgH+WiMZuKots3a/6eFH
-         5rFUFIxXVlm+aeJTzYiKktnFYJqoaji+uf+n35Annv4EB6aCJBWzj7nFMo9tHnzOHvLT
-         V9wg==
+        bh=Pby1yMSBPXIRmnbK0mp8JoI7OWrC1joW57AiQcbBP0Q=;
+        b=inC+UgcY0EIaKzbjmu9TomN+u6btHsSO05ufbPi8fwp81bBlk7mkWQVr7pqZ9RRqLU
+         hvBJbrD1nAXbb0hc5VwXN8Zy0wnZm1nu/acyUVP51b3R3tpQPCOkPmzPFeHbyBLmJyeD
+         uUsXNzjU/sI4QGzkncRbj0amd+xLIyLUVu96aUe4zdN5DyQq8bScni4Xe6fhYbd8MlXQ
+         fldeeRjYOZMaUDbfhU72Iu9YETXX3PT74/PjlHmCWhL1iSDhIi5IpALmZhk32MpKs2FF
+         E8mXcJQcYSqqpqHwX1R1NrAsGeifiFjZgcxsHNJrwzwd55cY55RnJW8VJH40ZxVikK/Z
+         43hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=gxYbz4vgkJrv2ZDG6l+fEiYODdiBDS379CnGFFAEQCA=;
-        b=F1QiAvZudC0ps9cgIPgAUvsfdvcyYz4A+d49ItmZQXSHLP8xH7fnReJ/+N164mQ7mq
-         4O89LTrD2BoMonNiA5VWkqfiDpEFeWYxTIK5ZuXoMn3d/NIgd+8OqctFKXSWaP8C/Uh1
-         9jiJUNQ4UV5lJR9I0uSzbVdOt1oXGKQoEzy+bztoAwltpVF1rA10G6reEfFGUqMaNGIH
-         LcCGmQTSpW+qVQQm6/tsggXk8Y4CbhZPv9WlnFMMUmNQ9x4SljdCvuEcm+imbkn6FhYg
-         zsHPaiOYHtZgEGf/MrwfCMMjke/VCsY4diY07+3rf0X4EkPeKTlJ86FazEdGuywGSXOf
-         Pltg==
-X-Gm-Message-State: ACgBeo09aY4z2ViR/WRQb6X7VoWwi/IO295eTsvHRtvRanaUJ7WuUP5X
-        AAuhZIsmoyKzGUEQaQmJMgIZDfzvNtI6X5IT0HxogIvVloo=
-X-Google-Smtp-Source: AA6agR6fWtVoNrOD7JgMSokpy8oT8f5OQpwjiqzz0CiLyVnI5Kvr+Ua/5vUIOYrZCE8GFyy5YCy81xhLnbftN4xBEzY=
-X-Received: by 2002:a05:6830:449e:b0:638:c72b:68ff with SMTP id
- r30-20020a056830449e00b00638c72b68ffmr3925360otv.26.1660768513316; Wed, 17
- Aug 2022 13:35:13 -0700 (PDT)
+        bh=Pby1yMSBPXIRmnbK0mp8JoI7OWrC1joW57AiQcbBP0Q=;
+        b=xUDgOTbcmGPKYzywZoFSJE+5mEMQBgLL1LHD3hF6vZ1sZIiRlKV/xKYoG8+V2BurVH
+         lyMt9BdGzN3/+Cxe8ZJmqhEJ7XNyPyzsQmZzvCSBoDidb6u9jtA27YVZAQ2+f3urfZCc
+         nz+digFju9/S/m3ad79dgxGsOVnurAYL6RHPxs3c21KCjKPOwryxPSKvnQUDToe5vC4G
+         OAscDI8GaTypDJYmWP8T74uq27xyGAmkD5Vo+DiRjRrU4LK3zIPhBc/U3kJe6nNPgvhZ
+         c0gn4UsiDH09mB6gRindeN4f1N30AK5Bxi/NDG0BSP8oRAwZGvNsW4HSKFa7iXwXeQTx
+         BZtw==
+X-Gm-Message-State: ACgBeo1gEoH68FQaC+X2avqg+ge9teDYUvnNC8Kbqtkebb5S9Mcn5jDE
+        +GHCYvHixb6A4GWYq6qY7sD940NMAkAAozcLls0=
+X-Google-Smtp-Source: AA6agR7TXYadG2mmWjKCH/W19SWAIUnwsaui5VCW1HOoHb7uysbbyVqhETXpaRT38pEdo0NpybxBnNWQxdaC+V4gaI0=
+X-Received: by 2002:a67:be01:0:b0:388:7361:2eb3 with SMTP id
+ x1-20020a67be01000000b0038873612eb3mr11215542vsq.14.1660768792854; Wed, 17
+ Aug 2022 13:39:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220816175246.42401-1-vishal.moola@gmail.com>
- <20220816175246.42401-6-vishal.moola@gmail.com> <CAKFNMome2DoupJxiNT4YtuMDLUgUD1aevHSExd+M+Q+ghXwaEw@mail.gmail.com>
-In-Reply-To: <CAKFNMome2DoupJxiNT4YtuMDLUgUD1aevHSExd+M+Q+ghXwaEw@mail.gmail.com>
-From:   Vishal Moola <vishal.moola@gmail.com>
-Date:   Wed, 17 Aug 2022 13:35:01 -0700
-Message-ID: <CAOzc2pyDFVVBF3rmUK3_nWS=8rw4FieD40ivf904AfM8o_GWvQ@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] nilfs2: Convert nilfs_find_uncommited_extent() to
- use filemap_get_folios_contig()
-To:     Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Cc:     linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
+References: <YvU4GD8HtZ1A4dhI@debian> <20220812090731.31da7d85@oak.ozlabs.ibm.com>
+ <20220817094309.140c346e@canb.auug.org.au>
+In-Reply-To: <20220817094309.140c346e@canb.auug.org.au>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Wed, 17 Aug 2022 21:39:17 +0100
+Message-ID: <CADVatmO-kc93dQc9TPy7ZjGuLUUut7or1VLGYkLWTw803mkWiQ@mail.gmail.com>
+Subject: Re: build failure of next-20220811 due to b1a63a0b48ad
+ ("drm/amd/display: consider DSC pass-through during mode validation")
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Hamza Mahfooz <hamza.mahfooz@amd.com>,
+        Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        amd-gfx mailing list <amd-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-next <linux-next@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 9:33 PM Ryusuke Konishi
-<konishi.ryusuke@gmail.com> wrote:
+On Wed, Aug 17, 2022 at 12:43 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 >
-> On Wed, Aug 17, 2022 at 2:54 AM Vishal Moola (Oracle)  wrote:
-> >
-> > Converted function to use folios throughout. This is in preparation for
-> > the removal of find_get_pages_contig(). Now also supports large folios.
-> >
-> > Also cleaned up an unnecessary if statement - pvec.pages[0]->index > index
-> > will always evaluate to false, and filemap_get_folios_contig() returns 0 if
-> > there is no folio found at index.
-> >
-> > Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
-> > ---
-> >
-> > v2:
-> >   - Fixed a warning regarding a now unused label "out"
-> >   - Reported-by: kernel test robot <lkp@intel.com>
-> > ---
-> >  fs/nilfs2/page.c | 39 +++++++++++++++++----------------------
-> >  1 file changed, 17 insertions(+), 22 deletions(-)
-> >
-> > diff --git a/fs/nilfs2/page.c b/fs/nilfs2/page.c
-> > index 3267e96c256c..14629e03d0da 100644
-> > --- a/fs/nilfs2/page.c
-> > +++ b/fs/nilfs2/page.c
-> > @@ -480,13 +480,13 @@ unsigned long nilfs_find_uncommitted_extent(struct inode *inode,
-> >                                             sector_t start_blk,
-> >                                             sector_t *blkoff)
-> >  {
-> > -       unsigned int i;
-> > +       unsigned int i, nr;
-> >         pgoff_t index;
-> >         unsigned int nblocks_in_page;
-> >         unsigned long length = 0;
-> >         sector_t b;
-> > -       struct pagevec pvec;
-> > -       struct page *page;
-> > +       struct folio_batch fbatch;
-> > +       struct folio *folio;
-> >
-> >         if (inode->i_mapping->nrpages == 0)
-> >                 return 0;
-> > @@ -494,27 +494,24 @@ unsigned long nilfs_find_uncommitted_extent(struct inode *inode,
-> >         index = start_blk >> (PAGE_SHIFT - inode->i_blkbits);
-> >         nblocks_in_page = 1U << (PAGE_SHIFT - inode->i_blkbits);
-> >
-> > -       pagevec_init(&pvec);
-> > +       folio_batch_init(&fbatch);
-> >
-> >  repeat:
-> > -       pvec.nr = find_get_pages_contig(inode->i_mapping, index, PAGEVEC_SIZE,
-> > -                                       pvec.pages);
-> > -       if (pvec.nr == 0)
-> > +       nr = filemap_get_folios_contig(inode->i_mapping, &index, ULONG_MAX,
-> > +                       &fbatch);
-> > +       if (nr == 0)
-> >                 return length;
-> >
-> > -       if (length > 0 && pvec.pages[0]->index > index)
-> > -               goto out;
-> > -
-> > -       b = pvec.pages[0]->index << (PAGE_SHIFT - inode->i_blkbits);
-> > +       b = fbatch.folios[0]->index << (PAGE_SHIFT - inode->i_blkbits);
-> >         i = 0;
-> >         do {
-> > -               page = pvec.pages[i];
-> > +               folio = fbatch.folios[i];
-> >
-> > -               lock_page(page);
-> > -               if (page_has_buffers(page)) {
-> > +               folio_lock(folio);
-> > +               if (folio_buffers(folio)) {
-> >                         struct buffer_head *bh, *head;
-> >
-> > -                       bh = head = page_buffers(page);
-> > +                       bh = head = folio_buffers(folio);
-> >                         do {
-> >                                 if (b < start_blk)
-> >                                         continue;
-> > @@ -532,18 +529,16 @@ unsigned long nilfs_find_uncommitted_extent(struct inode *inode,
-> >
+> Hi all,
 >
-> >                         b += nblocks_in_page;
+> On Fri, 12 Aug 2022 09:07:31 +1000 Stephen Rothwell <sfr@rothwell.id.au> wrote:
+> >
+> > On Thu, 11 Aug 2022 18:10:48 +0100 "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com> wrote:
+> > >
+> > > Not sure if it has been reported, builds of riscv, alpha, s390, arm,
+> > > arm64, xtensa, mips, csky allmodconfig have failed to build next-20220811
+> > > with the error:
+> > >
+> > > ERROR: modpost: "dc_dsc_compute_bandwidth_range" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
+> > > ERROR: modpost: "dc_dsc_get_policy_for_timing" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
+> > >
+> > > git bisect pointed to b1a63a0b48ad ("drm/amd/display: consider DSC pass-through during mode validation")
+> > > And, reverting that commit has fixed the build failure.
+> > >
+> > > I will be happy to test any patch or provide any extra log if needed.
+> >
+> > I have reverted that commit in today's linux-next.
 >
-> Here, It looks like the block index "b" should be updated with the
-> number of blocks in the
-> folio because the loop is now per folio, not per page.
+> I have removed that revert.  Sudip, can you recheck when linux-next is
+> released, please?
 
-Yup, thanks for catching that.
+The build failure is not seen with next-20220817.
 
-> Instead of replacing it with a calculation that uses folio_size(folio)
-> or folio_shift(folio),
-> I think it would be better to move the calculation of "b" inside the
-> branch where the folio
-> has buffers as follows:
->
->                 if (folio_buffers(folio)) {
->                         struct buffer_head *bh, *head;
->                         sector_t b;
->
->                         b = folio->index << (PAGE_SHIFT - inode->i_blkbits);
->                         bh = head = folio_buffers(folio);
->                         ...
->                } else if (length > 0) {
->                        goto out_locked;
->                }
->
-> This way, we can remove calculations for the block index "b" outside
-> the above part
-> and the variable "nblocks_in_page" as well.
 
-Sounds good, I'll do that.
-
-> Thanks,
-> Ryusuke Konishi
->
-> >                 }
-> > -               unlock_page(page);
-> > +               folio_unlock(folio);
-> >
-> > -       } while (++i < pagevec_count(&pvec));
-> > +       } while (++i < nr);
-> >
-> > -       index = page->index + 1;
-> > -       pagevec_release(&pvec);
-> > +       folio_batch_release(&fbatch);
-> >         cond_resched();
-> >         goto repeat;
-> >
-> >  out_locked:
-> > -       unlock_page(page);
-> > -out:
-> > -       pagevec_release(&pvec);
-> > +       folio_unlock(folio);
-> > +       folio_batch_release(&fbatch);
-> >         return length;
-> >  }
-> > --
-> > 2.36.1
-> >
+-- 
+Regards
+Sudip
