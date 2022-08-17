@@ -2,119 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A810BC32773
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF21C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241462AbiHQT2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
+        id S241288AbiHQTaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiHQT2w (ORCPT
+        with ESMTP id S238432AbiHQTau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:28:52 -0400
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AED12873F;
-        Wed, 17 Aug 2022 12:28:51 -0700 (PDT)
-Received: by mail-pg1-f178.google.com with SMTP id q16so12788801pgq.6;
-        Wed, 17 Aug 2022 12:28:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=eIIJ90bC7P6FQljG0Svb0/jyjx1J3a6+sZdp1aw3LWc=;
-        b=xJ5nXoWOUm3MYviUc2Gs4cJVbrVxpcpOWAC6qVbR/Ejl92Esqeus9dZtnZy47syROu
-         zx7iH/x/CIoH2UaeUeLVX+dfVu9m6kX+7sW18ajZ1OnQRRDPGiWKPmayI1LAVqISeSoQ
-         U8W3aLREUrGZ3wstM5wwE1klMBLAoJO/C4ztXByvh+T+Jepm9CLlq54rvusNw76qgt4v
-         uVMR8lFJLyRM0xpXvfepDXQwQcGtP/Bp3LA2W6Sz3tOP2wcGG9KCUUEIQCKf1zdA2LIH
-         vth+kBpPiV7Nlud9IoELI9tGR2cZF+O6Uthij+B8e2AuYSDbNBD0ViM4ckpyR59x0Fcv
-         /L+w==
-X-Gm-Message-State: ACgBeo0NGMBrqdWjJm3oYSx+5IUssZq3zcJ/uAWs9PwiicTEw/Ujtkfj
-        GEMH7x/OYFP83CXj5fNOtgSnw0dTGxM=
-X-Google-Smtp-Source: AA6agR5N1VLxg1D0o/efqSo+AfelEHXkXuS7UXlv7yTPvJeIol1q15tQVj7kMfdJLeiP19U+aJHknA==
-X-Received: by 2002:aa7:88d3:0:b0:52e:ade6:6192 with SMTP id k19-20020aa788d3000000b0052eade66192mr26944323pff.41.1660764530467;
-        Wed, 17 Aug 2022 12:28:50 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:55b:6314:9f8d:7bcd? ([2620:15c:211:201:55b:6314:9f8d:7bcd])
-        by smtp.gmail.com with ESMTPSA id n2-20020a170902e54200b0016ed8af2ec0sm312931plf.29.2022.08.17.12.28.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 12:28:49 -0700 (PDT)
-Message-ID: <41b3cf11-6129-60d8-436a-b957b442a4bc@acm.org>
-Date:   Wed, 17 Aug 2022 12:28:46 -0700
+        Wed, 17 Aug 2022 15:30:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFC35B042;
+        Wed, 17 Aug 2022 12:30:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660764648; x=1692300648;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tyTSNq5F9hK0d+h8MFDvRwJmttjYl2ZU/nazL7KLnpw=;
+  b=twHEcr3ZwpUmwVuqFDnAZmhUbeH6HfEqhm7ld+LebaOaMHRQGPkYmkwJ
+   +L59dHFuBw3cCfpH6xSkuLhQmFJrSX4mznxR2hLJCVJi9xAbMloikeJFI
+   TdF6BDOUl7y9yqiQIu0NcThP6r6hje81dS7KfhAZvPAjVsxbWZfw4Tue7
+   CHmhEYX/KPo3q9YcpdlXJJIWH8il2Y7ZCuVO7VOTjkmEsItUSQGoOA8ri
+   4JlOKRzYVzPgrG71euBC4TznqZRdEXsxc/rM6u3QISrGCezTT1zDVEyud
+   90YrgttDozgtNOYAZpY8xi8Enj0LCl8ZKZze4X6+aZIbW01hhTO7eWyY1
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
+   d="scan'208";a="176816539"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:30:46 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 17 Aug 2022 12:30:46 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:30:43 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 0/8] net: lan966x: Add lag support
+Date:   Wed, 17 Aug 2022 21:34:41 +0200
+Message-ID: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 2/2] scsi: sd: Rework asynchronous resume support
-Content-Language: en-US
-To:     Vlastimil Babka <vbabka@suse.cz>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Ming Lei <ming.lei@redhat.com>, Hannes Reinecke <hare@suse.de>,
-        John Garry <john.garry@huawei.com>, ericspero@icloud.com,
-        jason600.groome@gmail.com,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-ide@vger.kernel.org,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        regressions@lists.linux.dev
-References: <20220630195703.10155-1-bvanassche@acm.org>
- <alpine.DEB.2.22.394.2207191125130.1006766@ramsan.of.borg>
- <db19ed29-e7f9-e5b0-3a6c-f2812078a07d@acm.org>
- <CAMuHMdVzsgSYtbJQnaigNax_JbxPsQfU+gHcteS-ojWbxUdMfw@mail.gmail.com>
- <CAMuHMdWtxBj8ug7AHTqentF8UD4jpO2sgoWWcQCOvEKLJtdq8A@mail.gmail.com>
- <506ca1a6-1122-5755-fc74-60f7c7bfbd0d@acm.org>
- <CAMuHMdVQ2K2v8jpsFfOMk99DG_sBB4_ioiQRroC7K_Ov1wvp9w@mail.gmail.com>
- <6f70e742-9d8a-f389-0482-0ba9696bf445@acm.org>
- <CAMuHMdVc+ATGV-=R3uV6RyF0-mZiuKv7HpmogRBgqGVyO-MKWg@mail.gmail.com>
- <54e20a27-a10b-b77a-e950-1d3398e2e907@acm.org>
- <CAMuHMdURQpAEGgv4cY7v0rqzs12v2TT=Amt26Y0OoBSW7YAoaw@mail.gmail.com>
- <084e7c5a-f98d-d61e-de81-83525851ecf9@acm.org>
- <CAMuHMdW2vOC8ZsE_XF8TbSNoF9zCrwq7UkGZ5jXen1E1mTZe+g@mail.gmail.com>
- <14ec47f3-f3b8-61c7-2c64-d96d00dd7076@acm.org>
- <CAMuHMdW7nGxV_3Z2JV_TCM+WtTdYv5P+0cE6Tw=6krcseNCdAw@mail.gmail.com>
- <40700595-8c83-1b61-ea93-ea9554bfb2db@acm.org>
- <98592410-dd31-9081-86be-fda67d3b06d2@suse.cz>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <98592410-dd31-9081-86be-fda67d3b06d2@suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/17/22 12:07, Vlastimil Babka wrote:
-> In my case it's
-> /sys/devices/pci0000:00/0000:00:17.0/ata1/host0/scsi_host/host0/proc_name:ahci
-> /sys/devices/pci0000:00/0000:00:17.0/ata2/host1/scsi_host/host1/proc_name:ahci
-> 
-> Some more details from dmesg
-> 
-> [    0.849373] ata2: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-> [    0.852849] ata2.00: ACPI cmd f5/00:00:00:00:00:a0(SECURITY FREEZE LOCK) filtered out
-> [    0.854671] ata2.00: supports DRM functions and may not be fully accessible
-> [    0.856181] ata2.00: ATA-9: SAMSUNG MZ7LN512HMJP-000L7, MAV01L6Q, max UDMA/133
-> [    0.858115] ata2.00: 1000215216 sectors, multi 1: LBA48 NCQ (depth 32), AA
-> [    0.861584] ata2.00: Features: Trust Dev-Sleep NCQ-sndrcv
-> [    0.863749] ata2.00: ACPI cmd f5/00:00:00:00:00:a0(SECURITY FREEZE LOCK) filtered out
-> [    0.865481] ata2.00: supports DRM functions and may not be fully accessible
-> [    0.870043] ata2.00: configured for UDMA/133
-> [    0.871871] scsi 1:0:0:0: Direct-Access     ATA      SAMSUNG MZ7LN512 1L6Q PQ: 0 ANSI: 5
-> 
-> Please Cc me on further questions/steps to try/patches to test.
+Add lag support for lan966x.
+First 4 patches don't do any changes to the current behaviour, they
+just prepare for lag support. While the rest is to add the lag support.
 
-Hi Vlastimil,
+v3->v4:
+- aggregation configuration is global for all bonds, so make sure that
+  there can't be enabled multiple configurations at the same time
+- return error faster from lan966x_foreign_bridging_check, don't
+  continue the search if the error is seen already
+- flush fdb workqueue when a port leaves a bridge or lag.
 
-Thank you for having provided the above information. The root cause of 
-the hang is not yet clear to me. I was wondering whether the hang 
-perhaps would be triggered by controllers that only support queue depth 
-1. However, in the above output I see "depth 32".
+v2->v3:
+- return error code from 'switchdev_bridge_port_offload()'
+- fix lan966x_foreign_dev_check(), it was missing lag support
+- remove lan966x_lag_mac_add_entry and lan966x_mac_del_entry as
+  they are not needed
+- fix race conditions when accessing port->bond
+- move FDB entries when a new port joins the lag if it has a lower
 
-As already reported in this email thread a revert for commit 
-88f1669019bd62b3 has been posted on the linux-scsi mailing list. 
-Additionally, Greg KH has been asked to drop that patch from the stable 
-trees.
+v1->v2:
+- fix the LAG PGIDs when ports go down, in this way is not
+  needed anymore the last patch of the series.
 
-Thanks,
+Horatiu Vultur (8):
+  net: lan966x: Add registers used to configure lag interfaces
+  net: lan966x: Split lan966x_fdb_event_work
+  net: lan966x: Flush fdb workqueue when port is leaving a bridge.
+  net: lan966x: Expose lan966x_switchdev_nb and
+    lan966x_switchdev_blocking_nb
+  net: lan966x: Extend lan966x_foreign_bridging_check
+  net: lan966x: Add lag support for lan966x
+  net: lan966x: Extend FDB to support also lag
+  net: lan966x: Extend MAC to support also lag interfaces.
 
-Bart.
+ .../net/ethernet/microchip/lan966x/Kconfig    |   1 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_fdb.c  | 155 +++++---
+ .../ethernet/microchip/lan966x/lan966x_lag.c  | 363 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 104 ++++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  39 ++
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
+ .../microchip/lan966x/lan966x_switchdev.c     | 138 +++++--
+ 8 files changed, 741 insertions(+), 106 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+
+-- 
+2.33.0
+
