@@ -2,69 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A039C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D950DC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233941AbiHQJHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 05:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36152 "EHLO
+        id S234063AbiHQJIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 05:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbiHQJHJ (ORCPT
+        with ESMTP id S229637AbiHQJIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 05:07:09 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D5669F41
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 02:07:07 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M72B91R0wzkWXl;
-        Wed, 17 Aug 2022 17:03:45 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+        Wed, 17 Aug 2022 05:08:34 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A6530556
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 02:08:33 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M72Bq3NtrzXdqv;
+        Wed, 17 Aug 2022 17:04:19 +0800 (CST)
+Received: from [10.67.110.176] (10.67.110.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 17:07:06 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 17 Aug
- 2022 17:07:05 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <yangxiaohua@everest-semi.com>, <zhuning@everest-semi.com>,
-        <broonie@kernel.org>
-Subject: [PATCH -next] ASoC: codecs: es8326: change es8326_regmap_config to static
-Date:   Wed, 17 Aug 2022 17:15:19 +0800
-Message-ID: <20220817091519.2487385-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2375.24; Wed, 17 Aug 2022 17:08:30 +0800
+Subject: Re: [PATCH -next 0/2] A few fixup patches for nvmem
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <wangweiyang2@huawei.com>
+References: <20220816134935.263825-1-cuigaosheng1@huawei.com>
+ <c798c5fd-e877-9f70-8733-26d1d494a637@linaro.org>
+From:   cuigaosheng <cuigaosheng1@huawei.com>
+Message-ID: <a6511232-b08d-6e44-04f7-d67f1c11b003@huawei.com>
+Date:   Wed, 17 Aug 2022 17:08:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+In-Reply-To: <c798c5fd-e877-9f70-8733-26d1d494a637@linaro.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.176]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-es8326_regmap_config is only used in es8326.c now, change it to static.
+I'll take a closer look at this link, thank you very much!
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- sound/soc/codecs/es8326.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Gaosheng
 
-diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
-index 975302b2a61d..87c1cc16592b 100755
---- a/sound/soc/codecs/es8326.c
-+++ b/sound/soc/codecs/es8326.c
-@@ -207,7 +207,7 @@ static const struct regmap_access_table es8326_volatile_table = {
- 	.n_yes_ranges = ARRAY_SIZE(es8326_volatile_ranges),
- };
- 
--const struct regmap_config es8326_regmap_config = {
-+static const struct regmap_config es8326_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- 	.max_register = 0xff,
--- 
-2.25.1
-
+在 2022/8/17 16:53, Srinivas Kandagatla 写道:
+>
+>
+> On 16/08/2022 14:49, Gaosheng Cui wrote:
+>> This series contains a fixup patches to fix possible memleak,
+>> and add error handling of dev_set_name to keep nvmem code
+>> implementation consistent, in addition, it can also avoid
+>> the possibility illegal address access. Thanks!
+>>
+>> Gaosheng Cui (2):
+>>    nvmem: core: Fix memleak in nvmem_register()
+>>    nvmem: core: add error handling for dev_set_name
+>>
+>
+> I have applied these patches for now but remember the subject line 
+> does not reflect the patch version or the cover letter does not 
+> include any changes done over the versions.
+>
+> Please take a look at 
+> https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html
+>
+>
+> thanks,
+> Srini
+>
+>>   drivers/nvmem/core.c | 27 +++++++++++++++------------
+>>   1 file changed, 15 insertions(+), 12 deletions(-)
+>>
+> .
