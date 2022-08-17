@@ -2,85 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9EE2C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DF9C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241331AbiHQSwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
+        id S241327AbiHQSzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241300AbiHQSwb (ORCPT
+        with ESMTP id S233617AbiHQSzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:52:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E328A3D6A;
-        Wed, 17 Aug 2022 11:52:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAB2961446;
-        Wed, 17 Aug 2022 18:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 02EE6C433D7;
-        Wed, 17 Aug 2022 18:52:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660762349;
-        bh=RR33wIOlyo9eMIkzmh0mFx+gISQrdv7F4Oqj1rsVrls=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ewjRLEHvK5mf5HNdt8uN0i2auiMMJL/abHSO0tZhFBtZCdqUL2gHWoMC3BCOSaiFV
-         fHNf4HtQwTuT18iTJ0rXY0BZCJQSScNGeS9o8lXeNWhSHmn066mmdPMoNdfz6qcX17
-         z9rsxGTKL04zbP9sThuO9coCE4FwO0FGMn70Y3PytUltFoSM6inbpAQsW92AqWmJA+
-         TgEFbr3E7FeQ8hEmfOgF8ceNVbabViy+40W8bSG36mleCOFhCHrwji6QQZy8rt/JQ8
-         Q2juUM7SxEdX+qeiLIRXz2S7t7ctqgyS+/xx9Z4WoljBk6wRYGo4HrK7fH2qaZCKjv
-         6zfZQ1Md/OZ2w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CED06E2A04C;
-        Wed, 17 Aug 2022 18:52:28 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Bluetooth: hci_sync: fix double mgmt_pending_free() in
- remove_adv_monitor()
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <166076234884.20898.8598584910836798147.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Aug 2022 18:52:28 +0000
-References: <ea64b27e-6cbf-fdd5-1f23-aecc3a308e47@I-love.SAKURA.ne.jp>
-In-Reply-To: <ea64b27e-6cbf-fdd5-1f23-aecc3a308e47@I-love.SAKURA.ne.jp>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     syzbot+915a8416bf15895b8e07@syzkaller.appspotmail.com,
-        davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+        Wed, 17 Aug 2022 14:55:19 -0400
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA75C57209;
+        Wed, 17 Aug 2022 11:55:18 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 18AE9581153;
+        Wed, 17 Aug 2022 14:55:18 -0400 (EDT)
+Received: from imap50 ([10.202.2.100])
+  by compute3.internal (MEProxy); Wed, 17 Aug 2022 14:55:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        colorremedies.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660762518; x=
+        1660766118; bh=2MSzHf7ULCb3kZkQymVkXbgysig1iR5rZCCBOLTeyYk=; b=J
+        6RpGRAB8er5OtqTwFoSv99IibnkkxQSmPTHsH6PTM0ychl74tOyhxCDoq+N3oiL3
+        gWJCBrYbFwHTDFwxmKH4krAdtSjiQqYueFzQZCYcalHSYLPBijPbJ98BXAOFi03R
+        NlBHluWZUf3BedagU/MrlLIjP46hHscZOZGN86WS/jL4uh3buXTUmBPUrqteSuR8
+        9jpl2mkTibR15MdaUfLSs2LB1WkS8HbTjSETx46E676XnvUsGVM+qdRFRbWqAmZS
+        RJRx67cxEbOZ0GqftDKHkVXJO0qs5DSzZkfciknwL6pvlU6yjKmRxoBdxCgnszRt
+        h/Da8XLwjd5jj34g1C8MA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660762518; x=1660766118; bh=2MSzHf7ULCb3kZkQymVkXbgysig1
+        iR5rZCCBOLTeyYk=; b=fKlkXzeY3T1X6lDoHRmZyhzHI+rnwVk0dEzPZWk3EmEK
+        Tc5wYnCbVprGssXbQvp6Os4phdDd24CYfvN30BXcGwqvb9lbrdWLlpuL6XGDXCSZ
+        K+4qFdwKa+nbuWmHsn9Q1TtqI3bxPqNUci5aHQGngNT6uPgQCPb88VvyBLuEEffe
+        MI2fgQv6+Z+zinSNHzTPdePtaOSRBu+foKS7NQ+OUjCCjDq4z6j6s8hlBVWxWLD8
+        C8oKR62ZMHL7t1zlCSiEXUh2yz8VPz4P2x9BxC9E/4j12MRUDagueXcBCJ1944CW
+        i33KsosNmIF+M5VAFmowuPTvJIoxjvTvTOL5HU6HHw==
+X-ME-Sender: <xms:lTn9YswnFe3PqZnR5lGZ14X0fYhBRJremBOnsjJKW7qTnParAfHBCA>
+    <xme:lTn9YgRWydPQquTKc10FE8TEpLoHqLX11eyzr-cG2HAu9fyYw8AcrK5gf2eLQQuY_
+    _l2iIlyhEMrBwR3ygM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedgudefvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdev
+    hhhrihhsucfouhhrphhhhidfuceolhhishhtshestgholhhorhhrvghmvgguihgvshdrtg
+    homheqnecuggftrfgrthhtvghrnhepgfdvueektdefgfefgfdtleffvdeileetgfefuddt
+    ffelueeiveeiveekhedtheeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheplhhishhtshestgholhhorhhrvghmvgguihgvshdrtghomh
+X-ME-Proxy: <xmx:lTn9YuWPEcuaC_ECqX5WKJJ_wVzuSK4LAJABqgueMMAtNEUWqcPvjw>
+    <xmx:lTn9Yqhuwb9I6mQps7MD0IE2bwq5xCfalGbFh0S0b7lbvcDPIZx-IQ>
+    <xmx:lTn9YuDR6l3Mu8o6I56QT_2UeX67ecWclkWA6IrJ_PkFsi3iIW9CPg>
+    <xmx:ljn9Yg0YjJA_u65qyn4VKZFWV9dLfbWdsOZyjCrtXS2wP-D2dNF4Kg>
+Feedback-ID: i06494636:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 553831700082; Wed, 17 Aug 2022 14:55:17 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
+Mime-Version: 1.0
+Message-Id: <2f252399-0e30-4465-8c02-3f42c145174a@www.fastmail.com>
+In-Reply-To: <20220817183335.47a4ao26wjopavo2@quack3>
+References: <dcd8beea-d2d9-e692-6e5d-c96b2d29dfd1@suse.com>
+ <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
+ <7c830487-95a6-b008-920b-8bc4a318f10a@applied-asynchrony.com>
+ <20220817114933.66c4g4xjsi4df2tg@quack3>
+ <85a141ae-56a7-4dcd-b75a-04be4b276b3a@www.fastmail.com>
+ <20220817163059.kigrvdfmxfswmhls@quack3>
+ <f6f899a5-97e2-460f-ad73-73d4b5e38eb6@www.fastmail.com>
+ <51cd43f9-ab6b-4dd6-814f-e0c1ace3143c@www.fastmail.com>
+ <20220817181554.znqljc6mmci45ukd@quack3>
+ <e4c260da-2df7-49a3-a8dc-1d3fc7ca12a0@www.fastmail.com>
+ <20220817183335.47a4ao26wjopavo2@quack3>
+Date:   Wed, 17 Aug 2022 14:54:42 -0400
+From:   "Chris Murphy" <lists@colorremedies.com>
+To:     "Jan Kara" <jack@suse.cz>
+Cc:     =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        "Nikolay Borisov" <nborisov@suse.com>,
+        "Jens Axboe" <axboe@kernel.dk>,
+        "Paolo Valente" <paolo.valente@linaro.org>,
+        Linux-RAID <linux-raid@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Josef Bacik" <josef@toxicpanda.com>
+Subject: Re: stalling IO regression since linux 5.12, through 5.18
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
-On Wed, 17 Aug 2022 20:14:36 +0900 you wrote:
-> syzbot is reporting double kfree() at remove_adv_monitor() [1], for
-> commit 7cf5c2978f23fdbb ("Bluetooth: hci_sync: Refactor remove Adv
-> Monitor") forgot to remove duplicated mgmt_pending_remove() when
-> merging "if (err) {" path and "if (!pending) {" path.
-> 
-> Link: https://syzkaller.appspot.com/bug?extid=915a8416bf15895b8e07 [1]
-> Reported-by: syzbot <syzbot+915a8416bf15895b8e07@syzkaller.appspotmail.com>
-> Fixes: 7cf5c2978f23fdbb ("Bluetooth: hci_sync: Refactor remove Adv Monitor")
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> 
-> [...]
+On Wed, Aug 17, 2022, at 2:33 PM, Jan Kara wrote:
+> On Wed 17-08-22 14:18:01, Chris Murphy wrote:
+>> 
+>> 
+>> On Wed, Aug 17, 2022, at 2:15 PM, Jan Kara wrote:
+>> 
+>> > OK, if this indeed passes then b6e68ee82585 ("blk-mq: Improve performance
+>> > of non-mq IO schedulers with multiple HW queues") might be what's causing
+>> > issues (although I don't know how yet...).
+>> 
+>> I can revert it from 5.12.0 and try. Let me know which next test is preferred :)
+>
+> Let's try to revert this first so that we have it narrowed down what
+> started causing the issues. 
 
-Here is the summary with links:
-  - Bluetooth: hci_sync: fix double mgmt_pending_free() in remove_adv_monitor()
-    https://git.kernel.org/bluetooth/bluetooth-next/c/ae2b5c97cd40
+OK I've reverted b6e68ee82585, and removing megaraid_sas.host_tagset_enable=0, and will restart the workload...
 
-You are awesome, thank you!
+Usually it's within 10 minutes but the newer the kernel it seems the longer it takes, or the more things I have to throw at it. The problem doesn't reproduce at all with 5.19 series unless I also run a separate dnf install, and that only triggers maybe 1 in 3 times.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Chris Murphy
