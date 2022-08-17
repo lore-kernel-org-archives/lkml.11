@@ -2,104 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E0CC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5491AC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241325AbiHQTkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
+        id S241495AbiHQTkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241020AbiHQTjv (ORCPT
+        with ESMTP id S241307AbiHQTj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:39:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77030A4B2A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:39:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660765188;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ulBqU/UC4+G7ZCOp5gWa2ib+D+JCAcv6bqRwjOAxJYg=;
-        b=NpvfHF6Bliakl1W1n5B3ps2TqfHW8kry8BBjgt+uyf1X+2Dc09PslObI/2Px5eD+ysR/yz
-        M6qrCSX5ONnJaDnXUyJp39LHQtBgmYbdCtJfR2LEzVQfoT3S6SQWEsjtWsl6cs6YMpN3MB
-        05C4kJDtY3c94o+cwbEkjCGnua33IP8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630-6OArxlt0NWamL6T1UMoD-Q-1; Wed, 17 Aug 2022 15:39:44 -0400
-X-MC-Unique: 6OArxlt0NWamL6T1UMoD-Q-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 47D96811E76;
-        Wed, 17 Aug 2022 19:39:43 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.18.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A2F4E492C3B;
-        Wed, 17 Aug 2022 19:39:42 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC v4 05/17] drm/display/dp_mst: Fix confusing docs for drm_dp_atomic_release_time_slots()
-Date:   Wed, 17 Aug 2022 15:38:34 -0400
-Message-Id: <20220817193847.557945-6-lyude@redhat.com>
-In-Reply-To: <20220817193847.557945-1-lyude@redhat.com>
-References: <20220817193847.557945-1-lyude@redhat.com>
+        Wed, 17 Aug 2022 15:39:59 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0797A4B08
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:39:50 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo2743379pjd.3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:39:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=r68vuNb5uh5ONaquxzxTqZ7ONll565ksnKh3ylI2Qso=;
+        b=fMHE08mTNGtgJz5Oy07EEtIpqqdqolGc17nEd8gVvKUw5CdSjv/rRzxqaLb78IHB67
+         dldRsPtd4wwFvOhdDwQV4bqau/Eu1sfiQ9hhO6/lGkKw/IpZWigxnU2oPUBD+pZqQKEO
+         7bul/7sfTougSEqU7vjXZAS4IeQZPRusWPFiU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=r68vuNb5uh5ONaquxzxTqZ7ONll565ksnKh3ylI2Qso=;
+        b=x9iUMe6HSK2nK2+QfHmiREQSdsu7l/+pz5eQ8eHcqA70IPbE7p231rnX0WYyo8gEDN
+         Vpe+sWyuQDwTam/csa/fubGZNzTkpLwOSyVI/nJpQHJHx/tJ2Okv0GoSV4T946h75Xgi
+         UyJmMlEy0oBCnY7GxaN+Hnb4NsojnOjfWUOKJjtKQYoIByqEH0mQUWgASNatHKP6MA6N
+         15zV+H2RinYQQXQUks8e/9NlvnzhUW3W+wjeLHBsByndE31ZXfFhOJRHFtKKBdSywZaW
+         +X//kwdh5kC+jnYFQsoYTyqdFv4EEd76+TFoNgfzY5nuiOpbup7xpWfVae3eBPgjlHeM
+         fbqg==
+X-Gm-Message-State: ACgBeo3oRdyZaFfuTyR2wJ0ZKCXasEiRGO9UzM4y0QCZrUJBhSI7LkPS
+        lSNZwJQLOAd8Ktkco0YCwUe3DQ==
+X-Google-Smtp-Source: AA6agR4QLUE1Ptr9L6/5prtoBq9XWGwAqLKFX6+0rTRLhg6Qq0It1iuQEECu3eQaVfLVc7g9ixBe/A==
+X-Received: by 2002:a17:902:ccd1:b0:172:5c49:34be with SMTP id z17-20020a170902ccd100b001725c4934bemr21344292ple.23.1660765189710;
+        Wed, 17 Aug 2022 12:39:49 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q7-20020aa79607000000b0052d0a93f6d5sm10845922pfg.116.2022.08.17.12.39.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 12:39:49 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 12:39:48 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [PATCH v9 03/27] kallsyms: add static relationship between
+ `KSYM_NAME_LEN{,_BUFFER}`
+Message-ID: <202208171238.80053F8C@keescook>
+References: <20220805154231.31257-1-ojeda@kernel.org>
+ <20220805154231.31257-4-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805154231.31257-4-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For some reason we mention returning 0 if "slots have been added back to
-drm_dp_mst_topology_state->avail_slots". This is totally misleading,
-avail_slots is simply for figuring out the total number of slots available
-in total on the topology and has no relation to the current payload
-allocations.
+On Fri, Aug 05, 2022 at 05:41:48PM +0200, Miguel Ojeda wrote:
+> This adds a static assert to ensure `KSYM_NAME_LEN_BUFFER`
+> gets updated when `KSYM_NAME_LEN` changes.
+> 
+> The relationship used is one that keeps the new size (512+1)
+> close to the original buffer size (500).
+> 
+> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+> ---
+>  scripts/kallsyms.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index f3c5a2623f71..f543b1c4f99f 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -33,7 +33,11 @@
+>  #define KSYM_NAME_LEN		128
+>  
+>  /* A substantially bigger size than the current maximum. */
+> -#define KSYM_NAME_LEN_BUFFER	499
+> +#define KSYM_NAME_LEN_BUFFER	512
+> +_Static_assert(
+> +	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
+> +	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
+> +);
 
-So, let's get rid of that comment.
+Why not just make this define:
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
-Acked-by: Jani Nikula <jani.nikula@intel.com>
----
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+#define KSYM_NAME_LEN_BUFFER (KSYM_NAME_LEN * 4)
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index fad80ab2b9db..8a2ddfde594a 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4456,8 +4456,7 @@ EXPORT_SYMBOL(drm_dp_atomic_find_time_slots);
-  * drm_dp_mst_atomic_check()
-  *
-  * Returns:
-- * 0 if all slots for this port were added back to
-- * &drm_dp_mst_topology_state.avail_slots or negative error code
-+ * 0 on success, negative error code otherwise
-  */
- int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
- 				     struct drm_dp_mst_topology_mgr *mgr,
+? If there's a good reason not it, please put it in the commit log.
+
+-Kees
+
 -- 
-2.37.1
-
+Kees Cook
