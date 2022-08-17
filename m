@@ -2,77 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937BDC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DDCC25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238217AbiHQCjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 22:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
+        id S238267AbiHQClV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 22:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbiHQCju (ORCPT
+        with ESMTP id S238055AbiHQClS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 22:39:50 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776DB92F4A
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:39:49 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6sbH0kpzzkWM9;
-        Wed, 17 Aug 2022 10:36:27 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 10:39:47 +0800
-Subject: Re: [PATCH 2/6] mm/hugetlb: fix WARN_ON(!kobj) in
- sysfs_create_group()
-To:     Muchun Song <muchun.song@linux.dev>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220816130553.31406-1-linmiaohe@huawei.com>
- <20220816130553.31406-3-linmiaohe@huawei.com>
- <AA374889-2C8B-4D8B-9542-A760267F00E4@linux.dev>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <a9dead65-0b68-e373-1785-7324b1378e24@huawei.com>
-Date:   Wed, 17 Aug 2022 10:39:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 16 Aug 2022 22:41:18 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1970093531;
+        Tue, 16 Aug 2022 19:41:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660704078; x=1692240078;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4n6G6Y+EHrQouzMLtdagC2MwEGhSMCP/0lx2rTV0IDs=;
+  b=XOCKOnp1cSDgPw4LJGuXoYgso40IrHQ7qwMXsnuY4ttFtLRhMlCExDLV
+   wCIGaA2UiRDan9TPayA0DmcRQ87jV4jUfYUU75RE1LG0r1zdE38c8uj8s
+   ShjrSgSOn9UzCltkrF6Hivy3Lh2qr+AQUcUebzX0ZkyfCGqs5njItWNuA
+   wMlqcqepE5Y0G3hTIivxXCtnHeqYRYa/+vVpHeyvclDlzuV60aRWZHJMM
+   k3HypYs/zXFulbGwG5Hy54bhTlxs+HQ4gxnLTmVV8O3FwzJZEihIzHAkZ
+   uxnatzfVvpJvAkKraX8JObmWOsa/hHo1512EEwUeuak/GjtwCbk2fw+rd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="275438998"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="275438998"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 19:41:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="603738830"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 16 Aug 2022 19:41:14 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     iommu@lists.linux.dev
+Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        raghunathan.srinivasan@intel.com, yi.l.liu@intel.com,
+        linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
+        stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Correctly calculate sagaw value of IOMMU
+Date:   Wed, 17 Aug 2022 10:35:58 +0800
+Message-Id: <20220817023558.3253263-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <AA374889-2C8B-4D8B-9542-A760267F00E4@linux.dev>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/17 10:31, Muchun Song wrote:
-> 
-> 
->> On Aug 16, 2022, at 21:05, Miaohe Lin <linmiaohe@huawei.com> wrote:
->>
->> If sysfs_create_group() fails with hstate_attr_group, hstate_kobjs[hi]
->> will be set to NULL. Then it will be passed to sysfs_create_group() if
->> h->demote_order != 0 thus triggering WARN_ON(!kobj) check. Fix this by
->> making sure hstate_kobjs[hi] != NULL when calling sysfs_create_group.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> 
-> It’s better to add a Fixes tag here.
+The Intel IOMMU driver possibly selects between the first-level and the
+second-level translation tables for DMA address translation. However,
+the levels of page-table walks for the 4KB base page size are calculated
+from the SAGAW field of the capability register, which is only valid for
+the second-level page table. This causes the IOMMU driver to stop working
+if the hardware (or the emulated IOMMU) advertises only first-level
+translation capability and reports the SAGAW field as 0.
 
-Will add it in next version. Thanks for your review and comment.
+This solves the above problem by considering both the first level and the
+second level when calculating the supported page table levels.
 
-Thanks,
-Miaohe Lin
+Fixes: b802d070a52a1 ("iommu/vt-d: Use iova over first level")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
-> 
-> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-> 
-> Thanks.
-> 
-> .
-> 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 889ad2c9a7b9..2d0d2ef820d2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -370,14 +370,36 @@ static inline int domain_pfn_supported(struct dmar_domain *domain,
+ 	return !(addr_width < BITS_PER_LONG && pfn >> addr_width);
+ }
+ 
++/*
++ * Calculate the Supported Adjusted Guest Address Widths of an IOMMU.
++ * Refer to 11.4.2 of the VT-d spec for the encoding of each bit of
++ * the returned SAGAW.
++ */
++static unsigned long __iommu_calculate_sagaw(struct intel_iommu *iommu)
++{
++	unsigned long fl_sagaw, sl_sagaw;
++
++	fl_sagaw = 0x6 | (cap_fl1gp_support(iommu->cap) ? BIT(3) : 0);
++	sl_sagaw = cap_sagaw(iommu->cap);
++
++	/* Second level only. */
++	if (!sm_supported(iommu) || !ecap_flts(iommu->ecap))
++		return sl_sagaw;
++
++	/* First level only. */
++	if (!ecap_slts(iommu->ecap))
++		return fl_sagaw;
++
++	return fl_sagaw & sl_sagaw;
++}
++
+ static int __iommu_calculate_agaw(struct intel_iommu *iommu, int max_gaw)
+ {
+ 	unsigned long sagaw;
+ 	int agaw;
+ 
+-	sagaw = cap_sagaw(iommu->cap);
+-	for (agaw = width_to_agaw(max_gaw);
+-	     agaw >= 0; agaw--) {
++	sagaw = __iommu_calculate_sagaw(iommu);
++	for (agaw = width_to_agaw(max_gaw); agaw >= 0; agaw--) {
+ 		if (test_bit(agaw, &sagaw))
+ 			break;
+ 	}
+-- 
+2.25.1
 
