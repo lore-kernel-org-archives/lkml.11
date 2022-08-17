@@ -2,259 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E981FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA74C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239381AbiHQMNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
+        id S239389AbiHQMQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235951AbiHQMNM (ORCPT
+        with ESMTP id S235951AbiHQMQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:13:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08D3BCAA
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:13:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64F5CB81D90
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF83C433D6;
-        Wed, 17 Aug 2022 12:13:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660738386;
-        bh=xX7CZcwx16zQ5npVToI6lwOByIx2441xlG+tSU5KC64=;
-        h=Date:From:To:Cc:Subject:From;
-        b=CCIFAYj8LzB+JtgWLSQjc/JIhOOFH49b/MpZId7t6ebX31+nXeYJl5pYoiGQu2Nv3
-         rUbZM0Vvg42yBxmwsPcy2D1W9y99ZJq86e61tmETK+CDSUOUL+Gsu0cVElpeCEYX5X
-         l8eAzDRoE0qCVn/FwBKtg4RiqiWsxdXoxf5WRzrpPj+fnCYCppPJ9uGUhsEMwYTduo
-         y61XMBZQ1y271yFJI/Mynb9ankK3ZOYx3ltmsbNuYXprP05oYdZF0/D/A+iJCz2Eu2
-         MYDsb/4aB1WyLWoUbBzy9cY+igFD0LQnsoD0Ov/qpctt5x1qe58KSOoxuPmetiQWgv
-         Xe9GpuNw7JoUw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 454644035A; Wed, 17 Aug 2022 09:13:03 -0300 (-03)
-Date:   Wed, 17 Aug 2022 09:13:03 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Like Xu <like.xu@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Robert Hoo <robert.hu@linux.intel.com>
-Subject: [PATCH FYI 1/1] tools arch x86: Sync the msr-index.h copy with the
- kernel sources
-Message-ID: <YvzbT24m2o5U/7+q@kernel.org>
+        Wed, 17 Aug 2022 08:16:06 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A04F2861CC
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:16:04 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 247A2113E;
+        Wed, 17 Aug 2022 05:16:05 -0700 (PDT)
+Received: from e108754-lin.cambridge.arm.com (e108754-lin.cambridge.arm.com [10.1.195.34])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6EA793F67D;
+        Wed, 17 Aug 2022 05:16:03 -0700 (PDT)
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        James Morse <james.morse@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ionela Voinescu <ionela.voinescu@arm.com>
+Subject: [RESEND PATCH v2] arm64: errata: add detection for AMEVCNTR01 incrementing incorrectly
+Date:   Wed, 17 Aug 2022 13:15:51 +0100
+Message-Id: <20220817121551.21790-1-ionela.voinescu@arm.com>
+X-Mailer: git-send-email 2.29.2.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tldr; Just FYI, I'm carrying this on the perf tools tree.
+The AMU counter AMEVCNTR01 (constant counter) should increment at the same
+rate as the system counter. On affected Cortex-A510 cores, AMEVCNTR01
+increments incorrectly giving a significantly higher output value. This
+results in inaccurate task scheduler utilization tracking and incorrect
+feedback on CPU frequency.
 
-- Arnaldo
+Work around this problem by returning 0 when reading the affected counter
+in key locations that results in disabling all users of this counter from
+using it either for frequency invariance or as FFH reference counter. This
+effect is the same to firmware disabling affected counters.
 
-Full explanation:
+Details on how the two features are affected by this erratum:
 
-There used to be no copies, with tools/ code using kernel headers
-directly. From time to time tools/perf/ broke due to legitimate kernel
-hacking. At some point Linus complained about such direct usage. Then we
-adopted the current model.
+ - AMU counters will not be used for frequency invariance for affected
+   CPUs and CPUs in the same cpufreq policy. AMUs can still be used for
+   frequency invariance for unaffected CPUs in the system. Although
+   unlikely, if no alternative method can be found to support frequency
+   invariance for affected CPUs (cpufreq based or solution based on
+   platform counters) frequency invariance will be disabled. Please check
+   the chapter on frequency invariance at
+   Documentation/scheduler/sched-capacity.rst for details of its effect.
 
-The way these headers are used in perf are not restricted to just
-including them to compile something.
+ - Given that FFH can be used to fetch either the core or constant counter
+   values, restrictions are lifted regarding any of these counters
+   returning a valid (!0) value. Therefore FFH is considered supported
+   if there is a least one CPU that support AMUs, independent of any
+   counters being enabled or affected by this erratum.
 
-There are sometimes used in scripts that convert defines into string
-tables, etc, so some change may break one of these scripts, or new MSRs
-may use some different #define pattern, etc.
+The above is achieved through adding a new erratum: ARM64_ERRATUM_2457168.
 
-E.g.:
-
-  $ ls -1 tools/perf/trace/beauty/*.sh | head -5
-  tools/perf/trace/beauty/arch_errno_names.sh
-  tools/perf/trace/beauty/drm_ioctl.sh
-  tools/perf/trace/beauty/fadvise.sh
-  tools/perf/trace/beauty/fsconfig.sh
-  tools/perf/trace/beauty/fsmount.sh
-  $
-  $ tools/perf/trace/beauty/fadvise.sh
-  static const char *fadvise_advices[] = {
-  	[0] = "NORMAL",
-  	[1] = "RANDOM",
-  	[2] = "SEQUENTIAL",
-  	[3] = "WILLNEED",
-  	[4] = "DONTNEED",
-  	[5] = "NOREUSE",
-  };
-  $
-
-The tools/perf/check-headers.sh script, part of the tools/ build
-process, points out changes in the original files.
-
-So its important not to touch the copies in tools/ when doing changes in
-the original kernel headers, that will be done later, when
-check-headers.sh inform about the change to the perf tools hackers.
-
+Signed-off-by: Ionela Voinescu <ionela.voinescu@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: James Morse <james.morse@arm.com>
 ---
 
-To pick up the changes in:
+Hi,
 
-  2b1299322016731d ("x86/speculation: Add RSB VM Exit protections")
-  4af184ee8b2c0a69 ("tools/power turbostat: dump secondary Turbo-Ratio-Limit")
-  4ad3278df6fe2b08 ("x86/speculation: Disable RRSBA behavior")
-  d7caac991feeef1b ("x86/cpu/amd: Add Spectral Chicken")
-  6ad0ad2bf8a67e27 ("x86/bugs: Report Intel retbleed vulnerability")
-  c59a1f106f5cd484 ("KVM: x86/pmu: Add IA32_PEBS_ENABLE MSR emulation for extended PEBS")
-  465932db25f36648 ("x86/cpu: Add new VMX feature, Tertiary VM-Execution control")
-  027bbb884be006b0 ("KVM: x86/speculation: Disable Fill buffer clear within guests")
-  51802186158c74a0 ("x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug")
+This patch is based on the information in the A510 Errata Notice,
+version 13.0 at [1] and applies on v5.19-rc5.
 
-Addressing these tools/perf build warnings:
+v2 RESEND: v2 rebased on 6.0-rc1
 
-    diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-index.h
-    Warning: Kernel ABI header at 'tools/arch/x86/include/asm/msr-index.h' differs from latest version at 'arch/x86/include/asm/msr-index.h'
+v1 -> v2:
+ - v1 at [2]
+ - Move detection of erratum in cpu_errata.c
+ - Limit checking for affected CPUs to the init phase for FIE (Frequency
+   Invariance Engine). For FFH we'll still check for affected CPUs at each
+   read of the constant counter, but reads happen less often (driven by
+   sysfs reads) compared to FIE (on the tick).
 
-That makes the beautification scripts to pick some new entries:
+[1] https://developer.arm.com/documentation/SDEN2397589/1300/?lang=en
+[2] https://lore.kernel.org/lkml/20220607125340.13635-1-ionela.voinescu@arm.com/
 
-  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > before
-  $ cp arch/x86/include/asm/msr-index.h tools/arch/x86/include/asm/msr-index.h
-  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > after
-  $ diff -u before after
-  --- before	2022-08-17 09:05:13.938246475 -0300
-  +++ after	2022-08-17 09:05:22.221455851 -0300
-  @@ -161,6 +161,7 @@
-   	[0x0000048f] = "IA32_VMX_TRUE_EXIT_CTLS",
-   	[0x00000490] = "IA32_VMX_TRUE_ENTRY_CTLS",
-   	[0x00000491] = "IA32_VMX_VMFUNC",
-  +	[0x00000492] = "IA32_VMX_PROCBASED_CTLS3",
-   	[0x000004c1] = "IA32_PMC0",
-   	[0x000004d0] = "IA32_MCG_EXT_CTL",
-   	[0x00000560] = "IA32_RTIT_OUTPUT_BASE",
-  @@ -212,6 +213,7 @@
-   	[0x0000064D] = "PLATFORM_ENERGY_STATUS",
-   	[0x0000064e] = "PPERF",
-   	[0x0000064f] = "PERF_LIMIT_REASONS",
-  +	[0x00000650] = "SECONDARY_TURBO_RATIO_LIMIT",
-   	[0x00000658] = "PKG_WEIGHTED_CORE_C0_RES",
-   	[0x00000659] = "PKG_ANY_CORE_C0_RES",
-   	[0x0000065A] = "PKG_ANY_GFXE_C0_RES",
-  $
+Thanks,
+Ionela.
 
-Now one can trace systemwide asking to see backtraces to where those
-MSRs are being read/written, see this example with a previous update:
 
-  # perf trace -e msr:*_msr/max-stack=32/ --filter="msr>=IA32_U_CET && msr<=IA32_INT_SSP_TAB"
-  ^C#
+ Documentation/arm64/silicon-errata.rst |  2 ++
+ arch/arm64/Kconfig                     | 17 +++++++++++++++++
+ arch/arm64/kernel/cpu_errata.c         | 10 ++++++++++
+ arch/arm64/kernel/cpufeature.c         |  5 ++++-
+ arch/arm64/kernel/topology.c           | 10 ++++++++--
+ arch/arm64/tools/cpucaps               |  1 +
+ 6 files changed, 42 insertions(+), 3 deletions(-)
 
-If we use -v (verbose mode) we can see what it does behind the scenes:
-
-  # perf trace -v -e msr:*_msr/max-stack=32/ --filter="msr>=IA32_U_CET && msr<=IA32_INT_SSP_TAB"
-  Using CPUID AuthenticAMD-25-21-0
-  0x6a0
-  0x6a8
-  New filter for msr:read_msr: (msr>=0x6a0 && msr<=0x6a8) && (common_pid != 597499 && common_pid != 3313)
-  0x6a0
-  0x6a8
-  New filter for msr:write_msr: (msr>=0x6a0 && msr<=0x6a8) && (common_pid != 597499 && common_pid != 3313)
-  mmap size 528384B
-  ^C#
-
-Example with a frequent msr:
-
-  # perf trace -v -e msr:*_msr/max-stack=32/ --filter="msr==IA32_SPEC_CTRL" --max-events 2
-  Using CPUID AuthenticAMD-25-21-0
-  0x48
-  New filter for msr:read_msr: (msr==0x48) && (common_pid != 2612129 && common_pid != 3841)
-  0x48
-  New filter for msr:write_msr: (msr==0x48) && (common_pid != 2612129 && common_pid != 3841)
-  mmap size 528384B
-  Looking at the vmlinux_path (8 entries long)
-  symsrc__init: build id mismatch for vmlinux.
-  Using /proc/kcore for kernel data
-  Using /proc/kallsyms for symbols
-     0.000 Timer/2525383 msr:write_msr(msr: IA32_SPEC_CTRL, val: 6)
-                                       do_trace_write_msr ([kernel.kallsyms])
-                                       do_trace_write_msr ([kernel.kallsyms])
-                                       __switch_to_xtra ([kernel.kallsyms])
-                                       __switch_to ([kernel.kallsyms])
-                                       __schedule ([kernel.kallsyms])
-                                       schedule ([kernel.kallsyms])
-                                       futex_wait_queue_me ([kernel.kallsyms])
-                                       futex_wait ([kernel.kallsyms])
-                                       do_futex ([kernel.kallsyms])
-                                       __x64_sys_futex ([kernel.kallsyms])
-                                       do_syscall_64 ([kernel.kallsyms])
-                                       entry_SYSCALL_64_after_hwframe ([kernel.kallsyms])
-                                       __futex_abstimed_wait_common64 (/usr/lib64/libpthread-2.33.so)
-     0.030 :0/0 msr:write_msr(msr: IA32_SPEC_CTRL, val: 2)
-                                       do_trace_write_msr ([kernel.kallsyms])
-                                       do_trace_write_msr ([kernel.kallsyms])
-                                       __switch_to_xtra ([kernel.kallsyms])
-                                       __switch_to ([kernel.kallsyms])
-                                       __schedule ([kernel.kallsyms])
-                                       schedule_idle ([kernel.kallsyms])
-                                       do_idle ([kernel.kallsyms])
-                                       cpu_startup_entry ([kernel.kallsyms])
-                                       secondary_startup_64_no_verify ([kernel.kallsyms])
-  #
-
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Daniel Sneddon <daniel.sneddon@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Len Brown <len.brown@intel.com>
-Cc: Like Xu <like.xu@linux.intel.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Robert Hoo <robert.hu@linux.intel.com>
-Link: https://lore.kernel.org/lkml/
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/arch/x86/include/asm/msr-index.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/tools/arch/x86/include/asm/msr-index.h b/tools/arch/x86/include/asm/msr-index.h
-index e057e039173cb627..6674bdb096f346d9 100644
---- a/tools/arch/x86/include/asm/msr-index.h
-+++ b/tools/arch/x86/include/asm/msr-index.h
-@@ -235,6 +235,12 @@
- #define PERF_CAP_PT_IDX			16
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index 33b04db8408f..fda97b3fcf01 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -52,6 +52,8 @@ stable kernels.
+ | Allwinner      | A64/R18         | UNKNOWN1        | SUN50I_ERRATUM_UNKNOWN1     |
+ +----------------+-----------------+-----------------+-----------------------------+
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A510     | #2457168        | ARM64_ERRATUM_2457168       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A510     | #2064142        | ARM64_ERRATUM_2064142       |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A510     | #2038923        | ARM64_ERRATUM_2038923       |
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 571cc234d0b3..9fb9fff08c94 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -917,6 +917,23 @@ config ARM64_ERRATUM_1902691
  
- #define MSR_PEBS_LD_LAT_THRESHOLD	0x000003f6
-+#define PERF_CAP_PEBS_TRAP             BIT_ULL(6)
-+#define PERF_CAP_ARCH_REG              BIT_ULL(7)
-+#define PERF_CAP_PEBS_FORMAT           0xf00
-+#define PERF_CAP_PEBS_BASELINE         BIT_ULL(14)
-+#define PERF_CAP_PEBS_MASK	(PERF_CAP_PEBS_TRAP | PERF_CAP_ARCH_REG | \
-+				 PERF_CAP_PEBS_FORMAT | PERF_CAP_PEBS_BASELINE)
+ 	  If unsure, say Y.
  
- #define MSR_IA32_RTIT_CTL		0x00000570
- #define RTIT_CTL_TRACEEN		BIT(0)
-@@ -392,6 +398,7 @@
- #define MSR_TURBO_ACTIVATION_RATIO	0x0000064C
++config ARM64_ERRATUM_2457168
++	bool "Cortex-A510: 2457168: workaround for AMEVCNTR01 incrementing incorrectly"
++	depends on ARM64_AMU_EXTN
++	default y
++	help
++	  This option adds the workaround for ARM Cortex-A510 erratum 2457168.
++
++	  The AMU counter AMEVCNTR01 (constant counter) should increment at the same rate
++	  as the system counter. On affected Cortex-A510 cores AMEVCNTR01 increments
++	  incorrectly giving a significantly higher output value.
++
++	  Work around this problem by returning 0 when reading the affected counter in
++	  key locations that results in disabling all users of this counter. This effect
++	  is the same to firmware disabling affected counters.
++
++	  If unsure, say Y.
++
+ config CAVIUM_ERRATUM_22375
+ 	bool "Cavium erratum 22375, 24313"
+ 	default y
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index 7e6289e709fc..810dd3c39882 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -654,6 +654,16 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
+ 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 2)
+ 	},
+ #endif
++#ifdef CONFIG_ARM64_ERRATUM_2457168
++	{
++		.desc = "ARM erratum 2457168",
++		.capability = ARM64_WORKAROUND_2457168,
++		.type = ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
++
++		/* Cortex-A510 r0p0-r1p1 */
++		CAP_MIDR_RANGE(MIDR_CORTEX_A510, 0, 0, 1, 1)
++	},
++#endif
+ #ifdef CONFIG_ARM64_ERRATUM_2038923
+ 	{
+ 		.desc = "ARM erratum 2038923",
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 907401e4fffb..af4de817d712 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -1870,7 +1870,10 @@ static void cpu_amu_enable(struct arm64_cpu_capabilities const *cap)
+ 		pr_info("detected CPU%d: Activity Monitors Unit (AMU)\n",
+ 			smp_processor_id());
+ 		cpumask_set_cpu(smp_processor_id(), &amu_cpus);
+-		update_freq_counters_refs();
++
++		/* 0 reference values signal broken/disabled counters */
++		if (!this_cpu_has_cap(ARM64_WORKAROUND_2457168))
++			update_freq_counters_refs();
+ 	}
+ }
  
- #define MSR_PLATFORM_ENERGY_STATUS	0x0000064D
-+#define MSR_SECONDARY_TURBO_RATIO_LIMIT	0x00000650
+diff --git a/arch/arm64/kernel/topology.c b/arch/arm64/kernel/topology.c
+index 869ffc4d4484..5d7efb15f7cf 100644
+--- a/arch/arm64/kernel/topology.c
++++ b/arch/arm64/kernel/topology.c
+@@ -301,7 +301,8 @@ static void cpu_read_corecnt(void *val)
  
- #define MSR_PKG_WEIGHTED_CORE_C0_RES	0x00000658
- #define MSR_PKG_ANY_CORE_C0_RES		0x00000659
-@@ -1022,6 +1029,7 @@
- #define MSR_IA32_VMX_TRUE_EXIT_CTLS      0x0000048f
- #define MSR_IA32_VMX_TRUE_ENTRY_CTLS     0x00000490
- #define MSR_IA32_VMX_VMFUNC             0x00000491
-+#define MSR_IA32_VMX_PROCBASED_CTLS3	0x00000492
+ static void cpu_read_constcnt(void *val)
+ {
+-	*(u64 *)val = read_constcnt();
++	*(u64 *)val = this_cpu_has_cap(ARM64_WORKAROUND_2457168) ?
++		      0UL : read_constcnt();
+ }
  
- /* VMX_BASIC bits and bitmasks */
- #define VMX_BASIC_VMCS_SIZE_SHIFT	32
+ static inline
+@@ -328,7 +329,12 @@ int counters_read_on_cpu(int cpu, smp_call_func_t func, u64 *val)
+  */
+ bool cpc_ffh_supported(void)
+ {
+-	return freq_counters_valid(get_cpu_with_amu_feat());
++	int cpu = get_cpu_with_amu_feat();
++
++	if ((cpu >= nr_cpu_ids) || !cpumask_test_cpu(cpu, cpu_present_mask))
++		return false;
++
++	return true;
+ }
+ 
+ int cpc_read_ffh(int cpu, struct cpc_reg *reg, u64 *val)
+diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+index 779653771507..63b2484ce6c3 100644
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -67,6 +67,7 @@ WORKAROUND_1902691
+ WORKAROUND_2038923
+ WORKAROUND_2064142
+ WORKAROUND_2077057
++WORKAROUND_2457168
+ WORKAROUND_TRBE_OVERWRITE_FILL_MODE
+ WORKAROUND_TSB_FLUSH_FAILURE
+ WORKAROUND_TRBE_WRITE_OUT_OF_RANGE
 -- 
-2.37.1
+2.25.1
 
