@@ -2,99 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E34C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 942E5C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242221AbiHQXMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 19:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40510 "EHLO
+        id S242236AbiHQXNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 19:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233622AbiHQXMv (ORCPT
+        with ESMTP id S233622AbiHQXNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 19:12:51 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154B5ACA14
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:12:46 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id u14so16944775oie.2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:12:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=LxMzn+ge/kAscik4k/Skya/rcppy5TB3UPJbRHjbmNw=;
-        b=ZMSivDnXniEMASu3EBBX5BtUdFu4EVPmkeRJ3ee78RxKEGYOeUwGbBAy6U3fZ7z8sD
-         dCkQpMha8IsiWTvB7Rl4yB6DRBQ6FvXLbGCjsi4LpRSmj7P9X6AvKdeSBJDqAOORhyYA
-         CDWGHTW+8SbGHp5llGjo8P1prJ0z77XOhbjkE4aqahu+Dszq19ujEa9z/oIzL2p1cgRc
-         NtJ49iUae0YiYX+wEIwWAO/lCXUWgeV5VACFMu07v8lTam+5u/fcQhrePmNd4L0CuE5F
-         1axW9WWzIcIcD2SUcdUVDp7iMhJY4Nck4VEQqs9gPD9GGTj7aYFdz+2GNjuXXVbtSib8
-         zkig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=LxMzn+ge/kAscik4k/Skya/rcppy5TB3UPJbRHjbmNw=;
-        b=zKQQQ+yfcL9GSnyWOFR6N1hkebfl/WDhEbNmixZh4PT7IwHma0oxROzMN/zC3tE5aP
-         o3biNmahmN0TJtg9R8PiDgqA2dH/UIzE/M5TbfuwfLO3jAeByDREIq5OM/PsizMypwyL
-         lKk1H37YylpUIIq4KD29jjw6qvy2IE42pBteA8BzTOucUSlWElWZLPx18i949tPMi/En
-         cEDg4zrznnEXg8/WpOA273TF7PaIEw8Zp0AeHO/Pr93rBKFw46rzDpWxCwN6CS90xAYj
-         E3Jj9Ip3YstQIjO5U8JBaNeUjdy0fvoKniq7BEEsF5Rz09hLZo+t5auzXjDCYKLpCnC6
-         Ra5Q==
-X-Gm-Message-State: ACgBeo3lPejyGBEuVNCIwzImsTy1IyAPBJqPBlmckiehiUFsi9gJK5Le
-        nSC93ItzmmeXtAt/ML5bCFxVdg==
-X-Google-Smtp-Source: AA6agR4RjZMSD+HLFmCEXKwPeOCg2lasV4sKuV5KudXbS/qHB1uOaK5nsyrZUGjNTa/U1Egwg+auWA==
-X-Received: by 2002:aca:1b13:0:b0:344:d3f5:4df0 with SMTP id b19-20020aca1b13000000b00344d3f54df0mr159322oib.209.1660777965456;
-        Wed, 17 Aug 2022 16:12:45 -0700 (PDT)
-Received: from localhost (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id t2-20020a9d7f82000000b00637032a39a3sm18537otp.6.2022.08.17.16.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 16:12:44 -0700 (PDT)
-From:   Steev Klimaszewski <steev@kali.org>
-To:     steev@kali.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: qcom: thinkpad-x13s: Fix firmware location
-Date:   Wed, 17 Aug 2022 18:12:36 -0500
-Message-Id: <20220817231236.3971-1-steev@kali.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 17 Aug 2022 19:13:51 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C862B5E562;
+        Wed, 17 Aug 2022 16:13:50 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 98E346601AC9;
+        Thu, 18 Aug 2022 00:13:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660778029;
+        bh=BTERDkMplbg6+afpyAvBteIliO13LfIHxpLWBRSHwRc=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=nYKg/VedkcteBe0aJJPlonz2U7BYSYy26WkKiGh+Cu1+NWCgtCj8F71fdd0gBrBVa
+         FsrVhXk2Var8kVuo8ehUOQ5+kIyHLcRLBNznHdUsXfEUjCv6Gs8oAxvfU4SszIwhBJ
+         JTJ5XudTOYzq9FrEm5AvYcpKZPsWiGIzkLWdLCRWfcE/eOgTa3Rl9LfiEqasV7ISRO
+         jugSGlJMQniqbCNUikXXkKHzzuiWmk2ZRDiMeu3uInKYWiBWwXCHOisOJ+gwaOYT50
+         PtCZvT0yZwgzRj7bbVccXwn2aVoGWzFTPEWdrpH0f73y3L+cl7ngcGLi9N/1OiuXsl
+         QU8kSr3kFDhjQ==
+Message-ID: <48b5dd12-b0df-3cc6-a72d-f35156679844@collabora.com>
+Date:   Thu, 18 Aug 2022 02:13:45 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1] drm/ttm: Refcount allocated tail pages
+Content-Language: en-US
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>, Huang Rui <ray.huang@amd.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Trigger Huang <Trigger.Huang@gmail.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Antonio Caggiano <antonio.caggiano@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>, kvm@vger.kernel.org,
+        kernel@collabora.com, virtualization@lists.linux-foundation.org
+References: <20220815095423.11131-1-dmitry.osipenko@collabora.com>
+ <8230a356-be38-f228-4a8e-95124e8e8db6@amd.com>
+ <134bce02-58d6-8553-bb73-42dfda18a595@collabora.com>
+ <8caf3008-dcf3-985a-631e-e019b277c6f0@amd.com>
+ <4fcc4739-2da9-1b89-209c-876129604d7d@amd.com>
+ <14be3b22-1d60-732b-c695-ddacc6b21055@collabora.com>
+ <2df57a30-2afb-23dc-c7f5-f61c113dd5b4@collabora.com>
+ <57562db8-bacf-e82d-8417-ab6343c1d2fa@amd.com>
+ <86a87de8-24a9-3c53-3ac7-612ca97e41df@collabora.com>
+ <8f749cd0-9a04-7c72-6a4f-a42d501e1489@amd.com>
+ <5340d876-62b8-8a64-aa6d-7736c2c8710f@collabora.com>
+ <594f1013-b925-3c75-be61-2d649f5ca54e@amd.com>
+ <6893d5e9-4b60-0efb-2a87-698b1bcda63e@collabora.com>
+ <73e5ed8d-0d25-7d44-8fa2-e1d61b1f5a04@amd.com>
+ <c9d89644-409e-0363-69f0-a3b8f2ef0ae4@collabora.com>
+ <6effcd33-8cc3-a4e0-3608-b9cef7a76da7@collabora.com>
+ <ff28e1b4-cda2-14b8-b9bf-10706ae52cac@collabora.com>
+In-Reply-To: <ff28e1b4-cda2-14b8-b9bf-10706ae52cac@collabora.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The firmware for the Lenovo Thinkpad X13s has been submitted, accepted
-and merged upstream, so update to the correct path.
+On 8/18/22 01:57, Dmitry Osipenko wrote:
+> On 8/15/22 18:54, Dmitry Osipenko wrote:
+>> On 8/15/22 17:57, Dmitry Osipenko wrote:
+>>> On 8/15/22 16:53, Christian König wrote:
+>>>> Am 15.08.22 um 15:45 schrieb Dmitry Osipenko:
+>>>>> [SNIP]
+>>>>>> Well that comment sounds like KVM is doing the right thing, so I'm
+>>>>>> wondering what exactly is going on here.
+>>>>> KVM actually doesn't hold the page reference, it takes the temporal
+>>>>> reference during page fault and then drops the reference once page is
+>>>>> mapped, IIUC. Is it still illegal for TTM? Or there is a possibility for
+>>>>> a race condition here?
+>>>>>
+>>>>
+>>>> Well the question is why does KVM grab the page reference in the first
+>>>> place?
+>>>>
+>>>> If that is to prevent the mapping from changing then yes that's illegal
+>>>> and won't work. It can always happen that you grab the address, solve
+>>>> the fault and then immediately fault again because the address you just
+>>>> grabbed is invalidated.
+>>>>
+>>>> If it's for some other reason than we should probably investigate if we
+>>>> shouldn't stop doing this.
+>>>
+>>> CC: +Paolo Bonzini who introduced this code
+>>>
+>>> commit add6a0cd1c5ba51b201e1361b05a5df817083618
+>>> Author: Paolo Bonzini <pbonzini@redhat.com>
+>>> Date:   Tue Jun 7 17:51:18 2016 +0200
+>>>
+>>>     KVM: MMU: try to fix up page faults before giving up
+>>>
+>>>     The vGPU folks would like to trap the first access to a BAR by setting
+>>>     vm_ops on the VMAs produced by mmap-ing a VFIO device.  The fault
+>>> handler
+>>>     then can use remap_pfn_range to place some non-reserved pages in the
+>>> VMA.
+>>>
+>>>     This kind of VM_PFNMAP mapping is not handled by KVM, but follow_pfn
+>>>     and fixup_user_fault together help supporting it.  The patch also
+>>> supports
+>>>     VM_MIXEDMAP vmas where the pfns are not reserved and thus subject to
+>>>     reference counting.
+>>>
+>>> @Paolo,
+>>> https://lore.kernel.org/dri-devel/73e5ed8d-0d25-7d44-8fa2-e1d61b1f5a04@amd.com/T/#m7647ce5f8c4749599d2c6bc15a2b45f8d8cf8154
+>>>
+>>
+>> If we need to bump the refcount only for VM_MIXEDMAP and not for
+>> VM_PFNMAP, then perhaps we could add a flag for that to the kvm_main
+>> code that will denote to kvm_release_page_clean whether it needs to put
+>> the page?
+> 
+> The other variant that kind of works is to mark TTM pages reserved using
+> SetPageReserved/ClearPageReserved, telling KVM not to mess with the page
+> struct. But the potential consequences of doing this are unclear to me.
+> 
+> Christian, do you think we can do it?
 
-Signed-off-by: Steev Klimaszewski <steev@kali.org>
----
- arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Although, no. It also doesn't work with KVM without additional changes
+to KVM.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-index 84dc92dda0b8..e07cc9d1ff27 100644
---- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-+++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-@@ -235,13 +235,13 @@ keyboard@68 {
- };
- 
- &remoteproc_adsp {
--	firmware-name = "qcom/sc8280xp/qcadsp8280.mbn";
-+	firmware-name = "qcom/LENOVO/21BX/qcadsp8280.mbn";
- 
- 	status = "okay";
- };
- 
- &remoteproc_nsp0 {
--	firmware-name = "qcom/sc8280xp/qccdsp8280.mbn";
-+	firmware-name = "qcom/LENOVO/21BX/qccdsp8280.mbn";
- 
- 	status = "okay";
- };
 -- 
-2.34.1
-
+Best regards,
+Dmitry
