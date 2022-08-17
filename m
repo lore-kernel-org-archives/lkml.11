@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF5EC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2EDEC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239872AbiHQQ2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S241119AbiHQQ2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241004AbiHQQ1l (ORCPT
+        with ESMTP id S239344AbiHQQ1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 17 Aug 2022 12:27:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1B4A033D
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:27:40 -0700 (PDT)
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C72A031D;
+        Wed, 17 Aug 2022 09:27:40 -0700 (PDT)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660753658;
+        s=2020; t=1660753657;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F9l7y3m8zkOiNy05wS2hSJk+waPS7nO5NnqSs6GtD6Q=;
-        b=ahVLd9nL3dCq1i5nadi2s73phgxk46U/cAa/JGm1oBcNYwokEpPrfwAB5Lp8ZJORaH1smt
-        ZYwfZrkBmj22GkgDrGdyC/aHgVNIEZEDpcUaMSwto7T7OLlZal2MdwREue2Bz+8KTPCyFp
-        /TRn6vY7nem5QbWT6tHzSw15B66Y7md6oGuMmI+7/KLDsGZ14FFiC3QTUecsGOB9A7hLCU
-        8sPjta8aon+QUj27nhHmP1S8g9DL0Yr8+ZZ/wn5InvTm/9e5GFQX3Pj3Uc+qQqGdEAvHqm
-        dHT6Yf1fco8y91x+kaPu74FobZPLuro1Fyd6S4pQgt0ee3pTDes3A1zJL3L8+A==
+        bh=icKYkzOEkU10wqYj/AO1hlieqfsCO6opQIYue93MICc=;
+        b=WUwxVW+uGIaO0szg7BxOu1wCzapAwDdXZYNPFf3kiI2xBtu8Es480fO/5T71TMYiQKTjL2
+        Y5lWxIQqJ7x7BoSnhKaFZCzRhG7+8yHeQ5/tmMMThFpP2L1agJ4szHQY5JVMPUakod0IbE
+        yIc6Gl3i758gJbuMjFnB7KmeyFMZ5xJ0mfQb/Ikck/iVjEeodnOdRlmZ/pr1p0eX5sgM4R
+        M4paCBlURfexAPIOmkPU+fjGxjbUG3Dnqp+YkiX1A4mHylwtylhelH9PtNbQGgVaw0NytL
+        acYvZri+GlxU9tb6ucjTkjxdrXJYjietaE0V6tqA4Eq9vmaflVkD4q9k8U95TQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660753658;
+        s=2020e; t=1660753657;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F9l7y3m8zkOiNy05wS2hSJk+waPS7nO5NnqSs6GtD6Q=;
-        b=KHC1BnhWzRoSCVIlYh78XhedbXu636S/1THUCnmQGK5a+5dok80bN92jiqq/g3b6OU1xoA
-        htdYRwUhK/B08uDg==
+        bh=icKYkzOEkU10wqYj/AO1hlieqfsCO6opQIYue93MICc=;
+        b=500tFezzQJcGWrboXp6CHY0SHvmE+zDVA//pAXoHOs0Jh0IxU+Aa1gSbSy/Lv6WZU3qbC3
+        94vz4DsO75E0UxCQ==
 To:     linux-kernel@vger.kernel.org
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nick Terrell <terrelln@fb.com>, linux-mm@kvack.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 7/9] mm/compaction: Get rid of RT ifdeffery
-Date:   Wed, 17 Aug 2022 18:27:01 +0200
-Message-Id: <20220817162703.728679-8-bigeasy@linutronix.de>
+Subject: [PATCH 6/9] mm/memcontrol: Replace the PREEMPT_RT conditionals
+Date:   Wed, 17 Aug 2022 18:27:00 +0200
+Message-Id: <20220817162703.728679-7-bigeasy@linutronix.de>
 In-Reply-To: <20220817162703.728679-1-bigeasy@linutronix.de>
 References: <20220817162703.728679-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -59,53 +63,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Move the RT dependency for the initial value of
-sysctl_compact_unevictable_allowed into Kconfig.
+Use VM_WARN_ON_IRQS_ENABLED() and preempt_disable/enable_nested() to
+replace the CONFIG_PREEMPT_RT #ifdeffery.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Nick Terrell <terrelln@fb.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Shakeel Butt <shakeelb@google.com>
+Cc: Muchun Song <songmuchun@bytedance.com>
+Cc: cgroups@vger.kernel.org
 Cc: linux-mm@kvack.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- mm/Kconfig      | 5 +++++
- mm/compaction.c | 6 +-----
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ mm/memcontrol.c | 19 ++++++-------------
+ 1 file changed, 6 insertions(+), 13 deletions(-)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 0331f1461f81c..a0506a54a4f3f 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -579,6 +579,11 @@ config COMPACTION
- 	  it and then we would be really interested to hear about that at
- 	  linux-mm@kvack.org.
-=20
-+config COMPACT_UNEVICTABLE_DEFAULT
-+	int
-+	default 0 if PREEMPT_RT
-+	default 1
-+
- #
- # support for free page reporting
- config PAGE_REPORTING
-diff --git a/mm/compaction.c b/mm/compaction.c
-index 640fa76228dd9..10561cb1aaad9 100644
---- a/mm/compaction.c
-+++ b/mm/compaction.c
-@@ -1727,11 +1727,7 @@ typedef enum {
-  * Allow userspace to control policy on scanning the unevictable LRU for
-  * compactable pages.
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index b69979c9ced5c..d35b6fa560f0a 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -597,25 +597,18 @@ static u64 flush_next_time;
   */
+ static void memcg_stats_lock(void)
+ {
 -#ifdef CONFIG_PREEMPT_RT
--int sysctl_compact_unevictable_allowed __read_mostly =3D 0;
+-      preempt_disable();
 -#else
--int sysctl_compact_unevictable_allowed __read_mostly =3D 1;
+-      VM_BUG_ON(!irqs_disabled());
 -#endif
-+int sysctl_compact_unevictable_allowed __read_mostly =3D CONFIG_COMPACT_UN=
-EVICTABLE_DEFAULT;
++	preempt_disable_nested();
++	VM_WARN_ON_IRQS_ENABLED();
+ }
 =20
- static inline void
- update_fast_start_pfn(struct compact_control *cc, unsigned long pfn)
+ static void __memcg_stats_lock(void)
+ {
+-#ifdef CONFIG_PREEMPT_RT
+-      preempt_disable();
+-#endif
++	preempt_disable_nested();
+ }
+=20
+ static void memcg_stats_unlock(void)
+ {
+-#ifdef CONFIG_PREEMPT_RT
+-      preempt_enable();
+-#endif
++	preempt_enable_nested();
+ }
+=20
+ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
+@@ -715,7 +708,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, en=
+um node_stat_item idx,
+ 	 * interrupt context while other caller need to have disabled interrupt.
+ 	 */
+ 	__memcg_stats_lock();
+-	if (IS_ENABLED(CONFIG_DEBUG_VM) && !IS_ENABLED(CONFIG_PREEMPT_RT)) {
++	if (IS_ENABLED(CONFIG_DEBUG_VM)) {
+ 		switch (idx) {
+ 		case NR_ANON_MAPPED:
+ 		case NR_FILE_MAPPED:
+@@ -725,7 +718,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, en=
+um node_stat_item idx,
+ 			WARN_ON_ONCE(!in_task());
+ 			break;
+ 		default:
+-			WARN_ON_ONCE(!irqs_disabled());
++			VM_WARN_ON_IRQS_ENABLED();
+ 		}
+ 	}
+=20
 --=20
 2.37.2
 
