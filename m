@@ -2,117 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74FA0C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735F3C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239368AbiHQMFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38288 "EHLO
+        id S239335AbiHQMH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239289AbiHQMEu (ORCPT
+        with ESMTP id S239369AbiHQMHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:04:50 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71E556B94
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:04:34 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id e15so18784730lfs.0
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:04:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=DqeinnIMS7tnZ1s/F5WbYXe7dS10PhHD2RlaXqtenk4=;
-        b=HA4YX3lATWHZy1PycT9JEiDmaVCC74tJ89+lBTjqcQesxYBXT6y37LEBBk9hjQE1m1
-         cLisYJI+duLjN0FEqQH0R7h53RyPZLxgcA0Q1AyY/3SmYfsCb4pwk5SGe3yj7MlNk8Bo
-         MiZzcOHR0qLkntxsOPVC9RGn7CoXNqkSgV9gR55uucH3vSASXDp6THl3sZhPsAjAT/fM
-         SiTFRsRTpd0Lm1W+OLhQbbuN0HuZ6VOnWsXoYcluoSbtEuraU07JaVqhYXXvZo6JXKy8
-         lWIsDaWTsLtcg5m+WyVoXINwchBoMIRMLYJ3b4yNj7IgMl9rfFKThNOTCDjFhNfdSa0G
-         zt7g==
+        Wed, 17 Aug 2022 08:07:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6255586B61
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660738024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uvED31tz28w3zR0MRsRpAF+4dRa0mrzWJzSKyavcZMM=;
+        b=TpOUYd6Nk3jdrpmp41LJCoXXzz5JI0lPMuHGvbxQ6sTqByk9OJe4L9NOMMtf19Q0+199uS
+        Ciig3F9XPyTqcSPzLmtZ7JWm2e9FZLzxXtb6M2x6Wh0/lBFL+9kJTe3rCoN6MHU/C35N6U
+        RVj+J0HOI2K5sEg29SjG2/0UVRStpr0=
+Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
+ [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-512-d0F_4Vc6NMushh-C6ow1ig-1; Wed, 17 Aug 2022 08:07:03 -0400
+X-MC-Unique: d0F_4Vc6NMushh-C6ow1ig-1
+Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-31f3959ba41so150462837b3.2
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:07:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=DqeinnIMS7tnZ1s/F5WbYXe7dS10PhHD2RlaXqtenk4=;
-        b=GKRT4dPlSVmplI80inLXxSXsgZKalMefPq8QcgWGKKMqKOl2D3+E76MQj/1LBU5Js9
-         tIihSakPMisE+5EPTomgKWclsIXfoTy2/zoHSOLb/O5PTTQlNXo0qN/eQcs+UyY7a/EG
-         DNqg7ECG149AVSzDGaROgi7+0HZygWBAdNJ8TpLiqv2YTcIXa8ivRqMFMJ0Q6hH75Izc
-         hcVuJuRo8TCUpTuRW1zHDIk8xJiETEIzuRf279/kUeO8Deh9XBGEDM0CDeYZMwp49kX7
-         sUzEPyov7xNth4zFFQcDt2CM6CFywsVnCnxS8SoPnh5nrbDD/jb2monHBxDncrTkVI5u
-         BwNg==
-X-Gm-Message-State: ACgBeo2IcI5cy8Wq/G5dI48vQIjJAA7dZepi4QtcyYe6Tkz5nyjCM1qn
-        s58rIAU/BnoieeGD7BlXBEv7sg==
-X-Google-Smtp-Source: AA6agR6Ad+YVXQ2ESPuMzul02yuxva58dgnkUgd2uhe5MsvfrsJV4vu40ijZIXllqyCSouRi1YOZtA==
-X-Received: by 2002:a05:6512:6c4:b0:491:c8f9:1994 with SMTP id u4-20020a05651206c400b00491c8f91994mr5822628lff.179.1660737872906;
-        Wed, 17 Aug 2022 05:04:32 -0700 (PDT)
-Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id d15-20020a05651221cf00b0048a97042251sm1670496lft.22.2022.08.17.05.04.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 05:04:32 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH 13/14] arm64: dts: qcom: sdm630: switch TCSR mutex to MMIO
-Date:   Wed, 17 Aug 2022 15:04:02 +0300
-Message-Id: <20220817120403.458000-15-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817120403.458000-1-krzysztof.kozlowski@linaro.org>
-References: <20220817120403.458000-1-krzysztof.kozlowski@linaro.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=uvED31tz28w3zR0MRsRpAF+4dRa0mrzWJzSKyavcZMM=;
+        b=Aw/Rde93vJpkFdOYl9yuNevOjeoKThcIpDT/L1x04Si1B1cVbe7ERZ2N+fPnUM7wDN
+         ehICGwL/U+HD6XDFoMad7kJ+Ahi6+BRc1UddJxa3seXslMJhgT/GJiLq77WAwjJ+0QdK
+         pWAtOQsmQZD49xv3qUCvK1jYwOq2RnqupZnI4Py4++j45oNUwZGE7+Rs4mz/Pi+rX10y
+         BvJnbExErngxo2lmTYXMeAuECQ+p8x6NJIeJ8md1tGhlkS8oXutfcCDspdgg+xc1o4wA
+         Umz0TE0zdyW6OJHnPyoCtcni6I6bCz3qzGPASQucWRfmVqzyQK4El7CoIuCDO/l6wdST
+         7pZA==
+X-Gm-Message-State: ACgBeo23+0u9SDOWqSUijrVKU0+Xx8WTK+co9kDPCLaL6CwwAReLi15Q
+        jyrvoVPxAbWnfjsFEup8Q3wDF6olQam/GMQ+hVC5YGM47DTzT3HD5zOuWUdBFU5k3dhFmqXmvdL
+        FTSRR5wpdEwtbbZfaFnCxXLL/ohjNPbsy4AnxrEbY
+X-Received: by 2002:a25:e209:0:b0:67c:234a:f08c with SMTP id h9-20020a25e209000000b0067c234af08cmr19261953ybe.19.1660738022542;
+        Wed, 17 Aug 2022 05:07:02 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR62CJmKIVjjGO862klgBFeJm3NBx72xx36Q9rR58vnUPEUrkGjik0Yn2s8sx5yftCEoPxhb1gkbhMxTvLwwrcg=
+X-Received: by 2002:a25:e209:0:b0:67c:234a:f08c with SMTP id
+ h9-20020a25e209000000b0067c234af08cmr19261926ybe.19.1660738022293; Wed, 17
+ Aug 2022 05:07:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <e38aa76d-6034-4dde-8624-df1745bb17fc@www.fastmail.com>
+ <YvPvghdv6lzVRm/S@localhost.localdomain> <2220d403-e443-4e60-b7c3-d149e402c13e@www.fastmail.com>
+ <cb1521d5-8b07-48d8-8b88-ca078828cf69@www.fastmail.com> <ad78a32c-7790-4e21-be9f-81c5848a4953@www.fastmail.com>
+ <e36fe80f-a33b-4750-b593-3108ba169611@www.fastmail.com> <CAEzrpqe3rRTvH=s+-aXTtupn-XaCxe0=KUe_iQfEyHWp-pXb5w@mail.gmail.com>
+ <d48c7e95-e21e-dcdc-a776-8ae7bed566cb@kernel.dk> <61e5ccda-a527-4fea-9850-91095ffa91c4@www.fastmail.com>
+ <4995baed-c561-421d-ba3e-3a75d6a738a3@www.fastmail.com> <dcd8beea-d2d9-e692-6e5d-c96b2d29dfd1@suse.com>
+ <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
+In-Reply-To: <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
+From:   Ming Lei <ming.lei@redhat.com>
+Date:   Wed, 17 Aug 2022 20:06:51 +0800
+Message-ID: <CAFj5m9+6Vj3NdSg_n3nw1icscY1qr9f9SOvkWYyqpEtFBb_-1g@mail.gmail.com>
+Subject: Re: stalling IO regression since linux 5.12, through 5.18
+To:     Chris Murphy <lists@colorremedies.com>
+Cc:     Nikolay Borisov <nborisov@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Jan Kara <jack@suse.cz>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
+        Linux-RAID <linux-raid@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Ming Lei <ming.lei@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TCSR mutex bindings allow device to be described only with address
-space (so it uses MMIO, not syscon regmap).  This seems reasonable as
-TCSR mutex is actually a dedicated IO address space and it also fixes DT
-schema checks:
+Hello Chris,
 
-  qcom/sdm636-sony-xperia-ganges-mermaid.dtb: hwlock: 'reg' is a required property
-  qcom/sdm636-sony-xperia-ganges-mermaid.dtb: hwlock: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
+On Tue, Aug 16, 2022 at 11:35 PM Chris Murphy <lists@colorremedies.com> wrote:
+>
+>
+>
+...
+>
+> I already reported on that: always happens with bfq within an hour or less. Doesn't happen with mq-deadline for ~25+ hours. Does happen with bfq with the above patches removed. Does happen with cgroup.disabled=io set.
+>
+> Sounds to me like it's something bfq depends on and is somehow becoming perturbed in a way that mq-deadline does not, and has changed between 5.11 and 5.12. I have no idea what's under bfq that matches this description.
+>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+blk-mq debugfs log is usually helpful for io stall issue, care to post
+the blk-mq debugfs log:
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index 1bc9091cad2a..40a40d00eae4 100644
---- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -697,9 +697,10 @@ tsens: thermal-sensor@10ae000 {
- 			#thermal-sensor-cells = <1>;
- 		};
- 
--		tcsr_mutex_regs: syscon@1f40000 {
--			compatible = "syscon";
--			reg = <0x01f40000 0x40000>;
-+		tcsr_mutex: hwlock@1f40000 {
-+			compatible = "qcom,tcsr-mutex";
-+			reg = <0x01f40000 0x20000>;
-+			#hwlock-cells = <1>;
- 		};
- 
- 		tlmm: pinctrl@3100000 {
-@@ -2351,12 +2352,6 @@ intc: interrupt-controller@17a00000 {
- 		};
- 	};
- 
--	tcsr_mutex: hwlock {
--		compatible = "qcom,tcsr-mutex";
--		syscon = <&tcsr_mutex_regs 0 0x1000>;
--		#hwlock-cells = <1>;
--	};
--
- 	sound: sound {
- 	};
- 
--- 
-2.34.1
+(cd /sys/kernel/debug/block/$disk && find . -type f -exec grep -aH . {} \;)
+
+Thanks,
+Ming
 
