@@ -2,233 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E21BCC25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 00:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FAEC25B08
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 00:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242392AbiHRAMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 20:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
+        id S239827AbiHRAUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 20:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242046AbiHRAMh (ORCPT
+        with ESMTP id S231510AbiHRAUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 20:12:37 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB97A3D4E
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 17:12:35 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id x63-20020a17090a6c4500b001fabbf8debfso281825pjj.4
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 17:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=youYpgIRDFxAeu4mwecp1uJBQGmjys1bezqPW12aWgE=;
-        b=UCR5LbWjsytFslgCsE0jphSKIIfHXLrwqVIdtaHJDqbOgD76Dl4Wr+qhYX7/IvKijD
-         4WoEsIzUrGO9kQPjVWIJsenuCTuX+zowr58KIuH8GsCEt2r1CYv4lazX3ywSlxgEYYul
-         kdhWZJQ1Y8XGyCRBm1RimSxKT///eHxsN2DlM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=youYpgIRDFxAeu4mwecp1uJBQGmjys1bezqPW12aWgE=;
-        b=tMFNYV+xiHPQbgpcTKy7J49YjgsG8eY5JTPJXDT8b5OGfwjm36vxDq2M8bZb1f1Ikw
-         KpX36LjuX90trMiWpSvWtsDFhmAyDQfv76160VDZzAltQzyq6QI2p/8g4FaxyTTtbjb4
-         e3B7RBN3Vg6UmYwijcxqrax5FsGD1j4QsOUg1ah9TtY61ulWekeZK26uEFIEATSPTc+X
-         z+x0uHa92zLmUaULG0ACOrJ2fOUNuO9rz+nRLfUmesg43pFcPVjt0VmaFIutu+EkRvqb
-         +JMjmqCaLJxp+Ieg2uMhyLc5hYpG9+1Stm1v+6CSFpHDx5S6xOFQ0UTNS9JBv34aAex6
-         SKow==
-X-Gm-Message-State: ACgBeo1gPMzbmKVmsre7FkkRb4xMc2f3nL5dWyfDYjHZ+ObTB7YuRHGL
-        kH0S7LYpi2b4pMEGs4hHXjI/ig==
-X-Google-Smtp-Source: AA6agR5mRAF7yxfBbQaw/DoOtsDOwwfqBAVdzxdq+NcFYZRSYoRPkqalUG4Twt7hthHtdMe/eERHLg==
-X-Received: by 2002:a17:902:7682:b0:170:a235:b5a2 with SMTP id m2-20020a170902768200b00170a235b5a2mr328051pll.113.1660781555349;
-        Wed, 17 Aug 2022 17:12:35 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q28-20020a63f95c000000b00428c216467csm65439pgk.32.2022.08.17.17.12.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 17:12:34 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 17:12:33 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Andi Shyti <andi.shyti@linux.intel.com>
-Cc:     Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, mchehab@kernel.org,
-        chris@chris-wilson.co.uk, matthew.auld@intel.com,
-        thomas.hellstrom@linux.intel.com, jani.nikula@intel.com,
-        nirmoy.das@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        andrzej.hajda@intel.com, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v7 1/8] overflow: Move and add few utility macros into
- overflow
-Message-ID: <202208171657.63AE7AC@keescook>
-References: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
- <20220816093525.184940-2-gwan-gyeong.mun@intel.com>
- <Yv10sQADwdZrIV42@alfio.lan>
+        Wed, 17 Aug 2022 20:20:52 -0400
+X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 17:20:51 PDT
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03BEA1D11;
+        Wed, 17 Aug 2022 17:20:51 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7B68B580556;
+        Wed, 17 Aug 2022 19:41:25 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 17 Aug 2022 19:41:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660779685; x=1660786885; bh=NI
+        aAYd9poCwuCaReO0KiItjGT5b3278AiQgPlMaoGH8=; b=PuKLpG0lACFDSWgEO8
+        rwPWX4M0HQpSuEdYRtGzQptcaolkieS2EgsFIwpoZyncFWpZckNeFIzIIYOqO8zc
+        9BpZgvlyinTevkQRn/C/ka6JMZsh8Ts9cHQWdeYq9ybnuk1SQZpubaUGZQB9t1lM
+        qk4rSx6j+tUOfRKOd3g94hTTtthwjyy2FqigUkFALmNMXV3xaGruqjoeP5+34xuk
+        J1Cinr4a4qem9KNGhx+lzwXQAr8UJisToeNsfhj8HLQwy0xeOfa5U42VQCIa7k9W
+        qZ8iK9otGm9LKKwttomxp7Dv3pSQF6Et1ZTaIBSz7M8flKM1wmlzQBaAB4PFaBIk
+        k9IQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660779685; x=1660786885; bh=NIaAYd9poCwuCaReO0KiItjGT5b3
+        278AiQgPlMaoGH8=; b=WGuGDaggU/a6pga7pL9w3WYTfRF/tux3G1kX0A3mQjNG
+        OC+VxEFGbO+smOA+p7iGMZ3GoMIsMcaWl3/NDeaFMGDz77QMAzUSQkUiUmCGJkRW
+        xHDUodL0TH5AF7G//emEtkunMR0IZ4l2d7XmME00+CIEmSs0g9HkS3qnHI4slsRN
+        HLEINl4PWiLW8DvpQUTe/0aF8/PdVhKDH0qkmMtKQaNXy1O+iZNm5MWAKX+BYowx
+        KuXbnGKaeKu5x2AZgYGthwUdYmgJrzE5cQQyW5v4ZXRMkJgZP9HwjqtkEwDmOL4I
+        VHlt+Z4I/oeTtr+VVKyUXBqBYFKb61xw+pnbo22rNA==
+X-ME-Sender: <xms:pHz9YkXNQXrutmOXLT8qKC8bAkDrafNZwTbHHUvk4uGruAWRz8lSXw>
+    <xme:pHz9YomAAobQndykgGisfSvrEaUbnwRxPnhjaRnRKcy7rwe8iA--U-9p8AJVY1ht3
+    CHYDQX82TnQfowOqrY>
+X-ME-Received: <xmr:pHz9YoYoOJJ3U6PUwRm1npi6IHWY-81B3GDPi_Hh-Sh04EiF8v9DMalIOFzMmXc0odStsA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehjedgvdehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdttddttddtvdenucfhrhhomhepfdfmihhr
+    ihhllhcutedrucfuhhhuthgvmhhovhdfuceokhhirhhilhhlsehshhhuthgvmhhovhdrnh
+    grmhgvqeenucggtffrrghtthgvrhhnpefhieeghfdtfeehtdeftdehgfehuddtvdeuheet
+    tddtheejueekjeegueeivdektdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehkihhrihhllhesshhhuhhtvghmohhvrdhnrghmvg
+X-ME-Proxy: <xmx:pHz9YjURvYrPk7ln2G6y5jzbE1QNYYzGLgRztyxiICy4kfvUbUjaNg>
+    <xmx:pHz9Yum1Ff9XGpoiOlx7NWmi_AWkZcUFRDXkPoeuriI3uxXSxr406w>
+    <xmx:pHz9YodmYF_t-pLZ3YNAgjRYP3doKC47u2BG16XkOANkKS6FtmEg2Q>
+    <xmx:pXz9YoADMoiV4yerQswAA91U22gwFiEMHVgZT94HO2C4gO2O9zUMXQ>
+Feedback-ID: ie3994620:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 17 Aug 2022 19:41:23 -0400 (EDT)
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id E5075104A77; Thu, 18 Aug 2022 02:41:20 +0300 (+03)
+Date:   Thu, 18 Aug 2022 02:41:20 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
+Message-ID: <20220817234120.mw2j3cgshmuyo2vw@box.shutemov.name>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
+ <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
+ <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yv10sQADwdZrIV42@alfio.lan>
+In-Reply-To: <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 01:07:29AM +0200, Andi Shyti wrote:
-> Hi Kees,
-> 
-> would you mind taking a look at this patch?
-
-Hi! Thanks for the heads-up!
-
-> 
-> Thanks,
-> Andi
-> 
-> On Tue, Aug 16, 2022 at 06:35:18PM +0900, Gwan-gyeong Mun wrote:
-> > It moves overflows_type utility macro into overflow header from i915_utils
-> > header. The overflows_type can be used to catch the truncation between data
-> > types. And it adds safe_conversion() macro which performs a type conversion
-> > (cast) of an source value into a new variable, checking that the
-> > destination is large enough to hold the source value. And the functionality
-> > of overflows_type has been improved to handle the signbit.
-> > The is_unsigned_type macro has been added to check the sign bit of the
-> > built-in type.
+On Fri, Aug 05, 2022 at 07:55:38PM +0200, Paolo Bonzini wrote:
+> On 7/21/22 11:44, David Hildenbrand wrote:
 > > 
-> > v3: Add is_type_unsigned() macro (Mauro)
-> >     Modify overflows_type() macro to consider signed data types (Mauro)
-> >     Fix the problem that safe_conversion() macro always returns true
-> > v4: Fix kernel-doc markups
-> > v6: Move macro addition location so that it can be used by other than drm
-> >     subsystem (Jani, Mauro, Andi)
-> >     Change is_type_unsigned to is_unsigned_type to have the same name form
-> >     as is_signed_type macro
-> > 
-> > Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-> > Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-> > Cc: Matthew Auld <matthew.auld@intel.com>
-> > Cc: Nirmoy Das <nirmoy.das@intel.com>
-> > Cc: Jani Nikula <jani.nikula@intel.com>
-> > Cc: Andi Shyti <andi.shyti@linux.intel.com>
-> > Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org> (v5)
-> > ---
-> >  drivers/gpu/drm/i915/i915_utils.h |  5 +--
-> >  include/linux/overflow.h          | 54 +++++++++++++++++++++++++++++++
-> >  2 files changed, 55 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
-> > index c10d68cdc3ca..eb0ded23fa9c 100644
-> > --- a/drivers/gpu/drm/i915/i915_utils.h
-> > +++ b/drivers/gpu/drm/i915/i915_utils.h
-> > @@ -32,6 +32,7 @@
-> >  #include <linux/types.h>
-> >  #include <linux/workqueue.h>
-> >  #include <linux/sched/clock.h>
-> > +#include <linux/overflow.h>
-> >  
-> >  #ifdef CONFIG_X86
-> >  #include <asm/hypervisor.h>
-> > @@ -111,10 +112,6 @@ bool i915_error_injected(void);
-> >  #define range_overflows_end_t(type, start, size, max) \
-> >  	range_overflows_end((type)(start), (type)(size), (type)(max))
-> >  
-> > -/* Note we don't consider signbits :| */
-> > -#define overflows_type(x, T) \
-> > -	(sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-> > -
-> >  #define ptr_mask_bits(ptr, n) ({					\
-> >  	unsigned long __v = (unsigned long)(ptr);			\
-> >  	(typeof(ptr))(__v & -BIT(n));					\
-> > diff --git a/include/linux/overflow.h b/include/linux/overflow.h
-> > index f1221d11f8e5..462a03454377 100644
-> > --- a/include/linux/overflow.h
-> > +++ b/include/linux/overflow.h
-> > @@ -35,6 +35,60 @@
-> >  #define type_max(T) ((T)((__type_half_max(T) - 1) + __type_half_max(T)))
-> >  #define type_min(T) ((T)((T)-type_max(T)-(T)1))
-> >  
-> > +/**
-> > + * is_unsigned_type - helper for checking data type which is an unsigned data
-> > + * type or not
-> > + * @x: The data type to check
-> > + *
-> > + * Returns:
-> > + * True if the data type is an unsigned data type, false otherwise.
-> > + */
-> > +#define is_unsigned_type(x) ((typeof(x))-1 >= (typeof(x))0)
+> > Also, I*think*  you can place pages via userfaultfd into shmem. Not
+> > sure if that would count "auto alloc", but it would certainly bypass
+> > fallocate().
+> 
+> Yeah, userfaultfd_register would probably have to forbid this for
+> F_SEAL_AUTO_ALLOCATE vmas.  Maybe the memfile_node can be reused for this,
+> adding a new MEMFILE_F_NO_AUTO_ALLOCATE flags?  Then userfault_register
+> would do something like memfile_node_get_flags(vma->vm_file) and check the
+> result.
 
-I'd rather not have separate logic for this. Instead, I'd like it to be:
+I donno, memory allocation with userfaultfd looks pretty intentional to
+me. Why would F_SEAL_AUTO_ALLOCATE prevent it?
 
-#define is_unsigned_type(x) (!is_signed_type(x))
+Maybe we would need it in the future for post-copy migration or something?
 
-> > +
-> > +/**
-> > + * overflows_type - helper for checking the truncation between data types
-> > + * @x: Source for overflow type comparison
-> > + * @T: Destination for overflow type comparison
-> > + *
-> > + * It compares the values and size of each data type between the first and
-> > + * second argument to check whether truncation can occur when assigning the
-> > + * first argument to the variable of the second argument.
-> > + * Source and Destination can be used with or without sign bit.
-> > + * Composite data structures such as union and structure are not considered.
-> > + * Enum data types are not considered.
-> > + * Floating point data types are not considered.
-> > + *
-> > + * Returns:
-> > + * True if truncation can occur, false otherwise.
-> > + */
-> > +#define overflows_type(x, T) \
-> > +	(is_unsigned_type(x) ? \
-> > +		is_unsigned_type(T) ? \
-> > +			(sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-> > +			: (sizeof(x) >= sizeof(T) && (x) >> (BITS_PER_TYPE(T) - 1)) ? 1 : 0 \
-> > +	: is_unsigned_type(T) ? \
-> > +		((x) < 0) ? 1 : (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-> > +		: (sizeof(x) > sizeof(T)) ? \
-> > +			((x) < 0) ? (((x) * -1) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-> > +				: ((x) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-> > +			: 0)
+Or existing practises around userfaultfd touch memory randomly and
+therefore incompatible with F_SEAL_AUTO_ALLOCATE intent?
 
-Like the other, I'd much rather this was rephrased in terms of the
-existing macros (e.g. type_min()/type_max().)
-
-> > +
-> > +/**
-> > + * safe_conversion - perform a type conversion (cast) of an source value into
-> > + * a new variable, checking that the destination is large enough to hold the
-> > + * source value.
-> > + * @ptr: Destination pointer address
-> > + * @value: Source value
-> > + *
-> > + * Returns:
-> > + * If the value would overflow the destination, it returns false.
-> > + */
-> > +#define safe_conversion(ptr, value) ({ \
-> > +	typeof(value) __v = (value); \
-> > +	typeof(ptr) __ptr = (ptr); \
-> > +	overflows_type(__v, *__ptr) ? 0 : ((*__ptr = (typeof(*__ptr))__v), 1); \
-> > +})
-
-I try to avoid "safe" as an adjective for interface names, since it
-doesn't really answer "safe from what?" This looks more like "assign, but
-zero when out of bounds". And it can be built from existing macros here:
-
-	if (check_add_overflow(0, value, ptr))
-		*ptr = 0;
-
-I actually want to push back on this a bit, because there can still be
-logic bugs built around this kind of primitive. Shouldn't out-of-bounds
-assignments be seen as a direct failure? I would think this would be
-sufficient:
-
-#define check_assign(value, ptr)	check_add_overflow(0, value, ptr)
-
-And callers would do:
-
-	if (check_assign(value, &var))
-		return -EINVAL;
-
-etc.
-
+Note, that userfaultfd is only relevant for shared memory as it requires
+VMA which we don't have for MFD_INACCESSIBLE.
 
 -- 
-Kees Cook
+  Kiryl Shutsemau / Kirill A. Shutemov
