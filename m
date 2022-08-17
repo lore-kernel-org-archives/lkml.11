@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFE3C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7CDC32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:06:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241726AbiHQUGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
+        id S241721AbiHQUGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241706AbiHQUFz (ORCPT
+        with ESMTP id S241443AbiHQUGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:05:55 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4141563F14
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:05:54 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id n4so17367519wrp.10
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:05:54 -0700 (PDT)
+        Wed, 17 Aug 2022 16:06:02 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA6B5A8B3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:06:00 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id r16so8189296wrm.6
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:06:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=vuO3cD7vHfOoM26qaFlIa3/qXvWH4JaTB3axSBEJPBw=;
-        b=aLff/SU5U5NCprD2QuW81ZfqWPcaSFXlXSbnm3nBxoThVUuC+erRdVodWmcN79GWR3
-         x6K8q62Y/aYgL/FZR7jCoVAQly7asoaWMM3eg4Sn7jt91w07TL5ryQcaxYoFF6mtw7x7
-         WyCWzHVrw1kx1hzhuGNSQ8Z1QZLPIxrOSVAv5jzhEYz5lNvczMpa1TQU+b0Tf7qi+ALt
-         tyUURhWEo6A/4e0QPQ+c9f7f1yX97VvMESe+aAoTJFbFqSFzjrwU8WvqNZnisdvUVt5J
-         zfYmHcItVD5nQhI8sOUgr2pTtd/SmXdJo6yVsTj0KdxUltsCv4tc4rsYkjw0cepkFKbm
-         LQTg==
+        bh=G88Wg8efx4vUqMWMZ62OXKazA2toNV7pxgmBvPS4y7g=;
+        b=VzaGcfunVEH2z7tJRNS1AU/vIocqbg6xnzILw4gRFcBEDkijY1Zq4TmA5/TNRldDSx
+         WzgaQIj45pktnr3tjYDuiDyxviAqihEm4l2MkHueEnlQXQjanVthYnOkTHEn09mCRbGs
+         1MqmO9w4ty96NiqmLtnlo7Ub2udERairrBssiSs6S3plZkziQhalrIMKvkJPE7ilS2IF
+         8jKUcOsS2tT7/eTA52ruguZTo4qlgfu4c8mhay7OiLT1A9eHMWIsCbJW7wgPuG0fQkNS
+         TH/3JAfFK7hhxh5fd11oPwDkmvnuw9zsoquL8KJ9BEYzhU9+mGSf16ovrpiqU5Nd47RD
+         Z5xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=vuO3cD7vHfOoM26qaFlIa3/qXvWH4JaTB3axSBEJPBw=;
-        b=TWucobMFoYq2d3p82IEzvT44+friI8TrckRzAZ0ZOZl5t2UH2vELGvMaIdB1t8iQdI
-         aZgWoAA56z5mTeazivUAS113ztkjVg8A/jLyDr00vtqYBg4pshTbWORVJ9C16Bxhv1PF
-         m2wtbPVlwgmPxqJuo7xfkLZColkS448Lw0ZVGIhM/Xtzmj9cUZE/egzYdDUe6XolpWoT
-         EAFMOyXcpsMOVWg0gQaxke+MY7iNm8k5VcsVwVFqJahsf+LLpOeYj1JPs6Jab/F9xwrU
-         AALa4deWrTn+6oQQDNDm/323V7DL0Kar/muq85xH/CV4QS89Q4KQDAe2ACejORvuGPuR
-         6XSw==
-X-Gm-Message-State: ACgBeo18lZxEzkQUWoFnIbgofEnQLVZfs6oY6EPgPwRBzhKAguvotUky
-        p+DGTZK0Au9qxKPASIxKFj0hQQ==
-X-Google-Smtp-Source: AA6agR6xInXHiAM2BCLKV9u+fYev1yEmFG0NjjMiZhNBeLkYTbhJq4za1Z3qh97Ys5ZCdjUKqm17DQ==
-X-Received: by 2002:a05:6000:1b92:b0:220:7d86:2e30 with SMTP id r18-20020a0560001b9200b002207d862e30mr15678682wru.530.1660766752738;
-        Wed, 17 Aug 2022 13:05:52 -0700 (PDT)
+        bh=G88Wg8efx4vUqMWMZ62OXKazA2toNV7pxgmBvPS4y7g=;
+        b=koliDxgHw7ry211sDxFtOb8ShlY8Yvo+0saJ6ZLrIY8EoJbHQtr41yDzS1/MPTli+o
+         UhxXv3t/vLEzB15kTtPyp/XRK0eMTt7kJ32YNaRmNLAZC1yx/6Ioo5hy+a3PlfA2mfUg
+         0XoGLLiKVpnDb3JVx+SkKEj5MVeJOFzYdK3E7axNU7kx9HEQF5+CxNiXKsYHp/rFUDGe
+         LnF1gzh73UW3jxhri+m32ZmJ1ZBgflS5fIyJF4VvQFPAQJdElMCzW5C+yWNQHRulpvQy
+         OyPzkr9hq3p3hL20uCSNfRFbc8fGwdy/gJQGz4penmi8iM+MqzpDBk38eJ6vDcOgjcy1
+         OE4A==
+X-Gm-Message-State: ACgBeo2H8YoOsUnEpzZOFUHmmDWkNJ4s141aL8hcdtGwrPZrPfdH5IRQ
+        XnNGPIIkooVczQFzOyr4DSWnwg==
+X-Google-Smtp-Source: AA6agR6RY3pzrMDDeo4DomjmEAqXTBHnmR2N2jKtYWKl/s2Lhds8el5y+ky2C+45OzgIECGp7SjeTQ==
+X-Received: by 2002:a5d:5509:0:b0:225:20ac:37fb with SMTP id b9-20020a5d5509000000b0022520ac37fbmr3914379wrv.38.1660766759021;
+        Wed, 17 Aug 2022 13:05:59 -0700 (PDT)
 Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id i133-20020a1c3b8b000000b003a531c7aa66sm3400883wma.1.2022.08.17.13.05.50
+        by smtp.gmail.com with ESMTPSA id i133-20020a1c3b8b000000b003a531c7aa66sm3400883wma.1.2022.08.17.13.05.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:05:51 -0700 (PDT)
+        Wed, 17 Aug 2022 13:05:58 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -64,11 +64,10 @@ Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
         Jessica Clarke <jrtc27@jrtc27.com>,
         Andrew Jones <ajones@ventanamicro.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 2/4] dt-bindings: interrupt-controller: sifive,plic: add legacy riscv compatible
-Date:   Wed, 17 Aug 2022 21:05:21 +0100
-Message-Id: <20220817200531.988850-3-mail@conchuod.ie>
+        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org
+Subject: [PATCH v2 0/4] Fix dt-validate issues on qemu dtbdumps due to dt-bindings
+Date:   Wed, 17 Aug 2022 21:05:24 +0100
+Message-Id: <20220817200531.988850-6-mail@conchuod.ie>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220817200531.988850-1-mail@conchuod.ie>
 References: <20220817200531.988850-1-mail@conchuod.ie>
@@ -80,41 +79,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-While "real" hardware might not use the compatible string "riscv,plic0"
-it is present in the driver & QEMU uses it for automatically generated
-virt machine dtbs. To avoid dt-validate problems with QEMU produced
-dtbs, such as the following, add it to the binding.
+The device trees produced automatically for the virt and spike machines
+fail dt-validate on several grounds. Some of these need to be fixed in
+the linux kernel's dt-bindings, but others are caused by bugs in QEMU.
 
-riscv-virt.dtb: plic@c000000: compatible: 'oneOf' conditional failed, one must be fixed:
-        'sifive,plic-1.0.0' is not one of ['sifive,fu540-c000-plic', 'starfive,jh7100-plic', 'canaan,k210-plic']
-        'sifive,plic-1.0.0' is not one of ['allwinner,sun20i-d1-plic']
-        'sifive,plic-1.0.0' was expected
-        'thead,c900-plic' was expected
-riscv-virt.dtb: plic@c000000: '#address-cells' is a required property
+Patches been sent that fix the QEMU issues [0], but a couple of them
+need to be fixed in the kernel's dt-bindings. The first patches add
+compatibles for "riscv,{clint,plic}0" which are present in drivers and
+the auto generated QEMU dtbs. The final patch should be ignored for all
+serious purposes unless you want to wash your eyes out afterwards, but
+JIC the versioned extensions ever come up, it's there.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml     | 5 +++++
- 1 file changed, 5 insertions(+)
+Thanks to Rob Herring for reporting these issues [1],
+Conor.
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-index 92e0f8c3eff2..99e01f4d0a69 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-@@ -66,6 +66,11 @@ properties:
-           - enum:
-               - allwinner,sun20i-d1-plic
-           - const: thead,c900-plic
-+      - items:
-+          - const: sifive,plic-1.0.0
-+          - const: riscv,plic0
-+        deprecated: true
-+        description: For the QEMU virt machine only
- 
-   reg:
-     maxItems: 1
+To reproduce the errors:
+./build/qemu-system-riscv64 -nographic -machine virt,dumpdtb=qemu.dtb
+dt-validate -p /path/to/linux/kernel/Documentation/devicetree/bindings/processed-schema.json qemu.dtb
+(The processed schema needs to be generated first)
+
+0 - https://lore.kernel.org/linux-riscv/20220810184612.157317-1-mail@conchuod.ie/
+1 - https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
+
+Changes since v1:
+- drop the "legacy systems" bit from the binding descriptions
+- convert to a regex for the isa string
+
+Conor Dooley (4):
+  dt-bindings: timer: sifive,clint: add legacy riscv compatible
+  dt-bindings: interrupt-controller: sifive,plic: add legacy riscv
+    compatible
+  dt-bindings: riscv: add new riscv,isa strings for emulators
+  dt-bindings: riscv: isa string bonus content
+
+ .../sifive,plic-1.0.0.yaml                     |  5 +++++
+ .../devicetree/bindings/riscv/cpus.yaml        |  9 ++++++---
+ .../bindings/timer/sifive,clint.yaml           | 18 ++++++++++++------
+ 3 files changed, 23 insertions(+), 9 deletions(-)
+
+
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
 2.37.1
 
