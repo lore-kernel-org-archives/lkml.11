@@ -2,217 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED24C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE4BC32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239865AbiHQODR convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
+        id S240033AbiHQODd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiHQOCb (ORCPT
+        with ESMTP id S239935AbiHQOCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:02:31 -0400
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA7C98C81
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:02:03 -0700 (PDT)
-Received: by mail-qt1-f175.google.com with SMTP id a4so10386316qto.10
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:02:03 -0700 (PDT)
+        Wed, 17 Aug 2022 10:02:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCD998C86
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:02:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660744927;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pt7BDtIMM3FtA0HcC2AXZKv8xyOB8ntdc2I9DoZlSjw=;
+        b=fTMT5nhyAg+CymIYZUtZ7Nzr+XK/PydCwlpLoIJpcS60+Q2YV5xXdOd9SyH+/Ty++xBCnH
+        2MH5qBBtJZDAGDT0IsWdQ+G6Ir119b2Vqnj4E+nNbuU+RqO2KYFv/gAhU2OP3E/qQfq0v4
+        IbRrcc/HsIgTMPxhDT4UlH5Sb47lGvg=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-214-l-Am4VmbPsOycEDqnZv7pQ-1; Wed, 17 Aug 2022 10:02:06 -0400
+X-MC-Unique: l-Am4VmbPsOycEDqnZv7pQ-1
+Received: by mail-io1-f70.google.com with SMTP id l18-20020a6bd112000000b0067cb64ad9b2so7889239iob.20
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:02:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=9vGZaeYeF3C4CiTE5MgNIzB+zcyQS3be59eUDCUL+Fc=;
-        b=TotBbNBzTNxPpCDzVL6CxahQoB/4IFpa5epyCV4d2CHJBXSLL/1INwAdTZZecxLe4T
-         Fgr7OOJo17sWNf64na6EzW5Nm2jTz2FZ9oietDG2DhJ03rEI4PrVKaDnYGCCi2TAcOcw
-         TGc7g8Un3Oz7KGALL8QcDaRjpqBkta0T2tiBAdPHwi+aYii3jt4dVeuClSQy8Ap7nigr
-         fUX3wAKa9fchmhWlujUgGaFkUqs0+/EezWMlsOT+1Mu1hjNxxS/3pdqnGEORbgrRHCqC
-         MKG54uq38adSu1tOslpRTTG4EOzlNZTkRk66Ykj+CxvmcTfIkn+ddDe9N9oC8jRZyKmO
-         kt6g==
-X-Gm-Message-State: ACgBeo17KwtmlHGYSwS9JIUdK5Bhp6HblocGmBwR2tpDoF3KPIsSdhiH
-        /yQdEB9QJHpX5YtpotmICwowt51v+BeE6w==
-X-Google-Smtp-Source: AA6agR67GDkykqb4JaxiyAEnNWSBcwVFD1TzI/d0j6GPjAK1Uc3VpWbkwQ1w3bWnhrZN0hpr+HI31g==
-X-Received: by 2002:a05:622a:174f:b0:344:552b:c6a9 with SMTP id l15-20020a05622a174f00b00344552bc6a9mr15955926qtk.13.1660744922409;
-        Wed, 17 Aug 2022 07:02:02 -0700 (PDT)
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
-        by smtp.gmail.com with ESMTPSA id i12-20020a05622a08cc00b003434f7483a1sm12399381qte.32.2022.08.17.07.02.00
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 07:02:01 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-32fd97c199fso208568047b3.6
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:02:00 -0700 (PDT)
-X-Received: by 2002:a0d:eb45:0:b0:333:f813:6c79 with SMTP id
- u66-20020a0deb45000000b00333f8136c79mr5998789ywe.384.1660744920203; Wed, 17
- Aug 2022 07:02:00 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc;
+        bh=Pt7BDtIMM3FtA0HcC2AXZKv8xyOB8ntdc2I9DoZlSjw=;
+        b=BuZELLBrnS9609oRPhee6V/VZ4UDR1ksPIs7/C9bMMKcQd1t0xVAsyPeukBUQhicbY
+         dZpYC+x+QHTQDkwoK5zk+Ap0+Z652wYFOn/xcuP0x8Y8a27a8Xj3BSvaAQLFgCqrA70b
+         Rb9OR30d/PsNMLKnOmTi2pP4pMBYh7Hg+hVD+c45KhHJKACtVCmxL7DVQ2P4GS917BIM
+         BezSj0jltvm8JJscZqeWDBYNM2gIcfW5TX8Qsz2LsQ2rhOQxYXxGaXgPBtvsU3yCDpsZ
+         GCgY8CvwRkzp1rcHfpZh4RgRUWSsyCvr4wLf1DUVpeBsYxtjPUYhim+W+b8QCjrx+Fko
+         7o0A==
+X-Gm-Message-State: ACgBeo1SgpoM/UiW5BbX2NxjVMTf/T3VQp4l9ms5IPcUxJQ3uj4/RiTD
+        r9Qreb7LugbrJ/W1XoQyL8QDLJ71jzHZR7WhhneXhR9bH1qLpAE/oEyCJgv0iELdD5Hg5KFQoOq
+        5L80/G0DHSxp/VF0P47FCNUCO
+X-Received: by 2002:a05:6602:14c2:b0:67d:ae1:1c23 with SMTP id b2-20020a05660214c200b0067d0ae11c23mr10996739iow.212.1660744924866;
+        Wed, 17 Aug 2022 07:02:04 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4bGd0JIkKE6JDPsmRO7YZrbm3YU8lrNbz8b/j2FgnreXtiopIU1h0WEkWjStJNGqcDXUPU0Q==
+X-Received: by 2002:a05:6602:14c2:b0:67d:ae1:1c23 with SMTP id b2-20020a05660214c200b0067d0ae11c23mr10996720iow.212.1660744924533;
+        Wed, 17 Aug 2022 07:02:04 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id s10-20020a056602168a00b00684690536d7sm7676106iow.35.2022.08.17.07.02.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 07:02:04 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 08:02:02 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc:     linux-pci@vger.kernel.org, bhelgaas@google.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] PCI: Expose resource resizing through sysfs
+Message-ID: <20220817080202.1a0c29cf.alex.williamson@redhat.com>
+In-Reply-To: <a15fe381-1f41-2c92-2ef1-0b4eb30a5142@amd.com>
+References: <166067824399.1885802.12557332818208187324.stgit@omen>
+        <a15fe381-1f41-2c92-2ef1-0b4eb30a5142@amd.com>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <20220728-rpi-analog-tv-properties-v1-4-3d53ae722097@cerno.tech>
- <CAMuHMdUrwzPYjA0wdR7ADj5Ov6+m03JbnY8fBYzRYyWDuNm5=g@mail.gmail.com>
- <20220816132636.3tmwqmrox64pu3lt@houat> <CAMuHMdUNLPbjs=usYQBim5FxsrC1oJLuF+3JB7auzHHRoOqavQ@mail.gmail.com>
- <20220817075351.4xpsqdngjgtiqvob@houat> <CAMuHMdUusnhYodWGCxJBu-1Hd2KW-xdT8jxE_iVdQjDo8b3Y5Q@mail.gmail.com>
- <20220817131454.qcuywcuc4ts4hswm@houat>
-In-Reply-To: <20220817131454.qcuywcuc4ts4hswm@houat>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 17 Aug 2022 16:01:48 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVPEgnnsY-4uuf=FDJ0YxWpch-0kZWFT_TZfcDvXLtwWQ@mail.gmail.com>
-Message-ID: <CAMuHMdVPEgnnsY-4uuf=FDJ0YxWpch-0kZWFT_TZfcDvXLtwWQ@mail.gmail.com>
-Subject: Re: [PATCH v1 04/35] drm/modes: Introduce 480i and 576i modes
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
+On Wed, 17 Aug 2022 12:10:44 +0200
+Christian K=C3=B6nig <christian.koenig@amd.com> wrote:
 
-On Wed, Aug 17, 2022 at 3:15 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> On Wed, Aug 17, 2022 at 10:51:55AM +0200, Geert Uytterhoeven wrote:
-> > On Wed, Aug 17, 2022 at 9:54 AM Maxime Ripard <maxime@cerno.tech> wrote:
-> > > On Tue, Aug 16, 2022 at 05:00:38PM +0200, Geert Uytterhoeven wrote:
-> > > > On Tue, Aug 16, 2022 at 3:26 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> > > > > On Fri, Aug 12, 2022 at 03:18:58PM +0200, Geert Uytterhoeven wrote:
-> > > > > > On Fri, Jul 29, 2022 at 6:35 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> > > > > > > Multiple drivers (meson, vc4) define the analog TV 525-lines and 625-lines
-> > > > > > > modes in the drivers.
-> > > > > >
-> > > > > > Nit: strictly speaking these are not analog modes, but the digital
-> > > > > > variants (ITU-R BT.656 and DVD-Video D1) of NTSC and PAL, using a
-> > > > > > 13.5 MHz sampling frequency for pixels.
-> > > > > >
-> > > > > > In analog modes, the only discrete values are the number of lines, and
-> > > > > > the frame/field rate (fixing the horizontal sync rate when combined).
-> > > > > >
-> > > > > > The number of (in)visible pixels per line depends on the available
-> > > > > > bandwidth.  In a digital variant (which is anything generated by a
-> > > > > > digital computer system), the latter depends on the pixel clock, which
-> > > > > > can wildly differ from the 13.5 MHz used in the BT.656 standard. (e.g.
-> > > > > > Amiga uses 7.09/14.19/28.38 MHz (PAL) or 7.16/14.32/28.64 MHz (NTSC)).
-> > > > > >
-> > > > > > So I think we probably need some way to generate a PAL/NTSC-compatible
-> > > > > > mode based not only on resolution, but also on pixel clock.
-> > > > >
-> > > > > This would also fix the comments made by Jani and Thomas, so I quite
-> > > > > like the idea of it.
-> > > > >
-> > > > > I'm struggling a bit to find how would could implement this though.
-> > > > >
-> > > > > From what you were saying, I guess the prototype would be something like
-> > > > >
-> > > > > struct drm_display_mode *drm_create_analog_mode(unsigned int pixel_clock,
-> > > > >                                                 unsigned int lines,
-> > > > >                                                 unsigned int frame_rate)
-> > > > >
-> > > > > But I have zero idea on what the implementation would be. Do you have
-> > > > > some resources for this you could point me to?
-> > > >
-> > > > Horizontally, I think you should calculate left/right margins and
-> > > > hsync length to yield timings that match those for the BT.656 PAL/NTSC
-> > > > modes.  I.e. when a 640x512 mode with a pixel clock of 14 MHz is
-> > > > requested, you want to calculate left', right', and hslen' for
-> > > >
-> > > > | <---- left' ---> | <- 640 pixels -> | <---- right' ---> | <--- hslen' --> |
-> > > >                         @ 14 MHz
-> > > >
-> > > > so they match the timings for left, right, and hslen for
-> > > >
-> > > > | <--- left ---> | <--- 720 pixels ---> | <--- right ---> | <--- hslen ---> |
-> > > >                         @ 13.5 MHz
-> > > >
-> > > > As 640 pixels @ 14 MHz are less wide than 720 pixels @ 13.5 MHz,
-> > > > you want to make sure to align the center of the visible part.
-> > >
-> > > So I guess in that example if we want to center it, left == right and
-> > > left' == right'? What about the sync length?
+> Am 16.08.22 um 21:39 schrieb Alex Williamson:
+> > We have a couple graphics drivers making use of PCIe Resizable BARs
+> > now, but I've been trying to figure out how we can make use of such
+> > features for devices assigned to a VM.  This is a proposal for a
+> > rather basic interface in sysfs such that we have the ability to
+> > pre-enable larger BARs before we bind devices to vfio-pci and
+> > attach them to a VM. =20
+>=20
+> Ah, yes please.
+>=20
+> I was considering doing this myself just for testing while adding the=20
+> rebar support for the GFX drivers, but then just implementing it on the=20
+> GFX side was simpler.
+>=20
+> I would just add a warning that resizing BARs can easily crash the=20
+> system even when no driver directly claimed the resource or PCIe device.
+>=20
+> It literally took me weeks to figure out that I need to kick out the EFI=
+=20
+> framebuffer driver before trying to resize the BAR or otherwise I just=20
+> get a hung system.
+
+Good point, I think maybe we can avoid crashing the system though if we
+use the new aperture support to remove conflicting drivers from all VGA
+class devices, similar to d17378062079 ("vfio/pci: Remove console
+drivers").  A note in the ABI documentation about removing console
+drivers from the device when resizing resources would definitely be in
+order.
+
+> > Along the way I found a double-free in the error path of creating
+> > resource attributes, that can certainly be pulled separately (1/).
 > >
-> > No, left and right are asymmetrical, cfr. front and back porch in
-> > https://en.wikipedia.org/wiki/PAL#PAL_signal_details
-> > I.e. if the pixel part is reduced, both the left and right margins
-> > should be increased by the same amount.
-> >
-> > From the table linked above, hslen should be ca. 4.7µs (fixed).
->
-> each pixel taking 1 / pixel_clock seconds (assuming pixel_clock is in
-> Hz), and thus hslen (in pixels) = 4.7 * 10 ^ -6 * pixel_clk, right?
+> > I'm using an RTX6000 for testing, which unexpectedly only supports
+> > REBAR with smaller than default sizes, which led me to question
+> > why we have such heavy requirements for shrinking resources (2/). =20
+>=20
+> Oh, that's easy. You got tons of ARM boards with less than 512MiB of=20
+> address space per root PCIe complex.
+>=20
+> If you want to get a GPU working on those you need to decrease the
+> BAR size or otherwise you won't be able to fit 256MiB VRAM BAR +
+> register BAR into the same hole for the PCIe root complex.
+>=20
+> An alternative explanation is that at least AMD produced some boards=20
+> with a messed up resize configuration word. But on those you only got=20
+> 256MiB, 512MiB and 1GiB potential BAR sizes IIRC.
 
-Exactly.
+An aspect of shrinking BARs that maybe I'm not giving enough
+consideration to is that we might be shrinking a BAR on one device in
+order to release MMIO space from a bridge aperture, that we might then
+use to expand a BAR elsewhere.  The RTX6000 case only frees a rather
+modest amount of MMIO space, but I could imagine more substantial
+configurations.  Maybe this justifies resizing the bridge aperture even
+in the shrinking case?
 
-> > > > Vertically, it's simpler, as the number of lines is discrete.
-> > > > You do have to take into account interlace and doublescan, and
-> > > > progressive modes with 262/312 lines.
-> > >
-> > > So we only have to deal with 525 and 625 lines total (without taking
-> > > interlace and doublescan into account), right?
-> >
-> > Yes.
-> >
-> > > I guess we still have the same question, we probably want to center it,
-> > > so top == bottom, but what about the vsync length?
-> >
-> > Unfortunately that table does not mention top and bottom margins.
-> > But according to drivers/video/fbdev/amifb.c (see the "Broadcast
-> > video timings" comment block and the definitions of the "ntsc-lace"
-> > and "pal-lace" video modes), they are asymmetrical, too.
-> >
-> > Vsync length is 0.576ms, so that's 9 scan lines (I guess I didn't
-> > have that info when I wrote amifb, as I used 4 lines there).
->
-> Thanks, that's some great info already.
->
-> It's mentioned though that the settings for NTSC are "straightforward",
-> but it's definitely not for me :)
+> Anyway, with an appropriate warning added to the sysfs documentation
+> the patch #2 and #3 are Acked-by: Christian K=C3=B6nig
+> <christian.koenig@amd.com>
 
-As in NTSC just uses different pixel clock and horizontal/vertical sync
-rate values...
+Thanks!
 
-> I've looked around and it looks like the entire blanking area is
-> supposed to be 40 pixels in interlaced, but I couldn't find anywhere how
+Alex
 
-625 lines - 575[*] visible lines = 50 lines.
-
-[*] BT.656 uses 576 visible lines as that's a multiple of 2, for splitting
-     a frame in two fields of equal size.
-
-"visible" is relative, as it includes the overscan region.
-Some PAL monitors used with computers had knobs to control width/height
-and position of the screen, so you could make use of most or all of
-the overscan region, but on a real TV you're limited to ca. 640x512 (on
-PAL)  which is what an Amiga used by default (with a 14 MHz pixclock).
-> it's supposed to be split between the upper and lower margins and the
-> sync period.
-
-"Field Synchronization of PAL System" on http://martin.hinner.info/vga/pal.html
-shows the split.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
