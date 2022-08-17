@@ -2,196 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC913C32773
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 06:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04789C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 06:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbiHQGGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 02:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
+        id S232796AbiHQGHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 02:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiHQGF4 (ORCPT
+        with ESMTP id S230241AbiHQGHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 02:05:56 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A916D9F3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 23:05:55 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id v2so17750106lfi.6
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 23:05:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=bWmFMUxl6d2LitE+dvs3csdd/mu6oD0O1Ta/ZIMPt5w=;
-        b=tUX+4Hn3giE4YCkx/E3r8WWiuH4JZ1Wtyi1OYFyuJr+HpDyj75d4mrEc9RGv24TJPD
-         7/xHAQxEaG78rkZfxDSsi7n2MbrA1BeZRnXpeOsj8p/ktLEywHd3XSKb8icMd6pp8P7Y
-         Dvb9NX1AndP6YK0u/jwt4yoGfChP9OeD3r9SDGVYHeJyk5K4WRMAO522TaRFrAP1q4OC
-         k9pXXlo6Z2AuR6XkDU8wPxapHkn127FwerVGL6xZdhs5hDtkvS4oLjxxBauPMgfImLjT
-         vw5gyq1xwvOyn2S7VdpUIu6N9tBsdEYBaXAORdTlSni+axra1J7vAMoYYRecqndYq6DQ
-         VRFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=bWmFMUxl6d2LitE+dvs3csdd/mu6oD0O1Ta/ZIMPt5w=;
-        b=sGnw8BIU6G0fKJP1gTNFN4jRhAY5X+7bIR/R/197LylnhITZL4Efnk9pfeI6/7U3EH
-         6V3goGQUYP/ZiRvpOtDwAk4Y4E4WRbDcgpCcznVXhxW2V38aax7TckWCm+w6O+lFD1kk
-         1lSwy1d9s0S1LxXoD7exSzHz8lQTZCf7XIcBd/OZ/if4nFSy+3VLp0JO4ll5KyhPwSnL
-         5lV7KzHcIxqNIPEd00T3U2smABas4WWT3pnwg1rTaKUcvqVkAWwHDvVeWeOCKHaY8yZk
-         0a44GczcHlXmxN8yU9YJ+FyyiyglKeh9RV3R9O5KajKX1RPzgw/HgmkNmNeJ+ClZC3it
-         S1Ug==
-X-Gm-Message-State: ACgBeo38oeItDoo0SPzpNGB9uGqZZRkkgakVdRPzCKCsjDAM6euObAoh
-        Byv0XBph7Zay5x33gkq7UOuNsg==
-X-Google-Smtp-Source: AA6agR5FDOl7BpD8mpkedePKEvYHg/Ukn8SXEztT/Q4GBFCOxeYKw7YzAc45ZNJO7bt2jX3eC2Z7TQ==
-X-Received: by 2002:a05:6512:304c:b0:48c:ed09:1e95 with SMTP id b12-20020a056512304c00b0048ced091e95mr9059939lfb.642.1660716353479;
-        Tue, 16 Aug 2022 23:05:53 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:1b1c:14b7:109b:ed76? (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id h25-20020ac24d39000000b0048b2be5320csm1576801lfk.118.2022.08.16.23.05.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 23:05:52 -0700 (PDT)
-Message-ID: <6c283634-70b3-200f-a346-28eb4c428d39@linaro.org>
-Date:   Wed, 17 Aug 2022 09:05:51 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/2] dt-bindings: pinctrl: qcom: Add sc8280xp lpass lpi
- pinctrl bindings
-Content-Language: en-US
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        linus.walleij@linaro.org
-Cc:     konrad.dybcio@somainline.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        Wed, 17 Aug 2022 02:07:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B53C6DF90
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 23:06:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=G9e1eXFet/1n+mqch3msero3cUeihjkQibHHOgmNHVM=; b=Rjbq716kAe5Ou/J+71N+hGKqTD
+        rjBxLPgqVJS/FA+J+eJHtLDxa8091zEn2PBUJiiHocGXYYzeQJCxG6uejC8Iy5Xk7ro5E4sZsszic
+        87cufXld7JIGytD0sHUTUwaFEeCr9/yE5jE0QJXOUreiziHvVEGgaW+4i+JqU+mi3nKfi+QuzN+Yi
+        +xR2aYL4SLJiTlcSn+V9tssSZfFuUTjKew7RIMHDvykz7jWp+h8lsngSQV27WVm86Y4rzAhFj+fk3
+        1uYj7pEeMUQWRKxqs0RrjJ9/oVoCtjrl2nlKlCAx9PPZst3YrhOYbDO16JIZddv8KWK5MeL9skebG
+        IC9G7gew==;
+Received: from [2a02:1210:321a:af00:5fac:fede:a3b:c715] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oOCCY-00BeK1-LI; Wed, 17 Aug 2022 06:06:51 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        David Rientjes <rientjes@google.com>,
         linux-kernel@vger.kernel.org
-References: <20220816180538.9039-1-srinivas.kandagatla@linaro.org>
- <20220816180538.9039-2-srinivas.kandagatla@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220816180538.9039-2-srinivas.kandagatla@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 2/3] dma-pool: don't return errors from dma_atomic_pool_init
+Date:   Wed, 17 Aug 2022 08:06:46 +0200
+Message-Id: <20220817060647.1032426-3-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220817060647.1032426-1-hch@lst.de>
+References: <20220817060647.1032426-1-hch@lst.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/2022 21:05, Srinivas Kandagatla wrote:
-> Add device tree binding Documentation details for Qualcomm SC8280XP
-> LPASS(Low Power Audio Sub System) LPI(Low Power Island) pinctrl driver.
-> 
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Returning errors from initcalls does not change a thing, thus don't
+bother with returning -ENOMEM if one of the pool allocations failed.
 
-Thank you for your patch. There is something to discuss/improve.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ kernel/dma/pool.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-> +  gpio-ranges:
-> +    maxItems: 1
-> +
-> +#PIN CONFIGURATION NODES
-> +patternProperties:
-> +  '-pins$':
-> +    type: object
-> +    description:
-> +      Pinctrl node's client devices use subnodes for desired pin configuration.
-> +      Client device subnodes use below standard properties.
-> +    $ref: "/schemas/pinctrl/pincfg-node.yaml"
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 56f96678934bf..5b07b0379a501 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -195,8 +195,6 @@ static unsigned long calculate_pool_size(unsigned long zone_pages)
+ 
+ static int __init dma_atomic_pool_init(void)
+ {
+-	int ret = 0;
+-
+ 	/*
+ 	 * If coherent_pool was not used on the command line, default the pool
+ 	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
+@@ -208,23 +206,17 @@ static int __init dma_atomic_pool_init(void)
+ 
+ 	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
+ 						    GFP_KERNEL);
+-	if (!atomic_pool_kernel)
+-		ret = -ENOMEM;
+ 	if (has_managed_dma()) {
+ 		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!atomic_pool_dma)
+-			ret = -ENOMEM;
+ 	}
+ 	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
+ 		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA32);
+-		if (!atomic_pool_dma32)
+-			ret = -ENOMEM;
+ 	}
+ 
+ 	dma_atomic_pool_debugfs_init();
+-	return ret;
++	return 0;
+ }
+ postcore_initcall(dma_atomic_pool_init);
+ 
+-- 
+2.30.2
 
-Drop the quotes.
-
-> +
-> +    properties:
-> +      pins:
-> +        description:
-> +          List of gpio pins affected by the properties specified in this
-> +          subnode.
-> +        items:
-> +          pattern: "^gpio([0-1]|[0-8]])$"
-
-error in pattern - double ]. If you have 19 GPIOs, this should be
-probably: ^gpio([0-9]|1[0-8])$
-
-> +
-> +      function:
-> +        enum: [ swr_tx_clk, swr_tx_data, swr_rx_clk, swr_rx_data,
-> +                dmic1_clk, dmic1_data, dmic2_clk, dmic2_data, dmic4_clk,
-> +                dmic4_data, i2s2_clk, i2s2_ws, dmic3_clk, dmic3_data,
-> +                qua_mi2s_sclk, qua_mi2s_ws, qua_mi2s_data, i2s1_clk, i2s1_ws,
-> +                i2s1_data, wsa_swr_clk, wsa_swr_data, wsa2_swr_clk,
-> +                wsa2_swr_data, i2s2_data, i2s3_clk, i2s3_ws, i2s3_data,
-> +                ext_mclk1_c, ext_mclk1_b, ext_mclk1_a ]
-> +
-
-Skip blank line (confuses with a new property).
-
-> +        description:
-> +          Specify the alternative function to be configured for the specified
-> +          pins.
-> +
-> +      drive-strength:
-> +        enum: [2, 4, 6, 8, 10, 12, 14, 16]
-> +        default: 2
-> +        description:
-> +          Selects the drive strength for the specified pins, in mA.
-> +
-> +      slew-rate:
-> +        enum: [0, 1, 2, 3]
-> +        default: 0
-> +        description: |
-> +          0: No adjustments
-> +          1: Higher Slew rate (faster edges)
-> +          2: Lower Slew rate (slower edges)
-> +          3: Reserved (No adjustments)
-> +
-> +      bias-pull-down: true
-> +
-> +      bias-pull-up: true
-> +
-> +      bias-disable: true
-> +
-> +      output-high: true
-> +
-> +      output-low: true
-> +
-> +    required:
-> +      - pins
-> +      - function
-> +
-> +    additionalProperties: false
-> +
-> +allOf:
-> +  - $ref: "pinctrl.yaml#"
-
-Drop the quotes.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - gpio-controller
-> +  - '#gpio-cells'
-> +  - gpio-ranges
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/sound/qcom,q6afe.h>
-> +    lpi_tlmm: pinctrl@33c0000 {
-
-Drop the label, not used anywhere here.
-
-> +        compatible = "qcom,sc8280xp-lpass-lpi-pinctrl";
-> +        reg = <0x33c0000 0x20000>,
-> +              <0x3550000 0x10000>;
-> +        clocks = <&q6afecc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
-> +                 <&q6afecc LPASS_HW_DCODEC_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
-> +        clock-names = "core", "audio";
-> +        gpio-controller;
-> +        #gpio-cells = <2>;
-> +        gpio-ranges = <&lpi_tlmm 0 0 18>;
-> +    };
-
-
-Best regards,
-Krzysztof
