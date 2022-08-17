@@ -2,57 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B96C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F104BC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239963AbiHQOCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52694 "EHLO
+        id S240010AbiHQODA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237162AbiHQOBT (ORCPT
+        with ESMTP id S239984AbiHQOCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:01:19 -0400
+        Wed, 17 Aug 2022 10:02:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7889E7332D
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:01:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361E2A416
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:01:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4515461471
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:01:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AED81C433B5;
-        Wed, 17 Aug 2022 14:01:13 +0000 (UTC)
-Date:   Wed, 17 Aug 2022 10:01:22 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        David Reaver <me@davidreaver.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Krister Johansen <kjlx@templeofstupid.com>
-Subject: Re: [PATCH] tracing/perf: Fix double put of trace event when init
- fails
-Message-ID: <20220817100122.127f0a44@gandalf.local.home>
-In-Reply-To: <Yvyx0ouTDvsWTox6@krava>
-References: <20220816192817.43d5e17f@gandalf.local.home>
-        <Yvyx0ouTDvsWTox6@krava>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FB7161470
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E6A5C433D6;
+        Wed, 17 Aug 2022 14:01:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660744915;
+        bh=onQBAQrTvzBoSaPRMgU2il8XbYjBkQYd+3ol/wEvy0I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BVy+DezmuGi0ohxLLFKmRwvCSDaeFvJ7vRlwGl//Us2Eq5lmyX+JP+tiHR3WKgWxb
+         orkcYkHpcMgFe1Tjztvn+TbD9/qn8wGfuMnXAhUKg/rhSIn6+dFJdYeA+qhISSpeUG
+         9ccL5S+aO1sPN/829esQh580bmnKefQhgF9EYIkJMQRBXlPamxVmcRApxE4rov4tDp
+         Dg173h/1OsJL36hWX03NENX4qKZilaH65gGEMMxeHdJ6rhsu/vbKyklIGm/LoEV0VS
+         G+fT1+5ZqDzxyK///z96gFGTPp/L+57KEZevj+WC+A66zS3DVuX3gpNrL4lpAUNZ/t
+         VZ0gevN2OWGlA==
+Date:   Wed, 17 Aug 2022 16:01:49 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] binderfs: rework superblock destruction
+Message-ID: <20220817140149.pfakskeyxkqcot54@wittgenstein>
+References: <YvzUS/7bd1mm6c/V@kroah.com>
+ <20220817130306.96978-1-brauner@kernel.org>
+ <Yvz0JkdxXwY8uDyT@ZenIV>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yvz0JkdxXwY8uDyT@ZenIV>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 11:16:02 +0200
-Jiri Olsa <olsajiri@gmail.com> wrote:
-
-> LGTM
+On Wed, Aug 17, 2022 at 02:59:02PM +0100, Al Viro wrote:
+> On Wed, Aug 17, 2022 at 03:03:06PM +0200, Christian Brauner wrote:
 > 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+> > +static void binderfs_kill_super(struct super_block *sb)
+> > +{
+> > +	struct binderfs_info *info = sb->s_fs_info;
+> > +
+> > +	if (info && info->ipc_ns)
+> > +		put_ipc_ns(info->ipc_ns);
+> > +
+> > +	kfree(info);
+> > +	kill_litter_super(sb);
+> > +}
+> 
+> Other way round, please - shut the superblock down, *then*
+> free the objects it'd been using.  IOW,
 
-Thanks Jiri!
-
--- Steve
+I wondered about that but a lot of places do it the other way around.
+So maybe the expected order should be documented somewhere.
