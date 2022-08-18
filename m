@@ -2,81 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D242C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057E7C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245020AbiHRNXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
+        id S245028AbiHRNX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242702AbiHRNXj (ORCPT
+        with ESMTP id S242702AbiHRNXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:23:39 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D56B611152
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:23:36 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6523F106F;
-        Thu, 18 Aug 2022 06:23:37 -0700 (PDT)
-Received: from pluto.. (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CCEB23F70D;
-        Thu, 18 Aug 2022 06:23:34 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        f.fainelli@gmail.com, vincent.guittot@linaro.org,
-        lukasz.luba@arm.com, Cristian Marussi <cristian.marussi@arm.com>
-Subject: [PATCH 0/1] Harmonize SCMI traces formats
-Date:   Thu, 18 Aug 2022 14:23:08 +0100
-Message-Id: <20220818132309.584042-1-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.37.2
+        Thu, 18 Aug 2022 09:23:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B35E15FFE;
+        Thu, 18 Aug 2022 06:23:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE31D6153A;
+        Thu, 18 Aug 2022 13:23:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B2FC433D6;
+        Thu, 18 Aug 2022 13:23:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660829027;
+        bh=7Jvb9VTNTGyJevS3lgNMgSmphDuDuYli74EbuMld70M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vJRAhCjxfceD0/NRdpH1rqi3S9qlJKifQfmcF0Qojaje3rJ+Zc4mlYEP17mKisiL3
+         rUnXKoskTQ4OPazWMfmsvCMTJ6W72qcQUf3DBqtGpJXZQBUFxUPmqoK9iiEvbySh7c
+         ikr7l5/4FuUrY7yv9iSSqsn17N57qEtJ3XXhYswTfM+VXPE7oN18CChPr7vm+7ohBZ
+         6RFZoFIJxSedXUlZJowCGCEpgMfKx06YXs1nKcanpUyr9JA/bsJntdaeqlcWFv/5fg
+         n7GvHEr3/lYueiSjBdobJ6zpLwXyvCaLt+f9H6WWR7oR8Mumxgb3IyxEjUBqTxjk7l
+         JodKLTToJxIXg==
+Date:   Thu, 18 Aug 2022 14:23:42 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     sanju.mehta@amd.com, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        krisman@collabora.com, alvaro.soliverez@collabora.com,
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: Re: [PATCH] spi: amd: Configure device speed
+Message-ID: <Yv49XpsaRzerUuMl@sirena.org.uk>
+References: <20220817131809.312533-1-shreeya.patel@collabora.com>
+ <Yvzw0GqUd9ZgxUTo@sirena.org.uk>
+ <3e2a0f50-c396-5af6-5cbe-303978378587@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wpON6ygzczDYYJtZ"
+Content-Disposition: inline
+In-Reply-To: <3e2a0f50-c396-5af6-5cbe-303978378587@collabora.com>
+X-Cookie: Logic is the chastity belt of the mind!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-after having recently added new scmi_msg_dump traces I realized the
-general format of the various other SCMI traces is not consistent.
+--wpON6ygzczDYYJtZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-As an example the full traces of a simple PERF_LEVEL_SET is now:
+On Wed, Aug 17, 2022 at 07:40:31PM +0530, Shreeya Patel wrote:
 
-     cpufreq-set-276     [000] .....   139.905639: scmi_xfer_begin: transfer_id=145 msg_id=7 protocol_id=19 seq=145 poll=0
-     cpufreq-set-276     [000] .....   139.905724: scmi_msg_dump: pt=13 t=CMND msg_id=07 seq=0091 s=0 pyld=000000008066ab13
-     cpufreq-set-276     [000] .....   139.905725: scmi_xfer_response_wait: transfer_id=145 msg_id=7 protocol_id=19 seq=145 tmo_ms=5000 poll=0
-          <idle>-0       [000] d.h2.   139.906493: scmi_msg_dump: pt=13 t=RESP msg_id=07 seq=0091 s=0 pyld=
-          <idle>-0       [000] d.h2.   139.906521: scmi_rx_done: transfer_id=145 msg_id=7 protocol_id=19 seq=145 msg_type=0
-     cpufreq-set-276     [000] .....   139.906651: scmi_xfer_end: transfer_id=145 msg_id=7 protocol_id=19 seq=145 status=0
+> yes, the code is actually configuring it to use the frequency which is
+> strictly less than the requested one.
+> I just didn't use the correct words. I will make the change in commit
+> message for v2 once you review the patch.
 
-... where same information is reported using different names (protocol_id= vs pt=)
-and even worst different bases, which is hard to read and to parse.
+Please just resend with a fixed commit message, I'll only have to review
+it again anyway when you resend.
 
-So this tiny patch aims to unify this, using the same naming and ordering
-of the fields (wherever possible) and moving all the protocol related
-fields to base-16 while keeping in base-10 timeouts, res_id and values, so
-that the new traces would be like:
+--wpON6ygzczDYYJtZ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-     cpufreq-set-274     [001] .....   100.242894: scmi_xfer_begin: pt=13 msg_id=07 seq=0092 transfer_id=92 poll=0
-     cpufreq-set-274     [001] .....   100.242906: scmi_msg_dump: pt=13 t=CMND msg_id=07 seq=0092 s=0 pyld=000000008066ab13
-     cpufreq-set-274     [001] .....   100.242907: scmi_xfer_response_wait: pt=13 msg_id=07 seq=0092 transfer_id=92 tmo_ms=5000 poll=0
-             cat-256     [000] d.h1.   100.243084: scmi_msg_dump: pt=13 t=RESP msg_id=07 seq=0092 s=0 pyld=
-             cat-256     [000] d.h1.   100.243094: scmi_rx_done: pt=13 msg_id=07 seq=0092 transfer_id=92 msg_type=0
-     cpufreq-set-274     [002] .....   100.243120: scmi_xfer_end: pt=13 msg_id=07 seq=0092 transfer_id=92 s=0
+-----BEGIN PGP SIGNATURE-----
 
-Being just a proposal I'm open to any variation of this that could help
-improving realiability and parsing, any feedback welcome !
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL+PV0ACgkQJNaLcl1U
+h9BEBwgAhIXtiH5DF+MI83yuJvAokOdJxz4J+febdaSBzNrTECfN7mr7moYpsmyT
+JzKCQubxRAPeFRStvx47bB2cbLiNCLZmXDq+bfxd87vPLGOmRhxsmkQAwTB40NeB
++m/ToXHS65FsMZo2Z1zDAE/3BtTW6VkQFoMXzw6xUlokN2yFHekhLMj2zSLsbpK4
+cGt+HX+AVu5LE/KvDqm73mBnDnVZ4MV1IWCqChFielHqbx+YRfmCPp/HNMkCFFar
+x3GNngih9khR+FRAv7heZH+Wuj2fFbO/IA5eIQ9nCr6Rd0Dh8XMLFSB8Io8Jmq6Z
+Z0lWGLNIMzNcdm/tNM5SfS3Gtbz7Uw==
+=nDTc
+-----END PGP SIGNATURE-----
 
-Thanks,
-Cristian
-
-Cristian Marussi (1):
-  include: trace: Harmonize SCMI tracing message format
-
- include/trace/events/scmi.h | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
-
--- 
-2.37.2
-
+--wpON6ygzczDYYJtZ--
