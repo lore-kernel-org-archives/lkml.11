@@ -2,139 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FAEC25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 00:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BA5C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 00:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239827AbiHRAUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 20:20:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
+        id S242226AbiHRAWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 20:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbiHRAUw (ORCPT
+        with ESMTP id S231491AbiHRAWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 20:20:52 -0400
-X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 17:20:51 PDT
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03BEA1D11;
-        Wed, 17 Aug 2022 17:20:51 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7B68B580556;
-        Wed, 17 Aug 2022 19:41:25 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Wed, 17 Aug 2022 19:41:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1660779685; x=1660786885; bh=NI
-        aAYd9poCwuCaReO0KiItjGT5b3278AiQgPlMaoGH8=; b=PuKLpG0lACFDSWgEO8
-        rwPWX4M0HQpSuEdYRtGzQptcaolkieS2EgsFIwpoZyncFWpZckNeFIzIIYOqO8zc
-        9BpZgvlyinTevkQRn/C/ka6JMZsh8Ts9cHQWdeYq9ybnuk1SQZpubaUGZQB9t1lM
-        qk4rSx6j+tUOfRKOd3g94hTTtthwjyy2FqigUkFALmNMXV3xaGruqjoeP5+34xuk
-        J1Cinr4a4qem9KNGhx+lzwXQAr8UJisToeNsfhj8HLQwy0xeOfa5U42VQCIa7k9W
-        qZ8iK9otGm9LKKwttomxp7Dv3pSQF6Et1ZTaIBSz7M8flKM1wmlzQBaAB4PFaBIk
-        k9IQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660779685; x=1660786885; bh=NIaAYd9poCwuCaReO0KiItjGT5b3
-        278AiQgPlMaoGH8=; b=WGuGDaggU/a6pga7pL9w3WYTfRF/tux3G1kX0A3mQjNG
-        OC+VxEFGbO+smOA+p7iGMZ3GoMIsMcaWl3/NDeaFMGDz77QMAzUSQkUiUmCGJkRW
-        xHDUodL0TH5AF7G//emEtkunMR0IZ4l2d7XmME00+CIEmSs0g9HkS3qnHI4slsRN
-        HLEINl4PWiLW8DvpQUTe/0aF8/PdVhKDH0qkmMtKQaNXy1O+iZNm5MWAKX+BYowx
-        KuXbnGKaeKu5x2AZgYGthwUdYmgJrzE5cQQyW5v4ZXRMkJgZP9HwjqtkEwDmOL4I
-        VHlt+Z4I/oeTtr+VVKyUXBqBYFKb61xw+pnbo22rNA==
-X-ME-Sender: <xms:pHz9YkXNQXrutmOXLT8qKC8bAkDrafNZwTbHHUvk4uGruAWRz8lSXw>
-    <xme:pHz9YomAAobQndykgGisfSvrEaUbnwRxPnhjaRnRKcy7rwe8iA--U-9p8AJVY1ht3
-    CHYDQX82TnQfowOqrY>
-X-ME-Received: <xmr:pHz9YoYoOJJ3U6PUwRm1npi6IHWY-81B3GDPi_Hh-Sh04EiF8v9DMalIOFzMmXc0odStsA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehjedgvdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdttddttddtvdenucfhrhhomhepfdfmihhr
-    ihhllhcutedrucfuhhhuthgvmhhovhdfuceokhhirhhilhhlsehshhhuthgvmhhovhdrnh
-    grmhgvqeenucggtffrrghtthgvrhhnpefhieeghfdtfeehtdeftdehgfehuddtvdeuheet
-    tddtheejueekjeegueeivdektdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehkihhrihhllhesshhhuhhtvghmohhvrdhnrghmvg
-X-ME-Proxy: <xmx:pHz9YjURvYrPk7ln2G6y5jzbE1QNYYzGLgRztyxiICy4kfvUbUjaNg>
-    <xmx:pHz9Yum1Ff9XGpoiOlx7NWmi_AWkZcUFRDXkPoeuriI3uxXSxr406w>
-    <xmx:pHz9YodmYF_t-pLZ3YNAgjRYP3doKC47u2BG16XkOANkKS6FtmEg2Q>
-    <xmx:pXz9YoADMoiV4yerQswAA91U22gwFiEMHVgZT94HO2C4gO2O9zUMXQ>
-Feedback-ID: ie3994620:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 17 Aug 2022 19:41:23 -0400 (EDT)
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id E5075104A77; Thu, 18 Aug 2022 02:41:20 +0300 (+03)
-Date:   Thu, 18 Aug 2022 02:41:20 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Message-ID: <20220817234120.mw2j3cgshmuyo2vw@box.shutemov.name>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
- <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
- <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
+        Wed, 17 Aug 2022 20:22:21 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B4EA59A4
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 17:22:20 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id h28so118998pfq.11
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 17:22:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=nFIIDeTvZykZ4JCof0BBN5j4s0/In/3TN3kyZo0Sqgc=;
+        b=s05zlC8jnPNo1K+zc5NmU6XEQaBejjlyQhfbnD42fOfAskGnWbUkm6G9hKiY24BwvA
+         7ZXooVb576S5UE+xN1CZVKWUKiCacVcgVnEBMZDt+yO9NjIDiy0m1Tk4BUw/9FQPoJPF
+         LNzmpzT1nzXPVE8EGYltC1rj12sYWyR9pG6FcIr9a9nYouKtOthaZIxuSIDEwCj7QvAt
+         f88TTcFiSaQFlD7IR4DlHznVWSFX8nW0MzsFPe6Dt9fVVjxSJL+/X2VT2c9+6FobOW7s
+         jx7t8MTNWUpJ/AnSA7fOiZCZkp5tOLaSALIDSxCM8gZuXiAje+Lbz8w1S24y/jgQkbRH
+         2S6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=nFIIDeTvZykZ4JCof0BBN5j4s0/In/3TN3kyZo0Sqgc=;
+        b=cVbm9uhwE1NZWH5Yacgblg7nlH5DFJ70fBTz3wNs99K6P8whWdwFqqq4o54TK9TUD8
+         U2i7ksMFcUIzTJ6zjMRcFmHcJNkBF0YzoFv++uxc/MyInpToKGPOAJQzRycLihM84YtE
+         26Lbtrer+vSa8KPuSiCjrUJ96HDufDSOoWAwt8DtHRR94vzFt1bFbHSBL0F4/WZCVKYt
+         btysMncZmXAQ0rGteqQQeBQ4l09bKNRtBBzmyaF7Kb60LJ7icjVTzpG3YLzXi4a+3P2W
+         yRcWtsNHOfEBkPbuF6nhsjB2psYmYye7TV9voQawmVnALxfWC2FnEFBFiFiPpYPz+rg9
+         LE9g==
+X-Gm-Message-State: ACgBeo2XLjCjHowfaKa9GZy+QaXEBePsX91G9H9QwVmyZgqqOJnpWz72
+        IgTQkieJ/gK9WmulY19ZZK+nDg==
+X-Google-Smtp-Source: AA6agR5k8LtRyUBe46tYyVVoQOEaH1+QAWL1p+9VGvJktMlKEwyJ09ACs+xdu0WuFUuIlu76ZqaPRA==
+X-Received: by 2002:a63:1854:0:b0:41d:e04b:44fc with SMTP id 20-20020a631854000000b0041de04b44fcmr547810pgy.237.1660782139843;
+        Wed, 17 Aug 2022 17:22:19 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id e8-20020a656788000000b0040c52ff0ba9sm70328pgr.37.2022.08.17.17.22.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 17:22:19 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 00:22:15 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcorr@google.com, michael.roth@amd.com, thomas.lendacky@amd.com,
+        joro@8bytes.org, mizhang@google.com, pbonzini@redhat.com,
+        andrew.jones@linux.dev, vannapurve@google.com
+Subject: Re: [V3 11/11] KVM: selftests: Add simple sev vm testing
+Message-ID: <Yv2GN1WPvi7K8LdI@google.com>
+References: <20220810152033.946942-1-pgonda@google.com>
+ <20220810152033.946942-12-pgonda@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
+In-Reply-To: <20220810152033.946942-12-pgonda@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 07:55:38PM +0200, Paolo Bonzini wrote:
-> On 7/21/22 11:44, David Hildenbrand wrote:
-> > 
-> > Also, I*think*  you can place pages via userfaultfd into shmem. Not
-> > sure if that would count "auto alloc", but it would certainly bypass
-> > fallocate().
+/sev_vm_launch_measurOn Wed, Aug 10, 2022, Peter Gonda wrote:
+> diff --git a/tools/testing/selftests/kvm/include/x86_64/sev.h b/tools/testing/selftests/kvm/include/x86_64/sev.h
+> index 2f7f7c741b12..b6552ea1c716 100644
+> --- a/tools/testing/selftests/kvm/include/x86_64/sev.h
+> +++ b/tools/testing/selftests/kvm/include/x86_64/sev.h
+> @@ -22,6 +22,9 @@
+>  #define SEV_POLICY_NO_DBG	(1UL << 0)
+>  #define SEV_POLICY_ES		(1UL << 2)
+>  
+> +#define CPUID_MEM_ENC_LEAF 0x8000001f
+> +#define CPUID_EBX_CBIT_MASK 0x3f
+
+Ha!  I was going to say "put these in processor.h", but I have an even better idea.
+I'll try to a series posted tomorrow (compile tested only at this point), but what
+I'm hoping to do is to allow automagic retrieval of multi-bit CPUID properties, a la
+the existing this_cpu_has() stuff.
+
+E.g.
+
+	#define X86_PROPERTY_CBIT_LOCATION		KVM_X86_CPU_PROPERTY(0x8000001F, 0, EBX, 0, 5)
+
+and then
+
+	sev->enc_bit = this_cpu_property(X86_PROPERTY_CBIT_LOCATION);
+
+LOL, now I see that the defines in sev.c were introduced back in patch 08.  That's
+probably fine for your submission so as not to take a dependency on the "property"
+idea.  This patch doesn't need to move the CPUID_* defines because it can use
+this_cpu_has(X86_FEATURE_SEV) and avoid referencing CPUID_MEM_ENC_LEAF.
+
+>  enum {
+>  	SEV_GSTATE_UNINIT = 0,
+>  	SEV_GSTATE_LUPDATE,
+> diff --git a/tools/testing/selftests/kvm/lib/x86_64/sev.c b/tools/testing/selftests/kvm/lib/x86_64/sev.c
+> index 3abcf50c0b5d..8f9f55c685a7 100644
+> --- a/tools/testing/selftests/kvm/lib/x86_64/sev.c
+> +++ b/tools/testing/selftests/kvm/lib/x86_64/sev.c
+> @@ -13,8 +13,6 @@
+>  #include "sev.h"
+>  
+>  #define PAGE_SHIFT		12
+
+Already defined in processor.h
+
+> -#define CPUID_MEM_ENC_LEAF 0x8000001f
+> -#define CPUID_EBX_CBIT_MASK 0x3f
+>  
+>  struct sev_vm {
+>  	struct kvm_vm *vm;
+> diff --git a/tools/testing/selftests/kvm/x86_64/sev_all_boot_test.c b/tools/testing/selftests/kvm/x86_64/sev_all_boot_test.c
+> new file mode 100644
+> index 000000000000..b319d18bdb60
+> --- /dev/null
+> +++ b/tools/testing/selftests/kvm/x86_64/sev_all_boot_test.c
+> @@ -0,0 +1,131 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Basic SEV boot tests.
+> + *
+> + * Copyright (C) 2021 Advanced Micro Devices
+> + */
+> +#define _GNU_SOURCE /* for program_invocation_short_name */
+> +#include <fcntl.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <string.h>
+> +#include <sys/ioctl.h>
+> +
+> +#include "test_util.h"
+> +
+> +#include "kvm_util.h"
+> +#include "processor.h"
+> +#include "svm_util.h"
+> +#include "linux/psp-sev.h"
+> +#include "sev.h"
+> +
+> +#define VCPU_ID			2
+
+Nooooooo.  Unless there is a really, REALLY good reason this needs to be '2', just
+pass '0' as a literal to vm_vcpu_add() and delete VCPU_ID.
+
+> +#define PAGE_STRIDE		32
+> +
+> +#define SHARED_PAGES		8192
+> +#define SHARED_VADDR_MIN	0x1000000
+> +
+> +#define PRIVATE_PAGES		2048
+> +#define PRIVATE_VADDR_MIN	(SHARED_VADDR_MIN + SHARED_PAGES * PAGE_SIZE)
+> +
+> +#define TOTAL_PAGES		(512 + SHARED_PAGES + PRIVATE_PAGES)
+> +
+> +#define NR_SYNCS 1
+> +
+> +static void guest_run_loop(struct kvm_vcpu *vcpu)
+> +{
+> +	struct ucall uc;
+> +	int i;
+> +
+> +	for (i = 0; i <= NR_SYNCS; ++i) {
+> +		vcpu_run(vcpu);
+> +		switch (get_ucall(vcpu, &uc)) {
+> +		case UCALL_SYNC:
+> +			continue;
+> +		case UCALL_DONE:
+> +			return;
+> +		case UCALL_ABORT:
+> +			TEST_ASSERT(false, "%s at %s:%ld\n\tvalues: %#lx, %#lx",
+> +				    (const char *)uc.args[0], __FILE__,
+> +				    uc.args[1], uc.args[2], uc.args[3]);
+> +		default:
+> +			TEST_ASSERT(
+> +				false, "Unexpected exit: %s",
+> +				exit_reason_str(vcpu->run->exit_reason));
+> +		}
+> +	}
+> +}
+> +
+> +static void __attribute__((__flatten__)) guest_sev_code(void)
+
+Is __flatten__ strictly necessary?  I don't see this being copied over anything
+that would require it to be a contiguous chunk.
+
+> +{
+> +	uint32_t eax, ebx, ecx, edx;
+> +	uint64_t sev_status;
+> +
+> +	GUEST_SYNC(1);
+> +
+> +	cpuid(CPUID_MEM_ENC_LEAF, &eax, &ebx, &ecx, &edx);
+> +	GUEST_ASSERT(eax & (1 << 1));
+
+	GUEST_ASSERT(this_cpu_has(X86_FEATURE_SEV));
+> +
+> +	sev_status = rdmsr(MSR_AMD64_SEV);
+> +	GUEST_ASSERT((sev_status & 0x1) == 1);
+> +
+> +	GUEST_DONE();
+> +}
+> +
+> +static struct sev_vm *setup_test_common(void *guest_code, uint64_t policy,
+> +					struct kvm_vcpu **vcpu)
+> +{
+> +	uint8_t measurement[512];
+> +	struct sev_vm *sev;
+> +	struct kvm_vm *vm;
+> +	int i;
+> +
+> +	sev = sev_vm_create(policy, TOTAL_PAGES);
+
+	TEST_ASSERT(sev, ...) so that this doesn't silently "pass"?
+
+> +	if (!sev)
+> +		return NULL;
+> +	vm = sev_get_vm(sev);
+> +
+> +	/* Set up VCPU and initial guest kernel. */
+> +	*vcpu = vm_vcpu_add(vm, VCPU_ID, guest_code);
+> +	kvm_vm_elf_load(vm, program_invocation_name);
+> +
+> +	/* Allocations/setup done. Encrypt initial guest payload. */
+> +	sev_vm_launch(sev);
+> +
+> +	/* Dump the initial measurement. A test to actually verify it would be nice. */
+> +	sev_vm_launch_measure(sev, measurement);
+> +	pr_info("guest measurement: ");
+> +	for (i = 0; i < 32; ++i)
+> +		pr_info("%02x", measurement[i]);
+> +	pr_info("\n");
+> +
+> +	sev_vm_launch_finish(sev);
+> +
+> +	return sev;
+> +}
+> +
+> +static void test_sev(void *guest_code, uint64_t policy)
+> +{
+> +	struct sev_vm *sev;
+> +	struct kvm_vcpu *vcpu;
+> +
+> +	sev = setup_test_common(guest_code, policy, &vcpu);
+> +	if (!sev)
+> +		return;
+
+And with an assert above, this return goes away.  Or better yet, fold setup_test_common()
+into test_sev(), there's only the one user of the so called "common" function.
+
+> +
+> +	/* Guest is ready to run. Do the tests. */
+> +	guest_run_loop(vcpu);
+> +
+> +	pr_info("guest ran successfully\n");
+> +
+> +	sev_vm_free(sev);
+> +}
+> +
+> +int main(int argc, char *argv[])
+> +{
+> +	/* SEV tests */
+> +	test_sev(guest_sev_code, SEV_POLICY_NO_DBG);
+> +	test_sev(guest_sev_code, 0);
+> +
+> +	return 0;
+> +}
+> -- 
+> 2.37.1.559.g78731f0fdb-goog
 > 
-> Yeah, userfaultfd_register would probably have to forbid this for
-> F_SEAL_AUTO_ALLOCATE vmas.  Maybe the memfile_node can be reused for this,
-> adding a new MEMFILE_F_NO_AUTO_ALLOCATE flags?  Then userfault_register
-> would do something like memfile_node_get_flags(vma->vm_file) and check the
-> result.
-
-I donno, memory allocation with userfaultfd looks pretty intentional to
-me. Why would F_SEAL_AUTO_ALLOCATE prevent it?
-
-Maybe we would need it in the future for post-copy migration or something?
-
-Or existing practises around userfaultfd touch memory randomly and
-therefore incompatible with F_SEAL_AUTO_ALLOCATE intent?
-
-Note, that userfaultfd is only relevant for shared memory as it requires
-VMA which we don't have for MFD_INACCESSIBLE.
-
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
