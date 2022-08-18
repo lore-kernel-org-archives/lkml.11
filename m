@@ -2,122 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EEAC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC16C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345908AbiHRUIv (ORCPT
+        id S1345897AbiHRUJq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 16:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
+        Thu, 18 Aug 2022 16:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345529AbiHRUIY (ORCPT
+        with ESMTP id S240933AbiHRUJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 16:08:24 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134D13AE59;
-        Thu, 18 Aug 2022 13:03:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660853006; x=1692389006;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hK4joLjW67roEfSg9L3o4RSW3LVg032fexmMiJB4qHE=;
-  b=GkDAWOARvETiowcvSZ4tteFXcJrlxFrfCe5AHfrbu16u9Wj7WV70WEcQ
-   gLSanioLOadt4kCSOC7NVO8RbgzaH1sTlxCtU3ZWYbnEjV5naMPe6UQeB
-   UJrTaZYuLGUGOy4c4pK0KrWQUSNXRT9AA8n8Hh3Fv7ajHVuFXNrFik7+E
-   KKpbtj7eD1QIiXUXcM8bDQ3o+bNXO4DjPxb3wKz/W/+jlcu3R9h5INmob
-   AS6rtmtsMpaq0lBAGqlN0eOdPG11JV8GsmuuEpVitS314RaKQ+niuPkGP
-   qDaEB1GDUWDeafAt46lfPqXdZ5Hu0v/pvJdyB37nvehljvKIiwmG6KSjY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="293648497"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="293648497"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 13:02:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="734179034"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 18 Aug 2022 13:02:07 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOliR-0000WH-01;
-        Thu, 18 Aug 2022 20:02:07 +0000
-Date:   Fri, 19 Aug 2022 04:01:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
-Message-ID: <202208190318.HygywK17-lkp@intel.com>
-References: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
+        Thu, 18 Aug 2022 16:09:18 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B163B9413;
+        Thu, 18 Aug 2022 13:04:14 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id pm17so2702589pjb.3;
+        Thu, 18 Aug 2022 13:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=9PaorD7ptOW+52yf4c1JDmGGs6/j3AuHVebm2R4Z+Hk=;
+        b=pedI4ABZKurUA/d45RDd5khivUXZ8QnGeNZ/azvY3tRsY0ULVjsazPK8KceoC/7uWA
+         xheEWWmaPDm1UypPXIuGyOCp8qGQI8WkJWx0fA4ffURS5NV9l0fnjypKqpCTbO98E8bV
+         SN7+3eWFUOmhVs5+z5jRYHI6r3eUe169xmusgRfwaH0jZbPMlux1O3Yhml2g8EP83A45
+         Akx3DEnT8gCpwht646xC9TmUyDaPuQygELVCVF9qSBGncIspRCMtexDmVdJcdGUVeEsQ
+         LobdYHGdwh0eoS3IFWAI31tJH8WsLIvTitWZntpGdCWnDgpPK3cTdwxBnsBb/9RsjNic
+         ClKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=9PaorD7ptOW+52yf4c1JDmGGs6/j3AuHVebm2R4Z+Hk=;
+        b=0PIUWfYME3zXwk2s6K+ZNhbRwFF4lZpAQePo9XkLKMeLgJs4irotY3vYkOeBW9KeMQ
+         ZZIy+Ah50UgaiCw7TYFdmI7MCFyvLUBk98V2obScy3e92zCFwt8GdFvlhPVhspwqaDLa
+         Djj7jwCrKkiLTQAKCfStJvyyx+e5wPk2XSWi9RjIvFjBzF0afehaBgnI+E5/dD849QO9
+         wo79H7Q4DomXALS7DRKem9oic8FzmHz7z19bsJSeMr61IRk2RuEjNwFCyxM+lrBfYXQS
+         863HlBmJ2k9ozcBCtLVae5CtkxzJ+q1T91KzwSUpbc1tyWTUr4rY0SWGNuYuFsacWxHj
+         fEsA==
+X-Gm-Message-State: ACgBeo1zUnEJz4dmRMI+4vZY9hOxRqi613AJ4FY+W8uC1/mUoQ1oQIgQ
+        PSZGJDOP8izb5i3Lskhdm1s=
+X-Google-Smtp-Source: AA6agR66ckJGxLP/0hrH7I8sjnhPx7o7drf2O1fuc4b+RQNt3wRKXBSG+3e0BMis36MWLZ15T3WnjA==
+X-Received: by 2002:a17:902:7b87:b0:172:8ae9:2015 with SMTP id w7-20020a1709027b8700b001728ae92015mr4002415pll.112.1660853032104;
+        Thu, 18 Aug 2022 13:03:52 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b0016d4f05eb95sm1736192plk.272.2022.08.18.13.03.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 13:03:51 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 18 Aug 2022 13:03:50 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eliav Farber <farbere@amazon.com>
+Cc:     jdelvare@suse.com, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
+        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
+        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
+        amitlavi@amazon.com, almogbs@amazon.com, dwmw@amazon.co.uk,
+        rtanwar@maxlinear.com
+Subject: Re: [PATCH v2 06/16] hwmon: (mr75203) fix multi-channel voltage
+ reading
+Message-ID: <20220818200350.GA3287916@roeck-us.net>
+References: <20220817054321.6519-1-farbere@amazon.com>
+ <20220817054321.6519-7-farbere@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
+In-Reply-To: <20220817054321.6519-7-farbere@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Wed, Aug 17, 2022 at 05:43:11AM +0000, Eliav Farber wrote:
+> - Fix voltage reading to support number of channels in VM IP (CH_NUM).
+> - Configure the ip-polling register to enable polling for all channels.
+> 
 
-Thank you for the patch! Yet something to improve:
+That fails to explain what is actually wrong in the current code.
+Also, one fix per patch, please.
 
-[auto build test ERROR on bpf-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: arm-versatile_defconfig (https://download.01.org/0day-ci/archive/20220819/202208190318.HygywK17-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/c7b21d163eb9c61514dd86baf4281deb4d4387bb
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
-        git checkout c7b21d163eb9c61514dd86baf4281deb4d4387bb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> net/core/filter.c:8723:10: error: call to undeclared function 'btf_struct_access'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                   return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-                          ^
-   net/core/filter.c:8797:10: error: call to undeclared function 'btf_struct_access'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                   return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-                          ^
-   2 errors generated.
-
-
-vim +/btf_struct_access +8723 net/core/filter.c
-
-  8714	
-  8715	static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
-  8716						const struct btf *btf,
-  8717						const struct btf_type *t, int off,
-  8718						int size, enum bpf_access_type atype,
-  8719						u32 *next_btf_id,
-  8720						enum bpf_type_flag *flag)
-  8721	{
-  8722		if (atype == BPF_READ)
-> 8723			return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-  8724						 flag);
-  8725	
-  8726		return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-  8727						      next_btf_id, flag);
-  8728	}
-  8729	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
+> ---
+>  drivers/hwmon/mr75203.c | 40 +++++++++++++++++++++++++++++++---------
+>  1 file changed, 31 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+> index bec63b611eb4..4419e481d47c 100644
+> --- a/drivers/hwmon/mr75203.c
+> +++ b/drivers/hwmon/mr75203.c
+> @@ -69,8 +69,9 @@
+>  
+>  /* VM Individual Macro Register */
+>  #define VM_COM_REG_SIZE	0x200
+> -#define VM_SDIF_DONE(n)	(VM_COM_REG_SIZE + 0x34 + 0x200 * (n))
+> -#define VM_SDIF_DATA(n)	(VM_COM_REG_SIZE + 0x40 + 0x200 * (n))
+> +#define VM_SDIF_DONE(vm)	(VM_COM_REG_SIZE + 0x34 + 0x200 * (vm))
+> +#define VM_SDIF_DATA(vm, ch)	\
+> +	(VM_COM_REG_SIZE + 0x40 + 0x200 * (vm) + 0x4 * (ch))
+>  
+>  /* SDA Slave Register */
+>  #define IP_CTRL			0x00
+> @@ -116,6 +117,7 @@ struct pvt_device {
+>  	u32			t_num;
+>  	u32			p_num;
+>  	u32			v_num;
+> +	u32			c_num;
+>  	u32			ip_freq;
+>  	u8			*vm_idx;
+>  };
+> @@ -181,12 +183,14 @@ static int pvt_read_in(struct device *dev, u32 attr, int channel, long *val)
+>  	struct regmap *v_map = pvt->v_map;
+>  	u32 n, stat;
+>  	u8 vm_idx;
+> +	u8 ch_idx;
+>  	int ret;
+>  
+> -	if (channel >= pvt->v_num)
+> +	if (channel >= pvt->v_num * pvt->c_num)
+>  		return -EINVAL;
+>  
+> -	vm_idx = pvt->vm_idx[channel];
+> +	vm_idx = pvt->vm_idx[channel / pvt->c_num];
+> +	ch_idx = channel % pvt->c_num;
+>  
+>  	switch (attr) {
+>  	case hwmon_in_input:
+> @@ -197,7 +201,7 @@ static int pvt_read_in(struct device *dev, u32 attr, int channel, long *val)
+>  		if (ret)
+>  			return ret;
+>  
+> -		ret = regmap_read(v_map, VM_SDIF_DATA(vm_idx), &n);
+> +		ret = regmap_read(v_map, VM_SDIF_DATA(vm_idx, ch_idx), &n);
+>  		if(ret < 0)
+>  			return ret;
+>  
+> @@ -386,6 +390,20 @@ static int pvt_init(struct pvt_device *pvt)
+>  		if (ret)
+>  			return ret;
+>  
+> +		val = GENMASK(pvt->c_num - 1, 0) | VM_CH_INIT |
+> +		      IP_POLL << SDIF_ADDR_SFT |
+> +		      SDIF_WRN_W | SDIF_PROG;
+> +		ret = regmap_write(v_map, SDIF_W, val);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = regmap_read_poll_timeout(v_map, SDIF_STAT,
+> +					       val, !(val & SDIF_BUSY),
+> +					       PVT_POLL_DELAY_US,
+> +					       PVT_POLL_TIMEOUT_US);
+> +		if (ret)
+> +			return ret;
+> +
+>  		val = CFG1_VOL_MEAS_MODE | CFG1_PARALLEL_OUT |
+>  		      CFG1_14_BIT | IP_CFG << SDIF_ADDR_SFT |
+>  		      SDIF_WRN_W | SDIF_PROG;
+> @@ -501,7 +519,7 @@ static int pvt_reset_control_deassert(struct device *dev, struct pvt_device *pvt
+>  static int mr75203_probe(struct platform_device *pdev)
+>  {
+>  	const struct hwmon_channel_info **pvt_info;
+> -	u32 ts_num, vm_num, pd_num, val, index, i;
+> +	u32 ts_num, vm_num, pd_num, ch_num, val, index, i;
+>  	struct device *dev = &pdev->dev;
+>  	u32 *temp_config, *in_config;
+>  	struct device *hwmon_dev;
+> @@ -547,9 +565,11 @@ static int mr75203_probe(struct platform_device *pdev)
+>  	ts_num = (val & TS_NUM_MSK) >> TS_NUM_SFT;
+>  	pd_num = (val & PD_NUM_MSK) >> PD_NUM_SFT;
+>  	vm_num = (val & VM_NUM_MSK) >> VM_NUM_SFT;
+> +	ch_num = (val & CH_NUM_MSK) >> CH_NUM_SFT;
+>  	pvt->t_num = ts_num;
+>  	pvt->p_num = pd_num;
+>  	pvt->v_num = vm_num;
+> +	pvt->c_num = ch_num;
+>  	val = 0;
+>  	if (ts_num)
+>  		val++;
+> @@ -586,6 +606,8 @@ static int mr75203_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	if (vm_num) {
+> +		u32 total_ch = ch_num * vm_num;
+> +
+>  		ret = pvt_get_regmap(pdev, "vm", pvt);
+>  		if (ret)
+>  			return ret;
+> @@ -614,13 +636,13 @@ static int mr75203_probe(struct platform_device *pdev)
+>  			pvt->v_num = i;
+>  		}
+>  
+> -		in_config = devm_kcalloc(dev, vm_num + 1,
+> +		in_config = devm_kcalloc(dev, total_ch + 1,
+>  					 sizeof(*in_config), GFP_KERNEL);
+>  		if (!in_config)
+>  			return -ENOMEM;
+>  
+> -		memset32(in_config, HWMON_I_INPUT, vm_num);
+> -		in_config[vm_num] = 0;
+> +		memset32(in_config, HWMON_I_INPUT, total_ch);
+> +		in_config[total_ch] = 0;
+>  		pvt_in.config = in_config;
+>  
+>  		pvt_info[index++] = &pvt_in;
