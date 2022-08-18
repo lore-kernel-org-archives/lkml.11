@@ -2,146 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB92CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 10:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA92C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 10:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244201AbiHRK5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 06:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
+        id S242917AbiHRK5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 06:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242917AbiHRK5M (ORCPT
+        with ESMTP id S244207AbiHRK5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 06:57:12 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A75E8F96E;
-        Thu, 18 Aug 2022 03:57:11 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660820224;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QwcESLCmW8ulJw28LxzClSHwzOuNQQyl6cJVugvBlps=;
-        b=PvT/spCWBQOdm3augbdnEd1SsHd2Cq8bLGAFh+lRxf5dNDv4nC3W0+C4AionWanAuCyLZo
-        ZFVGBAxx0/G8H6vuenX5a/CA8+OMJoUHLTSFsq7wl9fzBbUasvh4fU4EF/JKc5ERMKjHnN
-        ICSk+i7vmA9fHnaTmb6kI9a13Rv6ZXY86IONlsnoLPeSdSH2Di1nhIKtnE5n5KVlVpfGuY
-        wrC5KOyd1VHob6rjM6Ewx3IzCKtctan9cRt7klfSM8V3tSyeZa6Cl3aMAsfLmdFz2LXYYS
-        M/Wn0oAKDclgPfDLdUZ2KvM6oE7RmBWn+DmtpPzU3xOBi+mgGDVcjjfzMCS3VQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660820224;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QwcESLCmW8ulJw28LxzClSHwzOuNQQyl6cJVugvBlps=;
-        b=HKzI6hTHmw6EN0x7oU06xuzrV/0EqzveJFcwGkkIlcqOaCZG12gPEsy922Z4MyvcyjrWPo
-        ka6x/zC7WO5xAvCw==
-To:     Kyle Huey <me@kylehuey.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>
-Cc:     Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Robert O'Callahan <robert@ocallahan.org>,
-        David Manouchehri <david.manouchehri@riseup.net>,
-        Kyle Huey <me@kylehuey.com>, Borislav Petkov <bp@suse.de>,
-        kvm@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] x86/fpu: Allow PKRU to be (once again) written
- by ptrace.
-In-Reply-To: <20220808141538.102394-1-khuey@kylehuey.com>
-References: <20220808141538.102394-1-khuey@kylehuey.com>
-Date:   Thu, 18 Aug 2022 12:57:04 +0200
-Message-ID: <87ilmpzunz.ffs@tglx>
+        Thu, 18 Aug 2022 06:57:41 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FB391D30
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 03:57:39 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VMaUrGc_1660820256;
+Received: from localhost.localdomain(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VMaUrGc_1660820256)
+          by smtp.aliyun-inc.com;
+          Thu, 18 Aug 2022 18:57:36 +0800
+From:   Xin Hao <xhao@linux.alibaba.com>
+To:     sj@kernel.org
+Cc:     akpm@linux-foundation.org, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        xhao@linux.alibaba.com
+Subject: [PATCH V2 1/2] mm/damon/lru_sort: Move target memory region check to head of func
+Date:   Thu, 18 Aug 2022 18:57:31 +0800
+Message-Id: <20220818105732.34492-2-xhao@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220818105732.34492-1-xhao@linux.alibaba.com>
+References: <20220818105732.34492-1-xhao@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kyle!
+In damon_lru_sort_apply_parameters(), if "monitor_region_start"
+and "monitor_region_end" is not a valid physical address range,
+There no need to run the remainder codes in it.
 
-On Mon, Aug 08 2022 at 07:15, Kyle Huey wrote:
-> When management of the PKRU register was moved away from XSTATE, emulation
-> of PKRU's existence in XSTATE was added for APIs that read XSTATE, but not
-> for APIs that write XSTATE. This can be seen by running gdb and executing
-> `p $pkru`, `set $pkru = 42`, and `p $pkru`. On affected kernels (5.14+) the
-> write to the PKRU register (which gdb performs through ptrace) is ignored.
->
-> There are three relevant APIs: PTRACE_SETREGSET with NT_X86_XSTATE,
-> sigreturn, and KVM_SET_XSAVE. KVM_SET_XSAVE has its own special handling to
-> make PKRU writes take effect (in fpu_copy_uabi_to_guest_fpstate). Push that
-> down into copy_uabi_to_xstate and have PTRACE_SETREGSET with NT_X86_XSTATE
-> and sigreturn pass in pointers to the appropriate PKRU value.
->
-> This also adds code to initialize the PKRU value to the hardware init value
-> (namely 0) if the PKRU bit is not set in the XSTATE header to match XRSTOR.
-> This is a change to the current KVM_SET_XSAVE behavior.
+Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
+---
+ mm/damon/lru_sort.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-You are stating a fact here, but provide 0 justification why this is
-correct.
-
->
-> Changelog since v4:
-
-Can you please put the change log past the --- seperator line, so it
-gets stripped off when the patch is applied? That spares manual fixups.
-
->
-> Signed-off-by: Kyle Huey <me@kylehuey.com>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Borislav Petkov <bp@suse.de>
-> Cc: kvm@vger.kernel.org # For edge case behavior of KVM_SET_XSAVE
-> Cc: stable@vger.kernel.org # 5.14+
-> Fixes: e84ba47e313d ("x86/fpu: Hook up PKRU into ptrace()")
-
-Can you please use the documented tag ordering?
-
-https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#patch-submission-notes
-
-> @@ -1235,6 +1235,24 @@ static int copy_uabi_to_xstate(struct fpstate *fpstate, const void *kbuf,
->  	for (i = 0; i < XFEATURE_MAX; i++) {
->  		mask = BIT_ULL(i);
->  
-> +		if (i == XFEATURE_PKRU) {
-> +			/*
-> +			 * Retrieve PKRU if not in init state, otherwise
-> +			 * initialize it.
-> +			 */
-> +			if (hdr.xfeatures & mask) {
-> +				struct pkru_state xpkru = {0};
-> +
-> +				if (copy_from_buffer(&xpkru, xstate_offsets[i],
-> +						     sizeof(xpkru), kbuf, ubuf))
-> +					return -EFAULT;
-> +
-> +				*pkru = xpkru.pkru;
-> +			} else {
-> +				*pkru = 0;
-> +			}
-> +		}
-
-That's really horrible and there is no point in copying the stuff from
-the buffer twice:
-
-@@ -1246,6 +1246,15 @@ static int copy_uabi_to_xstate(struct fp
- 		}
- 	}
+diff --git a/mm/damon/lru_sort.c b/mm/damon/lru_sort.c
+index 9de6f00a71c5..ac50dca026f9 100644
+--- a/mm/damon/lru_sort.c
++++ b/mm/damon/lru_sort.c
+@@ -378,6 +378,13 @@ static int damon_lru_sort_apply_parameters(void)
+ 	unsigned int hot_thres, cold_thres;
+ 	int err = 0;
  
-+	/* Update the user protection key storage */
-+	*pkru = 0;
-+	if (hdr.xfeatures & XFEATURE_MASK_PKRU) {
-+		struct pkru_state *xpkru;
++	if (monitor_region_start > monitor_region_end)
++		return -EINVAL;
++	if (!monitor_region_start && !monitor_region_end &&
++			!get_monitoring_region(&monitor_region_start,
++				&monitor_region_end))
++		return -EINVAL;
 +
-+		xpkru = get_xsave_addr(xsave, XFEATURE_PKRU);
-+		*pkru = xpkru->pkru;
-+	}
-+
+ 	err = damon_set_attrs(ctx, sample_interval, aggr_interval, 0,
+ 			min_nr_regions, max_nr_regions);
+ 	if (err)
+@@ -401,12 +408,6 @@ static int damon_lru_sort_apply_parameters(void)
+ 		return -ENOMEM;
+ 	damon_add_scheme(ctx, scheme);
+ 
+-	if (monitor_region_start > monitor_region_end)
+-		return -EINVAL;
+-	if (!monitor_region_start && !monitor_region_end &&
+-			!get_monitoring_region(&monitor_region_start,
+-				&monitor_region_end))
+-		return -EINVAL;
+ 	addr_range.start = monitor_region_start;
+ 	addr_range.end = monitor_region_end;
+ 	return damon_set_regions(target, &addr_range, 1);
+-- 
+2.27.0
 
-Hmm?
-
-Thanks,
-
-        tglx
