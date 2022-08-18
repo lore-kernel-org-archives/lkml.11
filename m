@@ -2,270 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E06C32772
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7913C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245122AbiHRNa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        id S244638AbiHRNds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244638AbiHRNay (ORCPT
+        with ESMTP id S243265AbiHRNdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:30:54 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FFA5A2C5
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:30:53 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-333a4a5d495so40741037b3.10
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:30:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ijwCkfPW2UYMQmBDOFjxhcjsIxF5f4vvRDNvHTdaPyI=;
-        b=oIuVX4WiaBGggwX+X0EkGDfWfkiZ9e9n86gChg8gyDIkceUBK6EzG0IJW0BEaeLYxM
-         Xn5THdb+0jvfaAZW70qFAmVPDIU6Wtg4JRXttjMMlNg/0vQPhRwLpS5NqmmRPyvyLhFO
-         GNBWZV/vghE/7sA63lvc1rELyazKd6nQxrB0N9s2NSmBCRr0l0LGFh0CbQ1QYQ3d5WGW
-         CeQYYlC2FZ45IyzEvhF+cdI980gClDQpqaq+lyJbl/oe8XbUH/+3hKTShnA5B7J5CaNJ
-         555k/W4Uy372sCT2HbVLTAQVMUz0bvsOFqzcJRF9/xWxuOTuc7e5HN1QZZXY3FI+GpIj
-         S/4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ijwCkfPW2UYMQmBDOFjxhcjsIxF5f4vvRDNvHTdaPyI=;
-        b=RPlGzFDaO+fh8b50ElS0XInJOOrWJccda2ZS7TtiBRJ9UYaDKmWZutkrVMTDWSOh8F
-         FLJlG4ZoHF5NUko3eU3JZfUwFTsi2t0c4RiykjB3IqYf15+5G6Tx9j+e9YM2kFYX3CB9
-         LDc9jphaFF5LTo2D6ziPbErNIf5MzyLnJY3fMLwUg+OkXbywLHK2nQqC/m/Je73ZdR63
-         +AgBmdj6feAVw1/o44zJS2wlhzrIIx91iDLv8vpI7E9CSmo3EPj/+8Manrt/ASMtAGl5
-         W52KxEyrWFPxiVNVoI2C0d1lmKOotIZpqwwmfTPnizW7c+KIAhSPQgNPl3IXEJ6l938o
-         016Q==
-X-Gm-Message-State: ACgBeo2o7i7ma6l/ONoN6h42bmT/vzFDyPxrfoqbabwtpTNxxRxi5J1l
-        lH1lDa+WQrMvpAVptKtGrjS7JX5gl8M2MrR+FHwsNg==
-X-Google-Smtp-Source: AA6agR65oOzD5YJqAouKNl30cT4/Yf1oUCRs9F7cxO3Qn+h2PXGv5YDbZ9MurCN8ek4unJTHEhkvCvt2/nnAPadjcOw=
-X-Received: by 2002:a05:6902:124b:b0:67b:5d4e:c98d with SMTP id
- t11-20020a056902124b00b0067b5d4ec98dmr3043084ybu.475.1660829452051; Thu, 18
- Aug 2022 06:30:52 -0700 (PDT)
+        Thu, 18 Aug 2022 09:33:43 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2089.outbound.protection.outlook.com [40.107.212.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A61110FFE;
+        Thu, 18 Aug 2022 06:33:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FTkv8tg/H8n0w2y5STBERHsFL6F3vVMj+JWkvNYdZg9b0i41fzbX8ul/geKKkZKh8aAnVpgfbFBm8LRuRIGbkH+6ww7JEF2rmtMzIe9DJVgHc60XtWWBUcbp8enTMJLB09eaw7yRIkpLDko0NAUNKT8llZK95yNoNCtlwT9gyyVvIFl+5yArMTnKJspZVxmYsyEA+hW23NNdFugdhiYm9Q1p6oy29XFTPkuO/GVeRYWGn4diF48E0jAT+1Ru89+rfSx3yLTulsGQ4d6iivbFBU+d3M4eCoYygnI8YTD36pRykBvf/JlWeVH9A6S/24/ROvkWZnf1hACLOWDPvp/Drw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GzmDsoa5mQjJNXZ1cps8dVhi150tSzcqO5aVeztQ/ww=;
+ b=hR6nqcdRT7gcWZt2nG6Qj+2VIGqnbEa1MHjEnx41w6vnB5sde7l5j4mrQ1Ns7eiKtse3mW+cyDCsP0M91IhAKLEC73KyLX4ZxDF1ISVP46+q4U4ySeLdhXegJHStoZ0fEWxxLdsCuQSzfTg4L9h5Kr9fweinKYXRv1Z4EF97p8KlZqZAh1k1qfd9U/gLrPwMQx3Zj54WecSAcgOnB+/5zM91anUkv5EA7IIdhGiXzNyV4FQ33FgJih1duumitQDdxkgUYLuWBa4i6I3mQvkJ1LqZ7KBc1ls0pCo2XqUm9IQyrEvQSzgWM1F00uo/AHx5ZWuiO6S3eQ9FXhx8OjsxCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GzmDsoa5mQjJNXZ1cps8dVhi150tSzcqO5aVeztQ/ww=;
+ b=ZdU4HLhNDlF+OYcCtyWWamZo8xmN9E2J1ZaZ/VWllaElKbia60CcH3jjlhsttez565r/y12tgHS2huqNJeQk6/VuTdpu96qexCIioLCZdyYypc0R0vNaNTScABSK6ul3g9y+2xNM72y6cEx0Pz8c2+IGuDM35EwPbPZwjIkTp2YKHcDNS2Ee8MccskBimJqIlCz4N+N2KPO0GZgdcJh1qWqPKdjKRggPcGBieeSZoXRjDyzyfaKSbouFb/B/t9YyEPI3tBc95sfutsjpVPUnNMylZsVOzroHln7gGP1gE6GMXWVA6iBdazsOPTNnJMNbc82uKgWnwAgbMiehpTBbmQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN6PR12MB1396.namprd12.prod.outlook.com (2603:10b6:404:1b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Thu, 18 Aug
+ 2022 13:33:40 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%6]) with mapi id 15.20.5525.019; Thu, 18 Aug 2022
+ 13:33:40 +0000
+Date:   Thu, 18 Aug 2022 10:33:39 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v11 05/13] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Message-ID: <Yv4/s6lX6Nq+40tu@nvidia.com>
+References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
+ <20220817012024.3251276-6-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817012024.3251276-6-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BL1PR13CA0433.namprd13.prod.outlook.com
+ (2603:10b6:208:2c3::18) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-References: <20220818110859.1918035-1-jens.wiklander@linaro.org>
- <CAFA6WYO9ZoVNt+Npj7R+2=5rJ-Gxwy+QGEMziP7Z=eFupjjECQ@mail.gmail.com> <CAHUa44HoS4QgDzVgcsZkgAhK81wGXKQyqLWbLe9tqqrQELx=MA@mail.gmail.com>
-In-Reply-To: <CAHUa44HoS4QgDzVgcsZkgAhK81wGXKQyqLWbLe9tqqrQELx=MA@mail.gmail.com>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Thu, 18 Aug 2022 19:00:41 +0530
-Message-ID: <CAFA6WYOwXZU6-BUGPg59AcH4QB6oS=Z=Cq9ZwZdfkDa+X5nB-w@mail.gmail.com>
-Subject: Re: [PATCH v2] tee: add overflow check in register_shm_helper()
-To:     Jens Wiklander <jens.wiklander@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        stable@vger.kernel.org, Nimish Mishra <neelam.nimish@gmail.com>,
-        Anirban Chakraborty <ch.anirban00727@gmail.com>,
-        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
-        Jerome Forissier <jerome.forissier@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 088c1f57-6071-4c7f-c338-08da811e4329
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1396:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PMj8du61oouLoUlxM2xNZUQTTdW2bn5bMZ34Wm0xQkOUSHVokn7Fqb6GVG8xQc9HmcfV/YbSegyOItx1xSbkNKCZ9XKWPgx28eCJvcLyA/9C3ZWVBLB1VNkwIghidA5XrJl1eqZf7RhYFWhyERiiitd3PP8GfVjkMSE1CFKF31k2yBw2GvG2UzxMalWjeUY5bK5tMNwnLBIZs/okI2G87BUf8qxXEGX4IwIXTmAMocZISOjuUFKbNqtUgA9zsutrUlnRpKQn3tUMeHDZmtMH+ISWWcJx6jPEcaqCTbKxQdGCz8zr9dnG86tQmER7EIFFGBwLjkZ4uJiopEf9hYpAcWp3ccQOwersY9i+CB26JXJCPbxno7SlbJkgSfbQQElDWV9O5KOdKPgI6eM6EZrihr9bVZTOeAhJrSeNcchHOAWS2nY5GW3PhNMkM76sr5RTT+e1S0k0prRtlmInYNyta6zMjwW5p2OGLviKu5oowRgAIiukxXRWoJTJwzJx+TpglgRBk22BYar+wrWPGTJhQD4ufPBYPJkAprZz3LXhDM7/R3pWVEtfeiCYyhzeAOm2nVvVC3t5ubU3xqwXeqXzFipIWQd0jwsQ+SZTx6UGWTYcWOkkT+rt6Po0PPs8d8LLw0BTI1VxE0zscmwu2fg9cu2mNIMR0/Fobp/MKSrDqo9Rph5QNxWrrWFEbCVMP23QV4IVRm19cr95sAdSH3Rq3w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(376002)(346002)(39860400002)(4326008)(8676002)(6506007)(2906002)(6486002)(66946007)(66476007)(66556008)(38100700002)(41300700001)(26005)(6512007)(2616005)(86362001)(478600001)(5660300002)(7416002)(83380400001)(6916009)(54906003)(36756003)(186003)(316002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+L2Mb0bao4yEweRnZwmrTrDgJ2oKe512jiffDB+ZpYxT3g98cQsFHCHiJUOO?=
+ =?us-ascii?Q?LyCl7UJmNS2kmFkmxoJrVtFeoJjS1y14ykhIdEE0ZRoe0ODAF+lCz8t1KI1L?=
+ =?us-ascii?Q?dCmL4G3t9BIw5PiNCOvbUhwwAMGRjziK/fQ8yJJ1+zDGPKnp6BUldD1dm4yV?=
+ =?us-ascii?Q?08KttBXtdfgrXT7wmSMVBho3usaC7yREempBKUG/gSA3IC89L6eKlr4tqLX6?=
+ =?us-ascii?Q?z42BRsaxGAJRg+zUOZqleSHbJzZPFXjhD2E/y2twIYpHfUVONKvjrij/THOI?=
+ =?us-ascii?Q?pMxGnwsHR/yBDT2E48gZGabVDN/0BYwI/bwRVqcAopN+Vs/2OlsULyCPxU14?=
+ =?us-ascii?Q?CaQDGR37BFILLMTgLMyqT35F/mBDk+SZElJwRtLVWfSvEuDpG0WgUsjkc4LM?=
+ =?us-ascii?Q?ixUCJ6W7dtD8WimNp0sNov34gnp+fqLwb3OPMgnoKMOivWuMH7kZ+TAu2Qnb?=
+ =?us-ascii?Q?V20W8hpEKndcgUJaVaQR2AHeKoKVhK1wkHlH9xLv4aKZPeltV15z+zXxaOUo?=
+ =?us-ascii?Q?yaP66sBqz5QdGmiaSe1HPV8RJf5qptiGTEfyZO0zN/lerIM/U9bsOE8kQEPz?=
+ =?us-ascii?Q?rv5K1ybFAld+ae5HL+vvI+/mGGt/Ds8KM/Mm1A0/iItaNOWXnprnKTuuoaTU?=
+ =?us-ascii?Q?f104ix5EfMYXHLkk8eLKRgETmJ5uS9rDrSTYfF47w5xHYM2SRupY6UXInRVO?=
+ =?us-ascii?Q?BgsiKvdVtT52FcLp701eR8CG68ojaGLmwc5vI9375YlcKpLuLlTTWV7OqYb0?=
+ =?us-ascii?Q?CTWMpcV/eowgJLe8eEFN/EKiIVqNE5P9T5CGX5TZV/cjekOEkvL6C+iuCQjy?=
+ =?us-ascii?Q?Wz97VPDrKlWG55hbodhghYOuK/pJZiOsKGo1j6aONRSV/YyRRz04ah/7Dddh?=
+ =?us-ascii?Q?dT3c+zAk9hpq3Mxs29NFVoOan2BTw3wshEu5blx+4ll4/c8F23Le0+jN4a1H?=
+ =?us-ascii?Q?Dv2AJZ9bfX9u1E38198oIsdbvN0yW1M5+S5Ey7LukFtnqhH0WzFdUSvwXsyW?=
+ =?us-ascii?Q?VCf7Q9cNv4tEwWKvNN04h1jBUpHMp72KN3f9AJ7JLpXtx5GUXsdEHnvvBZar?=
+ =?us-ascii?Q?Tif6XTr2ho4Op49uoEvPciadnqi/DWmGrDM2niFn3s3xBcnMDV7yzmtrVOe8?=
+ =?us-ascii?Q?2qckCqLtat+X+lfjjCE+OD2RGhkCZhcDJn2bJOxiAGKwe8KwAw9oYOAa1oNd?=
+ =?us-ascii?Q?zaZ9EDj+38hqIYueyVGwME1uhaQx1m9x07wUBu9ZlR6rCUyrnxd21ddhzTE3?=
+ =?us-ascii?Q?HKBNlayhY+9fQ9F6toxsGWTEx/VBQbCaZaxd1lRardPovBCfOoYjVk2pYCzS?=
+ =?us-ascii?Q?sil3Qci/6EtEEBj3/9xxW56lgsKR4QQMWzLSi8DLCWqvzJabyviy4JyAZHF6?=
+ =?us-ascii?Q?eWJMjvj/U/YJYB/R2JOqoe0VtTOEGFxprMHA9mtZTd/H4GAn+GvqoV0T9OCb?=
+ =?us-ascii?Q?mIjtddP2glZ6Nvape4y0Fg9zT+a7YjTwlYdGjs/izq/Pf96YUKUmuvdjvYN4?=
+ =?us-ascii?Q?H0HzhMedSQn/QqStHqjMdhoFCBXS+7vXQznXjRYhYydh+Vv27alD65PfNGyV?=
+ =?us-ascii?Q?h+rKe1xR6NpWP3MZZFw3a+SsHadHSHdCdwtylzMu?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 088c1f57-6071-4c7f-c338-08da811e4329
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 13:33:40.3251
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qMtShXrXEYbasRBJSUtdq1G36Y/XfQ7kx3jhtWXOVYH/JNJbMQ8Hq8mBO9YMbMdB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1396
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 at 18:32, Jens Wiklander <jens.wiklander@linaro.org> wrote:
->
-> Hi Sumit,
->
-> On Thu, Aug 18, 2022 at 2:41 PM Sumit Garg <sumit.garg@linaro.org> wrote:
-> >
-> > Hi Jens,
-> >
-> > On Thu, 18 Aug 2022 at 16:39, Jens Wiklander <jens.wiklander@linaro.org> wrote:
-> > >
-> > > With special lengths supplied by user space, register_shm_helper() has
-> > > an integer overflow when calculating the number of pages covered by a
-> > > supplied user space memory region. This causes
-> > > internal_get_user_pages_fast() a helper function of
-> > > pin_user_pages_fast() to do a NULL pointer dereference.
-> > >
-> > > [   14.141620] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
-> > > [   14.142556] Mem abort info:
-> > > [   14.142829]   ESR = 0x0000000096000044
-> > > [   14.143237]   EC = 0x25: DABT (current EL), IL = 32 bits
-> > > [   14.143742]   SET = 0, FnV = 0
-> > > [   14.144052]   EA = 0, S1PTW = 0
-> > > [   14.144348]   FSC = 0x04: level 0 translation fault
-> > > [   14.144767] Data abort info:
-> > > [   14.145053]   ISV = 0, ISS = 0x00000044
-> > > [   14.145394]   CM = 0, WnR = 1
-> > > [   14.145766] user pgtable: 4k pages, 48-bit VAs, pgdp=000000004278e000
-> > > [   14.146279] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
-> > > [   14.147435] Internal error: Oops: 96000044 [#1] PREEMPT SMP
-> > > [   14.148026] Modules linked in:
-> > > [   14.148595] CPU: 1 PID: 173 Comm: optee_example_a Not tainted 5.19.0 #11
-> > > [   14.149204] Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
-> > > [   14.149832] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > > [   14.150481] pc : internal_get_user_pages_fast+0x474/0xa80
-> > > [   14.151640] lr : internal_get_user_pages_fast+0x404/0xa80
-> > > [   14.152408] sp : ffff80000a88bb30
-> > > [   14.152711] x29: ffff80000a88bb30 x28: 0000fffff836d000 x27: 0000fffff836e000
-> > > [   14.153580] x26: fffffc0000000000 x25: fffffc0000f4a1c0 x24: ffff00000289fb70
-> > > [   14.154634] x23: ffff000002702e08 x22: 0000000000040001 x21: ffff8000097eec60
-> > > [   14.155378] x20: 0000000000f4a1c0 x19: 00e800007d287f43 x18: 0000000000000000
-> > > [   14.156215] x17: 0000000000000000 x16: 0000000000000000 x15: 0000fffff836cfb0
-> > > [   14.157068] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
-> > > [   14.157747] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
-> > > [   14.158576] x8 : ffff00000276ec80 x7 : 0000000000000000 x6 : 000000000000003f
-> > > [   14.159243] x5 : 0000000000000000 x4 : ffff000041ec4eac x3 : ffff000002774cb8
-> > > [   14.159977] x2 : 0000000000000004 x1 : 0000000000000010 x0 : 0000000000000000
-> > > [   14.160883] Call trace:
-> > > [   14.161166]  internal_get_user_pages_fast+0x474/0xa80
-> > > [   14.161763]  pin_user_pages_fast+0x24/0x4c
-> > > [   14.162227]  register_shm_helper+0x194/0x330
-> > > [   14.162734]  tee_shm_register_user_buf+0x78/0x120
-> > > [   14.163290]  tee_ioctl+0xd0/0x11a0
-> > > [   14.163739]  __arm64_sys_ioctl+0xa8/0xec
-> > > [   14.164227]  invoke_syscall+0x48/0x114
-> > > [   14.164653]  el0_svc_common.constprop.0+0x44/0xec
-> > > [   14.165130]  do_el0_svc+0x2c/0xc0
-> > > [   14.165498]  el0_svc+0x2c/0x84
-> > > [   14.165847]  el0t_64_sync_handler+0x1ac/0x1b0
-> > > [   14.166258]  el0t_64_sync+0x18c/0x190
-> > > [   14.166878] Code: 91002318 11000401 b900f7e1 f9403be1 (f820d839)
-> > > [   14.167666] ---[ end trace 0000000000000000 ]---
-> > >
-> > > Fix this by adding an overflow check when calculating the end of the
-> > > memory range. Also add an explicit call to access_ok() in
-> > > tee_shm_register_user_buf() to catch an invalid user space address
-> > > early.
-> > >
-> > > Fixes: 033ddf12bcf5 ("tee: add register user memory")
-> > > Cc: stable@vger.kernel.org
-> > > Reported-by: Nimish Mishra <neelam.nimish@gmail.com>
-> > > Reported-by: Anirban Chakraborty <ch.anirban00727@gmail.com>
-> > > Reported-by: Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>
-> > > Suggested-by: Jerome Forissier <jerome.forissier@linaro.org>
-> > > Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-> > > ---
-> > >  drivers/tee/tee_shm.c | 23 +++++++++++++++++++----
-> > >  1 file changed, 19 insertions(+), 4 deletions(-)
-> > >
-> >
-> > I can't see the v1 and neither a changelog for v2, so my comments
-> > below may be duplicate.
->
-> Fair point. The original patch wasn't posted publicly, but in order to
-> avoid confusion with that patch I chose to publish this as V2.
->
-> >
-> > > diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-> > > index f2b1bcefcadd..f71651021c8d 100644
-> > > --- a/drivers/tee/tee_shm.c
-> > > +++ b/drivers/tee/tee_shm.c
-> > > @@ -231,15 +231,30 @@ EXPORT_SYMBOL_GPL(tee_shm_alloc_priv_buf);
-> > >
-> > >  static struct tee_shm *
-> > >  register_shm_helper(struct tee_context *ctx, unsigned long addr,
-> > > -                   size_t length, u32 flags, int id)
-> > > +                   unsigned long length, u32 flags, int id)
-> > >  {
-> > >         struct tee_device *teedev = ctx->teedev;
-> > > +       unsigned long end_addr;
-> > >         struct tee_shm *shm;
-> > >         unsigned long start;
-> > >         size_t num_pages;
-> > >         void *ret;
-> > >         int rc;
-> > >
-> > > +       /* Check for overflows, this may be input from user space */
-> >
-> > IMO, this bound checking should be part of the parent function (like
-> > tee_shm_register_user_buf() in this case).
->
-> I don't see any harm in checking it here even if it will then check
-> input from tee_shm_register_kernel_buf() too. Then I'm also reusing
-> the result in the roundup() and that should be done in this function.
->
-> >
-> > > +       addr = untagged_addr(addr);
-> > > +       start = rounddown(addr, PAGE_SIZE);
-> > > +       if (check_add_overflow(addr, length, &end_addr))
-> > > +               return ERR_PTR(-EINVAL);
-> >
-> > Isn't this check redundant after access_ok()? AFAICS, access_ok()
-> > should limit the upper bound to TASK_SIZE_MAX which should detect any
-> > overflows.
->
-> It may be redundant, depending on the configuration. It's likely
-> redundant on all platforms we care about at the moment, but who knows
-> where this will be used in the future.
->
+On Wed, Aug 17, 2022 at 09:20:16AM +0800, Lu Baolu wrote:
 
-Firstly, access_ok() is the common kernel way to check for valid
-user-space access as per quote below from
-include/asm-generic/access_ok.h:
+> +static int __iommu_set_group_pasid(struct iommu_domain *domain,
+> +				   struct iommu_group *group, ioasid_t pasid)
+> +{
+> +	struct iommu_domain *ops_domain;
+> +	struct group_device *device;
+> +	int ret = 0;
+> +
+> +	if (domain == group->blocking_domain)
+> +		ops_domain = xa_load(&group->pasid_array, pasid);
+> +	else
+> +		ops_domain = domain;
 
-  /*
-   * 'size' is a compile-time constant for most callers, so optimize for
-   * this case to turn the check into a single comparison against a constant
-   * limit and catch all possible overflows.
-   * On architectures with separate user address space (m68k, s390, parisc,
-   * sparc64) or those without an MMU, this should always return true.
-   *
-   * This version was originally contributed by Jonas Bonn for the
-   * OpenRISC architecture, and was found to be the most efficient
-   * for constant 'size' and 'limit' values.
-   */
+This seems weird, why isn't this just always
 
-So we shouldn't invent a redundant method to check if there is a buggy
-arch override for access_ok(). Also, results from check_add_overflow()
-are still inaccurate as it can allow addresses greater than
-TASK_SIZE_MAX.
+domain->ops->set_dev_pasid()?
 
-Secondly, a redundant check which is anticipated to fix a future arch
-bug doesn't qualify for a fix patch.
+> +	if (curr) {
+> +		ret = xa_err(curr) ? : -EBUSY;
+> +		goto out_unlock;
+> +	}
+> +
+> +	ret = __iommu_set_group_pasid(domain, group, pasid);
+> +	if (ret) {
+> +		__iommu_set_group_pasid(group->blocking_domain, group, pasid);
+> +		xa_erase(&group->pasid_array, pasid);
 
--Sumit
+I was looking at this trying to figure out why we are having
+attach/detach semantics vs set and this error handling seems to be the
+reason
 
-> >
-> > > +       end_addr = roundup(end_addr, PAGE_SIZE);
-> > > +       if (end_addr < start)
-> > > +               return ERR_PTR(-EINVAL);
-> >
-> > Ditto?
->
-> Yeah, same argument.
->
-> Thanks,
-> Jens
->
-> >
-> > -Sumit
-> >
-> > > +       num_pages = (end_addr - start) / PAGE_SIZE;
-> > > +
-> > > +       /* Error out early if no pages are to be registered */
-> > > +       if (!num_pages)
-> > > +               return ERR_PTR(-EINVAL);
-> > > +
-> > >         if (!tee_device_get(teedev))
-> > >                 return ERR_PTR(-EINVAL);
-> > >
-> > > @@ -261,11 +276,8 @@ register_shm_helper(struct tee_context *ctx, unsigned long addr,
-> > >         shm->flags = flags;
-> > >         shm->ctx = ctx;
-> > >         shm->id = id;
-> > > -       addr = untagged_addr(addr);
-> > > -       start = rounddown(addr, PAGE_SIZE);
-> > >         shm->offset = addr - start;
-> > >         shm->size = length;
-> > > -       num_pages = (roundup(addr + length, PAGE_SIZE) - start) / PAGE_SIZE;
-> > >         shm->pages = kcalloc(num_pages, sizeof(*shm->pages), GFP_KERNEL);
-> > >         if (!shm->pages) {
-> > >                 ret = ERR_PTR(-ENOMEM);
-> > > @@ -326,6 +338,9 @@ struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
-> > >         void *ret;
-> > >         int id;
-> > >
-> > > +       if (!access_ok((void __user *)addr, length))
-> > > +               return ERR_PTR(-EFAULT);
-> > > +
-> > >         mutex_lock(&teedev->mutex);
-> > >         id = idr_alloc(&teedev->idr, NULL, 1, 0, GFP_KERNEL);
-> > >         mutex_unlock(&teedev->mutex);
-> > > --
-> > > 2.31.1
-> > >
+Lets add a comment because it is subtle thing:
+
+  Setting a PASID to a blocking domain cannot fail, so we can always
+  safely error unwind a failure to attach a domain back to the original
+  group configuration of the PASID being unused.
+
+> +/*
+> + * iommu_detach_device_pasid() - Detach the domain from pasid of device
+> + * @domain: the iommu domain.
+> + * @dev: the attached device.
+> + * @pasid: the pasid of the device.
+> + *
+> + * The @domain must have been attached to @pasid of the @dev with
+> + * iommu_attach_device_pasid().
+> + */
+> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+> +			       ioasid_t pasid)
+
+Don't pass domain here?
+
+> +/*
+> + * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
+> + * @dev: the queried device
+> + * @pasid: the pasid of the device
+> + *
+> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
+> + * domain attached to pasid of a device. It's only for internal use of the
+> + * IOMMU subsystem. The caller must take care to avoid any possible
+> + * use-after-free case.
+
+How exactly does the caller manage that?
+
+> + *
+> + * Return: attached domain on success, NULL otherwise.
+> + */
+> +struct iommu_domain *
+> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
+> +{
+> +	struct iommu_domain *domain;
+> +	struct iommu_group *group;
+> +
+> +	if (!pasid_valid(pasid))
+> +		return NULL;
+
+Why bother? If the pasid is not valid then it definitely won't be in the xarray.
+
+But otherwise this overall thing seems fine to me
+
+Jason
