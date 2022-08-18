@@ -2,145 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2020C25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 03:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 363EBC25B08
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 03:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243114AbiHRDZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 23:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
+        id S242585AbiHRDaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 23:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240598AbiHRDZD (ORCPT
+        with ESMTP id S235263AbiHRDaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 23:25:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB83D5C9FB
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 20:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660793100;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3MPK+GM2uD1yCea/zMrRjLKC1MQOzHK2bgMfr6/LwJY=;
-        b=FCOmCd1zTMP5ewQVtkF9vmSuU6PSbpAxg90/p2egm0jjjMQ/EyLY/Wu3Oghmyd6OZmHmOw
-        iJYltkxLzMEk3XNSBMdGOHQO3JH9hRhAwnj4ustgoShDfwc7r6PefoZE/3afJn5Z6LePKM
-        JJ40DVEghTBYKa0t21eGNOR6a7HZ4FE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-463-ZFERLax1Opu6ZvU_1l8PDQ-1; Wed, 17 Aug 2022 23:24:56 -0400
-X-MC-Unique: ZFERLax1Opu6ZvU_1l8PDQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F1EC3804197;
-        Thu, 18 Aug 2022 03:24:55 +0000 (UTC)
-Received: from T590 (ovpn-8-20.pek2.redhat.com [10.72.8.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0487E2026D4C;
-        Thu, 18 Aug 2022 03:24:46 +0000 (UTC)
-Date:   Thu, 18 Aug 2022 11:24:41 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Chris Murphy <lists@colorremedies.com>
-Cc:     Nikolay Borisov <nborisov@suse.com>, Jens Axboe <axboe@kernel.dk>,
-        Jan Kara <jack@suse.cz>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
-        Linux-RAID <linux-raid@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>
-Subject: Re: stalling IO regression since linux 5.12, through 5.18
-Message-ID: <Yv2w+Tuhw1RAoXI5@T590>
-References: <dcd8beea-d2d9-e692-6e5d-c96b2d29dfd1@suse.com>
- <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
- <CAFj5m9+6Vj3NdSg_n3nw1icscY1qr9f9SOvkWYyqpEtFBb_-1g@mail.gmail.com>
- <b236ca6e-2e69-4faf-9c95-642339d04543@www.fastmail.com>
- <Yv0A6UhioH3rbi0E@T590>
- <f633c476-bdc9-40e2-a93f-29601979f833@www.fastmail.com>
- <Yv0KmT8UYos2/4SX@T590>
- <35f0d608-7448-4276-8922-19a23d8f9049@www.fastmail.com>
- <Yv2P0zyoVvz35w/m@T590>
- <568465de-5c3b-4d94-a74b-5b83ce2f942f@www.fastmail.com>
+        Wed, 17 Aug 2022 23:30:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1418FD66
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 20:30:07 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M7Vdr1QbLzXdqW;
+        Thu, 18 Aug 2022 11:25:52 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 11:30:04 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 11:30:04 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH v2] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
+Date:   Thu, 18 Aug 2022 11:26:59 +0800
+Message-ID: <20220818032659.56209-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <568465de-5c3b-4d94-a74b-5b83ce2f942f@www.fastmail.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 10:30:39PM -0400, Chris Murphy wrote:
-> 
-> 
-> On Wed, Aug 17, 2022, at 9:03 PM, Ming Lei wrote:
-> > On Wed, Aug 17, 2022 at 12:34:42PM -0400, Chris Murphy wrote:
-> >> 
-> >> 
-> >> On Wed, Aug 17, 2022, at 11:34 AM, Ming Lei wrote:
-> >> 
-> >> > From the 2nd log of blockdebugfs-all.txt, still not see any in-flight IO on
-> >> > request based block devices, but sda is _not_ included in this log, and
-> >> > only sdi, sdg and sdf are collected, is that expected?
-> >> 
-> >> While the problem was happening I did
-> >> 
-> >> cd /sys/kernel/debug/block
-> >> find . -type f -exec grep -aH . {} \;
-> >> 
-> >> The file has the nodes out of order, but I don't know enough about the interface to see if there are things that are missing, or what it means.
-> >> 
-> >> 
-> >> > BTW, all request based block devices should be observed in blk-mq debugfs.
-> >> 
-> >> /sys/kernel/debug/block contains
-> >> 
-> >> drwxr-xr-x.  2 root root 0 Aug 17 15:20 md0
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sda
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sdb
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sdc
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sdd
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sde
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sdf
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sdg
-> >> drwxr-xr-x. 51 root root 0 Aug 17 15:20 sdh
-> >> drwxr-xr-x.  4 root root 0 Aug 17 15:20 sdi
-> >> drwxr-xr-x.  2 root root 0 Aug 17 15:20 zram0
-> >
-> > OK, so lots of devices are missed in your log, and the following command
-> > is supposed to work for collecting log from all block device's debugfs:
-> >
-> > (cd /sys/kernel/debug/block/ && find . -type f -exec grep -aH . {} \;)
-> 
-> OK here it is:
-> 
-> https://drive.google.com/file/d/18nEOx2Ghsqx8uII6nzWpCFuYENHuQd-f/view?usp=sharing
+ftrace_startup does not remove ops from ftrace_ops_list when
+ftrace_startup_enable fails:
 
-The above log shows that the io stall happens on sdd, where:
+register_ftrace_function
+  ftrace_startup
+    __register_ftrace_function
+      ...
+      add_ftrace_ops(&ftrace_ops_list, ops)
+      ...
+    ...
+    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
+    ...
+  return 0 // ops is in the ftrace_ops_list.
 
-1) 616 requests pending from scheduler queue
+When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
+unregister_ftrace_function
+  ftrace_shutdown
+    if (unlikely(ftrace_disabled))
+            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
+                             // as a result, ops is still in the ftrace_ops_list
+    __unregister_ftrace_function
+    ...
 
-grep "busy=" blockdebugfs-all2.txt | grep sdd | grep sched | awk -F "=" '{s+=$2} END {print s}'
-616
+If ops is dynamically allocated, it will be free later, in this case,
+is_ftrace_trampoline accesses NULL pointer:
 
-2) 11 requests pending from ./sdd/hctx2/dispatch for more than 300 seconds
+is_ftrace_trampoline
+  ftrace_ops_trampoline
+    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
 
-Recently we seldom observe io hang from dispatch list, except for the
-following two:
+Syzkaller reports as follows:
+[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
+[ 1203.508039] #PF: supervisor read access in kernel mode
+[ 1203.508798] #PF: error_code(0x0000) - not-present page
+[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
+[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
+[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
+[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
+[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
+[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
+[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
+[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
+[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
+[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
+[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
+[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
+[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
+[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-https://lore.kernel.org/linux-block/20220803023355.3687360-1-yuyufen@huaweicloud.com/
-https://lore.kernel.org/linux-block/20220726122224.1790882-1-yukuai1@huaweicloud.com/
+Therefore, when ftrace_startup_enable fails, we need to rollback registration
+process and remove ops from ftrace_ops_list.
 
-BTW, what is the output of the following log?
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+---
+Changes since v1:
+  - Only roll back _unregister_ftrace_function when ftrace_disabled is set
 
-	(cd /sys/block/sdd/device && find . -type f -exec grep -aH . {} \;)
+ kernel/trace/ftrace.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Also the above log shows that host_tagset_enable support is still
-crippled on v5.12, I guess the issue may not be triggered(or pretty hard)
-after you update to d97e594c5166 ("blk-mq: Use request queue-wide tags for
-tagset-wide sbitmap"), or v5.14.
-
-
-
-thanks,
-Ming
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index bc921a3f7ea8..126c769d36c3 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2974,6 +2974,16 @@ int ftrace_startup(struct ftrace_ops *ops, int command)
+ 
+ 	ftrace_startup_enable(command);
+ 
++	/*
++	 * If ftrace is in an undefined state, we just remove ops from list
++	 * to prevent the NULL pointer, instead of totally rolling it back and
++	 * free trampoline, because those actions could cause further damage.
++	 */
++	if (unlikely(ftrace_disabled)) {
++		__unregister_ftrace_function(ops);
++		return -ENODEV;
++	}
++
+ 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
+ 
+ 	return 0;
+-- 
+2.30.GIT
 
