@@ -2,125 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0734C25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BA3C32771
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242669AbiHRCH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 22:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
+        id S242679AbiHRCJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 22:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242546AbiHRCHW (ORCPT
+        with ESMTP id S242672AbiHRCJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 22:07:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A8695AF5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 19:07:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660788440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YtSA4RBeCXTZTUITj7CouT42a1+0iIHwIDQs+/W3i5k=;
-        b=fYmG3XcZ8PwjXbYkFciygtjusMaDCjCG7kA7QDH4sfnNDBuRrIOQ65QvyQ/vZ000SNN2ff
-        S4I87bmJBK2QI+6YeOeAGwq8VOXIjRR5ZjL+J1e/gNDlX4E6ZCl/zAtol+RTh9eqcrJZRI
-        rg2XlTiTsrnV8y7o5UwizhKo22WSsJE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-536-Qc6KvA5MNdiRlCtSVrBI_A-1; Wed, 17 Aug 2022 22:06:27 -0400
-X-MC-Unique: Qc6KvA5MNdiRlCtSVrBI_A-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1132885A586;
-        Thu, 18 Aug 2022 02:06:27 +0000 (UTC)
-Received: from rtux.redhat.com (unknown [10.33.36.93])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 62875492C3B;
-        Thu, 18 Aug 2022 02:06:26 +0000 (UTC)
-From:   Alexey Klimov <aklimov@redhat.com>
-To:     linux-watchdog@vger.kernel.org
-Cc:     wim@linux-watchdog.org, linux@roeck-us.net,
-        linux-kernel@vger.kernel.org, klimov.linux@gmail.com
-Subject: [PATCH REVIEW 2/2] watchdog: add wd_data->lock mutex locking to watchdog_open()
-Date:   Thu, 18 Aug 2022 03:06:24 +0100
-Message-Id: <20220818020624.2386475-2-aklimov@redhat.com>
-In-Reply-To: <20220818020624.2386475-1-aklimov@redhat.com>
-References: <20220818020624.2386475-1-aklimov@redhat.com>
+        Wed, 17 Aug 2022 22:09:32 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3F96CF47;
+        Wed, 17 Aug 2022 19:09:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=OSvVOdfA6FOAs8kDqxv//qJumZqVNEgMpVWHYd6sYHE=; b=ys1VzU4EM8SGT6HcPcATTxTCBz
+        YhGNIaQuwsVtux+02LwQJ/ONRdIWcjxqbhHsZnXNkUYHiHeWn6xuTfqAi7a138FzBqBGJNXsOYVkM
+        5+xI3dUvYbZkXDnDkqMkIm0KmCG1M9hmg4ckZ5uSEs0euHB1SyEHVKvNGUHXSrH1m/diER7q9Es0E
+        9oBnFdFbT78A2q9ZPvgQaNcuNy5cgi9ObJIkMW5Lc/palxBvc7GZ1MV5ugbLwZZJVYWkxOcsdz+IM
+        LNMbfnGN06rM+MEEUGTWUnOv7Eu5db00otKav1YD6eWbQuGZlnlF/kBK40DoSO9RJeu7X1+L4umRk
+        ASA7BsYw==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oOUyN-00AzBi-GK; Thu, 18 Aug 2022 02:09:27 +0000
+Message-ID: <5638aaf1-b808-bdc6-d84a-820f24facea6@infradead.org>
+Date:   Wed, 17 Aug 2022 19:09:26 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: build failure of next-20220817 for amdgpu
+Content-Language: en-US
+To:     Alex Deucher <alexdeucher@gmail.com>,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-next@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <Yv1lepjhg/6QKyQl@debian>
+ <CADnq5_Od9W1iuzYpsmODOB=Xem97ogeH_t0JrjWC-S8h0XM9fA@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CADnq5_Od9W1iuzYpsmODOB=Xem97ogeH_t0JrjWC-S8h0XM9fA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-watchdog_open() does not have wd_data->lock locks at all unlike
-the watchdog_release() for instance. Also watchdog_open() calls
-watchdog_start() that should be called with wd_data->lock acquired.
-The mutex lock should be acquired in the beginning of the function
-after getting struct watchdog_core_data wd_data pointer to deal with
-different status fields and be able to call watchdog_start(); and
-released on exit and on different error paths.
 
-Signed-off-by: Alexey Klimov <aklimov@redhat.com>
----
- drivers/watchdog/watchdog_dev.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/watchdog/watchdog_dev.c b/drivers/watchdog/watchdog_dev.c
-index 804236a094f6..d07a864036d9 100644
---- a/drivers/watchdog/watchdog_dev.c
-+++ b/drivers/watchdog/watchdog_dev.c
-@@ -836,7 +836,7 @@ static int watchdog_open(struct inode *inode, struct file *file)
- 	struct watchdog_core_data *wd_data;
- 	struct watchdog_device *wdd;
- 	bool hw_running;
--	int err;
-+	int err = -EBUSY;
- 
- 	/* Get the corresponding watchdog device */
- 	if (imajor(inode) == MISC_MAJOR)
-@@ -845,9 +845,10 @@ static int watchdog_open(struct inode *inode, struct file *file)
- 		wd_data = container_of(inode->i_cdev, struct watchdog_core_data,
- 				       cdev);
- 
-+	mutex_lock(&wd_data->lock);
- 	/* the watchdog is single open! */
- 	if (test_and_set_bit(_WDOG_DEV_OPEN, &wd_data->status))
--		return -EBUSY;
-+		goto out_unlock;
- 
- 	wdd = wd_data->wdd;
- 
-@@ -856,10 +857,8 @@ static int watchdog_open(struct inode *inode, struct file *file)
- 	 * to be unloaded.
- 	 */
- 	hw_running = watchdog_hw_running(wdd);
--	if (!hw_running && !try_module_get(wdd->ops->owner)) {
--		err = -EBUSY;
-+	if (!hw_running && !try_module_get(wdd->ops->owner))
- 		goto out_clear;
--	}
- 
- 	err = watchdog_start(wdd);
- 	if (err < 0)
-@@ -878,6 +877,7 @@ static int watchdog_open(struct inode *inode, struct file *file)
- 	 * applied.
- 	 */
- 	wd_data->open_deadline = KTIME_MAX;
-+	mutex_unlock(&wd_data->lock);
- 
- 	/* dev/watchdog is a virtual (and thus non-seekable) filesystem */
- 	return stream_open(inode, file);
-@@ -886,6 +886,8 @@ static int watchdog_open(struct inode *inode, struct file *file)
- 	module_put(wd_data->wdd->ops->owner);
- out_clear:
- 	clear_bit(_WDOG_DEV_OPEN, &wd_data->status);
-+out_unlock:
-+	mutex_unlock(&wd_data->lock);
- 	return err;
- }
- 
+On 8/17/22 19:01, Alex Deucher wrote:
+> On Wed, Aug 17, 2022 at 6:03 PM Sudip Mukherjee (Codethink)
+> <sudipm.mukherjee@gmail.com> wrote:
+>>
+>> Hi All,
+>>
+>> Not sure if it has been reported, build of next-20220817 fails with the
+>> error:
+>>
+>> ERROR: modpost: "cpu_smallcore_map" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
+>>
+>> Trying to do a git bisect to find out the offending commit.
+>>
+> 
+> Thanks.  I don't see that symbol in the driver at all.  Not sure where
+> it is coming from.
+> 
+
+It's powerpc only.
+
+Sudip, is it non-CONFIG_SMP by any chance?
+
+> 
+> 
+>> I will be happy to test any patch or provide any extra log if needed.
+>>
+>>
+>> --
+>> Regards
+>> Sudip
+
 -- 
-2.37.2
-
+~Randy
