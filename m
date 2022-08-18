@@ -2,108 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F73CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCA1C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245428AbiHRN6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        id S245465AbiHRN6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245467AbiHRN6H (ORCPT
+        with ESMTP id S245485AbiHRN6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:58:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F11B7756;
-        Thu, 18 Aug 2022 06:58:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4AE4616F8;
-        Thu, 18 Aug 2022 13:58:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F8E1C433C1;
-        Thu, 18 Aug 2022 13:58:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660831086;
-        bh=AdTKGhR3ZoSq3QjtGA2FJAdfGi00v8hiRPln1cuwBGI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HKIinNsrHytow9Dx2L2W+cW4VJxiYbHQ3FsnCJxNa5P/g03TAe/3LVDUXhMVyw5RC
-         QTga7hlm4tduUdWJTAOVSnHDzGDWHJ8uHztAxmHYmBtmhKdmsSSEiYCp8IYqfCcQyV
-         vpsgH6lZFVIxwdRVtf5hnCyXrF7uFKESO6zqRgQJX7eq9bXQp6YETRWfdO1jJhi5Ur
-         cXIDZQWZJSUIfuSTXZ+eWm3eBfgIfAFdNLhusxedfD/hL4gw5/jhPGm3yCXuERVCIA
-         KHX8xAwa5G+4fYG0VoBKN3tVDU05aVar+Y9dbBfnJ0YUCA+ZXPoyMzhRgAua9wzPeL
-         zoobriewRCBDw==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org,
-        Tony Lindgren <tony@atomide.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Joel Stanley <joel@jms.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        William Zhang <william.zhang@broadcom.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Michael Walle <michael@walle.cc>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Adam Ford <aford173@gmail.com>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: [PATCH 04/11] ARM: defconfig: drop CONFIG_SERIAL_OMAP references
-Date:   Thu, 18 Aug 2022 15:57:13 +0200
-Message-Id: <20220818135737.3143895-3-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220818135737.3143895-1-arnd@kernel.org>
-References: <20220818135522.3143514-1-arnd@kernel.org>
- <20220818135737.3143895-1-arnd@kernel.org>
+        Thu, 18 Aug 2022 09:58:15 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39D82E3;
+        Thu, 18 Aug 2022 06:58:11 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4M7mgQ0Yqsz9sf4;
+        Thu, 18 Aug 2022 15:58:10 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Mh1iG2BKyRO9; Thu, 18 Aug 2022 15:58:10 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4M7mgP6sZWz9sdy;
+        Thu, 18 Aug 2022 15:58:09 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id DC8B78B767;
+        Thu, 18 Aug 2022 15:58:09 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id LlPoFkLgpU30; Thu, 18 Aug 2022 15:58:09 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.235.236])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9D11C8B763;
+        Thu, 18 Aug 2022 15:58:09 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 27IDw0Vu1993063
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 15:58:00 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 27IDw09J1993060;
+        Thu, 18 Aug 2022 15:58:00 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: [PATCH v3] spi: Add capability to perform some transfer with chipselect off
+Date:   Thu, 18 Aug 2022 15:57:49 +0200
+Message-Id: <fabbc87627e5ddc2c913b368ae99386668d8dcfb.1660830866.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1660831067; l=3497; s=20211009; h=from:subject:message-id; bh=pBEp2sV1HSEbreVLmDNueVNSIkEvPWM2zi6OQ+L8A3M=; b=ruZBrXja6jNd1n+ZvqAsoBgHCZ9iAZPljuFSoWxEqAaOztZftEi4UMQVPPKMcs+KQxOnaWQ/yslv 5ExyNtw1AaL2/5vYPGW7ZLIbVNRNFIBeTu9RkgKriygiTi0QfmlV
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Some components require a few clock cycles with chipselect off before
+or/and after the data transfer done with CS on.
 
-This driver is mutually exclusive with the new 8250_OMAP
-driver, so 'make defconfig' turns it off already. Drop
-the reference now.
+Typically IDT 801034 QUAD PCM CODEC datasheet states "Note *: CCLK
+should have one cycle before CS goes low, and two cycles after
+CS goes high".
 
-Fixes: 077e1cde78c3 ("ARM: omap2plus_defconfig: Enable 8250_OMAP")
-Fixes: f98d45145e6a ("ARM: multi_v7_defconfig: Enable 8250-omap serial driver and use it by default")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+The cycles "before" are implicitely provided by all previous activity
+on the SPI bus. But the cycles "after" must be provided in order to
+terminate the SPI transfer.
+
+In order to use that kind of component, add a cs_off flag to
+spi_transfer struct. When this flag is set, the transfer is performed
+with chipselect off. This allows consummer to add a dummy transfer
+at the end of the transfer list which is performed with chipselect
+OFF, providing the required additional clock cycles.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/arm/configs/multi_v7_defconfig  | 2 --
- arch/arm/configs/omap2plus_defconfig | 2 --
- 2 files changed, 4 deletions(-)
+This is a change in the approach. Now we offer the driver/consumer a way to perform an additional transfer with chipselect off.
 
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index ecf743b3409d..4cfe795981c8 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -377,8 +377,6 @@ CONFIG_SERIAL_MSM=y
- CONFIG_SERIAL_MSM_CONSOLE=y
- CONFIG_SERIAL_VT8500=y
- CONFIG_SERIAL_VT8500_CONSOLE=y
--CONFIG_SERIAL_OMAP=y
--CONFIG_SERIAL_OMAP_CONSOLE=y
- CONFIG_SERIAL_BCM63XX=y
- CONFIG_SERIAL_BCM63XX_CONSOLE=y
- CONFIG_SERIAL_XILINX_PS_UART=y
-diff --git a/arch/arm/configs/omap2plus_defconfig b/arch/arm/configs/omap2plus_defconfig
-index e273365838cb..89cda0877c52 100644
---- a/arch/arm/configs/omap2plus_defconfig
-+++ b/arch/arm/configs/omap2plus_defconfig
-@@ -419,8 +419,6 @@ CONFIG_SERIAL_8250_DETECT_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_8250_OMAP=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_OMAP=y
--CONFIG_SERIAL_OMAP_CONSOLE=y
- CONFIG_SERIAL_DEV_BUS=y
- CONFIG_I2C_CHARDEV=y
- CONFIG_SPI=y
+v2 is at https://patchwork.kernel.org/project/spi-devel-general/list/?series=618784&state=*&archive=both
+
+ drivers/spi/spi.c       | 12 +++++++++---
+ include/linux/spi/spi.h |  2 ++
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 2a472dcf081e..ca71723d44a7 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -1418,7 +1418,8 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 	struct spi_statistics *statm = &ctlr->statistics;
+ 	struct spi_statistics *stats = &msg->spi->statistics;
+ 
+-	spi_set_cs(msg->spi, true, false);
++	xfer = list_first_entry(&msg->transfers, struct spi_transfer, transfer_list);
++	spi_set_cs(msg->spi, !xfer->cs_off, false);
+ 
+ 	SPI_STATISTICS_INCREMENT_FIELD(statm, messages);
+ 	SPI_STATISTICS_INCREMENT_FIELD(stats, messages);
+@@ -1486,10 +1487,15 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 					 &msg->transfers)) {
+ 				keep_cs = true;
+ 			} else {
+-				spi_set_cs(msg->spi, false, false);
++				if (!xfer->cs_off)
++					spi_set_cs(msg->spi, false, false);
+ 				_spi_transfer_cs_change_delay(msg, xfer);
+-				spi_set_cs(msg->spi, true, false);
++				if (!list_next_entry(xfer, transfer_list)->cs_off)
++					spi_set_cs(msg->spi, true, false);
+ 			}
++		} else if (!list_is_last(&xfer->transfer_list, &msg->transfers) &&
++			   xfer->cs_off != list_next_entry(xfer, transfer_list)->cs_off) {
++			spi_set_cs(msg->spi, xfer->cs_off, false);
+ 		}
+ 
+ 		msg->actual_length += xfer->len;
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index 7ab3fed7b804..cbb787f6b9ff 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -818,6 +818,7 @@ struct spi_res {
+  *      for this transfer. If 0 the default (from @spi_device) is used.
+  * @dummy_data: indicates transfer is dummy bytes transfer.
+  * @cs_change: affects chipselect after this transfer completes
++ * @cs_off: performs the transfer with chipselect off.
+  * @cs_change_delay: delay between cs deassert and assert when
+  *      @cs_change is set and @spi_transfer is not the last in @spi_message
+  * @delay: delay to be introduced after this transfer before
+@@ -930,6 +931,7 @@ struct spi_transfer {
+ 	unsigned	cs_change:1;
+ 	unsigned	tx_nbits:3;
+ 	unsigned	rx_nbits:3;
++	unsigned	cs_off:1;
+ #define	SPI_NBITS_SINGLE	0x01 /* 1bit transfer */
+ #define	SPI_NBITS_DUAL		0x02 /* 2bits transfer */
+ #define	SPI_NBITS_QUAD		0x04 /* 4bits transfer */
 -- 
-2.29.2
+2.37.1
 
