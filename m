@@ -2,82 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 844EFC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31973C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239287AbiHRJ4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 05:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
+        id S240966AbiHRJ7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 05:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235275AbiHRJ4s (ORCPT
+        with ESMTP id S235275AbiHRJ7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 05:56:48 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44874B14CA;
-        Thu, 18 Aug 2022 02:56:47 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id cr9so703657qtb.13;
-        Thu, 18 Aug 2022 02:56:47 -0700 (PDT)
+        Thu, 18 Aug 2022 05:59:07 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B568275D1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 02:59:05 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id v10so1213015ljh.9
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 02:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=C3ba4yHheW5zprHK4xaSfKb4nNr+PJySvSlyPUInypY=;
+        b=kKZwm2Y1bNsACwoLDGfj3xeWLK7EuwFNINfyozQ1DrHMRpH1GeM4VlbaxXJhHHzNlm
+         99SvZmwdmkcRa/abxR9xs3bTumXoffxjWPAWwWxWt5ucgJEdvSLguQjTvcQELn7JjSSz
+         lOyHuHZuW2RZAvURc5d/ZLxJJ5ug3xxGhwetoyOO6RTf/LID5OpyJUHufp2bMiC+pK7J
+         AKBZaYpbI4Fi1+o2IUUFKk26wiK8n2l4EHt1OWX6f+20xOrjEr0g9tGd+RQvFOL2GSXK
+         mHNzTtgCBy7u8bRUw5eloF4Xw6488NrwdAC6J1/xOP4Pl4gnNAze5V1DdhteA0cnj2Lz
+         kwsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=WblwjE0ozAGvkxyVKtKYWCJ3rNKd/nqrE/2ZX5oPs6Q=;
-        b=AfXxExT0chVP8BHh/7d+QRXcBf++mkGGhnuDQajIlPRRCqYmiGH20DHbrNLCV9Apmv
-         P4E71s1450IwVb1CdSSx8VNVrys+uhSvIa3ZmMxYOcCq9ONnuwzO7X3RvYB/u1/D8ucU
-         3ItqYqS5gNWpckxJ9QafLZhjk89j2JwdXldwFiE1x+TbD1Qpp3uCsSQyIgggj61AzkYB
-         eDjKLV7MVpevD/KUN6QkRmQkUC2pyQlO6EAoQu0aazZLpQCqIRLGkL9fWVeQup9qUNd3
-         FXoZsiZRidK/DKQMxueBWvdL3yjMDoqA1i1+MY215OY0GtGDfUHCJtVeaRmz/Ba3mTvB
-         kbKA==
-X-Gm-Message-State: ACgBeo2vSAxOZGDVRHzz3MRgKAE0MOZp4P9Bh0AJ/j2GIncU6UaY0Ia+
-        Kr5IFPLPyrmjgJ838fumcn7tN28Vo2vi5g==
-X-Google-Smtp-Source: AA6agR54RKvtxVEGMkLlhQoqZrMDJF+g5j7lf3t8qvKwh82oL/gQxgmhgNBaYqngoZhnJDrzccBU1w==
-X-Received: by 2002:a05:622a:1454:b0:344:5909:ba42 with SMTP id v20-20020a05622a145400b003445909ba42mr1826117qtx.634.1660816606274;
-        Thu, 18 Aug 2022 02:56:46 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05620a22c400b006b5cc25535fsm1136253qki.99.2022.08.18.02.56.45
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=C3ba4yHheW5zprHK4xaSfKb4nNr+PJySvSlyPUInypY=;
+        b=vjwLa5WXoEukdcaYGgjlY1G3JOFI6TJLg0A2lSDTUxYapnXO7BwUwcRAw5MeW4MawA
+         SIVUMNjYBud2iN3x09g/GlhaYNYJvk+aaR9H4uQZumYMSp2evOap3EoneC2A3ATP4lZm
+         ZdruZxanlIm+KyuRUCsB2IgBeorP+QFEyCk5HADy0+m6JzPp6qXBw+FvWaaqZoJaJCRO
+         Tm6aFVigoSlkqVDLrWW+4WVcHN/HBZgKSIFZ4cc+djtpk+Ba6T8jKwJTmXHVaBgwT4J1
+         Cbcviv5zk0MRBROTPeyRr5uVjdVMFEDodmfLkmr9oBYQhoBRU+lc+nI9uQk1D3fvsmMt
+         lUVA==
+X-Gm-Message-State: ACgBeo1jZ0WNGAMDGl8+MU8yoGUiJ/c8eZ2isBU4rZxGYnCVeYqa7ufE
+        i75BytL7QMy4ozYMJsXKdy1cQg==
+X-Google-Smtp-Source: AA6agR54B8Wq5kprhSzFLvDsiJX1bUEd1bBo1eYAKq+/zJE3QVnHWvcS0sgkw3289Rm0f8B/Wfr2Ig==
+X-Received: by 2002:a2e:be9e:0:b0:261:b228:ed8b with SMTP id a30-20020a2ebe9e000000b00261b228ed8bmr601633ljr.226.1660816743805;
+        Thu, 18 Aug 2022 02:59:03 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id be32-20020a056512252000b0048a83ab2d32sm168965lfb.0.2022.08.18.02.59.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 02:56:45 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-32a17d3bba2so27105097b3.9;
-        Thu, 18 Aug 2022 02:56:45 -0700 (PDT)
-X-Received: by 2002:a81:1204:0:b0:322:7000:4ecb with SMTP id
- 4-20020a811204000000b0032270004ecbmr2030815yws.47.1660816605419; Thu, 18 Aug
- 2022 02:56:45 -0700 (PDT)
+        Thu, 18 Aug 2022 02:59:03 -0700 (PDT)
+Message-ID: <74156faf-492d-2e87-f32f-61d99131f17c@linaro.org>
+Date:   Thu, 18 Aug 2022 12:59:00 +0300
 MIME-Version: 1.0
-References: <20220726205858.1199-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220726205858.1199-1-wsa+renesas@sang-engineering.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 18 Aug 2022 11:56:32 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVkp6CGKzZkf_rx9OKwKbkecsyqEcMHgBhaVNFWhnCbgg@mail.gmail.com>
-Message-ID: <CAMuHMdVkp6CGKzZkf_rx9OKwKbkecsyqEcMHgBhaVNFWhnCbgg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: timer: renesas,tmu: Add r8a779f0 support
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH v2 1/6] Documentation: DT: Add entry for CDX
+ controller
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Nipun Gupta <nipun.gupta@amd.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, eric.auger@redhat.com,
+        alex.williamson@redhat.com, cohuck@redhat.com,
+        puneet.gupta@amd.com, song.bao.hua@hisilicon.com,
+        mchehab+huawei@kernel.org, maz@kernel.org, f.fainelli@gmail.com,
+        jeffrey.l.hugo@gmail.com, saravanak@google.com,
+        Michael.Srba@seznam.cz, mani@kernel.org, yishaih@nvidia.com,
+        jgg@ziepe.ca, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, kvm@vger.kernel.org
+Cc:     okaya@kernel.org, harpreet.anand@amd.com, nikhil.agarwal@amd.com,
+        michal.simek@amd.com, git@amd.com
+References: <20220803122655.100254-1-nipun.gupta@amd.com>
+ <20220817150542.483291-1-nipun.gupta@amd.com>
+ <20220817150542.483291-2-nipun.gupta@amd.com>
+ <93f080cd-e586-112f-bac8-fa2a7f69efb3@linaro.org>
+In-Reply-To: <93f080cd-e586-112f-bac8-fa2a7f69efb3@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 10:59 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+On 18/08/2022 12:54, Krzysztof Kozlowski wrote:
+>> +    gic@e2000000 {
+>> +        compatible = "arm,gic-v3";
+>> +        interrupt-controller;
+>> +        ...
+>> +        its: gic-its@e2040000 {
+>> +            compatible = "arm,gic-v3-its";
+>> +            msi-controller;
+>> +            ...
+>> +        }
+>> +    };
+>> +
+>> +    cdxbus: cdxbus@@4000000 {
+> 
+> Node names should be generic, so "cdx"
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Eh, too fast typing, obviously the other part of the name... node names
+should be generic, so just "bus".
 
-Gr{oetje,eeting}s,
+> 
+> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
+> 
+> Drop the label.
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
