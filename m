@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C7CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E99E4C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244039AbiHRIHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
+        id S244044AbiHRIHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238759AbiHRIH2 (ORCPT
+        with ESMTP id S243591AbiHRIH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 04:07:28 -0400
 Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C18FD6C122;
-        Thu, 18 Aug 2022 01:07:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D65426C765;
+        Thu, 18 Aug 2022 01:07:25 -0700 (PDT)
 Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27I86vaxE021081, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27I86vaxE021081
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27I86vMN2021079, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27I86vMN2021079
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
         Thu, 18 Aug 2022 16:06:57 +0800
 Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 18 Aug 2022 16:07:10 +0800
+ 15.1.2375.7; Thu, 18 Aug 2022 16:07:10 +0800
 Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
  (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Thu, 18 Aug
@@ -34,12 +34,10 @@ To:     <kuba@kernel.org>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
         <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net 1/2] r8152: fix the units of some registers for RTL8156A
-Date:   Thu, 18 Aug 2022 16:06:19 +0800
-Message-ID: <20220818080620.14538-393-nic_swsd@realtek.com>
+Subject: [PATCH net 0/2] r8152: fix flow control settings
+Date:   Thu, 18 Aug 2022 16:06:18 +0800
+Message-ID: <20220818080620.14538-392-nic_swsd@realtek.com>
 X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220818080620.14538-392-nic_swsd@realtek.com>
-References: <20220818080620.14538-392-nic_swsd@realtek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -57,50 +55,23 @@ X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
 X-KSE-Antivirus-Interceptor-Info: scan successful
 X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvMTggpFekyCAwNjowMDowMA==?=
 X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The units of PLA_RX_FIFO_FULL and PLA_RX_FIFO_EMPTY are 16 bytes.
+These patches fix the settings of RX FIFO about flow control.
 
-Fixes: 195aae321c82 ("r8152: support new chips")
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 17 ++---------------
- 1 file changed, 2 insertions(+), 15 deletions(-)
+Hayes Wang (2):
+  r8152: fix the units of some registers for RTL8156A
+  r8152: fix the RX FIFO settings when suspending
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 0f6efaabaa32..46c7954d2762 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -6431,21 +6431,8 @@ static void r8156_fc_parameter(struct r8152 *tp)
- 	u32 pause_on = tp->fc_pause_on ? tp->fc_pause_on : fc_pause_on_auto(tp);
- 	u32 pause_off = tp->fc_pause_off ? tp->fc_pause_off : fc_pause_off_auto(tp);
- 
--	switch (tp->version) {
--	case RTL_VER_10:
--	case RTL_VER_11:
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, pause_on / 8);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, pause_off / 8);
--		break;
--	case RTL_VER_12:
--	case RTL_VER_13:
--	case RTL_VER_15:
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, pause_on / 16);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, pause_off / 16);
--		break;
--	default:
--		break;
--	}
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, pause_on / 16);
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, pause_off / 16);
- }
- 
- static void rtl8156_change_mtu(struct r8152 *tp)
+ drivers/net/usb/r8152.c | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
+
 -- 
 2.34.3
 
