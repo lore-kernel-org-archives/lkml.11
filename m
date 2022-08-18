@@ -2,207 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D971C25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A86C25B08
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242743AbiHRCYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 22:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
+        id S239937AbiHRCYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 22:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233588AbiHRCYa (ORCPT
+        with ESMTP id S233588AbiHRCYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 22:24:30 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B3871BFD;
-        Wed, 17 Aug 2022 19:24:28 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M7TB61KXxzXdpZ;
-        Thu, 18 Aug 2022 10:20:14 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 10:24:26 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 10:24:25 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <rostedt@goodmis.org>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
-        <namhyung@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>
-CC:     <yangjihong1@huawei.com>
-Subject: [PATCH v4] perf/core: Fix reentry problem in perf_output_read_group
-Date:   Thu, 18 Aug 2022 10:21:21 +0800
-Message-ID: <20220818022121.116939-1-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+        Wed, 17 Aug 2022 22:24:50 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0AA171BD3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 19:24:49 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I1WfaI014129;
+        Thu, 18 Aug 2022 02:24:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id; s=qcppdkim1;
+ bh=5D69sy822CZwTCBimDMXWzfojWA04EG0IM9ZAqxhJZI=;
+ b=Fpf5QvJ6WVpHdd7eQPUJNBE3LjVSIQvfljVSQi8U7jqby65E/zqAgVrjDc4hom3dxz4b
+ XPy+S5fklu6nD17yJ76A7Q7cFC5hsGq6NV5dDgcRuB8gIIO2SE1k1Rm+5qH+H7kopOvv
+ UFvQe+T2aJeXS+DHJsRTWPvbYCSbGrnUd3NAuJRCyEq5u8fX3uyTAwscaHRjuPBaMyDS
+ Z1rwUuOpawVxbom08hEmwzBD/fgSJhKKwnYKZ3GaEKdF5NlgQlam0CiUTPLbEb+EACoz
+ yhoMfr/zB+fKExmWLog9Ny8dbRkVc+1SGXv10KBozXj0VpgoBdm3vKPB4Rq77dkhbtz1 Cg== 
+Received: from aptaippmta01.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j0w30bpv7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 02:24:33 +0000
+Received: from pps.filterd (APTAIPPMTA01.qualcomm.com [127.0.0.1])
+        by APTAIPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27I2OTrf026600;
+        Thu, 18 Aug 2022 02:24:29 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by APTAIPPMTA01.qualcomm.com (PPS) with ESMTPS id 3hxnbs38ut-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 18 Aug 2022 02:24:29 +0000
+Received: from APTAIPPMTA01.qualcomm.com (APTAIPPMTA01.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27I2OSb8026541;
+        Thu, 18 Aug 2022 02:24:28 GMT
+Received: from maow2-gv.ap.qualcomm.com (maow2-gv.qualcomm.com [10.232.193.133])
+        by APTAIPPMTA01.qualcomm.com (PPS) with ESMTP id 27I2OSfq026539;
+        Thu, 18 Aug 2022 02:24:28 +0000
+Received: by maow2-gv.ap.qualcomm.com (Postfix, from userid 399080)
+        id EF81321029A6; Thu, 18 Aug 2022 10:24:26 +0800 (CST)
+From:   Kassey Li <quic_yingangl@quicinc.com>
+To:     akpm@linux-foundation.org, vbabka@kernel.org
+Cc:     Kassey Li <quic_yingangl@quicinc.com>, minchan@kernel.org,
+        vbabka@suse.cz, iamjoonsoo.kim@lge.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH v9] mm/page_owner.c: add llseek for page_owner
+Date:   Thu, 18 Aug 2022 10:24:25 +0800
+Message-Id: <20220818022425.31056-1-quic_yingangl@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: -VeImGXq8WwH5karAXO-BVz0l_aZhZ1e
+X-Proofpoint-GUID: -VeImGXq8WwH5karAXO-BVz0l_aZhZ1e
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-17_17,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=772 clxscore=1015
+ malwarescore=0 bulkscore=0 adultscore=0 phishscore=0 impostorscore=0
+ spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208180007
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-perf_output_read_group may respond to IPI request of other cores and invoke
-__perf_install_in_context function. As a result, hwc configuration is modified.
-causing inconsistency and unexpected consequences.
+It is too slow to dump all the pages, in some usage we just want dump
+a given start pfn, for example: CMA range or a single page.
 
-Syzkaller has reported a problem with this scenario:
+To speed up and save time, this change allows specify start pfn
+by add llseek for page_onwer.
 
-Internal error: Oops - undefined instruction: 0 [#1] SMP
-Modules linked in:
-CPU: 1 PID: 15523 Comm: syz-executor.3 Not tainted 5.10.0 #6
-Hardware name: linux,dummy-virt (DT)
-pstate: 80400005 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
-pc : read_pmevcntrn+0x1e4/0x1ec arch/arm64/kernel/perf_event.c:423
-lr : read_pmevcntrn+0x1e4/0x1ec arch/arm64/kernel/perf_event.c:423
-sp : ffffa000174d6ee0
-x29: ffffa000174d6ee0 x28: ffffedbca6b17a40
-x27: ffffa000174d7310 x26: ffff4b3ec102e398
-x25: 00000000ffffffff x24: 00000000ffffffff
-x23: ffff4b3ed8afb000 x22: ffff4b3ed8afb160
-x21: ffff4b3ed8afb184 x20: ffffedbca46aa3e0
-x19: ffffedbca2a524bc x18: 0000000000000000
-x17: 0000000000000000 x16: 0000000000000000
-x15: 0000000020000100 x14: 0000000000000000
-x13: 0000000000000000 x12: ffff8967db15f63d
-x11: 1fffe967db15f63c x10: ffff8967db15f63c
-x9 : ffffedbca2a5273c x8 : ffff4b3ed8afb1e7
-x7 : 0000000000000001 x6 : ffff8967db15f63c
-x5 : ffff4b3f08b89400 x4 : 0000000000000000
-x3 : ffffedbca2a00000 x2 : ffffedbca4690000
-x1 : ffff4b3f08b89400 x0 : 0000000000000000
-Call trace:
- read_pmevcntrn+0x1e4/0x1ec arch/arm64/kernel/perf_event.c:423
- armv8pmu_read_evcntr arch/arm64/kernel/perf_event.c:467 [inline]
- armv8pmu_read_hw_counter arch/arm64/kernel/perf_event.c:475 [inline]
- armv8pmu_read_counter+0x10c/0x1f0 arch/arm64/kernel/perf_event.c:528
- armpmu_event_update+0x9c/0x1bc drivers/perf/arm_pmu.c:247
- armpmu_read+0x24/0x30 drivers/perf/arm_pmu.c:264
- perf_output_read_group+0x4cc/0x71c kernel/events/core.c:6806
- perf_output_read+0x78/0x1c4 kernel/events/core.c:6845
- perf_output_sample+0xafc/0x1000 kernel/events/core.c:6892
- __perf_event_output kernel/events/core.c:7273 [inline]
- perf_event_output_forward+0xd8/0x130 kernel/events/core.c:7287
- __perf_event_overflow+0xbc/0x20c kernel/events/core.c:8943
- perf_swevent_overflow kernel/events/core.c:9019 [inline]
- perf_swevent_event+0x274/0x2c0 kernel/events/core.c:9047
- do_perf_sw_event kernel/events/core.c:9160 [inline]
- ___perf_sw_event+0x150/0x1b4 kernel/events/core.c:9191
- __perf_sw_event+0x58/0x7c kernel/events/core.c:9203
- perf_sw_event include/linux/perf_event.h:1177 [inline]
- mm_account_fault mm/memory.c:4707 [inline]
- handle_mm_fault+0x364/0x3f0 mm/memory.c:4758
- __do_page_fault arch/arm64/mm/fault.c:438 [inline]
- do_page_fault+0x334/0x8f0 arch/arm64/mm/fault.c:537
- do_translation_fault+0x188/0x1e0 arch/arm64/mm/fault.c:619
- do_mem_abort+0x68/0x120 arch/arm64/mm/fault.c:743
- el1_abort+0xc0/0x150 arch/arm64/kernel/entry-common.c:119
- el1_sync_handler+0x118/0x150 arch/arm64/kernel/entry-common.c:202
- el1_sync+0x74/0x100 arch/arm64/kernel/entry.S:665
- __arch_clear_user+0x20/0xa0 arch/arm64/lib/clear_user.S:25
- read_iter_zero+0x90/0x16c drivers/char/mem.c:718
- call_read_iter include/linux/fs.h:1954 [inline]
- do_iter_readv_writev+0x394/0x414 fs/read_write.c:735
- do_iter_read+0x1b0/0x280 fs/read_write.c:798
- vfs_readv+0xf0/0x150 fs/read_write.c:918
- do_readv+0x108/0x270 fs/read_write.c:955
- __do_sys_readv fs/read_write.c:1046 [inline]
- __se_sys_readv fs/read_write.c:1043 [inline]
- __arm64_sys_readv+0x54/0x64 fs/read_write.c:1043
- __invoke_syscall arch/arm64/kernel/syscall.c:36 [inline]
- invoke_syscall arch/arm64/kernel/syscall.c:48 [inline]
- el0_svc_common.constprop.0+0xf4/0x414 arch/arm64/kernel/syscall.c:155
- do_el0_svc+0x50/0x11c arch/arm64/kernel/syscall.c:217
- el0_svc+0x20/0x30 arch/arm64/kernel/entry-common.c:353
- el0_sync_handler+0xe4/0x1e0 arch/arm64/kernel/entry-common.c:369
- el0_sync+0x148/0x180 arch/arm64/kernel/entry.S:683
-Code: 940c387b d53be813 17ffff9c 940c3878 (d53bebd3)
----[ end trace 6aab9f4b33ebf0aa ]---
-----------------
-Code disassembly (best guess):
-   0:	940c387b 	bl	0x30e1ec
-   4:	d53be813 	mrs	x19, pmevcntr0_el0
-   8:	17ffff9c 	b	0xfffffffffffffe78
-   c:	940c3878 	bl	0x30e1ec
-* 10:	d53bebd3 	mrs	x19, pmevcntr30_el0 <-- trapping instruction
-
-Interrupts are not disabled when perf_output_read_group reads PMU counter.
-In this case, IPI request may be received from other cores.
-As a result, PMU configuration is modified and an error occurs when
-reading PMU counter:
-
-                   CPU0                                         CPU1
-                                                    __se_sys_perf_event_open
-                                                      perf_install_in_context
-perf_output_read_group                                  smp_call_function_single
-  for_each_sibling_event(sub, leader) {                   generic_exec_single
-    if ((sub != event) &&                                   remote_function
-        (sub->state == PERF_EVENT_STATE_ACTIVE))                    |
-<enter IPI handler: __perf_install_in_context>   <----RAISE IPI-----+
-__perf_install_in_context
-  ctx_resched
-    event_sched_out
-      armpmu_del
-        ...
-        hwc->idx = -1; // event->hwc.idx is set to -1
-...
-<exit IPI>
-            sub->pmu->read(sub);
-              armpmu_read
-                armv8pmu_read_counter
-                  armv8pmu_read_hw_counter
-                    int idx = event->hw.idx; // idx = -1
-                    u64 val = armv8pmu_read_evcntr(idx);
-                      u32 counter = ARMV8_IDX_TO_COUNTER(idx); // invalid counter = 30
-                      read_pmevcntrn(counter) // undefined instruction
-
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Suggested-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Kassey Li <quic_yingangl@quicinc.com>
 ---
-Changes since v3:
-  - Modify commit message according to Peter's suggestion.
+ Documentation/mm/page_owner.rst |  5 +++++
+ mm/page_owner.c                 | 24 +++++++++++++++++++++---
+ 2 files changed, 26 insertions(+), 3 deletions(-)
 
-Changes since v2:
-  - Update commit message.
-
-Changes since v1:
-  - Adapt patch to mainline branch to solve compilation problem.
-
- kernel/events/core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 2621fd24ad26..752a9079a807 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6895,6 +6895,13 @@ static void perf_output_read_group(struct perf_output_handle *handle,
- 	u64 read_format = event->attr.read_format;
- 	u64 values[6];
- 	int n = 0;
-+	unsigned long flags;
+diff --git a/Documentation/mm/page_owner.rst b/Documentation/mm/page_owner.rst
+index f5c954afe97c..f18fd8907049 100644
+--- a/Documentation/mm/page_owner.rst
++++ b/Documentation/mm/page_owner.rst
+@@ -94,6 +94,11 @@ Usage
+ 	Page allocated via order XXX, ...
+ 	PFN XXX ...
+ 	// Detailed stack
++    By default, it will do full pfn dump, to start with a given pfn,
++    page_owner supports fseek.
 +
-+	/*
-+	 * Disabling interrupts avoids all counter scheduling
-+	 * (context switches, timer based rotation and IPIs).
-+	 */
-+	local_irq_save(flags);
++    FILE *fp = fopen("/sys/kernel/debug/page_owner", "r");
++    fseek(fp, pfn_start, SEEK_SET);
  
- 	values[n++] = 1 + leader->nr_siblings;
+    The ``page_owner_sort`` tool ignores ``PFN`` rows, puts the remaining rows
+    in buf, uses regexp to extract the page order value, counts the times
+diff --git a/mm/page_owner.c b/mm/page_owner.c
+index e4c6f3f1695b..25720d81bc26 100644
+--- a/mm/page_owner.c
++++ b/mm/page_owner.c
+@@ -497,8 +497,10 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 		return -EINVAL;
  
-@@ -6931,6 +6938,8 @@ static void perf_output_read_group(struct perf_output_handle *handle,
+ 	page = NULL;
+-	pfn = min_low_pfn + *ppos;
+-
++	if (*ppos == 0)
++		pfn = min_low_pfn;
++	else
++		pfn = *ppos;
+ 	/* Find a valid PFN or the start of a MAX_ORDER_NR_PAGES area */
+ 	while (!pfn_valid(pfn) && (pfn & (MAX_ORDER_NR_PAGES - 1)) != 0)
+ 		pfn++;
+@@ -561,7 +563,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 			continue;
  
- 		__output_copy(handle, values, n * sizeof(u64));
- 	}
-+
-+	local_irq_restore(flags);
+ 		/* Record the next PFN to read in the file offset */
+-		*ppos = (pfn - min_low_pfn) + 1;
++		*ppos = pfn + 1;
+ 
+ 		return print_page_owner(buf, count, pfn, page,
+ 				page_owner, handle);
+@@ -570,6 +572,21 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	return 0;
  }
  
- #define PERF_FORMAT_TOTAL_TIMES (PERF_FORMAT_TOTAL_TIME_ENABLED|\
++static loff_t lseek_page_owner(struct file *file, loff_t offset, int orig)
++{
++	switch (orig) {
++	case SEEK_SET:
++		file->f_pos = offset;
++		break;
++	case SEEK_CUR:
++		file->f_pos += offset;
++		break;
++	default:
++		return -EINVAL;
++	}
++	return file->f_pos;
++}
++
+ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
+ {
+ 	unsigned long pfn = zone->zone_start_pfn;
+@@ -660,6 +677,7 @@ static void init_early_allocated_pages(void)
+ 
+ static const struct file_operations proc_page_owner_operations = {
+ 	.read		= read_page_owner,
++	.llseek		= lseek_page_owner,
+ };
+ 
+ static int __init pageowner_init(void)
 -- 
-2.30.GIT
+2.17.1
 
