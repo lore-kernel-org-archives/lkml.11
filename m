@@ -2,118 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4346CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB91BC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243383AbiHREcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
+        id S242879AbiHREeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241247AbiHREcw (ORCPT
+        with ESMTP id S241247AbiHREec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:32:52 -0400
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2F6A3D47;
-        Wed, 17 Aug 2022 21:32:50 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B7756580B04;
-        Thu, 18 Aug 2022 00:32:49 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute3.internal (MEProxy); Thu, 18 Aug 2022 00:32:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        colorremedies.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660797169; x=
-        1660800769; bh=W2eJw7KGKlXQRQPp791lExmWC5wtIiq7rEevTDXit7U=; b=q
-        KPsDELaFWEZhbn1wGk1MlUp7ZAtpFeOVxzTL+flv1958SBLjYwRgSSDNSmm8tP1v
-        0qbhkXsJu//yksy3uRLzTZcgh0stFcleU++a1ctX8bWfU5yMgMvo27kY265V4ZgJ
-        GfKDSClkR39dTL9TDS5WdTTx4BhB/F7sCZQ0N6LyU0Ip6xRrq6cF22R20HbFiZo0
-        eiEyD0D+iBAxjZqMSiWg787QD7AjfZpIqVuptuJJ9LrwnTTOWHd98oU6Wxhq6jNb
-        Nz/syUmKvqja+sagCQpGWRN5rXpJXel6Tp3hN6JOHsHtvGPiaMevckRhxk92y668
-        x4BrPVAaFYTbmRoJ4gp9g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660797169; x=1660800769; bh=W2eJw7KGKlXQRQPp791lExmWC5wt
-        Iiq7rEevTDXit7U=; b=acl3ROum7Kf0ueXUdDeMApAC4WoAT6qkp4P4pmeKZYP5
-        CU4AJkpuPapFYFG4ZzCJpHc6TrbUcNmCBNM/ebWov9eaWaTJTKXv+7mude1G6Wz5
-        DCthDdml92AizUlnrnhaIt+wz6PvkaxpZaiYuvrvpSZ35azyyKzVgwDlxh/wJsYc
-        YJ5B1WkfgQ5iZcpBgmJJ7cWSxFUA4DF/1I4OL2+6mLI697hOb+eMH4lx7BgF/4zl
-        u/Dohd/E/ApSfssUn8v/+Ca+IrwG62jBOnF0cJc/3PEei7m7zGUlcSovUS+Ipz7v
-        5VeUQELYyesDqAIz4tF7tt1TSFHYYL/MbP6J0RdgxQ==
-X-ME-Sender: <xms:8cD9Yj3Wt3EMUeBgi6ugycuhgPmhFS_DO3nVTeQ_IrreRY9aj6EAfA>
-    <xme:8cD9YiEi80OkdTP-iKcPouDxB-3c2TURsfPvuIK0P6Sgxkb-9ZNGjaXRAqbbg_R0h
-    O4Emdr12DZ1SZJsM7U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehjedgkeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    goufhushhpvggtthffohhmrghinhculdegledmnecujfgurhepofgfggfkjghffffhvfev
-    ufgtsehttdertderredtnecuhfhrohhmpedfvehhrhhishcuofhurhhphhihfdcuoehlih
-    hsthhssegtohhlohhrrhgvmhgvughivghsrdgtohhmqeenucggtffrrghtthgvrhhnpeef
-    heeliedugeeuleetffeuheegkeetgfdtveevudffgfejvdegveeljefhvdefhfenucffoh
-    hmrghinhepghhoohhglhgvrdgtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
-    rghmpehmrghilhhfrhhomheplhhishhtshestgholhhorhhrvghmvgguihgvshdrtghomh
-X-ME-Proxy: <xmx:8cD9Yj6G-2poML8ZfB-tNtMbwwimq7PyzUV5L5a73Vo4l6AVkt3Chw>
-    <xmx:8cD9Yo1Iv1E9uY9gnjzlNG0fa7VKI0oYy8W82uLARnUVtQsTIpZF-Q>
-    <xmx:8cD9YmFW4A2JpKl5h-b4HTxpujH57GWZ3NLvNL_-x-rQ_9irz6ymWw>
-    <xmx:8cD9Yp12XfAg2KmeZp9bGb7QFEguYNQsYT4sumTAiQTDHzR9Xx2OKg>
-Feedback-ID: i06494636:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 3B2BE1700082; Thu, 18 Aug 2022 00:32:49 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <f74b484c-4258-41db-b3d4-a585197f73b7@www.fastmail.com>
-In-Reply-To: <5426d0f9-6539-477d-8feb-2b49136b960f@www.fastmail.com>
-References: <dcd8beea-d2d9-e692-6e5d-c96b2d29dfd1@suse.com>
- <2b8a38fa-f15f-45e8-8caa-61c5f8cd52de@www.fastmail.com>
- <CAFj5m9+6Vj3NdSg_n3nw1icscY1qr9f9SOvkWYyqpEtFBb_-1g@mail.gmail.com>
- <b236ca6e-2e69-4faf-9c95-642339d04543@www.fastmail.com>
- <Yv0A6UhioH3rbi0E@T590>
- <f633c476-bdc9-40e2-a93f-29601979f833@www.fastmail.com>
- <Yv0KmT8UYos2/4SX@T590>
- <35f0d608-7448-4276-8922-19a23d8f9049@www.fastmail.com>
- <Yv2P0zyoVvz35w/m@T590>
- <568465de-5c3b-4d94-a74b-5b83ce2f942f@www.fastmail.com>
- <Yv2w+Tuhw1RAoXI5@T590>
- <9f2f608a-cd5f-4736-9e6d-07ccc2eca12c@www.fastmail.com>
- <a817431f-276f-4aab-9ff8-c3e397494339@www.fastmail.com>
- <5426d0f9-6539-477d-8feb-2b49136b960f@www.fastmail.com>
-Date:   Thu, 18 Aug 2022 00:32:28 -0400
-From:   "Chris Murphy" <lists@colorremedies.com>
-To:     "Ming Lei" <ming.lei@redhat.com>
-Cc:     "Nikolay Borisov" <nborisov@suse.com>,
-        "Jens Axboe" <axboe@kernel.dk>, "Jan Kara" <jack@suse.cz>,
-        "Paolo Valente" <paolo.valente@linaro.org>,
-        "Btrfs BTRFS" <linux-btrfs@vger.kernel.org>,
-        Linux-RAID <linux-raid@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Josef Bacik" <josef@toxicpanda.com>
-Subject: Re: stalling IO regression since linux 5.12, through 5.18
-Content-Type: text/plain
+        Thu, 18 Aug 2022 00:34:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C55558E9
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 21:34:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660797270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TTFivvm9yHWKcVUkneavFwNxYuu+2L1pR/LF0ZMw4pU=;
+        b=ZD6T9/If3ts/7NjFEKI8O36CiSuvqNQjKDMNmC/IefFnhpI1I7L+PulivbErvj8ID6wrEm
+        62jUQPBAH7ACKu2hx+f1qnTTjYlR2XWzwdjfU2kW6W49XwGYA+o/jImQQNuCLZRTHPnY2m
+        XtZAumlg6OrohSr7KSP+GtzIsRxyP/c=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-511-I96gFKEeO4WAn07tg4OD8A-1; Thu, 18 Aug 2022 00:34:28 -0400
+X-MC-Unique: I96gFKEeO4WAn07tg4OD8A-1
+Received: by mail-pg1-f197.google.com with SMTP id z32-20020a631920000000b0042903cb8dfcso286608pgl.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 21:34:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=TTFivvm9yHWKcVUkneavFwNxYuu+2L1pR/LF0ZMw4pU=;
+        b=v8NlWG8h4YmGyZWnw7thKpyKShBb6+VohdzuHW3nfIgC41Y4tW4k/iTyt1lIMPnz87
+         NGVHFgs3o7QwbBGZbd1DKopmVCtIo5SlcrUSq+38IEKP1lM+nKxRe3GkgZFnVdoskGI7
+         NGH5XfsIz8/35MG24Zx2VDc+c6Qh+lst3HFqfHTUYB55eTYT5wT/5OY6CJgbhyl2zO2e
+         Ti4DVUHxFYhjHLCIp0LmGKA2162cf/ZiSU/wwAzI53LaSG561VfaBc82/e758tmZPpkW
+         EpkvAke1nK89BPEeH/GERbjPUdwbis6pbGa0eBKovEk5oj0I+4zebL4917YlPSK6sdtu
+         Czpw==
+X-Gm-Message-State: ACgBeo0P6mkA0VU0aV8liUjpG9uEgQ/8cEN0eJcDWp3RjYZGwk9qOfnE
+        ff5xtUf95dBcfQmc1GCMjsEPB8+Dx+fyVCPJ+Jx/ToUH58LWwO3Z9+JHxBEqB1xft4zglQZ42E7
+        1MQ/LSukA8V2H85rJ7xdNPx/k
+X-Received: by 2002:a63:8848:0:b0:41c:45da:2db9 with SMTP id l69-20020a638848000000b0041c45da2db9mr1153081pgd.206.1660797267587;
+        Wed, 17 Aug 2022 21:34:27 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7J3KtemYhLGoQErkrW2ImQSRRyS97OCrKf8dXjnhmz4oWC74Pc+PzZXQUPK8eeQKBWL8Ujlw==
+X-Received: by 2002:a63:8848:0:b0:41c:45da:2db9 with SMTP id l69-20020a638848000000b0041c45da2db9mr1153060pgd.206.1660797267343;
+        Wed, 17 Aug 2022 21:34:27 -0700 (PDT)
+Received: from [10.72.13.223] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id m11-20020a170902db0b00b001637529493esm299625plx.66.2022.08.17.21.34.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 21:34:26 -0700 (PDT)
+Message-ID: <2747ac1f-390e-99f9-b24e-f179af79a9da@redhat.com>
+Date:   Thu, 18 Aug 2022 12:34:19 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Bobby Eshleman <bobbyeshleman@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
+ <20220816123701-mutt-send-email-mst@kernel.org>
+ <20220816110717.5422e976@kernel.org> <YvtAktdB09tM0Ykr@bullseye>
+ <20220816160755.7eb11d2e@kernel.org> <YvtVN195TS1xpEN7@bullseye>
+ <20220816181528.5128bc06@kernel.org> <Yvt2f5i5R9NNNYUL@bullseye>
+ <20220817131437-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220817131437-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-On Thu, Aug 18, 2022, at 12:27 AM, Chris Murphy wrote:
-> On Thu, Aug 18, 2022, at 12:18 AM, Chris Murphy wrote:
->> On Thu, Aug 18, 2022, at 12:12 AM, Chris Murphy wrote:
->>> On Wed, Aug 17, 2022, at 11:41 PM, Ming Lei wrote:
->>>
->>>> OK, can you post the blk-mq debugfs log after you trigger it on v5.17?
+在 2022/8/18 01:20, Michael S. Tsirkin 写道:
+> On Tue, Aug 16, 2022 at 10:50:55AM +0000, Bobby Eshleman wrote:
+>>>>> Eh, I was hoping it was a side channel of an existing virtio_net
+>>>>> which is not the case. Given the zero-config requirement IDK if
+>>>>> we'll be able to fit this into netdev semantics :(
+>>>> It's certainly possible that it may not fit :/ I feel that it partially
+>>>> depends on what we mean by zero-config. Is it "no config required to
+>>>> have a working socket" or is it "no config required, but also no
+>>>> tuning/policy/etc... supported"?
+>>> The value of tuning vs confusion of a strange netdev floating around
+>>> in the system is hard to estimate upfront.
+>> I think "a strange netdev floating around" is a total
+>> mischaracterization... vsock is a networking device and it supports
+>> vsock networks. Sure, it is a virtual device and the routing is done in
+>> host software, but the same is true for virtio-net and VM-to-VM vlan.
+>>
+>> This patch actually uses netdev for its intended purpose: to support and
+>> manage the transmission of packets via a network device to a network.
+>>
+>> Furthermore, it actually prepares vsock to eliminate a "strange" use of
+>> a netdev. The netdev in vsockmon isn't even used to transmit
+>> packets, it's "floating around" for no other reason than it is needed to
+>> support packet capture, which vsock couldn't support because it didn't
+>> have a netdev.
+>>
+>> Something smells when we are required to build workaround kernel modules
+>> that use netdev for ciphoning packets off to userspace, when we could
+>> instead be using netdev for its intended purpose and get the same and
+>> more benefit.
+> So what happens when userspace inevitably attempts to bind a raw
+> packet socket to this device? Assign it an IP? Set up some firewall
+> rules?
 >
-> Same boot, 3rd log. But the load is above 300 so I kinda need to sysrq+b soon.
+> These things all need to be addressed before merging since they affect UAPI.
+
+
+It's possible if
+
+1) extend virtio-net to have vsock queues
+
+2) present vsock device on top of virtio-net via e.g auxiliary bus
+
+Then raw socket still work at ethernet level while vsock works too.
+
+The value is to share codes between the two type of devices (queues).
+
+Thanks
+
+
 >
-> https://drive.google.com/file/d/1375H558kqPTdng439rvG6LuXXWPXLToo/view?usp=sharing
+>>> The nice thing about using a built-in fq with no user visible knobs is
+>>> that there's no extra uAPI. We can always rip it out and replace later.
+>>> And it shouldn't be controversial, making the path to upstream smoother.
+>> The issue is that after pulling in fq for one kind of flow management,
+>> then as users observe other flow issues, we will need to re-implement
+>> pfifo, and then TBF, and then we need to build an interface to let users
+>> select one, and to choose queue sizes... and then after awhile we've
+>> needlessly re-implemented huge chunks of the tc system.
+>>
+>> I don't see any good reason to restrict vsock users to using suboptimal
+>> and rigid queuing.
+>>
+>> Thanks.
 
-sysfs sdc
-
-https://drive.google.com/file/d/1DLZHX8Mg_d5w-XSsAYYK1NDzn1pA_QPm/view?usp=sharing
-
--- 
-Chris Murphy
