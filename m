@@ -2,111 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFB4C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 820CFC28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243575AbiHRJDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 05:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S243654AbiHRJDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 05:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230514AbiHRJDI (ORCPT
+        with ESMTP id S231552AbiHRJDo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 05:03:08 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB6FB07E5;
-        Thu, 18 Aug 2022 02:03:07 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-f2a4c51c45so1074518fac.9;
-        Thu, 18 Aug 2022 02:03:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ZmOw2Ye6D3rDsXvEq+Hj2UxFw02iY07PBYlER+Z5IJs=;
-        b=Q3Fre+R1RjpfZX4kxBErGHtKC6H8E2ckTe1z2CBeIKwJZL3S5BsLtiQPbQtN3RDCS4
-         TsvoqB23mlWY6TOlC/ypJChNVQI/GcbJ2ejwD7rHYUb7jgZREbfFHHyd2by9RJ3HQwJV
-         bBCL+/0wBSFROazXYBbb/JHVI4cpF9DGH3AcgMEOlyV4cYFtHuLGcPdCzLnmcerwWfxv
-         +AavissL6J8FWnRPFOQ1x5Jb2xCA6S8T5kL+P4p1tt2UtiMsNOd9VNl/2soFZ6hkJpAO
-         mJWvoHpLItsfSX+2ygcAEWHw0t48zsQn4J+zXtgIql3+nrrVMwWCznzGx/zn9B4kUsd1
-         b8ww==
-X-Gm-Message-State: ACgBeo2/oqlHcHSwY2BhG8/5Z0x7RKijJBYPQofDag3AiVTJJQeW89/c
-        giDKD3yzrlZa4p5pgcIZhjFZ5g5neDwvtQ==
-X-Google-Smtp-Source: AA6agR7snnj50rO52+s+YlU9cl70Q6phrgmPr4knQPg5NNXja5M/hr3ABAgrLrkFzslQaNGliwqm3g==
-X-Received: by 2002:a05:6870:5a9:b0:11c:43b:5810 with SMTP id m41-20020a05687005a900b0011c043b5810mr3774158oap.159.1660813386760;
-        Thu, 18 Aug 2022 02:03:06 -0700 (PDT)
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com. [209.85.210.50])
-        by smtp.gmail.com with ESMTPSA id el3-20020a056870f68300b00101bc3380a5sm283490oab.12.2022.08.18.02.03.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 02:03:06 -0700 (PDT)
-Received: by mail-ot1-f50.google.com with SMTP id v12-20020a9d7d0c000000b00638e210c995so770987otn.13;
-        Thu, 18 Aug 2022 02:03:06 -0700 (PDT)
-X-Received: by 2002:a81:f47:0:b0:31f:434b:5ee with SMTP id 68-20020a810f47000000b0031f434b05eemr1877711ywp.383.1660812973568;
- Thu, 18 Aug 2022 01:56:13 -0700 (PDT)
+        Thu, 18 Aug 2022 05:03:44 -0400
+Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB8D31EF5;
+        Thu, 18 Aug 2022 02:03:43 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id C6B044359E;
+        Thu, 18 Aug 2022 09:03:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        in-reply-to:content-disposition:content-type:content-type
+        :mime-version:references:message-id:subject:subject:from:from
+        :date:date:received:received:received:received; s=mta-01; t=
+        1660813419; x=1662627820; bh=EvJRcBqtaatj5e3YDV8BwcK+UfpGMNa+hDM
+        f9JFpMj8=; b=Gfki9RlVP2inj/ynvwWAxPAlqN8LiWO4xevQ06KrZ9TjQ5MAn3v
+        8foez+g1uiDb3c/jek0v/aLzo9pRPhCE+luVB6wtbbfKmoo8ri3Kr4awOYLFMoHe
+        fKeJtaNFl64+jzEv/Rbuk3BM1p6h4Et8O/owtoXcXig58J/BGwPrfp3I=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 6Ze4dWDVFlB7; Thu, 18 Aug 2022 12:03:39 +0300 (MSK)
+Received: from T-EXCH-02.corp.yadro.com (t-exch-02.corp.yadro.com [172.17.10.102])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id 551D843592;
+        Thu, 18 Aug 2022 12:03:39 +0300 (MSK)
+Received: from T-EXCH-09.corp.yadro.com (172.17.11.59) by
+ T-EXCH-02.corp.yadro.com (172.17.10.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.669.32; Thu, 18 Aug 2022 12:03:39 +0300
+Received: from yadro.com (10.178.119.167) by T-EXCH-09.corp.yadro.com
+ (172.17.11.59) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.9; Thu, 18 Aug
+ 2022 12:03:38 +0300
+Date:   Thu, 18 Aug 2022 12:03:37 +0300
+From:   Konstantin Shelekhin <k.shelekhin@yadro.com>
+To:     Kees Cook <keescook@chromium.org>
+CC:     <ojeda@kernel.org>, <boqun.feng@gmail.com>,
+        <gregkh@linuxfoundation.org>, <jarkko@kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <patches@lists.linux.dev>, <rust-for-linux@vger.kernel.org>,
+        <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v9 01/27] kallsyms: use `sizeof` instead of hardcoded size
+Message-ID: <Yv4AaeUToxSJZK/v@yadro.com>
+References: <20220805154231.31257-2-ojeda@kernel.org>
+ <Yu2cYShT1h8gquW8@yadro.com>
+ <202208171235.52D14C2A@keescook>
 MIME-Version: 1.0
-References: <20220801214718.16943-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220801214718.16943-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220801214718.16943-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 18 Aug 2022 10:56:01 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXKnve1-KE+GF5YVe3k8w0oQA96P9VAfB9XxVMbuKiN7g@mail.gmail.com>
-Message-ID: <CAMuHMdXKnve1-KE+GF5YVe3k8w0oQA96P9VAfB9XxVMbuKiN7g@mail.gmail.com>
-Subject: Re: [PATCH 1/4] media: dt-bindings: media: Document RZ/G2L CSI-2 block
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <202208171235.52D14C2A@keescook>
+X-Originating-IP: [10.178.119.167]
+X-ClientProxiedBy: T-EXCH-02.corp.yadro.com (172.17.10.102) To
+ T-EXCH-09.corp.yadro.com (172.17.11.59)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
+On Wed, Aug 17, 2022 at 12:36:33PM -0700, Kees Cook wrote:
+> On Sat, Aug 06, 2022 at 01:40:33AM +0300, Konstantin Shelekhin wrote:
+> > > diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> > > index f18e6dfc68c5..52f5488c61bc 100644
+> > > --- a/scripts/kallsyms.c
+> > > +++ b/scripts/kallsyms.c
+> > > @@ -206,7 +206,7 @@ static struct sym_entry *read_symbol(FILE *in)
+> > >
+> > >     rc = fscanf(in, "%llx %c %499s\n", &addr, &type, name);
+> > >     if (rc != 3) {
+> > > -           if (rc != EOF && fgets(name, 500, in) == NULL)
+> > > +           if (rc != EOF && fgets(name, sizeof(name), in) == NULL)
+> > >                     fprintf(stderr, "Read error or end of file.\n");
+> > >             return NULL;
+> > >     }
+> >
+> > Might be another nit, but IMO it's better to use ARRAY_SIZE() here.
+> 
+> I'm not sure I see a benefit for char arrays. It'll produce the same
+> result, and the tradition for string functions is to use sizeof().
+> *shrug*
 
-On Mon, Aug 1, 2022 at 11:47 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document the CSI-2 block which is part of CRU found in Renesas
-> RZ/G2L SoC.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> RFC v2 -> v1
-> * Fixed review comments pointed by Rob and Jacopo.
+ARRAY_SIZE() (though not this one) can catch this:
 
-Thanks for the update!
+  - char array[16];
+  + char *array;
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/renesas,rzg2l-csi2.yaml
-> @@ -0,0 +1,149 @@
-
-> +  resets:
-> +    items:
-> +      - description: CRU_CMN_RSTB reset terminal
-> +
-> +  reset-names:
-> +    const: cmn-rstb
-
-While it doesn't hurt to always have reset-names, you may want to drop
-it, as there is only a single reset.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Saves me some.
