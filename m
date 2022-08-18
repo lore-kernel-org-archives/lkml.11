@@ -2,174 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94338C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F13C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245551AbiHRP30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
+        id S1344357AbiHRP3d (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 11:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344357AbiHRP3V (ORCPT
+        with ESMTP id S1343766AbiHRP3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:29:21 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DAA2DEC
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:29:20 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id pm17so2019429pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:29:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=1Eoyvkcq9AAxY99icUW84Rt92U/5ub05QuVo7keBPxs=;
-        b=n1W6kKUu2A7eMT68Y4o3rn50CZAJjXpLXiQrDalqIBg62jFCqTsoCA2LDMNlxznuvY
-         7Yv1lwg1Pg5C2O1nBr/rjNEJ3pp08M9sZvhKQHRuPgOg32a9wcHym1XDI1P2CxUo5oRv
-         ox+r8P85wAvmxDVTRmE69blQCOJpI6U5LKo2c=
+        Thu, 18 Aug 2022 11:29:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E804E8286C
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:29:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660836567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BsS/ws8PW+id0ON/BYeR+QEPGH6otJZmVRxUjUdHJZw=;
+        b=hPvQgm2Qv/A04sDb7q9i/kXeoIsTzXSiFF33izE22pTvYN2/Q5jLu4MX+ztI8qBv2dlZG/
+        NvGjNLVcRvuqJxbUakSmp3nPNj20CYp/6whDKHRc7tQp5gqI+RBNXAdLOJ0OJnwjrw8CWI
+        iE2OQBKb82xgNpOvJtDPd4TJw3Yb8yA=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-518-Yuz73AguP8mKR3-lwBhvag-1; Thu, 18 Aug 2022 11:29:26 -0400
+X-MC-Unique: Yuz73AguP8mKR3-lwBhvag-1
+Received: by mail-ej1-f70.google.com with SMTP id hr32-20020a1709073fa000b00730a39f36ddso798969ejc.5
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:29:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=1Eoyvkcq9AAxY99icUW84Rt92U/5ub05QuVo7keBPxs=;
-        b=DB8zq9ZcHyTNzv/hF17gia4ldvfx/c+hqXMsjZmZNa62O1P5lOjHvFT9d6EXaZCJtF
-         ZF11kGZXY3d7youlIWUQPwBnVCpjn8wf/XaxmY5jNQE08gTuHtw1iNpL3J5B3INrBdqg
-         WK65aSKHrrK0Lsztj1OH/8nTREnz5jkam0NxPNiZNE9YlLcuFyfibvnaaX93sM9FZNI6
-         VoplVVaBjIymMlI4F1DryUKD7aCD9+lFCv8IQwsWosrcUFO952pzRyydNDidPqza5w+m
-         Kn3WZ7ubbKuFapR1ZmKJhS18H7nr4w+VsmKYMJDgynm3Ha5Ovm4ZsKp7UZ5IkQ7G1WB0
-         VPzA==
-X-Gm-Message-State: ACgBeo26K3rcsL4jZKMv7cN2ssq8So/c0KQDdZv8z+neH21LknORVSTH
-        7mE6nk2gGC4QDgUiFGn6HKOwow==
-X-Google-Smtp-Source: AA6agR51XZUuKM9rBU7FLOtPuOpvhlht6MYLcClHV+ieYV7gldBty9sNBZUdTiVtZPHV1c5AvLZwwA==
-X-Received: by 2002:a17:902:e947:b0:170:d739:8cbe with SMTP id b7-20020a170902e94700b00170d7398cbemr3097176pll.141.1660836559944;
-        Thu, 18 Aug 2022 08:29:19 -0700 (PDT)
-Received: from evgreen-glaptop.lan ([98.45.66.167])
-        by smtp.gmail.com with ESMTPSA id m11-20020a17090a7f8b00b001f89383d587sm1613494pjl.56.2022.08.18.08.29.18
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=BsS/ws8PW+id0ON/BYeR+QEPGH6otJZmVRxUjUdHJZw=;
+        b=kzcOUDUCfEUssas+r1kZgCIErU5JZEv5p+MrAV93eWTqdXvXLSA0MVXELk62ao6eCl
+         v/IKU9IfmCNV6xRDQ3AZOMUIaQB60H8GaFUqC1WFdtHn6MTFK9wuAV5GtT/bbs+Ij4Sv
+         Kxkjx3m47WnXq5YCxKisnp5kqeixOhCx6cLR9LaUpXnuwXLBo9M/IhcVwGoXbl4x9Fyj
+         7OZpNSCs4CMuO155DMOFxPHnJDPe1S5LUM46FglpMjKIoVFiQAnrGGHZfzoVcA160kXg
+         E1DPg6L+rTkmmzYv+fKp/W1YgfqMkBz1TL1ibq9CIRTlQsP0NaoSiHAPbZ1+tZfr65nt
+         f2Sw==
+X-Gm-Message-State: ACgBeo26KeICEaea78feuHdlBZge0j9vmLYagjvfjqPMZtODvRkqUk6o
+        ji3FKOrL0RkfMvCKXourNpusY2LKIiZaYa+giWAXMjKsCwItetigq6BvwAjCCg9+luGsLCCgucb
+        IWL6rHCdzTXJd+q49G7Dj8qxVVViaC8hH/J3ko+4fmoBNDdAGGPRp0jcpaGpK45eaQw8WPfn/xF
+        mW
+X-Received: by 2002:a17:906:8cb0:b0:739:4c35:75d8 with SMTP id qr48-20020a1709068cb000b007394c3575d8mr2143933ejc.711.1660836565389;
+        Thu, 18 Aug 2022 08:29:25 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6ASJ7PrAhP1AxtzslI2uK+cdyhUoC0lq1YKdkkov99E4p7dL/Ue1WdJx9EeNbvpu3Z5stuxQ==
+X-Received: by 2002:a17:906:8cb0:b0:739:4c35:75d8 with SMTP id qr48-20020a1709068cb000b007394c3575d8mr2143910ejc.711.1660836565158;
+        Thu, 18 Aug 2022 08:29:25 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id e9-20020a056402330900b0043af8007e7fsm1355944eda.3.2022.08.18.08.29.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 08:29:19 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     Prashant Malani <pmalani@chromium.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Rajat Jain <rajatja@chromium.org>,
-        Evan Green <evgreen@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] platform/chrome: cros_ec: Expose suspend_timeout_ms in debugfs
-Date:   Thu, 18 Aug 2022 08:29:09 -0700
-Message-Id: <20220818082827.v2.1.Idd188ff3f9caddebc17ac357a13005f93333c21f@changeid>
-X-Mailer: git-send-email 2.31.0
+        Thu, 18 Aug 2022 08:29:24 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 03/26] x86/hyperv: Update 'struct
+ hv_enlightened_vmcs' definition
+In-Reply-To: <Yv5ZFgztDHzzIQJ+@google.com>
+References: <20220802160756.339464-1-vkuznets@redhat.com>
+ <20220802160756.339464-4-vkuznets@redhat.com>
+ <Yv5ZFgztDHzzIQJ+@google.com>
+Date:   Thu, 18 Aug 2022 17:29:23 +0200
+Message-ID: <875yiptvsc.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In modern Chromebooks, the embedded controller has a mechanism where
-it will watch a hardware-controlled line that toggles in suspend, and
-wake the system up if an expected sleep transition didn't occur. This
-can be very useful for detecting power management issues where the
-system appears to suspend, but doesn't actually reach its lowest
-expected power states.
+Sean Christopherson <seanjc@google.com> writes:
 
-Sometimes it's useful in debug and test scenarios to be able to control
-the duration of that timeout, or even disable the EC timeout mechanism
-altogether. Add a debugfs control to set the timeout to values other
-than the EC-defined default, for more convenient debug and
-development iteration.
+> On Tue, Aug 02, 2022, Vitaly Kuznetsov wrote:
+>> Updated Hyper-V Enlightened VMCS specification lists several new
+>> fields for the following features:
+>> 
+>> - PerfGlobalCtrl
+>> - EnclsExitingBitmap
+>> - Tsc Scaling
+>> - GuestLbrCtl
+>> - CET
+>> - SSP
+>> 
+>> Update the definition. The updated definition is available only when
+>> CPUID.0x4000000A.EBX BIT(0) is '1'. Add a define for it as well.
+>> 
+>> Note: The latest TLFS is available at
+>> https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/tlfs
+>> 
+>> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+>> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+>> ---
+>>  arch/x86/include/asm/hyperv-tlfs.h | 26 ++++++++++++++++++++++++--
+>>  1 file changed, 24 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+>> index 6f0acc45e67a..ebc27017fa48 100644
+>> --- a/arch/x86/include/asm/hyperv-tlfs.h
+>> +++ b/arch/x86/include/asm/hyperv-tlfs.h
+>> @@ -138,6 +138,17 @@
+>>  #define HV_X64_NESTED_GUEST_MAPPING_FLUSH		BIT(18)
+>>  #define HV_X64_NESTED_MSR_BITMAP			BIT(19)
+>>  
+>> +/*
+>> + * Nested quirks. These are HYPERV_CPUID_NESTED_FEATURES.EBX bits.
+>
+> The "quirks" part is very confusing, largely because KVM has a well-established
+> quirks mechanism.  I also don't see "quirks" anywhere in the TLFS documentation.
+> Can the "Nested quirks" part simply be dropped?
+>
 
-Signed-off-by: Evan Green <evgreen@chromium.org>
----
+Yes, it's completely made up (just like I made up
+HV_X64_NESTED_EVMCS1_2022_UPDATE), let's drop it.
 
-Changes in v2:
- - Update release version to 6.1 (Tzung-Bi)
- - Reference EC_HOST_SLEEP_TIMEOUT_INFINITE (Tzung-Bi)
- - Name the debugfs file suspend_timeout_ms (Prashant)
+>> + *
+>> + * Note: HV_X64_NESTED_EVMCS1_2022_UPDATE is not currently documented in any
+>> + * published TLFS version. When the bit is set, nested hypervisor can use
+>> + * 'updated' eVMCSv1 specification (perf_global_ctrl, s_cet, ssp, lbr_ctl,
+>> + * encls_exiting_bitmap, tsc_multiplier fields which were missing in 2016
+>> + * specification).
+>> + */
+>> +#define HV_X64_NESTED_EVMCS1_2022_UPDATE		BIT(0)
+>
+> This bit is now defined[*], but the docs says it's only for perf_global_ctrl.  Are
+> we expecting an update to the TLFS?
+>
+> 	Indicates support for the GuestPerfGlobalCtrl and HostPerfGlobalCtrl fields
+> 	in the enlightened VMCS.
+>
+> [*] https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/feature-discovery#hypervisor-nested-virtualization-features---0x4000000a
+>
 
- Documentation/ABI/testing/debugfs-cros-ec   | 22 +++++++++++++++++++++
- drivers/platform/chrome/cros_ec.c           |  3 ++-
- drivers/platform/chrome/cros_ec_debugfs.c   |  3 +++
- include/linux/platform_data/cros_ec_proto.h |  1 +
- 4 files changed, 28 insertions(+), 1 deletion(-)
+Oh well, better this than nothing. I'll ping the people who told me
+about this bit that their description is incomplete.
 
-diff --git a/Documentation/ABI/testing/debugfs-cros-ec b/Documentation/ABI/testing/debugfs-cros-ec
-index 1fe0add99a2a99..9f79c641b2d09f 100644
---- a/Documentation/ABI/testing/debugfs-cros-ec
-+++ b/Documentation/ABI/testing/debugfs-cros-ec
-@@ -54,3 +54,25 @@ Description:
- 		this feature.
- 
- 		Output will be in the format: "0x%08x\n".
-+
-+What:		/sys/kernel/debug/<cros-ec-device>/suspend_timeout_ms
-+Date:		August 2022
-+KernelVersion:	6.1
-+Description:
-+		Some ECs have a feature where they will track transitions to the
-+		a hardware-controlled sleep line, such as Intel's SLP_S0 line,
-+		in order to detect cases where a system failed to go into deep
-+		sleep states. The suspend_timeout file controls the amount of
-+		time in milliseconds the EC will wait before declaring a sleep
-+		timeout event and attempting to wake the system.
-+
-+		Supply 0 to use the default value coded into EC firmware. Supply
-+		65535 (EC_HOST_SLEEP_TIMEOUT_INFINITE) to disable the EC sleep
-+		failure detection mechanism. Values in between 0 and 65535
-+		indicate the number of milliseconds the EC should wait after a
-+		sleep transition before declaring a timeout. This includes both
-+		the duration after a sleep command was received but before the
-+		hardware line changed, as well as the duration between when the
-+		hardware line changed and the kernel sent an EC resume command.
-+
-+		Output will be in the format: "%u\n".
-diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-index 8aace50d446d65..e8d3e2a29a58f5 100644
---- a/drivers/platform/chrome/cros_ec.c
-+++ b/drivers/platform/chrome/cros_ec.c
-@@ -115,7 +115,7 @@ static int cros_ec_sleep_event(struct cros_ec_device *ec_dev, u8 sleep_event)
- 	if (ec_dev->host_sleep_v1) {
- 		buf.u.req1.sleep_event = sleep_event;
- 		buf.u.req1.suspend_params.sleep_timeout_ms =
--				EC_HOST_SLEEP_TIMEOUT_DEFAULT;
-+				ec_dev->suspend_timeout;
- 
- 		buf.msg.outsize = sizeof(buf.u.req1);
- 		if ((sleep_event == HOST_SLEEP_EVENT_S3_RESUME) ||
-@@ -188,6 +188,7 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
- 	ec_dev->max_passthru = 0;
- 	ec_dev->ec = NULL;
- 	ec_dev->pd = NULL;
-+	ec_dev->suspend_timeout = EC_HOST_SLEEP_TIMEOUT_DEFAULT;
- 
- 	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
- 	if (!ec_dev->din)
-diff --git a/drivers/platform/chrome/cros_ec_debugfs.c b/drivers/platform/chrome/cros_ec_debugfs.c
-index 0dbceee87a4b1a..d7f5338c1ab1cf 100644
---- a/drivers/platform/chrome/cros_ec_debugfs.c
-+++ b/drivers/platform/chrome/cros_ec_debugfs.c
-@@ -470,6 +470,9 @@ static int cros_ec_debugfs_probe(struct platform_device *pd)
- 	debugfs_create_x32("last_resume_result", 0444, debug_info->dir,
- 			   &ec->ec_dev->last_resume_result);
- 
-+	debugfs_create_u16("suspend_timeout_ms", 0664, debug_info->dir,
-+			   &ec->ec_dev->suspend_timeout);
-+
- 	ec->debug_info = debug_info;
- 
- 	dev_set_drvdata(&pd->dev, ec);
-diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-index 408b29ca4004be..60132444f7daa6 100644
---- a/include/linux/platform_data/cros_ec_proto.h
-+++ b/include/linux/platform_data/cros_ec_proto.h
-@@ -169,6 +169,7 @@ struct cros_ec_device {
- 	int event_size;
- 	u32 host_event_wake_mask;
- 	u32 last_resume_result;
-+	u16 suspend_timeout;
- 	ktime_t last_event_time;
- 	struct notifier_block notifier_ready;
- 
+>> +
+>>  /*
+>>   * This is specific to AMD and specifies that enlightened TLB flush is
+>>   * supported. If guest opts in to this feature, ASID invalidations only
+>> @@ -559,9 +570,20 @@ struct hv_enlightened_vmcs {
+>>  	u64 partition_assist_page;
+>>  	u64 padding64_4[4];
+>>  	u64 guest_bndcfgs;
+>> -	u64 padding64_5[7];
+>> +	u64 guest_ia32_perf_global_ctrl;
+>> +	u64 guest_ia32_s_cet;
+>> +	u64 guest_ssp;
+>> +	u64 guest_ia32_int_ssp_table_addr;
+>> +	u64 guest_ia32_lbr_ctl;
+>> +	u64 padding64_5[2];
+>>  	u64 xss_exit_bitmap;
+>> -	u64 padding64_6[7];
+>> +	u64 encls_exiting_bitmap;
+>> +	u64 host_ia32_perf_global_ctrl;
+>> +	u64 tsc_multiplier;
+>> +	u64 host_ia32_s_cet;
+>> +	u64 host_ssp;
+>> +	u64 host_ia32_int_ssp_table_addr;
+>> +	u64 padding64_6;
+>>  } __packed;
+>>  
+>>  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE			0
+>> -- 
+>> 2.35.3
+>> 
+>
+
 -- 
-2.31.0
+Vitaly
 
