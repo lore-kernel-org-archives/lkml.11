@@ -2,115 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB416C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAAFC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345974AbiHRUYW (ORCPT
+        id S1346037AbiHRUY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 16:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
+        Thu, 18 Aug 2022 16:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346025AbiHRUYD (ORCPT
+        with ESMTP id S1345975AbiHRUYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 16:24:03 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F396712A8F;
-        Thu, 18 Aug 2022 13:23:18 -0700 (PDT)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IFseMc015415;
-        Thu, 18 Aug 2022 20:23:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=7/Dlb7opb1zHeDvNOlDvqLTNKaGONEslYGnrJDLSevg=;
- b=bFKMVOwFLzkM2VSQVIyo81skadGLII1c+trgYqoqskbbT+3d73k80Oy9rWtEPbacp+IK
- zwhsw7scYm4xzN43dR2bit1V1p7Kq30TPtfS+AcBUj3G9/Ge2OKta1HsKflheHQkIfKY
- eE6t2iLLiPqznBIM74qUdHPTaJi6h9LY5opd/q8MQa3CI0gxRMOhAYpSVvWUhYRQtdLa
- rWaoz9qqlcsSa45Je6PQsy4nevQAaTzCHP7PKbQlyucvATbsfYzZh2ef9nwujTmk15mP
- V2n2JYlLOVHxoyPUAAh3bZyv3HoTVDqfIJ3VXA5W/VY/eI+gv/AR2X8O4q3EJiBd4LXL SA== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1d803f61-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 20:23:11 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27IKNAQe023554
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 20:23:10 GMT
-Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 18 Aug 2022 13:23:04 -0700
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-To:     freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
-CC:     Jordan Crouse <jordan@cosmicpenguin.net>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Douglas Anderson <dianders@chromium.org>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
-        Wang Qing <wangqing@vivo.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 7/7] drm/msm/a6xx: Handle GMU prepare-slumber hfi failure
-Date:   Fri, 19 Aug 2022 01:52:15 +0530
-Message-ID: <20220819015030.v5.7.I54815c7c36b80d4725cd054e536365250454452f@changeid>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660854135-1667-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1660854135-1667-1-git-send-email-quic_akhilpo@quicinc.com>
+        Thu, 18 Aug 2022 16:24:06 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAB16327;
+        Thu, 18 Aug 2022 13:23:28 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id w14so2422809plp.9;
+        Thu, 18 Aug 2022 13:23:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=+f47M8bnKeVgHl+2cxbnmIQoyHB0xTlkNOuBRH0IAOI=;
+        b=dYMcmCDSqwoLtSPeWiNd1pOUBeGeToMXODzJd8fsEPqRDRCehxILZFkbBjNRJNG7Dj
+         gD+ERA/jgbUDXMBFAkPtp8g0HkD8MLmnXaU4XxWVggeALlkRuhrl8ePC4DGaDKApusKo
+         0nOr0lGQ1BzrKGuM+LZOSPIA3PRcRSElxIJjovrHH7Xh+KOBdhcMITw/gCEy7CCUcaqo
+         x5mGljJsyR2o02N/R3JmF5NuL9jaZzv3/gFDMKjvuO79rkvZRRXl1CnJIJKv3L1OKZKX
+         ARnEYIhU/qf3isf2QfxFnRv7OBiawDLbgIZBDU2HUP7vumSWfaec4cUC9mVthWSJLXdg
+         LOuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=+f47M8bnKeVgHl+2cxbnmIQoyHB0xTlkNOuBRH0IAOI=;
+        b=qBp2DHb/bHtjLqEYaBcBcy7wTitaBPaZY1VXi933AJyvl6brjTdE7d0WkM5mvVeyVk
+         SZMG/6S/aPaZm+lrGhzGnajvYWRs9OTZ1c3TQFOXA3jP5R135O+URhFXjgmYGJEykaRG
+         nrMl4srKf9b6GMESf3Bbhv08dz9qJkMnZJC4BPqQzQQkKtvDT2fRO5Vndkxzm5zL0L6F
+         YnWaX/Dpi2lp9VVlqxUb3V60vvbvgJGUQjbDT7w7V7nF38YhH+ch/ZoNltICtPyAntmC
+         asqR6YlsVwGNnwKv49UiP6TPnluM5Nh3BM5fq7sGjKV/MuLd23fl4TsounPuQambq9d8
+         nEpA==
+X-Gm-Message-State: ACgBeo3nigKJ2I9rnK3RrOBbgMnF5eMgloAugZBa4fMfyghuf22n69t6
+        USm0D2JB8e4XgLgVs18o2gJdzxLtzBA=
+X-Google-Smtp-Source: AA6agR7vwLxurJjdjYVWP1aemep6T2jAyD2CszOcLQztYe+Wt4GScjqJqbCaATwjA1tbIzTuNQCTLg==
+X-Received: by 2002:a17:90a:c782:b0:1f7:a6cf:2f41 with SMTP id gn2-20020a17090ac78200b001f7a6cf2f41mr10344892pjb.128.1660854207313;
+        Thu, 18 Aug 2022 13:23:27 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id g2-20020a632002000000b0042988a04bfdsm1674346pgg.9.2022.08.18.13.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 13:23:25 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 18 Aug 2022 13:23:24 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eliav Farber <farbere@amazon.com>
+Cc:     jdelvare@suse.com, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
+        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
+        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
+        amitlavi@amazon.com, almogbs@amazon.com, dwmw@amazon.co.uk,
+        rtanwar@maxlinear.com
+Subject: Re: [PATCH v2 12/16] hwmon: (mr75203) modify the temperature equation
+Message-ID: <20220818202324.GA3431316@roeck-us.net>
+References: <20220817054321.6519-1-farbere@amazon.com>
+ <20220817054321.6519-13-farbere@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 7-UNUdfGEDKs2BOZkGLE4qVK8kNlPcmt
-X-Proofpoint-ORIG-GUID: 7-UNUdfGEDKs2BOZkGLE4qVK8kNlPcmt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-18_14,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- malwarescore=0 bulkscore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=862 mlxscore=0 adultscore=0 lowpriorityscore=0 phishscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180074
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817054321.6519-13-farbere@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When prepare-slumber hfi fails, we should follow a6xx_gmu_force_off()
-sequence.
+On Wed, Aug 17, 2022 at 05:43:17AM +0000, Eliav Farber wrote:
+> Modify the equation and coefficients to convert the digital output to
+> temperature according to series 5 of the Moortec Embedded Temperature
+> Sensor (METS) datasheet:
+> T = G + H * (n / cal5 - 0.5) + J * F
+> 
+> The G, H and J coefficients are multiplied by 1000 to get the temperature
+> in milli-Celsius.
+> 
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
----
+This is, at the very least, confusing. It doesn't explain the discrepancy
+to the old code nor the change in constant values. I have no idea if this
+change would result in erroneous readings on some other system where
+the existing calculation may be the correct one.
 
-(no changes since v1)
+On top of that, it seems overflow-prune in 32 bit systems.
 
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Guenter
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index db05942..3d00ef9 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -1082,7 +1082,11 @@ static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
- 		a6xx_bus_clear_pending_transactions(adreno_gpu);
- 
- 		/* tell the GMU we want to slumber */
--		a6xx_gmu_notify_slumber(gmu);
-+		ret = a6xx_gmu_notify_slumber(gmu);
-+		if (ret) {
-+			a6xx_gmu_force_off(gmu);
-+			return;
-+		}
- 
- 		ret = gmu_poll_timeout(gmu,
- 			REG_A6XX_GPU_GMU_AO_GPU_CX_BUSY_STATUS, val,
--- 
-2.7.4
-
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
+> ---
+>  drivers/hwmon/mr75203.c | 21 +++++++++++----------
+>  1 file changed, 11 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+> index e3191f590167..e500897585e4 100644
+> --- a/drivers/hwmon/mr75203.c
+> +++ b/drivers/hwmon/mr75203.c
+> @@ -102,9 +102,10 @@
+>  
+>  #define PVT_POLL_DELAY_US	20
+>  #define PVT_POLL_TIMEOUT_US	20000
+> -#define PVT_H_CONST		100000
+> -#define PVT_CAL5_CONST		2047
+> -#define PVT_G_CONST		40000
+> +#define PVT_H_CONST		60000
+> +#define PVT_G_CONST		200000
+> +#define PVT_J_CONST		-100
+> +#define PVT_CAL5_CONST		4094
+>  #define PVT_CONV_BITS		10
+>  #define PVT_N_CONST		90
+>  #define PVT_R_CONST		245805
+> @@ -158,7 +159,6 @@ static int pvt_read_temp(struct device *dev, u32 attr, int channel, long *val)
+>  	struct regmap *t_map = pvt->t_map;
+>  	u32 stat, nbs;
+>  	int ret;
+> -	u64 tmp;
+>  
+>  	switch (attr) {
+>  	case hwmon_temp_input:
+> @@ -176,12 +176,13 @@ static int pvt_read_temp(struct device *dev, u32 attr, int channel, long *val)
+>  		nbs &= SAMPLE_DATA_MSK;
+>  
+>  		/*
+> -		 * Convert the register value to
+> -		 * degrees centigrade temperature
+> +		 * Convert the register value to degrees centigrade temperature:
+> +		 * T = G + H * (n / cal5 - 0.5) + J * F
+>  		 */
+> -		tmp = nbs * PVT_H_CONST;
+> -		do_div(tmp, PVT_CAL5_CONST);
+> -		*val = tmp - PVT_G_CONST - pvt->ip_freq;
+> +		*val = PVT_G_CONST;
+> +		*val += PVT_H_CONST * nbs / PVT_CAL5_CONST;
+> +		*val -= PVT_H_CONST / 2;
+> +		*val += PVT_J_CONST * pvt->ip_freq / HZ_PER_MHZ;
+>  
+>  		return 0;
+>  	default:
+> @@ -313,7 +314,7 @@ static int pvt_init(struct pvt_device *pvt)
+>  		    (key >> 1) << CLK_SYNTH_HI_SFT |
+>  		    (key >> 1) << CLK_SYNTH_HOLD_SFT | CLK_SYNTH_EN;
+>  
+> -	pvt->ip_freq = sys_freq * 100 / (key + 2);
+> +	pvt->ip_freq = clk_get_rate(pvt->clk) / (key + 2);
+>  
+>  	if (t_num) {
+>  		ret = regmap_write(t_map, SDIF_SMPL_CTRL, 0x0);
