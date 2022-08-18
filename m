@@ -2,200 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD42C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A93C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343877AbiHRO5Z (ORCPT
+        id S1343922AbiHRO6V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
+        Thu, 18 Aug 2022 10:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343825AbiHRO4z (ORCPT
+        with ESMTP id S1343891AbiHRO6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:56:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B03BCCFE
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:56:54 -0700 (PDT)
+        Thu, 18 Aug 2022 10:58:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D1E2EF;
+        Thu, 18 Aug 2022 07:58:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46230612FE
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:56:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F85CC433D7;
-        Thu, 18 Aug 2022 14:56:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660834613;
-        bh=ezX5UU1asPXPTgpHCHPVGm4xP/s54A8YsDjVnU6X4vM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QagzPj3DbZBasCuAInN1YxC1ZjhQ03z5N84MC95qF+eCsEtEvOf2S0PcNGJzAMfTG
-         /3Y0O07XKHmewILZ3JopAB6dLRUWYd1HyWjaYphBs+05ozODmWgk+eX9RKpiw6QkcF
-         PsrbtFpL8QPegKQAz4cVnTbE7avW8B8gXlA6WjUcFjhLguzTx4euY5zIcuZ/VLxdzl
-         7LfzAwLjGxCFLngyjlOR50RKyrsF6Awt/lKqvPZkpl8zuleS2mILewHru5K8Qq0nfl
-         W1SrO0ObLpLawYrmhz/vhlHWWSjmEj8Oiu4SOPNoR8FdyfSx5q1MLxZl5UH+TJF3Xp
-         3ZUUCh8VquRLg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Subject: [PATCH 5/5] ARM: make ARCH_MULTIPLATFORM user-visible
-Date:   Thu, 18 Aug 2022 16:56:16 +0200
-Message-Id: <20220818145616.3156379-6-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220818145616.3156379-1-arnd@kernel.org>
-References: <20220818145616.3156379-1-arnd@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CD03B821C8;
+        Thu, 18 Aug 2022 14:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CF2C433D7;
+        Thu, 18 Aug 2022 14:58:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660834689;
+        bh=luR6i3/V/eJO/gG0ZpCGa1hqwnYHscYwGEBAjl6sHKA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i2v6ZUpkzQSSzHrqICDibacK4Zhv5qKPs8VVF6miieOMl8KDym7iiL4TinmbxQZfc
+         5HPhDnlGsPxvYTcU9kENPDfLRNbyBJM41ROtxLWNQXtz+NSYAld3r7raFmUTVLD2Cy
+         SZkwX+bFj5dIJ/lGD/I3bLapl1O6vrjcSNre0h40=
+Date:   Thu, 18 Aug 2022 16:58:01 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     duoming@zju.edu.cn
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        briannorris@chromium.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, johannes@sipsolutions.net,
+        rafael@kernel.org
+Subject: Re: [PATCH v7 1/2] devcoredump: remove the useless gfp_t parameter
+ in dev_coredumpv and dev_coredumpm
+Message-ID: <Yv5TefZcrUPY1Qjc@kroah.com>
+References: <cover.1660739276.git.duoming@zju.edu.cn>
+ <b861ce56ba555109a67f85a146a785a69f0a3c95.1660739276.git.duoming@zju.edu.cn>
+ <YvzicURy8t2JdQke@kroah.com>
+ <176e7de7.8a223.182ac1fbc47.Coremail.duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <176e7de7.8a223.182ac1fbc47.Coremail.duoming@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Wed, Aug 17, 2022 at 10:05:37PM +0800, duoming@zju.edu.cn wrote:
+> Hello,
+> 
+> On Wed, 17 Aug 2022 14:43:29 +0200 Greg KH wrote:
+> 
+> > On Wed, Aug 17, 2022 at 08:39:12PM +0800, Duoming Zhou wrote:
+> > > The dev_coredumpv() and dev_coredumpm() could not be used in atomic
+> > > context, because they call kvasprintf_const() and kstrdup() with
+> > > GFP_KERNEL parameter. The process is shown below:
+> > > 
+> > > dev_coredumpv(.., gfp_t gfp)
+> > >   dev_coredumpm(.., gfp_t gfp)
+> > >     dev_set_name
+> > >       kobject_set_name_vargs
+> > >         kvasprintf_const(GFP_KERNEL, ...); //may sleep
+> > >           kstrdup(s, GFP_KERNEL); //may sleep
+> > > 
+> > > This patch removes gfp_t parameter of dev_coredumpv() and dev_coredumpm()
+> > > and changes the gfp_t parameter of kzalloc() in dev_coredumpm() to
+> > > GFP_KERNEL in order to show they could not be used in atomic context.
+> > > 
+> > > Fixes: 833c95456a70 ("device coredump: add new device coredump class")
+> > > Reviewed-by: Brian Norris <briannorris@chromium.org>
+> > > Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+> > > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> > > ---
+> > > Changes in v7:
+> > >   - Remove gfp_t flag in amdgpu device.
+> > 
+> > Again, this creates a "flag day" where we have to be sure we hit all
+> > users of this api at the exact same time.  This will prevent any new
+> > driver that comes into a maintainer tree during the next 3 months from
+> > ever being able to use this api without cauing build breakages in the
+> > linux-next tree.
+> > 
+> > Please evolve this api to work properly for everyone at the same time,
+> > like was previously asked for so that we can take this change.  It will
+> > take 2 releases, but that's fine.
+> 
+> Thank you for your reply, I will evolve this api to work properly for everyone.
+> If there are not any new drivers that use this api during the next 3 months, 
+> I will send this patch again. Otherwise, I will wait until there are not new
+> users anymore.
 
-Some options like CONFIG_DEBUG_UNCOMPRESS and CONFIG_CMDLINE_FORCE are
-fundamentally incompatible with portable kernels but are currently allowed
-in all configurations. Other options like XIP_KERNEL are essentially
-useless after the completion of the multiplatform conversion.
+No, that is not necessary.  Do the work now so that there is no flag day
+and you don't have to worry about new users, it will all "just work".
 
-Repurpose the existing CONFIG_ARCH_MULTIPLATFORM option to decide
-whether the resulting kernel image is meant to be portable or not,
-and using this to guard all of the known incompatible options.
+thanks,
 
-This is similar to how the RISC-V kernel handles the CONFIG_NONPORTABLE
-option (with the opposite polarity).
-
-A few references to CONFIG_ARCH_MULTIPLATFORM were left behind by
-earlier clanups and have to be removed now up.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/Kconfig               | 15 ++++++++++++++-
- arch/arm/Kconfig.debug         |  1 +
- arch/arm/kernel/devtree.c      |  2 --
- arch/arm/mach-dove/Makefile    |  2 +-
- arch/arm/mach-mv78xx0/Makefile |  2 +-
- arch/arm/mach-mvebu/Makefile   |  2 +-
- arch/arm/mach-orion5x/Makefile |  2 +-
- 7 files changed, 19 insertions(+), 7 deletions(-)
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 3066ce82cffc..9cbac5bf8b3a 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -320,7 +320,19 @@ config ARCH_MMAP_RND_BITS_MAX
- 	default 16
- 
- config ARCH_MULTIPLATFORM
--	def_bool MMU && !(ARCH_FOOTBRIDGE || ARCH_RPC || ARCH_SA1100)
-+	bool "Require kernel to be portable to multiple machines" if EXPERT
-+	depends on MMU && !(ARCH_FOOTBRIDGE || ARCH_RPC || ARCH_SA1100)
-+	default y
-+	help
-+	  In general, all Arm machines can be supported in a single
-+	  kernel image, covering either Armv4/v5 or Armv6/v7.
-+
-+	  However, some configuration options require hardcoding machine
-+	  specific physical addresses or enable errata workarounds that may
-+	  break other machines.
-+
-+	  Selecting N here allows using those options, including
-+	  DEBUG_UNCOMPRESS, XIP_KERNEL and ZBOOT_ROM. If unsure, say Y.
- 
- menu "Platform selection"
- 	depends on MMU
-@@ -1609,6 +1621,7 @@ config CMDLINE_EXTEND
- 
- config CMDLINE_FORCE
- 	bool "Always use the default kernel command string"
-+	depends on !ARCH_MULTIPLATFORM
- 	help
- 	  Always use the default kernel command string, even if the boot
- 	  loader passes other arguments to the kernel.
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 655f84ada30f..c345775f035b 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -1904,6 +1904,7 @@ config DEBUG_UART_8250_PALMCHIP
- 
- config DEBUG_UNCOMPRESS
- 	bool "Enable decompressor debugging via DEBUG_LL output"
-+	depends on !ARCH_MULTIPLATFORM
- 	depends on !(ARCH_FOOTBRIDGE || ARCH_RPC || ARCH_SA1100)
- 	depends on DEBUG_LL && !DEBUG_OMAP2PLUS_UART && \
- 		     (!DEBUG_TEGRA_UART || !ZBOOT_ROM) && \
-diff --git a/arch/arm/kernel/devtree.c b/arch/arm/kernel/devtree.c
-index 02839d8b6202..264827281113 100644
---- a/arch/arm/kernel/devtree.c
-+++ b/arch/arm/kernel/devtree.c
-@@ -194,14 +194,12 @@ const struct machine_desc * __init setup_machine_fdt(void *dt_virt)
- {
- 	const struct machine_desc *mdesc, *mdesc_best = NULL;
- 
--#if defined(CONFIG_ARCH_MULTIPLATFORM) || defined(CONFIG_ARM_SINGLE_ARMV7M)
- 	DT_MACHINE_START(GENERIC_DT, "Generic DT based system")
- 		.l2c_aux_val = 0x0,
- 		.l2c_aux_mask = ~0x0,
- 	MACHINE_END
- 
- 	mdesc_best = &__mach_desc_GENERIC_DT;
--#endif
- 
- 	if (!dt_virt || !early_init_dt_verify(dt_virt))
- 		return NULL;
-diff --git a/arch/arm/mach-dove/Makefile b/arch/arm/mach-dove/Makefile
-index e83f6492834d..da373a5768ba 100644
---- a/arch/arm/mach-dove/Makefile
-+++ b/arch/arm/mach-dove/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
-+ccflags-y := -I$(srctree)/arch/arm/plat-orion/include
- 
- obj-y				+= common.o
- obj-$(CONFIG_DOVE_LEGACY)	+= irq.o mpp.o
-diff --git a/arch/arm/mach-mv78xx0/Makefile b/arch/arm/mach-mv78xx0/Makefile
-index a839e960b8c6..50aff70065f2 100644
---- a/arch/arm/mach-mv78xx0/Makefile
-+++ b/arch/arm/mach-mv78xx0/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
-+ccflags-y := -I$(srctree)/arch/arm/plat-orion/include
- 
- obj-y				+= common.o mpp.o irq.o pcie.o
- obj-$(CONFIG_MACH_DB78X00_BP)	+= db78x00-bp-setup.o
-diff --git a/arch/arm/mach-mvebu/Makefile b/arch/arm/mach-mvebu/Makefile
-index cb106899dd7c..c21733cbb4fa 100644
---- a/arch/arm/mach-mvebu/Makefile
-+++ b/arch/arm/mach-mvebu/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
-+ccflags-y := -I$(srctree)/arch/arm/plat-orion/include
- 
- AFLAGS_coherency_ll.o		:= -Wa,-march=armv7-a
- CFLAGS_pmsu.o			:= -march=armv7-a
-diff --git a/arch/arm/mach-orion5x/Makefile b/arch/arm/mach-orion5x/Makefile
-index 1a585a62d5e6..572c3520f7fe 100644
---- a/arch/arm/mach-orion5x/Makefile
-+++ b/arch/arm/mach-orion5x/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
-+ccflags-y := -I$(srctree)/arch/arm/plat-orion/include
- 
- obj-y				+= common.o pci.o irq.o mpp.o
- obj-$(CONFIG_MACH_DB88F5281)	+= db88f5281-setup.o
--- 
-2.29.2
-
+greg k-h
