@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A24EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC25BC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244711AbiHRMqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 08:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
+        id S244714AbiHRMqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 08:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234545AbiHRMqc (ORCPT
+        with ESMTP id S234545AbiHRMqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 08:46:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76295EDD4
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 05:46:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660826790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/0hgk5ZZHKuX8lnQA8p46Sj63fPkeFC8iuqEyWiwfa0=;
-        b=Pgjm30f+ZrbQDiGa4wdUdFLGPlZtgPLpPJzsufp1NICdbxH/DkB5taBzqdqdqkH2oPcY0w
-        XmKmRbW6gZS4vTR9S0QdTj2uj0eJ59WH/pVNo5PP6rNdRaMFWiza/NO0MfXd10+iRlNezg
-        Lz0ouUwG26ZLpEOo8VY8bTMbGJuVOAQ=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-648-O8YenrXGNFepmpah2LMHPw-1; Thu, 18 Aug 2022 08:46:29 -0400
-X-MC-Unique: O8YenrXGNFepmpah2LMHPw-1
-Received: by mail-pj1-f71.google.com with SMTP id t10-20020a17090a4e4a00b001fab2c791dcso977718pjl.5
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 05:46:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=/0hgk5ZZHKuX8lnQA8p46Sj63fPkeFC8iuqEyWiwfa0=;
-        b=ssxkGWtw3GJPfTQqIFfeCuxUmV5Che8db5u28P4TkjEl1GNQVz4RtnuhjIwPoDYsbv
-         w+twJ/iNtV4uPO/g7Gqgk2BrjXsy7R5sV0WoCDNhQ433qs2V0U8fHHSHfMYaxOxDAfmD
-         0LuLrzPdkTH0/PR73Qw2L4ckpUwqOfZ5dSFaEFWbrtjiAtlsdOHdSnCR0RmXP/+nKAzJ
-         q01BSvjK7wIo2sL5kgC33hYkEPn+Ku5UzECLMmg4kMzCWdiWsqI5zq9ysHLO3fAaIUWU
-         TVOoBn3u2nk48V3QEm8W0U6aOKP+D2Ik8HDtiX3A5G+g7dx4TXRbuN9Mu5NML5sMGjEh
-         2JRw==
-X-Gm-Message-State: ACgBeo0dM5jKHq1l9+j7QNIxcQEilJ35/Audf6tKTXsWMfQeBs/7+LDL
-        wMkOVgX2tf06CrKT03mFKCLB3YlRtIHtRviEqscRgWkYXzXa03VxZm3wX/9heNw/t1cAwyVYX9v
-        u5jWEiFx1iO2UP5nikqQ1ul/X
-X-Received: by 2002:a63:e348:0:b0:41b:444f:ff5f with SMTP id o8-20020a63e348000000b0041b444fff5fmr2274673pgj.333.1660826788624;
-        Thu, 18 Aug 2022 05:46:28 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6lGnUPcCxmlc8exuoQJXfXctG3A34swT/87OOrV3UStb1MANlk6xi+njtUm5mXcwCVHbDX6w==
-X-Received: by 2002:a63:e348:0:b0:41b:444f:ff5f with SMTP id o8-20020a63e348000000b0041b444fff5fmr2274658pgj.333.1660826788340;
-        Thu, 18 Aug 2022 05:46:28 -0700 (PDT)
-Received: from halaneylaptop ([2600:1700:1ff0:d0e0::1e])
-        by smtp.gmail.com with ESMTPSA id b1-20020a170903228100b001714c36a6e7sm1302339plh.284.2022.08.18.05.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 05:46:27 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 07:46:25 -0500
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: thinkpad-x13s: Fix firmware location
-Message-ID: <20220818124625.nfwrcostfqxs7ym5@halaneylaptop>
-References: <20220817231236.3971-1-steev@kali.org>
+        Thu, 18 Aug 2022 08:46:36 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ACC5EDD4
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 05:46:35 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M7l2B3HtXznTVN;
+        Thu, 18 Aug 2022 20:44:18 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 20:46:31 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
+ 2022 20:46:30 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Muchun Song <songmuchun@bytedance.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH -next] bootmem: remove the vmemmap pages from kmemleak in free_bootmem_page
+Date:   Thu, 18 Aug 2022 21:21:04 +0800
+Message-ID: <20220818132104.2144770-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817231236.3971-1-steev@kali.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 06:12:36PM -0500, Steev Klimaszewski wrote:
-> The firmware for the Lenovo Thinkpad X13s has been submitted, accepted
-> and merged upstream, so update to the correct path.
-> 
-> Signed-off-by: Steev Klimaszewski <steev@kali.org>
+The vmemmap pages is marked by kmemleak when allocated from memblock.
+Remove it from kmemleak when free the page. Otherwise, when we reuse the
+page, kmemleak may report such an error and then stop working.
 
-Matches what I see in linux-firmware! Thanks Steev.
+ kmemleak: Cannot insert 0xffff98fb6eab3d40 into the object search tree (overlaps existing)
+ kmemleak: Kernel memory leak detector disabled
+ kmemleak: Object 0xffff98fb6be00000 (size 335544320):
+ kmemleak:   comm "swapper", pid 0, jiffies 4294892296
+ kmemleak:   min_count = 0
+ kmemleak:   count = 0
+ kmemleak:   flags = 0x1
+ kmemleak:   checksum = 0
+ kmemleak:   backtrace:
 
-Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Fixes: f41f2ed43ca5 ("mm: hugetlb: free the vmemmap pages associated with each HugeTLB page")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ include/linux/bootmem_info.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-> ---
->  arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> index 84dc92dda0b8..e07cc9d1ff27 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> @@ -235,13 +235,13 @@ keyboard@68 {
->  };
->  
->  &remoteproc_adsp {
-> -	firmware-name = "qcom/sc8280xp/qcadsp8280.mbn";
-> +	firmware-name = "qcom/LENOVO/21BX/qcadsp8280.mbn";
->  
->  	status = "okay";
->  };
->  
->  &remoteproc_nsp0 {
-> -	firmware-name = "qcom/sc8280xp/qccdsp8280.mbn";
-> +	firmware-name = "qcom/LENOVO/21BX/qccdsp8280.mbn";
->  
->  	status = "okay";
->  };
-> -- 
-> 2.34.1
-> 
+diff --git a/include/linux/bootmem_info.h b/include/linux/bootmem_info.h
+index cc35d010fa94..899bc56948f7 100644
+--- a/include/linux/bootmem_info.h
++++ b/include/linux/bootmem_info.h
+@@ -3,6 +3,7 @@
+ #define __LINUX_BOOTMEM_INFO_H
+ 
+ #include <linux/mm.h>
++#include <linux/kmemleak.h>
+ 
+ /*
+  * Types for free bootmem stored in page->lru.next. These have to be in
+@@ -38,9 +39,10 @@ static inline void free_bootmem_page(struct page *page)
+ 	 */
+ 	VM_BUG_ON_PAGE(page_ref_count(page) != 2, page);
+ 
+-	if (magic == SECTION_INFO || magic == MIX_SECTION_INFO)
++	if (magic == SECTION_INFO || magic == MIX_SECTION_INFO) {
++		kmemleak_free_part(page_to_virt(page), PAGE_SIZE);
+ 		put_page_bootmem(page);
+-	else
++	} else
+ 		VM_BUG_ON_PAGE(1, page);
+ }
+ #else
+-- 
+2.25.1
 
