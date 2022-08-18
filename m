@@ -2,112 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E979C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 22:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C37DC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 22:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239609AbiHRWkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 18:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36152 "EHLO
+        id S1344412AbiHRWlU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 18:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241929AbiHRWkN (ORCPT
+        with ESMTP id S243822AbiHRWlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 18:40:13 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404D3D805C;
-        Thu, 18 Aug 2022 15:40:13 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-11c9af8dd3eso3032155fac.10;
-        Thu, 18 Aug 2022 15:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=2an3KXPew/OqEauIR1CsNmpNXfaK7XRjdWqKYm2SujE=;
-        b=cubs4ebu7YGHsevfT6xBOvrOySw1nCcX3bGMQVHcT8rRE3WAebeVaRfdHlcN/H0gAy
-         TTwmtKw/OWzPjCJGAf8z/sB9fcq5rEOsXZS3k74ZwAshP+3kGgVlLnIlU6zSZi82Ia2P
-         E+ofyozblVMipsx1CJbVno16Q2SRAGdpdY+j6dqhdBQZhYEEENG5iAe9OHOAgVhT5hy4
-         Xr0Idw3bkwRk0ZAdhcaJ6gfO7JMzD97vNrrF9CJ8ms2cUhNwjMzJJwGzqVDCdjKc44Aj
-         zqG9s9+6Yws2oncUeKrTX0JSW4qm7Nu1HYYKIHwl/+oCSi+gDFECvVGuy0V4+MRAQGvM
-         iZMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=2an3KXPew/OqEauIR1CsNmpNXfaK7XRjdWqKYm2SujE=;
-        b=CE4tmU22MoZp9CWACySkGAX7O2FDXmY2YJbHofqdy4fG/Qi+ULLemtj+DHTeZ1Qefk
-         eLpIZwf1g04a/OuMd2t5lKkwuNeiIDQygfk+owYVjgL3B1RbWMss1eTcDfS9BaTwTomH
-         UGjPtkk5EPu5wZaPOx/NEDFjk6X1U8u6AU8026e5TyBMqAl8ylcS0/0r/iSkLnxGA2mx
-         NlItmTd9U51BQUjM90IpyKTbUJB7/N/sDqujQcmwF8fiozPwaj0tmSofaSo6xKc2gFn1
-         EfRUWBo5fH5ngZHTu/5W2Fd2pUG67frP8iSA5/0UBNpPsQeb57HVF9VySx82pydntxGw
-         7PYw==
-X-Gm-Message-State: ACgBeo3ryUaqlIWNErZvhcfLrV6poyqyEDrSbeMTMYOmBXsPnnK/alA5
-        hPmOWWB9WWCg3DwdFVED9Jw=
-X-Google-Smtp-Source: AA6agR5sYonHELfFjG9sbNNFEDmx3kLjtWDYD+KlWZBQ8o4jYM/b2rhHvPGdD5xkOibnzoLDC/BUPQ==
-X-Received: by 2002:a05:6871:85:b0:fe:29a0:4a2c with SMTP id u5-20020a056871008500b000fe29a04a2cmr5495036oaa.249.1660862412137;
-        Thu, 18 Aug 2022 15:40:12 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id t27-20020a0568301e3b00b00636ed80eab8sm724802otr.4.2022.08.18.15.40.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 15:40:11 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 15:38:00 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH v2 2/5] cpumask: Introduce for_each_cpu_andnot()
-Message-ID: <Yv6/SAj6kQ/UIKvu@yury-laptop>
-References: <20220817175812.671843-1-vschneid@redhat.com>
- <20220817175812.671843-3-vschneid@redhat.com>
+        Thu, 18 Aug 2022 18:41:18 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BC4DC0A4
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 15:41:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660862477; x=1692398477;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=v1oyskW2FpLv925v7lM7xelZT4A7QhJ6jHcYLJ62ACs=;
+  b=JAshljhqZZydKgoRjONwriua67OPbaoj17PFdD1XAvJ4de1RaSfekGV/
+   VuxqHf/9WxP534nz7E7PiUtpjB/wt5wOuFwJhGnsII2ODEKMQ68JYH6B8
+   oyBsUiUQDTRydnKhZ4GgCi9DD1PbYngB+NVGznnf7gEJ0ponDT5i9wSpY
+   k+nfaSlHv2DlX35Lm5qByjhmOXku0Yji/wvgXQ1ZU57GuQLJ7oR2HvE++
+   mqYMfE+5j1Ze88b9PtGj8qx9hikAFMAWmAAkmT8JHS10cm+Xt7JPfSinP
+   insfNvs50nMmK1bmIxV8NrH9ASvUrbQDj7ZKM+fiUgEbBbOyg5tjowOzC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="291642415"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="291642415"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:41:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="641037374"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 18 Aug 2022 15:41:15 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOoCR-0000il-0u;
+        Thu, 18 Aug 2022 22:41:15 +0000
+Date:   Fri, 19 Aug 2022 06:41:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/cpu] BUILD SUCCESS
+ 0db7058e8e23e6bbab1b4747ecabd1784c34f50b
+Message-ID: <62febfff.6iPHw5th7VGEUE/w%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817175812.671843-3-vschneid@redhat.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 06:58:09PM +0100, Valentin Schneider wrote:
-> for_each_cpu_and() is very convenient as it saves having to allocate a
-> temporary cpumask to store the result of cpumask_and(). The same issue
-> applies to cpumask_andnot() which doesn't actually need temporary storage
-> for iteration purposes.
-> 
-> Following what has been done for for_each_cpu_and(), introduce
-> for_each_cpu_andnot().
-> 
-> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cpu
+branch HEAD: 0db7058e8e23e6bbab1b4747ecabd1784c34f50b  x86/clear_user: Make it faster
 
-I'm concerned that this series doesn't give us real examples and tests
-for the new API. If we take it as-is, we'll end up with a dead code for
-a while, quite probably for long.
+elapsed time: 721m
 
-Can you please submit a new code with a real application for the new API?
-Alternatively, you can rework some existing code.
+configs tested: 128
+configs skipped: 3
 
-Briefly grepping, I found good candidate in a core code: __sched_core_flip(),
-and one candidate in arch code: arch/powerpc/kernel/smp.c: update_coregroup_mask.
-I believe there are much more.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Regarding the test, I don't think it's strictly necessary to have it as soon as
-we'll have real users, but it's always good to backup with tests.
+gcc tested configs:
+arc                  randconfig-r043-20220818
+um                             i386_defconfig
+riscv                randconfig-r042-20220818
+um                           x86_64_defconfig
+s390                 randconfig-r044-20220818
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+mips                             allyesconfig
+arm                                 defconfig
+arm64                            allyesconfig
+arm                              allyesconfig
+x86_64                              defconfig
+x86_64                        randconfig-a004
+i386                          randconfig-a001
+i386                                defconfig
+x86_64                        randconfig-a013
+i386                          randconfig-a003
+i386                          randconfig-a014
+x86_64                        randconfig-a002
+x86_64                          rhel-8.3-func
+arc                              allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                        randconfig-a011
+alpha                            allyesconfig
+x86_64                           allyesconfig
+x86_64                           rhel-8.3-kvm
+m68k                             allyesconfig
+arc                               allnoconfig
+x86_64                               rhel-8.3
+x86_64                        randconfig-a015
+m68k                             allmodconfig
+i386                          randconfig-a005
+x86_64                    rhel-8.3-kselftests
+alpha                             allnoconfig
+riscv                             allnoconfig
+csky                              allnoconfig
+x86_64                           rhel-8.3-syz
+x86_64                        randconfig-a006
+i386                          randconfig-a012
+i386                          randconfig-a016
+sh                               allmodconfig
+ia64                             allmodconfig
+i386                             allyesconfig
+arc                          axs101_defconfig
+sh                   rts7751r2dplus_defconfig
+powerpc                 mpc837x_mds_defconfig
+powerpc                       maple_defconfig
+alpha                            alldefconfig
+sh                                  defconfig
+m68k                       m5475evb_defconfig
+sh                         ecovec24_defconfig
+sh                        edosk7705_defconfig
+sh                             sh03_defconfig
+arm                             ezx_defconfig
+sh                           se7712_defconfig
+mips                        vocore2_defconfig
+arm                        oxnas_v6_defconfig
+loongarch                           defconfig
+loongarch                         allnoconfig
+arm                            zeus_defconfig
+nios2                         3c120_defconfig
+i386                          randconfig-c001
+mips                      loongson3_defconfig
+sh                          polaris_defconfig
+arc                          axs103_defconfig
+powerpc                         wii_defconfig
+sh                               j2_defconfig
+mips                  decstation_64_defconfig
+powerpc                      cm5200_defconfig
+mips                            gpr_defconfig
+sh                               alldefconfig
+arm                           sunxi_defconfig
+arc                 nsimosci_hs_smp_defconfig
+loongarch                        alldefconfig
+m68k                                defconfig
+sparc                             allnoconfig
+m68k                         amcore_defconfig
+xtensa                              defconfig
+ia64                                defconfig
+arm                           sama5_defconfig
+um                                  defconfig
+ia64                             alldefconfig
+arm                            mps2_defconfig
+sparc                       sparc64_defconfig
+m68k                        m5307c3_defconfig
+m68k                           sun3_defconfig
+sh                           sh2007_defconfig
+arm                          gemini_defconfig
+arm64                               defconfig
+m68k                          hp300_defconfig
+sh                          landisk_defconfig
+openrisc                       virt_defconfig
+arm                          pxa910_defconfig
+sh                        apsh4ad0a_defconfig
+arm                            pleb_defconfig
+parisc                generic-64bit_defconfig
+sh                          rsk7201_defconfig
+mips                         db1xxx_defconfig
+mips                       bmips_be_defconfig
 
-Thanks,
-Yury
+clang tested configs:
+hexagon              randconfig-r041-20220818
+hexagon              randconfig-r045-20220818
+i386                          randconfig-a013
+i386                          randconfig-a015
+i386                          randconfig-a002
+x86_64                        randconfig-a005
+x86_64                        randconfig-a001
+x86_64                        randconfig-a016
+x86_64                        randconfig-a012
+i386                          randconfig-a006
+x86_64                        randconfig-a014
+i386                          randconfig-a011
+i386                          randconfig-a004
+x86_64                        randconfig-a003
+arm                        multi_v5_defconfig
+mips                      pic32mzda_defconfig
+x86_64                        randconfig-k001
+arm                          moxart_defconfig
+mips                           ip22_defconfig
+mips                          ath25_defconfig
+powerpc                          allmodconfig
+riscv                    nommu_virt_defconfig
+mips                        qi_lb60_defconfig
+mips                        omega2p_defconfig
+arm                             mxs_defconfig
+arm                  colibri_pxa270_defconfig
+hexagon                             defconfig
+arm                         bcm2835_defconfig
+arm                         s5pv210_defconfig
+arm                         shannon_defconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
