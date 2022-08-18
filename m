@@ -2,98 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBA8C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 585E2C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343526AbiHROPM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
+        id S245244AbiHROSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343507AbiHROPD (ORCPT
+        with ESMTP id S235049AbiHROSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:15:03 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DBBB8F18
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660832091; x=1692368091;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+Jw2sCqhFjrjd0ogBdcPM4xUu9vU/3VB2S/clQ7Sul0=;
-  b=gGREzXc5NOgkTXttR/HudL+CFZ/TipwmspAs+4SnZyBGRCKW76If/F1R
-   Cm2d8F0qiq/zN/v4IqukmVn32uO79UaXP5bsM9SKuFCeMF51ai57j7Oji
-   CyjTckh3+/whSxpTZ1KEcbORrxDW59oUqRRIVHys5SHFDdhdqXPmEtP5j
-   IVOcJfg886NMQYsxOl7QHMMiXcNr9hDfe7YZknXzq3qSyWfCmp0ElYUMr
-   ofndegs2pan+ec9MnBLnP/KOA3A0bCinIK9fzNxuybiGdK5ZIizkBtAv5
-   LCt1BSp1yTmH/IoaRPjTkMys3XDH6sn+JX6sIeVompstqvUr1NypFUvmG
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="272533281"
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="272533281"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:14:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="584222264"
-Received: from dev2.igk.intel.com ([10.237.148.94])
-  by orsmga006.jf.intel.com with ESMTP; 18 Aug 2022 07:14:49 -0700
-From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-To:     Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
-Cc:     linux-kernel@vger.kernel.org,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-Subject: [PATCH v2 4/4] ALSA: hda: Remove unused defines
-Date:   Thu, 18 Aug 2022 16:15:17 +0200
-Message-Id: <20220818141517.109280-5-amadeuszx.slawinski@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220818141517.109280-1-amadeuszx.slawinski@linux.intel.com>
-References: <20220818141517.109280-1-amadeuszx.slawinski@linux.intel.com>
+        Thu, 18 Aug 2022 10:18:44 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516FB4DB3B
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:18:41 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98ec329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98ec:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A42F91EC0575;
+        Thu, 18 Aug 2022 16:18:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660832315;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=gJ69YO/yMYg9+PoKFN0S+hG+LcapgaGO9wDIhQnh21s=;
+        b=EVQW7N+CO7PTLXRuoBtQFpm/qy/KwebJJCE2caXxD8qy3vvO3Xr1Jree8hgBh7svUMQU8f
+        jAJqhn8KS7oQY9M/ZwkcyyglnpGAfwnzT/hkpkbDaIKJQvSiEBVBEua+8bU1kPZcigUFyq
+        ZxBtOqsNnMIWdbXFr6Mx0J94TSkH/P4=
+Date:   Thu, 18 Aug 2022 16:18:31 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 1/6] x86/tdx: Add TDX Guest attestation interface
+ driver
+Message-ID: <Yv5KNyX992ddvVtD@zn.tnic>
+References: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220728034420.648314-2-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220728034420.648314-2-sathyanarayanan.kuppuswamy@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need to keep unused defines in file.
+On Wed, Jul 27, 2022 at 08:44:15PM -0700, Kuppuswamy Sathyanarayanan wrote:
 
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
----
- sound/pci/hda/hda_intel.c | 7 -------
- 1 file changed, 7 deletions(-)
+...
 
-diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index a77165bd92a9..7720978dc132 100644
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -86,9 +86,6 @@ enum {
- #define INTEL_SCH_HDA_DEVC      0x78
- #define INTEL_SCH_HDA_DEVC_NOSNOOP       (0x1<<11)
- 
--/* Define VIA HD Audio Device ID*/
--#define VIA_HDAC_DEVICE_ID		0x3288
--
- /* max number of SDs */
- /* ICH, ATI and VIA have 4 playback and 4 capture */
- #define ICH6_NUM_CAPTURE	4
-@@ -102,10 +99,6 @@ enum {
- #define ATIHDMI_NUM_CAPTURE	0
- #define ATIHDMI_NUM_PLAYBACK	8
- 
--/* TERA has 4 playback and 3 capture */
--#define TERA_NUM_CAPTURE	3
--#define TERA_NUM_PLAYBACK	4
--
- 
- static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
- static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;
+> Operations like getting TDREPORT or Quote generation involves sending
+> a blob of data as input and getting another blob of data as output. It
+> was considered to use a sysfs interface for this, but it doesn't fit
+> well into the standard sysfs model for configuring values. It would be
+> possible to do read/write on files, but it would need multiple file
+> descriptors, which would be somewhat messy. IOCTLs seems to be the best
+> fitting and simplest model for this use case. This is similar to AMD
+> SEV platform, which also uses IOCTL interface to support attestation.
+
+So the gist of this whole commit message - with the TD<->TDX
+nomenclature fixed - needs to go to Documentation/x86/tdx.rst.
+
+> diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
+> new file mode 100644
+> index 000000000000..46a2f3612753
+> --- /dev/null
+> +++ b/arch/x86/coco/tdx/attest.c
+> @@ -0,0 +1,81 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * attest.c - TDX attestation feature support.
+
+s/feature //
+
+> + *
+> + * Implements attestation related IOCTL handlers.
+> + *
+> + * Copyright (C) 2022 Intel Corporation
+> + *
+> + */
+> +
+> +#include <linux/mm.h>
+> +#include <linux/io.h>
+> +#include <asm/tdx.h>
+> +
+> +#include "tdx.h"
+> +
+> +/* TDREPORT module call leaf ID */
+> +#define TDX_GET_REPORT			4
+
+All TDX leaf definitions go to arch/x86/include/asm/shared/tdx.h, for
+example.
+
+Not spread around the tree. There are some in arch/x86/coco/tdx/tdx.c
+too.
+
+In a pre-patch: please pick a fitting header, move them there and keep
+them all there.
+
+> +long tdx_get_report(void __user *argp)
+> +{
+> +	u8 *reportdata = NULL, *tdreport = NULL;
+> +	struct tdx_report_req req;
+> +	long ret;
+> +
+> +	/* Copy request struct from the user buffer */
+
+Useless comment.
+
+> +	if (copy_from_user(&req, argp, sizeof(req)))
+> +		return -EFAULT;
+> +
+> +	/*
+> +	 * Per TDX Module 1.0 specification, section titled
+> +	 * "TDG.MR.REPORT", REPORTDATA and TDREPORT length
+> +	 * is fixed as TDX_REPORTDATA_LEN and TDX_REPORT_LEN.
+> +	 */
+> +	if (req.rpd_len != TDX_REPORTDATA_LEN || req.tdr_len != TDX_REPORT_LEN)
+> +		return -EINVAL;
+> +
+> +	/* Allocate kernel buffers for REPORTDATA and TDREPORT */
+> +	reportdata = kzalloc(req.rpd_len, GFP_KERNEL);
+> +	if (!reportdata) {
+> +		ret = -ENOMEM;
+> +		goto report_failed;
+> +	}
+> +
+> +	tdreport = kzalloc(req.tdr_len, GFP_KERNEL);
+> +	if (!tdreport) {
+> +		ret = -ENOMEM;
+> +		goto report_failed;
+> +	}
+> +
+> +
+> +	/* Copy REPORTDATA from user to kernel buffer */
+
+Useless comment.
+
+> +	if (copy_from_user(reportdata, (void *)req.reportdata, req.rpd_len)) {
+
+You're trusting a user pointer without any checks?
+
+I guess there's not a lot you can check besides the length with you do.
+If there are sanity checks you can do, though, do them here.
+
+> +		ret = -EFAULT;
+> +		goto report_failed;
+> +	}
+> +
+> +	/*
+> +	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
+> +	 *
+> +	 * Get the TDREPORT using REPORTDATA as input. Refer to
+> +	 * section 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
+> +	 * Specification for detailed information.
+> +	 */
+> +	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
+> +				virt_to_phys(reportdata), req.subtype,
+
+That subtype you're not checking either.
+
+Where's the paranoia?!
+
+> +				0, NULL);
+> +	if (ret) {
+> +		ret = -EIO;
+> +		goto report_failed;
+> +	}
+> +
+> +	/* Copy TDREPORT data back to the user buffer */
+
+Another useless comment.
+
+> +	if (copy_to_user((void *)req.tdreport, tdreport, req.tdr_len))
+> +		ret = -EFAULT;
+> +
+> +report_failed:
+> +	kfree(reportdata);
+> +	kfree(tdreport);
+> +	return ret;
+> +}
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index 928dcf7a20d9..205f98f42da8 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -5,6 +5,9 @@
+>  #define pr_fmt(fmt)     "tdx: " fmt
+>  
+>  #include <linux/cpufeature.h>
+> +#include <linux/miscdevice.h>
+> +#include <linux/mm.h>
+> +#include <linux/io.h>
+>  #include <asm/coco.h>
+>  #include <asm/tdx.h>
+>  #include <asm/vmx.h>
+> @@ -12,6 +15,8 @@
+>  #include <asm/insn-eval.h>
+>  #include <asm/pgtable.h>
+>  
+> +#include "tdx.h"
+> +
+>  /* TDX module Call Leaf IDs */
+>  #define TDX_GET_INFO			1
+>  #define TDX_GET_VEINFO			3
+> @@ -34,6 +39,10 @@
+>  #define VE_GET_PORT_NUM(e)	((e) >> 16)
+>  #define VE_IS_IO_STRING(e)	((e) & BIT(4))
+>  
+> +#define DRIVER_NAME	"tdx-guest"
+
+Just "tdx". When you add another driver, then you can disambiguate.
+
+> +static struct miscdevice tdx_misc_dev;
+> +
+>  /*
+>   * Wrapper for standard use of __tdx_hypercall with no output aside from
+>   * return code.
+> @@ -775,3 +784,49 @@ void __init tdx_early_init(void)
+>  
+>  	pr_info("Guest detected\n");
+>  }
+> +
+> +static long tdx_guest_ioctl(struct file *file, unsigned int cmd,
+> +			    unsigned long arg)
+> +{
+> +	void __user *argp = (void __user *)arg;
+> +	long ret = -EINVAL;
+> +
+> +	switch (cmd) {
+> +	case TDX_CMD_GET_REPORT:
+> +		ret = tdx_get_report(argp);
+> +		break;
+> +	default:
+> +		pr_debug("cmd %d not supported\n", cmd);
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct file_operations tdx_guest_fops = {
+> +	.owner		= THIS_MODULE,
+> +	.unlocked_ioctl	= tdx_guest_ioctl,
+> +	.llseek		= no_llseek,
+> +};
+> +
+> +static int __init tdx_guest_init(void)
+> +{
+> +	int ret;
+> +
+> +	/* Make sure we are in a valid TDX platform */
+
+More useless comments.
+
+When you type comments, pls stop and think whether it even makes sense
+to add them or the code you're commenting is actually clear from the
+function naming and the given parameters and the position in the
+function..., from all of it, that it is pretty clear what happens.
+
+> +	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+> +		return -EIO;
+> +
+> +	tdx_misc_dev.name = DRIVER_NAME;
+> +	tdx_misc_dev.minor = MISC_DYNAMIC_MINOR;
+> +	tdx_misc_dev.fops = &tdx_guest_fops;
+> +
+> +	ret = misc_register(&tdx_misc_dev);
+> +	if (ret) {
+> +		pr_err("misc device registration failed\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +device_initcall(tdx_guest_init)
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
