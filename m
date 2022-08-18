@@ -2,107 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A5CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F5DC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344550AbiHRR0E (ORCPT
+        id S1344815AbiHRR0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        Thu, 18 Aug 2022 13:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343515AbiHRRZJ (ORCPT
+        with ESMTP id S1345590AbiHRRZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:25:09 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED50558E9;
-        Thu, 18 Aug 2022 10:24:50 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73:8b7:7001:c8aa:b65f])
+        Thu, 18 Aug 2022 13:25:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4FCE48;
+        Thu, 18 Aug 2022 10:25:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 25B6D380;
-        Thu, 18 Aug 2022 17:24:50 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 25B6D380
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1660843490; bh=3fRl1j7mKGqvV85JpGfgS3kDrE8+2lAy6KIi73rzFoc=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=iKpMyJv3NbbL+LzdhHbx+QU4/u2VBzyekTAjUdJXeQ/8Bq1mmUsx2422T89+X385k
-         XteDu3N47gDwd9r01p8gfH7FJ/nnmNQ7StQXjcVMIMIKJ732E+MxDQSmUE9Px49UEr
-         TqIGxs//RbN3zGVa4hN/pjZfjYMkrDuLUqldcsiAfNz3fIpSJ/bp5RCGF6ITjf/cd4
-         mhTQnE4EZVT1ZHx1H9LJCMws7Uoe4oqL6seOBmvp9B2N+IOvoDKOZiBitRLH56sbQ1
-         WR6WNf4CzI+C6VP31CWSeWxIx7GPhLS66aR3ZDlx3iQhME8vpOStFbeV9VZUOJD37Z
-         yN7UUb052ts+Q==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     linux-doc@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH v2 2/3] docs/conf.py: Respect env variable SPHINX_IMGMATH
-In-Reply-To: <736e39fd-b068-80dd-b383-70e061e71bf5@gmail.com>
-References: <c41cab17-afd6-bc99-56a1-e4e73b8c1ef6@gmail.com>
- <736e39fd-b068-80dd-b383-70e061e71bf5@gmail.com>
-Date:   Thu, 18 Aug 2022 11:24:49 -0600
-Message-ID: <87sfltbh26.fsf@meer.lwn.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4536D616FD;
+        Thu, 18 Aug 2022 17:25:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 767AFC433C1;
+        Thu, 18 Aug 2022 17:25:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660843552;
+        bh=U4ulU7LUfIxOOKY+jPEQdeirsitxhl7mzZqSCLj9pLk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DI/wDz+hwFetaviDPUx/S35ihafJz/fiirF4hzWGi7bbpJIGg0lMUybl5TenFCb/j
+         JKqXVUHPN7WspTnqf7Efoo75RAUb8y3cHEwfZBT22+0Z76MdwvJSJ9zlVAR9Sl+wEm
+         5tOcALdJgW3DV5+62WeoqvaUTKkVx1DVfWl+tjnkj1zWqHMdOnnmphf8ypMqzgsmzx
+         QSPHUXWyB646qiVqtHnR9l9E1AUBebDkaUyYWtM9NCKC8STKCs7nUl7ZqqxuckF4lz
+         ouFexmlD9E1CAR0cNYa0GUttQwFXLGdGTdiYoV5X8mKgWj6uN8Y/Y82SWKEatrrFrs
+         x1De1mfYJt6hg==
+Received: by pali.im (Postfix)
+        id E05782868; Thu, 18 Aug 2022 19:25:49 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] leds: syscon: Implement support for active-low property
+Date:   Thu, 18 Aug 2022 19:25:28 +0200
+Message-Id: <20220818172528.23062-2-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220818172528.23062-1-pali@kernel.org>
+References: <20220818172528.23062-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akira Yokosawa <akiyks@gmail.com> writes:
+This new active-low property specify that LED has inverted logic
+(0 - enable LED, 1 - disable LED).
 
-> On some distros with coarse-grained packaging policy, dvipng is
-> installed along with latex.  In such cases, math rendering will
-> use imgmath by default.  It is possible to override the choice by
-> specifying the option string of "-D html_math_renderer='mathjax'"
-> to sphinx-build (Sphinx >= 1.8).
->
-> To provide developers an easier-to-use knob, add code for an env
-> variable "SPHINX_IMGMATH" which overrides the automatic choice
-> of math renderer for html docs.
->
->     SPHINX_IMGMATH=yes : Load imgmath even if dvipng is not found
->     SPHINX_IMGMATH=no  : Don't load imgmath (fall back to mathjax)
->
-> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> Changes since v1:
->  - No logical changes.
->  - Renames:
->      LOAD_IMGMATH -> SPHINX_IMGMATH (Mauro),
->      opt_load_imgmath -> env_sphinx_imgmath.
->  - Acked-by from Mauro.
->
-> --
->  Documentation/conf.py | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/conf.py b/Documentation/conf.py
-> index 3ec1f845c839..0b8f20e8e22c 100644
-> --- a/Documentation/conf.py
-> +++ b/Documentation/conf.py
-> @@ -128,8 +128,20 @@ autosectionlabel_maxdepth = 2
->  # mathjax is the default math renderer since Sphinx 1.8.
->  have_latex =  have_command('latex', '--version', 'pdfTeX')
->  have_dvipng = have_command('dvipng', '--version', 'dvipng')
-> -load_imgmath = ((have_latex and have_dvipng)
-> -                or (major == 1 and minor < 8)
-> +load_imgmath = have_latex and have_dvipng
-> +
-> +# Respect SPHINX_IMGMATH (for html docs only)
-> +if 'SPHINX_IMGMATH' in os.environ:
-> +    env_sphinx_imgmath = os.environ['SPHINX_IMGMATH']
-> +    if 'yes' in env_sphinx_imgmath:
-> +        load_imgmath = True
-> +    elif 'no' in env_sphinx_imgmath:
-> +        load_imgmath = False
-> +    else: # otherwide, auto selection
-> +        pass
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/leds/leds-syscon.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-That "else: pass" sequence does nothing, of course, and could be taken
-out.
+diff --git a/drivers/leds/leds-syscon.c b/drivers/leds/leds-syscon.c
+index 7eddb8ecb44e..5e605d8438e9 100644
+--- a/drivers/leds/leds-syscon.c
++++ b/drivers/leds/leds-syscon.c
+@@ -29,6 +29,7 @@ struct syscon_led {
+ 	struct regmap *map;
+ 	u32 offset;
+ 	u32 mask;
++	bool active_low;
+ 	bool state;
+ };
+ 
+@@ -41,10 +42,10 @@ static void syscon_led_set(struct led_classdev *led_cdev,
+ 	int ret;
+ 
+ 	if (value == LED_OFF) {
+-		val = 0;
++		val = sled->active_low ? sled->mask : 0;
+ 		sled->state = false;
+ 	} else {
+-		val = sled->mask;
++		val = sled->active_low ? 0 : sled->mask;
+ 		sled->state = true;
+ 	}
+ 
+@@ -85,6 +86,8 @@ static int syscon_led_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	if (of_property_read_u32(np, "mask", &sled->mask))
+ 		return -EINVAL;
++	if (of_find_property(np, "active-low", NULL))
++		sled->active_low = true;
+ 
+ 	state = of_get_property(np, "default-state", NULL);
+ 	if (state) {
+@@ -95,17 +98,20 @@ static int syscon_led_probe(struct platform_device *pdev)
+ 			if (ret < 0)
+ 				return ret;
+ 			sled->state = !!(val & sled->mask);
++			if (sled->active_low)
++				sled->state = !sled->state;
+ 		} else if (!strcmp(state, "on")) {
+ 			sled->state = true;
+ 			ret = regmap_update_bits(map, sled->offset,
+ 						 sled->mask,
+-						 sled->mask);
++						 sled->active_low ? 0 : sled->mask);
+ 			if (ret < 0)
+ 				return ret;
+ 		} else {
+ 			sled->state = false;
+ 			ret = regmap_update_bits(map, sled->offset,
+-						 sled->mask, 0);
++						 sled->mask,
++						 sled->active_low ? sled->mask : 0);
+ 			if (ret < 0)
+ 				return ret;
+ 		}
+-- 
+2.20.1
 
-Otherwise fine,
-
-jon
