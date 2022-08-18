@@ -2,120 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDEFAC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C96EBC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244474AbiHRMBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 08:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        id S244507AbiHRMD6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 08:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244468AbiHRMAz (ORCPT
+        with ESMTP id S244479AbiHRMDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 08:00:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A1E277
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 05:00:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660824054; x=1692360054;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=nUnatOEBHqllCBfKymhIxJyn7mqSpTnHv+/D+9S6usw=;
-  b=CWdrDw43Q2xvCE7IOV34ci77PrZkwSX3Be3vISTLQJGWE1EdjNQNQ7wN
-   fiGzvIz5TicuggmKR1ucdKNWrvIwGPPk+YUgUA6w8qVgZkb9bbm4A6W+1
-   YAhnpNLi7jOYSvJxy29vRXb9ZDzg+pQQb5966rlbrMKxb8UKu20/xEYrj
-   uw5RS6CM3AljvblcDLyKkZK9OQCqQb9t8bwr0xUigPJtPeITSTEdDrbZ8
-   vQptWJXFdkzEOrIKGqeQJJOvFP/JN61pShfKf4YnK5PNMZMLteZ6itIxG
-   2wSglbyPirbdNTyVey8jwRAmPiQvicyAJ80aTIy8oOACBRbZd39FaV5Af
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="292737985"
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="292737985"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 05:00:53 -0700
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="668074960"
-Received: from dursu-mobl1.ger.corp.intel.com ([10.249.42.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 05:00:52 -0700
-Date:   Thu, 18 Aug 2022 15:00:50 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kernel@axis.com,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] tty: Fix lookahead_buf crash with serdev
-In-Reply-To: <20220818115026.2237893-1-vincent.whitchurch@axis.com>
-Message-ID: <67bee157-5aa9-213b-e7b8-38956a3884d9@linux.intel.com>
-References: <20220818115026.2237893-1-vincent.whitchurch@axis.com>
+        Thu, 18 Aug 2022 08:03:55 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C3C582855
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 05:03:53 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AB685106F;
+        Thu, 18 Aug 2022 05:03:54 -0700 (PDT)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F18643F70D;
+        Thu, 18 Aug 2022 05:03:52 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 13:03:51 +0100
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>, James Morse <james.morse@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH v2] arm64: errata: add detection for AMEVCNTR01
+ incrementing incorrectly
+Message-ID: <Yv4qp9xar9EBQaD8@arm.com>
+References: <20220817121551.21790-1-ionela.voinescu@arm.com>
+ <Yv0eVVmrnPp7fjaB@arm.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1539636719-1660824053=:1604"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yv0eVVmrnPp7fjaB@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Catalin,
 
---8323329-1539636719-1660824053=:1604
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 18 Aug 2022, Vincent Whitchurch wrote:
-
-> Do not follow a NULL pointer if the tty_port_client_operations does not
-> implement the ->lookahead_buf() callback, which is the case with
-> serdev's ttyport.
+On Wednesday 17 Aug 2022 at 17:59:01 (+0100), Catalin Marinas wrote:
+> Hi Ionela,
 > 
-> Fixes: 6bb6fa6908ebd3 ("tty: Implement lookahead to process XON/XOFF timely")
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
--- 
- i.
-
-> ---
+> On Wed, Aug 17, 2022 at 01:15:51PM +0100, Ionela Voinescu wrote:
+> > diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+> > index 7e6289e709fc..810dd3c39882 100644
+> > --- a/arch/arm64/kernel/cpu_errata.c
+> > +++ b/arch/arm64/kernel/cpu_errata.c
+> > @@ -654,6 +654,16 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
+> >  		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 2)
+> >  	},
+> >  #endif
+> > +#ifdef CONFIG_ARM64_ERRATUM_2457168
+> > +	{
+> > +		.desc = "ARM erratum 2457168",
+> > +		.capability = ARM64_WORKAROUND_2457168,
+> > +		.type = ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
+> > +
+> > +		/* Cortex-A510 r0p0-r1p1 */
+> > +		CAP_MIDR_RANGE(MIDR_CORTEX_A510, 0, 0, 1, 1)
+> > +	},
+> > +#endif
+> >  #ifdef CONFIG_ARM64_ERRATUM_2038923
+> >  	{
+> >  		.desc = "ARM erratum 2038923",
+> > diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> > index 907401e4fffb..af4de817d712 100644
+> > --- a/arch/arm64/kernel/cpufeature.c
+> > +++ b/arch/arm64/kernel/cpufeature.c
+> > @@ -1870,7 +1870,10 @@ static void cpu_amu_enable(struct arm64_cpu_capabilities const *cap)
+> >  		pr_info("detected CPU%d: Activity Monitors Unit (AMU)\n",
+> >  			smp_processor_id());
+> >  		cpumask_set_cpu(smp_processor_id(), &amu_cpus);
+> > -		update_freq_counters_refs();
+> > +
+> > +		/* 0 reference values signal broken/disabled counters */
+> > +		if (!this_cpu_has_cap(ARM64_WORKAROUND_2457168))
+> > +			update_freq_counters_refs();
+> >  	}
+> >  }
 > 
-> Notes:
->     v2: Move more stuff into if block.
+> From a CPU errata workaround, this part looks fine to me.
 > 
->  drivers/tty/tty_buffer.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
+> >  
+> > diff --git a/arch/arm64/kernel/topology.c b/arch/arm64/kernel/topology.c
+> > index 869ffc4d4484..5d7efb15f7cf 100644
+> > --- a/arch/arm64/kernel/topology.c
+> > +++ b/arch/arm64/kernel/topology.c
+> > @@ -301,7 +301,8 @@ static void cpu_read_corecnt(void *val)
+> >  
+> >  static void cpu_read_constcnt(void *val)
+> >  {
+> > -	*(u64 *)val = read_constcnt();
+> > +	*(u64 *)val = this_cpu_has_cap(ARM64_WORKAROUND_2457168) ?
+> > +		      0UL : read_constcnt();
+> >  }
+> >  
+> >  static inline
+> > @@ -328,7 +329,12 @@ int counters_read_on_cpu(int cpu, smp_call_func_t func, u64 *val)
+> >   */
+> >  bool cpc_ffh_supported(void)
+> >  {
+> > -	return freq_counters_valid(get_cpu_with_amu_feat());
+> > +	int cpu = get_cpu_with_amu_feat();
+> > +
+> > +	if ((cpu >= nr_cpu_ids) || !cpumask_test_cpu(cpu, cpu_present_mask))
+> > +		return false;
+> > +
+> > +	return true;
+> >  }
 > 
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 9fdecc795b6b..5e287dedce01 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -470,7 +470,6 @@ static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
->  
->  	while (head) {
->  		struct tty_buffer *next;
-> -		unsigned char *p, *f = NULL;
->  		unsigned int count;
->  
->  		/*
-> @@ -489,11 +488,16 @@ static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
->  			continue;
->  		}
->  
-> -		p = char_buf_ptr(head, head->lookahead);
-> -		if (~head->flags & TTYB_NORMAL)
-> -			f = flag_buf_ptr(head, head->lookahead);
-> +		if (port->client_ops->lookahead_buf) {
-> +			unsigned char *p, *f = NULL;
-> +
-> +			p = char_buf_ptr(head, head->lookahead);
-> +			if (~head->flags & TTYB_NORMAL)
-> +				f = flag_buf_ptr(head, head->lookahead);
-> +
-> +			port->client_ops->lookahead_buf(port, p, f, count);
-> +		}
->  
-> -		port->client_ops->lookahead_buf(port, p, f, count);
->  		head->lookahead += count;
->  	}
->  }
+> So here we tell the core code that FFH is supported but always return 0
+> via cpc_read_ffh() if the const counter is requested. I assume the core
+> code figures this out and doesn't use the value on the affected CPUs. I
+> was hoping cpc_ffh_supported() would be per-CPU and the core code simply
+> skips calling cpc_read() on the broken cores.
+
+I used to think the same, but I've realised that the current approach is
+best, in my opinion.
+
+There are two users of these counters exposed though FFH in the kernel:
+CPPC-based frequency invariance(FIE) and reading current frequency through
+sysfs. If AMU counters are disabled or the CPU is affected by this
+erratum, a single read of 0 for any of the counters will result in
+cppc_get_perf_ctrs() returning -EFAULT which:
+
+- (cppc_cpufreq_cpu_fie_init()) Will disable the use of FIE for that
+  policy, and those counters will never be read again for that CPU, for
+  the purpose of FIE. This is the operation that would result in reading
+  those counters most often, which in this case won't happen.
+
+- Will return -EFAULT from cppc_cpufreq_get_rate() signaling to the user
+  that it cannot return a proper frequency using those counters. That's
+  cast to unsigned int so the user would have to be knowledgeable on the
+  matter :), but that's an existing problem.
+
+Therefore, error checking based on a counter read of 0 would be
+equivalent here to checking a potential ffh_supported(cpu). Also, in the
+future we might use FFH to not only read these counters. So it's better
+to keep ffh_supported() to just reflect whether generically FFH is
+supported, even if in some cases the "backend" (AMUs here) is disabled
+or broken.
+
+Also, given that it's most likely for a platform to use the same method
+for all CPU for reading counters, forgetting or not considering errata,
+together with the current use of ffh_supported() as gate-keeper of a CPU
+probe based on validity of all CPC methods, even if cpc_ffh_supported()
+was per-CPU, it's still better to probe the CPU and let the users of
+counters deal with breakage, especially given that these usecases are
+not critical.
+
+> Is the other register read by cpc_read_ffh() still useful without the
+> const one?
+
+Not for the current uses, and unlikely to be in the future - I don't see
+how the core counter value can be useful without a constant reference.
+
+
+> While the Kconfig entry describes the behaviour, I'd rather have a
+> comment in cpc_ffh_supported() and maybe cpu_read_constcnt() on why we
+> do these tricks.
 > 
 
---8323329-1539636719-1660824053=:1604--
+Will do!
+
+Thanks,
+Ionela.
+
+> Thanks.
+> 
+> -- 
+> Catalin
