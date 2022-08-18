@@ -2,76 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CDAC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF72C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239891AbiHRI2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
+        id S240182AbiHRIa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238978AbiHRI2U (ORCPT
+        with ESMTP id S231393AbiHRIaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 04:28:20 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DFE9584
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:28:17 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660811295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GmDACFAww771N8QDTZCRoxaYGKF8g2ZcH88LHpMyuOQ=;
-        b=i4uEb4xT2CK5L/Y7PRLMc1NDACaYTmcgl7O+fTwj0efVvaC5BIkWasWWIr2OB3DVx3xZ3y
-        y3Ifi+LMJIloPqAoSVDM1Fva9sR5PCHap83JuCcv7BKLjYajA4bbvKrUurUoLIz/2yKSPM
-        s45TYx25iDkJwsGxBbITbsfZUI977HY=
+        Thu, 18 Aug 2022 04:30:25 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555F08E0D3
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:30:24 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id bx38so1014425ljb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:30:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=qXTt19eF4mwiE0Ime+Awj3mOruDp7C/SRIF6tAJVQDo=;
+        b=t7xTMCHGMRGLK+umdFpXOwWkrNzQGqXrBos0quyiAm91vb4vugRXWXDWChF8XhbJxB
+         Z45VYXaaZ8B8aKebBHy/CEHVLDE3haCPej78R/834Q1wEXLBO1nz1v9kT291x8t4Jz9g
+         wxbdqTkch+nDEdgvqB1VPrP3zh8PF+xzINxshq+4Mwdqpm6sVoyWcolF1+3nif69HhkY
+         UcHP9C+h9WvpVGpJFjIhZ2WJQ00SeRm/6JH+vqVADiB9FY0lQFBfFAcqsYm1TVEqtcY8
+         Oex1ibpkBYs9UWAumFjN0IRr7fdNetDAX1sBSNgpKHGMj98kpZqJ1w4iYC3cUB58jP3l
+         L/hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=qXTt19eF4mwiE0Ime+Awj3mOruDp7C/SRIF6tAJVQDo=;
+        b=ohexli2RIhN7pCxpvDZlvkbuKprWAjd8DnSyEMIQkG5lrhfM1JE8+AZv3AEZDtfaEI
+         t8B0zuM2PlDSMvL9XJuEEqv0f5Fi07HGDYOCpoEp+8pHZit+E3NVQ5shWzv8BNTtPlnX
+         55b8zoe4cI9MT/2xBl5YZ7BHhxZNQAatFOhMsCW2fR+L5xO2tptRwvsV9HHLJmGOvzvq
+         oV/9K3YG3p4e89qrMEA6SRJ4K3zv6Mwtx3T6edsVVAK13f0WRgZfvCcDQjeVV5hDd4QL
+         1wYLhCs5mbMvTmy6yvOE3TGewaCFrLKzu6ZwudyhNi6+NWC52WaIjVSoRue+rvwvplAO
+         Sagg==
+X-Gm-Message-State: ACgBeo1DlLUz5gdxdqsqMFats0XTq1+crGB4lqd8KYQJYRuutC4HhKRq
+        0J3JfYV+trFNJ47G2DMoSS4j7g==
+X-Google-Smtp-Source: AA6agR5ruAqqxhSW0Jr0u0T2N6TAA417fghniyaD0s8eQMiBgW9TCyIVBnHWO9ViolQ/0JtLpXNFSw==
+X-Received: by 2002:a05:651c:179f:b0:261:83f5:4b5e with SMTP id bn31-20020a05651c179f00b0026183f54b5emr557765ljb.197.1660811422712;
+        Thu, 18 Aug 2022 01:30:22 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id q129-20020a2e5c87000000b002618e5c2664sm125538ljb.103.2022.08.18.01.30.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 01:30:22 -0700 (PDT)
+Message-ID: <188425fd-8cc7-fb2e-9ee3-ff37937cac54@linaro.org>
+Date:   Thu, 18 Aug 2022 11:30:20 +0300
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 1/2] mm/damon: validate if the pmd entry is present
- before accessing
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Muchun Song <muchun.song@linux.dev>
-In-Reply-To: <58b1d1f5fbda7db49ca886d9ef6783e3dcbbbc98.1660805030.git.baolin.wang@linux.alibaba.com>
-Date:   Thu, 18 Aug 2022 16:27:41 +0800
-Cc:     sj@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>, damon@lists.linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <A18421D4-7BD6-41E6-A284-846C4EF53B2F@linux.dev>
-References: <58b1d1f5fbda7db49ca886d9ef6783e3dcbbbc98.1660805030.git.baolin.wang@linux.alibaba.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v5 1/4] perf/amlogic: Add support for Amlogic meson G12
+ SoC DDR PMU driver
+Content-Language: en-US
+To:     Jiucheng Xu <jiucheng.xu@amlogic.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chris Healy <cphealy@gmail.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220817113423.2088581-1-jiucheng.xu@amlogic.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220817113423.2088581-1-jiucheng.xu@amlogic.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 17/08/2022 14:34, Jiucheng Xu wrote:
+> This patch adds support Amlogic meson G12 series SoC
+> DDR bandwidth PMU driver framework and interfaces.
+> 
+> The PMU not only can monitor the total DDR bandwidth,
+> but also the bandwidth which is from individual IP module.
+> 
+> Example usage:
 
+Thank you for your patch. There is something to discuss/improve.
 
-> On Aug 18, 2022, at 15:37, Baolin Wang <baolin.wang@linux.alibaba.com> =
-wrote:
->=20
-> The pmd_huge() is used to validate if the pmd entry is mapped by a =
-huge
-> page, also including the case of non-present (migration or hwpoisoned)
-> pmd entry on arm64 or x86 architectures. That means the pmd_pfn() can
-> not get the correct pfn number for the non-present pmd entry, which
-> will cause damon_get_page() to get an incorrect page struct (also
-> may be NULL by pfn_to_online_page()) to make the access statistics
-> incorrect.
->=20
-> Moreover it does not make sense that we still waste time to get the
-> page of the non-present entry, just treat it as not-accessed and skip =
-it,
-> that keeps consistent with non-present pte level entry.
->=20
-> Thus adding a pmd entry present validation to fix above issues.
->=20
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Reviewed-by: SeongJae Park <sj@kernel.org>
+}
+> +
+> +static int dmc_g12_irq_handler(struct dmc_info *info,
+> +			       struct dmc_counter *counter)
+> +{
+> +	unsigned int val;
+> +	int ret = -EINVAL;
+> +
+> +	val = readl(info->ddr_reg[0] + DMC_MON_G12_CTRL0);
+> +	if (val & DMC_QOS_IRQ) {
+> +		dmc_g12_get_counters(info, counter);
+> +		/* clear irq flags */
+> +		writel(val, info->ddr_reg[0] + DMC_MON_G12_CTRL0);
+> +		ret = 0;
+> +	}
+> +	return ret;
+> +}
+> +
+> +static struct dmc_hw_info g12a_dmc_info = {
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+This and other ones should be also const.
 
-Thanks.
+> +	.enable		= dmc_g12_counter_enable,
+> +	.disable	= dmc_g12_counter_disable,
+> +	.irq_handler	= dmc_g12_irq_handler,
+> +	.get_counters	= dmc_g12_get_counters,
+> +	.set_axi_filter	= dmc_g12_set_axi_filter,
+> +
+> +	.dmc_nr = 1,
+> +	.chann_nr = 4,
+> +	.capability = 0X7EFF00FF03DF,
+> +	.fmt_attr = g12_pmu_format_attrs,
+> +};
+> +
 
+Best regards,
+Krzysztof
