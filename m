@@ -2,73 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA15C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE051C28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231504AbiHRIJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
+        id S234280AbiHRIJ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbiHRIJq (ORCPT
+        with ESMTP id S229802AbiHRIJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 04:09:46 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B9A74CCC
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:09:42 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M7cvW1lRCzGpYF;
-        Thu, 18 Aug 2022 16:08:07 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 16:09:40 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
- 2022 16:09:40 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <sound-open-firmware@alsa-project.org>
-CC:     <rander.wang@intel.com>, <pierre-louis.bossart@linux.intel.com>,
-        <ranjani.sridharan@linux.intel.com>,
-        <peter.ujfalusi@linux.intel.com>, <broonie@kernel.org>
-Subject: [PATCH -next] ASoC: SOF: ipc4-topology: fix wrong use of sizeof in sof_ipc4_widget_setup_comp_src()
-Date:   Thu, 18 Aug 2022 16:17:51 +0800
-Message-ID: <20220818081751.2407066-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 18 Aug 2022 04:09:57 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9249779EDB
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:09:56 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id s9so983040ljs.6
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:09:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=EVo1JzzO+AXs1TK3RqIAy/YrxBDBkv9rEHre/pP8Dec=;
+        b=iDsTMsdTlN0fSKLMyb8USiEFCQe0NG9k6CcT9HwE5WmrhuNT4G4y5TxqDO4LrAY01m
+         GXKY5NfAe+tOCFRgb4GHyJuIf8Vz8mcsCmLXXze/Jwae+MWVVT8xs7ey4/lfRtPmJgjy
+         fWzrjmG51Nc/OYruHWKXiR7Zopsr/OzObK92jZFIX7wmg1OzGVyLY0OaTq000c3hepxh
+         39ji9J4eM28CgBleZnmaUiEDgbc34cS+LKfVm1DYf9z3+XkxcxLSQeCGMVvWPkZbMOWC
+         obzR5VpRcpvPev0rkt+W+7JzWp2mA7C5PEqATzRwgO7rBCIvafceVsZw/GqN7l6ZdnL3
+         gdeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=EVo1JzzO+AXs1TK3RqIAy/YrxBDBkv9rEHre/pP8Dec=;
+        b=aX23y3QtqtEA3BHBUBk1Wnzvs6wyl3zFNEdjMpqa01GUb5AZctOwHUcgTugWPqEZUy
+         LCj6LgPHVi6eGl0JrhMdR5LCLsDp//8uv7OQInkLgjhKNDLaidUocr6DnVxZAHBxu78k
+         5IWG4nCeNCKwwUSjt1L6sp+PL9RWHFC9ubZK/LalWyfpiOXFxu7XHYyNmUWFxgq4Zg8k
+         l00TQ1RC6VctJn3isGemOVnpHkdPju1RAGqSiQ/6N6sjNCVqYfnXwkvf9E023Z0tM36m
+         voC8GI2rb3e0urHPz6YpB8b7d8ZG0L0Mi+W6dSYgVxN/UthUNFq2JVSE6KT/mpl3kyNA
+         8COw==
+X-Gm-Message-State: ACgBeo3Iy8xOZv6VPVhn7axuLtTQfmElZVIY9zAHkqaWTf/hBWsfDxNB
+        bhdeaF4H0s4EK3gNjeBDyG59jA==
+X-Google-Smtp-Source: AA6agR5oWxJHUE1I2LfnQ5MXv3En7vtZMVUEcP09vZv5xbcLbvExxZ05uPN1/J4xNYLcEhqstH39gw==
+X-Received: by 2002:a2e:8e8b:0:b0:261:b3fa:1818 with SMTP id z11-20020a2e8e8b000000b00261b3fa1818mr305679ljk.444.1660810194964;
+        Thu, 18 Aug 2022 01:09:54 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id g28-20020a0565123b9c00b0048a9356cd63sm133113lfv.11.2022.08.18.01.09.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 01:09:54 -0700 (PDT)
+Message-ID: <85193de5-244c-2cda-e442-656769b97b14@linaro.org>
+Date:   Thu, 18 Aug 2022 11:09:53 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 2/2] power: supply: rt9471: Add Richtek RT9471 charger
+ driver
+Content-Language: en-US
+To:     cy_huang <u0084500@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, sre@kernel.org
+Cc:     mazziesaccount@gmail.com, alina_yu@richtek.com,
+        cy_huang@richtek.com, alinayu829@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1660785696-9010-1-git-send-email-u0084500@gmail.com>
+ <1660785696-9010-3-git-send-email-u0084500@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1660785696-9010-3-git-send-email-u0084500@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It should be size of the struct sof_ipc4_src, not data pointer pass to
-sof_update_ipc_object().
+On 18/08/2022 04:21, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> Add support for the RT9471 3A 1-Cell Li+ battery charger.
+> 
+> The RT9471 is a highly-integrated 3A switch mode battery charger with
+> low impedance power path to better optimize the charging efficiency.
+> 
+> Co-developed-by: Alina Yu <alina_yu@richtek.com>
+> Signed-off-by: Alina Yu <alina_yu@richtek.com>
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> ---
+> Since v2:
+> - Fix checkpatch error about 'foo * bar' to 'foo *bar' in psy_device_to_chip function.
+> - Specify the member name directly for the use of linear range.
+> 
+> ---
 
-Fixes: b85f4fc40d56 ("ASoC: SOF: add ipc4 SRC module support")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- sound/soc/sof/ipc4-topology.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+(...)
 
-diff --git a/sound/soc/sof/ipc4-topology.c b/sound/soc/sof/ipc4-topology.c
-index af072b484a60..c6abfaf5d532 100644
---- a/sound/soc/sof/ipc4-topology.c
-+++ b/sound/soc/sof/ipc4-topology.c
-@@ -771,7 +771,7 @@ static int sof_ipc4_widget_setup_comp_src(struct snd_sof_widget *swidget)
- 		goto err;
- 
- 	ret = sof_update_ipc_object(scomp, src, SOF_SRC_TOKENS, swidget->tuples,
--				    swidget->num_tuples, sizeof(src), 1);
-+				    swidget->num_tuples, sizeof(*src), 1);
- 	if (ret) {
- 		dev_err(scomp->dev, "Parsing SRC tokens failed\n");
- 		goto err;
--- 
-2.25.1
+> +
+> +static DEVICE_ATTR_RW(sysoff_enable);
+> +static DEVICE_ATTR_RW(charge_term_enable);
+> +static DEVICE_ATTR_RW(port_detect_enable);
+> +
+> +static struct attribute *rt9471_sysfs_entries[] = {
+> +	&dev_attr_sysoff_enable.attr,
+> +	&dev_attr_charge_term_enable.attr,
+> +	&dev_attr_port_detect_enable.attr,
+> +	NULL
 
+You need to document the sysfs ABI in Documentation.
+
+> +};
+> +
+> +static const struct attribute_group rt9471_attr_group = {
+> +	.attrs	= rt9471_sysfs_entries,
+> +};
+> +
+> +static const struct attribute_group *rt9471_attr_groups[] = {
+> +	&rt9471_attr_group,
+> +	NULL
+> +};
+
+(...)
+
+> +
+> +static const struct of_device_id rt9471_of_device_id[] = {
+> +	{ .compatible = "richtek,rt9471" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, rt9471_of_device_id);
+> +
+> +static struct i2c_driver rt9471_driver = {
+> +	.driver = {
+> +		.name = "rt9471",
+> +		.owner = THIS_MODULE,
+
+You should not need this. Run coccinelle/coccicheck on your driver.
+
+
+Best regards,
+Krzysztof
