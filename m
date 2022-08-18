@@ -2,468 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC72C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDE2C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344866AbiHRRBH (ORCPT
+        id S1345286AbiHRRBL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
+        Thu, 18 Aug 2022 13:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345300AbiHRRAY (ORCPT
+        with ESMTP id S1345321AbiHRRA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:00:24 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76A6C9EBC
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:16 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id n4so2403884wrp.10
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=MxOasEDeE+/u/o1zT6tGAu0EkjWfYJCMGyOsK4PePlw=;
-        b=j5qyvmJnsN5/vjP5AUZCBs+iUXItBSmsl6Q1hJlyoXpC2N0iuAAeKWCx3PtAReBbT3
-         RYD/uoo1HqWy4/hVVtmnGzFgW63u10qbgNJFBwDdLqP7E5HFJcujJPCj/HLrCbitYRNH
-         0Bxr5TpEWA3amo/oFs7udtx+x+hZWszbAvOYTkTJClDtgT0iQW8ER3UkCeweSAphSdeH
-         zAXi2ZuExMVPc/t4Ltf6KIsbrqjf0qGfMUbzpDWOyAme1f7HbSpntnE1676fBQWMvOu7
-         3sHHcJ/+KHJ5STb7FOQ0bKgoCSrQ8aVlmA8oSuCVulZeck+rJEqFHUQSwUOu4tpDPopu
-         Na0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=MxOasEDeE+/u/o1zT6tGAu0EkjWfYJCMGyOsK4PePlw=;
-        b=bVA+xxInSYO58c1mK3VzxKXqQp2AUc0uchcbrDrsJ/drIdXlTR+HWUqFc5U9quzNM0
-         TwcfBmS7Hzd5gDH41LVvXmpeiJvkWRC/C6kHWHcoxUB+XZKeeqwoxcJ8ZqXvPWch/Pqo
-         fjSjPyzlzIU2RDBvzWkCXWkSwNa9/BY427//fHjOrr4JNZ7fDvIQFr/cRvBJi24tx5cO
-         4Pf2fqpp0+3/o6QStrZI8ffeit+cF25zjH9+jODlC3t69Xii8FQxSR4fjW55ESgsKblc
-         MM7f4pNukqEOleyTMuidblgVJMV+kmCOtDHhUP6MIogDly4XCvNvyyUIWvQWCA9fpwuZ
-         xBzg==
-X-Gm-Message-State: ACgBeo2c1d8mIVDlUUqEAmUquxWm5wlJE3YLO8PulyJw1MKOv1QfDwix
-        CmTZ48z4vD4+HR7OLkuwC/gUPw==
-X-Google-Smtp-Source: AA6agR5qq3AZlS5BWazkdfCzm9ILDF8fg5izYR8N2g99VC9HKTBuDmPB72bT/DqT0TtDBWAFKJT0vA==
-X-Received: by 2002:a5d:6445:0:b0:225:1a75:7754 with SMTP id d5-20020a5d6445000000b002251a757754mr2124275wrw.239.1660842014652;
-        Thu, 18 Aug 2022 10:00:14 -0700 (PDT)
-Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:00:14 -0700 (PDT)
-From:   Dmitry Safonov <dima@arista.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <dima@arista.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-Subject: [PATCH 01/31] crypto: Introduce crypto_pool
-Date:   Thu, 18 Aug 2022 17:59:35 +0100
-Message-Id: <20220818170005.747015-2-dima@arista.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220818170005.747015-1-dima@arista.com>
-References: <20220818170005.747015-1-dima@arista.com>
+        Thu, 18 Aug 2022 13:00:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A691C12C0;
+        Thu, 18 Aug 2022 10:00:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EB546163F;
+        Thu, 18 Aug 2022 17:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3C28C43470;
+        Thu, 18 Aug 2022 17:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660842017;
+        bh=4alT+1kcW0AynTw4CzIKjHnkkcstzi9mfOYgPu9672k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LAdvY8HWNTKDjWAYsDasqK2xyXkUL5AdcRrhffJlzOahe/Nthx9qZv02KrOQhM2F6
+         BKVXCJusocInSjVo0c2x/ExHLwoJIbWAo31cpvumUUcm2yewTjEjKoSyeW5uLyjMn5
+         MWxgjt2y0iQWSVQSxl7rA2tnIOs9sk27Q/DhS2L3YG+eCnnUq/nXxVuK9elVqhal0z
+         lGWPg70nVFUqE742DkI6Z4OjizVs+BLISNz8iLdeHVkX0to/b7ad8qyL1kq3DLXtk8
+         KXSyI0LSHzOzTtnJ7aDzLLTOwPq0l3kNJ7uE6yVCdxXtWyZKGdmguQisnc5feZ3yGw
+         BUngpS41E2yRg==
+Date:   Thu, 18 Aug 2022 10:00:17 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Dave Chinner <david@fromorbit.com>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
+        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "david@fromorbit.com" <david@fromorbit.com>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>
+Subject: [PATCH] xfs: on memory failure, only shut down fs after scanning all
+ mappings
+Message-ID: <Yv5wIa2crHioYeRr@magnolia>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a per-CPU pool of async crypto requests that can be used
-in bh-disabled contexts (designed with net RX/TX softirqs as users in
-mind). Allocation can sleep and is a slow-path.
-Initial implementation has only ahash as a backend and a fix-sized array
-of possible algorithms used in parallel.
+From: Darrick J. Wong <djwong@kernel.org>
 
-Signed-off-by: Dmitry Safonov <dima@arista.com>
+xfs_dax_failure_fn is used to scan the filesystem during a memory
+failure event to look for memory mappings to revoke.  Unfortunately, if
+it encounters an rmap record for filesystem metadata, it will shut down
+the filesystem and the scan immediately.  This means that we don't
+complete the mapping revocation scan and instead leave live mappings to
+failed memory.  Fix the function to defer the shutdown until after we've
+finished culling mappings.
+
+While we're at it, add the usual "xfs_" prefix to struct failure_info,
+and actually initialize mf_flags.
+
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 ---
- crypto/Kconfig        |   6 +
- crypto/Makefile       |   1 +
- crypto/crypto_pool.c  | 291 ++++++++++++++++++++++++++++++++++++++++++
- include/crypto/pool.h |  34 +++++
- 4 files changed, 332 insertions(+)
- create mode 100644 crypto/crypto_pool.c
- create mode 100644 include/crypto/pool.h
+ fs/xfs/xfs_notify_failure.c |   26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index bb427a835e44..aeddaa3dcc77 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -2128,6 +2128,12 @@ config CRYPTO_STATS
- config CRYPTO_HASH_INFO
- 	bool
+diff --git a/fs/xfs/xfs_notify_failure.c b/fs/xfs/xfs_notify_failure.c
+index 69d9c83ea4b2..65d5eb20878e 100644
+--- a/fs/xfs/xfs_notify_failure.c
++++ b/fs/xfs/xfs_notify_failure.c
+@@ -23,17 +23,18 @@
+ #include <linux/mm.h>
+ #include <linux/dax.h>
  
-+config CRYPTO_POOL
-+	tristate "Per-CPU crypto pool"
-+	default n
-+	help
-+	  Per-CPU pool of crypto requests ready for usage in atomic contexts.
-+
- source "drivers/crypto/Kconfig"
- source "crypto/asymmetric_keys/Kconfig"
- source "certs/Kconfig"
-diff --git a/crypto/Makefile b/crypto/Makefile
-index a6f94e04e1da..b0f54cb9cea1 100644
---- a/crypto/Makefile
-+++ b/crypto/Makefile
-@@ -63,6 +63,7 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
- cryptomgr-y := algboss.o testmgr.o
+-struct failure_info {
++struct xfs_failure_info {
+ 	xfs_agblock_t		startblock;
+ 	xfs_extlen_t		blockcount;
+ 	int			mf_flags;
++	bool			want_shutdown;
+ };
  
- obj-$(CONFIG_CRYPTO_MANAGER2) += cryptomgr.o
-+obj-$(CONFIG_CRYPTO_POOL) += crypto_pool.o
- obj-$(CONFIG_CRYPTO_USER) += crypto_user.o
- crypto_user-y := crypto_user_base.o
- crypto_user-$(CONFIG_CRYPTO_STATS) += crypto_user_stat.o
-diff --git a/crypto/crypto_pool.c b/crypto/crypto_pool.c
-new file mode 100644
-index 000000000000..a5b6e6cf818a
---- /dev/null
-+++ b/crypto/crypto_pool.c
-@@ -0,0 +1,291 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <crypto/pool.h>
-+#include <linux/kref.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/percpu.h>
-+#include <linux/workqueue.h>
-+
-+static unsigned long scratch_size = DEFAULT_CRYPTO_POOL_SCRATCH_SZ;
-+static DEFINE_PER_CPU(void *, crypto_pool_scratch);
-+
-+struct crypto_pool_entry {
-+	struct ahash_request * __percpu *req;
-+	const char			*alg;
-+	struct kref			kref;
-+	bool				needs_key;
-+};
-+
-+#define CPOOL_SIZE (PAGE_SIZE/sizeof(struct crypto_pool_entry))
-+static struct crypto_pool_entry cpool[CPOOL_SIZE];
-+static int last_allocated;
-+static DEFINE_MUTEX(cpool_mutex);
-+
-+static int crypto_pool_scratch_alloc(void)
-+{
-+	int cpu;
-+
-+	lockdep_assert_held(&cpool_mutex);
-+
-+	for_each_possible_cpu(cpu) {
-+		void *scratch = per_cpu(crypto_pool_scratch, cpu);
-+
-+		if (scratch)
-+			continue;
-+
-+		scratch = kmalloc_node(scratch_size, GFP_KERNEL,
-+				       cpu_to_node(cpu));
-+		if (!scratch)
-+			return -ENOMEM;
-+		per_cpu(crypto_pool_scratch, cpu) = scratch;
+ static pgoff_t
+ xfs_failure_pgoff(
+ 	struct xfs_mount		*mp,
+ 	const struct xfs_rmap_irec	*rec,
+-	const struct failure_info	*notify)
++	const struct xfs_failure_info	*notify)
+ {
+ 	loff_t				pos = XFS_FSB_TO_B(mp, rec->rm_offset);
+ 
+@@ -47,7 +48,7 @@ static unsigned long
+ xfs_failure_pgcnt(
+ 	struct xfs_mount		*mp,
+ 	const struct xfs_rmap_irec	*rec,
+-	const struct failure_info	*notify)
++	const struct xfs_failure_info	*notify)
+ {
+ 	xfs_agblock_t			end_rec;
+ 	xfs_agblock_t			end_notify;
+@@ -71,13 +72,13 @@ xfs_dax_failure_fn(
+ {
+ 	struct xfs_mount		*mp = cur->bc_mp;
+ 	struct xfs_inode		*ip;
+-	struct failure_info		*notify = data;
++	struct xfs_failure_info		*notify = data;
+ 	int				error = 0;
+ 
+ 	if (XFS_RMAP_NON_INODE_OWNER(rec->rm_owner) ||
+ 	    (rec->rm_flags & (XFS_RMAP_ATTR_FORK | XFS_RMAP_BMBT_BLOCK))) {
+-		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
+-		return -EFSCORRUPTED;
++		notify->want_shutdown = true;
++		return 0;
+ 	}
+ 
+ 	/* Get files that incore, filter out others that are not in use. */
+@@ -86,8 +87,10 @@ xfs_dax_failure_fn(
+ 	/* Continue the rmap query if the inode isn't incore */
+ 	if (error == -ENODATA)
+ 		return 0;
+-	if (error)
+-		return error;
++	if (error) {
++		notify->want_shutdown = true;
++		return 0;
 +	}
-+	return 0;
-+}
-+
-+static void crypto_pool_scratch_free(void)
-+{
-+	int cpu;
-+
-+	lockdep_assert_held(&cpool_mutex);
-+
-+	for_each_possible_cpu(cpu) {
-+		void *scratch = per_cpu(crypto_pool_scratch, cpu);
-+
-+		if (!scratch)
-+			continue;
-+		per_cpu(crypto_pool_scratch, cpu) = NULL;
-+		kfree(scratch);
+ 
+ 	error = mf_dax_kill_procs(VFS_I(ip)->i_mapping,
+ 				  xfs_failure_pgoff(mp, rec, notify),
+@@ -104,6 +107,7 @@ xfs_dax_notify_ddev_failure(
+ 	xfs_daddr_t		bblen,
+ 	int			mf_flags)
+ {
++	struct xfs_failure_info	notify = { .mf_flags = mf_flags };
+ 	struct xfs_trans	*tp = NULL;
+ 	struct xfs_btree_cur	*cur = NULL;
+ 	struct xfs_buf		*agf_bp = NULL;
+@@ -120,7 +124,6 @@ xfs_dax_notify_ddev_failure(
+ 	for (; agno <= end_agno; agno++) {
+ 		struct xfs_rmap_irec	ri_low = { };
+ 		struct xfs_rmap_irec	ri_high;
+-		struct failure_info	notify;
+ 		struct xfs_agf		*agf;
+ 		xfs_agblock_t		agend;
+ 		struct xfs_perag	*pag;
+@@ -161,6 +164,11 @@ xfs_dax_notify_ddev_failure(
+ 	}
+ 
+ 	xfs_trans_cancel(tp);
++	if (error || notify.want_shutdown) {
++		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
++		if (!error)
++			error = -EFSCORRUPTED;
 +	}
-+}
-+
-+static int __cpool_alloc_ahash(struct crypto_pool_entry *e, const char *alg)
-+{
-+	struct crypto_ahash *hash;
-+	int cpu, ret = -ENOMEM;
-+
-+	e->alg = kstrdup(alg, GFP_KERNEL);
-+	if (!e->alg)
-+		return -ENOMEM;
-+
-+	e->req = alloc_percpu(struct ahash_request *);
-+	if (!e->req)
-+		goto out_free_alg;
-+
-+	hash = crypto_alloc_ahash(alg, 0, CRYPTO_ALG_ASYNC);
-+	if (IS_ERR(hash)) {
-+		ret = PTR_ERR(hash);
-+		goto out_free_req;
-+	}
-+
-+	/* If hash has .setkey(), allocate ahash per-cpu, not only request */
-+	e->needs_key = crypto_ahash_get_flags(hash) & CRYPTO_TFM_NEED_KEY;
-+
-+	for_each_possible_cpu(cpu) {
-+		struct ahash_request *req;
-+
-+		if (!hash)
-+			hash = crypto_alloc_ahash(alg, 0, CRYPTO_ALG_ASYNC);
-+		if (IS_ERR(hash))
-+			goto out_free;
-+
-+		req = ahash_request_alloc(hash, GFP_KERNEL);
-+		if (!req)
-+			goto out_free;
-+
-+		ahash_request_set_callback(req, 0, NULL, NULL);
-+
-+		*per_cpu_ptr(e->req, cpu) = req;
-+
-+		if (e->needs_key)
-+			hash = NULL;
-+	}
-+	kref_init(&e->kref);
-+	return 0;
-+
-+out_free:
-+	if (!IS_ERR_OR_NULL(hash) && e->needs_key)
-+		crypto_free_ahash(hash);
-+
-+	for_each_possible_cpu(cpu) {
-+		if (*per_cpu_ptr(e->req, cpu) == NULL)
-+			break;
-+		hash = crypto_ahash_reqtfm(*per_cpu_ptr(e->req, cpu));
-+		ahash_request_free(*per_cpu_ptr(e->req, cpu));
-+		if (e->needs_key) {
-+			crypto_free_ahash(hash);
-+			hash = NULL;
-+		}
-+	}
-+
-+	if (hash)
-+		crypto_free_ahash(hash);
-+out_free_req:
-+	free_percpu(e->req);
-+out_free_alg:
-+	kfree(e->alg);
-+	e->alg = NULL;
-+	return ret;
-+}
-+
-+/**
-+ * crypto_pool_alloc_ahash - allocates pool for ahash requests
-+ * @alg: name of async hash algorithm
-+ */
-+int crypto_pool_alloc_ahash(const char *alg)
-+{
-+	unsigned int i;
-+	int err;
-+
-+	/* slow-path */
-+	mutex_lock(&cpool_mutex);
-+	err = crypto_pool_scratch_alloc();
-+	if (err)
-+		goto out;
-+
-+	for (i = 0; i < last_allocated; i++) {
-+		if (cpool[i].alg && !strcmp(cpool[i].alg, alg)) {
-+			if (kref_read(&cpool[i].kref) > 0) {
-+				kref_get(&cpool[i].kref);
-+				goto out;
-+			} else {
-+				break;
-+			}
-+		}
-+	}
-+
-+	for (i = 0; i < last_allocated; i++) {
-+		if (!cpool[i].alg)
-+			break;
-+	}
-+	if (i >= CPOOL_SIZE) {
-+		err = -ENOSPC;
-+		goto out;
-+	}
-+
-+	err = __cpool_alloc_ahash(&cpool[i], alg);
-+	if (!err && last_allocated <= i)
-+		last_allocated++;
-+out:
-+	mutex_unlock(&cpool_mutex);
-+	return err ?: (int)i;
-+}
-+EXPORT_SYMBOL_GPL(crypto_pool_alloc_ahash);
-+
-+static void __cpool_free_entry(struct crypto_pool_entry *e)
-+{
-+	struct crypto_ahash *hash = NULL;
-+	int cpu;
-+
-+	for_each_possible_cpu(cpu) {
-+		if (*per_cpu_ptr(e->req, cpu) == NULL)
-+			continue;
-+
-+		hash = crypto_ahash_reqtfm(*per_cpu_ptr(e->req, cpu));
-+		ahash_request_free(*per_cpu_ptr(e->req, cpu));
-+		if (e->needs_key) {
-+			crypto_free_ahash(hash);
-+			hash = NULL;
-+		}
-+	}
-+	if (hash)
-+		crypto_free_ahash(hash);
-+	free_percpu(e->req);
-+	kfree(e->alg);
-+	memset(e, 0, sizeof(*e));
-+}
-+
-+static void cpool_cleanup_work_cb(struct work_struct *work)
-+{
-+	unsigned int i;
-+	bool free_scratch = true;
-+
-+	mutex_lock(&cpool_mutex);
-+	for (i = 0; i < last_allocated; i++) {
-+		if (kref_read(&cpool[i].kref) > 0) {
-+			free_scratch = false;
-+			continue;
-+		}
-+		if (!cpool[i].alg)
-+			continue;
-+		__cpool_free_entry(&cpool[i]);
-+	}
-+	if (free_scratch)
-+		crypto_pool_scratch_free();
-+	mutex_unlock(&cpool_mutex);
-+}
-+
-+static DECLARE_WORK(cpool_cleanup_work, cpool_cleanup_work_cb);
-+static void cpool_schedule_cleanup(struct kref *kref)
-+{
-+	schedule_work(&cpool_cleanup_work);
-+}
-+
-+/**
-+ * crypto_pool_release - decreases number of users for a pool. If it was
-+ * the last user of the pool, releases any memory that was consumed.
-+ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
-+ */
-+void crypto_pool_release(unsigned int id)
-+{
-+	if (WARN_ON_ONCE(id > last_allocated || !cpool[id].alg))
-+		return;
-+
-+	/* slow-path */
-+	kref_put(&cpool[id].kref, cpool_schedule_cleanup);
-+}
-+EXPORT_SYMBOL_GPL(crypto_pool_release);
-+
-+/**
-+ * crypto_pool_add - increases number of users (refcounter) for a pool
-+ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
-+ */
-+void crypto_pool_add(unsigned int id)
-+{
-+	if (WARN_ON_ONCE(id > last_allocated || !cpool[id].alg))
-+		return;
-+	kref_get(&cpool[id].kref);
-+}
-+EXPORT_SYMBOL_GPL(crypto_pool_add);
-+
-+/**
-+ * crypto_pool_get - disable bh and start using crypto_pool
-+ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
-+ * @c: returned crypto_pool for usage (uninitialized on failure)
-+ */
-+int crypto_pool_get(unsigned int id, struct crypto_pool *c)
-+{
-+	struct crypto_pool_ahash *ret = (struct crypto_pool_ahash *)c;
-+
-+	local_bh_disable();
-+	if (WARN_ON_ONCE(id > last_allocated || !cpool[id].alg)) {
-+		local_bh_enable();
-+		return -EINVAL;
-+	}
-+	ret->req = *this_cpu_ptr(cpool[id].req);
-+	ret->base.scratch = this_cpu_read(crypto_pool_scratch);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(crypto_pool_get);
-+
-+/**
-+ * crypto_pool_algo - return algorithm of crypto_pool
-+ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
-+ * @buf: buffer to return name of algorithm
-+ * @buf_len: size of @buf
-+ */
-+size_t crypto_pool_algo(unsigned int id, char *buf, size_t buf_len)
-+{
-+	size_t ret = 0;
-+
-+	/* slow-path */
-+	mutex_lock(&cpool_mutex);
-+	if (cpool[id].alg)
-+		ret = strscpy(buf, cpool[id].alg, buf_len);
-+	mutex_unlock(&cpool_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(crypto_pool_algo);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Per-CPU pool of crypto requests");
-diff --git a/include/crypto/pool.h b/include/crypto/pool.h
-new file mode 100644
-index 000000000000..2c61aa45faff
---- /dev/null
-+++ b/include/crypto/pool.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef _CRYPTO_POOL_H
-+#define _CRYPTO_POOL_H
-+
-+#include <crypto/hash.h>
-+
-+#define DEFAULT_CRYPTO_POOL_SCRATCH_SZ	128
-+
-+struct crypto_pool {
-+	void *scratch;
-+};
-+
-+/*
-+ * struct crypto_pool_ahash - per-CPU pool of ahash_requests
-+ * @base: common members that can be used by any async crypto ops
-+ * @req: pre-allocated ahash request
-+ */
-+struct crypto_pool_ahash {
-+	struct crypto_pool base;
-+	struct ahash_request *req;
-+};
-+
-+int crypto_pool_alloc_ahash(const char *alg);
-+void crypto_pool_add(unsigned int id);
-+void crypto_pool_release(unsigned int id);
-+
-+int crypto_pool_get(unsigned int id, struct crypto_pool *c);
-+static inline void crypto_pool_put(void)
-+{
-+	local_bh_enable();
-+}
-+size_t crypto_pool_algo(unsigned int id, char *buf, size_t buf_len);
-+
-+#endif /* _CRYPTO_POOL_H */
--- 
-2.37.2
-
+ 	return error;
+ }
+ 
