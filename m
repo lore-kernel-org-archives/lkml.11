@@ -2,436 +2,473 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD9AC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A12CC25B0E
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242735AbiHRVX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
+        id S1347094AbiHRVX5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 17:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347007AbiHRVXI (ORCPT
+        with ESMTP id S1346801AbiHRVXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:23:08 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8734DB3D
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:10 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id q20-20020a6bd214000000b00680799e0fbaso1552002iob.16
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=1mLm7zHPwaSDpP5qzMryOAAVwqyZ65bLi2QfaX4LQlw=;
-        b=5DD3nAyutmdK5Sa5TzvFPASGsao/YV8x1Lf3W3R+H4pvVwXAzEuWbCadCVWBtEBWxn
-         GwKjRD9UH6LZGtn82mzIZEmeiDsD1rexR64ZQAAtZwNK6+b1NIR8fSfvbW2Bh0NB0Rka
-         ifpFZK2K1gv329SP0UxamD0QPu6+iwonBUoOcYqgtTqSS57IFzGfQJtC6tW5c7BmxOKi
-         LZ0hwNnfNeKTQ9AF3E/Gvrsyi8CCsPL615NPATxMkGb7yJ7ODtYLCx3RnzmWxZbQ6lfN
-         E6Lh0ooIDLMC1ULG6eghSUKniMl3xwjv5LSToGf+QEPcPcH5tI2uWaQMx/GLfltPHbPM
-         nfnQ==
-X-Gm-Message-State: ACgBeo3jzgT6wcILeNd1n/lJi/u+KxMIr9/Taw+4iFi4Qykx3mET1oVu
-        srrtKP718B/jiXPQVEbdf5DvhIczpHMSBlJovR/UiLI6IRo3
-X-Google-Smtp-Source: AA6agR45h68RM1JRhno/Xwdbf7eGjS67+hTD6VN79k6itIukeFBhpIFXUUWQHS1Rt1d2JsIgUY84cag1DqfwLUYpbNi0F/7JXqpL
+        Thu, 18 Aug 2022 17:23:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C332166123
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19BAAB82413
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 21:16:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 248ACC433B5;
+        Thu, 18 Aug 2022 21:15:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660857361;
+        bh=1bSqISasPZGY6PvxNAo+nr0qFPcX9eKhG4TNgnhRS9s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PW9vLXltNA8LV9fjGJLpxAfQNqkCvJOsyKIZLtF8p/pHS92NtJI21A/+rCX1G679v
+         jqDWvhklqxfmr/rEpw2x1/ugJX2W3gaZkdQV+4xrg55tl79aweQ3BcPZ80NleG7BQl
+         UAe51YCgtLYQOp+cTnR2KEnTWRkF+S/h6WNYAOBI4CaYUsIIIoDP1A/6PHCukgDh0P
+         czBFKIjBIwi7Xd+w7a+quoN5hG9JyjfQSjRr+ycTNOlbzPVlv8AYcsVf6YKCJgXvfS
+         ZJgkonO6CW7XRlY0oFRh6HYszzv8OXsLBMpbFDuzqypY/NhCO6K4o+sWy70e3TqOTL
+         he/WY/hh07u4Q==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Christoph Hellwig <hch@lst.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 1/4] ARM: footbridge: remove addin mode
+Date:   Thu, 18 Aug 2022 23:15:47 +0200
+Message-Id: <20220818211550.3272321-2-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220818211550.3272321-1-arnd@kernel.org>
+References: <20220818211550.3272321-1-arnd@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:c88:b0:2e9:a68:fec3 with SMTP id
- b8-20020a056e020c8800b002e90a68fec3mr2020845ile.116.1660857271341; Thu, 18
- Aug 2022 14:14:31 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 14:14:31 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ae5aca05e68a7748@google.com>
-Subject: [syzbot] INFO: rcu detected stall in watchdog
-From:   syzbot <syzbot+0bab26cf3949891fb534@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        rafael@kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Arnd Bergmann <arnd@arndb.de>
 
-syzbot found the following issue on:
+This does not appear to have been used in many years, we can
+kill off some of the uglier code.
 
-HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11d620f3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
-dashboard link: https://syzkaller.appspot.com/bug?extid=0bab26cf3949891fb534
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a79067080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14d9627b080000
+Among other things, it avoids a randconfig issue when both modes
+are disabled:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0bab26cf3949891fb534@syzkaller.appspotmail.com
+arch/arm/mach-footbridge/common.c:149:24: error: 'ebsa285_host_io_desc' defined but not used [-Werror=unused-variable]
+  149 | static struct map_desc ebsa285_host_io_desc[] __initdata = {
+      |                        ^~~~~~~~~~~~~~~~~~~~
+arch/arm/mach-footbridge/common.c:136:24: error: 'fb_common_io_desc' defined but not used [-Werror=unused-variable]
+  136 | static struct map_desc fb_common_io_desc[] __initdata = {
+      |                        ^~~~~~~~~~~~~~~~~
 
-imon 5-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	1-...!: (1495 ticks this GP) idle=01fc/1/0x4000000000000000 softirq=5485/5485 fqs=1
-	(t=10501 jiffies g=4273 q=306 ncpus=2)
-rcu: rcu_preempt kthread starved for 2302 jiffies! g4273 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
-rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
-rcu: RCU grace-period kthread stack dump:
-task:rcu_preempt     state:I stack:28728 pid:   16 ppid:     2 flags:0x00004000
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5182 [inline]
- __schedule+0xadf/0x52b0 kernel/sched/core.c:6494
- schedule+0xda/0x1b0 kernel/sched/core.c:6570
- schedule_timeout+0x14a/0x2a0 kernel/time/timer.c:1935
- rcu_gp_fqs_loop+0x190/0x910 kernel/rcu/tree.c:1657
- rcu_gp_kthread+0x236/0x360 kernel/rcu/tree.c:1854
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-rcu: Stack dump where RCU GP kthread last ran:
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 28 Comm: khungtaskd Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:format_decode+0x8/0xad0 lib/vsprintf.c:2490
-Code: 66 90 e8 ab cc 59 fd 48 c7 c7 60 8a 46 91 e9 3f cc 80 fd 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 41 57 41 56 41 55 41 54 <55> 48 89 f5 53 48 bb 00 00 00 00 00 fc ff df 48 83 ec 78 48 c7 44
-RSP: 0018:ffffc900000071f8 EFLAGS: 00000046
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000100
-RDX: ffff888016d98000 RSI: ffffc90000007288 RDI: ffffffff8ab16ca0
-RBP: ffffffff8ab16ca0 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000069 R11: 0000000000000001 R12: ffffc900000076d6
-R13: ffffffff8ab16ca0 R14: 0000000000000000 R15: ffffc90000007360
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffd6287e8b4 CR3: 000000001ccaa000 CR4: 0000000000350ef0
-Call Trace:
- <IRQ>
- vsnprintf+0x155/0x14f0 lib/vsprintf.c:2734
- va_format.constprop.0+0x138/0x380 lib/vsprintf.c:1680
- pointer+0x544/0x950 lib/vsprintf.c:2419
- vsnprintf+0x5b2/0x14f0 lib/vsprintf.c:2786
- vprintk_store+0x2d8/0xae0 kernel/printk/printk.c:2155
- vprintk_emit+0x14c/0x5f0 kernel/printk/printk.c:2252
- dev_vprintk_emit+0x36e/0x3b2 drivers/base/core.c:4736
- dev_printk_emit+0xba/0xf1 drivers/base/core.c:4747
- __dev_printk+0xcf/0xf5 drivers/base/core.c:4759
- _dev_warn+0xd7/0x109 drivers/base/core.c:4803
- usb_rx_callback_intf0.cold+0x34/0x43 drivers/media/rc/imon.c:1773
- __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1671
- usb_hcd_giveback_urb+0x380/0x430 drivers/usb/core/hcd.c:1754
- dummy_timer+0x11ff/0x32c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
- call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
- invoke_softirq kernel/softirq.c:445 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1106
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
-RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
-RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60 kernel/kcov.c:200
-Code: 48 89 ef 5d e9 f1 b5 4b 00 5d be 03 00 00 00 e9 86 04 81 02 66 0f 1f 44 00 00 48 8b be a8 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 <65> 8b 05 29 68 86 7e 89 c1 48 8b 34 24 81 e1 00 01 00 00 65 48 8b
-RSP: 0018:ffffc90000a4fd78 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888016d98000 RSI: ffffffff8161e2a1 RDI: 0000000000000007
-RBP: ffffc90000a4fdb8 R08: 0000000000000007 R09: 0000000000000000
-R10: 0000000000000200 R11: 0000000000000000 R12: 0000000000000049
-R13: ffff8880263cbb00 R14: 0000000000000200 R15: ffffc90000a4fe08
- console_trylock_spinning kernel/printk/printk.c:1922 [inline]
- vprintk_emit+0x3f7/0x5f0 kernel/printk/printk.c:2270
- vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
- _printk+0xba/0xed kernel/printk/printk.c:2292
- check_hung_task kernel/hung_task.c:138 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:203 [inline]
- watchdog.cold+0xf4/0x158 kernel/hung_task.c:369
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.371 msecs
-imon 4-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-NMI backtrace for cpu 1
-CPU: 1 PID: 3624 Comm: sshd Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- nmi_cpu_backtrace.cold+0x46/0x14f lib/nmi_backtrace.c:111
- nmi_trigger_cpumask_backtrace+0x206/0x250 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:166 [inline]
- rcu_dump_cpu_stacks+0x2c7/0x4d0 kernel/rcu/tree_stall.h:371
- print_cpu_stall kernel/rcu/tree_stall.h:660 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:744 [inline]
- rcu_pending kernel/rcu/tree.c:3660 [inline]
- rcu_sched_clock_irq.cold+0x9f/0x79c kernel/rcu/tree.c:2342
- update_process_times+0x11a/0x1a0 kernel/time/timer.c:1839
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:243
- tick_sched_timer+0xee/0x120 kernel/time/tick-sched.c:1480
- __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
- __hrtimer_run_queues+0x1c0/0xe40 kernel/time/hrtimer.c:1749
- hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1095 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1112
- sysvec_apic_timer_interrupt+0x40/0xc0 arch/x86/kernel/apic/apic.c:1106
- asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
-RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:194
-Code: 74 24 10 e8 8a 76 dd f7 48 89 ef e8 12 f8 dd f7 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> 13 b9 d0 f7 65 8b 05 3c 72 80 76 85 c0 74 0a 5b 5d c3 e8 30 81
-RSP: 0018:ffffc900001e0b28 EFLAGS: 00000206
-RAX: 0000000000000002 RBX: 0000000000000200 RCX: 1ffffffff21254ee
-RDX: 0000000000000000 RSI: 0000000000000102 RDI: 0000000000000001
-RBP: ffff888147d40000 R08: 0000000000000001 R09: ffffffff908dba17
-R10: 0000000000000001 R11: 0000000000000001 R12: ffff888020a0a440
-R13: ffff888071066500 R14: dffffc0000000000 R15: ffff8880170a3400
- spin_unlock_irqrestore include/linux/spinlock.h:404 [inline]
- dummy_timer+0x12fc/0x32c0 drivers/usb/gadget/udc/dummy_hcd.c:2002
- call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
- do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
- </IRQ>
- <TASK>
- do_softirq kernel/softirq.c:464 [inline]
- __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
- local_bh_enable include/linux/bottom_half.h:33 [inline]
- rcu_read_unlock_bh include/linux/rcupdate.h:776 [inline]
- ip_finish_output2+0x7d0/0x2170 net/ipv4/ip_output.c:229
- __ip_finish_output net/ipv4/ip_output.c:306 [inline]
- __ip_finish_output+0x396/0x650 net/ipv4/ip_output.c:288
- ip_finish_output+0x2d/0x280 net/ipv4/ip_output.c:316
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip_output+0x19f/0x310 net/ipv4/ip_output.c:430
- dst_output include/net/dst.h:451 [inline]
- ip_local_out net/ipv4/ip_output.c:126 [inline]
- __ip_queue_xmit+0x8de/0x1be0 net/ipv4/ip_output.c:532
- __tcp_transmit_skb+0x1967/0x3800 net/ipv4/tcp_output.c:1402
- tcp_transmit_skb net/ipv4/tcp_output.c:1420 [inline]
- tcp_write_xmit+0xd89/0x6050 net/ipv4/tcp_output.c:2691
- __tcp_push_pending_frames+0xaa/0x380 net/ipv4/tcp_output.c:2875
- tcp_push+0x499/0x720 net/ipv4/tcp.c:728
- tcp_sendmsg_locked+0x241f/0x2f80 net/ipv4/tcp.c:1455
- tcp_sendmsg+0x2b/0x40 net/ipv4/tcp.c:1483
- inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- sock_write_iter+0x291/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2192 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9e9/0xdd0 fs/read_write.c:578
- ksys_write+0x1e8/0x250 fs/read_write.c:631
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f96787259a3
+The recently added phys_to_dma() functions are now trivial and
+could probably be removed again as a follow-up, if anyone knows
+how.
 
-================================
-WARNING: inconsistent lock state
-5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0 Not tainted
---------------------------------
-inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W} usage.
-sshd/3624 [HC1[1]:SC1[1]:HE0:SE0] takes:
-ffffffff8c0bee78 (vmap_area_lock){?.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
-ffffffff8c0bee78 (vmap_area_lock){?.+.}-{2:2}, at: find_vmap_area+0x1c/0x130 mm/vmalloc.c:1836
-{HARDIRQ-ON-W} state was registered at:
-  lock_acquire kernel/locking/lockdep.c:5666 [inline]
-  lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
-  __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
-  _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
-  spin_lock include/linux/spinlock.h:349 [inline]
-  alloc_vmap_area+0xa0b/0x1d50 mm/vmalloc.c:1617
-  __get_vm_area_node+0x142/0x3f0 mm/vmalloc.c:2484
-  get_vm_area_caller+0x43/0x50 mm/vmalloc.c:2537
-  __ioremap_caller.constprop.0+0x292/0x600 arch/x86/mm/ioremap.c:280
-  acpi_os_ioremap include/acpi/acpi_io.h:13 [inline]
-  acpi_map drivers/acpi/osl.c:296 [inline]
-  acpi_os_map_iomem+0x463/0x550 drivers/acpi/osl.c:355
-  acpi_tb_acquire_table+0xd8/0x209 drivers/acpi/acpica/tbdata.c:142
-  acpi_tb_validate_table drivers/acpi/acpica/tbdata.c:317 [inline]
-  acpi_tb_validate_table+0x50/0x8c drivers/acpi/acpica/tbdata.c:308
-  acpi_tb_verify_temp_table+0x84/0x674 drivers/acpi/acpica/tbdata.c:504
-  acpi_reallocate_root_table+0x374/0x3e0 drivers/acpi/acpica/tbxface.c:180
-  acpi_early_init+0x13a/0x438 drivers/acpi/bus.c:1214
-  start_kernel+0x3cf/0x48f init/main.c:1099
-  secondary_startup_64_no_verify+0xce/0xdb
-irq event stamp: 32301
-hardirqs last  enabled at (32300): [<ffffffff8981fd10>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:151 [inline]
-hardirqs last  enabled at (32300): [<ffffffff8981fd10>] _raw_spin_unlock_irqrestore+0x50/0x70 kernel/locking/spinlock.c:194
-hardirqs last disabled at (32301): [<ffffffff897ec0bb>] sysvec_apic_timer_interrupt+0xb/0xc0 arch/x86/kernel/apic/apic.c:1106
-softirqs last  enabled at (21154): [<ffffffff87d80ef2>] rcu_read_unlock_bh include/linux/rcupdate.h:772 [inline]
-softirqs last  enabled at (21154): [<ffffffff87d80ef2>] ip_finish_output2+0x7a2/0x2170 net/ipv4/ip_output.c:229
-softirqs last disabled at (21155): [<ffffffff814910ee>] do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(vmap_area_lock);
-  <Interrupt>
-    lock(vmap_area_lock);
-
- *** DEADLOCK ***
-
-4 locks held by sshd/3624:
- #0: ffff88807a790d30 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1687 [inline]
- #0: ffff88807a790d30 (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sendmsg+0x1d/0x40 net/ipv4/tcp.c:1482
- #1: ffffffff8bf89240 (rcu_read_lock){....}-{1:2}, at: read_pnet include/net/net_namespace.h:369 [inline]
- #1: ffffffff8bf89240 (rcu_read_lock){....}-{1:2}, at: sock_net include/net/sock.h:618 [inline]
- #1: ffffffff8bf89240 (rcu_read_lock){....}-{1:2}, at: __ip_queue_xmit+0x3d/0x1be0 net/ipv4/ip_output.c:457
- #2: ffffc900001e0d90 ((&dum_hcd->timer)){+.-.}-{0:0}, at: lockdep_copy_map include/linux/lockdep.h:31 [inline]
- #2: ffffc900001e0d90 ((&dum_hcd->timer)){+.-.}-{0:0}, at: call_timer_fn+0xd5/0x6b0 kernel/time/timer.c:1464
- #3: ffffffff8bf93798 (rcu_node_0){-.-.}-{2:2}, at: rcu_dump_cpu_stacks+0xc1/0x4d0 kernel/rcu/tree_stall.h:366
-
-stack backtrace:
-CPU: 1 PID: 3624 Comm: sshd Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_usage_bug kernel/locking/lockdep.c:3961 [inline]
- valid_state kernel/locking/lockdep.c:3973 [inline]
- mark_lock_irq kernel/locking/lockdep.c:4176 [inline]
- mark_lock.part.0.cold+0x18/0xd8 kernel/locking/lockdep.c:4632
- mark_lock kernel/locking/lockdep.c:4596 [inline]
- mark_usage kernel/locking/lockdep.c:4524 [inline]
- __lock_acquire+0x14a2/0x56d0 kernel/locking/lockdep.c:5007
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
- spin_lock include/linux/spinlock.h:349 [inline]
- find_vmap_area+0x1c/0x130 mm/vmalloc.c:1836
- check_heap_object mm/usercopy.c:176 [inline]
- __check_object_size mm/usercopy.c:250 [inline]
- __check_object_size+0x1f8/0x700 mm/usercopy.c:212
- check_object_size include/linux/thread_info.h:199 [inline]
- __copy_from_user_inatomic include/linux/uaccess.h:62 [inline]
- copy_from_user_nmi arch/x86/lib/usercopy.c:47 [inline]
- copy_from_user_nmi+0xcb/0x130 arch/x86/lib/usercopy.c:31
- copy_code arch/x86/kernel/dumpstack.c:91 [inline]
- show_opcodes+0x59/0xb0 arch/x86/kernel/dumpstack.c:121
- show_iret_regs+0xd/0x33 arch/x86/kernel/dumpstack.c:149
- __show_regs+0x1e/0x60 arch/x86/kernel/process_64.c:74
- show_trace_log_lvl+0x25b/0x2ba arch/x86/kernel/dumpstack.c:292
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- nmi_cpu_backtrace.cold+0x46/0x14f lib/nmi_backtrace.c:111
- nmi_trigger_cpumask_backtrace+0x206/0x250 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:166 [inline]
- rcu_dump_cpu_stacks+0x2c7/0x4d0 kernel/rcu/tree_stall.h:371
- print_cpu_stall kernel/rcu/tree_stall.h:660 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:744 [inline]
- rcu_pending kernel/rcu/tree.c:3660 [inline]
- rcu_sched_clock_irq.cold+0x9f/0x79c kernel/rcu/tree.c:2342
- update_process_times+0x11a/0x1a0 kernel/time/timer.c:1839
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:243
- tick_sched_timer+0xee/0x120 kernel/time/tick-sched.c:1480
- __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
- __hrtimer_run_queues+0x1c0/0xe40 kernel/time/hrtimer.c:1749
- hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1095 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1112
- sysvec_apic_timer_interrupt+0x40/0xc0 arch/x86/kernel/apic/apic.c:1106
- asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
-RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:194
-Code: 74 24 10 e8 8a 76 dd f7 48 89 ef e8 12 f8 dd f7 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> 13 b9 d0 f7 65 8b 05 3c 72 80 76 85 c0 74 0a 5b 5d c3 e8 30 81
-RSP: 0018:ffffc900001e0b28 EFLAGS: 00000206
-RAX: 0000000000000002 RBX: 0000000000000200 RCX: 1ffffffff21254ee
-RDX: 0000000000000000 RSI: 0000000000000102 RDI: 0000000000000001
-RBP: ffff888147d40000 R08: 0000000000000001 R09: ffffffff908dba17
-R10: 0000000000000001 R11: 0000000000000001 R12: ffff888020a0a440
-R13: ffff888071066500 R14: dffffc0000000000 R15: ffff8880170a3400
- spin_unlock_irqrestore include/linux/spinlock.h:404 [inline]
- dummy_timer+0x12fc/0x32c0 drivers/usb/gadget/udc/dummy_hcd.c:2002
- call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
- do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
- </IRQ>
- <TASK>
- do_softirq kernel/softirq.c:464 [inline]
- __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
- local_bh_enable include/linux/bottom_half.h:33 [inline]
- rcu_read_unlock_bh include/linux/rcupdate.h:776 [inline]
- ip_finish_output2+0x7d0/0x2170 net/ipv4/ip_output.c:229
- __ip_finish_output net/ipv4/ip_output.c:306 [inline]
- __ip_finish_output+0x396/0x650 net/ipv4/ip_output.c:288
- ip_finish_output+0x2d/0x280 net/ipv4/ip_output.c:316
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip_output+0x19f/0x310 net/ipv4/ip_output.c:430
- dst_output include/net/dst.h:451 [inline]
- ip_local_out net/ipv4/ip_output.c:126 [inline]
- __ip_queue_xmit+0x8de/0x1be0 net/ipv4/ip_output.c:532
- __tcp_transmit_skb+0x1967/0x3800 net/ipv4/tcp_output.c:1402
- tcp_transmit_skb net/ipv4/tcp_output.c:1420 [inline]
- tcp_write_xmit+0xd89/0x6050 net/ipv4/tcp_output.c:2691
- __tcp_push_pending_frames+0xaa/0x380 net/ipv4/tcp_output.c:2875
- tcp_push+0x499/0x720 net/ipv4/tcp.c:728
- tcp_sendmsg_locked+0x241f/0x2f80 net/ipv4/tcp.c:1455
- tcp_sendmsg+0x2b/0x40 net/ipv4/tcp.c:1483
- inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- sock_write_iter+0x291/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2192 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9e9/0xdd0 fs/read_write.c:578
- ksys_write+0x1e8/0x250 fs/read_write.c:631
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f96787259a3
-Code: 8b 15 d9 f4 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
-RSP: 002b:00007ffe0d29f248 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000034 RCX: 00007f96787259a3
-RDX: 0000000000000034 RSI: 00005608a3467640 RDI: 0000000000000004
-RBP: 00005608a34758b0 R08: 0000000000000000 R09: 00007ffe0d35a080
-R10: 00007ffe0d35a0f0 R11: 0000000000000246 R12: 0000000000000004
-R13: 0000000000000001 R14: 00007ffe0d29f2b8 R15: 00007ffe0d29f338
- </TASK>
-Code: 8b 15 d9 f4 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
-RSP: 002b:00007ffe0d29f248 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000034 RCX: 00007f96787259a3
-RDX: 0000000000000034 RSI: 00005608a3467640 RDI: 0000000000000004
-RBP: 00005608a34758b0 R08: 0000000000000000 R09: 00007ffe0d35a080
-R10: 00007ffe0d35a0f0 R11: 0000000000000246 R12: 0000000000000004
-R13: 0000000000000001 R14: 00007ffe0d29f2b8 R15: 00007ffe0d29f338
- </TASK>
-imon 1-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-imon 4-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-imon 5-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-imon 1-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-imon 4-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-imon 4-1:0.0: imon usb_rx_callback_intf0: status(-71): ignored
-NMI backtrace for cpu 0
-CPU: 0 PID: 2959 Comm: klogd Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0033:0x7f2ac83c87b2
-Code: 83 0b 08 5b c3 0f 1f 00 48 8b 47 28 48 39 47 10 48 0f 43 47 10 48 2b 47 18 c3 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 41 57 <41> 56 41 89 d6 41 55 49 89 f5 41 54 55 89 cd 53 48 89 fb 48 83 ec
-RSP: 002b:00007ffe513fd3c0 EFLAGS: 00000202
-RAX: 00007f2ac83c87b0 RBX: 0000561c2d7dd910 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000561c2d7dd910
-RBP: 0000561c2d7dd910 R08: 00007ffe513fd224 R09: 0000000000000002
-R10: 0000000000000010 R11: 0000561c2d7e19f4 R12: 000000000000000c
-R13: 0000000000000001 R14: 00007f2ac85bb77d R15: 00007ffe513fd4f8
-FS:  00007f2ac82a4800 GS:  0000000000000000
-
-
+Cc: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ arch/arm/include/asm/hardware/dec21285.h      | 13 ----
+ arch/arm/mach-footbridge/Kconfig              | 28 +------
+ arch/arm/mach-footbridge/Makefile             |  2 +-
+ arch/arm/mach-footbridge/common.c             | 73 ++-----------------
+ arch/arm/mach-footbridge/dc21285.c            | 61 +++++-----------
+ arch/arm/mach-footbridge/dma.c                |  3 +-
+ .../arm/mach-footbridge/include/mach/memory.h | 22 ------
+ arch/arm/mach-footbridge/isa.c                |  3 -
+ 8 files changed, 30 insertions(+), 175 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/arch/arm/include/asm/hardware/dec21285.h b/arch/arm/include/asm/hardware/dec21285.h
+index 3f18a56a025d..eee390e8d4dc 100644
+--- a/arch/arm/include/asm/hardware/dec21285.h
++++ b/arch/arm/include/asm/hardware/dec21285.h
+@@ -81,19 +81,6 @@
+ #define SA110_CNTL_XCSDIR(x)		((x)<<28)
+ #define SA110_CNTL_PCICFN		(1 << 31)
+ 
+-/*
+- * footbridge_cfn_mode() is used when we want
+- * to check whether we are the central function
+- */
+-#define __footbridge_cfn_mode() (*CSR_SA110_CNTL & SA110_CNTL_PCICFN)
+-#if defined(CONFIG_FOOTBRIDGE_HOST) && defined(CONFIG_FOOTBRIDGE_ADDIN)
+-#define footbridge_cfn_mode() __footbridge_cfn_mode()
+-#elif defined(CONFIG_FOOTBRIDGE_HOST)
+-#define footbridge_cfn_mode() (1)
+-#else
+-#define footbridge_cfn_mode() (0)
+-#endif
+-
+ #define CSR_PCIADDR_EXTN	DC21285_IO(0x0140)
+ #define CSR_PREFETCHMEMRANGE	DC21285_IO(0x0144)
+ #define CSR_XBUS_CYCLE		DC21285_IO(0x0148)
+diff --git a/arch/arm/mach-footbridge/Kconfig b/arch/arm/mach-footbridge/Kconfig
+index acc10b1caa69..3497ea8e91e3 100644
+--- a/arch/arm/mach-footbridge/Kconfig
++++ b/arch/arm/mach-footbridge/Kconfig
+@@ -8,31 +8,17 @@ config ARCH_CATS
+ 	depends on UNUSED_BOARD_FILES
+ 	select CLKEVT_I8253
+ 	select CLKSRC_I8253
+-	select FOOTBRIDGE_HOST
+ 	select ISA
+-	select ISA_DMA
+ 	select FORCE_PCI
+ 	help
+ 	  Say Y here if you intend to run this kernel on the CATS.
+ 
+ 	  Saying N will reduce the size of the Footbridge kernel.
+ 
+-config ARCH_EBSA285_ADDIN
+-	bool "EBSA285 (addin mode)"
+-	select ARCH_EBSA285
+-	select FOOTBRIDGE_ADDIN
+-	help
+-	  Say Y here if you intend to run this kernel on the EBSA285 card
+-	  in addin mode.
+-
+-	  Saying N will reduce the size of the Footbridge kernel.
+-
+ config ARCH_EBSA285_HOST
+ 	bool "EBSA285 (host mode)"
+ 	select ARCH_EBSA285
+-	select FOOTBRIDGE_HOST
+ 	select ISA
+-	select ISA_DMA
+ 	select ARCH_MAY_HAVE_PC_FDC
+ 	select FORCE_PCI
+ 	help
+@@ -45,9 +31,7 @@ config ARCH_NETWINDER
+ 	bool "NetWinder"
+ 	select CLKEVT_I8253
+ 	select CLKSRC_I8253
+-	select FOOTBRIDGE_HOST
+ 	select ISA
+-	select ISA_DMA
+ 	select FORCE_PCI
+ 	help
+ 	  Say Y here if you intend to run this kernel on the Rebel.COM
+@@ -61,19 +45,11 @@ endmenu
+ 
+ # Footbridge support
+ config FOOTBRIDGE
++	def_bool y
+ 	select ARCH_HAS_PHYS_TO_DMA
+-	bool
+-
+-# Footbridge in host mode
+-config FOOTBRIDGE_HOST
+-	bool
+ 	select ARCH_MIGHT_HAVE_PC_SERIO
++	select ISA_DMA
+ 
+-# Footbridge in addin mode
+-config FOOTBRIDGE_ADDIN
+-	bool
+-
+-# EBSA285 board in either host or addin mode
+ config ARCH_EBSA285
+ 	bool
+ 
+diff --git a/arch/arm/mach-footbridge/Makefile b/arch/arm/mach-footbridge/Makefile
+index 6262993c0555..30bae6684dce 100644
+--- a/arch/arm/mach-footbridge/Makefile
++++ b/arch/arm/mach-footbridge/Makefile
+@@ -9,7 +9,7 @@ obj-y			:= common.o dma.o isa-irq.o
+ 
+ pci-y			+= dc21285.o
+ pci-$(CONFIG_ARCH_CATS) += cats-pci.o
+-pci-$(CONFIG_ARCH_EBSA285_HOST) += ebsa285-pci.o
++pci-$(CONFIG_ARCH_EBSA285) += ebsa285-pci.o
+ pci-$(CONFIG_ARCH_NETWINDER) += netwinder-pci.o
+ 
+ obj-$(CONFIG_ARCH_CATS) += cats-hw.o isa-timer.o
+diff --git a/arch/arm/mach-footbridge/common.c b/arch/arm/mach-footbridge/common.c
+index 5020eb96b025..9483eccea5ae 100644
+--- a/arch/arm/mach-footbridge/common.c
++++ b/arch/arm/mach-footbridge/common.c
+@@ -198,9 +198,6 @@ void __init footbridge_init_irq(void)
+ 
+ 	__fb_init_irq();
+ 
+-	if (!footbridge_cfn_mode())
+-		return;
+-
+ 	if (machine_is_ebsa285())
+ 		/* The following is dependent on which slot
+ 		 * you plug the Southbridge card into.  We
+@@ -221,21 +218,13 @@ void __init footbridge_init_irq(void)
+  * commented out since there is a "No Fix" problem with it.  Not mapping
+  * it means that we have extra bullet protection on our feet.
+  */
+-static struct map_desc fb_common_io_desc[] __initdata = {
++static struct map_desc ebsa285_host_io_desc[] __initdata = {
+ 	{
+ 		.virtual	= ARMCSR_BASE,
+ 		.pfn		= __phys_to_pfn(DC21285_ARMCSR_BASE),
+ 		.length		= ARMCSR_SIZE,
+ 		.type		= MT_DEVICE,
+-	}
+-};
+-
+-/*
+- * The mapping when the footbridge is in host mode.  We don't map any of
+- * this when we are in add-in mode.
+- */
+-static struct map_desc ebsa285_host_io_desc[] __initdata = {
+-#if defined(CONFIG_ARCH_FOOTBRIDGE) && defined(CONFIG_FOOTBRIDGE_HOST)
++	},
+ 	{
+ 		.virtual	= PCIMEM_BASE,
+ 		.pfn		= __phys_to_pfn(DC21285_PCI_MEM),
+@@ -257,26 +246,12 @@ static struct map_desc ebsa285_host_io_desc[] __initdata = {
+ 		.length		= PCIIACK_SIZE,
+ 		.type		= MT_DEVICE,
+ 	},
+-#endif
+ };
+ 
+ void __init footbridge_map_io(void)
+ {
+-	/*
+-	 * Set up the common mapping first; we need this to
+-	 * determine whether we're in host mode or not.
+-	 */
+-	iotable_init(fb_common_io_desc, ARRAY_SIZE(fb_common_io_desc));
+-
+-	/*
+-	 * Now, work out what we've got to map in addition on this
+-	 * platform.
+-	 */
+-	if (footbridge_cfn_mode()) {
+-		iotable_init(ebsa285_host_io_desc, ARRAY_SIZE(ebsa285_host_io_desc));
+-		pci_map_io_early(__phys_to_pfn(DC21285_PCI_IO));
+-	}
+-
++	iotable_init(ebsa285_host_io_desc, ARRAY_SIZE(ebsa285_host_io_desc));
++	pci_map_io_early(__phys_to_pfn(DC21285_PCI_IO));
+ 	vga_base = PCIMEM_BASE;
+ }
+ 
+@@ -307,48 +282,12 @@ void footbridge_restart(enum reboot_mode mode, const char *cmd)
+ 	}
+ }
+ 
+-#ifdef CONFIG_FOOTBRIDGE_ADDIN
+-
+-static inline unsigned long fb_bus_sdram_offset(void)
+-{
+-	return *CSR_PCISDRAMBASE & 0xfffffff0;
+-}
+-
+-/*
+- * These two functions convert virtual addresses to PCI addresses and PCI
+- * addresses to virtual addresses.  Note that it is only legal to use these
+- * on memory obtained via get_zeroed_page or kmalloc.
+- */
+-unsigned long __virt_to_bus(unsigned long res)
+-{
+-	WARN_ON(res < PAGE_OFFSET || res >= (unsigned long)high_memory);
+-
+-	return res + (fb_bus_sdram_offset() - PAGE_OFFSET);
+-}
+-EXPORT_SYMBOL(__virt_to_bus);
+-
+-unsigned long __bus_to_virt(unsigned long res)
+-{
+-	res = res - (fb_bus_sdram_offset() - PAGE_OFFSET);
+-
+-	WARN_ON(res < PAGE_OFFSET || res >= (unsigned long)high_memory);
+-
+-	return res;
+-}
+-EXPORT_SYMBOL(__bus_to_virt);
+-#else
+-static inline unsigned long fb_bus_sdram_offset(void)
+-{
+-	return BUS_OFFSET;
+-}
+-#endif /* CONFIG_FOOTBRIDGE_ADDIN */
+-
+ dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+ {
+-	return paddr + (fb_bus_sdram_offset() - PHYS_OFFSET);
++	return paddr + (BUS_OFFSET - PHYS_OFFSET);
+ }
+ 
+ phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+ {
+-	return dev_addr - (fb_bus_sdram_offset() - PHYS_OFFSET);
++	return dev_addr - (BUS_OFFSET - PHYS_OFFSET);
+ }
+diff --git a/arch/arm/mach-footbridge/dc21285.c b/arch/arm/mach-footbridge/dc21285.c
+index f9713dc561cf..372600bc15c8 100644
+--- a/arch/arm/mach-footbridge/dc21285.c
++++ b/arch/arm/mach-footbridge/dc21285.c
+@@ -245,9 +245,6 @@ int __init dc21285_setup(int nr, struct pci_sys_data *sys)
+ {
+ 	struct resource *res;
+ 
+-	if (nr || !footbridge_cfn_mode())
+-		return 0;
+-
+ 	res = kcalloc(2, sizeof(struct resource), GFP_KERNEL);
+ 	if (!res) {
+ 		printk("out of memory for root bus resources");
+@@ -278,7 +275,6 @@ int __init dc21285_setup(int nr, struct pci_sys_data *sys)
+ void __init dc21285_preinit(void)
+ {
+ 	unsigned int mem_size, mem_mask;
+-	int cfn_mode;
+ 
+ 	pcibios_min_mem = 0x81000000;
+ 
+@@ -298,21 +294,15 @@ void __init dc21285_preinit(void)
+ 	*CSR_CSRBASEOFFSET    = 0;
+ 	*CSR_PCIADDR_EXTN     = 0;
+ 
+-	cfn_mode = __footbridge_cfn_mode();
+-
+ 	printk(KERN_INFO "PCI: DC21285 footbridge, revision %02lX, in "
+-		"%s mode\n", *CSR_CLASSREV & 0xff, cfn_mode ?
+-		"central function" : "addin");
+-
+-	if (footbridge_cfn_mode()) {
+-		/*
+-		 * Clear any existing errors - we aren't
+-		 * interested in historical data...
+-		 */
+-		*CSR_SA110_CNTL	= (*CSR_SA110_CNTL & 0xffffde07) |
+-				  SA110_CNTL_RXSERR;
+-		*CSR_PCICMD = (*CSR_PCICMD & 0xffff) | PCICMD_ERROR_BITS;
+-	}
++		"central function mode\n", *CSR_CLASSREV & 0xff);
++
++	/*
++	 * Clear any existing errors - we aren't
++	 * interested in historical data...
++	 */
++	*CSR_SA110_CNTL	= (*CSR_SA110_CNTL & 0xffffde07) | SA110_CNTL_RXSERR;
++	*CSR_PCICMD = (*CSR_PCICMD & 0xffff) | PCICMD_ERROR_BITS;
+ 
+ 	timer_setup(&serr_timer, dc21285_enable_error, 0);
+ 	timer_setup(&perr_timer, dc21285_enable_error, 0);
+@@ -331,29 +321,18 @@ void __init dc21285_preinit(void)
+ 	dc21285_request_irq(IRQ_PCI_DPERR, dc21285_dparity_irq, 0,
+ 			    "PCI data parity", NULL);
+ 
+-	if (cfn_mode) {
+-		/*
+-		 * Map our SDRAM at a known address in PCI space, just in case
+-		 * the firmware had other ideas.  Using a nonzero base is
+-		 * necessary, since some VGA cards forcefully use PCI addresses
+-		 * in the range 0x000a0000 to 0x000c0000. (eg, S3 cards).
+-		 */
+-		*CSR_PCICSRBASE       = 0xf4000000;
+-		*CSR_PCICSRIOBASE     = 0;
+-		*CSR_PCISDRAMBASE     = __virt_to_bus(PAGE_OFFSET);
+-		*CSR_PCIROMBASE       = 0;
+-		*CSR_PCICMD = PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER |
+-			      PCI_COMMAND_INVALIDATE | PCICMD_ERROR_BITS;
+-	} else if (footbridge_cfn_mode() != 0) {
+-		/*
+-		 * If we are not compiled to accept "add-in" mode, then
+-		 * we are using a constant virt_to_bus translation which
+-		 * can not hope to cater for the way the host BIOS  has
+-		 * set up the machine.
+-		 */
+-		panic("PCI: this kernel is compiled for central "
+-			"function mode only");
+-	}
++	/*
++	 * Map our SDRAM at a known address in PCI space, just in case
++	 * the firmware had other ideas.  Using a nonzero base is
++	 * necessary, since some VGA cards forcefully use PCI addresses
++	 * in the range 0x000a0000 to 0x000c0000. (eg, S3 cards).
++	 */
++	*CSR_PCICSRBASE       = 0xf4000000;
++	*CSR_PCICSRIOBASE     = 0;
++	*CSR_PCISDRAMBASE     = __virt_to_bus(PAGE_OFFSET);
++	*CSR_PCIROMBASE       = 0;
++	*CSR_PCICMD = PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER |
++		      PCI_COMMAND_INVALIDATE | PCICMD_ERROR_BITS;
+ }
+ 
+ void __init dc21285_postinit(void)
+diff --git a/arch/arm/mach-footbridge/dma.c b/arch/arm/mach-footbridge/dma.c
+index 86618074a7a5..228757c8e06f 100644
+--- a/arch/arm/mach-footbridge/dma.c
++++ b/arch/arm/mach-footbridge/dma.c
+@@ -50,8 +50,7 @@ static int __init fb_dma_init(void)
+ 	dma[_DC21285_DMA(1)].d_ops = &fb_dma_ops;
+ #endif
+ #ifdef CONFIG_ISA_DMA
+-	if (footbridge_cfn_mode())
+-		isa_init_dma();
++	isa_init_dma();
+ #endif
+ 	return 0;
+ }
+diff --git a/arch/arm/mach-footbridge/include/mach/memory.h b/arch/arm/mach-footbridge/include/mach/memory.h
+index 3a5d2638c18f..8f0ca8e8b37e 100644
+--- a/arch/arm/mach-footbridge/include/mach/memory.h
++++ b/arch/arm/mach-footbridge/include/mach/memory.h
+@@ -16,22 +16,6 @@
+ #ifndef __ASM_ARCH_MEMORY_H
+ #define __ASM_ARCH_MEMORY_H
+ 
+-
+-#if defined(CONFIG_FOOTBRIDGE_ADDIN)
+-/*
+- * If we may be using add-in footbridge mode, then we must
+- * use the out-of-line translation that makes use of the
+- * PCI BAR
+- */
+-#ifndef __ASSEMBLY__
+-extern unsigned long __virt_to_bus(unsigned long);
+-extern unsigned long __bus_to_virt(unsigned long);
+-#endif
+-#define __virt_to_bus	__virt_to_bus
+-#define __bus_to_virt	__bus_to_virt
+-
+-#elif defined(CONFIG_FOOTBRIDGE_HOST)
+-
+ /*
+  * The footbridge is programmed to expose the system RAM at 0xe0000000.
+  * The requirement is that the RAM isn't placed at bus address 0, which
+@@ -41,12 +25,6 @@ extern unsigned long __bus_to_virt(unsigned long);
+ #define __virt_to_bus(x)	((x) + (BUS_OFFSET - PAGE_OFFSET))
+ #define __bus_to_virt(x)	((x) - (BUS_OFFSET - PAGE_OFFSET))
+ 
+-#else
+-
+-#error "Undefined footbridge mode"
+-
+-#endif
+-
+ /*
+  * Cache flushing area.
+  */
+diff --git a/arch/arm/mach-footbridge/isa.c b/arch/arm/mach-footbridge/isa.c
+index ec5af521cf95..3375ac23c046 100644
+--- a/arch/arm/mach-footbridge/isa.c
++++ b/arch/arm/mach-footbridge/isa.c
+@@ -79,9 +79,6 @@ static int __init footbridge_isa_init(void)
+ {
+ 	int err = 0;
+ 
+-	if (!footbridge_cfn_mode())
+-		return 0;
+-
+ 	/* Personal server doesn't have RTC */
+ 	if (!machine_is_personal_server()) {
+ 		isa_rtc_init();
+-- 
+2.29.2
+
