@@ -2,78 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 299D2C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44FCC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244636AbiHRMjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 08:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40450 "EHLO
+        id S244147AbiHRMjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 08:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235717AbiHRMjJ (ORCPT
+        with ESMTP id S244470AbiHRMjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 08:39:09 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F874F6B6;
-        Thu, 18 Aug 2022 05:39:07 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M7ktN0gHtzGpcG;
-        Thu, 18 Aug 2022 20:37:32 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 20:39:05 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600010.china.huawei.com
- (7.193.23.86) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
- 2022 20:39:04 +0800
-From:   Sun Ke <sunke32@huawei.com>
-To:     <dhowells@redhat.com>
-CC:     <linux-cachefs@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <jefflexu@linux.alibaba.com>, <sunke32@huawei.com>
-Subject: [PATCH v3] cachefiles: fix error return code in cachefiles_ondemand_copen()
-Date:   Thu, 18 Aug 2022 20:50:38 +0800
-Message-ID: <20220818125038.2247720-1-sunke32@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 18 Aug 2022 08:39:47 -0400
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A585B061
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 05:39:45 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id D00832B05E6A;
+        Thu, 18 Aug 2022 08:39:39 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 18 Aug 2022 08:39:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660826379; x=1660833579; bh=YRrkqYfUey
+        d/afvSZhJ0kvziJy3S8LJDEtRjqUfFPSo=; b=IHz9beHjK6BmV92EOKI1gLLc0M
+        P9t82G2uluVqd7svl2yZLWMAJoeAjLoGLogb98PqFknQRGD1gtJZ6LtiUoi1SBky
+        IDyfMCqUl7rOPRZ/q0daavXQU/hdPPdM+38Le4gYw/FJg+DjGAZSmIuyBS57YrsB
+        e63wCjCvBy8K+nrRoPsw5EnywFBAD8u5plPWclrho6XuiOChzZc609mjM6oqKhQI
+        SWQZT4a8qwcJonb/0eZ6aTEXpRmdN6oTtLBmev2evIFDRvsr9fyiTsd0X1xdVoP2
+        Aq4HbOt2ei1w/d6+L2su/JzudsXQNLB7KETrs2DkncF2s/uqNzDSXvAnYg3g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660826379; x=1660833579; bh=YRrkqYfUeyd/afvSZhJ0kvziJy3S
+        8LJDEtRjqUfFPSo=; b=qAvK/y25kdOixORQ1DcGPmxPcHWSUKsl3RV+tTDS1EO5
+        NOPj/sCCY7oGDwQwvyJWkJzhPy2M/OOY5ydNH2EDdTJe/u8NLQGUEffJ3ICIDg9z
+        8Yk7ItX8XgPmjfb5zXPdgWKTuWIoSrYxKdCndlpJivExLPhVOq0KSKs/XGioJy+I
+        HqjVn5aKmUL328f1qyZjr9lU+Ponwbefox24cnMfTYvkq8Cy0/utT+EUWgx7YCW2
+        N5UHkZgC8btjVzhbarvvdtUT9roMh2sottdMTFausmjJdvPjoNC7NNqXf/JSso6c
+        RDM6b/ga/jMLUuMKsEP3dxx6+PrxnKHvw62M20jSBg==
+X-ME-Sender: <xms:CjP-YnGeVVLXM3mzZ2v7VHy6wrITCBDi8qvzdW9m3h4S-iQHge4HEA>
+    <xme:CjP-YkUY8FAcAVAWFOjI3fi74PkJhzACWS0q2oO31_xTk-QBUY7lRUkG4yw09Tiq5
+    ht1P6FoKXVh_KiOL6Q>
+X-ME-Received: <xmr:CjP-YpKrBFnbVIv4SfmxGlO5dZ9yKsaoNXWsZVsdtyKSyjbfZ2VcCUx3wA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehledgvdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpedvfeevudfgvefhtdefjedtfeelheeigfeghfeijedvgfegffevkefggfff
+    ueejtdenucffohhmrghinhephhhinhhnvghrrdhinhhfohenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgv
+    tghh
+X-ME-Proxy: <xmx:CjP-YlGlnSTXDodYwXRenPdTbe0fyyRAuyKpHoL9iwEKs46SIOyukA>
+    <xmx:CjP-YtXtlRp3s-IM5r0fC_58DTQfQNWdBhMJjzDFUH7UhTxIFe3R-Q>
+    <xmx:CjP-YgM-xnxj1Q2js1x6rE3FxXTBMgsvWAPPM37LKl4j_CxHuIJHhQ>
+    <xmx:CzP-YjHFF5LGbBDa_NV776KyH5859ooLfz0LmsNpe-VwQBt3g9IFmv5w2gQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 18 Aug 2022 08:39:37 -0400 (EDT)
+Date:   Thu, 18 Aug 2022 14:39:34 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 04/35] drm/modes: Introduce 480i and 576i modes
+Message-ID: <20220818123934.eim2bfrgbxsmviqx@houat>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-4-3d53ae722097@cerno.tech>
+ <CAMuHMdUrwzPYjA0wdR7ADj5Ov6+m03JbnY8fBYzRYyWDuNm5=g@mail.gmail.com>
+ <20220816132636.3tmwqmrox64pu3lt@houat>
+ <CAMuHMdUNLPbjs=usYQBim5FxsrC1oJLuF+3JB7auzHHRoOqavQ@mail.gmail.com>
+ <20220817075351.4xpsqdngjgtiqvob@houat>
+ <CAMuHMdUusnhYodWGCxJBu-1Hd2KW-xdT8jxE_iVdQjDo8b3Y5Q@mail.gmail.com>
+ <20220817131454.qcuywcuc4ts4hswm@houat>
+ <CAMuHMdVPEgnnsY-4uuf=FDJ0YxWpch-0kZWFT_TZfcDvXLtwWQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lcxbafgaqwff7pps"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVPEgnnsY-4uuf=FDJ0YxWpch-0kZWFT_TZfcDvXLtwWQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cache_size field of copen is specified by the user daemon.
-If cache_size < 0, then the OPEN request is expected to fail,
-while copen itself shall succeed. However, returning 0 is indeed
-unexpected when cache_size is an invalid error code.
 
-Fix this by returning error when cache_size is an invalid error code.
+--lcxbafgaqwff7pps
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: c8383054506c ("cachefiles: notify the user daemon when looking up cookie")
-Signed-off-by: Sun Ke <sunke32@huawei.com>
----
-v3: update the commit log suggested by Jingbo.
+Hi!
 
- fs/cachefiles/ondemand.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Aug 17, 2022 at 04:01:48PM +0200, Geert Uytterhoeven wrote:
+> > > > > Vertically, it's simpler, as the number of lines is discrete.
+> > > > > You do have to take into account interlace and doublescan, and
+> > > > > progressive modes with 262/312 lines.
+> > > >
+> > > > So we only have to deal with 525 and 625 lines total (without taking
+> > > > interlace and doublescan into account), right?
+> > >
+> > > Yes.
+> > >
+> > > > I guess we still have the same question, we probably want to center=
+ it,
+> > > > so top =3D=3D bottom, but what about the vsync length?
+> > >
+> > > Unfortunately that table does not mention top and bottom margins.
+> > > But according to drivers/video/fbdev/amifb.c (see the "Broadcast
+> > > video timings" comment block and the definitions of the "ntsc-lace"
+> > > and "pal-lace" video modes), they are asymmetrical, too.
+> > >
+> > > Vsync length is 0.576ms, so that's 9 scan lines (I guess I didn't
+> > > have that info when I wrote amifb, as I used 4 lines there).
+> >
+> > Thanks, that's some great info already.
+> >
+> > It's mentioned though that the settings for NTSC are "straightforward",
+> > but it's definitely not for me :)
+>=20
+> As in NTSC just uses different pixel clock and horizontal/vertical sync
+> rate values...
 
-diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
-index 1fee702d5529..ea8a1e8317d9 100644
---- a/fs/cachefiles/ondemand.c
-+++ b/fs/cachefiles/ondemand.c
-@@ -159,7 +159,7 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
- 	/* fail OPEN request if daemon reports an error */
- 	if (size < 0) {
- 		if (!IS_ERR_VALUE(size))
--			size = -EINVAL;
-+			ret = size = -EINVAL;
- 		req->error = size;
- 		goto out;
- 	}
--- 
-2.31.1
+Oh, so the constants differ but the calculation is the same, ack.
 
+> > I've looked around and it looks like the entire blanking area is
+> > supposed to be 40 pixels in interlaced, but I couldn't find anywhere how
+>=20
+> 625 lines - 575[*] visible lines =3D 50 lines.
+>=20
+> [*] BT.656 uses 576 visible lines as that's a multiple of 2, for splitting
+>      a frame in two fields of equal size.
+>=20
+> "visible" is relative, as it includes the overscan region.
+> Some PAL monitors used with computers had knobs to control width/height
+> and position of the screen, so you could make use of most or all of
+> the overscan region
+
+It brings back some memories :)
+
+> but on a real TV you're limited to ca. 640x512 (on PAL) which is what
+> an Amiga used by default (with a 14 MHz pixclock).
+
+> > it's supposed to be split between the upper and lower margins and the
+> > sync period.
+>=20
+> "Field Synchronization of PAL System" on
+> http://martin.hinner.info/vga/pal.html shows the split.
+
+Thanks, that's excellent as well.
+
+I'm mostly done with a function that creates a PAL mode, but I still
+have one question.
+
+If I understand well, the blanking period is made up (interlace) of 16
+pulses for the first field, 14 for the second, each pulse taking half a
+line. That amount to 30 pulses, so 15 lines.
+
+I first assumed that the pre-equalizing pulses would be the back porch,
+the long sync pulses the vsync, and the post-equalizing pulses the front
+porch. But... we're still missing 35 lines to amount to 625 lines, that
+seems to be counted in the field itself (305 lines =3D=3D (575 + 35) / 2)
+
+So I guess my assumption was wrong to begin with.
+
+You seem to have used a fixed vsync in amifb to 4 lines, and I don't
+understand how you come up with the upper and lower margins (or rather,
+how they are linked to what's described in that page)
+
+Maxime
+
+--lcxbafgaqwff7pps
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYv4zBgAKCRDj7w1vZxhR
+xYV3AQDMVX9EP9IeMgn/VC77iWNl8fZWLl3pV3GsUW4BHyIW6QEAnOHXzzmKBAoR
+Ta1eHGvbrbL9eJf0qR3cPhqIhbYH2Q0=
+=lHS5
+-----END PGP SIGNATURE-----
+
+--lcxbafgaqwff7pps--
