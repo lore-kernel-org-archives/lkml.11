@@ -2,84 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C70EC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E0CC32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245411AbiHRN6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        id S245570AbiHRN7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245504AbiHRN6X (ORCPT
+        with ESMTP id S245530AbiHRN6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:58:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4A72672
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:58:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E70A0B82175
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 13:58:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9F6DC433D6;
-        Thu, 18 Aug 2022 13:58:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660831095;
-        bh=q0OPuQbcdF1V1h6hlvy81uFHSyeXfFNwWV6JIbldMtU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IGw3uF1/SlW1blcN279Rxu0Cmdkojc/zhtVEjDGFiS+VFcpEkdHLgAfmnO7pgiV76
-         ItZ0qe5C8bmSFjb3SspNPbm1optPk+BIaN73vIzx8l+C9imaVnEm3j88le+2PZ8siq
-         0mPTKJNA+RkuvXAKv/mqSfzW03H8SJlAN9yfN+39JQMWXo4laoM5SGF1M6eYizey8U
-         7wLk/wtkvcXbaJsVBUE+RbkBVI9zGv4MMdT9QLwobh/2wQ5RD994dBXWn5YLL6IFbr
-         zfqP+RKn9TNuMt8hVj7G9JZkhHVfVvPXWjP2POhWXgYu4142A0yWEzfbKlUo4Wz3ZX
-         Q8CdPyWQHHQxg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Joel Stanley <joel@jms.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org
-Subject: [PATCH 05/11] ARM: defconfig: drop CONFIG_DRM_RCAR_LVDS
-Date:   Thu, 18 Aug 2022 15:57:14 +0200
-Message-Id: <20220818135737.3143895-4-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220818135737.3143895-1-arnd@kernel.org>
-References: <20220818135522.3143514-1-arnd@kernel.org>
- <20220818135737.3143895-1-arnd@kernel.org>
+        Thu, 18 Aug 2022 09:58:38 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D89E1015
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:58:31 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso2635077wma.2
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:58:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=o9Ay2vEp02yCz7wtoapfe+JbYqIRcJhSEcb1z+0LYVA=;
+        b=n7fh4Wb0yRW3KJURFLMocGfucbu0vFwY1MdMv/WAVHNRMs+YiFSTYRkDe5EZ3nBuci
+         797g12ZiwLhBQ4R5nKrv2WpDF8fPENnhXu+Ep7L7VPXRLhM12k7CoHj26V12dWPkSH5Z
+         fnQqYTf/+LpQLUuQnb++12zB02auXV/sI8jojV54zb8q0aK5pAW9fVo1fq3e2pIY7Cj6
+         tYWpnjFjE72aELypeq92ItC5N4y695ce3Ylk0T3qioaM6g7DTihaGxVqnqdNDLLYm9SG
+         QcjrGtrWlo7eReWvgAz1NH5XPRm8CsookvJ/gWwaOzfBQcJIM6+SU6vkB6NiDEu8oEWF
+         AufQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=o9Ay2vEp02yCz7wtoapfe+JbYqIRcJhSEcb1z+0LYVA=;
+        b=lPTsHgjuV1d0NxIhm3nVNUeVrPPajrez4WhxlKZwi6W5erfnPxH+vnruj549UN7PKn
+         dcdED15WaTbEFkDvDzM7VaereQxizW0WEys6IOKrWEoxFOFpYMp0e50ps/6xabyB2Sbf
+         J3rAiZuv64mrjhvn9bF9odcYhRdbaozdXa0CLvSlBW9rX9eWkkyR/CqmvTREMb1tlKeo
+         wtwYG/4cigx6SuGBS8L+n6MPrGQ/Bldy1cgH6OC0l45TCJD6MJP02XzXGUd83+cmdZtq
+         T0cOoohwq0E2P79iD28V9gLTzjk+iIVlSiDguv7Cpw5b10Luegtqgf1L/F5KpXyZHwlT
+         m7vA==
+X-Gm-Message-State: ACgBeo2bUIToxWBYASSpVbwIAPa/a7mWdVJHwMt51XAr9Y3ZxMEY/K3u
+        33RTucpxg/ZPuFpNG/taUjcB2A==
+X-Google-Smtp-Source: AA6agR5x3XYSteyGAwK5Qw85QEMJ/Q0oUaeWSFRKKd6fh1okhbFxUgsKVpK/fY5E3H1oaGjbTyMgiQ==
+X-Received: by 2002:a05:600c:4e8d:b0:3a5:f7ed:873 with SMTP id f13-20020a05600c4e8d00b003a5f7ed0873mr5343453wmq.170.1660831109242;
+        Thu, 18 Aug 2022 06:58:29 -0700 (PDT)
+Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id l24-20020a1c7918000000b003a5ca627333sm5335937wme.8.2022.08.18.06.58.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 06:58:28 -0700 (PDT)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     broonie@kernel.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 0/6] ASoC: qcom: add support for sc8280xp machine
+Date:   Thu, 18 Aug 2022 14:58:14 +0100
+Message-Id: <20220818135817.10142-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+THis patchset adds support for SC8280XP SoC machine driver.
 
-This is now a hidden symbol, so just drop the defconfig line.
+First patch moves some of the commonly used code to common from sm8250 machine driver
+and the follow on code adds minimal support for sc8280xp.
 
-Fixes: 42d95d1b3a9c ("drm/rcar: stop using 'imply' for dependencies")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/configs/multi_v7_defconfig | 1 -
- 1 file changed, 1 deletion(-)
+Currently this driver is only tested with SmartSpeakers and Headset
+on Lenovo Thinkpad X13s.
 
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 4cfe795981c8..b3669cf855b3 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -713,7 +713,6 @@ CONFIG_ROCKCHIP_DW_MIPI_DSI=y
- CONFIG_ROCKCHIP_INNO_HDMI=y
- CONFIG_DRM_ATMEL_HLCDC=m
- CONFIG_DRM_RCAR_DU=m
--CONFIG_DRM_RCAR_LVDS=y
- CONFIG_DRM_SUN4I=m
- CONFIG_DRM_MSM=m
- CONFIG_DRM_FSL_DCU=m
+Support for sm8450 is tested and I will post the patches soon.
+
+Thanks,
+Srini
+
+Srinivas Kandagatla (3):
+  ASoC: dt-bindings: qcom,sm8250: add compatibles for sm8450 and sm8250
+  ASoC: qcom: sm8250: move some code to common
+  ASoC: qcom: add machine driver for sc8280xp
+
+ .../bindings/sound/qcom,sm8250.yaml           |   2 +
+ sound/soc/qcom/Kconfig                        |  11 ++
+ sound/soc/qcom/Makefile                       |   2 +
+ sound/soc/qcom/common.c                       | 169 ++++++++++++++++++
+ sound/soc/qcom/common.h                       |  12 ++
+ sound/soc/qcom/sc8280xp.c                     | 157 ++++++++++++++++
+ sound/soc/qcom/sm8250.c                       | 152 +---------------
+ 7 files changed, 360 insertions(+), 145 deletions(-)
+ create mode 100644 sound/soc/qcom/sc8280xp.c
+
 -- 
-2.29.2
+2.21.0
 
