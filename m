@@ -2,119 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E32C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40609C25B0E
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243387AbiHREXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        id S243324AbiHREZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243290AbiHREW3 (ORCPT
+        with ESMTP id S243403AbiHREZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:22:29 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F8140BDD;
-        Wed, 17 Aug 2022 21:22:28 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I3QZ6p003021;
-        Thu, 18 Aug 2022 04:22:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=x5l1wkmdsRZBunkWcYFQkbtqD5PkHotLXuooX3FGyRs=;
- b=NOisLO46QDmPhIQL/1OG+UDW+1gESKDhVdPO8ugLrKmV9RSM72PGdG5huThneO68Ob+X
- dQT7dyrF5FU7f5+YpXEJt2sODgewHWz6Ov3+B3jGB5hjBx02SxuzltVL566SEXX/PiM0
- f1urRDiC3l6ZZKIzkMk0mRJhOcvRy7n+p7AoLkfmeLSNApsuLSWmlPAkTaMBpBzexlHl
- c+DRDkkiwbkyvyvQVRMu6IpbU3nQiGMiqSowDQrGk2LugYyTqMAnArFaV1DOzusewgmI
- hp8xb2K6lrMdAY31GHoyRot55VI+IFUcDR6cnuy903WUwXU3xc1P0d8aNWfNy2aQ3jLr dg== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j0wynkvev-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 04:22:22 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HL6j006616
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 04:17:21 GMT
-Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 08:14:45 -0700
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-To:     freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
-CC:     Matthias Kaehlcke <mka@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Douglas Anderson <dianders@chromium.org>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "David Airlie" <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 3/7] drm/msm: Correct pm_runtime votes in recover worker
-Date:   Wed, 17 Aug 2022 20:44:16 +0530
-Message-ID: <20220817204224.v4.3.Ib07ecec3d5c17cb0e1efa6fcddaaa019ec2fb556@changeid>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
+        Thu, 18 Aug 2022 00:25:50 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA07F31207;
+        Wed, 17 Aug 2022 21:25:48 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M7Wv51R4Pz1N7Jr;
+        Thu, 18 Aug 2022 12:22:25 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 12:25:46 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
+ 2022 12:25:46 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>
+CC:     <johannes@sipsolutions.net>
+Subject: [PATCH -next] wifi: mac80211: fix missing dev_kfree_skb() in error path in ieee80211_tx_control_port()
+Date:   Thu, 18 Aug 2022 12:33:49 +0800
+Message-ID: <20220818043349.4168835-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: n0j97RyrkP2uRAYM-3zclLemqE-wo0Z8
-X-Proofpoint-GUID: n0j97RyrkP2uRAYM-3zclLemqE-wo0Z8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 adultscore=0 spamscore=0 malwarescore=0 clxscore=1015
- impostorscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
- mlxlogscore=999 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180014
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the scenario where there is one a single submit which is hung, gpu is
-power collapsed when it is retired. Because of this, by the time we call
-reover(), gpu state would be already clear. Fix this by correctly
-managing the pm runtime votes.
+Add missing dev_kfree_skb() in error path in ieee80211_tx_control_port()
+to avoid memory leak.
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+Fixes: dd820ed6336a ("wifi: mac80211: return error from control port TX for drops")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
+ net/mac80211/tx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-(no changes since v1)
-
- drivers/gpu/drm/msm/msm_gpu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index e1dd3cc..1945efb 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -398,7 +398,6 @@ static void recover_worker(struct kthread_work *work)
- 	/* Record the crash state */
- 	pm_runtime_get_sync(&gpu->pdev->dev);
- 	msm_gpu_crashstate_capture(gpu, submit, comm, cmd);
--	pm_runtime_put_sync(&gpu->pdev->dev);
- 
- 	kfree(cmd);
- 	kfree(comm);
-@@ -446,6 +445,8 @@ static void recover_worker(struct kthread_work *work)
- 		}
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 45df9932d0ba..594bd70ee641 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -5885,6 +5885,7 @@ int ieee80211_tx_control_port(struct wiphy *wiphy, struct net_device *dev,
+ 	rcu_read_lock();
+ 	err = ieee80211_lookup_ra_sta(sdata, skb, &sta);
+ 	if (err) {
++		dev_kfree_skb(skb);
+ 		rcu_read_unlock();
+ 		return err;
  	}
- 
-+	pm_runtime_put_sync(&gpu->pdev->dev);
-+
- 	mutex_unlock(&gpu->lock);
- 
- 	msm_gpu_retire(gpu);
 -- 
-2.7.4
+2.25.1
 
