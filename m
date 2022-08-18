@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B371C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148F4C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347109AbiHRVYR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        id S238587AbiHRVYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 17:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346998AbiHRVXp (ORCPT
+        with ESMTP id S230062AbiHRVXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 17:23:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B9969F68
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8948551A38
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 443BC61640
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 21:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABBBC433D7;
-        Thu, 18 Aug 2022 21:15:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BE9861645
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 21:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37532C433C1;
+        Thu, 18 Aug 2022 21:16:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660857359;
-        bh=soe7WkpVDL0rQ3DepAGZmwBW25rHj0k0Dx4IE3FtFio=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lacB4lImkey8cNH3JqHzjgC+/r9sa6Ioyqet0e8tgdVjFCkz8zNntMBfxJl6MfsiQ
-         av721qEqGT562V6DCYFKxIGxzO/UDyUr1KEXiaMfJIxnT0afyK8spDwkxrVEZ/3XML
-         ojXySeRlJRAFxhPXJkXTjIQhJCzELNXvMqR+RAAa/CQY6dfJjDR4Uw2pnNS6M6xpP3
-         K57LKr9LpohuPFLnoCnxf3/7zyFFIsT0LN0bmRxlZ1tBk9aUEcRX0PNxamgoj0Xdk3
-         S3STddbVP5f+cdwn5ByKsE8jw/Qjd1sTLrXfIFRMYewTBH+YVYRyEf/gkrNDT0f4NP
-         itiWm7Hq673Wg==
+        s=k20201202; t=1660857363;
+        bh=XG6KXNr/XhLoTua87y5ZRB7Y9Skb9lfcJy6Wz27JkJ8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XMgqRXl6E+e3GoZDHzlCIykBB0pWNZ0NkQAPALjbu4szobunaHdY2/Ne+HId8sZkS
+         WSfq9ZL60LZNBHfKMsBPkKn15QScX76p5QBu96TPg21cb8T5/2xhLuvIfjyxE2dYBd
+         fWm9OcaHd/6SUKAZBhgjMxlGwcaN+GQxqhOB5LkOqUnRtj6kKhJ7xxGyMgaBwz97Ie
+         oBN2cq/lokWG5WopFDRV2WsX/G0F/NNulC8/xqkMO2JV5qffSrCnJxTPPJjKvfRIOS
+         xc3Amxc8G+zSjebuylT9sYVymWghJ7QJyprS2Nn9whOdKbYdUgKagcgzdHNi6Hqhv3
+         T286k6z26K0dg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -40,10 +39,12 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Christoph Hellwig <hch@lst.de>,
         Linus Walleij <linus.walleij@linaro.org>,
         Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 0/4] ARM: footbridge: cleanups
-Date:   Thu, 18 Aug 2022 23:15:46 +0200
-Message-Id: <20220818211550.3272321-1-arnd@kernel.org>
+Subject: [PATCH 2/4] ARM: footbridge: remove leftover from personal-server
+Date:   Thu, 18 Aug 2022 23:15:48 +0200
+Message-Id: <20220818211550.3272321-3-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220818211550.3272321-1-arnd@kernel.org>
+References: <20220818211550.3272321-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -52,44 +53,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-I had an older patch to remove the addin mode for footbridge,
-which nobody is using any more, and I found a few other small
-cleanups that are worth doing here.
+The machine was removed a while ago, and the checks are
+now useless.
 
-Footbridge is now the only platform with a custom __virt_to_bus()
-for ISA DMA, and a custom phys_to_dma() for PCI devices. Both
-just add a fixed offset, so there is probably a better way
-of doing the same without a custom helper function.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm/mach-footbridge/isa.c | 11 +++++------
+ drivers/tty/serial/21285.c     |  3 ---
+ 2 files changed, 5 insertions(+), 9 deletions(-)
 
-     Arnd
-
-Arnd Bergmann (4):
-  ARM: footbridge: remove addin mode
-  ARM: footbridge: remove leftover from personal-server
-  ARM: footbridge: move isa-dma support into footbridge
-  ARM: footbridge: limit CONFIG_ISA to CATS
-
- arch/arm/Kconfig                              |  5 --
- arch/arm/include/asm/hardware/dec21285.h      | 13 ----
- arch/arm/kernel/Makefile                      |  1 -
- arch/arm/mach-footbridge/Kconfig              | 30 +-------
- arch/arm/mach-footbridge/Makefile             |  5 +-
- arch/arm/mach-footbridge/common.c             | 73 ++-----------------
- arch/arm/mach-footbridge/dc21285.c            | 61 +++++-----------
- .../arm/{kernel => mach-footbridge}/dma-isa.c |  7 +-
- arch/arm/mach-footbridge/dma.c                | 58 ---------------
- .../mach-footbridge/include/mach/isa-dma.h    | 14 +---
- .../arm/mach-footbridge/include/mach/memory.h | 22 ------
- arch/arm/mach-footbridge/isa.c                | 14 ++--
- drivers/tty/serial/21285.c                    |  3 -
- 13 files changed, 42 insertions(+), 264 deletions(-)
- rename arch/arm/{kernel => mach-footbridge}/dma-isa.c (98%)
- delete mode 100644 arch/arm/mach-footbridge/dma.c
-
+diff --git a/arch/arm/mach-footbridge/isa.c b/arch/arm/mach-footbridge/isa.c
+index 3375ac23c046..84caccddce44 100644
+--- a/arch/arm/mach-footbridge/isa.c
++++ b/arch/arm/mach-footbridge/isa.c
+@@ -80,12 +80,11 @@ static int __init footbridge_isa_init(void)
+ 	int err = 0;
+ 
+ 	/* Personal server doesn't have RTC */
+-	if (!machine_is_personal_server()) {
+-		isa_rtc_init();
+-		err = platform_device_register(&rtc_device);
+-		if (err)
+-			printk(KERN_ERR "Unable to register RTC device: %d\n", err);
+-	}
++	isa_rtc_init();
++	err = platform_device_register(&rtc_device);
++	if (err)
++		printk(KERN_ERR "Unable to register RTC device: %d\n", err);
++
+ 	err = platform_device_register(&serial_device);
+ 	if (err)
+ 		printk(KERN_ERR "Unable to register serial device: %d\n", err);
+diff --git a/drivers/tty/serial/21285.c b/drivers/tty/serial/21285.c
+index 7520cc02fd4d..65d6af755567 100644
+--- a/drivers/tty/serial/21285.c
++++ b/drivers/tty/serial/21285.c
+@@ -461,9 +461,6 @@ static int __init serial21285_console_setup(struct console *co, char *options)
+ 	int parity = 'n';
+ 	int flow = 'n';
+ 
+-	if (machine_is_personal_server())
+-		baud = 57600;
+-
+ 	/*
+ 	 * Check whether an invalid uart number has been specified, and
+ 	 * if so, search for the first available port that does have
 -- 
 2.29.2
 
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Marc Zyngier <maz@kernel.org>
