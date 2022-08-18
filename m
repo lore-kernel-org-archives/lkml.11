@@ -2,70 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40609C25B0E
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F8CC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbiHREZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
+        id S243321AbiHRE1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243403AbiHREZu (ORCPT
+        with ESMTP id S243211AbiHRE1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:25:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA07F31207;
-        Wed, 17 Aug 2022 21:25:48 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M7Wv51R4Pz1N7Jr;
-        Thu, 18 Aug 2022 12:22:25 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 12:25:46 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
- 2022 12:25:46 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>
-CC:     <johannes@sipsolutions.net>
-Subject: [PATCH -next] wifi: mac80211: fix missing dev_kfree_skb() in error path in ieee80211_tx_control_port()
-Date:   Thu, 18 Aug 2022 12:33:49 +0800
-Message-ID: <20220818043349.4168835-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 18 Aug 2022 00:27:13 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C25F31207;
+        Wed, 17 Aug 2022 21:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660796832; x=1692332832;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=S+SgNVUGjPilD/TcMMolv5HajrqXFmE5M8AKXXkENE4=;
+  b=fQu4HwP9mca2fecH4sZVHE5pGAts1v7KL0a0T9CERbXVwz+gMTrtpwxq
+   yJNfUZ1RFdTFeFtUxFGF9/vz60arjJCXnb27a7pkynja8NblQQjSzXH2V
+   ZTMeUJHjL8Tm14IM//cxDud5Bx+FVsKZu1gGD4M1v83ObdeCr8V/dwdTG
+   gWmJcBwaHwUB+KFv38UXNTazq2WfKfadYJ7rwm4IePN4seO9qfpmsuM7n
+   BUQ8dadHIJnuvWnb6ngxbKyCE0uFuJb+E/qyeltIgDJLuGbk5uAjXwtwn
+   c5hhJH0UzcSt/KaN5e0NfpABKWcfesXS0juk/fJ/hjkDprloZYfQ/BLlD
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="354401921"
+X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
+   d="scan'208";a="354401921"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 21:27:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
+   d="scan'208";a="667923312"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga008.fm.intel.com with ESMTP; 17 Aug 2022 21:27:09 -0700
+Date:   Thu, 18 Aug 2022 12:18:02 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Peter Colberg <peter.colberg@intel.com>
+Cc:     Wu Hao <hao.wu@intel.com>, Tom Rix <trix@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        russell.h.weight@intel.com, matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        marpagan@redhat.com, lgoncalv@redhat.com
+Subject: Re: [PATCH v1] uio: dfl: add IOPLL user-clock feature id
+Message-ID: <Yv29ev8OKyEYcaf/@yilunxu-OptiPlex-7050>
+References: <20220817213746.4986-1-peter.colberg@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817213746.4986-1-peter.colberg@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing dev_kfree_skb() in error path in ieee80211_tx_control_port()
-to avoid memory leak.
+On 2022-08-17 at 17:37:46 -0400, Peter Colberg wrote:
+> Add a Device Feature List (DFL) feature id for the configurable
+> IOPLL user clock source, which can be used to configure the clock
+> speeds that are used for RTL logic that is programmed into the
+> Partial Reconfiguration (PR) region of an FPGA.
 
-Fixes: dd820ed6336a ("wifi: mac80211: return error from control port TX for drops")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- net/mac80211/tx.c | 1 +
- 1 file changed, 1 insertion(+)
+Why not use linux clock framework for this IOPLL? And let the PR
+driver set it togeter with the RTL logic reporgramming?
 
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 45df9932d0ba..594bd70ee641 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -5885,6 +5885,7 @@ int ieee80211_tx_control_port(struct wiphy *wiphy, struct net_device *dev,
- 	rcu_read_lock();
- 	err = ieee80211_lookup_ra_sta(sdata, skb, &sta);
- 	if (err) {
-+		dev_kfree_skb(skb);
- 		rcu_read_unlock();
- 		return err;
- 	}
--- 
-2.25.1
+Thanks,
+Yilun
 
+> 
+> The DFL feature id table can be found at:
+> https://github.com/OPAE/dfl-feature-id
+> 
+> Signed-off-by: Peter Colberg <peter.colberg@intel.com>
+> ---
+>  drivers/uio/uio_dfl.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
+> index 8f39cc8bb034..69e93f3e7faf 100644
+> --- a/drivers/uio/uio_dfl.c
+> +++ b/drivers/uio/uio_dfl.c
+> @@ -46,10 +46,12 @@ static int uio_dfl_probe(struct dfl_device *ddev)
+>  
+>  #define FME_FEATURE_ID_ETH_GROUP	0x10
+>  #define FME_FEATURE_ID_HSSI_SUBSYS	0x15
+> +#define PORT_FEATURE_ID_IOPLL_USRCLK	0x14
+>  
+>  static const struct dfl_device_id uio_dfl_ids[] = {
+>  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
+>  	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
+> +	{ PORT_ID, PORT_FEATURE_ID_IOPLL_USRCLK },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
+> -- 
+> 2.28.0
+> 
