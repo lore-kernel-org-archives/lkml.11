@@ -2,542 +2,656 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D84C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DEBC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346601AbiHRVJG (ORCPT
+        id S1346632AbiHRVJQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47922 "EHLO
+        Thu, 18 Aug 2022 17:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346255AbiHRVIj (ORCPT
+        with ESMTP id S1346280AbiHRVIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:08:39 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FA5D51C5
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:04:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=jAGdiy01QjFZdMcr7H4GvPmESRt
-        lhhyjFBPKrBE08G8=; b=DPdnNW+K+4OBDy3EK9Yw4qVPRXZdxcEfrenNKyobftK
-        Eu6+V1T6NJgFMeZJYrpu+LJ9JogvK36qaYT/EvB7R5EwrKHB71/BvTY5JfL/zWL+
-        yTGuYH/dly1rDHNn7nCeLJYxT0hgTpNY4xLYIxDfgQb6WBrN/4kHp+LHuAMrpJEE
-        =
-Received: (qmail 3961765 invoked from network); 18 Aug 2022 23:01:19 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:01:19 +0200
-X-UD-Smtp-Session: l3s3148p1@fy11SIrmy80ucref
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Andres Salomon <dilinger@queued.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Winischhofer <thomas@winischhofer.net>,
-        linux-parisc@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-geode@lists.infradead.org, linux-omap@vger.kernel.org
-Subject: [PATCH] video: move from strlcpy with unused retval to strscpy
-Date:   Thu, 18 Aug 2022 23:01:17 +0200
-Message-Id: <20220818210118.7541-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 18 Aug 2022 17:08:41 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D9AD51ED
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:04:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660856643; x=1692392643;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=enuGV+fx9Yyxk1sFYga4fMlHlv7RgJRfNkf+1q9h01k=;
+  b=Rcp6WWUk4/pP9JHk5STW3LnkK+qSJqt3v4tJt9uUak2SIfXxNmNC+F0J
+   FIkTcI5LvIV8OIV6sN3/GiDbF/R+f8ggKMGqHYMC6GMsNqdNg55IliFue
+   XrwBSzN8H2V3Gg/992th3QkxqK5HzILbm6GCye/jkPD/M2Y7/hPVfeBsc
+   iXAXqYX42aqCC8PzPsyjGc3gza1klzUE6HB4Uv+cO/IXewKcWUMM1PS34
+   xWijCow0uIkzH9ThNGj06Yeo/j7o9OuenXxAFELgLIgInM94jYsU1KXLW
+   bsfI6JdmBRmYvKGCNCeV0dmlijpxyY3iesH4I3tLhGDnk5C7x+HT07TD3
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="279830785"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="279830785"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 14:03:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="935964954"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 18 Aug 2022 14:03:10 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOmfW-0000bt-0g;
+        Thu, 18 Aug 2022 21:03:10 +0000
+Date:   Fri, 19 Aug 2022 05:02:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [peterz-queue:objtool/core 4/5] arch/x86/kvm/emulate.c:330:9: error:
+ expected ')' before 'IBT_NOSEAL'
+Message-ID: <202208190440.YNgyh4sX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow the advice of the below link and prefer 'strscpy' in this
-subsystem. Conversion is 1:1 because the return value is not used.
-Generated by a coccinelle script.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git objtool/core
+head:   56097f45807c0c230bc02116328732e85da8b0b0
+commit: 69e297b0cf20139a1684d61420a78911776ebe55 [4/5] x86/kvm: Fix "missing ENDBR" BUG for fastop functions
+config: x86_64-rhel-8.3 (https://download.01.org/0day-ci/archive/20220819/202208190440.YNgyh4sX-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=69e297b0cf20139a1684d61420a78911776ebe55
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue objtool/core
+        git checkout 69e297b0cf20139a1684d61420a78911776ebe55
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kvm/
 
-Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/video/console/sticore.c                | 2 +-
- drivers/video/fbdev/aty/atyfb_base.c           | 2 +-
- drivers/video/fbdev/aty/radeon_base.c          | 2 +-
- drivers/video/fbdev/bw2.c                      | 2 +-
- drivers/video/fbdev/cirrusfb.c                 | 2 +-
- drivers/video/fbdev/clps711x-fb.c              | 2 +-
- drivers/video/fbdev/core/fbcon.c               | 2 +-
- drivers/video/fbdev/cyber2000fb.c              | 8 ++++----
- drivers/video/fbdev/ffb.c                      | 2 +-
- drivers/video/fbdev/geode/gx1fb_core.c         | 6 +++---
- drivers/video/fbdev/gxt4500.c                  | 2 +-
- drivers/video/fbdev/i740fb.c                   | 2 +-
- drivers/video/fbdev/imxfb.c                    | 2 +-
- drivers/video/fbdev/matrox/matroxfb_base.c     | 6 +++---
- drivers/video/fbdev/omap2/omapfb/omapfb-main.c | 2 +-
- drivers/video/fbdev/pxa168fb.c                 | 2 +-
- drivers/video/fbdev/pxafb.c                    | 2 +-
- drivers/video/fbdev/s3fb.c                     | 2 +-
- drivers/video/fbdev/simplefb.c                 | 2 +-
- drivers/video/fbdev/sis/sis_main.c             | 4 ++--
- drivers/video/fbdev/sm501fb.c                  | 2 +-
- drivers/video/fbdev/sstfb.c                    | 2 +-
- drivers/video/fbdev/sunxvr1000.c               | 2 +-
- drivers/video/fbdev/sunxvr2500.c               | 2 +-
- drivers/video/fbdev/sunxvr500.c                | 2 +-
- drivers/video/fbdev/tcx.c                      | 2 +-
- drivers/video/fbdev/tdfxfb.c                   | 4 ++--
- drivers/video/fbdev/tgafb.c                    | 2 +-
- drivers/video/fbdev/tridentfb.c                | 2 +-
- 29 files changed, 38 insertions(+), 38 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/video/console/sticore.c b/drivers/video/console/sticore.c
-index bd4dc97d4d34..db568f67e4dc 100644
---- a/drivers/video/console/sticore.c
-+++ b/drivers/video/console/sticore.c
-@@ -290,7 +290,7 @@ static char default_sti_path[21] __read_mostly;
- static int __init sti_setup(char *str)
- {
- 	if (str)
--		strlcpy (default_sti_path, str, sizeof (default_sti_path));
-+		strscpy(default_sti_path, str, sizeof(default_sti_path));
- 	
- 	return 1;
- }
-diff --git a/drivers/video/fbdev/aty/atyfb_base.c b/drivers/video/fbdev/aty/atyfb_base.c
-index a3e6faed7745..14eb718bd67c 100644
---- a/drivers/video/fbdev/aty/atyfb_base.c
-+++ b/drivers/video/fbdev/aty/atyfb_base.c
-@@ -3891,7 +3891,7 @@ static int __init atyfb_setup(char *options)
- 			 && (!strncmp(this_opt, "Mach64:", 7))) {
- 			static unsigned char m64_num;
- 			static char mach64_str[80];
--			strlcpy(mach64_str, this_opt + 7, sizeof(mach64_str));
-+			strscpy(mach64_str, this_opt + 7, sizeof(mach64_str));
- 			if (!store_video_par(mach64_str, m64_num)) {
- 				m64_num++;
- 				mach64_count = m64_num;
-diff --git a/drivers/video/fbdev/aty/radeon_base.c b/drivers/video/fbdev/aty/radeon_base.c
-index 6851f47613e1..73b07c77a4e1 100644
---- a/drivers/video/fbdev/aty/radeon_base.c
-+++ b/drivers/video/fbdev/aty/radeon_base.c
-@@ -1980,7 +1980,7 @@ static int radeon_set_fbinfo(struct radeonfb_info *rinfo)
- 	info->screen_base = rinfo->fb_base;
- 	info->screen_size = rinfo->mapped_vram;
- 	/* Fill fix common fields */
--	strlcpy(info->fix.id, rinfo->name, sizeof(info->fix.id));
-+	strscpy(info->fix.id, rinfo->name, sizeof(info->fix.id));
-         info->fix.smem_start = rinfo->fb_base_phys;
-         info->fix.smem_len = rinfo->video_ram;
-         info->fix.type = FB_TYPE_PACKED_PIXELS;
-diff --git a/drivers/video/fbdev/bw2.c b/drivers/video/fbdev/bw2.c
-index e7702fe1fe7d..6403ae07970d 100644
---- a/drivers/video/fbdev/bw2.c
-+++ b/drivers/video/fbdev/bw2.c
-@@ -182,7 +182,7 @@ static int bw2_ioctl(struct fb_info *info, unsigned int cmd, unsigned long arg)
- 
- static void bw2_init_fix(struct fb_info *info, int linebytes)
- {
--	strlcpy(info->fix.id, "bwtwo", sizeof(info->fix.id));
-+	strscpy(info->fix.id, "bwtwo", sizeof(info->fix.id));
- 
- 	info->fix.type = FB_TYPE_PACKED_PIXELS;
- 	info->fix.visual = FB_VISUAL_MONO01;
-diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
-index a41a75841e10..2a9fa06881b5 100644
---- a/drivers/video/fbdev/cirrusfb.c
-+++ b/drivers/video/fbdev/cirrusfb.c
-@@ -1999,7 +1999,7 @@ static int cirrusfb_set_fbinfo(struct fb_info *info)
- 	}
- 
- 	/* Fill fix common fields */
--	strlcpy(info->fix.id, cirrusfb_board_info[cinfo->btype].name,
-+	strscpy(info->fix.id, cirrusfb_board_info[cinfo->btype].name,
- 		sizeof(info->fix.id));
- 
- 	/* monochrome: only 1 memory plane */
-diff --git a/drivers/video/fbdev/clps711x-fb.c b/drivers/video/fbdev/clps711x-fb.c
-index 771ce1f76951..a1061c2f1640 100644
---- a/drivers/video/fbdev/clps711x-fb.c
-+++ b/drivers/video/fbdev/clps711x-fb.c
-@@ -326,7 +326,7 @@ static int clps711x_fb_probe(struct platform_device *pdev)
- 	info->var.vmode = FB_VMODE_NONINTERLACED;
- 	info->fix.type = FB_TYPE_PACKED_PIXELS;
- 	info->fix.accel = FB_ACCEL_NONE;
--	strlcpy(info->fix.id, CLPS711X_FB_NAME, sizeof(info->fix.id));
-+	strscpy(info->fix.id, CLPS711X_FB_NAME, sizeof(info->fix.id));
- 	fb_videomode_to_var(&info->var, &cfb->mode);
- 
- 	ret = fb_alloc_cmap(&info->cmap, BIT(CLPS711X_FB_BPP_MAX), 0);
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index cf9ac4da0a82..4a032fcf0d14 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -412,7 +412,7 @@ static int __init fb_console_setup(char *this_opt)
- 
- 	while ((options = strsep(&this_opt, ",")) != NULL) {
- 		if (!strncmp(options, "font:", 5)) {
--			strlcpy(fontname, options + 5, sizeof(fontname));
-+			strscpy(fontname, options + 5, sizeof(fontname));
- 			continue;
- 		}
- 		
-diff --git a/drivers/video/fbdev/cyber2000fb.c b/drivers/video/fbdev/cyber2000fb.c
-index d45355b9a58c..8f041f9b14c7 100644
---- a/drivers/video/fbdev/cyber2000fb.c
-+++ b/drivers/video/fbdev/cyber2000fb.c
-@@ -1134,7 +1134,7 @@ int cyber2000fb_attach(struct cyberpro_info *info, int idx)
- 		info->fb_size	      = int_cfb_info->fb.fix.smem_len;
- 		info->info	      = int_cfb_info;
- 
--		strlcpy(info->dev_name, int_cfb_info->fb.fix.id,
-+		strscpy(info->dev_name, int_cfb_info->fb.fix.id,
- 			sizeof(info->dev_name));
- 	}
- 
-@@ -1229,7 +1229,7 @@ static int cyber2000fb_ddc_getsda(void *data)
- 
- static int cyber2000fb_setup_ddc_bus(struct cfb_info *cfb)
- {
--	strlcpy(cfb->ddc_adapter.name, cfb->fb.fix.id,
-+	strscpy(cfb->ddc_adapter.name, cfb->fb.fix.id,
- 		sizeof(cfb->ddc_adapter.name));
- 	cfb->ddc_adapter.owner		= THIS_MODULE;
- 	cfb->ddc_adapter.class		= I2C_CLASS_DDC;
-@@ -1304,7 +1304,7 @@ static int cyber2000fb_i2c_getscl(void *data)
- 
- static int cyber2000fb_i2c_register(struct cfb_info *cfb)
- {
--	strlcpy(cfb->i2c_adapter.name, cfb->fb.fix.id,
-+	strscpy(cfb->i2c_adapter.name, cfb->fb.fix.id,
- 		sizeof(cfb->i2c_adapter.name));
- 	cfb->i2c_adapter.owner = THIS_MODULE;
- 	cfb->i2c_adapter.algo_data = &cfb->i2c_algo;
-@@ -1500,7 +1500,7 @@ static int cyber2000fb_setup(char *options)
- 		if (strncmp(opt, "font:", 5) == 0) {
- 			static char default_font_storage[40];
- 
--			strlcpy(default_font_storage, opt + 5,
-+			strscpy(default_font_storage, opt + 5,
- 				sizeof(default_font_storage));
- 			default_font = default_font_storage;
- 			continue;
-diff --git a/drivers/video/fbdev/ffb.c b/drivers/video/fbdev/ffb.c
-index b3d580e57221..7cba3969a970 100644
---- a/drivers/video/fbdev/ffb.c
-+++ b/drivers/video/fbdev/ffb.c
-@@ -883,7 +883,7 @@ static void ffb_init_fix(struct fb_info *info)
- 	} else
- 		ffb_type_name = "Elite 3D";
- 
--	strlcpy(info->fix.id, ffb_type_name, sizeof(info->fix.id));
-+	strscpy(info->fix.id, ffb_type_name, sizeof(info->fix.id));
- 
- 	info->fix.type = FB_TYPE_PACKED_PIXELS;
- 	info->fix.visual = FB_VISUAL_TRUECOLOR;
-diff --git a/drivers/video/fbdev/geode/gx1fb_core.c b/drivers/video/fbdev/geode/gx1fb_core.c
-index 5d34d89fb665..e41204ecb0e3 100644
---- a/drivers/video/fbdev/geode/gx1fb_core.c
-+++ b/drivers/video/fbdev/geode/gx1fb_core.c
-@@ -410,13 +410,13 @@ static void __init gx1fb_setup(char *options)
- 			continue;
- 
- 		if (!strncmp(this_opt, "mode:", 5))
--			strlcpy(mode_option, this_opt + 5, sizeof(mode_option));
-+			strscpy(mode_option, this_opt + 5, sizeof(mode_option));
- 		else if (!strncmp(this_opt, "crt:", 4))
- 			crt_option = !!simple_strtoul(this_opt + 4, NULL, 0);
- 		else if (!strncmp(this_opt, "panel:", 6))
--			strlcpy(panel_option, this_opt + 6, sizeof(panel_option));
-+			strscpy(panel_option, this_opt + 6, sizeof(panel_option));
- 		else
--			strlcpy(mode_option, this_opt, sizeof(mode_option));
-+			strscpy(mode_option, this_opt, sizeof(mode_option));
- 	}
- }
- #endif
-diff --git a/drivers/video/fbdev/gxt4500.c b/drivers/video/fbdev/gxt4500.c
-index e5475ae1e158..94588b809ebf 100644
---- a/drivers/video/fbdev/gxt4500.c
-+++ b/drivers/video/fbdev/gxt4500.c
-@@ -650,7 +650,7 @@ static int gxt4500_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	cardtype = ent->driver_data;
- 	par->refclk_ps = cardinfo[cardtype].refclk_ps;
- 	info->fix = gxt4500_fix;
--	strlcpy(info->fix.id, cardinfo[cardtype].cardname,
-+	strscpy(info->fix.id, cardinfo[cardtype].cardname,
- 		sizeof(info->fix.id));
- 	info->pseudo_palette = par->pseudo_palette;
- 
-diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
-index 7f09a0daaaa2..bd30d8314b68 100644
---- a/drivers/video/fbdev/i740fb.c
-+++ b/drivers/video/fbdev/i740fb.c
-@@ -159,7 +159,7 @@ static int i740fb_setup_ddc_bus(struct fb_info *info)
- {
- 	struct i740fb_par *par = info->par;
- 
--	strlcpy(par->ddc_adapter.name, info->fix.id,
-+	strscpy(par->ddc_adapter.name, info->fix.id,
- 		sizeof(par->ddc_adapter.name));
- 	par->ddc_adapter.owner		= THIS_MODULE;
- 	par->ddc_adapter.class		= I2C_CLASS_DDC;
-diff --git a/drivers/video/fbdev/imxfb.c b/drivers/video/fbdev/imxfb.c
-index d97d7456d15a..94f3bc637fc8 100644
---- a/drivers/video/fbdev/imxfb.c
-+++ b/drivers/video/fbdev/imxfb.c
-@@ -681,7 +681,7 @@ static int imxfb_init_fbinfo(struct platform_device *pdev)
- 
- 	fbi->devtype = pdev->id_entry->driver_data;
- 
--	strlcpy(info->fix.id, IMX_NAME, sizeof(info->fix.id));
-+	strscpy(info->fix.id, IMX_NAME, sizeof(info->fix.id));
- 
- 	info->fix.type			= FB_TYPE_PACKED_PIXELS;
- 	info->fix.type_aux		= 0;
-diff --git a/drivers/video/fbdev/matrox/matroxfb_base.c b/drivers/video/fbdev/matrox/matroxfb_base.c
-index 236521b19daf..68bba2688f4c 100644
---- a/drivers/video/fbdev/matrox/matroxfb_base.c
-+++ b/drivers/video/fbdev/matrox/matroxfb_base.c
-@@ -2383,9 +2383,9 @@ static int __init matroxfb_setup(char *options) {
- 		else if (!strncmp(this_opt, "mem:", 4))
- 			mem = simple_strtoul(this_opt+4, NULL, 0);
- 		else if (!strncmp(this_opt, "mode:", 5))
--			strlcpy(videomode, this_opt+5, sizeof(videomode));
-+			strscpy(videomode, this_opt + 5, sizeof(videomode));
- 		else if (!strncmp(this_opt, "outputs:", 8))
--			strlcpy(outputs, this_opt+8, sizeof(outputs));
-+			strscpy(outputs, this_opt + 8, sizeof(outputs));
- 		else if (!strncmp(this_opt, "dfp:", 4)) {
- 			dfp_type = simple_strtoul(this_opt+4, NULL, 0);
- 			dfp = 1;
-@@ -2455,7 +2455,7 @@ static int __init matroxfb_setup(char *options) {
- 			else if (!strcmp(this_opt, "dfp"))
- 				dfp = value;
- 			else {
--				strlcpy(videomode, this_opt, sizeof(videomode));
-+				strscpy(videomode, this_opt, sizeof(videomode));
- 			}
- 		}
- 	}
-diff --git a/drivers/video/fbdev/omap2/omapfb/omapfb-main.c b/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
-index afa688e754b9..5ccddcfce722 100644
---- a/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
-+++ b/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
-@@ -1331,7 +1331,7 @@ static void clear_fb_info(struct fb_info *fbi)
- {
- 	memset(&fbi->var, 0, sizeof(fbi->var));
- 	memset(&fbi->fix, 0, sizeof(fbi->fix));
--	strlcpy(fbi->fix.id, MODULE_NAME, sizeof(fbi->fix.id));
-+	strscpy(fbi->fix.id, MODULE_NAME, sizeof(fbi->fix.id));
- }
- 
- static int omapfb_free_all_fbmem(struct omapfb2_device *fbdev)
-diff --git a/drivers/video/fbdev/pxa168fb.c b/drivers/video/fbdev/pxa168fb.c
-index e943300d23e8..d5d0bbd39213 100644
---- a/drivers/video/fbdev/pxa168fb.c
-+++ b/drivers/video/fbdev/pxa168fb.c
-@@ -640,7 +640,7 @@ static int pxa168fb_probe(struct platform_device *pdev)
- 	info->flags = FBINFO_DEFAULT | FBINFO_PARTIAL_PAN_OK |
- 		      FBINFO_HWACCEL_XPAN | FBINFO_HWACCEL_YPAN;
- 	info->node = -1;
--	strlcpy(info->fix.id, mi->id, 16);
-+	strscpy(info->fix.id, mi->id, 16);
- 	info->fix.type = FB_TYPE_PACKED_PIXELS;
- 	info->fix.type_aux = 0;
- 	info->fix.xpanstep = 0;
-diff --git a/drivers/video/fbdev/pxafb.c b/drivers/video/fbdev/pxafb.c
-index 66cfc3e9d3cf..696ac5431180 100644
---- a/drivers/video/fbdev/pxafb.c
-+++ b/drivers/video/fbdev/pxafb.c
-@@ -2042,7 +2042,7 @@ static int __init pxafb_setup_options(void)
- 		return -ENODEV;
- 
- 	if (options)
--		strlcpy(g_options, options, sizeof(g_options));
-+		strscpy(g_options, options, sizeof(g_options));
- 
- 	return 0;
- }
-diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
-index 5069f6f67923..67b63a753cb2 100644
---- a/drivers/video/fbdev/s3fb.c
-+++ b/drivers/video/fbdev/s3fb.c
-@@ -248,7 +248,7 @@ static int s3fb_setup_ddc_bus(struct fb_info *info)
- {
- 	struct s3fb_info *par = info->par;
- 
--	strlcpy(par->ddc_adapter.name, info->fix.id,
-+	strscpy(par->ddc_adapter.name, info->fix.id,
- 		sizeof(par->ddc_adapter.name));
- 	par->ddc_adapter.owner		= THIS_MODULE;
- 	par->ddc_adapter.class		= I2C_CLASS_DDC;
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index cf2a90ecd64e..e770b4a356b5 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -355,7 +355,7 @@ static int simplefb_regulators_get(struct simplefb_par *par,
- 		if (!p || p == prop->name)
- 			continue;
- 
--		strlcpy(name, prop->name,
-+		strscpy(name, prop->name,
- 			strlen(prop->name) - strlen(SUPPLY_SUFFIX) + 1);
- 		regulator = devm_regulator_get_optional(&pdev->dev, name);
- 		if (IS_ERR(regulator)) {
-diff --git a/drivers/video/fbdev/sis/sis_main.c b/drivers/video/fbdev/sis/sis_main.c
-index f28fd69d5eb7..d6bcc9d60b2d 100644
---- a/drivers/video/fbdev/sis/sis_main.c
-+++ b/drivers/video/fbdev/sis/sis_main.c
-@@ -1872,7 +1872,7 @@ sisfb_get_fix(struct fb_fix_screeninfo *fix, int con, struct fb_info *info)
- 
- 	memset(fix, 0, sizeof(struct fb_fix_screeninfo));
- 
--	strlcpy(fix->id, ivideo->myid, sizeof(fix->id));
-+	strscpy(fix->id, ivideo->myid, sizeof(fix->id));
- 
- 	mutex_lock(&info->mm_lock);
- 	fix->smem_start  = ivideo->video_base + ivideo->video_offset;
-@@ -5867,7 +5867,7 @@ static int sisfb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			ivideo->cardnumber++;
- 	}
- 
--	strlcpy(ivideo->myid, chipinfo->chip_name, sizeof(ivideo->myid));
-+	strscpy(ivideo->myid, chipinfo->chip_name, sizeof(ivideo->myid));
- 
- 	ivideo->warncount = 0;
- 	ivideo->chip_id = pdev->device;
-diff --git a/drivers/video/fbdev/sm501fb.c b/drivers/video/fbdev/sm501fb.c
-index 6a52eba64559..fce6cfbadfd6 100644
---- a/drivers/video/fbdev/sm501fb.c
-+++ b/drivers/video/fbdev/sm501fb.c
-@@ -1719,7 +1719,7 @@ static int sm501fb_init_fb(struct fb_info *fb, enum sm501_controller head,
- 		enable = 0;
- 	}
- 
--	strlcpy(fb->fix.id, fbname, sizeof(fb->fix.id));
-+	strscpy(fb->fix.id, fbname, sizeof(fb->fix.id));
- 
- 	memcpy(&par->ops,
- 	       (head == HEAD_CRT) ? &sm501fb_ops_crt : &sm501fb_ops_pnl,
-diff --git a/drivers/video/fbdev/sstfb.c b/drivers/video/fbdev/sstfb.c
-index 27d4b0ace2d6..cd4d640f9477 100644
---- a/drivers/video/fbdev/sstfb.c
-+++ b/drivers/video/fbdev/sstfb.c
-@@ -1382,7 +1382,7 @@ static int sstfb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto fail;
- 	}
- 	sst_get_memsize(info, &fix->smem_len);
--	strlcpy(fix->id, spec->name, sizeof(fix->id));
-+	strscpy(fix->id, spec->name, sizeof(fix->id));
- 
- 	printk(KERN_INFO "%s (revision %d) with %s dac\n",
- 		fix->id, par->revision, par->dac_sw.name);
-diff --git a/drivers/video/fbdev/sunxvr1000.c b/drivers/video/fbdev/sunxvr1000.c
-index 15b079505a00..490bd9a14763 100644
---- a/drivers/video/fbdev/sunxvr1000.c
-+++ b/drivers/video/fbdev/sunxvr1000.c
-@@ -80,7 +80,7 @@ static int gfb_set_fbinfo(struct gfb_info *gp)
- 	info->pseudo_palette = gp->pseudo_palette;
- 
- 	/* Fill fix common fields */
--	strlcpy(info->fix.id, "gfb", sizeof(info->fix.id));
-+	strscpy(info->fix.id, "gfb", sizeof(info->fix.id));
-         info->fix.smem_start = gp->fb_base_phys;
-         info->fix.smem_len = gp->fb_size;
-         info->fix.type = FB_TYPE_PACKED_PIXELS;
-diff --git a/drivers/video/fbdev/sunxvr2500.c b/drivers/video/fbdev/sunxvr2500.c
-index 1d3bacd9d5ac..1279b02234f8 100644
---- a/drivers/video/fbdev/sunxvr2500.c
-+++ b/drivers/video/fbdev/sunxvr2500.c
-@@ -84,7 +84,7 @@ static int s3d_set_fbinfo(struct s3d_info *sp)
- 	info->pseudo_palette = sp->pseudo_palette;
- 
- 	/* Fill fix common fields */
--	strlcpy(info->fix.id, "s3d", sizeof(info->fix.id));
-+	strscpy(info->fix.id, "s3d", sizeof(info->fix.id));
-         info->fix.smem_start = sp->fb_base_phys;
-         info->fix.smem_len = sp->fb_size;
-         info->fix.type = FB_TYPE_PACKED_PIXELS;
-diff --git a/drivers/video/fbdev/sunxvr500.c b/drivers/video/fbdev/sunxvr500.c
-index 9daf17b11106..f7b463633ba0 100644
---- a/drivers/video/fbdev/sunxvr500.c
-+++ b/drivers/video/fbdev/sunxvr500.c
-@@ -207,7 +207,7 @@ static int e3d_set_fbinfo(struct e3d_info *ep)
- 	info->pseudo_palette = ep->pseudo_palette;
- 
- 	/* Fill fix common fields */
--	strlcpy(info->fix.id, "e3d", sizeof(info->fix.id));
-+	strscpy(info->fix.id, "e3d", sizeof(info->fix.id));
-         info->fix.smem_start = ep->fb_base_phys;
-         info->fix.smem_len = ep->fb_size;
-         info->fix.type = FB_TYPE_PACKED_PIXELS;
-diff --git a/drivers/video/fbdev/tcx.c b/drivers/video/fbdev/tcx.c
-index 1638a40fed22..01d87f53324d 100644
---- a/drivers/video/fbdev/tcx.c
-+++ b/drivers/video/fbdev/tcx.c
-@@ -333,7 +333,7 @@ tcx_init_fix(struct fb_info *info, int linebytes)
- 	else
- 		tcx_name = "TCX24";
- 
--	strlcpy(info->fix.id, tcx_name, sizeof(info->fix.id));
-+	strscpy(info->fix.id, tcx_name, sizeof(info->fix.id));
- 
- 	info->fix.type = FB_TYPE_PACKED_PIXELS;
- 	info->fix.visual = FB_VISUAL_PSEUDOCOLOR;
-diff --git a/drivers/video/fbdev/tdfxfb.c b/drivers/video/fbdev/tdfxfb.c
-index 67e37a62b07c..8a8122f8bfeb 100644
---- a/drivers/video/fbdev/tdfxfb.c
-+++ b/drivers/video/fbdev/tdfxfb.c
-@@ -1264,7 +1264,7 @@ static int tdfxfb_setup_ddc_bus(struct tdfxfb_i2c_chan *chan, const char *name,
- {
- 	int rc;
- 
--	strlcpy(chan->adapter.name, name, sizeof(chan->adapter.name));
-+	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
- 	chan->adapter.owner		= THIS_MODULE;
- 	chan->adapter.class		= I2C_CLASS_DDC;
- 	chan->adapter.algo_data		= &chan->algo;
-@@ -1293,7 +1293,7 @@ static int tdfxfb_setup_i2c_bus(struct tdfxfb_i2c_chan *chan, const char *name,
- {
- 	int rc;
- 
--	strlcpy(chan->adapter.name, name, sizeof(chan->adapter.name));
-+	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
- 	chan->adapter.owner		= THIS_MODULE;
- 	chan->adapter.algo_data		= &chan->algo;
- 	chan->adapter.dev.parent	= dev;
-diff --git a/drivers/video/fbdev/tgafb.c b/drivers/video/fbdev/tgafb.c
-index ae0cf5540636..1fff5fd7ab51 100644
---- a/drivers/video/fbdev/tgafb.c
-+++ b/drivers/video/fbdev/tgafb.c
-@@ -1344,7 +1344,7 @@ tgafb_init_fix(struct fb_info *info)
- 		memory_size = 16777216;
- 	}
- 
--	strlcpy(info->fix.id, tga_type_name, sizeof(info->fix.id));
-+	strscpy(info->fix.id, tga_type_name, sizeof(info->fix.id));
- 
- 	info->fix.type = FB_TYPE_PACKED_PIXELS;
- 	info->fix.type_aux = 0;
-diff --git a/drivers/video/fbdev/tridentfb.c b/drivers/video/fbdev/tridentfb.c
-index 319131bd72cf..cda095420ee8 100644
---- a/drivers/video/fbdev/tridentfb.c
-+++ b/drivers/video/fbdev/tridentfb.c
-@@ -270,7 +270,7 @@ static int tridentfb_setup_ddc_bus(struct fb_info *info)
- {
- 	struct tridentfb_par *par = info->par;
- 
--	strlcpy(par->ddc_adapter.name, info->fix.id,
-+	strscpy(par->ddc_adapter.name, info->fix.id,
- 		sizeof(par->ddc_adapter.name));
- 	par->ddc_adapter.owner		= THIS_MODULE;
- 	par->ddc_adapter.class		= I2C_CLASS_DDC;
+All errors (new ones prefixed by >>):
+
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:333:9: note: in expansion of macro '__FOP_FUNC'
+     333 |         __FOP_FUNC(#name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:451:9: note: in expansion of macro 'FOP_FUNC'
+     451 |         FOP_FUNC(op) \
+         |         ^~~~~~~~
+   arch/x86/kvm/emulate.c:456:1: note: in expansion of macro 'FOP_SETCC'
+     456 | FOP_SETCC(seto)
+         | ^~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:455:1: note: in expansion of macro 'FOP_START'
+     455 | FOP_START(setcc)
+         | ^~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:333:9: note: in expansion of macro '__FOP_FUNC'
+     333 |         __FOP_FUNC(#name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:475:1: note: in expansion of macro 'FOP_FUNC'
+     475 | FOP_FUNC(salc)
+         | ^~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:474:1: note: in expansion of macro 'FOP_START'
+     474 | FOP_START(salc)
+         | ^~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1005:1: note: in expansion of macro 'FASTOP2'
+    1005 | FASTOP2(add);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1005:1: note: in expansion of macro 'FASTOP2'
+    1005 | FASTOP2(add);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1006:1: note: in expansion of macro 'FASTOP2'
+    1006 | FASTOP2(or);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1006:1: note: in expansion of macro 'FASTOP2'
+    1006 | FASTOP2(or);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1007:1: note: in expansion of macro 'FASTOP2'
+    1007 | FASTOP2(adc);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1007:1: note: in expansion of macro 'FASTOP2'
+    1007 | FASTOP2(adc);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1008:1: note: in expansion of macro 'FASTOP2'
+    1008 | FASTOP2(sbb);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1008:1: note: in expansion of macro 'FASTOP2'
+    1008 | FASTOP2(sbb);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1009:1: note: in expansion of macro 'FASTOP2'
+    1009 | FASTOP2(and);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1009:1: note: in expansion of macro 'FASTOP2'
+    1009 | FASTOP2(and);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1010:1: note: in expansion of macro 'FASTOP2'
+    1010 | FASTOP2(sub);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1010:1: note: in expansion of macro 'FASTOP2'
+    1010 | FASTOP2(sub);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1011:1: note: in expansion of macro 'FASTOP2'
+    1011 | FASTOP2(xor);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1011:1: note: in expansion of macro 'FASTOP2'
+    1011 | FASTOP2(xor);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1012:1: note: in expansion of macro 'FASTOP2'
+    1012 | FASTOP2(cmp);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1012:1: note: in expansion of macro 'FASTOP2'
+    1012 | FASTOP2(cmp);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:402:9: note: in expansion of macro 'FOP2E'
+     402 |         FOP2E(op##b, al, dl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1013:1: note: in expansion of macro 'FASTOP2'
+    1013 | FASTOP2(test);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:401:9: note: in expansion of macro 'FOP_START'
+     401 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1013:1: note: in expansion of macro 'FASTOP2'
+    1013 | FASTOP2(test);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:380:9: note: in expansion of macro 'FOP1E'
+     380 |         FOP1E(op, cl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1015:1: note: in expansion of macro 'FASTOP1SRC2'
+    1015 | FASTOP1SRC2(mul, mul_ex);
+         | ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:379:9: note: in expansion of macro 'FOP_START'
+     379 |         FOP_START(name) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1015:1: note: in expansion of macro 'FASTOP1SRC2'
+    1015 | FASTOP1SRC2(mul, mul_ex);
+         | ^~~~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:380:9: note: in expansion of macro 'FOP1E'
+     380 |         FOP1E(op, cl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1016:1: note: in expansion of macro 'FASTOP1SRC2'
+    1016 | FASTOP1SRC2(imul, imul_ex);
+         | ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:379:9: note: in expansion of macro 'FOP_START'
+     379 |         FOP_START(name) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1016:1: note: in expansion of macro 'FASTOP1SRC2'
+    1016 | FASTOP1SRC2(imul, imul_ex);
+         | ^~~~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:367:9: note: in expansion of macro 'FOP1E'
+     367 |         FOP1E(op, dst) _ASM_EXTABLE_TYPE_REG(10b, 11b, EX_TYPE_ZERO_REG, %%esi)
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:389:9: note: in expansion of macro 'FOP1EEX'
+     389 |         FOP1EEX(op, cl) \
+         |         ^~~~~~~
+   arch/x86/kvm/emulate.c:1017:1: note: in expansion of macro 'FASTOP1SRC2EX'
+    1017 | FASTOP1SRC2EX(div, div_ex);
+         | ^~~~~~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:388:9: note: in expansion of macro 'FOP_START'
+     388 |         FOP_START(name) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1017:1: note: in expansion of macro 'FASTOP1SRC2EX'
+    1017 | FASTOP1SRC2EX(div, div_ex);
+         | ^~~~~~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:367:9: note: in expansion of macro 'FOP1E'
+     367 |         FOP1E(op, dst) _ASM_EXTABLE_TYPE_REG(10b, 11b, EX_TYPE_ZERO_REG, %%esi)
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:389:9: note: in expansion of macro 'FOP1EEX'
+     389 |         FOP1EEX(op, cl) \
+         |         ^~~~~~~
+   arch/x86/kvm/emulate.c:1018:1: note: in expansion of macro 'FASTOP1SRC2EX'
+    1018 | FASTOP1SRC2EX(idiv, idiv_ex);
+         | ^~~~~~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:388:9: note: in expansion of macro 'FOP_START'
+     388 |         FOP_START(name) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1018:1: note: in expansion of macro 'FASTOP1SRC2EX'
+    1018 | FASTOP1SRC2EX(idiv, idiv_ex);
+         | ^~~~~~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:355:9: note: in expansion of macro '__FOP_FUNC'
+     355 |         __FOP_FUNC(name) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:359:9: note: in expansion of macro '__FOPNOP'
+     359 |         __FOPNOP(__stringify(__UNIQUE_ID(nop)))
+         |         ^~~~~~~~
+   arch/x86/kvm/emulate.c:443:9: note: in expansion of macro 'FOPNOP'
+     443 |         FOPNOP() \
+         |         ^~~~~~
+   arch/x86/kvm/emulate.c:1020:1: note: in expansion of macro 'FASTOP3WCL'
+    1020 | FASTOP3WCL(shld);
+         | ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:442:9: note: in expansion of macro 'FOP_START'
+     442 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1020:1: note: in expansion of macro 'FASTOP3WCL'
+    1020 | FASTOP3WCL(shld);
+         | ^~~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:355:9: note: in expansion of macro '__FOP_FUNC'
+     355 |         __FOP_FUNC(name) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:359:9: note: in expansion of macro '__FOPNOP'
+     359 |         __FOPNOP(__stringify(__UNIQUE_ID(nop)))
+         |         ^~~~~~~~
+   arch/x86/kvm/emulate.c:443:9: note: in expansion of macro 'FOPNOP'
+     443 |         FOPNOP() \
+         |         ^~~~~~
+   arch/x86/kvm/emulate.c:1021:1: note: in expansion of macro 'FASTOP3WCL'
+    1021 | FASTOP3WCL(shrd);
+         | ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:442:9: note: in expansion of macro 'FOP_START'
+     442 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1021:1: note: in expansion of macro 'FASTOP3WCL'
+    1021 | FASTOP3WCL(shrd);
+         | ^~~~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:355:9: note: in expansion of macro '__FOP_FUNC'
+     355 |         __FOP_FUNC(name) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:359:9: note: in expansion of macro '__FOPNOP'
+     359 |         __FOPNOP(__stringify(__UNIQUE_ID(nop)))
+         |         ^~~~~~~~
+   arch/x86/kvm/emulate.c:411:9: note: in expansion of macro 'FOPNOP'
+     411 |         FOPNOP() \
+         |         ^~~~~~
+   arch/x86/kvm/emulate.c:1023:1: note: in expansion of macro 'FASTOP2W'
+    1023 | FASTOP2W(imul);
+         | ^~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:410:9: note: in expansion of macro 'FOP_START'
+     410 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1023:1: note: in expansion of macro 'FASTOP2W'
+    1023 | FASTOP2W(imul);
+         | ^~~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:371:9: note: in expansion of macro 'FOP1E'
+     371 |         FOP1E(op##b, al) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1025:1: note: in expansion of macro 'FASTOP1'
+    1025 | FASTOP1(not);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:370:9: note: in expansion of macro 'FOP_START'
+     370 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1025:1: note: in expansion of macro 'FASTOP1'
+    1025 | FASTOP1(not);
+         | ^~~~~~~
+>> arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:371:9: note: in expansion of macro 'FOP1E'
+     371 |         FOP1E(op##b, al) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1026:1: note: in expansion of macro 'FASTOP1'
+    1026 | FASTOP1(neg);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:370:9: note: in expansion of macro 'FOP_START'
+     370 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1026:1: note: in expansion of macro 'FASTOP1'
+    1026 | FASTOP1(neg);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:371:9: note: in expansion of macro 'FOP1E'
+     371 |         FOP1E(op##b, al) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1027:1: note: in expansion of macro 'FASTOP1'
+    1027 | FASTOP1(inc);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:370:9: note: in expansion of macro 'FOP_START'
+     370 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1027:1: note: in expansion of macro 'FASTOP1'
+    1027 | FASTOP1(inc);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:362:9: note: in expansion of macro '__FOP_FUNC'
+     362 |         __FOP_FUNC(#op "_" #dst) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:371:9: note: in expansion of macro 'FOP1E'
+     371 |         FOP1E(op##b, al) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1028:1: note: in expansion of macro 'FASTOP1'
+    1028 | FASTOP1(dec);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:370:9: note: in expansion of macro 'FOP_START'
+     370 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1028:1: note: in expansion of macro 'FASTOP1'
+    1028 | FASTOP1(dec);
+         | ^~~~~~~
+   arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:420:9: note: in expansion of macro 'FOP2E'
+     420 |         FOP2E(op##b, al, cl) \
+         |         ^~~~~
+   arch/x86/kvm/emulate.c:1030:1: note: in expansion of macro 'FASTOP2CL'
+    1030 | FASTOP2CL(rol);
+         | ^~~~~~~~~
+   arch/x86/kvm/emulate.c:344:12: note: to match this '('
+     344 |         asm(".pushsection .text, \"ax\" \n\t" \
+         |            ^
+   arch/x86/kvm/emulate.c:349:23: note: in expansion of macro '__FOP_START'
+     349 | #define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
+         |                       ^~~~~~~~~~~
+   arch/x86/kvm/emulate.c:419:9: note: in expansion of macro 'FOP_START'
+     419 |         FOP_START(op) \
+         |         ^~~~~~~~~
+   arch/x86/kvm/emulate.c:1030:1: note: in expansion of macro 'FASTOP2CL'
+    1030 | FASTOP2CL(rol);
+         | ^~~~~~~~~
+   arch/x86/kvm/emulate.c:330:9: error: expected ')' before 'IBT_NOSEAL'
+     330 |         IBT_NOSEAL(name)
+         |         ^~~~~~~~~~
+   arch/x86/kvm/emulate.c:396:9: note: in expansion of macro '__FOP_FUNC'
+     396 |         __FOP_FUNC(#op "_" #dst "_" #src) \
+
+
+vim +330 arch/x86/kvm/emulate.c
+
+   324	
+   325	#define __FOP_FUNC(name) \
+   326		".align " __stringify(FASTOP_SIZE) " \n\t" \
+   327		".type " name ", @function \n\t" \
+   328		name ":\n\t" \
+   329		ASM_ENDBR \
+ > 330		IBT_NOSEAL(name)
+   331	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
