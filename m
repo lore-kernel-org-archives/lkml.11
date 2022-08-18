@@ -2,146 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966FDC25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 03:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC6AC32771
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 03:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242925AbiHRDW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 23:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
+        id S243100AbiHRDYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 23:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240205AbiHRDWw (ORCPT
+        with ESMTP id S238882AbiHRDYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 23:22:52 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29C2A9250
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 20:22:50 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-333a4a5d495so8489817b3.10
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 20:22:50 -0700 (PDT)
+        Wed, 17 Aug 2022 23:24:08 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962BC459B4;
+        Wed, 17 Aug 2022 20:24:04 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id j8so884896ejx.9;
+        Wed, 17 Aug 2022 20:24:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=s7mvImdTnwfruiP5+oJRaDpwmZoS0KHLcuR5YtEeEsM=;
-        b=oPd61McycJXFEWsy0Q32Of8LSDl1hBJagHFeA/ydpr1gT387O7WCMN+uTShodRE34J
-         kuvG/7HvjVjc2HsFHZ3zOGEt2qHg2l5IKeXRzixqS8VlBBSBcO6c/U1VAQo8h8GGJbLj
-         tDWyb1Qw5oqy8DqMdB1IkVDlKqqbOAGpWdimg=
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=i/5FTk4ehPe1FyyuKCLJg6XVHxq2SQ4ha+cI9T3mg3w=;
+        b=jVG/JT9/Bfyk2QC9r5gleNQHdiyhi6j2Uauh5fO6b9jw+f5ZqtDm409tS9fEBivFPJ
+         Q/Dv0QHfIR8eVYym2anf107mTjSGI3hH+oNJsUrvgXTHJX6MAzKL+LPpt0gz8mewr/d2
+         FzFIytXdXdVe6SduANzt2SxgX2yly8dfZoHzp7vtVcRGNQqxGn5i7TyQ9DZilvoLYOVk
+         BfYV7eOoL2F6+4IhRjpx38G+xLAQOkuuob8xFI2+d3fmBw03yG2+JqoyQ76WHxu8XOxZ
+         lUb+xzhUfMtFEitHhr6lgJU9VjfoG5S/qp/7gJjxDmYiwWEboKSFB4/vVmOreOUgytos
+         OVEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=s7mvImdTnwfruiP5+oJRaDpwmZoS0KHLcuR5YtEeEsM=;
-        b=zpDHt8bidaKC09N5cdjdY9h12+cYkfQkX22CF4eHidEiACjNPY3FlJohsQJfy/H0y8
-         deRpIvYUaI9PsSrqnw4ZUlr4+S5UQdGmQ7gbX3xfMJ5JdcnP7+EyfwMFe/wz6Eac5+4i
-         tq0q8ynGKGHsh9kKLNsYU2l0O8agCW24BcGjL/7zIInXCSj5mf+1B4PfopLOWSeXD7Kw
-         U9h2jPPsBtn+f/G6uk3vDEjQlp+6PgFJViFzuo4ObwCdwtrUuX93MnmkCUubk+79Fy9E
-         MH7RfcPe0/xN01gr00IRb9T/3ABL1Qszb2FBRhQCFgMgIBy2RZynVF+vZJXiLsCd56zt
-         MLWA==
-X-Gm-Message-State: ACgBeo2zRVlBFglDVLYFZas+8qdhJ12G7YM4uqqZiySAmgDOtXDMvV6v
-        zx6pMLKsNVJ4ajhD8zNjxHlItTAJv0ttSAbWndW0KQ==
-X-Google-Smtp-Source: AA6agR6onGFW/5xXkIYebD3W42xb40G2Vz1jh4mOkiO+Iqqd12Lic/TsE2OKXEjgCOtYH1qyy4ZFZfdqBrzjbIyCJCk=
-X-Received: by 2002:a05:6902:90a:b0:683:84f4:245d with SMTP id
- bu10-20020a056902090a00b0068384f4245dmr1074097ybb.584.1660792969806; Wed, 17
- Aug 2022 20:22:49 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=i/5FTk4ehPe1FyyuKCLJg6XVHxq2SQ4ha+cI9T3mg3w=;
+        b=TQ0SvaJs5v6/OtbhgHjBT30Hpc0WXlbVl8IO9PdcOVpMaeNRHXoMbZx4UdaZ2vVAv+
+         GmZtP2T7JKbkdsI58S8mPeOCIwEnbTYpk9XlFAY57Zd5zht89v1DD4i6RNWK0byKluqX
+         A6Ouzcydo2GtLWFIVPPVP+LkivksX7QTUCWkaFPj9ORyXpbdWOe4WEIwZ9IX+AQAlYp+
+         FDaZQLMLuRLODIIot801iqVlaaIa8GacK0V25WwmLYSOVrlLDqVT6dTriTC9U7hjeUvy
+         t3DQ+3grljI9K1f0W4/v0PeamgTJYXZ8juzN144nWFjoevL8E+4oLE0g5uYacrbJo6tS
+         +usA==
+X-Gm-Message-State: ACgBeo3SswwSwzweRkRqaKIRdQrmwEzf8hUk0B1DrrsCazg2nD6pipZz
+        5GiyI8GIlhmO+dxdJCM50aWeuEu+NJe3ngK2JgK99zK7mOKQqO4PljY=
+X-Google-Smtp-Source: AA6agR68ydPdGsAqXnYedHMznYevETK9SfkWZm7T/ZT1QyiE/ByPwlplDYMxsyn7W/r9ug1xRmGXd15ItRs6cckeceM=
+X-Received: by 2002:a17:907:1b1c:b0:72f:9aac:ee41 with SMTP id
+ mp28-20020a1709071b1c00b0072f9aacee41mr613895ejc.56.1660793043202; Wed, 17
+ Aug 2022 20:24:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220815093905.134164-1-hsinyi@chromium.org> <CAD=FV=XYNKF8q1mttru_J188pYMjSphQsEfQAO1Bt7GvjJRKXw@mail.gmail.com>
- <CAJMQK-gjg9evLY3oP5rgaGoRdQQTLqnK2-FChaabJTCxLTTmYA@mail.gmail.com> <CAMuczyUH1tefU_4+dx495_5kdrxRdA3pmXS-eyjzMCcYFfjNXQ@mail.gmail.com>
-In-Reply-To: <CAMuczyUH1tefU_4+dx495_5kdrxRdA3pmXS-eyjzMCcYFfjNXQ@mail.gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Thu, 18 Aug 2022 11:22:23 +0800
-Message-ID: <CAJMQK-jEgRq68JXSWtS4y5_39vJ1pWCT2-Atg31__veRtnuREA@mail.gmail.com>
-Subject: Re: [PATCH] drm/bridge: ps8640: Add double reset T4 and T5 to
- power-on sequence
-To:     Rock Chiu <rock.chiu@paradetech.corp-partner.google.com>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220817134324.702278-1-tcwzxx@gmail.com> <CAP-5=fVrpsid2_Ku=5hHeFSQ5Q1zE--5qszWw38ZVciq9Rxd5A@mail.gmail.com>
+In-Reply-To: <CAP-5=fVrpsid2_Ku=5hHeFSQ5Q1zE--5qszWw38ZVciq9Rxd5A@mail.gmail.com>
+From:   lika you <tcwzxx@gmail.com>
+Date:   Thu, 18 Aug 2022 11:26:00 +0800
+Message-ID: <CAHkAAVrhD4Z4=NtwD-sA-vwpQTj=sHB5V7Kr0KNFNSVsu+-DnQ@mail.gmail.com>
+Subject: Re: [PATCH] perf tool: add skip_not_exec_file_map_events option
+To:     Ian Rogers <irogers@google.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 11:19 AM Rock Chiu
-<rock.chiu@paradetech.corp-partner.google.com> wrote:
->
-> How does T4/T5  impact the real case? We talked previously the T4/T5
-> shouldn't cause user impact.
-> Do we have testing data from ODM?
->
-Please leave comments below the previous comment's headline.
+I'm so sorry for forgetting to reply to all. Here is the reply again.
 
-I'm confused. The reason I upstreamed this patch is because this is in
-your application note and you asked us to help upstream it. Now do you
-mean that we don't need T4 and T5?
+Thanks for the reply.
 
-> Rock Chiu
+The background is we have two types of tasks running on the same host.The high
+priority one which is CPU overhead and the low priority which is IO overhead.
+The high priority task has mmap many files as shared memory. The low priority
+task may load multi TB data from SSD at once time which will cause the high
+priority task file page cache to be swapped out. So we mmap all files with the
+PROT_EXEC flag to prevent hot page cache to be swapped out. That cause
+too many executable memory regions without symbols on it.
+
+The trick is implementate here.
+https://github.com/torvalds/linux/blob/master/mm/vmscan.c#L2572
+
+Thanks again
+
+On Thu, 18 Aug 2022 at 02:13, Ian Rogers <irogers@google.com> wrote:
 >
-> Hsin-Yi Wang <hsinyi@chromium.org> =E6=96=BC 2022=E5=B9=B48=E6=9C=8818=E6=
-=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8A=E5=8D=8810:43=E5=AF=AB=E9=81=93=EF=BC=
-=9A
+> On Wed, Aug 17, 2022 at 6:43 AM tcwzxx <tcwzxx@gmail.com> wrote:
 > >
-> > On Thu, Aug 18, 2022 at 6:54 AM Doug Anderson <dianders@chromium.org> w=
-rote:
-> > >
-> > > Hi,
-> > >
-> > > On Mon, Aug 15, 2022 at 2:39 AM Hsin-Yi Wang <hsinyi@chromium.org> wr=
-ote:
-> > > >
-> > > > The double reset power-on sequence is a workaround for the hardware
-> > > > flaw in some chip that SPI Clock output glitch and cause internal M=
-PU
-> > > > unable to read firmware correctly. The sequence is suggested in ps8=
-640
-> > > > application note.
-> > > >
-> > > > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> > > > ---
-> > > >  drivers/gpu/drm/bridge/parade-ps8640.c | 5 +++++
-> > > >  1 file changed, 5 insertions(+)
-> > > >
-> > > > diff --git a/drivers/gpu/drm/bridge/parade-ps8640.c b/drivers/gpu/d=
-rm/bridge/parade-ps8640.c
-> > > > index 49107a6cdac18..d7483c13c569b 100644
-> > > > --- a/drivers/gpu/drm/bridge/parade-ps8640.c
-> > > > +++ b/drivers/gpu/drm/bridge/parade-ps8640.c
-> > > > @@ -375,6 +375,11 @@ static int __maybe_unused ps8640_resume(struct=
- device *dev)
-> > > >         gpiod_set_value(ps_bridge->gpio_reset, 1);
-> > > >         usleep_range(2000, 2500);
-> > > >         gpiod_set_value(ps_bridge->gpio_reset, 0);
-> > > > +       /* Double reset for T4 and T5 */
-> > > > +       msleep(50);
-> > > > +       gpiod_set_value(ps_bridge->gpio_reset, 1);
-> > > > +       msleep(50);
-> > > > +       gpiod_set_value(ps_bridge->gpio_reset, 0);
-> > >
-> > > We really need another 100 ms here? ps8640 is already quite slow at
-> > > powering itself up and that has a real user impact. Why was it only
-> > > 2.5 ms for the first reset and 50 ms for the second?
-> > >
+> > When generate the flame graph, the perf-script subcommand will
+> > process all mmap event and add them to the rbtree. The 240,000
+> > mmap region takes about 5 minutes, which is not useful for flame
+> > graph. So add the skip-not-exec-file-map-events option to skip
+> > not PROT_EXEC flag memory regions.
 > >
-> > The T4 and T5 are required by Parade. I'm wondering if they can
-> > shorten the 200ms below:
+> > Signed-off-by: tcwzxx <tcwzxx@gmail.com>
+>
+> Could you provide more context? A reproduction?
+>
+> When we synthesize mmap events we drop non-executable pages:
+> https://github.com/torvalds/linux/blob/master/tools/perf/util/synthetic-events.c#L466
+>
+> Similarly in the kernel for the "dummy" event:
+> https://github.com/torvalds/linux/blob/master/kernel/events/core.c#L8258
+>
+> Thanks,
+> Ian
+>
+> > ---
+> >  tools/perf/builtin-report.c | 2 ++
+> >  tools/perf/builtin-script.c | 3 +++
+> >  tools/perf/util/machine.c   | 3 +++
+> >  tools/perf/util/map.c       | 5 +++++
+> >  tools/perf/util/map.h       | 2 ++
+> >  5 files changed, 15 insertions(+)
 > >
-> > /*
-> > * Mystery 200 ms delay for the "MCU to be ready". It's unclear if
-> > * this is truly necessary since the MCU will already signal that
-> > * things are "good to go" by signaling HPD on "gpio 9". See
-> > * _ps8640_wait_hpd_asserted(). For now we'll keep this mystery delay
-> > * just in case.
-> > */
-> > msleep(200);
+> > diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
+> > index 91ed41cc7d88..c28eb9450a66 100644
+> > --- a/tools/perf/builtin-report.c
+> > +++ b/tools/perf/builtin-report.c
+> > @@ -1364,6 +1364,8 @@ int cmd_report(int argc, const char **argv)
+> >                     "Disable raw trace ordering"),
+> >         OPT_BOOLEAN(0, "skip-empty", &report.skip_empty,
+> >                     "Do not display empty (or dummy) events in the output"),
+> > +       OPT_BOOLEAN(0, "skip-not-exec-file-map_events", &skip_not_exec_file_map_events,
+> > +                   "skip not exec map events"),
+> >         OPT_END()
+> >         };
+> >         struct perf_data data = {
+> > diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+> > index 13580a9c50b8..e3f4e5e654c9 100644
+> > --- a/tools/perf/builtin-script.c
+> > +++ b/tools/perf/builtin-script.c
+> > @@ -32,6 +32,7 @@
+> >  #include "util/time-utils.h"
+> >  #include "util/path.h"
+> >  #include "util/event.h"
+> > +#include "util/map.h"
+> >  #include "ui/ui.h"
+> >  #include "print_binary.h"
+> >  #include "archinsn.h"
+> > @@ -3936,6 +3937,8 @@ int cmd_script(int argc, const char **argv)
+> >                     "Guest code can be found in hypervisor process"),
+> >         OPT_BOOLEAN('\0', "stitch-lbr", &script.stitch_lbr,
+> >                     "Enable LBR callgraph stitching approach"),
+> > +       OPT_BOOLEAN(0, "skip-not-exec-map_events", &skip_not_exec_file_map_events,
+> > +                   "skip not exec map events"),
+> >         OPTS_EVSWITCH(&script.evswitch),
+> >         OPT_END()
+> >         };
+> > diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+> > index 2a16cae28407..21dde9f9935c 100644
+> > --- a/tools/perf/util/machine.c
+> > +++ b/tools/perf/util/machine.c
+> > @@ -1904,6 +1904,9 @@ int machine__process_mmap2_event(struct machine *machine,
+> >         if (thread == NULL)
+> >                 goto out_problem;
 > >
-> > Does this have to wait 200ms? Can it shorten to 100 due to the
-> > additional 100ms from T4 and T5?
+> > +       if (skip_not_exec_file_map_events && !(event->mmap2.prot & PROT_EXEC))
+> > +               goto out_problem;
+> > +
+> >         map = map__new(machine, event->mmap2.start,
+> >                         event->mmap2.len, event->mmap2.pgoff,
+> >                         &dso_id, event->mmap2.prot,
+> > diff --git a/tools/perf/util/map.c b/tools/perf/util/map.c
+> > index e0aa4a254583..2b51ca012c91 100644
+> > --- a/tools/perf/util/map.c
+> > +++ b/tools/perf/util/map.c
+> > @@ -16,6 +16,8 @@
+> >  #include "thread.h"
+> >  #include "vdso.h"
 > >
-> > > -Doug
+> > +bool skip_not_exec_file_map_events;
+> > +
+> >  static inline int is_android_lib(const char *filename)
+> >  {
+> >         return strstarts(filename, "/data/app-lib/") ||
+> > @@ -168,6 +170,9 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
+> >                 if (dso == NULL)
+> >                         goto out_delete;
+> >
+> > +               if (skip_not_exec_file_map_events && dso__type(dso, machine) == DSO__TYPE_UNKNOWN)
+> > +                       goto out_delete;
+> > +
+> >                 map__init(map, start, start + len, pgoff, dso);
+> >
+> >                 if (anon || no_dso) {
+> > diff --git a/tools/perf/util/map.h b/tools/perf/util/map.h
+> > index 3dcfe06db6b3..67b0e0f9f0ae 100644
+> > --- a/tools/perf/util/map.h
+> > +++ b/tools/perf/util/map.h
+> > @@ -11,6 +11,8 @@
+> >  #include <stdbool.h>
+> >  #include <linux/types.h>
+> >
+> > +extern bool skip_not_exec_file_map_events;
+> > +
+> >  struct dso;
+> >  struct maps;
+> >  struct machine;
+> > --
+> > 2.34.1
+> >
