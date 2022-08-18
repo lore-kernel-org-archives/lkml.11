@@ -2,167 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 831ADC2BB41
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 155E7C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344065AbiHRPJA (ORCPT
+        id S1344096AbiHRPJF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
+        Thu, 18 Aug 2022 11:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344052AbiHRPIw (ORCPT
+        with ESMTP id S1344008AbiHRPJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:08:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F0C6565D;
-        Thu, 18 Aug 2022 08:08:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660835331; x=1692371331;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TeTULpA5GIa1PuFYDxit9KmGEMhkRijHwhLM1hJOi10=;
-  b=mrGe1M3ntn1qTlOvNvUGtCBznPAqDJB+gSvEKpLbeDvu66LPuofOyN2l
-   pTG3sBfDDuX0OJZqYpc8nn0hptKOuBQZed0NbY6yXx61TNKrfh9aDj/nu
-   RNCvFNyczCUcMOugGPu1nXXkXmGdtHE3kyi120r3M+dFS8UhagQAWq5ws
-   VOquAt3TkhF5r9kk52akCBebL+NGuZhPBWcdrpjnJLOe9z8KYR5nrC3Zl
-   fTFKvKyltu9iBKYLRz3qquHKJwM4R7m2b0lNaMfb0EX+Y5BVm1me7ZQjJ
-   JIsLUCUTkn12irBrCFF5FUQA4y5vgyrocLDv7r941SLGXYrlO92Pe0GOz
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="318803193"
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="318803193"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 08:08:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="734080808"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 18 Aug 2022 08:08:47 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27IF8jgm008292;
-        Thu, 18 Aug 2022 16:08:45 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
-        lkp@intel.com, stable@vger.kernel.org
-Subject: Re: [RFC PATCH 1/3] modpost: fix TO_NATIVE() with expressions and consts
-Date:   Thu, 18 Aug 2022 17:07:06 +0200
-Message-Id: <20220818150706.1114737-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <Yv5ITarFK9Z3bkhZ@kroah.com>
-References: <20220818115306.1109642-1-alexandr.lobakin@intel.com> <20220818115306.1109642-2-alexandr.lobakin@intel.com> <Yv4v5vwXDER3GA2y@kroah.com> <20220818140153.1113308-1-alexandr.lobakin@intel.com> <Yv5ITarFK9Z3bkhZ@kroah.com>
+        Thu, 18 Aug 2022 11:09:00 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654EA65261;
+        Thu, 18 Aug 2022 08:08:59 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DD36F2224D;
+        Thu, 18 Aug 2022 17:08:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1660835337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jILUvoK/4AEf5bTCKpEzMwlbbfJmxcZFklruzntVamw=;
+        b=eGmR782JLnGqJKNqspUkU1vyHqk5kYPWehPZNE/MZ/AhjFRY0lTddJeoxyCAp81gQZFkjg
+        qpofYnCMEW8U7yNU5BsQ2HR51e2VPKPuEARSwN2Z5A5wJyE3W5pjtTsyxaNZc6CVTGtxXN
+        xrdtbNVz4rifSwjvNpuYC8OhB7sJh0Y=
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 18 Aug 2022 17:08:57 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH devicetree 2/3] arm64: dts: ls1028a: mark enetc port 3 as
+ a DSA master too
+In-Reply-To: <20220818144521.sctrmqcfzi6e6l3e@skbuf>
+References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
+ <20220818140519.2767771-3-vladimir.oltean@nxp.com>
+ <f646670f8ebc64cf1a3080330d54d733@walle.cc>
+ <20220818144521.sctrmqcfzi6e6l3e@skbuf>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <830a44530ce643aa111e74aa5815babf@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg KH <gregkh@linuxfoundation.org>
-Date: Thu, 18 Aug 2022 16:10:21 +0200
-
-> On Thu, Aug 18, 2022 at 04:01:53PM +0200, Alexander Lobakin wrote:
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Date: Thu, 18 Aug 2022 14:26:14 +0200
-> > 
-> > > On Thu, Aug 18, 2022 at 01:53:04PM +0200, Alexander Lobakin wrote:
-> > > > Macro TO_NATIVE() directly takes a reference to its argument @x
-> > > > without making an intermediate variable. This makes compilers
-> > > > emit build warnings and errors if @x is an expression or a deref
-> > > > of a const pointer (when target Endianness != host Endianness):
-> > > > 
-> > > > >> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-> > > >       87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-> > > >          |                  ^
-> > > >    scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-> > > >       19 | #define t(x)            TO_NATIVE(x)
-> > > >          |                         ^~~~~~~~~
-> > > >    scripts/mod/sympath.c:100:31: note: in expansion of macro 't'
-> > > >      100 |                 eh->e_shoff = t(h(eh->e_shoff) + off);
-> > > > 
-> > > > >> scripts/mod/modpost.h:87:24: warning: passing argument 2 of '__endian'
-> > > > discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-> > > >       87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-> > > >          |                        ^~~~~~
-> > > >    scripts/mod/sympath.c:18:25: note: in expansion of macro 'TO_NATIVE'
-> > > >       18 | #define h(x)            TO_NATIVE(x)
-> > > >          |                         ^~~~~~~~~
-> > > >    scripts/mod/sympath.c:178:48: note: in expansion of macro 'h'
-> > > >      178 |              iter < end; iter = (void *)iter + h(eh->e_shentsize)) {
-> > > 
-> > > How come this hasn't shown up in cross-builds today?
-> > 
-> > It doesn't happen with the current code.
+Am 2022-08-18 16:45, schrieb Vladimir Oltean:
+> On Thu, Aug 18, 2022 at 04:44:28PM +0200, Michael Walle wrote:
+>> status should be the last property, no?
 > 
-> Great, so there is no bug that you are trying to fix :)
-> 
-> > > > Create a temporary variable, assign @x to it and don't use @x after
-> > > > that. This makes it possible to pass expressions as an argument.
-> > > > Also, do a cast-away for the second argument when calling __endian()
-> > > > to avoid 'discarded qualifiers' warning, as typeof() preserves
-> > > > qualifiers and makes compilers think that we're passing pointer
-> > > > to a const.
-> > > > 
-> > > > Reported-by: kernel test robot <lkp@intel.com>
-> > > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > > > Cc: stable@vger.kernel.org # 4.9+
-> > > 
-> > > Where are these build warnings showing up at that we don't see them
-> > > today, yet this is needed to go back to all stable trees?
-> > 
-> > I thought all fixes should go to the applicable stable trees, am I
-> > wrong? If so, I'll drop the tag in the next spin.
-> 
-> But this isn't fixing a bug in the code today that anyone can hit, so
-> why would you mark it as such?
+> idk, should it?
 
-So do you mean that a fix is a fix not when it makes some wrong code
-work properly, but only when there's a certain bug report and this
-fix seems to resolve it?
-I.e, if there are no ways to reach some code in which 2 + 2 == 5,
-there is no bug? A loaded shotgun can't be considered loaded unless
-someone shots his leg?
+IIRC Shawn pointed that out. If I'm mistaken, then do it for the
+consistency within fsl-ls1028a.dtsi :)
 
-I mean, I understand the rule "don't touch if it works", but dunno,
-I don't feel it's: 1) completely justified; 2) always followed in
-the current stable trees.
-But I'm not a -stable maintainer :)
-
-> 
-> > I remember we had such discussion already regarding fixing stuff in
-> > modpost, which can happen only with never mainlained GCC LTO or with
-> > the in-dev code. At the end that fix made it into the stables IIRC.
-> 
-> I don't remember taking fixes for out-of-tree LTO stuff, but I shouldn't
-> have :)
-
-This: [0]
-
-There is no way to repro it on the stable kernels, but it's here
-backported :)
-
-> 
-> thanks,
-> 
-> greg k-h
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-4.19.y&id=03bd6eaab3e1cbd4e5060b36a67000165f6e0482
-
-Thanks,
-Olek
+-michael
