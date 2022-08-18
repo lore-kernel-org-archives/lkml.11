@@ -2,85 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC08EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 18:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F26C32793
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 18:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344306AbiHRSn0 (ORCPT
+        id S1345601AbiHRSp1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 14:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        Thu, 18 Aug 2022 14:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239533AbiHRSnT (ORCPT
+        with ESMTP id S1344894AbiHRSow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 14:43:19 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B8124F0B
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 11:43:18 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e19so1331904pju.1
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 11:43:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=EZNPdtAkUjL/8BisHyi/e90Lqm2n7xYyH/MX4BS/mJI=;
-        b=FEjTdfql9SwI6lhmhc97t1ZtELcAgbAxG0SePXOV8TOmtzp2mSJ4SeoMQDtR3T7YDh
-         OoZPp6dEOADgOes90rFdoaHD3Ez4Y7IZ0EKo5kGfNUQnp7MPhI6Y0zN+/Z+iI20B7Q7U
-         7sChdSUkown612Tq19eah2lx1yTd3L/20vitaaP22dKGReVuS+/mgE+/rt4BQX5KKwvH
-         nXQyBr4uIw5d0svzwcC6epe5Uft9TnydsPgYw4E9+ifY1NWCFqVfavcW0eQLjwEMul6h
-         KoOAbQwdmzP6kjLFyb/Pq2Q5T4A8KONRJD1HDfw/1WPbJAHQPX1MUe26/2ZzVa6FRC56
-         7fSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=EZNPdtAkUjL/8BisHyi/e90Lqm2n7xYyH/MX4BS/mJI=;
-        b=0iRIjV8g6dmnFwb6vlKA043O58WDqAg7LmYdecpzLHQ/D4pUmqq6/7VuW8qcUEOqtd
-         ysWaWMpjJA3iIWr/F5k1vXr8y5ZJ6bG1wB5MkGWxugHC9zfKr7O4fGSZ6GlzLdevoz3j
-         nNjPtyV3EEhv9Rj7sq+AHyPe/RELViExnUZ/eSkiZZXTWYuN8dJdbEEL3ZvCCLy2yaAM
-         eSwEhIqgq/qZmQqQVDKQWiVIYOkmzpzJ4Z39897VAn+/5MPq39QGWtIU5+FC8vr0yJwt
-         PLzK/AxaZgjaoAaT+MCgc5EcIS0VVDK8kaHXvR2W6opWLE3zlpob7X1g2Ojlu/bSD8zQ
-         468w==
-X-Gm-Message-State: ACgBeo0nV5JmumC76ZlEPE51rusR40852iygmH7HzckHS8dT7sLAT5bY
-        4z63JJoFYvfcEf0hfm6YKSEFBw==
-X-Google-Smtp-Source: AA6agR6j5hVPUABlfWXPoMjpcOuCJpF40QAcXSOrLn3IVNtcrFJ5fmKXQBvzoBmKH3sBVPirdX9HFw==
-X-Received: by 2002:a17:90a:c283:b0:1f8:a3e3:f937 with SMTP id f3-20020a17090ac28300b001f8a3e3f937mr9868336pjt.141.1660848197820;
-        Thu, 18 Aug 2022 11:43:17 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id s138-20020a632c90000000b0042195f31243sm1600965pgs.74.2022.08.18.11.43.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 11:43:17 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 18:43:13 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peter Gonda <pgonda@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcorr@google.com, michael.roth@amd.com, thomas.lendacky@amd.com,
-        joro@8bytes.org, mizhang@google.com, pbonzini@redhat.com,
-        andrew.jones@linux.dev, vannapurve@google.com
-Subject: Re: [V3 11/11] KVM: selftests: Add simple sev vm testing
-Message-ID: <Yv6IQW5wa1doLbQX@google.com>
-References: <20220810152033.946942-1-pgonda@google.com>
- <20220810152033.946942-12-pgonda@google.com>
+        Thu, 18 Aug 2022 14:44:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBFD5006A;
+        Thu, 18 Aug 2022 11:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660848291; x=1692384291;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PcJSuTWQKI6vhkJPHzCTeOrD3iyfAi8gQ3nIEL/zRHc=;
+  b=GBuKz0nnp4X2cZcUuiOBgaB48LTG73L6vcR7qN6NRD4RCvLCqxyNyq8G
+   II6OFqNrLAdBIx/XH3uZrXzDG7fLieEOXgkfBqqLsD/brrEW/PAoZz9fI
+   NPqGIZl9sAC3xBvcuw3wVllAcuNrDCNJhMAG8v5DsqsnRUbuAukbJTH/A
+   sYVi/zXq1p1uOdnZSwGO6gnwbuAUlDbVQ4x93xUAt8GSrDTbppZB4EHNC
+   TyrdFpiUhANwP+fHV63ZWjBhn80KuqO7hzwab1uF0MERvawcndPiKry+o
+   mpY2GGzDh8aDeFnnubWAfJkhZMLQJXa+DAEDLFQW+tQ8lLdnv87k8K9Ok
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="279804943"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="279804943"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 11:44:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="853514448"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by fmsmga006.fm.intel.com with ESMTP; 18 Aug 2022 11:44:50 -0700
+From:   kan.liang@linux.intel.com
+To:     peterz@infradead.org, acme@redhat.com, linux-kernel@vger.kernel.org
+Cc:     alexander.shishkin@linux.intel.com, ak@linux.intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Ammy Yi <ammy.yi@intel.com>, stable@vger.kernel.org
+Subject: [PATCH] perf/x86/intel: Fix pebs event constraints for ADL
+Date:   Thu, 18 Aug 2022 11:44:29 -0700
+Message-Id: <20220818184429.2355857-1-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810152033.946942-12-pgonda@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022, Peter Gonda wrote:
-> A very simple of booting SEV guests that checks related CPUID bits. This
-> is a stripped down version of "[PATCH v2 08/13] KVM: selftests: add SEV
-> boot tests" from Michael but much simpler.
-> 
-> Signed-off-by: Michael Roth <michael.roth@amd.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-If you're including Mike's SOB, then he should either be credited as the author
-or with Co-developed-by.  If the code has been significantly rewritten, i.e.
-carrying Mike's SOB would be disingenuous, then do a less "official"
+According to the latest event list, the LOAD_LATENCY PEBS event only
+works on the GP counter 0 and 1 for ADL and RPL.
 
-  Originally-by: Michael Roth <michael.roth@amd.com>
+Update the pebs event constraints table.
 
-or 
+Fixes: f83d2f91d259 ("perf/x86/intel: Add Alder Lake Hybrid support")
+Reported-by: Ammy Yi <ammy.yi@intel.com> 
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: stable@vger.kernel.org
+---
+ arch/x86/events/intel/ds.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  Suggested-by: Michael Roth <michael.roth@amd.com>
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index 629a18403e35..578adf861b98 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -822,7 +822,7 @@ struct event_constraint intel_glm_pebs_event_constraints[] = {
+ 
+ struct event_constraint intel_grt_pebs_event_constraints[] = {
+ 	/* Allow all events as PEBS with no flags */
+-	INTEL_HYBRID_LAT_CONSTRAINT(0x5d0, 0xf),
++	INTEL_HYBRID_LAT_CONSTRAINT(0x5d0, 0x3),
+ 	INTEL_HYBRID_LAT_CONSTRAINT(0x6d0, 0xf),
+ 	EVENT_CONSTRAINT_END
+ };
+-- 
+2.35.1
+
