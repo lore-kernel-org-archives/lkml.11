@@ -2,124 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A68CEC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32F4C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346461AbiHRVCV (ORCPT
+        id S1346467AbiHRVC0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
+        Thu, 18 Aug 2022 17:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346336AbiHRVA6 (ORCPT
+        with ESMTP id S1346208AbiHRVA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 17:00:58 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED1BD3ECE;
-        Thu, 18 Aug 2022 14:00:34 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a7so5472747ejp.2;
-        Thu, 18 Aug 2022 14:00:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=A32HPAP5Od3KT+F9QIsj7jmUdN0RqSZ7BrLG62V5DEQ=;
-        b=EiftZ2/VM3oMS8+3i8v5hmQJ7gd+jj9Nf4+FG1BUSy1bOtagUF0gdo7NXGpTDkTiV4
-         krvqNoexSpttqYfC2DiaUJbkZiavbyqRJWAwcwjAvcGuNBGgSlpQfJ96GtYq81176VNh
-         zty2bVEkWJyGMMt6MxgqI4tJXq0/mkCnlHQlTnECgC5C0OHS4zbw7JE6BE2/HzkcKSRj
-         oLKKYFMwEFlk1p2K9MQ7ebeEqci6tLIgJ3LgPDKDrUG1/82fMnvJ9TiEHgTs4DCvVoii
-         /mLKKcEFlJhRRLEknCVTDHajSGUZJ58XWqj0GCdgTK3r9CmhEjrfVsupepMKXI+i6rW6
-         BFOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=A32HPAP5Od3KT+F9QIsj7jmUdN0RqSZ7BrLG62V5DEQ=;
-        b=aTDtIBxeRSKRa7oa6Idj+1w+FMOgQ0sAS8+g9rQwEzMY0VRY2iqobB1jX/PAjcs+hM
-         VBhDgq6RlYIy62BjuUsfSEO6/DAVJ3XWIn1seqzQyNK7n1qa9N49Zn4UqdWWVUAN6Wtq
-         hdNWPGY8uFogtx0t8JtbvSeaAe53Oa2oho0p4l5v4TYojp4Ir4eZ9pm+PrEyl5/I+yIh
-         gL1C7mxBT2eQHjpT3gz8m3dNOfbfMlSJGsvGIgTXhEBU//0cjJKX1LsNku3BvmYfaI86
-         AcyyC4Z88l7i6uQAK6kO53c2K0vbJ/B+BoxJc6ccFGg20YLij7TfZQ67NwMM7iiOuYXa
-         OgYw==
-X-Gm-Message-State: ACgBeo3ip/55BczYjCnw1ik/8uHWb7k6zzDjsuONvXHW3HrULQfETVTJ
-        X+LoQBlmr2jRVqoVDrU1rN45bZZAM1rQgL5pn+LooIrPy/k=
-X-Google-Smtp-Source: AA6agR7aQiGzTiYfENEZTzgyWjIg+8U1NkzkYo7M9PDX9EYfCqoeF8HY7s/XnhGCss7xqrObq8l/Ir8cbgHuZaJKfDk=
-X-Received: by 2002:a17:906:a089:b0:72f:826b:e084 with SMTP id
- q9-20020a170906a08900b0072f826be084mr3061943ejy.708.1660856432758; Thu, 18
- Aug 2022 14:00:32 -0700 (PDT)
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E8DD3EE4
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=Q4ZsqxmFfhAnDBe/hXn3wbCf/zH
+        Yx589CWvjUIs5WaQ=; b=ZRwiV26AliBdJMJr67lG1l2A0q83M9kVpLHqWkVwqMv
+        16KjDvpMM3gCkY7jEAM+ShpWFDWPBDmEu5zIsVWHPpUQqV8Dy57faJJAvgSwHOjU
+        uG7cB+rDpafAUYylXfBlaOsz+jjuEktddp5nD8sjmI+C5DP2NC/mYzg6yb4dRgs0
+        =
+Received: (qmail 3960650 invoked from network); 18 Aug 2022 23:00:32 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:00:32 +0200
+X-UD-Smtp-Session: l3s3148p1@mLWfRYrm3J4ucref
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Tomas Winkler <tomas.winkler@intel.com>
+Subject: [PATCH] misc: move from strlcpy with unused retval to strscpy
+Date:   Thu, 18 Aug 2022 23:00:31 +0200
+Message-Id: <20220818210031.7036-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
- <YvoVgMzMuQbAEayk@krava> <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
- <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
- <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net> <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
- <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net> <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
- <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net> <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
- <Yv6gm09CMdZ/HMr5@krava> <20220818165024.433f56fd@gandalf.local.home>
-In-Reply-To: <20220818165024.433f56fd@gandalf.local.home>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 18 Aug 2022 14:00:21 -0700
-Message-ID: <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 1:50 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Thu, 18 Aug 2022 22:27:07 +0200
-> Jiri Olsa <olsajiri@gmail.com> wrote:
->
-> > ok, so the problem with __attribute__((patchable_function_entry(5))) is that
-> > it puts function address into __patchable_function_entries section, which is
-> > one of ftrace locations source:
-> >
-> >   #define MCOUNT_REC()    . = ALIGN(8);     \
-> >     __start_mcount_loc = .;                 \
-> >     KEEP(*(__mcount_loc))                   \
-> >     KEEP(*(__patchable_function_entries))   \
-> >     __stop_mcount_loc = .;                  \
-> >    ...
-> >
-> >
-> > it looks like __patchable_function_entries is used for other than x86 archs,
-> > so we perhaps we could have x86 specific MCOUNT_REC macro just with
-> > __mcount_loc section?
->
-> So something like this:
->
-> #ifdef CONFIG_X86
-> # define NON_MCOUNT_PATCHABLE KEEP(*(__patchable_function_entries))
-> # define MCOUNT_PATCHABLE
-> #else
-> # define NON_MCOUNT_PATCHABLE
-> # define MCOUNT_PATCHABLE  KEEP(*(__patchable_function_entries))
-> #endif
->
->   #define MCOUNT_REC()    . = ALIGN(8);     \
->     __start_mcount_loc = .;                 \
->     KEEP(*(__mcount_loc))                   \
->     MCOUNT_PATCHABLE                        \
->     __stop_mcount_loc = .;                  \
->     NON_MCOUNT_PATCHABLE                    \
->    ...
->
-> ??
+Follow the advice of the below link and prefer 'strscpy' in this
+subsystem. Conversion is 1:1 because the return value is not used.
+Generated by a coccinelle script.
 
-That's what more or less Peter's patch is doing:
-Here it is again for reference:
-https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=8d075bdf11193f1d276bf19fa56b4b8dfe24df9e
+Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ drivers/misc/altera-stapl/altera.c | 8 ++++----
+ drivers/misc/eeprom/eeprom.c       | 2 +-
+ drivers/misc/eeprom/idt_89hpesx.c  | 2 +-
+ drivers/misc/ics932s401.c          | 2 +-
+ drivers/misc/mei/bus-fixup.c       | 2 +-
+ 5 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/misc/altera-stapl/altera.c b/drivers/misc/altera-stapl/altera.c
+index 075f3a36d512..a58b7cb81d98 100644
+--- a/drivers/misc/altera-stapl/altera.c
++++ b/drivers/misc/altera-stapl/altera.c
+@@ -1014,7 +1014,7 @@ static int altera_execute(struct altera_state *astate,
+ 			 * ...argument 0 is string ID
+ 			 */
+ 			count = strlen(msg_buff);
+-			strlcpy(&msg_buff[count],
++			strscpy(&msg_buff[count],
+ 				&p[str_table + args[0]],
+ 				ALTERA_MESSAGE_LENGTH - count);
+ 			break;
+@@ -2146,7 +2146,7 @@ static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
+ 						&p[note_table + (8 * i) + 4])];
+ 
+ 				if (value != NULL)
+-					strlcpy(value, value_ptr, vallen);
++					strscpy(value, value_ptr, vallen);
+ 
+ 			}
+ 		}
+@@ -2162,13 +2162,13 @@ static int altera_get_note(u8 *p, s32 program_size, s32 *offset,
+ 			status = 0;
+ 
+ 			if (key != NULL)
+-				strlcpy(key, &p[note_strings +
++				strscpy(key, &p[note_strings +
+ 						get_unaligned_be32(
+ 						&p[note_table + (8 * i)])],
+ 					keylen);
+ 
+ 			if (value != NULL)
+-				strlcpy(value, &p[note_strings +
++				strscpy(value, &p[note_strings +
+ 						get_unaligned_be32(
+ 						&p[note_table + (8 * i) + 4])],
+ 					vallen);
+diff --git a/drivers/misc/eeprom/eeprom.c b/drivers/misc/eeprom/eeprom.c
+index 34fa385dfd4b..adb08ae5062d 100644
+--- a/drivers/misc/eeprom/eeprom.c
++++ b/drivers/misc/eeprom/eeprom.c
+@@ -136,7 +136,7 @@ static int eeprom_detect(struct i2c_client *client, struct i2c_board_info *info)
+ 	 && !i2c_check_functionality(adapter, I2C_FUNC_SMBUS_READ_I2C_BLOCK))
+ 		return -ENODEV;
+ 
+-	strlcpy(info->type, "eeprom", I2C_NAME_SIZE);
++	strscpy(info->type, "eeprom", I2C_NAME_SIZE);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/misc/eeprom/idt_89hpesx.c b/drivers/misc/eeprom/idt_89hpesx.c
+index 9aec3338e37d..01614fec40fe 100644
+--- a/drivers/misc/eeprom/idt_89hpesx.c
++++ b/drivers/misc/eeprom/idt_89hpesx.c
+@@ -1075,7 +1075,7 @@ static const struct i2c_device_id *idt_ee_match_id(struct fwnode_handle *fwnode)
+ 		return NULL;
+ 
+ 	p = strchr(compatible, ',');
+-	strlcpy(devname, p ? p + 1 : compatible, sizeof(devname));
++	strscpy(devname, p ? p + 1 : compatible, sizeof(devname));
+ 	/* Search through the device name */
+ 	while (id->name[0]) {
+ 		if (strcmp(devname, id->name) == 0)
+diff --git a/drivers/misc/ics932s401.c b/drivers/misc/ics932s401.c
+index 0f9ea75b0b18..d88fe136155b 100644
+--- a/drivers/misc/ics932s401.c
++++ b/drivers/misc/ics932s401.c
+@@ -424,7 +424,7 @@ static int ics932s401_detect(struct i2c_client *client,
+ 	if (revision != ICS932S401_REV)
+ 		dev_info(&adapter->dev, "Unknown revision %d\n", revision);
+ 
+-	strlcpy(info->type, "ics932s401", I2C_NAME_SIZE);
++	strscpy(info->type, "ics932s401", I2C_NAME_SIZE);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/misc/mei/bus-fixup.c b/drivers/misc/mei/bus-fixup.c
+index 59506ba6fc48..4cb341fcf543 100644
+--- a/drivers/misc/mei/bus-fixup.c
++++ b/drivers/misc/mei/bus-fixup.c
+@@ -471,7 +471,7 @@ static void mei_nfc(struct mei_cl_device *cldev)
+ 	}
+ 
+ 	dev_dbg(bus->dev, "nfc radio %s\n", radio_name);
+-	strlcpy(cldev->name, radio_name, sizeof(cldev->name));
++	strscpy(cldev->name, radio_name, sizeof(cldev->name));
+ 
+ disconnect:
+ 	mutex_lock(&bus->device_lock);
+-- 
+2.35.1
+
