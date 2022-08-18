@@ -2,567 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2306AC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD8FC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345512AbiHRREr (ORCPT
+        id S1345518AbiHRREv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
+        Thu, 18 Aug 2022 13:04:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345328AbiHRRCC (ORCPT
+        with ESMTP id S1345413AbiHRRCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:02:02 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3549CAC9F
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:59 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id ay12so1134018wmb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=vGJ3kSV/z/TY65CJkdoX1ty3nkbmUWg0sp73bEAPcbA=;
-        b=PAKnbCxzEPjKKW8rQZu8e88trGKV/fqMnjKHbjjMMqV3BcNsDJXiKH2AXuI8XOFruU
-         iRCafCjXQxnb0+POUBqsDg63j21LCUIfjyUij2EiD45SlF5IcZZAwvzzcrBIYZZIgvTc
-         AalNfgI5T7J9WSZ2sbEqK5iW/qjLM28JisLtLK4VgHjR2tHgkUdZ0tm+moXKCMg3Te4c
-         X7VTqIyCgZP5GHTO63jHjyjfzVh9AJIdBM+bhLiMRbXDUh/PXdawezqqJ+FxtqW6lvo9
-         mrsVrMg1x448DKOsyNdFRqL/bIEIMGbeQhOZ8ZtxW6j4uO6+Tz2cQCSBF/WlEAjRzmd4
-         WJ3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=vGJ3kSV/z/TY65CJkdoX1ty3nkbmUWg0sp73bEAPcbA=;
-        b=YJ8UHHiXn9CRqmqvOTqemoK18oBzHjlvOXTbD8nX6EoHu+CnMVDymL9158pWZxYgve
-         SHDOq003yqeHqNVilmZUDhLJyLvQETmEsUiykA7W6revBOrOdn4BdvA7EENr8arDLnNv
-         tEMdIsGKp/KkzFWB9yZ3oXemOr66lL6GzShRG3m7GHdfmSRFlKkM1+DuyhdFNJItp1aL
-         /k33wszDOux70juRMdbAYZH+tWW+GeIgk4HOPEzUS4B5BS/j1Qu02UaprbkD0rGI0McB
-         urf5UIEqJwAlOd5xg8kTgNCnNkiamhHEUo0bQ1Qf2bNVERKQnGnVAuN0uSnMBLT0Yr83
-         9uLg==
-X-Gm-Message-State: ACgBeo1VI/cFKJDBvciDPWvJMSVDJKrEtxn5F1oSSd0ZfHeE+/vkeJ4J
-        VjvnImY5NyTJegKHN3p60lo4vA==
-X-Google-Smtp-Source: AA6agR5JSdaI9bPTfugpkhEIC8ftyWaZ99ZRXRF7BxYWMWvNsktzFJ24qQazTIKhwI6axSPP7UqgFQ==
-X-Received: by 2002:a1c:a187:0:b0:3a5:e055:715b with SMTP id k129-20020a1ca187000000b003a5e055715bmr2516003wme.171.1660842059332;
-        Thu, 18 Aug 2022 10:00:59 -0700 (PDT)
-Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:00:58 -0700 (PDT)
-From:   Dmitry Safonov <dima@arista.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <dima@arista.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-Subject: [PATCH 31/31] selftests/aolib: Add test/benchmark for removing MKTs
-Date:   Thu, 18 Aug 2022 18:00:05 +0100
-Message-Id: <20220818170005.747015-32-dima@arista.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220818170005.747015-1-dima@arista.com>
-References: <20220818170005.747015-1-dima@arista.com>
+        Thu, 18 Aug 2022 13:02:55 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2075.outbound.protection.outlook.com [40.107.92.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABC9CB5F7;
+        Thu, 18 Aug 2022 10:01:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SNz4orQDkJUMEfPpwcaQCOm3RM00IwHH9Z6l2bCn/tTPx7kqzCvCdZR9zhltZAJiqtW0r2DZAo7Z8eZ4Vbzyqh1DepvrO9oKwzFXeAnGUwefZn7QplsAukSQ85T55nZ3Bc1+qwgEXT+lB32sea3uvLQJwdbN51lY4eSIP4h3ancxgxTKN7xOpFzyGRzXeyGEnDUFplD0/Arq3qEX7irdXVaMx+1uEFaUKXNkg1zV0BCccDfAdd7dcPXqU6iTKWnIjGF4i2Jx79nNaqvdXJ/oOmPiCUYpRdpA/lMmMK/mEAEf6PwnFZIeJq+kE0D1GEZqVufvaKd7stDYS7uBhUOnLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l5t2mm1SpMoxtPnxmh8iPf2GLje/c/90qc60SotkTS4=;
+ b=QMj3zfmS3T9ne9dJCQ+FrlSj3r2fESF4PUl/hsidyJvMlZwP8yfGiQ6HRCfTRVEVAey7iI8JypXkw0gkLJjI0TsjETV/E0AR+j7wZHcbZj+gKYJ9xbgb5YmaVwSGMHCd6boznjOPXvMygBQgyrqtIvrE1W0czfk494LXiIn3sutGTgea3D8vzSEc4BdT2ebLQSxH6S8CVQz6QfoLxtSy3uN86V7FHUuPD0OqM+hzj9voKN1gPvQHz6fOXk5FyY0QtkYd3Pn5QwoxlW3DzY0JnXMXpRFbAK92OQqBU8Ei4kramnchkFfDpHzAnjOz/Ed7oqUJsX793WsyEl5NCS4fyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l5t2mm1SpMoxtPnxmh8iPf2GLje/c/90qc60SotkTS4=;
+ b=F8thv0cDbG9EDO+PGX6uJHdLLV85jiDRQ2qoDRdir7Nij+D6Bl0rrGuYEO3Wl+viC31gYfrAXuZMDALY3y8xiCaCOx8LO6RPd/HajpOvF7HRe+Tf0LmGcw2Df7NuEPSdHdZI9gmz8nd/WQBf9Q5FeZR9i0v5ZvdBAzeWFNkD7tf+yLaTiRSSabwAFrrbezsXVMt1zZXmqi3QIaHM9Unj3nKMtcCqFr3gne2p3ZhZe3UpaKYhAbak/bvjPUWtTnnPGIUwa0M9mxnRNOphAX3Ruuzj4wy4AJOvuc6cheTXGELQqwQ9Ox1GWw+RL4yc+HyK+f+f8k6jqbd9MBZ4L0AY9A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL1PR12MB5304.namprd12.prod.outlook.com (2603:10b6:208:314::13)
+ by CH2PR12MB3751.namprd12.prod.outlook.com (2603:10b6:610:25::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
+ 2022 17:01:15 +0000
+Received: from BL1PR12MB5304.namprd12.prod.outlook.com
+ ([fe80::784c:3561:5f6a:10ed]) by BL1PR12MB5304.namprd12.prod.outlook.com
+ ([fe80::784c:3561:5f6a:10ed%8]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
+ 17:01:14 +0000
+Message-ID: <62e6d510-8e7c-8a31-fb7f-905bb13afe67@nvidia.com>
+Date:   Thu, 18 Aug 2022 22:31:03 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v6 5/5] vfio/pci: Implement
+ VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org
+References: <20220817051323.20091-1-abhsahu@nvidia.com>
+ <20220817051323.20091-6-abhsahu@nvidia.com> <Yvzy0VOfKkKod0OV@nvidia.com>
+ <5363303b-30bb-3c4a-bf42-426dd7f8138d@nvidia.com>
+ <Yv0oH23UYbI/LI+X@nvidia.com>
+X-Nvconfidentiality: public
+From:   Abhishek Sahu <abhsahu@nvidia.com>
+In-Reply-To: <Yv0oH23UYbI/LI+X@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0042.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:98::7) To BL1PR12MB5304.namprd12.prod.outlook.com
+ (2603:10b6:208:314::13)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 296d275c-5438-4b0e-612a-08da813b4267
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3751:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bzO6Cio7FGLWmcMYD81VV5TFJj5NOa99XB/GwumNH641ULkOZgJLpzVrqQpxEnRfjeFV6PrSuZeo5sZAH3JjpiMce/Z90A/tO1katxw8uN8m6iPB1FlXEhEbIuxUch7UpipCT9TxIs+lRUOUk4ShAlleQMUJzNcLnfcbD6AU1s+ey/U77F2T8j1Co4rgOxChgPiPMZQ4aJr5M/J2ZZOpnhwnKHTlOjA0soRJ6HFuP949GMI7JYhhy604DhEqsqdAOKy9fIDgz75FRiIkGyJAovvHsfizdD4x6//uwnx9ztUcPpY5tr2kkQr3iYStu6ryhnEaxdGnz0LJbpdvBV7K2++eyeIX63oqOeWW6ZtCYXuC+Razdoxi57gi7Zim76YWCBk1iPVA9KUQO5qwvVk6X3ExgNekwpwPL1PfG3UZ6A7TWgkVCtXUYKJ4Ekxliq54wxj922MnlZ2oYnk/aIOTMF0eonZx7dI6XK6ZR4K/tX3r4gzVxJVyI/MmTRj2MgH4yRFdSrbbLGfZpoZF97IPaXUztgkBCm/hIY+2my87AD01lk5nElgD1nY4K7xssb6fzbWFaVoasDLKvCG3D6/BUYbJlpFoCFz8yGSJQ73fg1p24FNpoQQy7k8TDauVdAlZwqEe7P8HqRf9LZvyjlpkD3GdrpA2FQ2RrP+J8cG+pDr/mN5Z1jra8aoZiO2ejMp4suPCYmPaayejdADE6zOqqf9Ulp9mhlSX2T2rBvfe1JfJJXI0E/1/GEqyy59pEfKtMzTi1x7YZc4goBDRIzM6p6w7eQ3eua+GMXPObn4iDjw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5304.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(366004)(376002)(39860400002)(136003)(2906002)(41300700001)(66476007)(66556008)(4326008)(8676002)(7416002)(66946007)(54906003)(316002)(31686004)(37006003)(6636002)(6512007)(26005)(6486002)(478600001)(53546011)(55236004)(6506007)(6666004)(31696002)(86362001)(83380400001)(5660300002)(6862004)(36756003)(8936002)(2616005)(38100700002)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OGNYVldSQnduc09td1VaenFySTZoSFJTMURTTDl6eVQwR3dubVZNTnBic256?=
+ =?utf-8?B?NGZjRVV3aU1nR0lKVWhvNUVIUTBCaTVSYytJVzNmSHFBdUlldTZFSXpYdkps?=
+ =?utf-8?B?QWZBRmJQcW0yeEQ5SUpESUtLMjFULzc5ZzFFVVdCSzNtL05nV2N2aXZUTHZB?=
+ =?utf-8?B?c2JyamdsMlIyZFJSTGJWU0RaUE92a010emN3K3gwSUtZanVqQnhxU3BMQlRO?=
+ =?utf-8?B?dkkvRnBDQVN2M0JSQ2lVRlhtYUxCMkQyWHdVZXczMERYSnB3QzlZdi9XaHpu?=
+ =?utf-8?B?YmZmN3JzTkFlWk4wM01jMThTODY0MGxGdUp2NWo3T1hrVmdNQVl1WjZOUkZW?=
+ =?utf-8?B?VUZKRFRIdnRJV2NzYzAreVB3UmhVWG5HN0FrTEtBTW1wYzY2bzRDWnp5Zm1v?=
+ =?utf-8?B?blNhQVpxVXczclBWOTBrUVdKNi84RWxNV0tzYkVtYjN2YkNWVFk0bk1XUTho?=
+ =?utf-8?B?SzhZb08yY3V5WHU0WmM1STZpQWtZaHNFb3RwWHNreWlqLzR2RDRkLzlHNnFq?=
+ =?utf-8?B?dk5LdjNGUFBPaVoyaTZ6S3NWSmV0WmYwVVgzdDVsKzVHRDFucFYxUUJYMzRV?=
+ =?utf-8?B?a1BrWWh6ZkYreEdMYmxSTXpZSHhmbHczbnBEc1htb01oeFErd2xYRGRsU0po?=
+ =?utf-8?B?V0Jxd2VGbk9RSHJhSjFjLzc4QlFPdzVvSlFKamhONVVlRTR6T25qL3M3WnU1?=
+ =?utf-8?B?YXpWQU15L0xkdTNZZDRCeDJtQkVkQWJTZTE0MXRkS0VMY0lyb2ZyRlAwRTVJ?=
+ =?utf-8?B?TkpMTWNoK29KVzFyeTlJZDNKZVhMRzNmUXNxb1VqKzhEWTFKQWNGQ2tCRTZk?=
+ =?utf-8?B?ZEV2TTEyVml2R1hkeTNKNEM1cVNwYncwdjM0TEdWR05JaEUwWkp4MTZJeFNV?=
+ =?utf-8?B?UmdWUk10NlpMK2cxOFp6YmFEQnhMUE5LVVlZaFZWdnMrS1lnTi9seURLTDh6?=
+ =?utf-8?B?MVRNdUIxNjM4NEVOdThlL2V2YU5PTkxLMEkvSWRWZHM1TGY4a0ViUDlld0lD?=
+ =?utf-8?B?cXRsU21peDZoUkpDdEpjRkJGSjZZYVpCTlo4dnNaT2NjOTk1alZXL1RtelhE?=
+ =?utf-8?B?dW94NzBtQWdzVVJ5UklvK2FIMHJBRllnTExkeHhlMGZjckw0dEhIRVh4NkdU?=
+ =?utf-8?B?R2JHYWR2NkllNFV5V0Z3cmdONTJnNTZtaWxwSndDeEdDVnp5Uzlna2hFR25L?=
+ =?utf-8?B?YkRBMUZxcXNyYmFUK01vNnI0Q3FRNlVrKzV1YnZjL1RvUUxmTVRnS0dyNVMv?=
+ =?utf-8?B?eVJZRHhaemg0TU1zRGgxTHZQcHh3R1Z1WWNRRmRPeloyY2owOWxxUmVEUmw1?=
+ =?utf-8?B?dFdNeWhUWnEyWHBTbGpZSURUYzI0SC9PaGd1UWhLY3B6Z0U4cUdpcXJZbmVh?=
+ =?utf-8?B?Yll5SmRJdWRpRUcrZDBncjg3ZmFNOTN5RXJ2ZDM3cnB6Z2g3MndLdVh5VVo0?=
+ =?utf-8?B?Mkx6dVVRMzhNZFRjMHd2SThQZUIwWUJjMXROVHNncGp5SDVCRytkSzZjUkg4?=
+ =?utf-8?B?c3VaMXdVWXlKNUNSRWdmb3NwSER2TWNNVHBPbElkY3FSOHVVd1JkdVYxS0VJ?=
+ =?utf-8?B?YjNqZER4dVlqOWszdDlTRFZyOTBKUmhWQlAzeTQrM0swSmhVUlFHazZIdFFn?=
+ =?utf-8?B?ME4rMi83SElSVjN3MUlmWjkvb2RqWHRFYWQ5ZS9JUFg2ODVnRWJvWW5kNGli?=
+ =?utf-8?B?dTZxYnpWcGp6dHNyUzBiYXhEemtHTGRYUUdORkpVSHhRejEvZ2dHaEJDTW02?=
+ =?utf-8?B?bk5uWldHZDZMN2xnTjROaHhQVXVuM3ZHMGpMazdtLyt5RExJejk0dTZMenNw?=
+ =?utf-8?B?OUdWMlg0aU41eFNBSlBqY0JuVmlxdmZsVUhJYzYvVUY4OUp3eWZ4K0RibUdY?=
+ =?utf-8?B?L3dnejZjclY2Ym4xeVNuUHVGTDRDcmhDbFh4TFRXUStEWW0vNC9obUNkNzRt?=
+ =?utf-8?B?SzdGb1JFaisrS2FSSTQxVFdRSzFNYllEREM1TFNOMWp0MHZTbkUreU01eDVG?=
+ =?utf-8?B?WkpLODdFV0p4WG85M2ZwQ1NCZVZObDlwVFBhYjhVYUVMT2ZkdWEzbUlzQ0pi?=
+ =?utf-8?B?dlorL3hhUXdtZytIc1BSbmpXbmRORVlSKzFoMS9EUVQwNkduQ1IxWDdJNG51?=
+ =?utf-8?Q?BL9vMhZ728r6p1dhUUu5iqv3d?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 296d275c-5438-4b0e-612a-08da813b4267
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5304.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 17:01:14.7064
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mgQsE8kVGZZ5unZ72mWMThKb+zC8pz+LUyKTeiSOhw7qmdn0uJGQeCnLKXcgWEek+Xcjth7nZJy+pMjAaSlh4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3751
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sample output:
-> 1..36
-> # 1106[lib/setup.c:207] rand seed 1660754406
-> TAP version 13
-> ok 1   Worst case connect       512 keys: min=0ms max=1ms mean=0.583329ms stddev=0.076376
-> ok 2 Connect random-search      512 keys: min=0ms max=1ms mean=0.53412ms stddev=0.0516779
-> ok 3    Worst case delete       512 keys: min=2ms max=11ms mean=6.04139ms stddev=0.245792
-> ok 4        Add a new key       512 keys: min=0ms max=13ms mean=0.673415ms stddev=0.0820618
-> ok 5 Remove random-search       512 keys: min=5ms max=9ms mean=6.65969ms stddev=0.258064
-> ok 6         Remove async       512 keys: min=0ms max=0ms mean=0.041825ms stddev=0.0204512
-> ok 7   Worst case connect       1024 keys: min=0ms max=2ms mean=0.520357ms stddev=0.0721358
-> ok 8 Connect random-search      1024 keys: min=0ms max=2ms mean=0.535312ms stddev=0.0517355
-> ok 9    Worst case delete       1024 keys: min=5ms max=9ms mean=8.27219ms stddev=0.287614
-> ok 10        Add a new key      1024 keys: min=0ms max=1ms mean=0.688121ms stddev=0.0829531
-> ok 11 Remove random-search      1024 keys: min=5ms max=9ms mean=8.37649ms stddev=0.289422
-> ok 12         Remove async      1024 keys: min=0ms max=0ms mean=0.0457096ms stddev=0.0213798
-> ok 13   Worst case connect      2048 keys: min=0ms max=2ms mean=0.748804ms stddev=0.0865335
-> ok 14 Connect random-search     2048 keys: min=0ms max=2ms mean=0.782993ms stddev=0.0625697
-> ok 15    Worst case delete      2048 keys: min=5ms max=10ms mean=8.23106ms stddev=0.286898
-> ok 16        Add a new key      2048 keys: min=0ms max=1ms mean=0.812988ms stddev=0.0901658
-> ok 17 Remove random-search      2048 keys: min=8ms max=9ms mean=8.84949ms stddev=0.297481
-> ok 18         Remove async      2048 keys: min=0ms max=0ms mean=0.0297223ms stddev=0.0172402
-> ok 19   Worst case connect      4096 keys: min=1ms max=5ms mean=1.53352ms stddev=0.123836
-> ok 20 Connect random-search     4096 keys: min=1ms max=5ms mean=1.52226ms stddev=0.0872429
-> ok 21    Worst case delete      4096 keys: min=5ms max=9ms mean=8.25874ms stddev=0.28738
-> ok 22        Add a new key      4096 keys: min=0ms max=3ms mean=1.67382ms stddev=0.129376
-> ok 23 Remove random-search      4096 keys: min=5ms max=10ms mean=8.26178ms stddev=0.287433
-> ok 24         Remove async      4096 keys: min=0ms max=0ms mean=0.0340009ms stddev=0.0184393
-> ok 25   Worst case connect      8192 keys: min=2ms max=4ms mean=2.86208ms stddev=0.169177
-> ok 26 Connect random-search     8192 keys: min=2ms max=4ms mean=2.87592ms stddev=0.119915
-> ok 27    Worst case delete      8192 keys: min=6ms max=11ms mean=7.55291ms stddev=0.274826
-> ok 28        Add a new key      8192 keys: min=1ms max=5ms mean=2.56797ms stddev=0.160249
-> ok 29 Remove random-search      8192 keys: min=5ms max=10ms mean=7.14002ms stddev=0.267208
-> ok 30         Remove async      8192 keys: min=0ms max=0ms mean=0.0320066ms stddev=0.0178904
-> ok 31   Worst case connect      16384 keys: min=5ms max=6ms mean=5.55334ms stddev=0.235655
-> ok 32 Connect random-search     16384 keys: min=5ms max=6ms mean=5.52614ms stddev=0.166225
-> ok 33    Worst case delete      16384 keys: min=5ms max=11ms mean=7.39109ms stddev=0.271866
-> ok 34        Add a new key      16384 keys: min=2ms max=4ms mean=3.35799ms stddev=0.183248
-> ok 35 Remove random-search      16384 keys: min=5ms max=8ms mean=6.86078ms stddev=0.261931
-> ok 36         Remove async      16384 keys: min=0ms max=0ms mean=0.0302384ms stddev=0.0173892
-> # Totals: pass:36 fail:0 xfail:0 xpass:0 skip:0 error:0
+On 8/17/2022 11:10 PM, Jason Gunthorpe wrote:
+> On Wed, Aug 17, 2022 at 09:34:30PM +0530, Abhishek Sahu wrote:
+>> On 8/17/2022 7:23 PM, Jason Gunthorpe wrote:
+>>> On Wed, Aug 17, 2022 at 10:43:23AM +0530, Abhishek Sahu wrote:
+>>>
+>>>> +static int
+>>>> +vfio_pci_core_pm_entry_with_wakeup(struct vfio_device *device, u32 flags,
+>>>> +				   void __user *arg, size_t argsz)
+>>>
+>>> This should be
+>>>   struct vfio_device_low_power_entry_with_wakeup __user *arg
+>>>
+>>
+>>  Thanks Jason.
+>>
+>>  I can update this.
+>>
+>>  But if we look the existing code, for example
+>>  (vfio_ioctl_device_feature_mig_device_state()), then there it still uses
+>>  'void __user *arg' only. Is this a new guideline which we need to take
+>>  care ?
+> 
+> I just sent a patch that fixes that too
+> 
 
-From it it's visible that the current simplified approach with
-linked-list of MKTs scales quite fine even for thousands of keys.
-And that also means that the majority of the time for delete is eaten by
-synchronize_rcu() [which I can confirm separately by tracing].
+ Thanks for the update.
+ I will change this. 
 
-Signed-off-by: Dmitry Safonov <dima@arista.com>
----
- tools/testing/selftests/net/tcp_ao/Makefile   |   4 +-
- .../selftests/net/tcp_ao/bench-lookups.c      | 403 ++++++++++++++++++
- 2 files changed, 406 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/tcp_ao/bench-lookups.c
+>>  Do we need to keep the IOCTL name alphabetically sorted in the case list.
+>>  Currently, I have added in the order of IOCTL numbers.
+> 
+> It is generally a good practice to sort lists of things.
+> 
+> Jason
 
-diff --git a/tools/testing/selftests/net/tcp_ao/Makefile b/tools/testing/selftests/net/tcp_ao/Makefile
-index da44966f3687..a4af7d4da169 100644
---- a/tools/testing/selftests/net/tcp_ao/Makefile
-+++ b/tools/testing/selftests/net/tcp_ao/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- TEST_BOTH_AF := connect icmps-discard icmps-accept connect-deny \
--		setsockopt-closed unsigned-md5
-+		setsockopt-closed unsigned-md5 bench-lookups
- 
- TEST_IPV4_PROGS := $(TEST_BOTH_AF:%=%_ipv4)
- TEST_IPV6_PROGS := $(TEST_BOTH_AF:%=%_ipv6)
-@@ -46,3 +46,5 @@ $(OUTPUT)/%_ipv6: %.c
- 
- $(OUTPUT)/icmps-accept_ipv4: CFLAGS+= -DTEST_ICMPS_ACCEPT
- $(OUTPUT)/icmps-accept_ipv6: CFLAGS+= -DTEST_ICMPS_ACCEPT
-+$(OUTPUT)/bench-lookups_ipv4: LDFLAGS+= -lm
-+$(OUTPUT)/bench-lookups_ipv6: LDFLAGS+= -lm
-diff --git a/tools/testing/selftests/net/tcp_ao/bench-lookups.c b/tools/testing/selftests/net/tcp_ao/bench-lookups.c
-new file mode 100644
-index 000000000000..41456d85e06a
---- /dev/null
-+++ b/tools/testing/selftests/net/tcp_ao/bench-lookups.c
-@@ -0,0 +1,403 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Author: Dmitry Safonov <dima@arista.com> */
-+#include <arpa/inet.h>
-+#include <inttypes.h>
-+#include <math.h>
-+#include <stdlib.h>
-+#include <stdio.h>
-+#include <time.h>
-+
-+#include "../../../../include/linux/bits.h"
-+#include "../../../../include/linux/kernel.h"
-+#include "aolib.h"
-+
-+#define AO_KEY_SZ	300 /* ~= sizeof(struct tcp_ao_key) */
-+#define NR_ITERS	100 /* number of times to run gathering statistics */
-+
-+#ifdef IPV6_TEST
-+typedef struct in6_addr ipaddr_t;
-+static ipaddr_t get_ipaddr_t(ipaddr_t net, size_t n)
-+{
-+	ipaddr_t ret = net;
-+
-+	ret.s6_addr32[3] = htonl(n & (BIT(32) - 1));
-+	ret.s6_addr32[2] = htonl((n >> 32) & (BIT(32) - 1));
-+
-+	return ret;
-+}
-+#else
-+typedef struct in_addr ipaddr_t;
-+static ipaddr_t get_ipaddr_t(ipaddr_t net, size_t n)
-+{
-+	ipaddr_t ret;
-+
-+	ret.s_addr = htonl(ntohl(net.s_addr) + n);
-+	return ret;
-+}
-+#endif
-+
-+static void gen_test_ips(ipaddr_t *ips, size_t ips_nr, bool use_rand)
-+{
-+	ipaddr_t net;
-+	size_t i, j;
-+
-+	if (inet_pton(TEST_FAMILY, TEST_NETWORK, &net) != 1)
-+		test_error("Can't convert ip address %s", TEST_NETWORK);
-+
-+	if (!use_rand) {
-+		for (i = 0; i < ips_nr; i++)
-+			ips[i] = get_ipaddr_t(net, 2 * i + 1);
-+		return;
-+	}
-+	for (i = 0; i < ips_nr; i++) {
-+		size_t r = (size_t)random() | 0x1;
-+
-+		ips[i] = get_ipaddr_t(net, r);
-+
-+		for (j = i - 1; j > 0 && i > 0; j--) {
-+			if (!memcmp(&ips[i], &ips[j], sizeof(ipaddr_t))) {
-+				i--; /* collision */
-+				break;
-+			}
-+		}
-+	}
-+}
-+
-+static void test_add_routes(ipaddr_t *ips, size_t ips_nr)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < ips_nr; i++) {
-+		union tcp_addr *p = (union tcp_addr *)&ips[i];
-+
-+		if (ip_route_add(veth_name, TEST_FAMILY, this_ip_addr, *p))
-+			test_error("Failed to add route");
-+	}
-+}
-+
-+static void server_apply_keys(int lsk, ipaddr_t *ips, size_t ips_nr)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < ips_nr; i++) {
-+		union tcp_addr *p = (union tcp_addr *)&ips[i];
-+
-+		if (test_set_ao(lsk, "password", 0, *p, -1, 100, 100))
-+			test_error("setsockopt(TCP_AO)");
-+	}
-+}
-+
-+static const size_t nr_keys[] = { 512, 1024, 2048, 4096, 8192, 16384 };
-+static ipaddr_t *test_ips;
-+
-+struct bench_stats {
-+	uint64_t min;
-+	uint64_t max;
-+	uint64_t nr;
-+	double mean;
-+	double s2;
-+};
-+
-+static struct bench_tests {
-+	struct bench_stats delete_last_key;
-+	struct bench_stats add_key;
-+	struct bench_stats delete_rand_key;
-+	struct bench_stats connect_last_key;
-+	struct bench_stats connect_rand_key;
-+	struct bench_stats delete_async;
-+} bench_results[ARRAY_SIZE(nr_keys)];
-+
-+#define NSEC_PER_SEC 1000000000ULL
-+
-+static void measure_call(struct bench_stats *st,
-+			 void (*f)(int, void *), int sk, void *arg)
-+{
-+	struct timespec start = {}, end = {};
-+	double delta;
-+	uint64_t nsec;
-+
-+	if (clock_gettime(CLOCK_MONOTONIC, &start))
-+		test_error("clock_gettime()");
-+
-+	f(sk, arg);
-+
-+	if (clock_gettime(CLOCK_MONOTONIC, &end))
-+		test_error("clock_gettime()");
-+
-+	nsec = (end.tv_sec - start.tv_sec) * NSEC_PER_SEC;
-+	if (end.tv_nsec >= start.tv_nsec)
-+		nsec += end.tv_nsec - start.tv_nsec;
-+	else
-+		nsec -= start.tv_nsec - end.tv_nsec;
-+
-+	if (st->nr == 0) {
-+		st->min = st->max = nsec;
-+	} else {
-+		if (st->min > nsec)
-+			st->min = nsec;
-+		if (st->max < nsec)
-+			st->max = nsec;
-+	}
-+
-+	/* Welford-Knuth algorithm */
-+	st->nr++;
-+	delta = (double)nsec - st->mean;
-+	st->mean += delta / st->nr;
-+	st->s2 += delta * ((double)nsec - st->mean);
-+}
-+
-+static void delete_mkt(int sk, void *arg)
-+{
-+	struct tcp_ao_del *ao = arg;
-+
-+	if (setsockopt(sk, IPPROTO_TCP, TCP_AO_DEL, ao, sizeof(*ao)))
-+		test_error("setsockopt(TCP_AO_DEL)");
-+}
-+
-+static void add_back_mkt(int sk, void *arg)
-+{
-+	union tcp_addr *p = arg;
-+
-+	if (test_set_ao(sk, "password", 0, *p, -1, 100, 100))
-+		test_error("setsockopt(TCP_AO)");
-+}
-+
-+static void memcpy_sockaddr(void *dest, union tcp_addr *in_addr)
-+{
-+#ifdef IPV6_TEST
-+	struct sockaddr_in6 addr = {
-+		.sin6_family	= AF_INET6,
-+		.sin6_port	= 0,
-+		.sin6_addr	= in_addr->a6,
-+	};
-+#else
-+	struct sockaddr_in addr = {
-+		.sin_family	= AF_INET,
-+		.sin_port	= 0,
-+		.sin_addr	= in_addr->a4,
-+	};
-+#endif
-+
-+	memcpy(dest, &addr, sizeof(addr));
-+}
-+
-+static void bench_delete(int lsk, struct bench_stats *add,
-+			 struct bench_stats *del,
-+			 ipaddr_t *ips, size_t ips_nr,
-+			 bool rand_order, bool async)
-+{
-+	struct tcp_ao_del ao_del = {};
-+	union tcp_addr *p;
-+	size_t i;
-+
-+	ao_del.tcpa_sndid = 100;
-+	ao_del.tcpa_rcvid = 100;
-+	if (async)
-+		ao_del.tcpa_flags = TCP_AO_CMDF_DEL_ASYNC;
-+	ao_del.tcpa_prefix = DEFAULT_TEST_PREFIX;
-+
-+	/* Remove the first added */
-+	p = (union tcp_addr *)&ips[0];
-+	memcpy_sockaddr(&ao_del.tcpa_addr, p);
-+
-+	for (i = 0; i < NR_ITERS; i++) {
-+		measure_call(del, delete_mkt, lsk, (void *)&ao_del);
-+
-+		/* Restore it back */
-+		measure_call(add, add_back_mkt, lsk, (void *)p);
-+
-+		/*
-+		 * Slowest for FILO-linked-list:
-+		 * on (i) iteration removing ips[i] element. When it gets
-+		 * added to the list back - it becomes first to fetch, so
-+		 * on (i + 1) iteration go to ips[i + 1] element.
-+		 */
-+		if (rand_order)
-+			p = (union tcp_addr *)&ips[rand() % ips_nr];
-+		else
-+			p = (union tcp_addr *)&ips[i % ips_nr];
-+		memcpy_sockaddr(&ao_del.tcpa_addr, p);
-+	}
-+}
-+
-+static void bench_connect_srv(int lsk, ipaddr_t *ips, size_t ips_nr)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < NR_ITERS; i++) {
-+		int err, sk;
-+
-+		synchronize_threads();
-+
-+		err = test_wait_fd(lsk, TEST_TIMEOUT_SEC, 0);
-+		if (!err)
-+			test_error("timeouted for accept()");
-+		else if (err < 0)
-+			test_error("test_wait_fd()");
-+
-+		sk = accept(lsk, NULL, NULL);
-+		if (sk < 0)
-+			test_error("accept()");
-+
-+		close(sk);
-+	}
-+}
-+
-+static void test_print_stats(const char *desc, size_t nr, struct bench_stats *bs)
-+{
-+	test_ok("%20s\t%zu keys: min=%" PRIu64 "ms max=%" PRIu64 "ms mean=%gms stddev=%g",
-+		desc, nr, bs->min / 1000000, bs->max / 1000000,
-+		bs->mean / 1000000, sqrt((bs->mean / 1000000) / bs->nr));
-+}
-+
-+static void *server_fn(void *arg)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < ARRAY_SIZE(nr_keys); i++) {
-+		struct bench_tests *bt = &bench_results[i];
-+		int lsk;
-+
-+		test_ips = malloc(nr_keys[i] * sizeof(ipaddr_t));
-+		if (!test_ips)
-+			test_error("malloc()");
-+
-+		lsk = test_listen_socket(this_ip_addr, test_server_port + i, 1);
-+
-+		gen_test_ips(test_ips, nr_keys[i], false);
-+		test_add_routes(test_ips, nr_keys[i]);
-+		test_set_optmem(AO_KEY_SZ * nr_keys[i]);
-+		server_apply_keys(lsk, test_ips, nr_keys[i]);
-+
-+		synchronize_threads();
-+		bench_connect_srv(lsk, test_ips, nr_keys[i]);
-+		bench_connect_srv(lsk, test_ips, nr_keys[i]);
-+
-+		/* The worst case for FILO-list */
-+		bench_delete(lsk, &bt->add_key, &bt->delete_last_key,
-+			     test_ips, nr_keys[i], false, false);
-+		test_print_stats("Worst case delete",
-+				nr_keys[i], &bt->delete_last_key);
-+		test_print_stats("Add a new key",
-+				nr_keys[i], &bt->add_key);
-+
-+		bench_delete(lsk, &bt->add_key, &bt->delete_rand_key,
-+			     test_ips, nr_keys[i], true, false);
-+		test_print_stats("Remove random-search",
-+				nr_keys[i], &bt->delete_rand_key);
-+
-+		bench_delete(lsk, &bt->add_key, &bt->delete_async,
-+			     test_ips, nr_keys[i], false, true);
-+		test_print_stats("Remove async", nr_keys[i], &bt->delete_async);
-+
-+		free(test_ips);
-+		close(lsk);
-+	}
-+
-+	return NULL;
-+}
-+
-+static void connect_client(int sk, void *arg)
-+{
-+	size_t *p = arg;
-+
-+	if (test_connect_socket(sk, this_ip_dest, test_server_port + *p) <= 0)
-+		test_error("failed to connect()");
-+}
-+
-+static void client_addr_setup(int sk, union tcp_addr taddr)
-+{
-+#ifdef IPV6_TEST
-+	struct sockaddr_in6 addr = {
-+		.sin6_family	= AF_INET6,
-+		.sin6_port	= 0,
-+		.sin6_addr	= taddr.a6,
-+	};
-+#else
-+	struct sockaddr_in addr = {
-+		.sin_family	= AF_INET,
-+		.sin_port	= 0,
-+		.sin_addr	= taddr.a4,
-+	};
-+#endif
-+	int ret;
-+
-+	ret = ip_addr_add(veth_name, TEST_FAMILY, taddr, TEST_PREFIX);
-+	if (ret && ret != -EEXIST)
-+		test_error("Failed to add ip address");
-+	ret = ip_route_add(veth_name, TEST_FAMILY, taddr, this_ip_dest);
-+	if (ret && ret != -EEXIST)
-+		test_error("Failed to add route");
-+
-+	if (bind(sk, &addr, sizeof(addr)))
-+		test_error("bind()");
-+}
-+
-+static void bench_connect_client(size_t port_off, struct bench_tests *bt,
-+		ipaddr_t *ips, size_t ips_nr, bool rand_order)
-+{
-+	struct bench_stats *con;
-+	union tcp_addr *p;
-+	size_t i;
-+
-+	if (rand_order)
-+		con = &bt->connect_rand_key;
-+	else
-+		con = &bt->connect_last_key;
-+
-+	p = (union tcp_addr *)&ips[0];
-+
-+	for (i = 0; i < NR_ITERS; i++) {
-+		int sk = socket(test_family, SOCK_STREAM, IPPROTO_TCP);
-+
-+		if (sk < 0)
-+			test_error("socket()");
-+
-+		client_addr_setup(sk, *p);
-+		if (test_set_ao(sk, "password", 0, this_ip_dest, -1, 100, 100))
-+			test_error("setsockopt(TCP_AO)");
-+
-+		synchronize_threads();
-+
-+		measure_call(con, connect_client, sk, (void *)&port_off);
-+
-+		close(sk);
-+
-+		/*
-+		 * Slowest for FILO-linked-list:
-+		 * on (i) iteration removing ips[i] element. When it gets
-+		 * added to the list back - it becomes first to fetch, so
-+		 * on (i + 1) iteration go to ips[i + 1] element.
-+		 */
-+		if (rand_order)
-+			p = (union tcp_addr *)&ips[rand() % ips_nr];
-+		else
-+			p = (union tcp_addr *)&ips[i % ips_nr];
-+	}
-+}
-+
-+static void *client_fn(void *arg)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < ARRAY_SIZE(nr_keys); i++) {
-+		struct bench_tests *bt = &bench_results[i];
-+
-+		synchronize_threads();
-+		bench_connect_client(i, bt, test_ips, nr_keys[i], false);
-+		test_print_stats("Worst case connect",
-+				nr_keys[i], &bt->connect_last_key);
-+
-+		bench_connect_client(i, bt, test_ips, nr_keys[i], false);
-+		test_print_stats("Connect random-search",
-+				nr_keys[i], &bt->connect_last_key);
-+	}
-+	synchronize_threads();
-+	return NULL;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	test_init(36, server_fn, client_fn);
-+	return 0;
-+}
--- 
-2.37.2
+ Sure. I will make the sorted list.
 
+ Regards,
+ Abhishek
