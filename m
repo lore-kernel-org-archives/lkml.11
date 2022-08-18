@@ -2,486 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE8EC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A33C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245554AbiHRN7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S245461AbiHRN7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245539AbiHRN6l (ORCPT
+        with ESMTP id S245454AbiHRN7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:58:41 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF872A718
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:58:34 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id k9so1870279wri.0
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:58:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ctM38jQuzTHb3zbHExnXZUiYZ27GKCoC7SghpDpizGc=;
-        b=ZaD7AN1ZDubBR4YYPXmt/RZTONQHByz5UdRXorp9bxAKFQiGKYU6NXef/pipoO6Q5o
-         E1QSWws5YRTKphqRpVCgePOyq7ajFokIJAWqoYqqj8qaPgS7rl9kwYkf3ct2+DDujAtD
-         qRlVWPjJn/HYepT2t0GRawr72slTzyboC1uWdemMf6ZQI5ASchwtjqrXbDZMgjq7sWGh
-         UB74JwZvo7BpPLYPKOqMkwOwLQqVPWgVAiMnXyXV7++xceFm1Pj88Zyc9sbK4tYbIRWl
-         HHVulTCtABx7B8tWPXxsUR/0PBuxOQunfafQiGhU+/fBpp8QoO6uQss2Of2YxlPUHgdh
-         RUAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ctM38jQuzTHb3zbHExnXZUiYZ27GKCoC7SghpDpizGc=;
-        b=b5j9qHQwP9fy5z2d+nKq7vCleSgBXW5/7Xl03jdpEfVRmLlrwtZPdw3TlCv9TPGzeN
-         rFPKpJZuAonKS9nSQlCBG+4jFlqS+cdLqC/IjBX0mDdZn5g4yHWSyCrjCx7t+ff8gM/M
-         Td3fkaA0gxlqnk9w4z778KdsM0TDtU7/YWET+iuFu5poBQJM98w1rDJGJw8ZMJ/cFm5Y
-         QmE+egeOypGHyXqWbITyy+quMi7nzAFywwdzLWw3IZtPKx1fEsew9SiG24yBbDeNoOoW
-         3naI9aa3qGokJY4/dCFxBebg2eAX//LMETLDZzUp67vjsDbgLk3ZG0tZc1E0fdb0iQzs
-         GEAA==
-X-Gm-Message-State: ACgBeo3rMTdapGxOzfcuhMDFoId1kt9AR6cxNUznXum0qDdgvDtEH7Qp
-        7xH+FdeWQgS0dHNNqsZTQR/fsA==
-X-Google-Smtp-Source: AA6agR6OA9GQc/IGwpgE2EtGk02i/Pv0SbcQwLbD1cZHnT2+8Rq3Iow74FarEYgGW4U+3OPNZP+QgQ==
-X-Received: by 2002:a5d:4649:0:b0:225:309d:1d51 with SMTP id j9-20020a5d4649000000b00225309d1d51mr1313370wrs.450.1660831112000;
-        Thu, 18 Aug 2022 06:58:32 -0700 (PDT)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id l24-20020a1c7918000000b003a5ca627333sm5335937wme.8.2022.08.18.06.58.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 06:58:31 -0700 (PDT)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     broonie@kernel.org
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 2/3] ASoC: qcom: sm8250: move some code to common
-Date:   Thu, 18 Aug 2022 14:58:16 +0100
-Message-Id: <20220818135817.10142-3-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220818135817.10142-1-srinivas.kandagatla@linaro.org>
-References: <20220818135817.10142-1-srinivas.kandagatla@linaro.org>
+        Thu, 18 Aug 2022 09:59:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B5C67179;
+        Thu, 18 Aug 2022 06:58:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 590C1616D6;
+        Thu, 18 Aug 2022 13:58:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C83D8C433C1;
+        Thu, 18 Aug 2022 13:58:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660831137;
+        bh=b8vt69Qw477yM8JIOVSGHYEMcdgBcpySmH+QDCFvREI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=muoubQR1vF3zI+qMAoLPrSRs/OGngZZcUC/I2h0qUVoxX3jGQq6Tt2unaA20wpQR3
+         oq7OU5/MJxa98aD/+npZmPZt0eOPeUx0wxEyv3ueqr7ZC+9yq0eQiAEH+2r0CWnLBg
+         BDeeVB1UsmpLI2rylEKG6mR1AG3xedJpdxVjCsJA8q/4yeup8LEehdwvIAB4AHhtmq
+         ynasq1+AdOU2IcR+O74ErhRKMxgV4L5slBfWOu433t+xFvQf4Ex7Q4jYqFLSfNIFFr
+         EBSXZ0vksPBaI8+klXRRUFfmTdKsDrgp/Rgp1DXaLIK3Asme3RPvWUH1FEMXS0Q18N
+         nedEQcd+JW6Fw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-arm-kernel@lists.infradead.org,
+        Tony Lindgren <tony@atomide.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Mark Brown <broonie@kernel.org>,
+        William Zhang <william.zhang@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org
+Subject: [PATCH 06/11] ARM: defconfig: drop CONFIG_PTP_1588_CLOCK=y
+Date:   Thu, 18 Aug 2022 15:57:15 +0200
+Message-Id: <20220818135737.3143895-5-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220818135737.3143895-1-arnd@kernel.org>
+References: <20220818135522.3143514-1-arnd@kernel.org>
+ <20220818135737.3143895-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SM8450 machine driver code can be reused across multiple Qualcomm SoCs,
-Atleast another 2 of them for now (SM8450 and SM8250XP).
+From: Arnd Bergmann <arnd@arndb.de>
 
-Move some of the common SoundWire stream specific code to common file
-so that other drivers can use it instead of duplicating.
+PTP support is now enabled by default for configurations with
+ethernet support, so drop the redundant entries in defconfig
+files.
 
-This patch is to prepare the common driver to be able to add new SoCs support
-with less dupication.
-
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Fixes: e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- sound/soc/qcom/common.c | 169 ++++++++++++++++++++++++++++++++++++++++
- sound/soc/qcom/common.h |  12 +++
- sound/soc/qcom/sm8250.c | 152 ++----------------------------------
- 3 files changed, 188 insertions(+), 145 deletions(-)
+ arch/arm/configs/keystone_defconfig  | 1 -
+ arch/arm/configs/multi_v7_defconfig  | 1 -
+ arch/arm/configs/omap2plus_defconfig | 1 -
+ 3 files changed, 3 deletions(-)
 
-diff --git a/sound/soc/qcom/common.c b/sound/soc/qcom/common.c
-index c407684ce1a2..8d1582733b6c 100644
---- a/sound/soc/qcom/common.c
-+++ b/sound/soc/qcom/common.c
-@@ -3,6 +3,9 @@
- // Copyright (c) 2018, The Linux Foundation. All rights reserved.
- 
- #include <linux/module.h>
-+#include <sound/jack.h>
-+#include <linux/input-event-codes.h>
-+#include "qdsp6/q6afe.h"
- #include "common.h"
- 
- int qcom_snd_parse_of(struct snd_soc_card *card)
-@@ -177,4 +180,170 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
- }
- EXPORT_SYMBOL(qcom_snd_parse_of);
- 
-+int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
-+			 struct sdw_stream_runtime *sruntime,
-+			 bool *stream_prepared)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-+	int ret;
-+
-+	if (!sruntime)
-+		return 0;
-+
-+	switch (cpu_dai->id) {
-+	case WSA_CODEC_DMA_RX_0:
-+	case WSA_CODEC_DMA_RX_1:
-+	case RX_CODEC_DMA_RX_0:
-+	case RX_CODEC_DMA_RX_1:
-+	case TX_CODEC_DMA_TX_0:
-+	case TX_CODEC_DMA_TX_1:
-+	case TX_CODEC_DMA_TX_2:
-+	case TX_CODEC_DMA_TX_3:
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	if (*stream_prepared) {
-+		sdw_disable_stream(sruntime);
-+		sdw_deprepare_stream(sruntime);
-+		*stream_prepared = false;
-+	}
-+
-+	ret = sdw_prepare_stream(sruntime);
-+	if (ret)
-+		return ret;
-+
-+	/**
-+	 * NOTE: there is a strict hw requirement about the ordering of port
-+	 * enables and actual WSA881x PA enable. PA enable should only happen
-+	 * after soundwire ports are enabled if not DC on the line is
-+	 * accumulated resulting in Click/Pop Noise
-+	 * PA enable/mute are handled as part of codec DAPM and digital mute.
-+	 */
-+
-+	ret = sdw_enable_stream(sruntime);
-+	if (ret) {
-+		sdw_deprepare_stream(sruntime);
-+		return ret;
-+	}
-+	*stream_prepared  = true;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(qcom_snd_sdw_prepare);
-+
-+int qcom_snd_sdw_hw_params(struct snd_pcm_substream *substream,
-+			   struct snd_pcm_hw_params *params,
-+			   struct sdw_stream_runtime **psruntime)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct snd_soc_dai *codec_dai;
-+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-+	struct sdw_stream_runtime *sruntime;
-+	int i;
-+
-+	switch (cpu_dai->id) {
-+	case WSA_CODEC_DMA_RX_0:
-+	case RX_CODEC_DMA_RX_0:
-+	case RX_CODEC_DMA_RX_1:
-+	case TX_CODEC_DMA_TX_0:
-+	case TX_CODEC_DMA_TX_1:
-+	case TX_CODEC_DMA_TX_2:
-+	case TX_CODEC_DMA_TX_3:
-+		for_each_rtd_codec_dais(rtd, i, codec_dai) {
-+			sruntime = snd_soc_dai_get_stream(codec_dai, substream->stream);
-+			if (sruntime != ERR_PTR(-ENOTSUPP))
-+				*psruntime = sruntime;
-+		}
-+		break;
-+	}
-+
-+	return 0;
-+
-+}
-+EXPORT_SYMBOL(qcom_snd_sdw_hw_params);
-+
-+int qcom_snd_sdw_hw_free(struct snd_pcm_substream *substream,
-+			 struct sdw_stream_runtime *sruntime, bool *stream_prepared)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-+
-+	switch (cpu_dai->id) {
-+	case WSA_CODEC_DMA_RX_0:
-+	case WSA_CODEC_DMA_RX_1:
-+	case RX_CODEC_DMA_RX_0:
-+	case RX_CODEC_DMA_RX_1:
-+	case TX_CODEC_DMA_TX_0:
-+	case TX_CODEC_DMA_TX_1:
-+	case TX_CODEC_DMA_TX_2:
-+	case TX_CODEC_DMA_TX_3:
-+		if (sruntime && *stream_prepared) {
-+			sdw_disable_stream(sruntime);
-+			sdw_deprepare_stream(sruntime);
-+			*stream_prepared = false;
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(qcom_snd_sdw_hw_free);
-+
-+int qcom_snd_wcd_jack_setup(struct snd_soc_pcm_runtime *rtd,
-+			    struct snd_soc_jack *jack, bool *jack_setup)
-+{
-+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-+	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
-+	struct snd_soc_card *card = rtd->card;
-+	int rval, i;
-+
-+	if (!*jack_setup) {
-+		rval = snd_soc_card_jack_new(card, "Headset Jack",
-+					     SND_JACK_HEADSET | SND_JACK_LINEOUT |
-+					     SND_JACK_MECHANICAL |
-+					     SND_JACK_BTN_0 | SND_JACK_BTN_1 |
-+					     SND_JACK_BTN_2 | SND_JACK_BTN_3 |
-+					     SND_JACK_BTN_4 | SND_JACK_BTN_5,
-+					     jack);
-+
-+		if (rval < 0) {
-+			dev_err(card->dev, "Unable to add Headphone Jack\n");
-+			return rval;
-+		}
-+
-+		snd_jack_set_key(jack->jack, SND_JACK_BTN_0, KEY_MEDIA);
-+		snd_jack_set_key(jack->jack, SND_JACK_BTN_1, KEY_VOICECOMMAND);
-+		snd_jack_set_key(jack->jack, SND_JACK_BTN_2, KEY_VOLUMEUP);
-+		snd_jack_set_key(jack->jack, SND_JACK_BTN_3, KEY_VOLUMEDOWN);
-+		*jack_setup = true;
-+	}
-+
-+	switch (cpu_dai->id) {
-+	case TX_CODEC_DMA_TX_0:
-+	case TX_CODEC_DMA_TX_1:
-+	case TX_CODEC_DMA_TX_2:
-+	case TX_CODEC_DMA_TX_3:
-+		for_each_rtd_codec_dais(rtd, i, codec_dai) {
-+			rval = snd_soc_component_set_jack(codec_dai->component,
-+							  jack, NULL);
-+			if (rval != 0 && rval != -ENOTSUPP) {
-+				dev_warn(card->dev, "Failed to set jack: %d\n", rval);
-+				return rval;
-+			}
-+		}
-+
-+		break;
-+	default:
-+		break;
-+	}
-+
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(qcom_snd_wcd_jack_setup);
- MODULE_LICENSE("GPL v2");
-diff --git a/sound/soc/qcom/common.h b/sound/soc/qcom/common.h
-index f05c05b12bd7..0ab8d13ef44e 100644
---- a/sound/soc/qcom/common.h
-+++ b/sound/soc/qcom/common.h
-@@ -5,7 +5,19 @@
- #define __QCOM_SND_COMMON_H__
- 
- #include <sound/soc.h>
-+#include <linux/soundwire/sdw.h>
- 
- int qcom_snd_parse_of(struct snd_soc_card *card);
-+int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
-+			 struct sdw_stream_runtime *runtime,
-+			 bool *stream_prepared);
-+int qcom_snd_sdw_hw_params(struct snd_pcm_substream *substream,
-+			   struct snd_pcm_hw_params *params,
-+			   struct sdw_stream_runtime **psruntime);
-+int qcom_snd_sdw_hw_free(struct snd_pcm_substream *substream,
-+			 struct sdw_stream_runtime *sruntime,
-+			 bool *stream_prepared);
-+int qcom_snd_wcd_jack_setup(struct snd_soc_pcm_runtime *rtd,
-+			    struct snd_soc_jack *jack, bool *jack_setup);
- 
- #endif
-diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
-index 98a2fde9e004..8dbe9ef41b1c 100644
---- a/sound/soc/qcom/sm8250.c
-+++ b/sound/soc/qcom/sm8250.c
-@@ -27,57 +27,8 @@ struct sm8250_snd_data {
- static int sm8250_snd_init(struct snd_soc_pcm_runtime *rtd)
- {
- 	struct sm8250_snd_data *data = snd_soc_card_get_drvdata(rtd->card);
--	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
--	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
--	struct snd_soc_card *card = rtd->card;
--	int rval, i;
--
--	if (!data->jack_setup) {
--		struct snd_jack *jack;
--
--		rval = snd_soc_card_jack_new(card, "Headset Jack",
--					     SND_JACK_HEADSET | SND_JACK_LINEOUT |
--					     SND_JACK_MECHANICAL |
--					     SND_JACK_BTN_0 | SND_JACK_BTN_1 |
--					     SND_JACK_BTN_2 | SND_JACK_BTN_3 |
--					     SND_JACK_BTN_4 | SND_JACK_BTN_5,
--					     &data->jack);
--
--		if (rval < 0) {
--			dev_err(card->dev, "Unable to add Headphone Jack\n");
--			return rval;
--		}
--
--		jack = data->jack.jack;
--
--		snd_jack_set_key(jack, SND_JACK_BTN_0, KEY_MEDIA);
--		snd_jack_set_key(jack, SND_JACK_BTN_1, KEY_VOICECOMMAND);
--		snd_jack_set_key(jack, SND_JACK_BTN_2, KEY_VOLUMEUP);
--		snd_jack_set_key(jack, SND_JACK_BTN_3, KEY_VOLUMEDOWN);
--		data->jack_setup = true;
--	}
--
--	switch (cpu_dai->id) {
--	case TX_CODEC_DMA_TX_0:
--	case TX_CODEC_DMA_TX_1:
--	case TX_CODEC_DMA_TX_2:
--	case TX_CODEC_DMA_TX_3:
--		for_each_rtd_codec_dais(rtd, i, codec_dai) {
--			rval = snd_soc_component_set_jack(codec_dai->component,
--							  &data->jack, NULL);
--			if (rval != 0 && rval != -ENOTSUPP) {
--				dev_warn(card->dev, "Failed to set jack: %d\n", rval);
--				return rval;
--			}
--		}
--
--		break;
--	default:
--		break;
--	}
- 
--
--	return 0;
-+	return qcom_snd_wcd_jack_setup(rtd, &data->jack, &data->jack_setup);
- }
- 
- static int sm8250_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
-@@ -121,92 +72,21 @@ static int sm8250_snd_hw_params(struct snd_pcm_substream *substream,
- 				struct snd_pcm_hw_params *params)
- {
- 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
--	struct snd_soc_dai *codec_dai;
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
- 	struct sm8250_snd_data *pdata = snd_soc_card_get_drvdata(rtd->card);
--	struct sdw_stream_runtime *sruntime;
--	int i;
--
--	switch (cpu_dai->id) {
--	case WSA_CODEC_DMA_RX_0:
--	case RX_CODEC_DMA_RX_0:
--	case RX_CODEC_DMA_RX_1:
--	case TX_CODEC_DMA_TX_0:
--	case TX_CODEC_DMA_TX_1:
--	case TX_CODEC_DMA_TX_2:
--	case TX_CODEC_DMA_TX_3:
--		for_each_rtd_codec_dais(rtd, i, codec_dai) {
--			sruntime = snd_soc_dai_get_stream(codec_dai,
--							  substream->stream);
--			if (sruntime != ERR_PTR(-ENOTSUPP))
--				pdata->sruntime[cpu_dai->id] = sruntime;
--		}
--		break;
--	}
--
--	return 0;
- 
-+	return qcom_snd_sdw_hw_params(substream, params, &pdata->sruntime[cpu_dai->id]);
- }
- 
--static int sm8250_snd_wsa_dma_prepare(struct snd_pcm_substream *substream)
-+static int sm8250_snd_prepare(struct snd_pcm_substream *substream)
- {
- 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
- 	struct sm8250_snd_data *data = snd_soc_card_get_drvdata(rtd->card);
- 	struct sdw_stream_runtime *sruntime = data->sruntime[cpu_dai->id];
--	int ret;
--
--	if (!sruntime)
--		return 0;
- 
--	if (data->stream_prepared[cpu_dai->id]) {
--		sdw_disable_stream(sruntime);
--		sdw_deprepare_stream(sruntime);
--		data->stream_prepared[cpu_dai->id] = false;
--	}
--
--	ret = sdw_prepare_stream(sruntime);
--	if (ret)
--		return ret;
--
--	/**
--	 * NOTE: there is a strict hw requirement about the ordering of port
--	 * enables and actual WSA881x PA enable. PA enable should only happen
--	 * after soundwire ports are enabled if not DC on the line is
--	 * accumulated resulting in Click/Pop Noise
--	 * PA enable/mute are handled as part of codec DAPM and digital mute.
--	 */
--
--	ret = sdw_enable_stream(sruntime);
--	if (ret) {
--		sdw_deprepare_stream(sruntime);
--		return ret;
--	}
--	data->stream_prepared[cpu_dai->id]  = true;
--
--	return ret;
--}
--
--static int sm8250_snd_prepare(struct snd_pcm_substream *substream)
--{
--	struct snd_soc_pcm_runtime *rtd = substream->private_data;
--	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
--
--	switch (cpu_dai->id) {
--	case WSA_CODEC_DMA_RX_0:
--	case WSA_CODEC_DMA_RX_1:
--	case RX_CODEC_DMA_RX_0:
--	case RX_CODEC_DMA_RX_1:
--	case TX_CODEC_DMA_TX_0:
--	case TX_CODEC_DMA_TX_1:
--	case TX_CODEC_DMA_TX_2:
--	case TX_CODEC_DMA_TX_3:
--		return sm8250_snd_wsa_dma_prepare(substream);
--	default:
--		break;
--	}
--
--	return 0;
-+	return qcom_snd_sdw_prepare(substream, sruntime,
-+				    &data->stream_prepared[cpu_dai->id]);
- }
- 
- static int sm8250_snd_hw_free(struct snd_pcm_substream *substream)
-@@ -216,26 +96,8 @@ static int sm8250_snd_hw_free(struct snd_pcm_substream *substream)
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
- 	struct sdw_stream_runtime *sruntime = data->sruntime[cpu_dai->id];
- 
--	switch (cpu_dai->id) {
--	case WSA_CODEC_DMA_RX_0:
--	case WSA_CODEC_DMA_RX_1:
--	case RX_CODEC_DMA_RX_0:
--	case RX_CODEC_DMA_RX_1:
--	case TX_CODEC_DMA_TX_0:
--	case TX_CODEC_DMA_TX_1:
--	case TX_CODEC_DMA_TX_2:
--	case TX_CODEC_DMA_TX_3:
--		if (sruntime && data->stream_prepared[cpu_dai->id]) {
--			sdw_disable_stream(sruntime);
--			sdw_deprepare_stream(sruntime);
--			data->stream_prepared[cpu_dai->id] = false;
--		}
--		break;
--	default:
--		break;
--	}
--
--	return 0;
-+	return qcom_snd_sdw_hw_free(substream, sruntime,
-+				    &data->stream_prepared[cpu_dai->id]);
- }
- 
- static const struct snd_soc_ops sm8250_be_ops = {
+diff --git a/arch/arm/configs/keystone_defconfig b/arch/arm/configs/keystone_defconfig
+index 97f958d55019..4a5b9adbf2a1 100644
+--- a/arch/arm/configs/keystone_defconfig
++++ b/arch/arm/configs/keystone_defconfig
+@@ -152,7 +152,6 @@ CONFIG_SPI=y
+ CONFIG_SPI_CADENCE_QUADSPI=y
+ CONFIG_SPI_DAVINCI=y
+ CONFIG_SPI_SPIDEV=y
+-CONFIG_PTP_1588_CLOCK=y
+ CONFIG_PINCTRL_SINGLE=y
+ CONFIG_GPIOLIB=y
+ CONFIG_GPIO_SYSFS=y
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index b3669cf855b3..a523591798cb 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -462,7 +462,6 @@ CONFIG_SPI_TEGRA20_SLINK=y
+ CONFIG_SPI_XILINX=y
+ CONFIG_SPI_SPIDEV=y
+ CONFIG_SPMI=y
+-CONFIG_PTP_1588_CLOCK=y
+ CONFIG_PINCTRL_AS3722=y
+ CONFIG_PINCTRL_MICROCHIP_SGPIO=y
+ CONFIG_PINCTRL_OCELOT=y
+diff --git a/arch/arm/configs/omap2plus_defconfig b/arch/arm/configs/omap2plus_defconfig
+index 89cda0877c52..39c89576ab2b 100644
+--- a/arch/arm/configs/omap2plus_defconfig
++++ b/arch/arm/configs/omap2plus_defconfig
+@@ -428,7 +428,6 @@ CONFIG_SPI_TI_QSPI=m
+ CONFIG_HSI=m
+ CONFIG_OMAP_SSI=m
+ CONFIG_SSI_PROTOCOL=m
+-CONFIG_PTP_1588_CLOCK=y
+ CONFIG_PINCTRL_SINGLE=y
+ CONFIG_DEBUG_GPIO=y
+ CONFIG_GPIO_SYSFS=y
 -- 
-2.21.0
+2.29.2
 
