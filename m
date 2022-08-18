@@ -2,237 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D96DC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2CCC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343933AbiHRPez (ORCPT
+        id S1343802AbiHRPmC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
+        Thu, 18 Aug 2022 11:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343842AbiHRPet (ORCPT
+        with ESMTP id S245389AbiHRPl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:34:49 -0400
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C7AAA4F2
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:34:48 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.west.internal (Postfix) with ESMTP id E71C52B05E12;
-        Thu, 18 Aug 2022 11:34:45 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 18 Aug 2022 11:34:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1660836885; x=1660844085; bh=GAUFg7YBUW
-        3KZkhSrcZm39FqAMhooeWFavdqBj/boSc=; b=S2d51Isqq1Zfi+AxajatuXg8ye
-        15pL9Ze1gddbSMyun1wfS4cpEKeWIg4QYxg+xB0iFEfetn6vHYqxlf9WzmGGlN+s
-        TZeMN7EQp1GkuStXBnZG2qlTccm/X0PyJGud3p7yM4we7DLrGm8Jc+3ApxtbKo/+
-        oRilxp1otV1Cs0FMSDy/TtSuG0zWrrwGG+cE//gT5H8nuKD6eLXrW1yuFpKXzhzh
-        FW+C+gqSSGisQR79QdKt3IGOX74xDqhW+Dg6FS98tGt/7FEXDb+TC497+mHp3Wvu
-        jjBF2cpTN/VZh7sjofWUHdRAkdxgOo5ZG0aHPNctYFZ+VNxh6RXq+H6FhtOg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660836885; x=1660844085; bh=GAUFg7YBUW3KZkhSrcZm39FqAMho
-        oeWFavdqBj/boSc=; b=Kxp5Lqvz6W8BPZZDJaChn+WcunwvHAs4cXxk2ZFCRpvL
-        aT3+o9AcUrC8ErQZQV+kv2UUd/cXjqJB2OsnxNHU+hrtzDhOAJMp4nL/nkTVn+cn
-        8Fbockon/GbHKurPtThGGaGw3Q2D8K93WX1jv+OPq0HgUJgCIfVKuDNWRZU8qdBp
-        T8dD5c1L6YpEiKRFd410q6fiT9N//vW6a7kweZBnAVv2xLMB2u5bvmcmqkrElLuL
-        zw8YK4aMx1w2/Kpe/fJ498Xv7NcbRt9K6S7u2eod5uPv3tcJ2o4D3co6M0dAE9AM
-        ORR5ViHu7KGwjv7gjBzjr1QZTFQo9PKkxeYU3HuAgA==
-X-ME-Sender: <xms:FVz-Yug9FW1woL7geWS8qqmoJDRnUp2aHH8FWOvGDW9X1lXHCPKRIA>
-    <xme:FVz-YvDnfxGsKJFIlVW5CFZUSRqHguTsiMW5PcPFcZpHPkKBr43UIuUSY_i0LUdUR
-    -UPlqpeAAdNhcDiAgQ>
-X-ME-Received: <xmr:FVz-YmG5d0ZOMXF9BX3k7krzrQewCtIz5ufXWSmnn5wtrZ5TVJpwJBHKZQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehledgieehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpedtleekjeeiudefvdfhieffteelhfeivdeliefgieeugffhvdelieffjeei
-    geetjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
-    hh
-X-ME-Proxy: <xmx:FVz-YnSA1tnju4aJHmcDxqgaCg3kxgbqJmQmatK29GNwFAYvcrOnbQ>
-    <xmx:FVz-Yryt8Lby_Lowy0-0hF0VUexMokyzkCzIMKWWqHs-NuY9_dz17w>
-    <xmx:FVz-Yl59x9JsMTie6vtN2IWfBwScA_VRZXPWWvzDgiavVT6Gj1TLIA>
-    <xmx:FVz-YihsR4wuttjVpHMeeXUZHnq2FrLkRyXyJv6xL_QIAttgzO9q2sMHQR0>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 18 Aug 2022 11:34:44 -0400 (EDT)
-Date:   Thu, 18 Aug 2022 17:34:42 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>
-Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
-Message-ID: <20220818153442.u4knumkfbe7j6zj3@houat>
-References: <20220816154956.pkdpxmmw27mia5ix@houat>
- <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
- <20220817074710.w4c4xwj7edly2b5p@houat>
- <CAMuHMdXeBakWr6geOWGxnjQYaU9Pi4tRvVFFtubyMJZTT2nPnw@mail.gmail.com>
- <20220817111454.pn2iltvyo2drebq7@houat>
- <CAMuHMdU57g1rNoLo65jhLK8mk4YkNEbMz1E7XKWk2dnCxTr=gg@mail.gmail.com>
- <20220817131854.jwmhqvhfhp77bbr3@houat>
- <CAMuHMdXrfH9MArXesfNCvqayiq17u7XaqtSvXTNt4V10=obSHQ@mail.gmail.com>
- <20220818145436.vqojnhmvhjxdzooe@houat>
- <CAMuHMdW5kTUeg59fym7QxfN5oisTZHWbiAPeSYKJVShZWduJcA@mail.gmail.com>
+        Thu, 18 Aug 2022 11:41:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EB0B8F18;
+        Thu, 18 Aug 2022 08:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=TCONSFUsRiagPq8Y40nHQ8cdEkcQObBuoVvqxp3VPVI=; b=XTdRIFx7hhK+o9Af9S2VM8waHw
+        Z94lt+y/o42hKc3JZfKXkuz+9X6tzBKTxATr1wZY4NMlSWHsuKlx0CylpmcA2Gqet2WcfpY3p+Iau
+        L4bQF8cG8/cscxcO+nge6zaM9n34xUJY+p/PL2gDs/14zidYwznu9IcAZFIxBUeq4g/M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oOheR-00Dldv-Kj; Thu, 18 Aug 2022 17:41:43 +0200
+Date:   Thu, 18 Aug 2022 17:41:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Bhadram Varka <vbhadram@nvidia.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v3 00/11] net: phy: Add support for rate adaptation
+Message-ID: <Yv5dt1Scht2Tmdfg@lunn.ch>
+References: <20220725153730.2604096-1-sean.anderson@seco.com>
+ <f6707ee4-b735-52ad-4f02-be2f58eb3f9b@seco.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zlk7q2pcgbstxof7"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdW5kTUeg59fym7QxfN5oisTZHWbiAPeSYKJVShZWduJcA@mail.gmail.com>
+In-Reply-To: <f6707ee4-b735-52ad-4f02-be2f58eb3f9b@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Aug 18, 2022 at 11:21:10AM -0400, Sean Anderson wrote:
+> 
+> 
+> On 7/25/22 11:37 AM, Sean Anderson wrote:
+> > This adds support for phy rate adaptation: when a phy adapts between
+> > differing phy interface and link speeds. It was originally submitted as
+> > part of [1], which is considered "v1" of this series.
+ 
+> ping?
+> 
+> Are there any comments on this series other than about the tags for patch 6?
 
---zlk7q2pcgbstxof7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Anything that old is going to need a rebase. So you may as well repost
+rather than ping.
 
-On Thu, Aug 18, 2022 at 05:20:42PM +0200, Geert Uytterhoeven wrote:
-> Hi Maxime,
->=20
-> On Thu, Aug 18, 2022 at 4:54 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> > On Wed, Aug 17, 2022 at 04:04:24PM +0200, Geert Uytterhoeven wrote:
-> > > On Wed, Aug 17, 2022 at 3:19 PM Maxime Ripard <maxime@cerno.tech> wro=
-te:
-> > > > On Wed, Aug 17, 2022 at 03:05:52PM +0200, Geert Uytterhoeven wrote:
-> > > > > On Wed, Aug 17, 2022 at 1:15 PM Maxime Ripard <maxime@cerno.tech>=
- wrote:
-> > > > > > On Wed, Aug 17, 2022 at 10:35:07AM +0200, Geert Uytterhoeven wr=
-ote:
-> > > > > > > On Wed, Aug 17, 2022 at 9:47 AM Maxime Ripard <maxime@cerno.t=
-ech> wrote:
-> > > > > > > > On Wed, Aug 17, 2022 at 09:31:18AM +0200, Geert Uytterhoeve=
-n wrote:
-> > > > > > > > > On Tue, Aug 16, 2022 at 5:50 PM Maxime Ripard <maxime@cer=
-no.tech> wrote:
-> > > > > > > > > > On Tue, Aug 16, 2022 at 04:43:44PM +0200, Geert Uytterh=
-oeven wrote:
-> > > > > > > > > > > > > > > Either you have to add them here (e.g. "hd720=
-p50" and "hd720p60"), or
-> > > > > > > > > > > > > > > handle them through "@<refresh>".  The latter=
- would impact "[PATCH v1
-> > > > > > > > > > > > > > > 09/35] drm/modes: Move named modes parsing to=
- a separate function", as
-> > > > > > > > > > > > > > > currently a named mode and a refresh rate can=
-'t be specified both.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > I think the former would make more sense. It si=
-mplifies a bit the
-> > > > > > > > > > > > > > parser, and we're going to use a named mode any=
-way.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > As "[PATCH v1 34/35] drm/modes: Introduce the=
- tv_mode property as a
-> > > > > > > > > > > > > > > command-line option" uses a separate "tv_mode=
-" option, and not the main
-> > > > > > > > > > > > > > > mode name, I think you want to add them here.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > It's a separate story I think, we could have a =
-named mode hd720p50,
-> > > > > > > > > > > > > > which would be equivalent to 1280x720,tv_mode=
-=3Dhd720p
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > So where's the field rate in "1280x720,tv_mode=3D=
-hd720p"?
-> > > > > > > > > > > >
-> > > > > > > > > > > > Yeah, sorry I meant 1280x720@50,tv_mode=3Dhd720p
-> > > > > > > > > > >
-> > > > > > > > > > > Above you said "I think the former would make more se=
-nse", so that
-> > > > > > > > > > > should be "1280x720,tv_mode=3Dhd720p50"?
-> > > > > > > > > >
-> > > > > > > > > > No, 720p at 50Hz would be either hd720p50 or 1280x720@5=
-0,tv_mode=3Dhd720p
-> > > > > > > > > > and 60Hz would be hd720p60 or 1280x720@60,tv_mode=3Dhd7=
-20p
-> > > > > > > > >
-> > > > > > > > > I disagree: hd720p50 and hd720p60 are different TV modes.
-> > > > > > > >
-> > > > > > > > I agree, and I don't see how that command-line doesn't expr=
-ess that?
-> > > > > > >
-> > > > > > > Oh, I see what you mean: yes, it expresses that.
-> > > > > > > But it is inconsistent with the NTSC/PAL/SECAM/hd{480,576}[ip=
-] modes,
-> > > > > > > where the TV mode specifies both number of lines and frame ra=
-te.
-> > > > > >
-> > > > > > Only if we're using a named mode, and naming is hard :)
-> > > > >
-> > > > > That's not true: "640x480,tv_mode=3DPAL-N" would give me a mode w=
-ith
-> > > > > 625 lines and 25 frames/s, "640x480,tv_mode=3DPAL-M" would give m=
-e a
-> > > > > mode with 525 lines and 30 frames/s.
-> > > >
-> > > > In that series, "640x480,tv_mode=3DPAL-N" would be rejected as inva=
-lid:
-> > > >
-> > > > https://lore.kernel.org/dri-devel/20220728-rpi-analog-tv-properties=
--v1-14-3d53ae722097@cerno.tech/
-> > >
-> > > It would become supported once the ideas from thread "[PATCH v1 04/35]
-> > > drm/modes: Introduce 480i and 576i modes" are implemented...
-> >
-> > Indeed, but I'm still not sure what your concern is here.
-> > "640x480,tv_mode=3DPAL-N" and "640x480,tv_mode=3DPAL-M" are both fairly
-> > obvious.
-> >
-> > You were initially saying that you had concern over the inconsistency of
-> > NTSC/PAL/SECAM where the TV mode would specify a number of lines and
-> > frame rate, but hd720p50 also specifies a number of line and frame rate?
->=20
-> My concern is that you want to call the TV mode "hd720p", which
-> does not dictate the frame rate.
-> I would like to have both "720p50" and "720p60", as they do dictate
-> the frame rate, like all the non-hd modes.
-
-But they don't?
-
-The refresh rate is part of the drm_display_mode, whereas that property
-is metadata and entirely separate from the display mode.
-
-You can even change it without changing the mode at all
-
-Maxime
-
---zlk7q2pcgbstxof7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYv5cEgAKCRDj7w1vZxhR
-xY/lAP4ouRoHdY9bHKZSp+wtASk8iZSUl11mDM3E2bLvkDHbXwEAlugNW44dB/5n
-SVBu8xcbWOl4IqoJVVeIxrn04MiX3ww=
-=N3ll
------END PGP SIGNATURE-----
-
---zlk7q2pcgbstxof7--
+       Andrew
