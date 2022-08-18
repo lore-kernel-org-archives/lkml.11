@@ -2,163 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB2DC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918A9C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244143AbiHRNjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46522 "EHLO
+        id S245043AbiHRNj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244637AbiHRNjJ (ORCPT
+        with ESMTP id S245124AbiHRNjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:39:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF67757E34;
+        Thu, 18 Aug 2022 09:39:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D7657E35;
         Thu, 18 Aug 2022 06:39:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C28E61683;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39361616A0;
         Thu, 18 Aug 2022 13:39:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63AFDC433C1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B27C43140;
         Thu, 18 Aug 2022 13:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660829947;
-        bh=j+GR3xNPkOEEZIReKsoLX51DZZCpOm55zjpW98JIWhQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VDVU+urmE+ZEW42chc83KfdXmTEeVbpDiMmU4yB93fu+QIRGvFQfARyMVv3qM2fky
-         UvGXmZB19CSQTd4YnWzzIYLRLq7kTaZLQTZcEgrjVK1jcXpxPGMbyr0j/aEMALUHmC
-         8uZCuSH40n2NrqlRv8rJEuoTb7vUQnX28htCLpfE/6cxZPPobhpbl7rj3Vc/DbyQpB
-         NxEdu5nr9wRACHQBh1eCme//Ovk84dqqiYsiVMqOvEpnm0ZIOXUR+B6U7CjUudGIa9
-         c5Pf5QbVK59YJkgLO6FkEYBPCDH2kyTwxxxucabhBYm3UHKWtEdtHLM3PbqYCIn8it
-         nDhsz5L2kppAQ==
+        bh=/u+oKcPW6ChqPyJvj84EmuaOgNhqaFaZAyoGnBvxnqY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hwvQJkMP7sKAup+IMRAOJNCY/nR4UeVdNyY2tX4e7ZQsZanBK+lHhogPva3aYdsDG
+         gy4izYE4OrQgFZNdfjd2LTIV6emUljpX9KX4Tk3bc3PlsFIahl0GnFkr/UBtauykhM
+         /Npqeb0StGezUcBbZobOdkRiHVrag8XH80kgaLEee/yPQHO2ldQHgFMsuUUEpDCRuX
+         P0OV8x9XNvESfil84IBv6N3Iu+Su0eCttqi52LYDgwofn7qQIAwGpswtyuTeLnX/dJ
+         /iGU/k8CvnbTOMskvWketZ4l/IRVBca6b0gz60lc9sSo79Rbvhkq4zDWVo8MiCRHZk
+         3y/fm7ozACUeg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oOfjl-00AY7B-0o;
+        id 1oOfjl-00AY7V-CG;
         Thu, 18 Aug 2022 15:39:05 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Akira Yokosawa <akiyks@gmail.com>, Alex Shi <alexs@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        David Howells <dhowells@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Kosuke Fujimoto <fujimotokosuke0@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Leo Yan <leo.yan@linaro.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Madhavan Srinivasan <maddy@in.ibm.com>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
         Mike Leach <mike.leach@linaro.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
         Rob Herring <robh@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Tsugikazu Shibata <shibata@linuxfoundation.org>,
-        Wu XiangCheng <bobwxc@email.cn>, Xiubo Li <xiubli@redhat.com>,
-        Yanteng Si <siyanteng@loongson.cn>, coresight@lists.linaro.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-cachefs@redhat.com,
-        linux-mm@kvack.org
-Subject: [PATCH 00/13] Fix documentation build warnings against 6.0-rc1
-Date:   Thu, 18 Aug 2022 15:38:46 +0200
-Message-Id: <cover.1660829433.git.mchehab@kernel.org>
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 05/13] dt-bindings: arm: update arm,coresight-cpu-debug.yaml reference
+Date:   Thu, 18 Aug 2022 15:38:51 +0200
+Message-Id: <20815dbff3d27f5d3e6876363f052d2a08ad2e72.1660829433.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <cover.1660829433.git.mchehab@kernel.org>
+References: <cover.1660829433.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jon,
+Changeset 66d052047ca8 ("dt-bindings: arm: Convert CoreSight CPU debug to DT schema")
+renamed: Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
+to: Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml.
 
-This series is against 6.0-rc1, so it should apply fine on the top of your tree.
+Update its cross-reference accordingly.
 
-After applying one fix sent to ACPI:
+Fixes: 66d052047ca8 ("dt-bindings: arm: Convert CoreSight CPU debug to DT schema")
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-https://lore.kernel.org/linux-acpi/20220818055156.7456-1-sakari.ailus@linux.intel.com/T/#u
+See [PATCH 00/13] at: https://lore.kernel.org/all/cover.1660829433.git.mchehab@kernel.org/
 
-make htmldocs (with Sphinx 2.4.4) produces a very clean result:
-:
+ Documentation/trace/coresight/coresight-cpu-debug.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	Warning: Documentation/devicetree/bindings/regulator/siliconmitus,sm5703
--regulator.yaml references a file that doesn't exist: Documentation/devicetree/b
-indings/mfd/siliconmitus,sm5703.yaml
-	  SPHINX  htmldocs --> file:///new_devel/v4l/docs/Documentation/output
-	  PARSE   include/uapi/linux/dvb/ca.h
-	  PARSE   include/uapi/linux/dvb/dmx.h
-	  PARSE   include/uapi/linux/dvb/frontend.h
-	  PARSE   include/uapi/linux/dvb/net.h
-	  PARSE   include/uapi/linux/videodev2.h
-	  PARSE   include/uapi/linux/media.h
-	  PARSE   include/uapi/linux/cec.h
-	  PARSE   include/uapi/linux/lirc.h
-	Using sphinx_rtd_theme theme
-
-The only warning is due to a driver that got its upstream way for MFD, but it seems that
-the corresponding regulator driver has lost its way.
-
-If we can fix such warning, we could add a sort of "Werror" for:
-
-	- some ABI issues;
-	- kernel-doc warnings/errors;
-	- broken kernel-doc warnings.
-
-Although there will still have Sphinx warnings that can come up from various sources,
-this could help to keep documentation on a better shape, as time goes by.
-
-Regards,
-Mauro
-
-
-Mauro Carvalho Chehab (13):
-  scripts: kernel-doc: add support for EXPORT_SYMBOL variants
-  docs: update vmemmap_dedup.rst reference
-  docs: ja_JP: remove SubmittingPatches
-  docs: zh_CN: remove references to rust documentation
-  dt-bindings: arm: update arm,coresight-cpu-debug.yaml reference
-  Documentation: coresight: fix a documentation build warning
-  MAINTAINERS: fix wildcard for mfd da90* files
-  MAINTAINERS: fix a typo for hpe,gxp-spifi.yaml
-  ABI: sysfs-bus-nvdimm: fix a doc build warning
-  docs: leds: add leds-qcom-lpg.rst to the index file
-  fscache: fix kernel-doc markup on two functions
-  serial: document start_rx member at struct uart_ops
-  fs/dcache: fix a kernel-doc markup
-
- Documentation/ABI/testing/sysfs-bus-nvdimm    |   2 +
- Documentation/leds/index.rst                  |   1 +
- .../trace/coresight/coresight-cpu-debug.rst   |   2 +-
- Documentation/trace/coresight/coresight.rst   |   2 +-
- .../translations/ja_JP/SubmittingPatches      | 722 ------------------
- .../zh_CN/doc-guide/kernel-doc.rst            |   2 -
- MAINTAINERS                                   |   4 +-
- drivers/gpu/drm/scheduler/sched_main.c        |   1 +
- include/drm/gpu_scheduler.h                   |   1 +
- include/linux/dcache.h                        |  10 +-
- include/linux/fscache.h                       |   4 +-
- include/linux/serial_core.h                   |   8 +
- mm/hugetlb_vmemmap.h                          |   2 +-
- scripts/kernel-doc                            |   8 +-
- 14 files changed, 33 insertions(+), 736 deletions(-)
- delete mode 100644 Documentation/translations/ja_JP/SubmittingPatches
-
+diff --git a/Documentation/trace/coresight/coresight-cpu-debug.rst b/Documentation/trace/coresight/coresight-cpu-debug.rst
+index 993dd294b81b..79bbe587e5e8 100644
+--- a/Documentation/trace/coresight/coresight-cpu-debug.rst
++++ b/Documentation/trace/coresight/coresight-cpu-debug.rst
+@@ -117,7 +117,7 @@ divide into below cases:
+ Device Tree Bindings
+ --------------------
+ 
+-See Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt for details.
++See Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml for details.
+ 
+ 
+ How to use the module
 -- 
 2.37.1
-
 
