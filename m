@@ -2,473 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A12CC25B0E
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE8BFC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347094AbiHRVX5 (ORCPT
+        id S1346986AbiHRVYD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
+        Thu, 18 Aug 2022 17:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346801AbiHRVXh (ORCPT
+        with ESMTP id S1346875AbiHRVXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:23:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C332166123
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19BAAB82413
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 21:16:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 248ACC433B5;
-        Thu, 18 Aug 2022 21:15:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660857361;
-        bh=1bSqISasPZGY6PvxNAo+nr0qFPcX9eKhG4TNgnhRS9s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PW9vLXltNA8LV9fjGJLpxAfQNqkCvJOsyKIZLtF8p/pHS92NtJI21A/+rCX1G679v
-         jqDWvhklqxfmr/rEpw2x1/ugJX2W3gaZkdQV+4xrg55tl79aweQ3BcPZ80NleG7BQl
-         UAe51YCgtLYQOp+cTnR2KEnTWRkF+S/h6WNYAOBI4CaYUsIIIoDP1A/6PHCukgDh0P
-         czBFKIjBIwi7Xd+w7a+quoN5hG9JyjfQSjRr+ycTNOlbzPVlv8AYcsVf6YKCJgXvfS
-         ZJgkonO6CW7XRlY0oFRh6HYszzv8OXsLBMpbFDuzqypY/NhCO6K4o+sWy70e3TqOTL
-         he/WY/hh07u4Q==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Christoph Hellwig <hch@lst.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 1/4] ARM: footbridge: remove addin mode
-Date:   Thu, 18 Aug 2022 23:15:47 +0200
-Message-Id: <20220818211550.3272321-2-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220818211550.3272321-1-arnd@kernel.org>
-References: <20220818211550.3272321-1-arnd@kernel.org>
-MIME-Version: 1.0
+        Thu, 18 Aug 2022 17:23:38 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2057FE992F
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:36 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id y4so2545154plb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:16:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc;
+        bh=7oIe7UPglhSMlfQFr1TuN0Ln/s1ah6Fw09rZLyKnfrQ=;
+        b=ungHvqmzyqGDAu/fP+qJLsFe+D3rJ3m/3zy0Rh3o0MRNuWupqyMOrkA+PYarA052+7
+         7dTwrvjrvy6RHLuRqB7SbLWRgUUlkcxvev7/eRPXFIt+CwvkRpvyL3AawVEk4XKrtbKW
+         gRzM8f0ELaJzv+pMnSUoK32ypwoveWAoYb2kMOm9rNiNHJdjTvxdDdvTUvhqPfLGFo5O
+         DqRDgAQXLAOylGrPo4kyVRFwbILOcx32ECSyH5M9f1WTbJvk4gjJaTpJKgcuveMzj+vK
+         o1aoyEnuA9EHaJWfG7gEKvUKXKId1G9CvDW7hIfs2t0sBmas/RRu0C/IR7cip2KSX+t1
+         lmBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc;
+        bh=7oIe7UPglhSMlfQFr1TuN0Ln/s1ah6Fw09rZLyKnfrQ=;
+        b=lzKimjTayv70mPpAfEnc8FljV70eGX6JFN0taMYFh604Q1k8OACQBFJyRkkAHNQMhd
+         /rvysFLBDU0jC8wlfgRV7VsGLRzJkW96QyLoG/MCLQEhkWHBGjU617UFoUPhFQb5+cqE
+         /4mJuaayQ0uNOYEWGdmwziMgg8ZA6Jlz9EYFnaJNHOjkZ0UI4LiaAbgk2PZKrU8+ONAO
+         AJrwemvgJ49qsHNBeWTioG0eESqJ9sq9r5H2B9a7w85wZy5OvUHx/I5KXOMKZrdbnoY4
+         R2lKb6AxJCEK4w2Dq2vbmuQE1GAFnOYHAQq436ckpscyAknw9nm2BsjTV77AVTdRO5vD
+         tViw==
+X-Gm-Message-State: ACgBeo39njvTwU9NUosuENz6g1mVH/fyj0F7YwxrniXjHQPiL5MKhRxO
+        2ssgdhLlGghwHNNYnScgG/AgGQ==
+X-Google-Smtp-Source: AA6agR439SG/RMOn6SpIyP/60Ikavt0l/7rw5mA3CHrjuHRMKlMRmkLZqHOLnA02psRCFa+63TC2MA==
+X-Received: by 2002:a17:902:cf43:b0:172:86f3:586a with SMTP id e3-20020a170902cf4300b0017286f3586amr4453826plg.71.1660857355746;
+        Thu, 18 Aug 2022 14:15:55 -0700 (PDT)
+Received: from localhost ([50.221.140.186])
+        by smtp.gmail.com with ESMTPSA id z17-20020aa79591000000b0052aaff953aesm2113454pfj.115.2022.08.18.14.15.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 14:15:55 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 14:15:55 -0700 (PDT)
+X-Google-Original-Date: Thu, 18 Aug 2022 14:15:53 PDT (-0700)
+Subject:     Re: [GIT PULL] Fix RISC-V's arch-topology reporting
+In-Reply-To: <994ad6ea-5d3f-b3d1-e0e5-883530ebaf2a@microchip.com>
+CC:     sudeep.holla@arm.com, catalin.marinas@arm.com,
+        Will Deacon <will@kernel.org>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Conor.Dooley@microchip.com,
+        linux-arm-kernel@lists.infradead.org, atishp@atishpatra.org,
+        Brice.Goglin@inria.fr, Greg KH <gregkh@linuxfoundation.org>
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     Conor.Dooley@microchip.com
+Message-ID: <mhng-a7823b28-ca11-43bc-9564-2eb7d607d288@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Thu, 18 Aug 2022 14:10:54 PDT (-0700), Conor.Dooley@microchip.com wrote:
+> 
+> 
+> On 18/08/2022 22:03, Palmer Dabbelt wrote:
+>> On Mon, 15 Aug 2022 15:14:55 PDT (-0700), Conor.Dooley@microchip.com wrote:
+>>> Hey Will/Palmer/Sudeep,
+>>>
+>>> Catalin suggested [0] dropping the CC: stable for the arm64 patch and
+>>> instead making it a specific prereq of the RISC-V patch & making a PR,
+>>> so here we are.. I was still up when -rc1 came out so pushed it last
+>>> night to get the test coverage, but LKP seems to not have reported a
+>>> build success since early on the 13th so not holding my horses! I built
+>>> it again for both ARMs and RISC-V myself.
+>>>
+>>> I tagged it tonight, so it's on conor/linux.git as riscv-topo-on-6.0-rc1
+>>> with the prereq specified.
+>>>
+>>> Not sure if you want to merge this too Sudeep or if that's up to Greg?
+>> 
+>> It's a little bit vague what you're asking for here, so I'm just
+>> going to kind of guessing here but this on riscv/for-next.  I'm not
+>> sure if you were looking for me to just merge the arch/riscv bits or
+>> if this should be on fixes (just looking at the patch makes it look
+>> like it should be), but I don't want to send up some arm64 code to
+>> fixes without it being pretty explicit that I should do so
+> 
+> Ahh sorry, I completely forgot to mention that Will said "for 5.21" in
+> his response to my original patchset. for-next sounds fine to me - all
+> in-tree devicetrees had the optional properties added to them that solve
+> the issue - and they were AUTOSEL'ed too from what I can see.
 
-This does not appear to have been used in many years, we can
-kill off some of the uglier code.
+OK, sounds like we're good then.
 
-Among other things, it avoids a randconfig issue when both modes
-are disabled:
-
-arch/arm/mach-footbridge/common.c:149:24: error: 'ebsa285_host_io_desc' defined but not used [-Werror=unused-variable]
-  149 | static struct map_desc ebsa285_host_io_desc[] __initdata = {
-      |                        ^~~~~~~~~~~~~~~~~~~~
-arch/arm/mach-footbridge/common.c:136:24: error: 'fb_common_io_desc' defined but not used [-Werror=unused-variable]
-  136 | static struct map_desc fb_common_io_desc[] __initdata = {
-      |                        ^~~~~~~~~~~~~~~~~
-
-The recently added phys_to_dma() functions are now trivial and
-could probably be removed again as a follow-up, if anyone knows
-how.
-
-Cc: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/include/asm/hardware/dec21285.h      | 13 ----
- arch/arm/mach-footbridge/Kconfig              | 28 +------
- arch/arm/mach-footbridge/Makefile             |  2 +-
- arch/arm/mach-footbridge/common.c             | 73 ++-----------------
- arch/arm/mach-footbridge/dc21285.c            | 61 +++++-----------
- arch/arm/mach-footbridge/dma.c                |  3 +-
- .../arm/mach-footbridge/include/mach/memory.h | 22 ------
- arch/arm/mach-footbridge/isa.c                |  3 -
- 8 files changed, 30 insertions(+), 175 deletions(-)
-
-diff --git a/arch/arm/include/asm/hardware/dec21285.h b/arch/arm/include/asm/hardware/dec21285.h
-index 3f18a56a025d..eee390e8d4dc 100644
---- a/arch/arm/include/asm/hardware/dec21285.h
-+++ b/arch/arm/include/asm/hardware/dec21285.h
-@@ -81,19 +81,6 @@
- #define SA110_CNTL_XCSDIR(x)		((x)<<28)
- #define SA110_CNTL_PCICFN		(1 << 31)
- 
--/*
-- * footbridge_cfn_mode() is used when we want
-- * to check whether we are the central function
-- */
--#define __footbridge_cfn_mode() (*CSR_SA110_CNTL & SA110_CNTL_PCICFN)
--#if defined(CONFIG_FOOTBRIDGE_HOST) && defined(CONFIG_FOOTBRIDGE_ADDIN)
--#define footbridge_cfn_mode() __footbridge_cfn_mode()
--#elif defined(CONFIG_FOOTBRIDGE_HOST)
--#define footbridge_cfn_mode() (1)
--#else
--#define footbridge_cfn_mode() (0)
--#endif
--
- #define CSR_PCIADDR_EXTN	DC21285_IO(0x0140)
- #define CSR_PREFETCHMEMRANGE	DC21285_IO(0x0144)
- #define CSR_XBUS_CYCLE		DC21285_IO(0x0148)
-diff --git a/arch/arm/mach-footbridge/Kconfig b/arch/arm/mach-footbridge/Kconfig
-index acc10b1caa69..3497ea8e91e3 100644
---- a/arch/arm/mach-footbridge/Kconfig
-+++ b/arch/arm/mach-footbridge/Kconfig
-@@ -8,31 +8,17 @@ config ARCH_CATS
- 	depends on UNUSED_BOARD_FILES
- 	select CLKEVT_I8253
- 	select CLKSRC_I8253
--	select FOOTBRIDGE_HOST
- 	select ISA
--	select ISA_DMA
- 	select FORCE_PCI
- 	help
- 	  Say Y here if you intend to run this kernel on the CATS.
- 
- 	  Saying N will reduce the size of the Footbridge kernel.
- 
--config ARCH_EBSA285_ADDIN
--	bool "EBSA285 (addin mode)"
--	select ARCH_EBSA285
--	select FOOTBRIDGE_ADDIN
--	help
--	  Say Y here if you intend to run this kernel on the EBSA285 card
--	  in addin mode.
--
--	  Saying N will reduce the size of the Footbridge kernel.
--
- config ARCH_EBSA285_HOST
- 	bool "EBSA285 (host mode)"
- 	select ARCH_EBSA285
--	select FOOTBRIDGE_HOST
- 	select ISA
--	select ISA_DMA
- 	select ARCH_MAY_HAVE_PC_FDC
- 	select FORCE_PCI
- 	help
-@@ -45,9 +31,7 @@ config ARCH_NETWINDER
- 	bool "NetWinder"
- 	select CLKEVT_I8253
- 	select CLKSRC_I8253
--	select FOOTBRIDGE_HOST
- 	select ISA
--	select ISA_DMA
- 	select FORCE_PCI
- 	help
- 	  Say Y here if you intend to run this kernel on the Rebel.COM
-@@ -61,19 +45,11 @@ endmenu
- 
- # Footbridge support
- config FOOTBRIDGE
-+	def_bool y
- 	select ARCH_HAS_PHYS_TO_DMA
--	bool
--
--# Footbridge in host mode
--config FOOTBRIDGE_HOST
--	bool
- 	select ARCH_MIGHT_HAVE_PC_SERIO
-+	select ISA_DMA
- 
--# Footbridge in addin mode
--config FOOTBRIDGE_ADDIN
--	bool
--
--# EBSA285 board in either host or addin mode
- config ARCH_EBSA285
- 	bool
- 
-diff --git a/arch/arm/mach-footbridge/Makefile b/arch/arm/mach-footbridge/Makefile
-index 6262993c0555..30bae6684dce 100644
---- a/arch/arm/mach-footbridge/Makefile
-+++ b/arch/arm/mach-footbridge/Makefile
-@@ -9,7 +9,7 @@ obj-y			:= common.o dma.o isa-irq.o
- 
- pci-y			+= dc21285.o
- pci-$(CONFIG_ARCH_CATS) += cats-pci.o
--pci-$(CONFIG_ARCH_EBSA285_HOST) += ebsa285-pci.o
-+pci-$(CONFIG_ARCH_EBSA285) += ebsa285-pci.o
- pci-$(CONFIG_ARCH_NETWINDER) += netwinder-pci.o
- 
- obj-$(CONFIG_ARCH_CATS) += cats-hw.o isa-timer.o
-diff --git a/arch/arm/mach-footbridge/common.c b/arch/arm/mach-footbridge/common.c
-index 5020eb96b025..9483eccea5ae 100644
---- a/arch/arm/mach-footbridge/common.c
-+++ b/arch/arm/mach-footbridge/common.c
-@@ -198,9 +198,6 @@ void __init footbridge_init_irq(void)
- 
- 	__fb_init_irq();
- 
--	if (!footbridge_cfn_mode())
--		return;
--
- 	if (machine_is_ebsa285())
- 		/* The following is dependent on which slot
- 		 * you plug the Southbridge card into.  We
-@@ -221,21 +218,13 @@ void __init footbridge_init_irq(void)
-  * commented out since there is a "No Fix" problem with it.  Not mapping
-  * it means that we have extra bullet protection on our feet.
-  */
--static struct map_desc fb_common_io_desc[] __initdata = {
-+static struct map_desc ebsa285_host_io_desc[] __initdata = {
- 	{
- 		.virtual	= ARMCSR_BASE,
- 		.pfn		= __phys_to_pfn(DC21285_ARMCSR_BASE),
- 		.length		= ARMCSR_SIZE,
- 		.type		= MT_DEVICE,
--	}
--};
--
--/*
-- * The mapping when the footbridge is in host mode.  We don't map any of
-- * this when we are in add-in mode.
-- */
--static struct map_desc ebsa285_host_io_desc[] __initdata = {
--#if defined(CONFIG_ARCH_FOOTBRIDGE) && defined(CONFIG_FOOTBRIDGE_HOST)
-+	},
- 	{
- 		.virtual	= PCIMEM_BASE,
- 		.pfn		= __phys_to_pfn(DC21285_PCI_MEM),
-@@ -257,26 +246,12 @@ static struct map_desc ebsa285_host_io_desc[] __initdata = {
- 		.length		= PCIIACK_SIZE,
- 		.type		= MT_DEVICE,
- 	},
--#endif
- };
- 
- void __init footbridge_map_io(void)
- {
--	/*
--	 * Set up the common mapping first; we need this to
--	 * determine whether we're in host mode or not.
--	 */
--	iotable_init(fb_common_io_desc, ARRAY_SIZE(fb_common_io_desc));
--
--	/*
--	 * Now, work out what we've got to map in addition on this
--	 * platform.
--	 */
--	if (footbridge_cfn_mode()) {
--		iotable_init(ebsa285_host_io_desc, ARRAY_SIZE(ebsa285_host_io_desc));
--		pci_map_io_early(__phys_to_pfn(DC21285_PCI_IO));
--	}
--
-+	iotable_init(ebsa285_host_io_desc, ARRAY_SIZE(ebsa285_host_io_desc));
-+	pci_map_io_early(__phys_to_pfn(DC21285_PCI_IO));
- 	vga_base = PCIMEM_BASE;
- }
- 
-@@ -307,48 +282,12 @@ void footbridge_restart(enum reboot_mode mode, const char *cmd)
- 	}
- }
- 
--#ifdef CONFIG_FOOTBRIDGE_ADDIN
--
--static inline unsigned long fb_bus_sdram_offset(void)
--{
--	return *CSR_PCISDRAMBASE & 0xfffffff0;
--}
--
--/*
-- * These two functions convert virtual addresses to PCI addresses and PCI
-- * addresses to virtual addresses.  Note that it is only legal to use these
-- * on memory obtained via get_zeroed_page or kmalloc.
-- */
--unsigned long __virt_to_bus(unsigned long res)
--{
--	WARN_ON(res < PAGE_OFFSET || res >= (unsigned long)high_memory);
--
--	return res + (fb_bus_sdram_offset() - PAGE_OFFSET);
--}
--EXPORT_SYMBOL(__virt_to_bus);
--
--unsigned long __bus_to_virt(unsigned long res)
--{
--	res = res - (fb_bus_sdram_offset() - PAGE_OFFSET);
--
--	WARN_ON(res < PAGE_OFFSET || res >= (unsigned long)high_memory);
--
--	return res;
--}
--EXPORT_SYMBOL(__bus_to_virt);
--#else
--static inline unsigned long fb_bus_sdram_offset(void)
--{
--	return BUS_OFFSET;
--}
--#endif /* CONFIG_FOOTBRIDGE_ADDIN */
--
- dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
--	return paddr + (fb_bus_sdram_offset() - PHYS_OFFSET);
-+	return paddr + (BUS_OFFSET - PHYS_OFFSET);
- }
- 
- phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
- {
--	return dev_addr - (fb_bus_sdram_offset() - PHYS_OFFSET);
-+	return dev_addr - (BUS_OFFSET - PHYS_OFFSET);
- }
-diff --git a/arch/arm/mach-footbridge/dc21285.c b/arch/arm/mach-footbridge/dc21285.c
-index f9713dc561cf..372600bc15c8 100644
---- a/arch/arm/mach-footbridge/dc21285.c
-+++ b/arch/arm/mach-footbridge/dc21285.c
-@@ -245,9 +245,6 @@ int __init dc21285_setup(int nr, struct pci_sys_data *sys)
- {
- 	struct resource *res;
- 
--	if (nr || !footbridge_cfn_mode())
--		return 0;
--
- 	res = kcalloc(2, sizeof(struct resource), GFP_KERNEL);
- 	if (!res) {
- 		printk("out of memory for root bus resources");
-@@ -278,7 +275,6 @@ int __init dc21285_setup(int nr, struct pci_sys_data *sys)
- void __init dc21285_preinit(void)
- {
- 	unsigned int mem_size, mem_mask;
--	int cfn_mode;
- 
- 	pcibios_min_mem = 0x81000000;
- 
-@@ -298,21 +294,15 @@ void __init dc21285_preinit(void)
- 	*CSR_CSRBASEOFFSET    = 0;
- 	*CSR_PCIADDR_EXTN     = 0;
- 
--	cfn_mode = __footbridge_cfn_mode();
--
- 	printk(KERN_INFO "PCI: DC21285 footbridge, revision %02lX, in "
--		"%s mode\n", *CSR_CLASSREV & 0xff, cfn_mode ?
--		"central function" : "addin");
--
--	if (footbridge_cfn_mode()) {
--		/*
--		 * Clear any existing errors - we aren't
--		 * interested in historical data...
--		 */
--		*CSR_SA110_CNTL	= (*CSR_SA110_CNTL & 0xffffde07) |
--				  SA110_CNTL_RXSERR;
--		*CSR_PCICMD = (*CSR_PCICMD & 0xffff) | PCICMD_ERROR_BITS;
--	}
-+		"central function mode\n", *CSR_CLASSREV & 0xff);
-+
-+	/*
-+	 * Clear any existing errors - we aren't
-+	 * interested in historical data...
-+	 */
-+	*CSR_SA110_CNTL	= (*CSR_SA110_CNTL & 0xffffde07) | SA110_CNTL_RXSERR;
-+	*CSR_PCICMD = (*CSR_PCICMD & 0xffff) | PCICMD_ERROR_BITS;
- 
- 	timer_setup(&serr_timer, dc21285_enable_error, 0);
- 	timer_setup(&perr_timer, dc21285_enable_error, 0);
-@@ -331,29 +321,18 @@ void __init dc21285_preinit(void)
- 	dc21285_request_irq(IRQ_PCI_DPERR, dc21285_dparity_irq, 0,
- 			    "PCI data parity", NULL);
- 
--	if (cfn_mode) {
--		/*
--		 * Map our SDRAM at a known address in PCI space, just in case
--		 * the firmware had other ideas.  Using a nonzero base is
--		 * necessary, since some VGA cards forcefully use PCI addresses
--		 * in the range 0x000a0000 to 0x000c0000. (eg, S3 cards).
--		 */
--		*CSR_PCICSRBASE       = 0xf4000000;
--		*CSR_PCICSRIOBASE     = 0;
--		*CSR_PCISDRAMBASE     = __virt_to_bus(PAGE_OFFSET);
--		*CSR_PCIROMBASE       = 0;
--		*CSR_PCICMD = PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER |
--			      PCI_COMMAND_INVALIDATE | PCICMD_ERROR_BITS;
--	} else if (footbridge_cfn_mode() != 0) {
--		/*
--		 * If we are not compiled to accept "add-in" mode, then
--		 * we are using a constant virt_to_bus translation which
--		 * can not hope to cater for the way the host BIOS  has
--		 * set up the machine.
--		 */
--		panic("PCI: this kernel is compiled for central "
--			"function mode only");
--	}
-+	/*
-+	 * Map our SDRAM at a known address in PCI space, just in case
-+	 * the firmware had other ideas.  Using a nonzero base is
-+	 * necessary, since some VGA cards forcefully use PCI addresses
-+	 * in the range 0x000a0000 to 0x000c0000. (eg, S3 cards).
-+	 */
-+	*CSR_PCICSRBASE       = 0xf4000000;
-+	*CSR_PCICSRIOBASE     = 0;
-+	*CSR_PCISDRAMBASE     = __virt_to_bus(PAGE_OFFSET);
-+	*CSR_PCIROMBASE       = 0;
-+	*CSR_PCICMD = PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER |
-+		      PCI_COMMAND_INVALIDATE | PCICMD_ERROR_BITS;
- }
- 
- void __init dc21285_postinit(void)
-diff --git a/arch/arm/mach-footbridge/dma.c b/arch/arm/mach-footbridge/dma.c
-index 86618074a7a5..228757c8e06f 100644
---- a/arch/arm/mach-footbridge/dma.c
-+++ b/arch/arm/mach-footbridge/dma.c
-@@ -50,8 +50,7 @@ static int __init fb_dma_init(void)
- 	dma[_DC21285_DMA(1)].d_ops = &fb_dma_ops;
- #endif
- #ifdef CONFIG_ISA_DMA
--	if (footbridge_cfn_mode())
--		isa_init_dma();
-+	isa_init_dma();
- #endif
- 	return 0;
- }
-diff --git a/arch/arm/mach-footbridge/include/mach/memory.h b/arch/arm/mach-footbridge/include/mach/memory.h
-index 3a5d2638c18f..8f0ca8e8b37e 100644
---- a/arch/arm/mach-footbridge/include/mach/memory.h
-+++ b/arch/arm/mach-footbridge/include/mach/memory.h
-@@ -16,22 +16,6 @@
- #ifndef __ASM_ARCH_MEMORY_H
- #define __ASM_ARCH_MEMORY_H
- 
--
--#if defined(CONFIG_FOOTBRIDGE_ADDIN)
--/*
-- * If we may be using add-in footbridge mode, then we must
-- * use the out-of-line translation that makes use of the
-- * PCI BAR
-- */
--#ifndef __ASSEMBLY__
--extern unsigned long __virt_to_bus(unsigned long);
--extern unsigned long __bus_to_virt(unsigned long);
--#endif
--#define __virt_to_bus	__virt_to_bus
--#define __bus_to_virt	__bus_to_virt
--
--#elif defined(CONFIG_FOOTBRIDGE_HOST)
--
- /*
-  * The footbridge is programmed to expose the system RAM at 0xe0000000.
-  * The requirement is that the RAM isn't placed at bus address 0, which
-@@ -41,12 +25,6 @@ extern unsigned long __bus_to_virt(unsigned long);
- #define __virt_to_bus(x)	((x) + (BUS_OFFSET - PAGE_OFFSET))
- #define __bus_to_virt(x)	((x) - (BUS_OFFSET - PAGE_OFFSET))
- 
--#else
--
--#error "Undefined footbridge mode"
--
--#endif
--
- /*
-  * Cache flushing area.
-  */
-diff --git a/arch/arm/mach-footbridge/isa.c b/arch/arm/mach-footbridge/isa.c
-index ec5af521cf95..3375ac23c046 100644
---- a/arch/arm/mach-footbridge/isa.c
-+++ b/arch/arm/mach-footbridge/isa.c
-@@ -79,9 +79,6 @@ static int __init footbridge_isa_init(void)
- {
- 	int err = 0;
- 
--	if (!footbridge_cfn_mode())
--		return 0;
--
- 	/* Personal server doesn't have RTC */
- 	if (!machine_is_personal_server()) {
- 		isa_rtc_init();
--- 
-2.29.2
-
+> 
+> Thanks & sorry!
+> Conor.
+> 
+>> 
+>> Acked-by: Palmer Dabbelt <palmer@rivosinc.com> # arch/riscv bits, for 6.0-rc
+>> 
+>> in case someone else wants to send it up before I get back to this,
+>> I'm fine either way.
+>> 
+>> Thanks!
+>> 
+>>>
+>>> Thanks,
+>>> Conor.
+>>>
+>>> 0 - https://lore.kernel.org/linux-riscv/Ytac7G1zlq6WW4jt@arm.com/
+>>>
+>>> The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
+>>>
+>>>   Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
+>>>
+>>> are available in the Git repository at:
+>>>
+>>>   https://git.kernel.org/pub/scm/linux/kernel/git/conor/linux.git/ tags/riscv-topo-on-6.0-rc1
+>>>
+>>> for you to fetch changes up to fbd92809997a391f28075f1c8b5ee314c225557c:
+>>>
+>>>   riscv: topology: fix default topology reporting (2022-08-15 22:07:34 +0100)
+>>>
+>>> ----------------------------------------------------------------
+>>> Fix RISC-V's topology reporting
+>>>
+>>> The goal here is the fix the incorrectly reported arch topology on
+>>> RISC-V which seems to have been broken since it was added.
+>>> cpu, package and thread IDs are all currently reported as -1, so tools
+>>> like lstopo think systems have multiple threads on the same core when
+>>> this is not true:
+>>> https://github.com/open-mpi/hwloc/issues/536
+>>>
+>>> arm64's topology code basically applies to RISC-V too, so it has been
+>>> made generic along with the removal of MPIDR related code, which
+>>> appears to be redudant code since '3102bc0e6ac7 ("arm64: topology: Stop
+>>> using MPIDR for topology information")' replaced the code that actually
+>>> interacted with MPIDR with default values.
+>>>
+>>> ----------------------------------------------------------------
+>>> Conor Dooley (2):
+>>>       arm64: topology: move store_cpu_topology() to shared code
+>>>       riscv: topology: fix default topology reporting
+>>>
+>>>  arch/arm64/kernel/topology.c | 40 ----------------------------------------
+>>>  arch/riscv/Kconfig           |  2 +-
+>>>  arch/riscv/kernel/smpboot.c  |  3 ++-
+>>>  drivers/base/arch_topology.c | 19 +++++++++++++++++++
+>>>  4 files changed, 22 insertions(+), 42 deletions(-)
+>> 
+>> _______________________________________________
+>> linux-riscv mailing list
+>> linux-riscv@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-riscv
