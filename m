@@ -2,168 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB239C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9986CC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344160AbiHRPML (ORCPT
+        id S1344171AbiHRPMP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
+        Thu, 18 Aug 2022 11:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344118AbiHRPL6 (ORCPT
+        with ESMTP id S245462AbiHRPMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:11:58 -0400
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E65BFA8B;
-        Thu, 18 Aug 2022 08:11:53 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id br15-20020a056830390f00b0061c9d73b8bdso1276800otb.6;
-        Thu, 18 Aug 2022 08:11:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=WfG6z66abqmikTTPic3DpB5e3H4wBaNLiClJ/rnvyVc=;
-        b=pucIdsytBnSNMGKOlVgFv3STr5Snk0UhtGcRmUKRjc4bdrWWDQYhYVXjamSzRZHy6p
-         hPF1R5isHYgas+hSi2WZl4QgedPu6Kp48hmz7IWIQunNfS8XRX0jIY3t3Vfr/BISj/4D
-         npF2cw4mBemgkzafMr46F/RWnNvw6Au4Rhu06XdB//41cwfliJf3IsUNP8wJrcm/oIxh
-         BEKFrqvhlnUifiZX5zWWM+QOCKhcccWunvY5HADyYp8f3/123vdVYnxXgF/o4Zpy77/W
-         vPkNtfL87m1QzHboXV89XKdbP3ZBbThaxJpnA0J7OmXJ2OwOecoojVRsTzQ4sSZW2EII
-         Fh4g==
-X-Gm-Message-State: ACgBeo3WjPRZ1gVa9FVCzsFga6v1TJc8UPHSZ+dafCHl1n80UyR/y1aQ
-        Y2qupVrEIpXtPrjRzXYfywk2oACb3g==
-X-Google-Smtp-Source: AA6agR6o7rSkFIPBKN9it7S6e36TvpRIoeN+/X1zhFrbsie8UcZ/YzC4dQpBxe2obE3oQFSaW2ODvA==
-X-Received: by 2002:a9d:12a2:0:b0:638:937a:f620 with SMTP id g31-20020a9d12a2000000b00638937af620mr1239118otg.29.1660835512452;
-        Thu, 18 Aug 2022 08:11:52 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:5fe0:b4f5:6e22:4704:df60:73a3])
-        by smtp.gmail.com with ESMTPSA id v43-20020a056870b52b00b00116d5103487sm493752oap.31.2022.08.18.08.11.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 08:11:52 -0700 (PDT)
-Received: (nullmailer pid 1877668 invoked by uid 1000);
-        Thu, 18 Aug 2022 15:11:50 -0000
-Date:   Thu, 18 Aug 2022 09:11:50 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Asmaa Mnebhi <asmaa@nvidia.com>
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Khalil Blaiech <kblaiech@nvidia.com>
-Subject: Re: [PATCH v1 6/7] i2c-mlxbf.c: support BlueField-3 SoC
-Message-ID: <20220818151150.GK1829017-robh@kernel.org>
-References: <20220816225412.9095-1-asmaa@nvidia.com>
- <20220816225412.9095-7-asmaa@nvidia.com>
+        Thu, 18 Aug 2022 11:12:01 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2044.outbound.protection.outlook.com [40.107.22.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7236BE4FA;
+        Thu, 18 Aug 2022 08:11:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FilaJm8WJ4mv8K7SkKAnTzQCdvO8KB974EEYb18SnExW3Kr2/c8KtA7jwTnLvoRp6X4zKZH9fLLyyhw9ek1+rp719oWS6An6OGGf0dfHi9CVjf936F0VqIv7nNjPeoik/oerqLQgOKLaCR56V1G1uup9l73Mh4IQLA/z8bw5zqJbZxpgGVq9J1NRssWBrvDVhNj4VYzgTT6WPkseEENNE6P6ULrlu35jVq0HTUiLv1d7IKRs+lo4AvQqjD4J0z0CpRj1XZ2ADrwGigNdd2ApMXIvwK7iywi3/TJeFGoiV7Qi6NUerOkYldFV6x6eCKBQu7+/FnR1kahXuTDLOg7oug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PxyZmoQ4HPxt9JAZN3QVzBllZWpIazPpqniEWrzTllw=;
+ b=BprdSuTI+P64SOqeTQzWn/O+FrdrqbR5bcNvLLtsq80lt/lyxqdTo+QiN+aVhRywr2kPZSNk3fwQYKupVI/xmRyh2GmP3IWtXz+Fuq20bEDpfg/tvmXeu6p2Wyes+VQVk73QTH9/IZlttHpQQL7/gcWd1ZgKrG1SYm8+TPqN2fXbKkGg5UTxG7lGfbXTLiI+nrGzAkfllVNeyChBTvC74OYHsweoIpDcLgefFjpd8lpR8oTaKeJA1hq5jDC07YwAQleNhMG/DQyff2PZ8etGGK06v+xF4fcDHnoqrFQgwdfYkb+10l5j2tx0q3oAuIZK6QOwj0fn8f13wtwyCEij0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PxyZmoQ4HPxt9JAZN3QVzBllZWpIazPpqniEWrzTllw=;
+ b=JqOYbackT+upKDF5Qbg15kkR77MfoYd0HVJPnnS0YH8eMAFx0fu8kAwAMHlNVM6nuHwfIvknSuAj13jCihQNyxuGqq/Ilq90SmFLcydGAirjtPbQMjTWNrZUHuIDeR/SPNjhGyaxFOPqMMrzC/Myc3Tr45+G7czLweLDeBjOZGc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PAXPR04MB9186.eurprd04.prod.outlook.com (2603:10a6:102:232::18)
+ by AM0PR04MB5713.eurprd04.prod.outlook.com (2603:10a6:208:125::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
+ 2022 15:11:53 +0000
+Received: from PAXPR04MB9186.eurprd04.prod.outlook.com
+ ([fe80::40a9:93e4:75d4:f73c]) by PAXPR04MB9186.eurprd04.prod.outlook.com
+ ([fe80::40a9:93e4:75d4:f73c%3]) with mapi id 15.20.5546.016; Thu, 18 Aug 2022
+ 15:11:53 +0000
+From:   Frank Li <Frank.Li@nxp.com>
+To:     maz@kernel.org, tglx@linutronix.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kw@linux.com, bhelgaas@google.com
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+        peng.fan@nxp.com, aisheng.dong@nxp.com, jdmason@kudzu.us,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        kishon@ti.com, lorenzo.pieralisi@arm.com, ntb@lists.linux.dev,
+        lznuaa@gmail.com
+Subject: [PATCH v6 1/4] irqchip: allow pass down .pm field at IRQCHIP_PLATFORM_DRIVER_END
+Date:   Thu, 18 Aug 2022 10:11:24 -0500
+Message-Id: <20220818151127.2449064-2-Frank.Li@nxp.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220818151127.2449064-1-Frank.Li@nxp.com>
+References: <20220818151127.2449064-1-Frank.Li@nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR13CA0141.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c6::26) To PAXPR04MB9186.eurprd04.prod.outlook.com
+ (2603:10a6:102:232::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816225412.9095-7-asmaa@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7e208eae-693c-42e4-9a3a-08da812bfb8d
+X-MS-TrafficTypeDiagnostic: AM0PR04MB5713:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bvfwWvBA5amL9yHYFfkpE1WDS7ibdl1vEbbL9hWOH0tBFiWlHoV21qL5yGR0mQLbk/BqW2JIFW3YZTY0SMd/eWt3fRjXEefEWwGBBotCtcfKpa0dTXOdvN5jmeOTXQpZoVWu1ZyBK4W45QhUpwgsVEg0vrK1qVKlC1LYSTAdsaYvYyHHOuGor+rLY69CSV/JFGV0dh3CqcoR2sv1CilZDlXNK0M0/lia2xhxVOt9SGmqp7bYpYLbqwkmAVEA74ya6Z3ysEafZPbIMYJNDmRMzOZJdGckGgih62oZj8Ky1kQBM68U0NqvT/4ww2VhsBvMbkvk7hua8ZaN7ha+CyF7qP3vTpJT5ls7frw5j5noGgN0bHdHipiNs1SxDaaHFWSuUJwWs+bmLwCL+0fPv8zM0U3kHOhZU/QT7Ks1z0N0Nq0lBXhx+1GWYvJTzwPeb8jkYM0O5VoUeUcL6rRnHpPqNr76Fm94aIqBWoDi8M4XDnzZEoAxBgNSaBQ/8ZXzxP2z2TvLTEpzH6TRAJy9/sJvL2t9UYol0fDpYGhRU0qieA61yttryd3gt0esnmtED1PaGQkRWr/G7g89LmOXfLxmotUqQe5wfiMbwc42IMIEdw11O4InGoAWT6GwjwScMuXucOj+NhEi1S0J9B/SalR9PqmdOKaBZnuA03gmFKTj9idbj1xBhw+JIfBHUIbBf1L6TOJMjrWgkbszrjZgb9aFOVNQWxreR1Z1bVIwYtHmw2mvkyzzZQORfnAvlZHe5dkPJSseLOzI7B+tYcazWiLOfw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9186.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(366004)(376002)(39860400002)(396003)(2616005)(316002)(1076003)(186003)(83380400001)(36756003)(38350700002)(38100700002)(6506007)(52116002)(4326008)(66946007)(66476007)(66556008)(2906002)(8676002)(6486002)(86362001)(6512007)(41300700001)(478600001)(26005)(6666004)(8936002)(5660300002)(7416002)(142923001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PrJHPDQliS87q+bg9R7PHgtQ2fJtToVoan0SFxHjojiiV/YvfAbKt8nAkGmR?=
+ =?us-ascii?Q?2wYedH/dnH2Pao4bS0+bAUut1hvPazRRrAX8Z3X/SVZ5AtVXAj85GS5jrH82?=
+ =?us-ascii?Q?dgSTDHUbG7qhzfGXnIk3vJcQJKQ5lMGCfMy2VLAX7sxQczhGwJfMuWZ0hhNZ?=
+ =?us-ascii?Q?t0CyK/PwRjYumuXjfzrlXh50G6TwavpoHojz77x8MGe714UIrMah17kFYeEt?=
+ =?us-ascii?Q?+mt5eeicl3eFdpQpxzCG+Fd3rcarmkYwg27jh3sYvhTp5cWGcOPFqoedfZM2?=
+ =?us-ascii?Q?FxNpSVsLvBZdkWvnZpPWzMiyKku8mP7cj3gXhETKXUNFL5+T/hKh6iSdFPdk?=
+ =?us-ascii?Q?m9R2e0eK4Dpdr7/SwgBAtvgYHgAQQCc+p7SDyLxTkCPSfStbtxWCmk6WfNJ7?=
+ =?us-ascii?Q?fDdrVJSem7Ugv+vcdZmRJtqXqsC7LoDT812iCQHxSTHDqhJVExVcbj6rsrA6?=
+ =?us-ascii?Q?pY+1cKuzB0qB4WwuRMWbNYRXeUjLuUtUu7WfEdzYPvOGRKQ0JImnkxLQ0jDn?=
+ =?us-ascii?Q?CUNo3c6OxO7yp/IrxciQS+8pUWKA7bvewuX63aw2IKfg6d45C+7Byyts4mb0?=
+ =?us-ascii?Q?IjVOH6cqxDCgCEzwWhXxD3hZ9sLENEHzTFJcYGUXOFo9kXQDDTDM5q7Udq1H?=
+ =?us-ascii?Q?Al2YUua2f4eE/0w1xJfPxMEkjrs8f8PettE7O+BifDXV9WLjSCDH2G8i5NQj?=
+ =?us-ascii?Q?bTMjJxE1GVspYfq5Xo5CTWSCpwBdwuYR9UuAo2H3ARIDYTLRKZbmwsxFPNj5?=
+ =?us-ascii?Q?tagA4Vmz/a4iQIejH11xWH57cLG+27tLgL62LWlwi6WEWYo79a43edLRgM/Y?=
+ =?us-ascii?Q?1XMK5tbpUnUCo0Fz3OjCQ2cJkyXbpXZoNEwtCXO3J2ARrf/vuVdy2RMStW9a?=
+ =?us-ascii?Q?OlFK02MpD0gnItOrBQDaDH4WsSyyK38EEZRQjLl0JV91EIB5Eoc6pR5xioR7?=
+ =?us-ascii?Q?1j70maHQtBGBXBRhzOiRudLy1P0Ynbku9yGeOi4F1neIXnHfodMk/C7vKimc?=
+ =?us-ascii?Q?K+FquAaf0vJnqAa1zFgKI6vkQ3Ntg7JjqSJDRsQTxmUfLcHTsMkpsxA1L3PM?=
+ =?us-ascii?Q?bZGcOnNkN/qK7VLdh0rQpKFqg7tG16D4OyubHFAXm+YKBZZ0L0uvsjR54leo?=
+ =?us-ascii?Q?SOPfn0ONlRvDXc6FYv/89uzLYAD7U95WbH8u/j7wdq9SdxzEgI4gFG21Ujp6?=
+ =?us-ascii?Q?8zliUCvRKkHvFqJNjHL3NGZ9ZD7jyBAgFfgK0sXCTw3nMx6TNgFsCiAXcNGr?=
+ =?us-ascii?Q?Ax61LjGKDnQytCVuoZZuwdkAqastvJaTofj0LWXyUjJWb76w6+0tAr0whl/P?=
+ =?us-ascii?Q?WUTrrCiQz9AXhWoGNqgdl2QbClKCgsv9i4HehHlSta7W/eHJAIWOUN5h6zNK?=
+ =?us-ascii?Q?tycTHZuZDTiMGzWkFFaneiJkd5GNh5o41X8jxpPCD46bVcKDdomxvlaedkEG?=
+ =?us-ascii?Q?h+EHu8N6y1tZ6IuCt1K5/178dt/2iN0xWQpzhy3/fCnbLZE8R0c8Z4OUSF8u?=
+ =?us-ascii?Q?SdHhQR9fsnVwZ7LBZQ+CknEDHzQvWq1Rmq5fb1rl+3iL6Em39mkmoYmDyD9y?=
+ =?us-ascii?Q?z96tNbR2BrYuzZqqhdE=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e208eae-693c-42e4-9a3a-08da812bfb8d
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9186.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 15:11:53.4971
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4jobOm0K/E/a/JCE+0jARUIrdM3wjIzW8CELUJ6HOQMOMXyGj6IOjdQMLsQs7PsGHF/Gt8VvlpGXLD/oxzG9aA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5713
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 06:54:11PM -0400, Asmaa Mnebhi wrote:
-> BlueField-3 SoC has the same I2C IP logic as previous
-> BlueField-1 and 2 SoCs but it has different registers' addresses.
-> This is an effort to keep this driver generic accross all
-> BlueField generations.
-> This patch breaks down the "smbus" resource into 3 separate
-> resources to enable us to use common registers' offsets for all
-> BlueField SoCs:
-> struct mlxbf_i2c_resource *timer;
-> struct mlxbf_i2c_resource *mst;
-> struct mlxbf_i2c_resource *slv;
-> 
-> Of course, all offsets had to be adjusted accordingly, and we took
-> this chance to reorganize the macros depending on the register block
-> they target.
-> 
-> There are only 2 registers' offsets that do not fit within this
-> schema so their offsets are passed as SoC-specific parameters:
-> smbus_master_rs_bytes_off
-> smbus_master_fsm_off
-> 
-> Reviewed-by: Khalil Blaiech <kblaiech@nvidia.com>
-> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
-> ---
->  .../bindings/i2c/mellanox,i2c-mlxbf.yaml      |  30 +-
+IRQCHIP_PLATFORM_DRIVER_* compilation define platform_driver
+for irqchip. But can't set .pm field of platform_driver.
+Added variadic macros to set .pm field or other field if need.
 
-Bindings go in a separate patch.
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+---
+ include/linux/irqchip.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->  MAINTAINERS                                   |   1 +
->  drivers/i2c/busses/i2c-mlxbf.c                | 397 ++++++++++--------
->  3 files changed, 258 insertions(+), 170 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml b/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml
-> index 93198d5d43a6..cb3a012914e0 100644
-> --- a/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml
-> @@ -8,6 +8,7 @@ title: Mellanox I2C SMBus on BlueField SoCs
->  
->  maintainers:
->    - Khalil Blaiech <kblaiech@nvidia.com>
-> +  - Asmaa Mnebhi <asmaa@nvidia.com>
->  
->  allOf:
->    - $ref: /schemas/i2c/i2c-controller.yaml#
-> @@ -17,11 +18,15 @@ properties:
->      enum:
->        - mellanox,i2c-mlxbf1
->        - mellanox,i2c-mlxbf2
-> +      - mellanox,i2c-mlxbf3
->  
->    reg:
-> -    minItems: 3
-> +    minItems: 5
+diff --git a/include/linux/irqchip.h b/include/linux/irqchip.h
+index 3a091d0710ae1..d5e6024cb2a8c 100644
+--- a/include/linux/irqchip.h
++++ b/include/linux/irqchip.h
+@@ -44,7 +44,8 @@ static const struct of_device_id drv_name##_irqchip_match_table[] = {
+ #define IRQCHIP_MATCH(compat, fn) { .compatible = compat,		\
+ 				    .data = typecheck_irq_init_cb(fn), },
+ 
+-#define IRQCHIP_PLATFORM_DRIVER_END(drv_name)				\
++
++#define IRQCHIP_PLATFORM_DRIVER_END(drv_name, ...)			\
+ 	{},								\
+ };									\
+ MODULE_DEVICE_TABLE(of, drv_name##_irqchip_match_table);		\
+@@ -56,6 +57,7 @@ static struct platform_driver drv_name##_driver = {			\
+ 		.owner = THIS_MODULE,					\
+ 		.of_match_table = drv_name##_irqchip_match_table,	\
+ 		.suppress_bind_attrs = true,				\
++		__VA_ARGS__						\
+ 	},								\
+ };									\
+ builtin_platform_driver(drv_name##_driver)
+-- 
+2.35.1
 
-You just broke platforms with 3 entries.
-
-> +    maxItems: 6
->      items:
-> -      - description: Smbus block registers
-> +      - description: Smbus timer registers
-> +      - description: Smbus master registers
-> +      - description: Smbus slave registers
-
-You can't add new registers at the beginning of the list for existing 
-users.
-
-Either add to the end or it has to be conditional (if/then schema).
-
->        - description: Cause master registers
->        - description: Cause slave registers
->        - description: Cause coalesce registers
-> @@ -58,7 +63,9 @@ examples:
->    - |
->      i2c@2804000 {
->          compatible = "mellanox,i2c-mlxbf1";
-> -        reg = <0x02804000 0x800>,
-> +        reg = <0x02804000 0x40>,
-> +              <0x02804200 0x200>,
-> +              <0x02804400 0x200>,
->                <0x02801200 0x020>,
->                <0x02801260 0x020>;
->          interrupts = <57>;
-> @@ -68,10 +75,25 @@ examples:
->    - |
->      i2c@2808800 {
->          compatible = "mellanox,i2c-mlxbf2";
-> -        reg = <0x02808800 0x600>,
-> +        reg = <0x02808800 0x40>,
-> +              <0x02808a00 0x200>,
-> +              <0x02808c00 0x200>,
->                <0x02808e00 0x020>,
->                <0x02808e20 0x020>,
->                <0x02808e40 0x010>;
->          interrupts = <57>;
->          clock-frequency = <400000>;
->      };
-> +
-> +  - |
-> +    i2c@2808800 {
-> +        compatible = "mellanox,i2c-mlxbf3";
-> +        reg = <0x13404480 0x40>,
-> +              <0x13404200 0x200>,
-> +              <0x13404000 0x200>,
-> +              <0x13404400 0x020>,
-> +              <0x13404420 0x020>,
-> +              <0x13404440 0x010>;
-> +        interrupts = <35>;
-> +        clock-frequency = <400000>;
-> +    };
