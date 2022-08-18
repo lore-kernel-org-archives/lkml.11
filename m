@@ -2,153 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C636DC32773
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 18:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0321AC32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 18:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345325AbiHRSOa (ORCPT
+        id S1345334AbiHRSPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 14:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49918 "EHLO
+        Thu, 18 Aug 2022 14:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241491AbiHRSO1 (ORCPT
+        with ESMTP id S240531AbiHRSPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 14:14:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF076B9FBC
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 11:14:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660846465;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=W0yvrJCNySNCn52+IL1OETOtNI6hUhlyn5gBnr+tlWk=;
-        b=ARbqba80eB7qM1voAbLfp5f2MUFtRbTzyBLJ/iDW7jpDgvr16TFy60VZdoi5Le1MgFRiQx
-        ki6QFKmft03RXqQRP3BVa7Qni79JLCS/GHNLN64m5oXvA6JINEVFU09ZJikxFI5fg3F9nx
-        TmBLBoyQOAqFjMV1c/mNF2nbHbMq3xw=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-633-wTWxvxHwMdmY-rvIUJ7Y_g-1; Thu, 18 Aug 2022 14:14:23 -0400
-X-MC-Unique: wTWxvxHwMdmY-rvIUJ7Y_g-1
-Received: by mail-pj1-f72.google.com with SMTP id s5-20020a17090a2f0500b001fab8938907so1356531pjd.7
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 11:14:23 -0700 (PDT)
+        Thu, 18 Aug 2022 14:15:19 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EADBCACBC;
+        Thu, 18 Aug 2022 11:15:18 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-335624d1e26so63287937b3.4;
+        Thu, 18 Aug 2022 11:15:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=O+By8SMEsmKfUQcl5iTzfeSzCB2mzamR2FlbcS3iWL4=;
+        b=OwJpheqT025swB+aQkicuRDS+5JK7bUrIY7PUJDoAKH86DJWZlcq6Pe9apJpXfgVqD
+         adOT/+026BI4sRPQYb22IS/Qc9wiFvCfBhrjfuywrQfij9F3n8Ua7Hg2XIs5itKOSAUj
+         lRfnUqtrh+K4hsTzYxzvNys4P/sksuatUIYrJ6Y/PMibiSF3ZZJ6H1ieERbMjlicpjyR
+         n3Lbd7LCkcZePV37TLPniIPFYo9RPFK2RHBuuJ+oS4H2BigeX4Gwp3wMhEKaHknGNCw+
+         +dUMMxCE1HHU8a/LA6Gx4/DNu9t8FN9wE+bNAzb8V+S3F2jUVSmyF4XKV/dMozVwEEpL
+         Ovtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=W0yvrJCNySNCn52+IL1OETOtNI6hUhlyn5gBnr+tlWk=;
-        b=ecqgEEEqG4BW94JVdAyHZo16vQxoR+kYHys0ZL9wTT2CWW2dGmwLzrZqJ5CH1JRwIe
-         Pb8ml2SOTouOoCcYq5Ytzr+Z3xycuqPRLycEtpv5AWzgoJBwVisLrhvHcqe9QxIh+xhv
-         L5qECd89N4G77q+ci2tIDqM+nX/4tF9sSUyNOefTZyauUPGOJJm3RgCGlhiRG51gmy5R
-         mNXuhC+NlCWsRNNsotdfFrmlwalmd+MQgd+sDeyEG3+elmg1mSZ1BFMg67oBsl4bzADb
-         1ztAun6Pqx5UpfZVnDZJcNvMFN+sCR4+r9QmAyoFSRL8qo7H5CsfQIEeqZPHfpE58sDs
-         LsTQ==
-X-Gm-Message-State: ACgBeo2toOhh7ht0i1D5qjPfXSGqYLD1GXv1oAug/QU7gRJPEfNu2Ewl
-        jMDidZScYIdhC1jpS/Pl+Et3B7+87S0bFFrRdwW4+zxE9IUlOh76A3puSETru26fxx2H3e0SOjW
-        Sn0t4chkMUWF3+fC4rSCYPEUR
-X-Received: by 2002:a17:90b:1c82:b0:1ee:eb41:b141 with SMTP id oo2-20020a17090b1c8200b001eeeb41b141mr4285207pjb.143.1660846462853;
-        Thu, 18 Aug 2022 11:14:22 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6QokUB9XAiZHout1FdGj0TFG42x0+7uXqK5dl1kBebaN2yKIVrrTUm09/AgqN1PfwicrccCw==
-X-Received: by 2002:a17:90b:1c82:b0:1ee:eb41:b141 with SMTP id oo2-20020a17090b1c8200b001eeeb41b141mr4285195pjb.143.1660846462606;
-        Thu, 18 Aug 2022 11:14:22 -0700 (PDT)
-Received: from xps13.. ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
-        by smtp.gmail.com with ESMTPSA id c16-20020a056a00009000b0052dce4edceesm1960592pfj.169.2022.08.18.11.14.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 11:14:22 -0700 (PDT)
-From:   Shigeru Yoshida <syoshida@redhat.com>
-To:     deller@gmx.de
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Shigeru Yoshida <syoshida@redhat.com>,
-        syzbot+a168dbeaaa7778273c1b@syzkaller.appspotmail.com
-Subject: [PATCH] fbcon: Properly revert changes when vc_resize() failed
-Date:   Fri, 19 Aug 2022 03:13:36 +0900
-Message-Id: <20220818181336.3504010-1-syoshida@redhat.com>
-X-Mailer: git-send-email 2.37.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=O+By8SMEsmKfUQcl5iTzfeSzCB2mzamR2FlbcS3iWL4=;
+        b=BbjWkVUQEtnrQ4xB1ta9wk2LT/yOMwkRtUU9DIXH9opTsa/MaaYbYARfFied5JHTNf
+         F7AKDZENpuqTyuudt017pNt5FHkAxa+TMwoRguAYDC56ZaJWLtKxBpJQDwnzd0rnCn/7
+         E2eQSs0VssZWx5tTxiX2PPcmU5IMZWKSkzOzBePRF2Kwc7YxJas+heRuGXeh9mbUZQr9
+         +vWPk957oExhrPX8tD3HTZO3mC+S8TAOTV1fu75zZkCcHgsNn3rakXNHFBjUAHkX8qq+
+         YCOo+fjazwPvM7s6HO/ex2LYCBjHfWRaFyu/iu12P3E6wQ7S9g/lha0MpsQcZ0KIM61c
+         PGkQ==
+X-Gm-Message-State: ACgBeo3sXPkFJqbX77Uzn3d5bmz2Czi3eT6d1XK0cTXX5Fm8qPXd7GQc
+        ew5iwdShDIz9dEMKUARx2anRyOX+lmcA/B/VZ7RjhmZLZ6rldQ==
+X-Google-Smtp-Source: AA6agR7JYpjH33vGbyFyKa+MW4WlwRlRszKVF+PruKNgD58gus/PmNbDQfsg4w839r1gZXy45mqFPwFmt959K4pZJuo=
+X-Received: by 2002:a25:8b8c:0:b0:67b:5c18:870 with SMTP id
+ j12-20020a258b8c000000b0067b5c180870mr4072997ybl.244.1660846517231; Thu, 18
+ Aug 2022 11:15:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220815151451.23293-4-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdUaketBpEfoSKeSJ4SuYwOTLoqJ_FCp=G8HmVudhv3zWw@mail.gmail.com>
+In-Reply-To: <CAMuHMdUaketBpEfoSKeSJ4SuYwOTLoqJ_FCp=G8HmVudhv3zWw@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Thu, 18 Aug 2022 19:14:49 +0100
+Message-ID: <CA+V-a8tSWshjoEqq=bwsY8eMfTe_QkZ-Uv+c3QBvZtD0XXgA+g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/8] dt-bindings: soc: renesas: renesas.yaml: Document
+ Renesas RZ/Five SoC
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-fbcon_do_set_font() calls vc_resize() when font size is changed.
-However, if if vc_resize() failed, current implementation doesn't
-revert changes for font size, and this causes inconsistent state.
+Hi Geert,
 
-syzbot reported unable to handle page fault due to this issue [1].
-syzbot's repro uses fault injection which cause failure for memory
-allocation, so vc_resize() failed.
+Thank you for the review.
 
-This patch fixes this issue by properly revert changes for font
-related date when vc_resize() failed.
+On Thu, Aug 18, 2022 at 4:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Prabhakar,
+>
+> On Mon, Aug 15, 2022 at 5:16 PM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > Document Renesas RZ/Five (R9A07G043) SoC.
+> >
+> > More info about RZ/Five SoC:
+> > https://www.renesas.com/us/en/products/microcontrollers-microprocessors/rz-mpus/rzfive-risc-v-general-purpose-microprocessors-risc-v-cpu-core-andes-ax45mp-single-10-ghz-2ch-gigabit-ethernet
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> Thanks for your patch!
+>
+> > --- a/Documentation/devicetree/bindings/arm/renesas.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/renesas.yaml
+> > @@ -415,11 +415,12 @@ properties:
+> >                - renesas,rzn1d400-db # RZN1D-DB (RZ/N1D Demo Board for the RZ/N1D 400 pins package)
+> >            - const: renesas,r9a06g032
+> >
+> > -      - description: RZ/G2UL (R9A07G043)
+> > +      - description: RZ/Five and RZ/G2UL (R9A07G043)
+> >          items:
+> >            - enum:
+> >                - renesas,smarc-evk # SMARC EVK
+> >            - enum:
+> > +              - renesas,r9a07g043f01 # RZ/Five (RISC-V core)
+>
+> Should we be consistent, and leave out the "(RISC-V core)" comment,
+> or add it everywhere?
+>
+Rather leave it for now ;) . If Rob agrees on your suggestion on
+splitting (renesas,{rmobile,rcar-gen[1234],rza,rzg,rzn,...}.yaml that
+would make it cleaner.
 
-Link: https://syzkaller.appspot.com/bug?id=3443d3a1fa6d964dd7310a0cb1696d165a3e07c4 [1]
-Reported-by: syzbot+a168dbeaaa7778273c1b@syzkaller.appspotmail.com
-Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
----
- drivers/video/fbdev/core/fbcon.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+> Note that several of the SoCs listed in this file have SuperH or
+> RealTime ARM cores, so going for the former means a lot of work.
+>
+Agreed.
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index cf9ac4da0a82..825b012debe7 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2401,15 +2401,21 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- 	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
--	int resize;
-+	int resize, ret, old_userfont, old_width, old_height, old_charcount;
- 	char *old_data = NULL;
- 
- 	resize = (w != vc->vc_font.width) || (h != vc->vc_font.height);
- 	if (p->userfont)
- 		old_data = vc->vc_font.data;
- 	vc->vc_font.data = (void *)(p->fontdata = data);
-+	old_userfont = p->userfont;
- 	if ((p->userfont = userfont))
- 		REFCOUNT(data)++;
-+
-+	old_width = vc->vc_font.width;
-+	old_height = vc->vc_font.height;
-+	old_charcount = vc->vc_font.charcount;
-+
- 	vc->vc_font.width = w;
- 	vc->vc_font.height = h;
- 	vc->vc_font.charcount = charcount;
-@@ -2425,7 +2431,9 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- 		rows = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
- 		cols /= w;
- 		rows /= h;
--		vc_resize(vc, cols, rows);
-+		ret = vc_resize(vc, cols, rows);
-+		if (ret)
-+			goto err_out;
- 	} else if (con_is_visible(vc)
- 		   && vc->vc_mode == KD_TEXT) {
- 		fbcon_clear_margins(vc, 0);
-@@ -2435,6 +2443,21 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- 	if (old_data && (--REFCOUNT(old_data) == 0))
- 		kfree(old_data - FONT_EXTRA_WORDS * sizeof(int));
- 	return 0;
-+
-+err_out:
-+	p->fontdata = old_data;
-+	vc->vc_font.data = (void *)old_data;
-+
-+	if (userfont) {
-+		p->userfont = old_userfont;
-+		REFCOUNT(data)--;
-+	}
-+
-+	vc->vc_font.width = old_width;
-+	vc->vc_font.height = old_height;
-+	vc->vc_font.charcount = old_charcount;
-+
-+	return ret;
- }
- 
- /*
--- 
-2.37.1
-
+Cheers,
+Prabhakar
