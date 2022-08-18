@@ -2,90 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63923C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 984A4C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244897AbiHRNBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        id S244407AbiHRNBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244886AbiHRNBH (ORCPT
+        with ESMTP id S244860AbiHRNAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:01:07 -0400
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0511975CC8;
-        Thu, 18 Aug 2022 06:01:07 -0700 (PDT)
-Received: by mail-qt1-f171.google.com with SMTP id c20so1003335qtw.8;
-        Thu, 18 Aug 2022 06:01:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=G6NRVtnuSqWqwGqpWt9DLp5hNULRC9LvfIAkNgdvtjM=;
-        b=kJlGbGfmxfBqf+bVVh1QtEbfOKf4xTrV9NX0JzY8WP2LZQ5OM1y9CAD0vWzGEG4Vbc
-         y0cTvjr7k8yiqbGarpUAFzx+Y6c/N9E98NxDQPJxD2wAkyiKgL+PnhGsU5umWk0qnyiZ
-         ctEv0IQVLBpH4hBb0o6W5aheZcorfIsj6QjuoRcdY9S05iDuGO0/e9+FOiCYw1/IV3cx
-         6lpZu8eCgnSve26GBIPYxqA00xxopWjum8UPHglF3rXQpjhmPNl5ZpIEyKsqL7TLzMn4
-         6RzK/ht5jG9siNtp97ntMTc77gHdBBoR2VqOXS7zwfVuBA+hw0cqcHxhpNVH5BLV9ant
-         4c8w==
-X-Gm-Message-State: ACgBeo0KOUzAV1rn9SNnpToWhrZtnAfC5Otg6a2UAf7QqWqCg9ayZA7k
-        LfT9VJCT6DObk5I8Twh5A4ee/qaww3znXg==
-X-Google-Smtp-Source: AA6agR75szNWxxDWZq4k1aFKjLruPb048asQ5OckjyQNTnlEAHYjLNCu5y8pFD5TXmxu7gn1BzFIYg==
-X-Received: by 2002:ac8:58c6:0:b0:343:6ea4:c5d with SMTP id u6-20020ac858c6000000b003436ea40c5dmr2339896qta.371.1660827665177;
-        Thu, 18 Aug 2022 06:01:05 -0700 (PDT)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id 19-20020ac84e93000000b0033e51aea00esm1025051qtp.25.2022.08.18.06.01.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 06:01:05 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-31f445bd486so38260767b3.13;
-        Thu, 18 Aug 2022 06:01:04 -0700 (PDT)
-X-Received: by 2002:a05:6902:100a:b0:676:ed53:25b0 with SMTP id
- w10-20020a056902100a00b00676ed5325b0mr2514289ybt.365.1660827625358; Thu, 18
- Aug 2022 06:00:25 -0700 (PDT)
+        Thu, 18 Aug 2022 09:00:49 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F17F6B16B
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:00:48 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M7lLZ5N68znTYd;
+        Thu, 18 Aug 2022 20:58:30 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
+ 2022 21:00:43 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH 6/6] mm, hwpoison: avoid trying to unpoison reserved page
+Date:   Thu, 18 Aug 2022 21:00:16 +0800
+Message-ID: <20220818130016.45313-7-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220818130016.45313-1-linmiaohe@huawei.com>
+References: <20220818130016.45313-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220815151451.23293-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220815151451.23293-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 18 Aug 2022 15:00:13 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWWv0MUsxJgy1XLNm3CENoAkRgZ2dwcYDgPdAkApA4=fQ@mail.gmail.com>
-Message-ID: <CAMuHMdWWv0MUsxJgy1XLNm3CENoAkRgZ2dwcYDgPdAkApA4=fQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/8] dt-bindings: riscv: Sort the CPU core list alphabetically
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <Conor.Dooley@microchip.com>,
-        Anup Patel <anup@brainfault.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 5:16 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Sort the CPU cores list alphabetically for maintenance.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+For reserved pages, HWPoison flag will be set without increasing the page
+refcnt. So we shouldn't even try to unpoison these pages and thus decrease
+the page refcnt unexpectly. Add a PageReserved() check to filter this case
+out and remove the below unneeded zero page (zero page is reserved) check.
 
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/memory-failure.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 5f9615a86296..c831c41bb092 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -2355,7 +2355,7 @@ int unpoison_memory(unsigned long pfn)
+ 		goto unlock_mutex;
+ 	}
+ 
+-	if (PageSlab(page) || PageTable(page))
++	if (PageSlab(page) || PageTable(page) || PageReserved(page))
+ 		goto unlock_mutex;
+ 
+ 	ret = get_hwpoison_page(p, MF_UNPOISON);
+@@ -2386,7 +2386,7 @@ int unpoison_memory(unsigned long pfn)
+ 		freeit = !!TestClearPageHWPoison(p);
+ 
+ 		put_page(page);
+-		if (freeit && !(pfn == my_zero_pfn(0) && page_count(p) == 1)) {
++		if (freeit) {
+ 			put_page(page);
+ 			ret = 0;
+ 		}
+-- 
+2.23.0
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
