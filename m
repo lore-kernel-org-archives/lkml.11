@@ -2,112 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C03C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6455AC32771
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242728AbiHRCWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 22:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50292 "EHLO
+        id S242608AbiHRCXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 22:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242559AbiHRCWe (ORCPT
+        with ESMTP id S234661AbiHRCXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 22:22:34 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F2290C5F;
-        Wed, 17 Aug 2022 19:22:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660789353; x=1692325353;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yrKAFnVPaGNMYYATTJbAtyQVPe2c1G8tf11MardVXvs=;
-  b=J/KZkT7tzm+rzM5p0TEYbrc0QLl+d7CGCAPzsUWriQtV5RgIJ2TIAKzS
-   KISmPGlJaQRPnWP2wvIcUTd3XapdRewNFB4/qNY+rYK+5v+DpjspLRH14
-   NNMqYFm4L2gUzcDgz5Z/7QMgf370z0x8bTsrKOjynUk7bWjSWYUnU/3VU
-   TvwzLz0kdcjy7agIS+J6LWghr2b7CPzTMVxI7GRy+YONsqdgg6W7Tsiq3
-   Sa0OXDfqLsYxkBSfQes0WOJbZFsiTdUlW5yJl7pn4HQdqIDwHEcblR24q
-   gbGA0DqRm7lYZhkb4SX5EBPTVxdyeo9oNDT8f7tmv8IP0Wtn8LhSEsMJu
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="279613721"
-X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
-   d="scan'208";a="279613721"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 19:22:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
-   d="scan'208";a="636626805"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orsmga008.jf.intel.com with ESMTP; 17 Aug 2022 19:22:29 -0700
-Date:   Thu, 18 Aug 2022 10:13:22 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, dg@emlix.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru,
-        yilun.xu@intel.com
-Subject: Re: [PATCH v6 1/2] fpga: ecp5-spi: add Lattice ECP5 FPGA manager
-Message-ID: <Yv2gQnN+XlW3CWjl@yilunxu-OptiPlex-7050>
-References: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
- <20220815132157.8083-2-i.bornyakov@metrotek.ru>
- <Yvr6SY5WGXlYiLig@yilunxu-OptiPlex-7050>
- <20220816045841.irhr5vigemdqknaw@x260>
- <Yvs0jieXsyzhn8q9@yilunxu-OptiPlex-7050>
- <20220817090413.ywf7wescwj2manif@x260>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817090413.ywf7wescwj2manif@x260>
+        Wed, 17 Aug 2022 22:23:51 -0400
+Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2202E520BF;
+        Wed, 17 Aug 2022 19:23:46 -0700 (PDT)
+X-UUID: 281874f6fb504b1380983b1d6bb40172-20220818
+X-CPASD-INFO: 2646bc0e11794639b8f47462f07b1dfb@e4ZuVo-VXpVdUXmFg3l-
+        c4JplmRnYFaBqGpXkl-
+        UkoKVgnxsTV5qXFWCgGpQYWNdYlV3fGtQYmBgZFB5i4Jyj1RgXmCCVHSTgHRwVGaQkw==
+X-CLOUD-ID: 2646bc0e11794639b8f47462f07b1dfb
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:173.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:166.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
+        5,AUF:1,DUF:2660,ACD:52,DCD:52,SL:0,EISP:0,AG:0,CFC:0.416,CFSR:0.068,UAT:0,RA
+        F:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,E
+        AF:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: 281874f6fb504b1380983b1d6bb40172-20220818
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: 281874f6fb504b1380983b1d6bb40172-20220818
+X-User: huanglei@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by mailgw
+        (envelope-from <huanglei@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1783756006; Thu, 18 Aug 2022 10:23:48 +0800
+From:   huanglei <huanglei@kylinos.cn>
+To:     laurent.pinchart@ideasonboard.com
+Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huanglei <huanglei@kylinos.cn>
+Subject: [PATCH v2] media: uvcvideo: limit power line control for Sonix Technology
+Date:   Thu, 18 Aug 2022 10:23:38 +0800
+Message-Id: <20220818022338.13374-1-huanglei@kylinos.cn>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-17 at 12:04:13 +0300, Ivan Bornyakov wrote:
-> On Tue, Aug 16, 2022 at 02:09:18PM +0800, Xu Yilun wrote:
-> > On 2022-08-16 at 07:58:41 +0300, Ivan Bornyakov wrote:
-> > > On Tue, Aug 16, 2022 at 10:00:41AM +0800, Xu Yilun wrote:
-> > > > On 2022-08-15 at 16:21:56 +0300, Ivan Bornyakov wrote:
-> > > > > Add support to the FPGA manager for programming Lattice ECP5 FPGA over
-> > > > > slave SPI interface with .bit formatted uncompressed bitstream image.
-> > > > 
-> > > > Not sure if something is missed.
-> > > > 
-> > > > https://lore.kernel.org/all/20220729145757.GA2601292@yilunxu-OptiPlex-7050/
-> > > > 
-> > > > I was considering if a generic driver for lattice slave SPI sysCONFIG
-> > > > interface could be introduced. From machxo2 & ecp5 Programming Usage
-> > > > Guide, or others in this series, they basically use the same reconfigure
-> > > > interface & protocol.
-> > > > 
-> > > > Thanks,
-> > > > Yilun
-> > > > 
-> > > 
-> > > I only have HW with ECP5, can't vouch for the rest.
-> > 
-> > I understand your concern, but having separate drivers for the same IP on
-> > different boards makes the maintaining harder.
-> > 
-> > We don't have to make everything fine, but start with machxo2 and ecp5
-> > first. If the change affects machxo2, other people may help.
-> > 
-> > Thanks,
-> > Yilun
-> > 
-> 
-> Hi, Yilun.
-> 
-> To clear things out, considering what Daniel said in
-> https://lore.kernel.org/linux-fpga/20220816074216.GA31706@homes.emlix.com/
-> you still don't want separate ECP5 driver, or this v6 is OK and review
+The device does not implement the power line control correctly. Add a
+corresponding control mapping override.
 
-I still perfer one sysCONFIG driver. If I understand right, the 2
-reprogramming modes and the command sets are within the scope of
-sysCONFIG spec. So they could be all supported in sysCONFIG driver, and
-I assume some config option could be made to adapt different boards.
+Bus 003 Device 003: ID 3277:0072 Sonix Technology Co., Ltd. USB 2.0 Camera
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass          239 Miscellaneous Device
+  bDeviceSubClass         2
+  bDeviceProtocol         1 Interface Association
+  bMaxPacketSize0        64
+  idVendor           0x3277
+  idProduct          0x0072
+  bcdDevice            1.00
+  iManufacturer           2 Sonix Technology Co., Ltd.
+  iProduct                1 USB 2.0 Camera
+  iSerial                 3 REV0001
+  bNumConfigurations      1
 
-Thanks,
-Yilun
+Signed-off-by: huanglei <huanglei@kylinos.cn>
+---
+ drivers/media/usb/uvc/uvc_driver.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-> continues?
-> 
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index 9c05776f11d1..218db3f1db5d 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -3282,6 +3282,15 @@ static const struct usb_device_id uvc_ids[] = {
+ 	  .bInterfaceSubClass	= 1,
+ 	  .bInterfaceProtocol	= 0,
+ 	  .driver_info		= UVC_INFO_META(V4L2_META_FMT_D4XX) },
++	/* Sonix Technology USB 2.0 Camera */
++	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
++				| USB_DEVICE_ID_MATCH_INT_INFO,
++	  .idVendor		= 0x3277,
++	  .idProduct		= 0x0072,
++	  .bInterfaceClass	= USB_CLASS_VENDOR_SPEC,
++	  .bInterfaceSubClass	= 1,
++	  .bInterfaceProtocol	= 0,
++	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
+ 	/* Generic USB Video Class */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_VIDEO, 1, UVC_PC_PROTOCOL_UNDEFINED) },
+ 	{ USB_INTERFACE_INFO(USB_CLASS_VIDEO, 1, UVC_PC_PROTOCOL_15) },
+-- 
+2.17.1
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
