@@ -2,94 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8206FC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3789C32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344437AbiHRRVq (ORCPT
+        id S1345117AbiHRRWA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
+        Thu, 18 Aug 2022 13:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245653AbiHRRVK (ORCPT
+        with ESMTP id S1344311AbiHRRVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:21:10 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F0F5C362;
-        Thu, 18 Aug 2022 10:19:27 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1BBF31F8C9;
-        Thu, 18 Aug 2022 17:19:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660843166;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NRvraFGp4jiu+Zv6R16UajS2/oeIiXb+VaX74HP2TW4=;
-        b=bjjh35Iv4gxwXIPmtG7SfCHHnPd5p5v80PuTaeTC3aPB99KurVwUZyewv9e3rE1Rx9P+Sp
-        Qiun7yKw7BJPdYlrJ+EUFQr0fIJz6X3czrNu8a3j633IDs+EjDqYAuNXlS2pv5MA/UuZ3v
-        tDvm9ImOJlrA0aN8rCow6nrdlhnt/vo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660843166;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NRvraFGp4jiu+Zv6R16UajS2/oeIiXb+VaX74HP2TW4=;
-        b=m9yyGEmSUbV95zuM+a0Lg/Fc1vmv/i81uHckjP11hrIxu3AExfAaEbKun/ESKLiEAUE0mb
-        zPzQn78ne6R1VEDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E2D10133B5;
-        Thu, 18 Aug 2022 17:19:25 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 5FVfNp10/mLmQAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 18 Aug 2022 17:19:25 +0000
-Date:   Thu, 18 Aug 2022 19:14:14 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Uros Bizjak <ubizjak@gmail.com>
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-Subject: Re: [PATCH] fs/btrfs: Use atomic_try_cmpxchg in free_extent_buffer
-Message-ID: <20220818171414.GM13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Uros Bizjak <ubizjak@gmail.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-References: <20220809163633.8255-1-ubizjak@gmail.com>
+        Thu, 18 Aug 2022 13:21:38 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E4542AF1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:20:02 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id jl18so2065130plb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=oxkIL7t6QF/08WGCg7LwevIs7IPtvy2DWZ/yQUzyzpw=;
+        b=oT+xYcRJe+BsVSbihqkOFFsJHOzKLtYkEKpL4xy/l86phwOS/hn1nfDHoIBrWVL+w9
+         yb4lD5vXPHhmw9hoIden1DXoX4ZswlfgFRk4JpVJC+Lmrg80cADPMJFkmxPktCzR4+ox
+         5e/2+8r2fq0NiBtOgp6LWKEZPuRWXa3vwy+wCHnSgtkwXnl+F+c4aJpQ9412goyf2NXx
+         0h+uV3o02Lr+qzjOrh8H5JI/OthbOr+dH/vIaFpJptjvcJebu87c3bewsBZOqFcxHRqi
+         OUtEb2kgvtJ34aL4CLvE+S9TSacRrBrtc4zlGXufA0EikQNpSCCX7QapEQ05qZuBJQCf
+         L1Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=oxkIL7t6QF/08WGCg7LwevIs7IPtvy2DWZ/yQUzyzpw=;
+        b=Kc/MVHVVnyaB8la5Up9HY6F26XBajwXwl4o5qaWupGzGjTVRiJFOn0TWrhCF7zFRDH
+         l4srO94CXgENUn4vBkEmgtqCoFGakh9UHZMmkOaekH2qETPvW3Q0YwGVG5QDqUnSQmRQ
+         XAHz0jYVk4SFFlkQ0t+glwTeORDqS6hJLvbRglNxDfh+R2k0O2Z1XLU4A/X53jkYtdgR
+         AHLq3obvAp2zrY7pPPpBIRte/WvRTd/P0Tmb3saA+/T3Dw90TGgWIJleRZgpGd0CBPLd
+         tDMkYN3V1ozLHRACnKXZM0YaEGG0I8PanhAaxMVWwn9ErlxNtc9i7+8w4kh1uGYBusPh
+         NtXg==
+X-Gm-Message-State: ACgBeo14gNLncRsPvXu19rbG3ufQJL0vW3R2HkAkgE1mcwkOPR8kV1KO
+        TK9Y3he7yFbHGuaWEMhI0DDcuA==
+X-Google-Smtp-Source: AA6agR7Rl/cE0F+L87ZcmO12psnHHsz5CQgapTnbh6BHn8bRtzBKIoh2Dmn5hldKJ5+/F+R/OjqLjg==
+X-Received: by 2002:a17:902:efd2:b0:172:b0a5:fd79 with SMTP id ja18-20020a170902efd200b00172b0a5fd79mr3704461plb.87.1660843202321;
+        Thu, 18 Aug 2022 10:20:02 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id k1-20020a170902ce0100b0016f04c098ddsm1624592plg.226.2022.08.18.10.20.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 10:20:01 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 17:19:57 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 09/26] KVM: VMX: nVMX: Support TSC scaling and
+ PERF_GLOBAL_CTRL with enlightened VMCS
+Message-ID: <Yv50vWGoLQ9n+6MO@google.com>
+References: <20220802160756.339464-1-vkuznets@redhat.com>
+ <20220802160756.339464-10-vkuznets@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220809163633.8255-1-ubizjak@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220802160756.339464-10-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 06:36:33PM +0200, Uros Bizjak wrote:
-> Use `atomic_try_cmpxchg(ptr, &old, new)` instead of
-> `atomic_cmpxchg(ptr, old, new) == old` in free_extent_buffer. This
-> has two benefits:
-> 
-> - The x86 cmpxchg instruction returns success in the ZF flag, so this
->   change saves a compare after cmpxchg, as well as a related move
->   instruction in the front of cmpxchg.
-> 
-> - atomic_try_cmpxchg implicitly assigns the *ptr value to &old when
->   cmpxchg fails, enabling further code simplifications.
-> 
-> This patch has no functional change.
-> 
-> Cc: Chris Mason <clm@fb.com>
-> Cc: Josef Bacik <josef@toxicpanda.com>
-> Cc: David Sterba <dsterba@suse.com>
-> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+On Tue, Aug 02, 2022, Vitaly Kuznetsov wrote:
+> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+> index f886a8ff0342..4b809c79ae63 100644
+> --- a/arch/x86/kvm/vmx/evmcs.h
+> +++ b/arch/x86/kvm/vmx/evmcs.h
+> @@ -37,16 +37,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+>   *	EPTP_LIST_ADDRESS               = 0x00002024,
+>   *	VMREAD_BITMAP                   = 0x00002026,
+>   *	VMWRITE_BITMAP                  = 0x00002028,
+> - *
+> - *	TSC_MULTIPLIER                  = 0x00002032,
+>   *	PLE_GAP                         = 0x00004020,
+>   *	PLE_WINDOW                      = 0x00004022,
+>   *	VMX_PREEMPTION_TIMER_VALUE      = 0x0000482E,
+> - *      GUEST_IA32_PERF_GLOBAL_CTRL     = 0x00002808,
+> - *      HOST_IA32_PERF_GLOBAL_CTRL      = 0x00002c04,
+> - *
+> - * Currently unsupported in KVM:
+> - *	GUEST_IA32_RTIT_CTL		= 0x00002814,
 
-It's not in a performance critical code but resulting code is slightly
-more efficient. Added to misc-next, thanks.
+Almost forgot: is deleting this chunk of the comment intentional?
+
+>   */
+>  #define EVMCS1_UNSUPPORTED_PINCTRL (PIN_BASED_POSTED_INTR | \
+>  				    PIN_BASED_VMX_PREEMPTION_TIMER)
