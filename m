@@ -2,117 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F453C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE4CC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347043AbiHRVOX (ORCPT
+        id S1346690AbiHRVO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        Thu, 18 Aug 2022 17:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346846AbiHRVKh (ORCPT
+        with ESMTP id S1346853AbiHRVKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:10:37 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0D4D8E38
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:05:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=CIbXLcEJrXspYU/hN3KracAV+Wb
-        sEFRPKyFn2zxbs3g=; b=3OBc/B00GqnK8Efg2bP7poepP0IpI5bstznABOB/Ucb
-        fY9AtsrhthWRkHXIeIDjvpqAF7qLKGOSnrw44mjYjQqZ+MKkc9i2JQsaiD7FqFeN
-        AJrjZrESf+btY1+qKfkRaAdDECBFoKU6jFbNFQYPNkoV4QcBzie1U6VkzrtLa7N8
-        =
-Received: (qmail 3963187 invoked from network); 18 Aug 2022 23:02:21 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:02:21 +0200
-X-UD-Smtp-Session: l3s3148p1@HsUjTIrmDL4ucref
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: [PATCH] ipv6: move from strlcpy with unused retval to strscpy
-Date:   Thu, 18 Aug 2022 23:02:20 +0200
-Message-Id: <20220818210220.8491-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 18 Aug 2022 17:10:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA2DD8E3C;
+        Thu, 18 Aug 2022 14:05:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 615AACE22C3;
+        Thu, 18 Aug 2022 21:05:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D025FC433D7;
+        Thu, 18 Aug 2022 21:05:32 +0000 (UTC)
+Date:   Thu, 18 Aug 2022 17:05:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+Message-ID: <20220818170543.2e361e7d@gandalf.local.home>
+In-Reply-To: <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
+References: <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
+        <YvoVgMzMuQbAEayk@krava>
+        <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
+        <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
+        <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
+        <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
+        <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
+        <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
+        <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
+        <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
+        <Yv6gm09CMdZ/HMr5@krava>
+        <20220818165024.433f56fd@gandalf.local.home>
+        <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow the advice of the below link and prefer 'strscpy' in this
-subsystem. Conversion is 1:1 because the return value is not used.
-Generated by a coccinelle script.
+On Thu, 18 Aug 2022 14:00:21 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- net/ipv6/ip6_gre.c    | 2 +-
- net/ipv6/ip6_tunnel.c | 2 +-
- net/ipv6/ip6_vti.c    | 2 +-
- net/ipv6/sit.c        | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+> > #ifdef CONFIG_X86
+> > # define NON_MCOUNT_PATCHABLE KEEP(*(__patchable_function_entries))
+> > # define MCOUNT_PATCHABLE
+> > #else
+> > # define NON_MCOUNT_PATCHABLE
+> > # define MCOUNT_PATCHABLE  KEEP(*(__patchable_function_entries))
+> > #endif
+> >
+> >   #define MCOUNT_REC()    . = ALIGN(8);     \
+> >     __start_mcount_loc = .;                 \
+> >     KEEP(*(__mcount_loc))                   \
+> >     MCOUNT_PATCHABLE                        \
+> >     __stop_mcount_loc = .;                  \
+> >     NON_MCOUNT_PATCHABLE                    \
+> >    ...
+> >
+> > ??  
+> 
+> That's what more or less Peter's patch is doing:
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 80cb50d459e4..48b4ff0294f6 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -360,7 +360,7 @@ static struct ip6_tnl *ip6gre_tunnel_locate(struct net *net,
- 	if (parms->name[0]) {
- 		if (!dev_valid_name(parms->name))
- 			return NULL;
--		strlcpy(name, parms->name, IFNAMSIZ);
-+		strscpy(name, parms->name, IFNAMSIZ);
- 	} else {
- 		strcpy(name, "ip6gre%d");
- 	}
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 3fda5634578c..886511ecee23 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -293,7 +293,7 @@ static struct ip6_tnl *ip6_tnl_create(struct net *net, struct __ip6_tnl_parm *p)
- 	if (p->name[0]) {
- 		if (!dev_valid_name(p->name))
- 			goto failed;
--		strlcpy(name, p->name, IFNAMSIZ);
-+		strscpy(name, p->name, IFNAMSIZ);
- 	} else {
- 		sprintf(name, "ip6tnl%%d");
- 	}
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index 8fe59a79e800..1ddd60d06830 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -211,7 +211,7 @@ static struct ip6_tnl *vti6_tnl_create(struct net *net, struct __ip6_tnl_parm *p
- 	if (p->name[0]) {
- 		if (!dev_valid_name(p->name))
- 			goto failed;
--		strlcpy(name, p->name, IFNAMSIZ);
-+		strscpy(name, p->name, IFNAMSIZ);
- 	} else {
- 		sprintf(name, "ip6_vti%%d");
- 	}
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 6b73b7a5f175..98f1cf40746f 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -254,7 +254,7 @@ static struct ip_tunnel *ipip6_tunnel_locate(struct net *net,
- 	if (parms->name[0]) {
- 		if (!dev_valid_name(parms->name))
- 			goto failed;
--		strlcpy(name, parms->name, IFNAMSIZ);
-+		strscpy(name, parms->name, IFNAMSIZ);
- 	} else {
- 		strcpy(name, "sit%d");
- 	}
--- 
-2.35.1
+Heh.
 
+> Here it is again for reference:
+> https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=8d075bdf11193f1d276bf19fa56b4b8dfe24df9e
+
+Thanks, I missed seeing this.
+
+-- Steve
