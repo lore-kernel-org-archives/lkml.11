@@ -2,114 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7485EC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2077C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343694AbiHROrr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
+        id S245214AbiHROry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343497AbiHROrX (ORCPT
+        with ESMTP id S245520AbiHROrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 10:47:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB1F9C1F2
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOgnk-0008KN-3d; Thu, 18 Aug 2022 16:47:16 +0200
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOgnj-000X2u-DQ; Thu, 18 Aug 2022 16:47:15 +0200
-Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOgni-004BVV-4i; Thu, 18 Aug 2022 16:47:14 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     mchehab@kernel.org, sakari.ailus@linux.intel.com,
-        laurent.pinchart+renesas@ideasonboard.com,
-        jacopo+renesas@jmondi.org, akinobu.mita@gmail.com
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH 1/4] media: mt9m111: add V4L2_CID_PIXEL_RATE support
-Date:   Thu, 18 Aug 2022 16:47:09 +0200
-Message-Id: <20220818144712.997477-1-m.felsch@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69885BBA43;
+        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
+Received: by mail-qk1-f171.google.com with SMTP id b9so1263559qka.2;
+        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=gdljhD4izytPCTwhmdt8DBVVfc0NydPAltPgDipKvog=;
+        b=z21x2EFoAdNeIjrz68Au7PO2e9cPtW0hiwQpPagWD378YKOU24Kiv1WLGGLpLtisUR
+         qBk1cmhmh7sPvwMU6eHzIXmgq+kg2d4NgE7GPDq+clkNTZWsKVrEkvZHry8FMONDW8J9
+         4iyi6nFbvprD/o0eEeck5HAahW/0disiGm6noXG21VzPGXb/RMwxvQ7/uVMkG85ronW6
+         8XN593sIqFSPghnVuC1jOYMbZZrT5j9/A1BN7SBDsaej93rC4JGzkUNA0qsKEi6pxiij
+         YjLgrpuureSyFZwfk1xtddwhKp4WQvLJWgZc1C3Pikmm1CUdimKmpKPNKsCyl+whQ5nd
+         Lipg==
+X-Gm-Message-State: ACgBeo3Lvc0nxCHMN1kJlXgiwEYJAiFy5FrXDoCOIJu4RxxQJadrpjOJ
+        xCzgVISjm1KCKluhLunPMw==
+X-Google-Smtp-Source: AA6agR6os7Il7llhYeMa4bR2kBtfZkcv6PCsh86UdfBNsIhRKKgO+IREW4lBHpdZzuhJU3WR6VLMIQ==
+X-Received: by 2002:a05:620a:2286:b0:6bb:5fa4:58 with SMTP id o6-20020a05620a228600b006bb5fa40058mr2241995qkh.202.1660834040446;
+        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:25d2:ea0d:b91c:d10a:6423:3870])
+        by smtp.gmail.com with ESMTPSA id n1-20020ac86741000000b0031eebfcb369sm1049301qtp.97.2022.08.18.07.47.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
+Received: (nullmailer pid 1843176 invoked by uid 1000);
+        Thu, 18 Aug 2022 14:47:13 -0000
+Date:   Thu, 18 Aug 2022 08:47:13 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH] MAINTAINERS: Update email of Neil Armstrong
+Message-ID: <20220818144713.GC1829017-robh@kernel.org>
+References: <20220816095617.948678-1-narmstrong@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816095617.948678-1-narmstrong@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to report the PIXEL_RATE so a host or bridge device can ask
-the sensor.
+On Tue, Aug 16, 2022 at 11:56:17AM +0200, Neil Armstrong wrote:
+> From: Neil Armstrong <neil.armstrong@linaro.org>
+> 
+> My professional e-mail will change and the BayLibre one will
+> bounce after mid-september of 2022.
+> 
+> This updates the MAINTAINERS file, the YAML bindings and adds an
+> entry in the .mailmap file.
+> 
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> ---
+>  .mailmap                                      |  1 +
+>  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
+>  .../display/amlogic,meson-dw-hdmi.yaml        |  2 +-
+>  .../bindings/display/amlogic,meson-vpu.yaml   |  2 +-
+>  .../display/bridge/analogix,anx7814.yaml      |  2 +-
+>  .../bindings/display/bridge/ite,it66121.yaml  |  2 +-
+>  .../display/panel/sgd,gktw70sdae4se.yaml      |  2 +-
+>  .../bindings/i2c/amlogic,meson6-i2c.yaml      |  2 +-
+>  .../mailbox/amlogic,meson-gxbb-mhu.yaml       |  2 +-
+>  .../bindings/media/amlogic,axg-ge2d.yaml      |  2 +-
+>  .../bindings/media/amlogic,gx-vdec.yaml       |  2 +-
+>  .../media/amlogic,meson-gx-ao-cec.yaml        |  2 +-
+>  .../devicetree/bindings/mfd/khadas,mcu.yaml   |  2 +-
+>  .../bindings/net/amlogic,meson-dwmac.yaml     |  2 +-
+>  .../bindings/phy/amlogic,axg-mipi-dphy.yaml   |  2 +-
+>  .../phy/amlogic,meson-g12a-usb2-phy.yaml      |  2 +-
+>  .../phy/amlogic,meson-g12a-usb3-pcie-phy.yaml |  2 +-
+>  .../bindings/power/amlogic,meson-ee-pwrc.yaml |  2 +-
+>  .../bindings/reset/amlogic,meson-reset.yaml   |  2 +-
+>  .../bindings/rng/amlogic,meson-rng.yaml       |  2 +-
+>  .../bindings/serial/amlogic,meson-uart.yaml   |  2 +-
+>  .../bindings/soc/amlogic/amlogic,canvas.yaml  |  2 +-
+>  .../bindings/spi/amlogic,meson-gx-spicc.yaml  |  2 +-
+>  .../bindings/spi/amlogic,meson6-spifc.yaml    |  2 +-
+>  .../usb/amlogic,meson-g12a-usb-ctrl.yaml      |  2 +-
+>  .../watchdog/amlogic,meson-gxbb-wdt.yaml      |  2 +-
+>  MAINTAINERS                                   | 20 +++++++++----------
+>  27 files changed, 36 insertions(+), 35 deletions(-)
 
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
----
- drivers/media/i2c/mt9m111.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+Applied, thanks!
 
-diff --git a/drivers/media/i2c/mt9m111.c b/drivers/media/i2c/mt9m111.c
-index afc86efa9e3e..cdaf283e1309 100644
---- a/drivers/media/i2c/mt9m111.c
-+++ b/drivers/media/i2c/mt9m111.c
-@@ -908,6 +908,8 @@ static int mt9m111_s_ctrl(struct v4l2_ctrl *ctrl)
- 		return mt9m111_set_test_pattern(mt9m111, ctrl->val);
- 	case V4L2_CID_COLORFX:
- 		return mt9m111_set_colorfx(mt9m111, ctrl->val);
-+	case V4L2_CID_PIXEL_RATE:
-+		return 0;
- 	}
- 
- 	return -EINVAL;
-@@ -1249,6 +1251,7 @@ static int mt9m111_probe(struct i2c_client *client)
- {
- 	struct mt9m111 *mt9m111;
- 	struct i2c_adapter *adapter = client->adapter;
-+	unsigned long mclk_rate;
- 	int ret;
- 
- 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WORD_DATA)) {
-@@ -1271,6 +1274,13 @@ static int mt9m111_probe(struct i2c_client *client)
- 	if (IS_ERR(mt9m111->clk))
- 		return PTR_ERR(mt9m111->clk);
- 
-+	ret = clk_prepare_enable(mt9m111->clk);
-+	if (ret < 0)
-+		return ret;
-+
-+	mclk_rate = clk_get_rate(mt9m111->clk);
-+	clk_disable_unprepare(mt9m111->clk);
-+
- 	mt9m111->regulator = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(mt9m111->regulator)) {
- 		dev_err(&client->dev, "regulator not found: %ld\n",
-@@ -1285,7 +1295,7 @@ static int mt9m111_probe(struct i2c_client *client)
- 	mt9m111->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
- 				 V4L2_SUBDEV_FL_HAS_EVENTS;
- 
--	v4l2_ctrl_handler_init(&mt9m111->hdl, 7);
-+	v4l2_ctrl_handler_init(&mt9m111->hdl, 8);
- 	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops,
- 			V4L2_CID_VFLIP, 0, 1, 1, 0);
- 	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops,
-@@ -1309,6 +1319,9 @@ static int mt9m111_probe(struct i2c_client *client)
- 				BIT(V4L2_COLORFX_NEGATIVE) |
- 				BIT(V4L2_COLORFX_SOLARIZATION)),
- 			V4L2_COLORFX_NONE);
-+	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops, V4L2_CID_PIXEL_RATE,
-+			  mclk_rate, mclk_rate, 1, mclk_rate);
-+
- 	mt9m111->subdev.ctrl_handler = &mt9m111->hdl;
- 	if (mt9m111->hdl.error) {
- 		ret = mt9m111->hdl.error;
--- 
-2.30.2
-
+Rob
