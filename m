@@ -2,145 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A736C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 19:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9385DC32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 19:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345609AbiHRTkQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 15:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53326 "EHLO
+        id S244031AbiHRTls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 15:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239149AbiHRTkN (ORCPT
+        with ESMTP id S232038AbiHRTlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 15:40:13 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674171057F;
-        Thu, 18 Aug 2022 12:40:12 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id f4so208120pgc.12;
-        Thu, 18 Aug 2022 12:40:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=ulMg8tTHr07JXADnsATIwJjQyIx3Snpx5qARr9jK6UA=;
-        b=n9xlbNi8id94f4BxSUtpst7ZPal3m8sIo8LIC6dMnklQbgk3mkRVYEPstoDKAdpjcm
-         /RMlGcKEXZxSGd3YjFd5R6chTO7+VYz0302lCBLpMn9jPUdn5oUybzWJQjEkqydKp4so
-         UvkBu6UWzAos5J6ih9d29NCqHH+QVb/oRKOy+5iWNTS1QQzOJYeJIAVPGPirM+4lhadx
-         22ezxtRRy56V1ylvsCi+WO8szAQFY4Q2kHXGBiimnGk4h0nPyzvrdBnyogic4XCGUcw/
-         NeUq2Ylp7RvsWn8YgxOgt8jOibWYJ8k8D01K6DkXY3tLcARu0XvUCIvbzx91DwW6W/4y
-         8UNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=ulMg8tTHr07JXADnsATIwJjQyIx3Snpx5qARr9jK6UA=;
-        b=5c6Y+AWzMwCnSyJ1rsHKO8+wN5GUpLlz+cToRSAhzkBn//cV7enyp1G5akM9EecVjX
-         pVJk8ZScZZaKn69WUgUvyO8NQqLLWSG0MR401v3EJbGbEeGaypqG6pFgL9R5BMn4hIEG
-         a5xU5XFDkSvjpldjREDx7tQovw+BJ//cgHen5aDGs3w/4J8Wn4KE4LZXmTwCFFeN/ouq
-         R2nK6C/my+Orbb4Oo0P6UMK2Te/ZPtCmMXC35WAQBIlmFLjb9t3QKF80J1MMOWz0LdGV
-         ukHG65h5qa95MSeTIBX05TOXbUSe9wrsn4YcW41nRdtcPHduavzJ7HhV5ZUUF/qxZohD
-         ntIg==
-X-Gm-Message-State: ACgBeo0/J9BUfgifFXM9vV7GIL6CaAOUQLpaSdi94S21jlB11GAcVIxU
-        nNQfT+4geW4vTeP3Ev5ZguU=
-X-Google-Smtp-Source: AA6agR4FefTBHo9ngDpHXcHDxebo2RSaUqagrN+Kjesfv4bVTdERIQ1NvP2huUDMIRbJeSw94+jv5Q==
-X-Received: by 2002:a05:6a00:1996:b0:52e:b0f7:8c83 with SMTP id d22-20020a056a00199600b0052eb0f78c83mr4342979pfl.59.1660851611848;
-        Thu, 18 Aug 2022 12:40:11 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id e25-20020aa79819000000b0052895642037sm1991984pfl.139.2022.08.18.12.40.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 12:40:10 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 18 Aug 2022 12:40:08 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Eliav Farber <farbere@amazon.com>
-Cc:     jdelvare@suse.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
-        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
-        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
-        amitlavi@amazon.com, almogbs@amazon.com, dwmw@amazon.co.uk,
-        rtanwar@maxlinear.com
-Subject: Re: [PATCH v2 01/16] hwmon: (mr75203) fix VM sensor allocation when
- "intel,vm-map" not defined
-Message-ID: <20220818194008.GA3118944@roeck-us.net>
-References: <20220817054321.6519-1-farbere@amazon.com>
- <20220817054321.6519-2-farbere@amazon.com>
+        Thu, 18 Aug 2022 15:41:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4754ED021A
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 12:41:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5C256132A
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 19:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFE4C433D6;
+        Thu, 18 Aug 2022 19:41:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660851704;
+        bh=4FgQMLBChYeexHrpum2+OfTBS1r6DlALKEiuH7ZxKDI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YHY0zAbBPDFN4L8RsInVQ4m+k4k5VJPaoLl2/0QS9nwcUV/mW5/GJx9zGFO9LcbTA
+         g5KzQLlYX9dfc86QvJrtTR8IRe9I2eqB4Tf5o8OfU4ldSwjGev3SFiCUC3S4z1nt89
+         brucRxbGWs79V1FeavgEzOgP2Jx88Uu/rgYBjh4M7lWNV3oZy16leFf/JoppMmaPFx
+         mN5PL2NNNv/6zA+nkDE4xm+4IXN4Py7bEVddgtGoOVICoWKU8zCwtglWl9NRaTOfei
+         H9iW4LSU2N84jDebgaB2uwaMP/zs4MDLosbaLlb5QAxnYcn0i1Y5KpVLpjWs5ZncDT
+         sa54P3PUUqYQA==
+Date:   Thu, 18 Aug 2022 21:41:37 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linux Phy <linux-phy@lists.infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pali =?UTF-8?B?Um9o?= =?UTF-8?B?w6Fy?= <pali@kernel.org>,
+        josef.schlehofer@nic.cz
+Subject: Re: [PATCH linux-phy v2 2/4] device property: Add
+ {fwnode/device}_get_tx_p2p_amplitude()
+Message-ID: <20220818214137.29ccb13a@thinkpad>
+In-Reply-To: <CAHp75Vcn1MXEB_+kJuR3qY8qxi6oq0pEFFSFrmKv2-tE-YP-zA@mail.gmail.com>
+References: <20220817200335.911-1-kabel@kernel.org>
+        <20220817200335.911-3-kabel@kernel.org>
+        <CAHp75Vcn1MXEB_+kJuR3qY8qxi6oq0pEFFSFrmKv2-tE-YP-zA@mail.gmail.com>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817054321.6519-2-farbere@amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 05:43:06AM +0000, Eliav Farber wrote:
-> Fix a bug that in case "intel,vm-map" is missing 'num' is set to 0,
-> and no voltage channel infos are allocated.
-> 
+On Thu, 18 Aug 2022 22:22:31 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-"intel,vm-map" is listed as required property in moortec,mr75203.yaml.
-If it is missing, the probe function should fail.
+> On Wed, Aug 17, 2022 at 11:09 PM Marek Beh=C3=BAn <kabel@kernel.org> wrot=
+e:
+> >
+> > Add functions fwnode_get_tx_p2p_amplitude() and
+> > device_get_tx_p2p_amplitude() that parse the 'tx-p2p-microvolt' and
+> > 'tx-p2p-microvolt-names' properties and return peak to peak transmit
+> > amplitude in microvolts for given PHY mode.
+> >
+> > The functions search for mode name in 'tx-p2p-microvolt-names' property,
+> > and return amplitude at the corresponding index in the 'tx-p2p-microvol=
+t'
+> > property.
+> >
+> > If given mode is not matched in 'tx-p2p-microvolt-names' array, the mode
+> > name is generalized (for example "pcie3" -> "pcie" -> "default", or
+> > "usb-ss" -> "usb" -> "default").
+> >
+> > If the 'tx-p2p-microvolt-names' is not present, the 'tx-p2p-microvolt'
+> > property is expected to contain only one value, which is considered
+> > default, and will be returned for any mode. =20
+>=20
+> It's very specific to a domain. NAK for putting it to the generic
+> code, otherwise explain how it can be useful outside of the PHY world.
 
-Guenter
+The property may be also useful for drivers that don't depend on
+generic PHY subsystem. At least the mv88e6xxx DSA driver already reads
+the property [1] although it simply uses of_property_read_u32(),
+because it does not expect more complicated definition yet.
 
-> Signed-off-by: Eliav Farber <farbere@amazon.com>
-> ---
->  drivers/hwmon/mr75203.c | 28 ++++++++++++----------------
->  1 file changed, 12 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
-> index 046523d47c29..0e29877a1a9c 100644
-> --- a/drivers/hwmon/mr75203.c
-> +++ b/drivers/hwmon/mr75203.c
-> @@ -580,8 +580,6 @@ static int mr75203_probe(struct platform_device *pdev)
->  	}
->  
->  	if (vm_num) {
-> -		u32 num = vm_num;
-> -
->  		ret = pvt_get_regmap(pdev, "vm", pvt);
->  		if (ret)
->  			return ret;
-> @@ -594,30 +592,28 @@ static int mr75203_probe(struct platform_device *pdev)
->  		ret = device_property_read_u8_array(dev, "intel,vm-map",
->  						    pvt->vm_idx, vm_num);
->  		if (ret) {
-> -			num = 0;
-> +			/*
-> +			 * Incase intel,vm-map property is not defined, we
-> +			 * assume incremental channel numbers.
-> +			 */
-> +			for (i = 0; i < vm_num; i++)
-> +				pvt->vm_idx[i] = i;
->  		} else {
->  			for (i = 0; i < vm_num; i++)
->  				if (pvt->vm_idx[i] >= vm_num ||
-> -				    pvt->vm_idx[i] == 0xff) {
-> -					num = i;
-> +				    pvt->vm_idx[i] == 0xff)
->  					break;
-> -				}
-> -		}
->  
-> -		/*
-> -		 * Incase intel,vm-map property is not defined, we assume
-> -		 * incremental channel numbers.
-> -		 */
-> -		for (i = num; i < vm_num; i++)
-> -			pvt->vm_idx[i] = i;
-> +			vm_num = i;
-> +		}
->  
-> -		in_config = devm_kcalloc(dev, num + 1,
-> +		in_config = devm_kcalloc(dev, vm_num + 1,
->  					 sizeof(*in_config), GFP_KERNEL);
->  		if (!in_config)
->  			return -ENOMEM;
->  
-> -		memset32(in_config, HWMON_I_INPUT, num);
-> -		in_config[num] = 0;
-> +		memset32(in_config, HWMON_I_INPUT, vm_num);
-> +		in_config[vm_num] = 0;
->  		pvt_in.config = in_config;
->  
->  		pvt_info[index++] = &pvt_in;
+There are three subsystem which may want to use this function: generic
+PHY, ethernet PHY and DSA. Since ethernet PHY subsystem nor DSA
+subsystem do not depend on generic PHY, I thought putting it in base
+would be sensible.
+
+If you think it should be in generic PHY subsystem anyway, and that
+other drivers needing it should depend on GENERIC_PHY, I can move it.
+
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/dri=
+vers/net/dsa/mv88e6xxx/chip.c?h=3Dv6.0-rc1#n3504
+
+>=20
+> ...
+>=20
+> > +       cnt =3D fwnode_property_string_array_count(fwnode, names_prop);
+> > +       if (!cnt || cnt =3D=3D -EINVAL)
+> > +               /*
+> > +                * If the names property does not exist or is empty, we=
+ expect
+> > +                * the values property to contain only one, default val=
+ue.
+> > +                */
+> > +               return fwnode_property_read_u32(fwnode, vals_prop, ampl=
+itude);
+> > +       else if (cnt < 0)
+> > +               return cnt; =20
+>=20
+> You may count the values and read them all,
+
+What do you mean? Count the values and read them all via one
+call to fwnode_property_string_array_count() ?
+
+> and then check the names
+> and compare count to the read values. In such a case you don't need
+> too many (overlapped) checks. I think the current implementation is
+> far from being optimal. Take your time and try to get rid of 20% of
+> lines in this function. I believe it's doable.
+>
+> ...
+>=20
+> > + * Gets the peak to peak transmit amplitude in microvolts for a given =
+PHY mode
+> > + * by parsing the 'tx-p2p-microvolt' and 'tx-p2p-microvolt-names' prop=
+erties.
+> > + * If amplitude is not specified for @mode exactly, tries a more gener=
+ic mode,
+> > + * and if that isn't specified, tries "default". =20
+>=20
+> Gets --> Get
+> tries --> try
+>=20
+> Otherwise add a subject to the sentences.
+>=20
+
