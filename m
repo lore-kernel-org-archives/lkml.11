@@ -2,65 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8BEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 03:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C2D5C32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242824AbiHRDwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 23:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
+        id S239290AbiHREB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240247AbiHRDwk (ORCPT
+        with ESMTP id S234176AbiHREBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 23:52:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3F16527F;
-        Wed, 17 Aug 2022 20:52:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DB1561542;
-        Thu, 18 Aug 2022 03:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D45C433D6;
-        Thu, 18 Aug 2022 03:52:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660794758;
-        bh=NSlez/1Y8KI9kkSJxWI8jwfTv3VmOAFhtcUY0bfupfk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=j2ZO9whBC0e2Fm6KyvLDdPeo34tA7YwXGmDJfOxL90rai22v4AwXxUzg7wUHtEM+Q
-         z1zkLK/LRvkNnXQbcSZ5mccBcneYNc0xGOEOyrRSQRv6CH8sAkBM+X07jyXxSBEPgS
-         alcRGtwemQEXBWjYHXgt85mQBsWqyQXHGDqpJHmAlh3Kl2AgdFzBn5U9FqCjW95cS4
-         Gxxv8IY8t6kJzTwHJy4LX1scN0EYzhBUPW8XMBtr5WkVMx4ZG4KBU2VFOAnZkFlqRg
-         ATjlIn6HUaWShLIqxW/3TN4G/bl4wyt5Rob+zzSbJWcsqntNzew/gnjLF7PiiNeyPb
-         ktU5qo5YhXFcw==
-Date:   Wed, 17 Aug 2022 20:52:37 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xu.xin16@zte.com.cn
-Subject: Re: [PATCH 0/2] Namespaceify two sysctls related with route
-Message-ID: <20220817205237.3e701f0b@kernel.org>
-In-Reply-To: <20220816022522.81772-1-xu.xin16@zte.com.cn>
-References: <20220816022522.81772-1-xu.xin16@zte.com.cn>
+        Thu, 18 Aug 2022 00:01:23 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A5BAB04F;
+        Wed, 17 Aug 2022 21:01:21 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 27I3f86v089912;
+        Thu, 18 Aug 2022 11:41:09 +0800 (GMT-8)
+        (envelope-from neal_liu@aspeedtech.com)
+Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Aug
+ 2022 11:59:59 +0800
+From:   Neal Liu <neal_liu@aspeedtech.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        "Andrew Jeffery" <andrew@aj.id.au>,
+        Dhananjay Phadke <dhphadke@microsoft.com>,
+        "Johnny Huang" <johnny_huang@aspeedtech.com>
+CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>,
+        Dhananjay Phadke <dphadke@linux.microsoft.com>
+Subject: [PATCH v10 3/5] ARM: dts: aspeed: Add HACE device controller node
+Date:   Thu, 18 Aug 2022 11:59:54 +0800
+Message-ID: <20220818035956.1160585-4-neal_liu@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220818035956.1160585-1-neal_liu@aspeedtech.com>
+References: <20220818035956.1160585-1-neal_liu@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.10.10]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 27I3f86v089912
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 02:25:22 +0000 cgel.zte@gmail.com wrote:
-> Different netns has different requirements on the setting of error_cost
-> and error_burst, which are related with limiting the frequency of sending
-> ICMP_DEST_UNREACH packets or outputing error message to dmesg.
+Add hace node to device tree for AST2500/AST2600.
 
-Could you add a bit more detail about why you need this knob per netns?
-The code looks fine, no objections there, what I'm confused by is that
-we don't have this knob for IPv6. So is it somehow important enough for
-v4 to be per-ns and yet not important enough to exist at all on v6?
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+Reviewed-by: Dhananjay Phadke <dphadke@linux.microsoft.com>
+---
+ arch/arm/boot/dts/aspeed-g5.dtsi | 8 ++++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi | 8 ++++++++
+ 2 files changed, 16 insertions(+)
 
-Could you add Documentation in Documentation/admin-guide/sysctl/net.rst
-while at it, and use READ_ONCE / WRITE_ONCE when accessing the sysctl?
+diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
+index c89092c3905b..04f98d1dbb97 100644
+--- a/arch/arm/boot/dts/aspeed-g5.dtsi
++++ b/arch/arm/boot/dts/aspeed-g5.dtsi
+@@ -262,6 +262,14 @@ rng: hwrng@1e6e2078 {
+ 				quality = <100>;
+ 			};
+ 
++			hace: crypto@1e6e3000 {
++				compatible = "aspeed,ast2500-hace";
++				reg = <0x1e6e3000 0x100>;
++				interrupts = <4>;
++				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
++				resets = <&syscon ASPEED_RESET_HACE>;
++			};
++
+ 			gfx: display@1e6e6000 {
+ 				compatible = "aspeed,ast2500-gfx", "syscon";
+ 				reg = <0x1e6e6000 0x1000>;
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index 6660564855ff..095cf8d03616 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -323,6 +323,14 @@ apb {
+ 			#size-cells = <1>;
+ 			ranges;
+ 
++			hace: crypto@1e6d0000 {
++				compatible = "aspeed,ast2600-hace";
++				reg = <0x1e6d0000 0x200>;
++				interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
++				resets = <&syscon ASPEED_RESET_HACE>;
++			};
++
+ 			syscon: syscon@1e6e2000 {
+ 				compatible = "aspeed,ast2600-scu", "syscon", "simple-mfd";
+ 				reg = <0x1e6e2000 0x1000>;
+-- 
+2.25.1
 
-Please make sure to CC the relevant maintainers. IP maintainers were
-not CCed here. The get_maintainers script will tell you who to CC,
-please use it.
