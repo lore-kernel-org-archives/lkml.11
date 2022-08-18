@@ -2,181 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F13C32772
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE9AC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344357AbiHRP3d (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52688 "EHLO
+        id S245075AbiHRPbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 11:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343766AbiHRP3a (ORCPT
+        with ESMTP id S239670AbiHRPbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:29:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E804E8286C
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660836567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BsS/ws8PW+id0ON/BYeR+QEPGH6otJZmVRxUjUdHJZw=;
-        b=hPvQgm2Qv/A04sDb7q9i/kXeoIsTzXSiFF33izE22pTvYN2/Q5jLu4MX+ztI8qBv2dlZG/
-        NvGjNLVcRvuqJxbUakSmp3nPNj20CYp/6whDKHRc7tQp5gqI+RBNXAdLOJ0OJnwjrw8CWI
-        iE2OQBKb82xgNpOvJtDPd4TJw3Yb8yA=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-518-Yuz73AguP8mKR3-lwBhvag-1; Thu, 18 Aug 2022 11:29:26 -0400
-X-MC-Unique: Yuz73AguP8mKR3-lwBhvag-1
-Received: by mail-ej1-f70.google.com with SMTP id hr32-20020a1709073fa000b00730a39f36ddso798969ejc.5
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:29:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=BsS/ws8PW+id0ON/BYeR+QEPGH6otJZmVRxUjUdHJZw=;
-        b=kzcOUDUCfEUssas+r1kZgCIErU5JZEv5p+MrAV93eWTqdXvXLSA0MVXELk62ao6eCl
-         v/IKU9IfmCNV6xRDQ3AZOMUIaQB60H8GaFUqC1WFdtHn6MTFK9wuAV5GtT/bbs+Ij4Sv
-         Kxkjx3m47WnXq5YCxKisnp5kqeixOhCx6cLR9LaUpXnuwXLBo9M/IhcVwGoXbl4x9Fyj
-         7OZpNSCs4CMuO155DMOFxPHnJDPe1S5LUM46FglpMjKIoVFiQAnrGGHZfzoVcA160kXg
-         E1DPg6L+rTkmmzYv+fKp/W1YgfqMkBz1TL1ibq9CIRTlQsP0NaoSiHAPbZ1+tZfr65nt
-         f2Sw==
-X-Gm-Message-State: ACgBeo26KeICEaea78feuHdlBZge0j9vmLYagjvfjqPMZtODvRkqUk6o
-        ji3FKOrL0RkfMvCKXourNpusY2LKIiZaYa+giWAXMjKsCwItetigq6BvwAjCCg9+luGsLCCgucb
-        IWL6rHCdzTXJd+q49G7Dj8qxVVViaC8hH/J3ko+4fmoBNDdAGGPRp0jcpaGpK45eaQw8WPfn/xF
-        mW
-X-Received: by 2002:a17:906:8cb0:b0:739:4c35:75d8 with SMTP id qr48-20020a1709068cb000b007394c3575d8mr2143933ejc.711.1660836565389;
-        Thu, 18 Aug 2022 08:29:25 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6ASJ7PrAhP1AxtzslI2uK+cdyhUoC0lq1YKdkkov99E4p7dL/Ue1WdJx9EeNbvpu3Z5stuxQ==
-X-Received: by 2002:a17:906:8cb0:b0:739:4c35:75d8 with SMTP id qr48-20020a1709068cb000b007394c3575d8mr2143910ejc.711.1660836565158;
-        Thu, 18 Aug 2022 08:29:25 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id e9-20020a056402330900b0043af8007e7fsm1355944eda.3.2022.08.18.08.29.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 08:29:24 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 03/26] x86/hyperv: Update 'struct
- hv_enlightened_vmcs' definition
-In-Reply-To: <Yv5ZFgztDHzzIQJ+@google.com>
-References: <20220802160756.339464-1-vkuznets@redhat.com>
- <20220802160756.339464-4-vkuznets@redhat.com>
- <Yv5ZFgztDHzzIQJ+@google.com>
-Date:   Thu, 18 Aug 2022 17:29:23 +0200
-Message-ID: <875yiptvsc.fsf@redhat.com>
+        Thu, 18 Aug 2022 11:31:09 -0400
+Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7349AF80
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:31:08 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id 9B5D92B05ADE;
+        Thu, 18 Aug 2022 11:31:05 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 18 Aug 2022 11:31:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660836665; x=1660843865; bh=zsZN0+/dvw
+        oQ1eBJsmGkPBClTq6+A6mbZvTtkF8HBEY=; b=BMiP2oaAOwbNtZZLLkDUVMmYY0
+        RONK7KgiEuxuKSpy29xDAffJAjJ//MxoOfyJ7z1PgFPhtU5yaFfSLExBbFZiRSkT
+        mFwEIaB1C70toP9zCEJxKi7iIa6CeTw4nAkxOArZHavQLc1XsxBPgkX3+UvUbc6z
+        pZcYemBlWY12iE/uGW2O1DGwdPviDTDgDOTWMSCRpiLxI9g8s8LtUaGARWberwba
+        ZyOzY3rpaPkIC6ToN01G4p/005OMe0YIjBsGQ+/Fsq9Re5oygKLYA9y0E8tyuyOD
+        CNjL2nBgcT2neTJNUsh+g6VZK2mjTxPvcCI9Lukvqvxr+xJxM9q1gtu9BZGQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660836665; x=1660843865; bh=zsZN0+/dvwoQ1eBJsmGkPBClTq6+
+        A6mbZvTtkF8HBEY=; b=wxtGJPeahDRmQybRntrvlGpL29icAnQ2KJUUR/750Dbj
+        RTpbASl5qveK0yvvFsPZ6PUdrQT9NVmCBI1Ez1yAHJXi/rjEDHiuCj+xcCNVg9On
+        arMZo1tw0FEhao2iyb2gWvlBB0QTtVYIaL69vHSsgEZ5ZNF/y8roJHvhAu09PBlP
+        lmAhz8WdhPVN9pjbb18dsGLY1UDq6O4nPa29UNltwcRXaTHEM8FAYy/1KsQmt4c7
+        NuLFwnfHAB7OoPm/W+r12dqzYe/UhergwWfAvZktZ/9KrJ2OfqLvMkLvhdeyij+w
+        Ts1fbl49nMfed+UFlxccB7JIToXT+R49JTtl28PaRg==
+X-ME-Sender: <xms:OFv-Yu62dxrUPmg8XCcF5vkBdZLfkKWRTWRMceuh4Vl3jYCNG5H6Pw>
+    <xme:OFv-Yn7TsCJLt_qf9gSXzBLKVG64_WoSf7DCT2ulkn9PQaxuUCdwXHYznUN4Jbcjf
+    o-IKO199x9giG7346k>
+X-ME-Received: <xmr:OFv-YteY1dY6O4ATQ96hfBGrkJ2o8UBdWlnoxhHjzH7PUUPiBgRkGDSQvA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehledgieegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeevuddthffgfeeiffejgfeghfeludegkedtgefgffejtdegtddvleduvdfh
+    teehveenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:OFv-YrKpWv2QM74J0-xWujbdUgcE3V56GmPDsPu8q3osVUebdxqsPw>
+    <xmx:OFv-YiLxa1wCF6AU95HNuaOQYlymPhHHcDpNseqE1P8hRDE5kqKS_g>
+    <xmx:OFv-YszT2JwRE0EKsOdHk8fGMEyVZQ1Ox2NB1FXHDNfzzewjIGhnFA>
+    <xmx:OVv-Yi7g6GJ7u7ml1Q6EnLVRN5lnPYqOwokiIL5aN8jHgi551F2z4v7DD8o>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 18 Aug 2022 11:31:03 -0400 (EDT)
+Date:   Thu, 18 Aug 2022 17:31:01 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+Message-ID: <20220818153101.c25x33vkl6qboswe@houat>
+References: <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <9fdecae2-80ad-6212-0522-7dccf9fb57be@tronnes.org>
+ <20220816082612.grebxql5ynnfnvfd@houat>
+ <ea6ebdda-f779-78af-1ffd-bd86d715077f@tronnes.org>
+ <20220816094922.oqhrhefv327zo2ou@houat>
+ <be9b6b71-fa2a-3290-2bce-901342e01981@tronnes.org>
+ <20220817114605.jpb3tlnoseyvf65d@houat>
+ <30f3005d-0acc-e5af-10ca-cf46f18b3478@tronnes.org>
+ <133c2a1d-0b4c-cef9-11fe-9ce9985253d6@tronnes.org>
+ <9daca9bf-838e-c3eb-51de-1cf5188a9341@tronnes.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="neorrh2qu6ghuw3r"
+Content-Disposition: inline
+In-Reply-To: <9daca9bf-838e-c3eb-51de-1cf5188a9341@tronnes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
 
-> On Tue, Aug 02, 2022, Vitaly Kuznetsov wrote:
->> Updated Hyper-V Enlightened VMCS specification lists several new
->> fields for the following features:
->> 
->> - PerfGlobalCtrl
->> - EnclsExitingBitmap
->> - Tsc Scaling
->> - GuestLbrCtl
->> - CET
->> - SSP
->> 
->> Update the definition. The updated definition is available only when
->> CPUID.0x4000000A.EBX BIT(0) is '1'. Add a define for it as well.
->> 
->> Note: The latest TLFS is available at
->> https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/tlfs
->> 
->> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
->> ---
->>  arch/x86/include/asm/hyperv-tlfs.h | 26 ++++++++++++++++++++++++--
->>  1 file changed, 24 insertions(+), 2 deletions(-)
->> 
->> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
->> index 6f0acc45e67a..ebc27017fa48 100644
->> --- a/arch/x86/include/asm/hyperv-tlfs.h
->> +++ b/arch/x86/include/asm/hyperv-tlfs.h
->> @@ -138,6 +138,17 @@
->>  #define HV_X64_NESTED_GUEST_MAPPING_FLUSH		BIT(18)
->>  #define HV_X64_NESTED_MSR_BITMAP			BIT(19)
->>  
->> +/*
->> + * Nested quirks. These are HYPERV_CPUID_NESTED_FEATURES.EBX bits.
->
-> The "quirks" part is very confusing, largely because KVM has a well-established
-> quirks mechanism.  I also don't see "quirks" anywhere in the TLFS documentation.
-> Can the "Nested quirks" part simply be dropped?
->
+--neorrh2qu6ghuw3r
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yes, it's completely made up (just like I made up
-HV_X64_NESTED_EVMCS1_2022_UPDATE), let's drop it.
+On Thu, Aug 18, 2022 at 05:01:38PM +0200, Noralf Tr=F8nnes wrote:
+>=20
+>=20
+> Den 18.08.2022 01.23, skrev Noralf Tr=F8nnes:
+> >=20
+> >=20
+> > Den 17.08.2022 15.11, skrev Noralf Tr=F8nnes:
+> >>
+> >>
+> >> Den 17.08.2022 13.46, skrev Maxime Ripard:
+> >>> On Tue, Aug 16, 2022 at 09:35:24PM +0200, Noralf Tr=F8nnes wrote:
+> >>>> Den 16.08.2022 11.49, skrev Maxime Ripard:
+> >>>>> On Tue, Aug 16, 2022 at 11:42:20AM +0200, Noralf Tr=F8nnes wrote:
+> >>>>>> Den 16.08.2022 10.26, skrev Maxime Ripard:
+> >>>>>>> Hi,
+> >>>>>>>
+> >>>>>>> On Mon, Aug 08, 2022 at 02:44:56PM +0200, Noralf Tr=F8nnes wrote:
+> >>>>>>>> Den 29.07.2022 18.34, skrev Maxime Ripard:
+> >>>>>>>>> The TV mode property has been around for a while now to select =
+and get the
+> >>>>>>>>> current TV mode output on an analog TV connector.
+> >>>>>>>>>
+> >>>>>>>>> Despite that property name being generic, its content isn't and=
+ has been
+> >>>>>>>>> driver-specific which makes it hard to build any generic behavi=
+our on top
+> >>>>>>>>> of it, both in kernel and user-space.
+> >>>>>>>>>
+> >>>>>>>>> Let's create a new bitmask tv norm property, that can contain a=
+ny of the
+> >>>>>>>>> analog TV standards currently supported by kernel drivers. Each=
+ driver can
+> >>>>>>>>> then pass in a bitmask of the modes it supports.
+> >>>>>>>>>
+> >>>>>>>>> We'll then be able to phase out the older tv mode property.
+> >>>>>>>>>
+> >>>>>>>>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> >>>>>>>>>
+> >=20
+> >>>> How do you test the property? I've used modetest but I can only chan=
+ge
+> >>>> to a tv.mode that matches the current display mode. I can't switch f=
+rom
+> >>>> ntsc to pal for instance.
+> >>>
+> >>> Yep, if you want to change from PAL to NTSC, it will require a new mo=
+de.
+> >>>
+> >>
+> >> So userspace has to check tv.mode first and then create a display mode
+> >> the driver will accept if switching to a different display mode is
+> >> necessary? In other words, userspace can't discover from the kernel
+> >> which display modes a certain tv.mode/norm provides before it is
+> >> selected? If so, maybe libdrm should have some function(s) to deal with
+> >> switching between modes that require a different display mode since
+> >> knowledge about which display modes a tv.mode supports is needed before
+> >> hand.
+> >>
+> >=20
+> > I haven't used vc4 on Pi4 in mainline before and have finally gotten it
+> > to work.
+> >=20
+> > I see that the connector reports 2 modes that together fit all tv.norms
+> > so userspace doesn't have to contruct a display mode, but it does need
+> > to know which display mode belongs to a certain tv.norm.
+> >=20
+> > When I try to use modetest I'm unable to set a mode:
+> >=20
+> > pi@pi4t:~ $ modetest -M vc4 -s 45:720x480i
+> > setting mode 720x480i-29.97Hz on connectors 45, crtc 68
+> > failed to set mode: Function not implemented
+> >=20
+> > The errno is misleading, modetest does a drmModeDirtyFB before checking
+> > the error returned by drmModeSetCrtc.
+> >=20
+> > Setting the property succeeds, but the modeset still fails:
+> >=20
+> > pi@pi4t:~ $ modetest -M vc4 -s 45:720x480i -w 45:"tv norm":2
+> > setting mode 720x480i-29.97Hz on connectors 45, crtc 68
+> > failed to set mode: Function not implemented
+> >=20
+> > pi@pi4t:~ $ modetest -M vc4 -c
+> >         37 tv norm:
+> >                 flags: bitmask
+> >                 values: NTSC-443=3D0x1 NTSC-J=3D0x2 NTSC-M=3D0x4 PAL-B=
+=3D0x10
+> > PAL-M=3D0x200 PAL-N=3D0x400 SECAM-B=3D0x2000
+> >                 value: 2
+> >=20
+> > Here's the log, can you see if there's anything obvious in there:
+> > https://gist.github.com/notro/a079498bf6b64327105752b2bafa8858
+> >=20
+>=20
+> I'm one step closer as I now have fbcon working, I had forgotten to add
+> enable_tvout=3D1 and I had disable_fw_kms_setup=3D1 which disables the
+> video=3D mode on the kernel commandline.
+>=20
+> modetest still fails though, after alot of printk sprinkling, I've
+> tracked it down to the drm_mode_equal test in
+> drm_atomic_helper_connector_tv_check(). The aspect ratios differ:
+>=20
+> [   61.336295] drm_atomic_helper_connector_tv_check:
+> mode->picture_aspect_ratio=3D1
+> [   61.336301] drm_atomic_helper_connector_tv_check:
+> &crtc_state->mode->picture_aspect_ratio=3D0
 
->> + *
->> + * Note: HV_X64_NESTED_EVMCS1_2022_UPDATE is not currently documented in any
->> + * published TLFS version. When the bit is set, nested hypervisor can use
->> + * 'updated' eVMCSv1 specification (perf_global_ctrl, s_cet, ssp, lbr_ctl,
->> + * encls_exiting_bitmap, tsc_multiplier fields which were missing in 2016
->> + * specification).
->> + */
->> +#define HV_X64_NESTED_EVMCS1_2022_UPDATE		BIT(0)
->
-> This bit is now defined[*], but the docs says it's only for perf_global_ctrl.  Are
-> we expecting an update to the TLFS?
->
-> 	Indicates support for the GuestPerfGlobalCtrl and HostPerfGlobalCtrl fields
-> 	in the enlightened VMCS.
->
-> [*] https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/feature-discovery#hypervisor-nested-virtualization-features---0x4000000a
->
+I haven't seen this when testing, but I'll have a look, thanks!
+Maxime
 
-Oh well, better this than nothing. I'll ping the people who told me
-about this bit that their description is incomplete.
+--neorrh2qu6ghuw3r
+Content-Type: application/pgp-signature; name="signature.asc"
 
->> +
->>  /*
->>   * This is specific to AMD and specifies that enlightened TLB flush is
->>   * supported. If guest opts in to this feature, ASID invalidations only
->> @@ -559,9 +570,20 @@ struct hv_enlightened_vmcs {
->>  	u64 partition_assist_page;
->>  	u64 padding64_4[4];
->>  	u64 guest_bndcfgs;
->> -	u64 padding64_5[7];
->> +	u64 guest_ia32_perf_global_ctrl;
->> +	u64 guest_ia32_s_cet;
->> +	u64 guest_ssp;
->> +	u64 guest_ia32_int_ssp_table_addr;
->> +	u64 guest_ia32_lbr_ctl;
->> +	u64 padding64_5[2];
->>  	u64 xss_exit_bitmap;
->> -	u64 padding64_6[7];
->> +	u64 encls_exiting_bitmap;
->> +	u64 host_ia32_perf_global_ctrl;
->> +	u64 tsc_multiplier;
->> +	u64 host_ia32_s_cet;
->> +	u64 host_ssp;
->> +	u64 host_ia32_int_ssp_table_addr;
->> +	u64 padding64_6;
->>  } __packed;
->>  
->>  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE			0
->> -- 
->> 2.35.3
->> 
->
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Vitaly
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYv5bNQAKCRDj7w1vZxhR
+xdaLAQDfZ8rnYBDZfyN3qNMxZCR7YqMUNw8GId3H6w/a4n0wnwD9GeUKIJz3PUw0
+hmv+huFdsLIyqvj6T79wwzxtYJk+3gY=
+=PX5K
+-----END PGP SIGNATURE-----
 
+--neorrh2qu6ghuw3r--
