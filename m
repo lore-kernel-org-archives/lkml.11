@@ -2,135 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5413CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D94C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343662AbiHROew (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
+        id S245509AbiHROiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245296AbiHROeD (ORCPT
+        with ESMTP id S244793AbiHROiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:34:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559EE27B13
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:33:42 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOgaJ-0005lR-Kg; Thu, 18 Aug 2022 16:33:23 +0200
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOgaI-000X15-PW; Thu, 18 Aug 2022 16:33:22 +0200
-Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOgaH-0043dR-2W; Thu, 18 Aug 2022 16:33:21 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     mchehab@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org, kishon@ti.com,
-        sakari.ailus@linux.intel.com, hverkuil@xs4all.nl,
-        jacopo@jmondi.org, laurent.pinchart+renesas@ideasonboard.com
-Cc:     linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-media@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH 2/4] phy: dphy: add support to calculate the timing based on hs_clk_rate
-Date:   Thu, 18 Aug 2022 16:33:05 +0200
-Message-Id: <20220818143307.967150-3-m.felsch@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220818143307.967150-1-m.felsch@pengutronix.de>
-References: <20220818143307.967150-1-m.felsch@pengutronix.de>
+        Thu, 18 Aug 2022 10:38:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8786527F
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660833480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=55iMMmbwkaAqw4I8aj14bQmLqWfqTrm37aZFBETpBEc=;
+        b=Ru09/ZDKDCObZDmnQ0+w2gXF6TL6ZzcYz/M+0yO5HivuT7YxINNVR9mVxXHzgs6rOj6JDv
+        IIYZQSW96qgFFf0/rrG3WN/x4uqiiVpccm4ezTQyU80M+2AMtE5uzz0rtnRxLh3OnqVgB3
+        LQSaPoqNwZw77MGQHGGvkK98W8mbDYo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-511-M4bmjfZDOWKfskDloj51Ww-1; Thu, 18 Aug 2022 10:37:56 -0400
+X-MC-Unique: M4bmjfZDOWKfskDloj51Ww-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 258CD101A586;
+        Thu, 18 Aug 2022 14:37:55 +0000 (UTC)
+Received: from [10.22.9.156] (unknown [10.22.9.156])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB81740CFD05;
+        Thu, 18 Aug 2022 14:37:51 +0000 (UTC)
+Message-ID: <58f4533b-6d0e-dc5f-2b8c-986212598125@redhat.com>
+Date:   Thu, 18 Aug 2022 07:37:51 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 1/3] sched: Use user_cpus_ptr for saving user provided
+ cpumask in sched_setaffinity()
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Will Deacon <will@kernel.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220816192734.67115-1-longman@redhat.com>
+ <20220816192734.67115-2-longman@redhat.com>
+ <YvymwlTkdsVDtmRB@worktop.programming.kicks-ass.net>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YvymwlTkdsVDtmRB@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For MIPI-CSI sender use-case it is common to specify the allowed
-link-frequencies which should be used for the MIPI link and is
-half the hs-clock rate.
+On 8/17/22 04:28, Peter Zijlstra wrote:
+> On Tue, Aug 16, 2022 at 03:27:32PM -0400, Waiman Long wrote:
+>
+>> This will be some changes in behavior for arm64 systems with asymmetric
+>> CPUs in some corner cases. For instance, if sched_setaffinity()
+>> has never been called and there is a cpuset change before
+>> relax_compatible_cpus_allowed_ptr() is called, its subsequent call will
+>> follow what the cpuset allows but not what the previous cpu affinity
+>> setting allows.
+> That's arguably a correctness fix, no? That is, the save/restore should
+> not have been allowed to revert to an earlier cpuset state.
 
-This commit adds a helper to calculate the D-PHY timing based on the
-hs-clock rate so we don't need to calculate the timings within the
-driver.
+Yes, it is a correctness fix in a sense. I just want to highlight that 
+there will be some slight changes in behavior in some corner cases for 
+the arm64 arch.
 
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
----
- drivers/phy/phy-core-mipi-dphy.c  | 22 ++++++++++++++++++----
- include/linux/phy/phy-mipi-dphy.h |  3 +++
- 2 files changed, 21 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
-index ba365bc77407..f4956a417a47 100644
---- a/drivers/phy/phy-core-mipi-dphy.c
-+++ b/drivers/phy/phy-core-mipi-dphy.c
-@@ -20,16 +20,18 @@
- static int phy_mipi_dphy_calc_config(unsigned long pixel_clock,
- 				     unsigned int bpp,
- 				     unsigned int lanes,
-+				     unsigned long long hs_clk_rate,
- 				     struct phy_configure_opts_mipi_dphy *cfg)
- {
--	unsigned long long hs_clk_rate;
- 	unsigned long long ui;
- 
- 	if (!cfg)
- 		return -EINVAL;
- 
--	hs_clk_rate = pixel_clock * bpp;
--	do_div(hs_clk_rate, lanes);
-+	if (!hs_clk_rate) {
-+		hs_clk_rate = pixel_clock * bpp;
-+		do_div(hs_clk_rate, lanes);
-+	}
- 
- 	ui = ALIGN(PSEC_PER_SEC, hs_clk_rate);
- 	do_div(ui, hs_clk_rate);
-@@ -81,11 +83,23 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
- 				     unsigned int lanes,
- 				     struct phy_configure_opts_mipi_dphy *cfg)
- {
--	return phy_mipi_dphy_calc_config(pixel_clock, bpp, lanes, cfg);
-+	return phy_mipi_dphy_calc_config(pixel_clock, bpp, lanes, 0, cfg);
- 
- }
- EXPORT_SYMBOL(phy_mipi_dphy_get_default_config);
- 
-+int phy_mipi_dphy_get_default_config_for_hsclk(unsigned long long hs_clk_rate,
-+					       unsigned int lanes,
-+					       struct phy_configure_opts_mipi_dphy *cfg)
-+{
-+	if (!hs_clk_rate)
-+		return -EINVAL;
-+
-+	return phy_mipi_dphy_calc_config(0, 0, lanes, hs_clk_rate, cfg);
-+
-+}
-+EXPORT_SYMBOL(phy_mipi_dphy_get_default_config_for_hsclk);
-+
- /*
-  * Validate D-PHY configuration according to MIPI D-PHY specification
-  * (v1.2, Section Section 6.9 "Global Operation Timing Parameters").
-diff --git a/include/linux/phy/phy-mipi-dphy.h b/include/linux/phy/phy-mipi-dphy.h
-index a877ffee845d..1ac128d78dfe 100644
---- a/include/linux/phy/phy-mipi-dphy.h
-+++ b/include/linux/phy/phy-mipi-dphy.h
-@@ -279,6 +279,9 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
- 				     unsigned int bpp,
- 				     unsigned int lanes,
- 				     struct phy_configure_opts_mipi_dphy *cfg);
-+int phy_mipi_dphy_get_default_config_for_hsclk(unsigned long long hs_clk_rate,
-+					       unsigned int lanes,
-+					       struct phy_configure_opts_mipi_dphy *cfg);
- int phy_mipi_dphy_config_validate(struct phy_configure_opts_mipi_dphy *cfg);
- 
- #endif /* __PHY_MIPI_DPHY_H_ */
--- 
-2.30.2
+Cheers,
+Longman
 
