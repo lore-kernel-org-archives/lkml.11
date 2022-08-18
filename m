@@ -2,132 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0F4C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94781C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245261AbiHROpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        id S245144AbiHROrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245445AbiHROpr (ORCPT
+        with ESMTP id S233992AbiHROrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:45:47 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D0C422CA;
-        Thu, 18 Aug 2022 07:45:46 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Thu, 18 Aug 2022 10:47:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0338ABB926;
+        Thu, 18 Aug 2022 07:47:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BFB3B22248;
-        Thu, 18 Aug 2022 16:45:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1660833943;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tqSBNQl1mf/1igPF5XqlRtw3O/1RNBIhVB5yzX6jyns=;
-        b=fUpmdZM2jjYTYnlEoHOBwU/Fw/2/aKXZW+MBNbtArIe/fYkSwtng5ZQ7zGtWG3E4RgriDx
-        OUh08ziwON4iWeApYeNfn0Yq/3hXMe+tdJ1FfBgMXM3ImrruqGjni4jcN4B6bd88yyEWGt
-        +ESDbQuz9fB41FVFcdp6+Z0vTCiEI80=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9416260B3F;
+        Thu, 18 Aug 2022 14:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98B4DC433C1;
+        Thu, 18 Aug 2022 14:47:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660834036;
+        bh=vkra+54wSOIY+Y+8ajG7f72gPrM+M8yjbxSyC4XndDc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LNjBIGy2aDIQKn0/m/2vLz7gWbb+Mhtvi8/RiYREGS5rL0/rCC8RMXAJH1lcKRkgk
+         1DpHRpQulWGffTzE7e0P22n32+4zkTU5YSNvxPqsYi4ACCI+IINgdQ8S/3YlXAHwCg
+         0bhIipR3qJReZrwZn4JEXdShmonF/fexjAtdpBW4=
+Date:   Thu, 18 Aug 2022 16:47:14 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Alan J. Wylie" <alan@wylie.me.uk>, linux-usb@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: Regression in 5.19.0: USB errors during boot
+Message-ID: <Yv5Q8gDvVTGOHd8k@kroah.com>
+References: <25342.20092.262450.330346@wylie.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 18 Aug 2022 16:45:43 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH devicetree 1/3] arm64: dts: ls1028a: move DSA CPU port
- property to the common SoC dtsi
-In-Reply-To: <20220818140519.2767771-2-vladimir.oltean@nxp.com>
-References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
- <20220818140519.2767771-2-vladimir.oltean@nxp.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <125791f71a27edd4c2d989125c55de3a@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <25342.20092.262450.330346@wylie.me.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-08-18 16:05, schrieb Vladimir Oltean:
-> Since the CPU port 4 of the switch is hardwired inside the SoC to go to
-> the enetc port 2, this shouldn't be something that the board files need
-> to set (but whether that CPU port is used or not is another 
-> discussion).
-> 
-> So move the DSA "ethernet" property to the common dtsi.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  .../boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts     | 1 -
->  arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts  | 1 -
->  arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts                | 1 -
->  arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi                   | 1 +
->  4 files changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git
-> a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> index 6b575efd84a7..52ef2e8e5492 100644
-> --- 
-> a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> +++ 
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> @@ -104,7 +104,6 @@ &mscc_felix_port3 {
->  };
-> 
->  &mscc_felix_port4 {
-> -	ethernet = <&enetc_port2>;
->  	status = "okay";
->  };
-> 
-> diff --git
-> a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> index 330e34f933a3..37c20cb6c152 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> @@ -60,6 +60,5 @@ &mscc_felix_port1 {
->  };
-> 
->  &mscc_felix_port4 {
-> -	ethernet = <&enetc_port2>;
->  	status = "okay";
->  };
-> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> index e0cd1516d05b..7285bdcf2302 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> @@ -278,7 +278,6 @@ &mscc_felix_port3 {
->  };
-> 
->  &mscc_felix_port4 {
-> -	ethernet = <&enetc_port2>;
->  	status = "okay";
->  };
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> index 5627dd7734f3..3da105119d82 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> @@ -1157,6 +1157,7 @@ mscc_felix_port4: port@4 {
->  						reg = <4>;
->  						phy-mode = "internal";
->  						status = "disabled";
-> +						ethernet = <&enetc_port2>;
+[Adding in linux-usb@vger]
 
-same here, status should probably the last one.
 
-except from that:
-Acked-by: Michael Walle <michael@walle.cc>
-
+On Thu, Aug 18, 2022 at 03:36:44PM +0100, Alan J. Wylie wrote:
 > 
->  						fixed-link {
->  							speed = <2500>;
+> Apologies for the delay in reporting this: I messed up my first attempt at
+> bisecting, then I've spent a week going to, enjoying, returning from and
+> recovering from a music festival.
+> 
+> Up to and including 5.18.18 things are fine. With 5.19.0 (and .1 and .2)  I see
+> lots of errors and hangs on the USB2 chipset, e.g.
+> 
+> $ grep "usb 9-4" dmesg.5.19.2
+> [    6.669075] usb 9-4: new full-speed USB device number 2 using ohci-pci
+> [    6.829087] usb 9-4: device descriptor read/64, error -32
+> [    7.097094] usb 9-4: device descriptor read/64, error -32
+> [    7.361087] usb 9-4: new full-speed USB device number 3 using ohci-pci
+> [    7.521152] usb 9-4: device descriptor read/64, error -32
+> [    7.789066] usb 9-4: device descriptor read/64, error -32
+> [    8.081070] usb 9-4: new full-speed USB device number 4 using ohci-pci
+> [    8.497138] usb 9-4: device not accepting address 4, error -32
+> [    8.653140] usb 9-4: new full-speed USB device number 5 using ohci-pci
+> [    9.069141] usb 9-4: device not accepting address 5, error -32
+> $
+> 
+> $ grep "usb 1-2" dmesg.5.19.2
+> [    5.917102] usb 1-2: new high-speed USB device number 2 using ehci-pci
+> [    6.277076] usb 1-2: device descriptor read/64, error -71
+> [    6.513143] usb 1-2: device descriptor read/64, error -32
+> [    6.753146] usb 1-2: new high-speed USB device number 3 using ehci-pci
+> [    6.881143] usb 1-2: device descriptor read/64, error -32
+> [    7.117144] usb 1-2: device descriptor read/64, error -32
+> [    7.429141] usb 1-2: new high-speed USB device number 4 using ehci-pci
+> [    7.845134] usb 1-2: device not accepting address 4, error -32
+> [    7.977142] usb 1-2: new high-speed USB device number 5 using ehci-pci
+> [    8.393158] usb 1-2: device not accepting address 5, error -32
+> $
+> 
+> the USB port is then no longer usable
+> 
+> This is not reproducible on the other chipset (USB3) on this machine,
+> nor on two other systems. Swapping USB cables doesn't help.
+> 
+> I have bisected it to
+> 
+> $ git bisect bad
+> 78013eaadf696d2105982abb4018fbae394ca08f is the first bad commit
+> commit 78013eaadf696d2105982abb4018fbae394ca08f
+> Author: Christoph Hellwig <hch@lst.de>
+> Date:   Mon Feb 14 14:11:44 2022 +0100
+> 
+>     x86: remove the IOMMU table infrastructure
+> 
+> however it will not easily revert
+> 
+> I'll be more than happy to assist with any debugging/testing.
+> 
+> $ git revert 78013eaadf696d2105982abb4018fbae394ca08f
+> Auto-merging arch/x86/include/asm/dma-mapping.h
+> CONFLICT (content): Merge conflict in arch/x86/include/asm/dma-mapping.h
+> Auto-merging arch/x86/include/asm/iommu.h
+> Auto-merging arch/x86/include/asm/xen/swiotlb-xen.h
+> Auto-merging arch/x86/kernel/Makefile
+> Auto-merging arch/x86/kernel/pci-dma.c
+> CONFLICT (content): Merge conflict in arch/x86/kernel/pci-dma.c
+> Auto-merging arch/x86/kernel/vmlinux.lds.S
+> Auto-merging drivers/iommu/amd/init.c
+> Auto-merging drivers/iommu/amd/iommu.c
+> CONFLICT (content): Merge conflict in drivers/iommu/amd/iommu.c
+> Auto-merging drivers/iommu/intel/dmar.c
+> error: could not revert 78013eaadf69... x86: remove the IOMMU table infrastructure
+> 
+> # dmidecode  | grep -A2 "^Base Board"
+> Base Board Information
+>      Manufacturer: Gigabyte Technology Co., Ltd.
+>      Product Name: 970A-DS3P
+> #
+> 
+> # lspci -nn | grep -i usb
+> 00:12.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller [1002:4397]
+> 00:12.2 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller [1002:4396]
+> 00:13.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller [1002:4397]
+> 00:13.2 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller [1002:4396]
+> 00:14.5 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI2 Controller [1002:4399]
+> 00:16.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller [1002:4397]
+> 00:16.2 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller [1002:4396]
+> 02:00.0 USB controller [0c03]: VIA Technologies, Inc. VL805/806 xHCI USB 3.0 Controller [1106:3483] (rev 01)
+
+So this only happens with the on-board USB 2 controller?
+
+This is odd, I would not expect one PCI controller to work, but the
+other one not.
+
+
+> #
+> 
+> # lspci -v -s 00:12
+> 00:12.0 USB controller: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller (prog-if 10 [OHCI])
+> 	Subsystem: Gigabyte Technology Co., Ltd GA-880GMA-USB3
+> 	Flags: bus master, 66MHz, medium devsel, latency 32, IRQ 18
+> 	Memory at fe50a000 (32-bit, non-prefetchable) [size=4K]
+> 	Kernel driver in use: ohci-pci
+> 				 	Kernel modules: ohci_pci
+> 00:12.2 USB controller: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller (prog-if 20 [EHCI])
+> 	Subsystem: Gigabyte Technology Co., Ltd GA-880GMA-USB3
+> 	Flags: bus master, 66MHz, medium devsel, latency 32, IRQ 17
+> 	Memory at fe509000 (32-bit, non-prefetchable) [size=256]
+> 	Capabilities: [c0] Power Management version 2
+> 	Capabilities: [e4] Debug port: BAR=1 offset=00e0
+> 	Kernel driver in use: ehci-pci
+> 	Kernel modules: ehci_pci
+> #
+
+What is the output of the lspci -v for the USB 3 controller?
+
+Christoph, any ideas?
+
+thanks,
+
+greg k-h
