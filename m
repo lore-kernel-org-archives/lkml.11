@@ -2,128 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2754C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 10:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CFCC32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 10:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244154AbiHRKro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 06:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
+        id S244157AbiHRKst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 06:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244141AbiHRKrj (ORCPT
+        with ESMTP id S244036AbiHRKsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 06:47:39 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61D9816BD;
-        Thu, 18 Aug 2022 03:47:35 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M7hPf5yGpzGpVw;
-        Thu, 18 Aug 2022 18:45:58 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 18:47:32 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 18:47:31 +0800
-Subject: Re: [PATCH -next] net: neigh: use dev_kfree_skb_irq instead of
- kfree_skb()
-To:     "Denis V. Lunev" <den@virtuozzo.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>
-References: <20220818043729.412753-1-yangyingliang@huawei.com>
- <79784952-0d15-8a4a-aa8d-590bc243ab5e@virtuozzo.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <705de4aa-91bf-c559-419c-2bfd083c9067@huawei.com>
-Date:   Thu, 18 Aug 2022 18:47:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Thu, 18 Aug 2022 06:48:46 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE187C1C1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 03:48:45 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 12so1014832pga.1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 03:48:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=UNP6qpNdQsZRLeNzE7376DQlpkdebC2s72vK1V3HknI=;
+        b=f+LpZScrSfCNtgyglIYZDBho9yBitI6JQ4TJSm9zFdbt9wrXVhUpuGFHhHVo/EXV2y
+         t0yjRID+4BYUBAv/pG0vcs9Q0LaYlZg7tk7Y0fbV5TqIFUpb+TGezoM9+iVbUWZEU7i8
+         dCdK17/4Qcd7R3wxxD9zoNwQen+hZhc12g+nzwkOqNrtn3xnvyEJHheNkAnO/T/oPVKY
+         5iIgWqPTj//FxnD/Frbe0Aa4wh4HxCYUYjdVDWPJzKDkZGPM+WBtesCbHTKX6i6nSRu9
+         BGN2g8C6jb/D9HQjpKEGo9ay+gcSzkhKTKzOMLdCe+lNgu2+hNKZ3t/7BsbI1XcJxe7P
+         +XIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=UNP6qpNdQsZRLeNzE7376DQlpkdebC2s72vK1V3HknI=;
+        b=U8yA6TTw6kwz05dqLamwE+oyYp9vnDCXVePEqCG5cEZBx7/VGfpc2OaEoGISijFP+A
+         NVABHLmbtgPAH4EGVG4gHLjaTFiWAAaxwEyLUbnMke0KY+GXiO8VRlDiM/LUnMcWBU6G
+         +Tlypgd+vzoRUS/85UsTfYDHr09RYDwveDyP/NOHuUOMkjp3tHiXRKIdwe4tRcNQQ1wE
+         Qx6Y/EPwXfR1l89UN455gx2m2/yFtKZZcs42+sqKZrSOgC3jSPuLijBklGmjxNU9QDTH
+         T2/55HJK09/A+i98qrc0Qt8bznwf1k1nAUJKxkBhgeXZ/5JH7gezLax5XE6jB9sphIcG
+         w6YA==
+X-Gm-Message-State: ACgBeo1ziMoyYqHNqBwm5bBpybBnmH/IQuIZH2XsURej3wawSYqpmmEO
+        BXP7k5Qc5JGwsbI4F5XIK/oFLg==
+X-Google-Smtp-Source: AA6agR6KS7MnAr6fLbC0w2abq0b2/mN7cJUC1eWVYd5Z53fS1v98N+OnAOIMKgGYC+eTq1RlbhY72g==
+X-Received: by 2002:aa7:9390:0:b0:52d:8816:a906 with SMTP id t16-20020aa79390000000b0052d8816a906mr2424742pfe.63.1660819724610;
+        Thu, 18 Aug 2022 03:48:44 -0700 (PDT)
+Received: from [10.70.253.98] ([139.177.225.230])
+        by smtp.gmail.com with ESMTPSA id t15-20020a1709027fcf00b0016d5428f041sm1076189plb.199.2022.08.18.03.48.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 03:48:44 -0700 (PDT)
+Message-ID: <6eefe729-2323-d9a1-9903-547e2fc63ab8@bytedance.com>
+Date:   Thu, 18 Aug 2022 18:48:39 +0800
 MIME-Version: 1.0
-In-Reply-To: <79784952-0d15-8a4a-aa8d-590bc243ab5e@virtuozzo.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.1.2
+Subject: Re: [PATCH v5 7/9] sched/fair: allow changing cgroup of new forked
+ task
 Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        mingo@redhat.com, rostedt@goodmis.org, bsegall@google.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org, tj@kernel.org
+References: <20220818034343.87625-1-zhouchengming@bytedance.com>
+ <20220818034343.87625-8-zhouchengming@bytedance.com>
+ <Yv4WJQAGw0zgU3nH@worktop.programming.kicks-ass.net>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <Yv4WJQAGw0zgU3nH@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 2022/8/18 18:36, Peter Zijlstra wrote:
+> On Thu, Aug 18, 2022 at 11:43:41AM +0800, Chengming Zhou wrote:
+> 
+>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>> index 8e3f1c3f0b2c..157f7461a08a 100644
+>> --- a/kernel/sched/core.c
+>> +++ b/kernel/sched/core.c
+>> @@ -4550,11 +4550,11 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+>>  {
+>>  	__sched_fork(clone_flags, p);
+>>  	/*
+>> -	 * We mark the process as NEW here. This guarantees that
+>> +	 * We mark the process as running here. This guarantees that
+>>  	 * nobody will actually run it, and a signal or other external
+>>  	 * event cannot wake it up and insert it on the runqueue either.
+>>  	 */
+>> -	p->__state = TASK_NEW;
+>> +	p->__state = TASK_RUNNING;
+>>  
+>>  	/*
+>>  	 * Make sure we do not leak PI boosting priority to the child.
+>> @@ -4672,7 +4672,6 @@ void wake_up_new_task(struct task_struct *p)
+>>  	struct rq *rq;
+>>  
+>>  	raw_spin_lock_irqsave(&p->pi_lock, rf.flags);
+>> -	WRITE_ONCE(p->__state, TASK_RUNNING);
+>>  #ifdef CONFIG_SMP
+>>  	/*
+>>  	 * Fork balancing, do it here and not earlier because:
+>> @@ -10290,36 +10289,19 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
+>>  	sched_unregister_group(tg);
+>>  }
+> 
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index eba8a64f905a..e0d34ecdabae 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -11840,6 +11840,13 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
+>>  #ifdef CONFIG_FAIR_GROUP_SCHED
+>>  static void task_change_group_fair(struct task_struct *p)
+>>  {
+>> +	/*
+>> +	 * We couldn't detach or attach a forked task which
+>> +	 * hasn't been woken up by wake_up_new_task().
+>> +	 */
+>> +	if (!p->on_rq && !p->se.sum_exec_runtime)
+>> +		return;
+>> +
+>>  	detach_task_cfs_rq(p);
+> 
+> Wouldn't that be much clearer when expressed in TASK_NEW ?
 
-On 2022/8/18 17:00, Denis V. Lunev wrote:
-> On 18.08.2022 06:37, 'Yang Yingliang' via den wrote:
->> It is not allowed to call kfree_skb() from hardware interrupt
->> context or with interrupts being disabled. So replace kfree_skb()
->> with dev_kfree_skb_irq() under spin_lock_irqsave().
->>
->> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface 
->> start/stop loop")
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   net/core/neighbour.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->> index 5b669eb80270..167826200f3e 100644
->> --- a/net/core/neighbour.c
->> +++ b/net/core/neighbour.c
->> @@ -328,7 +328,7 @@ static void pneigh_queue_purge(struct 
->> sk_buff_head *list, struct net *net)
->>               __skb_unlink(skb, list);
->>                 dev_put(dev);
->> -            kfree_skb(skb);
->> +            dev_kfree_skb_irq(skb);
->>           }
->>           skb = skb_next;
->>       }
->
-> Technically this is pretty much correct, but would it be better to
-> move all skb to purge into the new list and after that purge
-> them at once?
->
-> what about something like this?
->
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index aa16a8017c5e..f7e30daa46ae 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -311,6 +311,9 @@ static void pneigh_queue_purge(struct sk_buff_head 
-> *list, struct net *net)
->  {
->         unsigned long flags;
->         struct sk_buff *skb;
-> +       struct sk_buff_head tmp;
-> +
-> +       skb_queue_head_init(&tmp);
->
->         spin_lock_irqsave(&list->lock, flags);
->         skb = skb_peek(list);
-> @@ -318,12 +321,16 @@ static void pneigh_queue_purge(struct 
-> sk_buff_head *list, struct net *net)
->                 struct sk_buff *skb_next = skb_peek_next(skb, list);
->                 if (net == NULL || net == dev_net(skb->dev)) {
->                         __skb_unlink(skb, list);
-> -                       dev_put(skb->dev);
-> -                       kfree_skb(skb);
-> +                       __skb_queue_tail(&tmp, skb);
->                 }
->                 skb = skb_next;
->         } while (skb != NULL);
->         spin_unlock_irqrestore(&list->lock, flags);
-> +
-> +       while ((skb = __skb_dequeue(&tmp)) != NULL) {
-> +               dev_put(skb->dev);
-> +               kfree_skb(skb);
-> +       }
->  }
-It's better, I can send a v2 later.
+Ah, I was stupid, will change to use TASK_NEW.
 
-Thanks,
-Yang
->
-> iris ~/src/linux-2.6 $
->
-> .
+Thanks for your suggestion!
+
