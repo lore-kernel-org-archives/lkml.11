@@ -2,104 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F11C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AB1C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244910AbiHRNmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
+        id S245147AbiHRNmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244804AbiHRNl4 (ORCPT
+        with ESMTP id S244804AbiHRNmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:41:56 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A418CB6D70
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:40:47 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id w15so1774278ljw.1
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:40:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=GqdFW3oQXAaOy2vD929UNnW4uaTA9ODo4Hnd/8x5r/w=;
-        b=YuQDwPUo3DIr0crrpdiKWa7aeyFVRW4wxBAAJDKYqTTesQxo3XNEB7/JwZoqafvALT
-         r11HeAmBrv9QiucR0M4IVeb3YctfJRVwDqIC9CNS6ERimqwegYhqz0qJOGA9HYrl+Chs
-         pMgMGU+JXY/sTK8TJF/d9B0kYD/ojMFW1HY4YWSi7r6Gg1nnPnRjComN/AVWdpqVvbZg
-         ThmVGm3VmvUG0iyuk9kqhUITpc1meIymgB79yc+laAB0OzzkFVlmYjeFCHWm3vAAtixI
-         FXifZNAdGxr1Fl7ab5VDZrYCbH2mwR/eSD66rBj74nccZIRCLmh0fiqVkZFlz+awnEm/
-         8c7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=GqdFW3oQXAaOy2vD929UNnW4uaTA9ODo4Hnd/8x5r/w=;
-        b=a833Gq9unSyUMmD8X5pmtR5UA/WtdRuyIcNC+/8HNEV1tQNPJRgoeYXIt1RjdjMmGZ
-         puhjs8FMvmR1iwTfDMfjUjLpdA29VZO85h2GXUwH8kCxl+ikCBNFf2J+dcgSjJnVvho8
-         Lz6lG3532wMsNEzy7vHYM5ZVOm9AkQE04Y4XD7tKfWZzBXXKYN3eegamA4SL0MrMeI3K
-         ICkNPx8OBL+LJdHcoGj+kinqtjY3gn0CkVIkcJ98Cw2tj996yy9RkSswiuHl/FaKyNS9
-         PvMrmqdq1+ca+DtKa4455Ch1qfO/S7+c4z74XQSIeq8ams9fZbIkiSIaKo2g2V8q6jgI
-         R69w==
-X-Gm-Message-State: ACgBeo2dLKiMq57BQ7fO2rgo3dfePu3DWXROdB9UJA6BubAYdBkwBA+s
-        6zIPTDn5Sojgdk3+aQro8HYYRA==
-X-Google-Smtp-Source: AA6agR6canFiyg1kTCJm0l42OJhT+cDmUJ3ZeFSp8L6NUXKQ7yoOlW+9GVvc+6KFzATTGH1C1AljcA==
-X-Received: by 2002:a05:651c:12c4:b0:25d:d71c:e249 with SMTP id 4-20020a05651c12c400b0025dd71ce249mr834770lje.17.1660830045692;
-        Thu, 18 Aug 2022 06:40:45 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
-        by smtp.gmail.com with ESMTPSA id k8-20020a2ea268000000b0025e53413b6dsm241886ljm.2.2022.08.18.06.40.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 06:40:45 -0700 (PDT)
-Message-ID: <9947dc76-ab12-f840-3439-ca383c02c598@linaro.org>
-Date:   Thu, 18 Aug 2022 16:40:43 +0300
+        Thu, 18 Aug 2022 09:42:17 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245E1B81C0;
+        Thu, 18 Aug 2022 06:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660830068; x=1692366068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VY0sbb/RXNUU157VT44IttsuY4LjKgmphFRvohq9bwI=;
+  b=X3MIfQ8bFiTrygrL3X+IeA9Nc8ILWcJafDCVuqaV27M7ndbLPmG83OHi
+   Z5Fv62F4l7q+xudGNaY7RQCLEKttB08cN9OQhycEc2BKxTTVibr4LnNWO
+   E6AcidB0Ib/j8d4WpmgfQbQ/UFeloaoRXS6v7NdUwqGxrGzlYLu+64Gy+
+   Ae+s9hRUPx8X02M4AMvLG5ya2G1pYsVlPmw9OZV1ZcfuHYYFrwsoUSkz5
+   ao25o5UaX+gk4LIbM9xtMiiqkHb6dixQT7GTvwAaa9O/eSs7+45PVqoYu
+   7OS6gYO/IW+/k3ZPxuq78aNx0alBJCAyV8leaq9K32JWf884xdGU7KSQ8
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="379051431"
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="379051431"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 06:41:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="853418276"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 18 Aug 2022 06:41:02 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27IDf0GP012032;
+        Thu, 18 Aug 2022 14:41:00 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
+        lkp@intel.com, stable@vger.kernel.org
+Subject: Re: [RFC PATCH 0/3] kallsyms: add option to include relative filepaths into kallsyms
+Date:   Thu, 18 Aug 2022 15:39:18 +0200
+Message-Id: <20220818133918.1112657-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <Yv4udm0QKVA1ku++@kroah.com>
+References: <20220818115306.1109642-1-alexandr.lobakin@intel.com> <Yv4udm0QKVA1ku++@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH RESEND] dt-bindings: timer: Add compatible for MediaTek
- MT8188
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Johnson Wang <johnson.wang@mediatek.com>,
-        daniel.lezcano@linaro.org, matthias.bgg@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220818124602.20394-1-johnson.wang@mediatek.com>
- <3d91fe87-feed-d083-9eeb-51293aead67a@linaro.org>
-In-Reply-To: <3d91fe87-feed-d083-9eeb-51293aead67a@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/2022 15:51, Krzysztof Kozlowski wrote:
-> On 18/08/2022 15:46, Johnson Wang wrote:
->> Add dt-binding documentation of timer for MediaTek MT8188 SoC
->> platform.
->>
->> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
->> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> index f1c848af91d3..8bbb6e94508b 100644
->> --- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> +++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> @@ -25,6 +25,7 @@ Required properties:
->>  	For those SoCs that use SYST
->>  	* "mediatek,mt8183-timer" for MT8183 compatible timers (SYST)
->>  	* "mediatek,mt8186-timer" for MT8186 compatible timers (SYST)
->> +	* "mediatek,mt8188-timer" for MT8188 compatible timers (SYST)
+From: Greg KH <gregkh@linuxfoundation.org>
+Date: Thu, 18 Aug 2022 14:20:06 +0200
+
+> On Thu, Aug 18, 2022 at 01:53:03PM +0200, Alexander Lobakin wrote:
+> > This is an early RFC to not rewrite stuff one more time later on if
+> > the implementation is not acceptable or any major design changes are
+> > required. For the TODO list, please scroll to the end.
+> > 
+> > Make kallsyms independent of symbols positions in vmlinux (or module)
+> > by including relative filepath in each symbol's kallsyms value. I.e.
+> > 
+> > dev_gro_receive -> net/core/gro.c:dev_gro_receive
+> > 
+> > For the implementation details, please look at the patch 3/3.
+> > Patch 2/3 is just a stub, I plan to reuse kallsyms enhancement from
+> > the Rust series for it.
+> > Patch 1/3 is a fix of one modpost macro straight from 2.6.12-rc2.
+> > 
+> > A nice side effect is that it's now easier to debug the kernel, as
+> > stacktraces will now tell every call's place in the file tree:
 > 
-> Where is the driver change implementing this?
+> That's a side effect, but that does not explain _why_ you want this
+> change.
+> 
+> What is this good for?  Who can use it?  Why is it worth added build
+> times?
 
-Or is there a generic fallback and you just added a specific one (not
-visible on the diff)?
+I think I wrote that we need to get rid of this positioned-based
+search for kallsyms, at least for livepatching and probes, didn't
+I?
+OTOH I didn't write that originally that was a prereq for FG-KASLR,
+but then I decided it deserves a separate series =\ Thanks for
+mentioning this, so I wrote it here now and will not forget this
+time to mention it in the cover letter for v2.
 
-Best regards,
-Krzysztof
+> 
+> You don't tell us anything except what this does :(
+> 
+> thanks,
+> 
+> greg k-h
+
+Thanks,
+Olek
