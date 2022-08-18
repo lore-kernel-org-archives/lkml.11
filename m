@@ -2,111 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B65C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9576FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 12:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244812AbiHRMtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 08:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
+        id S244319AbiHRMu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 08:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244769AbiHRMtA (ORCPT
+        with ESMTP id S244817AbiHRMur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 08:49:00 -0400
-Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B43F5F221;
-        Thu, 18 Aug 2022 05:48:56 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4M7kBq39nfz9v7H3;
-        Thu, 18 Aug 2022 20:06:43 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwA38hluLP5ipRkyAA--.42926S3;
-        Thu, 18 Aug 2022 13:11:40 +0100 (CET)
-From:   roberto.sassu@huaweicloud.com
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, quentin@isovalent.com
-Cc:     linux-perf-users@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 2/3] tools/build: Increment room for feature name in feature detection output
-Date:   Thu, 18 Aug 2022 14:09:56 +0200
-Message-Id: <20220818120957.319995-2-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220818120957.319995-1-roberto.sassu@huaweicloud.com>
-References: <20220818120957.319995-1-roberto.sassu@huaweicloud.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GxC2BwA38hluLP5ipRkyAA--.42926S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7CF1Utr17Kw43uF4xZw1DKFg_yoW8WFy8p3
-        93CrW8Cr4DAr4Yk3W0yrs8ur43Gws7Xay7tFZ3Zw4jvFy8JF9Fvw1ayF4IqFs2g34Fqr45
-        Wr9Fga1UAw10ywUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUmFb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1j6r18M7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGw
-        A2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-        w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-        WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
-        Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
-        Av7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY
-        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7M4kE6xkIj40Ew7
-        xC0wCY1x0262kKe7AKxVW8ZVWrXwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
-        JVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67
-        kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY
-        6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42
-        IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2
-        KfnxnUUI43ZEXa7IUnwqXPUUUUU==
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/
-X-CFilter-Loop: Reflected
+        Thu, 18 Aug 2022 08:50:47 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADADA72B48;
+        Thu, 18 Aug 2022 05:50:36 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id s3-20020a17090a2f0300b001facfc6fdbcso1076427pjd.1;
+        Thu, 18 Aug 2022 05:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=vJnTLCeVR9FrR1fGRSRdR2jBPsd1aq0zZ9FQzI+eolU=;
+        b=MNghI+LDP186da8pPH5kN9fVLYJujS42WIxMQGjKnlNZa8RCbzlRfVTcF3q1cKj0zk
+         mcKXl5kVByFhgGoY8VY20bK91f6X/X25Swf/+nFpCSy5Xk28gky5VRN6ZIYUJ3hTSkFa
+         Raa6L68H0Toq88Lke3DIDhAoTzplcZQ3DOmDLFEkq7Q3szoxucTNmwtGsFkDZ+PY+KQV
+         k0QlCJ4WH0WiUmXCS7ZcMnniRhboVtbtoG+yJvcbnxWPRVoqiZhIy5GYnIJ7QEbKXtlh
+         Z1na53a+UmfHyXM5axPf8OcGmJrUXUvuSweboWqtf5+wU0Ddl3sbXs/02kMQ2xfgYRUY
+         iRKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=vJnTLCeVR9FrR1fGRSRdR2jBPsd1aq0zZ9FQzI+eolU=;
+        b=4ZynomhOXuyG334Ae9T5CzJllHGHktzHfXmhu1y7W/U9ysGlXZKV3MxlcH9RTNI5yB
+         bqos4pzaeD1OFjgp+9e6Rg3rsMVmb3ZpFE4t2G3vL0t2kgiAGhdoQvw1JzMOaxlBojnj
+         B7n1sQdL/du5ycgpumDmBW1FrTPfxu3Vo4WPRQmK0MF2kcxyOF/yXB6v4Nuyhb9eQnGR
+         b0CiuFUr/DxG5aL9H84iQK4KZ0VjIVgKZIKQCpjSqZSw6x7ScnxglD8np5I1fygWPVRw
+         /plJis3cumct88I2VgK6f5oAxoobE7208sYNOCOOeK1MhIEcmIZT0fhtWqocpyCPwiUn
+         2KiA==
+X-Gm-Message-State: ACgBeo0A/+Cu0GxzScj4Zk0h/TAa+GaZPhwIT35lqVj0oZpt9a31iyIo
+        6CR8x/MtfNL/SViPk2pF2x8=
+X-Google-Smtp-Source: AA6agR6XIc1+iaF72gu2Yv5kU53Tf7XtCVTsB/UrrSTAgOpxlJ5jT/K/Kg28sATRWPJ7zrAo3Ia6Nw==
+X-Received: by 2002:a17:90b:4f49:b0:1f5:c7c:b565 with SMTP id pj9-20020a17090b4f4900b001f50c7cb565mr8929936pjb.32.1660827034057;
+        Thu, 18 Aug 2022 05:50:34 -0700 (PDT)
+Received: from goorm.ap-northeast-2.compute.internal (ec2-3-39-17-166.ap-northeast-2.compute.amazonaws.com. [3.39.17.166])
+        by smtp.gmail.com with ESMTPSA id t15-20020a1709027fcf00b0016d5428f041sm1301228plb.199.2022.08.18.05.50.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 05:50:33 -0700 (PDT)
+From:   YongSu Yoo <yongsuyoo0215@gmail.com>
+To:     mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yongsu.yoo@lge.com
+Cc:     YongSu Yoo <yongsuyoo0215@gmail.com>
+Subject: [PATCH] media: dvb_ca_en50221: A bug is fixed for size write
+Date:   Thu, 18 Aug 2022 12:50:27 +0000
+Message-Id: <20220818125027.1131-1-yongsuyoo0215@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+Signed-off-by:Yongsu Yoo <yongsuyoo0215@gmail.com>
 
-Since now there are features with a long name, increase the room for them,
-so that fields are correctly aligned.
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+The function of "dvb_ca_en50221_write_data" at source/drivers/media
+/dvb-core/dvb_ca_en50221.c is used for two cases.
+The first case is for writing APDU data in the function of
+"dvb_ca_en50221_io_write" at source/drivers/media/dvb-core/
+dvb_ca_en50221.c.
+The second case is for writing the host link buf size on the
+Command Register in the function of "dvb_ca_en50221_link_init"
+at source/drivers/media/dvb-core/dvb_ca_en50221.c.
+In the second case, there exists a bug like followings.
+In the function of the "dvb_ca_en50221_link_init",
+after a TV host calculates the host link buf_size,
+the TV host writes the calculated host link buf_size on the
+Size Register.
+Accroding to the en50221 Spec (the page 60 of
+https://dvb.org/wp-content/uploads/2020/02/En50221.V1.pdf),
+before this writing operation, the "SW(CMDREG_SW)" flag in the
+Command Register should be set. We can see this setting operation
+in the function of the "dvb_ca_en50221_link_init" like below.
+...
+	if ((ret = ca->pub->write_cam_control(ca->pub, slot,
+CTRLIF_COMMAND, IRQEN | CMDREG_SW)) != 0)
+		return ret;
+...
+But, after that, the real writing operation is implemented using
+the function of the "dvb_ca_en50221_write_data" in the function of
+"dvb_ca_en50221_link_init", and the "dvb_ca_en50221_write_data"
+includes the function of "ca->pub->write_cam_control",
+and the function of the "ca->pub->write_cam_control" in the
+function of the "dvb_ca_en50221_wrte_data" does not include
+"CMDREG_SW" flag like below.
+...
+	if ((status = ca->pub->write_cam_control(ca->pub, slot,
+CTRLIF_COMMAND, IRQEN | CMDREG_HC)) != 0)
+...
+In the above source code, we can see only the "IRQEN | CMDREG_HC",
+but we cannot see the "CMDREG_SW".
+The "CMDREG_SW" flag which was set in the function of the
+"dvb_ca_en50221_link_init" was rollbacked by the follwoing function
+of the "dvb_ca_en50221_write_data".
+This is a bug. and this bug causes that the calculated host link buf_size
+is not properly written in the CI module.
+Through this patch, we fix this bug.
 ---
- tools/build/Makefile.feature | 6 +++---
- tools/perf/Makefile.config   | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/media/dvb-core/dvb_ca_en50221.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
-index 9d3afbc37e15..6c809941ff01 100644
---- a/tools/build/Makefile.feature
-+++ b/tools/build/Makefile.feature
-@@ -181,15 +181,15 @@ feature_print_status = $(eval $(feature_print_status_code))
+diff --git a/drivers/media/dvb-core/dvb_ca_en50221.c b/drivers/media/dvb-core/dvb_ca_en50221.c
+index 15a08d8c69ef..13f249b0a080 100644
+--- a/drivers/media/dvb-core/dvb_ca_en50221.c
++++ b/drivers/media/dvb-core/dvb_ca_en50221.c
+@@ -187,7 +187,7 @@ static void dvb_ca_en50221_thread_wakeup(struct dvb_ca_private *ca);
+ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
+ 				    u8 *ebuf, int ecount);
+ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
+-				     u8 *ebuf, int ecount);
++				     u8 *ebuf, int ecount, int size_write_flag);
  
- define feature_print_status_code
-   ifeq ($(feature-$(1)), 1)
--    MSG = $(shell printf '...%30s: [ \033[32mon\033[m  ]' $(1))
-+    MSG = $(shell printf '...%40s: [ \033[32mon\033[m  ]' $(1))
-   else
--    MSG = $(shell printf '...%30s: [ \033[31mOFF\033[m ]' $(1))
-+    MSG = $(shell printf '...%40s: [ \033[31mOFF\033[m ]' $(1))
-   endif
- endef
+ /**
+  * findstr - Safely find needle in haystack.
+@@ -370,7 +370,7 @@ static int dvb_ca_en50221_link_init(struct dvb_ca_private *ca, int slot)
+ 	ret = dvb_ca_en50221_wait_if_status(ca, slot, STATUSREG_FR, HZ / 10);
+ 	if (ret)
+ 		return ret;
+-	ret = dvb_ca_en50221_write_data(ca, slot, buf, 2);
++	ret = dvb_ca_en50221_write_data(ca, slot, buf, 2, CMDREG_SW);
+ 	if (ret != 2)
+ 		return -EIO;
+ 	ret = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_COMMAND, IRQEN);
+@@ -778,11 +778,13 @@ static int dvb_ca_en50221_read_data(struct dvb_ca_private *ca, int slot,
+  * @buf: The data in this buffer is treated as a complete link-level packet to
+  *	 be written.
+  * @bytes_write: Size of ebuf.
++ * @size_write_flag: A flag on Command Register which says whether the link size
++ * information will be writen or not. 
+  *
+  * return: Number of bytes written, or < 0 on error.
+  */
+ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
+-				     u8 *buf, int bytes_write)
++				     u8 *buf, int bytes_write, int size_write_flag)
+ {
+ 	struct dvb_ca_slot *sl = &ca->slot_info[slot];
+ 	int status;
+@@ -817,7 +819,7 @@ static int dvb_ca_en50221_write_data(struct dvb_ca_private *ca, int slot,
  
- feature_print_text = $(eval $(feature_print_text_code))
- define feature_print_text_code
--    MSG = $(shell printf '...%30s: %s' $(1) $(2))
-+    MSG = $(shell printf '...%40s: %s' $(1) $(2))
- endef
+ 	/* OK, set HC bit */
+ 	status = ca->pub->write_cam_control(ca->pub, slot, CTRLIF_COMMAND,
+-					    IRQEN | CMDREG_HC);
++					    IRQEN | CMDREG_HC | size_write_flag);
+ 	if (status)
+ 		goto exit;
  
- #
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index f4de6e16fbe2..c41a090c0652 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -1301,7 +1301,7 @@ endif
+@@ -1508,7 +1510,7 @@ static ssize_t dvb_ca_en50221_io_write(struct file *file,
  
- print_var = $(eval $(print_var_code)) $(info $(MSG))
- define print_var_code
--    MSG = $(shell printf '...%30s: %s' $(1) $($(1)))
-+    MSG = $(shell printf '...%40s: %s' $(1) $($(1)))
- endef
- 
- ifeq ($(feature_display),1)
+ 			mutex_lock(&sl->slot_lock);
+ 			status = dvb_ca_en50221_write_data(ca, slot, fragbuf,
+-							   fraglen + 2);
++							   fraglen + 2, 0);
+ 			mutex_unlock(&sl->slot_lock);
+ 			if (status == (fraglen + 2)) {
+ 				written = 1;
 -- 
-2.25.1
+2.17.1
 
