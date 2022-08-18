@@ -2,118 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40234C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 16:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2756AC32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 16:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344561AbiHRQii (ORCPT
+        id S1344573AbiHRQkF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 12:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        Thu, 18 Aug 2022 12:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239763AbiHRQif (ORCPT
+        with ESMTP id S239763AbiHRQkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 12:38:35 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CBD491C4
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 09:38:34 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c39so2612299edf.0
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 09:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=2B8tvc8B2hGOQWJ0UIEwuS9k9Pi3iffbpMUFMt6cRTA=;
-        b=ErGEvsdDtIIHCcxD24M8zXwYEB9SpeIIeJzzWl1gJpkkCmePawUmhzzEyHMxG94Ate
-         GsURqbvPPl0c5qKNQiCNovk95SuLeVZazP7OmbqjwmpgPnpySNqwHgPlhjlPT1ccG1Bu
-         Fns8MY8lhCRWCcYo8V/9qKS67ZVgGzkhMkhOg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=2B8tvc8B2hGOQWJ0UIEwuS9k9Pi3iffbpMUFMt6cRTA=;
-        b=OEfWgeQ9YhYgpMBngbRal8J+4af1+cnbZ8F7gpABz0xijxJa8AOL86MC8LpkcIZAre
-         L3dsCBFzejlZtIypTxlAEIMnVe56VaIg4dmz3j8jO0P74PTgKUzOwOg7wV4D7RBx8HkP
-         YfKL8XZZwBLFlZ9naD/q7msJjOZnqsPLE3qZfBOpMpaqTviES2cCEarOgrgcFfzpGtPx
-         1HY2dH/gL9aO1/fuu2r8NfDZlMGPFdjpInaHfZVey83L9dfVlJw+Dlag+rsXEz+y2fjP
-         t6O0+BpQZ/9K0mbw3gcOEatkcY9rLviBTMi/DILseUAkF5LqFDW75ZdI+Shwki8GYn01
-         PnXQ==
-X-Gm-Message-State: ACgBeo3/cuqBQC9d1y+lErljqHMcUZvKLbMaeqX6OkfxAPtAqwIebgAG
-        g4SXh5cJ2pzJhWvebdse/jlzmE1IruhGV8Iy
-X-Google-Smtp-Source: AA6agR6TBLTt/7Gv3Tl5ktbDTOSKFS8GymPJnHCdd6kR0uOj9JrPPa9qnEY3IUuAtk54R4fCPJV1jg==
-X-Received: by 2002:a05:6402:1e8a:b0:43e:93ab:5ab8 with SMTP id f10-20020a0564021e8a00b0043e93ab5ab8mr2889777edf.211.1660840712427;
-        Thu, 18 Aug 2022 09:38:32 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id ck30-20020a0564021c1e00b00445d760fc69sm1444027edb.50.2022.08.18.09.38.30
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 09:38:31 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id m10-20020a05600c3b0a00b003a603fc3f81so1246781wms.0
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 09:38:30 -0700 (PDT)
-X-Received: by 2002:a05:600c:2195:b0:3a6:b3c:c100 with SMTP id
- e21-20020a05600c219500b003a60b3cc100mr2371564wme.8.1660840710358; Thu, 18 Aug
- 2022 09:38:30 -0700 (PDT)
+        Thu, 18 Aug 2022 12:40:03 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F7F87088;
+        Thu, 18 Aug 2022 09:40:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660840800; x=1692376800;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+dg6EB0Haqdjba5Oqz01neGrQPpoA8j0DmfpOuSwVT0=;
+  b=kHpU8BDzRPAG1Pz2lXXlh38rONxj9CxPFdcnFs67tpNlKnxg6yGQOAul
+   ol6pLEoQSxqyHlKlR0qIUiAnjqwyghSsNBn9+Xh31bOvAmFFI8L0YeNbf
+   t3yeiHzJ3Bp3OB5sdL1nP+Hsi1oFaFQ0EY+tdiLMSz9uaorcbqrjhL99b
+   uqEkDFJWRe/Y5Cbb7SlNmAVLXPChQnQvjcF1LQGdN4yk9ss+HdiZR0xta
+   0IE8KmJVwp8TYccBS07SlM9257tPgRxVGyc5DOI8CsLIKjlqa4QL1YA4i
+   06TVLBn4lEKlMgwljj51G0Hxc2L2iXLdEw9ZsEtGGB5W/DjwF4bCkb+XE
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="176812616"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Aug 2022 09:40:00 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 18 Aug 2022 09:39:57 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Thu, 18 Aug 2022 09:39:56 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH 1/2] dt-bindings: lan966x-otpc: document Lan966X OTPC
+Date:   Thu, 18 Aug 2022 18:44:04 +0200
+Message-ID: <20220818164405.1953698-2-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220818164405.1953698-1-horatiu.vultur@microchip.com>
+References: <20220818164405.1953698-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-References: <20220818110859.1918035-1-jens.wiklander@linaro.org>
-In-Reply-To: <20220818110859.1918035-1-jens.wiklander@linaro.org>
-From:   Linus Torvalds <torvalds@linuxfoundation.org>
-Date:   Thu, 18 Aug 2022 09:38:14 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiEqhzrMskE=7_q4E+X+zPyxm6xvuADhaBxh8gD5p57kA@mail.gmail.com>
-Message-ID: <CAHk-=wiEqhzrMskE=7_q4E+X+zPyxm6xvuADhaBxh8gD5p57kA@mail.gmail.com>
-Subject: Re: [PATCH v2] tee: add overflow check in register_shm_helper()
-To:     Jens Wiklander <jens.wiklander@linaro.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Sumit Garg <sumit.garg@linaro.org>, stable@vger.kernel.org,
-        Nimish Mishra <neelam.nimish@gmail.com>,
-        Anirban Chakraborty <ch.anirban00727@gmail.com>,
-        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
-        Jerome Forissier <jerome.forissier@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 4:09 AM Jens Wiklander
-<jens.wiklander@linaro.org> wrote:
->
-> Fix this by adding an overflow check when calculating the end of the
-> memory range. Also add an explicit call to access_ok() in
-> tee_shm_register_user_buf() to catch an invalid user space address
-> early.
+Document Lan966x OTP controller.
 
-I applied the access_ok() part of this which was clearly missing.
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../nvmem/microchip,lan966x-otpc.yaml         | 42 +++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/microchip,lan966x-otpc.yaml
 
-The check_add_overflow() should be pointless with that.
+diff --git a/Documentation/devicetree/bindings/nvmem/microchip,lan966x-otpc.yaml b/Documentation/devicetree/bindings/nvmem/microchip,lan966x-otpc.yaml
+new file mode 100644
+index 000000000000..b19465971930
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/microchip,lan966x-otpc.yaml
+@@ -0,0 +1,42 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/microchip,lan966x-otpc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip LAN966X OTP Controller (OTPC)
++
++maintainers:
++  - Horatiu Vultur <horatiu.vultur@microchip.com>
++
++description: |
++  OTP controller drives a NVMEM memory where system specific data
++  (e.g. hardware configuration settings, chip identifiers) or
++  user specific data could be stored.
++
++allOf:
++  - $ref: "nvmem.yaml#"
++
++properties:
++  compatible:
++    items:
++      - const: microchip,lan966x-otpc
++      - const: syscon
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    otpc: otp@e0021000 {
++        compatible = "microchip,lan966x-otpc", "syscon";
++        reg = <0xe0021000 0x300>;
++    };
++
++...
+-- 
+2.33.0
 
-And the "roundup() overflows" check should just check for a zero
-result - if it is actually needed. Which I don't think it is on any
-relevant platform (the TEE subsystem only works on arm and x86).
-
-I do think it might be worth discussing whether
-ALTERNATE_USER_ADDRESS_SPACE (and no-MMU) architectures should still
-have access_ok() check that it doesn't actually wrap around in the
-address space, so I've added linux-arch here.
-
-That's m68k, PA-RISC, S390 and sparc.
-
-In fact, I wonder if some or all of those might want to have the
-TASK_SIZE limit anyway - they may have a separate user address space,
-but several ones have some limits even then, and probably should have
-access_ok() check them rather than depend on the hardware then giving
-page fault.
-
-For example, sparc32 has a user address space, but defines TASK_SIZE
-to 0xF0000000. m68k has several different case. parisc also has an
-actual limit.
-
-And s390 uses
-
-    #define TASK_SIZE_MAX         (-PAGE_SIZE)
-
-which is a good value and leaves a guard page at the top.
-
-So I think the "roundup overflows" would probably be best fixed by
-just admitting that every architecture in practice has a TASK_SIZE_MAX
-anyway, and we should just make access_ok() check it.
-
-              Linus
