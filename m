@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FF3C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 11:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D19C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 11:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244308AbiHRLMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 07:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36528 "EHLO
+        id S244317AbiHRLMp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 07:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243897AbiHRLL6 (ORCPT
+        with ESMTP id S243897AbiHRLMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 07:11:58 -0400
-X-Greylist: delayed 628 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 18 Aug 2022 04:11:56 PDT
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F723A5C57;
-        Thu, 18 Aug 2022 04:11:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660821087; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=CK+0SxAcSS6Nr2B+ne/H3MWMkiC1taz5FsR2IymBmR8eHwRqr05o0KleO6clc2g4+a3vA6Zzp0qzSSLFgkTEfOtxwzREBNj3B7ecpPEgkErCgWjW8l8NhIoGI8u8G3xNY70IHPLSIkxHUX2PCZ2OHFm4dLDodpL7wv/5rqLMiSI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660821087; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=y+G1krJ8CXTDXn6qZTth7DCyPot/zzg8W1f8MXUNSdI=; 
-        b=BXEIBvr6GH4KJjl0jR0jZsY34OPzAV5c1XD2B8yOlA0omfCOGEpZzyZDUV4fwxXBac7gZmZbAJH4qUC0wkmtz5H37DAo+maxpr6oqzKxsIxyw1tZ4qBF3pizqGQCxq6uVpDPJIk8ofrK7+WDa+hMbzvo0Mur7wSzVxSRpq6bJ3g=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660821087;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=y+G1krJ8CXTDXn6qZTth7DCyPot/zzg8W1f8MXUNSdI=;
-        b=OdpzWta8ueF1lTahkP72qgf9IErRfIuKV/RyxF+9g476kcZEaCJRCnAHaFlUf4Cc
-        SP3OVYaWI0Ku5SZz+3lTwVgXDYiK5F00aqFFKFqvsBrLRR/d1TdJH/6fh/j/jYucXNz
-        ppnU/TUKtsECR9TfMsnP7stYhGQn7C96AQJ3RjsA=
-Received: from localhost.localdomain (103.86.19.2 [103.86.19.2]) by mx.zoho.in
-        with SMTPS id 166082108572024.568604130410563; Thu, 18 Aug 2022 16:41:25 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     code@siddh.me
-Cc:     david@fromorbit.com, djwong@kernel.org, fgheet255t@gmail.com,
-        hch@infradead.org, linux-ext4@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-xfs@vger.kernel.org, riteshh@linux.ibm.com,
-        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com
-Message-ID: <20220818111117.102681-1-code@siddh.me>
-Subject: Re: [syzbot] WARNING in iomap_iter
-Date:   Thu, 18 Aug 2022 16:41:17 +0530
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220818110031.89467-1-code@siddh.me>
-References: <20220818110031.89467-1-code@siddh.me>
+        Thu, 18 Aug 2022 07:12:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCC8A5706
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 04:12:41 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IAqCBj027648;
+        Thu, 18 Aug 2022 11:12:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=m5xFRYbqQ/2lXXY1pQSEa2jDiReGuiBLzYwDkADrplE=;
+ b=M2Bngfz7d4VqP77Src4wPCnEmqXKT6WT3sLE6z1uvfiwN6MlwzpD5Oy8ngDALfjJhGWj
+ jbcWhmNcAVUNwpl0C2hYSea91OU3Cd7SqcVCf9NNXuEYi2gHpvE3KUeRvVHfstA4cRE5
+ yUlqqwxUHAmxDCYgXXIRZvRZdrOWPjZbyuqKMX1GS/RbJ1not/aP0PLTWrhPo3Q9wHS8
+ 4vXVna0Yp7cTyyvLL9byM7QxiCcMd23Y+CsBs2oEmxL+gQ2o/AFrmqURsEJTVNwowVJu
+ H7qcOGbI2PAoHjVU/UJLbRMYIBjajQS7jwONe0BdytPOanCttGSXlfa93vdo349+w7F2 IA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1m250jq8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 11:12:21 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27IArAwY030058;
+        Thu, 18 Aug 2022 11:12:20 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1m250jpc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 11:12:20 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27IB6ctP004824;
+        Thu, 18 Aug 2022 11:12:18 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04ams.nl.ibm.com with ESMTP id 3hx3k9ds81-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 11:12:17 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27IBCFBm24117694
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 18 Aug 2022 11:12:15 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9255011C050;
+        Thu, 18 Aug 2022 11:12:15 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B130111C04C;
+        Thu, 18 Aug 2022 11:12:12 +0000 (GMT)
+Received: from [9.109.198.207] (unknown [9.109.198.207])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 18 Aug 2022 11:12:12 +0000 (GMT)
+Message-ID: <07a21891-1571-95ac-8afd-93ff1b92ef4b@linux.vnet.ibm.com>
+Date:   Thu, 18 Aug 2022 16:42:11 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 05/16] powerpc: Skip objtool from running on
+ drivers/crypto/vmx/aesp8-ppc.o
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Cc:     "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "npiggin@gmail.com" <npiggin@gmail.com>,
+        "chenzhongjin@huawei.com" <chenzhongjin@huawei.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+References: <20220808114908.240813-1-sv@linux.ibm.com>
+ <20220808114908.240813-6-sv@linux.ibm.com>
+ <fad7cc16-7dfb-de90-50e7-f2524525e1c3@csgroup.eu>
+From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
+In-Reply-To: <fad7cc16-7dfb-de90-50e7-f2524525e1c3@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: u77vzHn5j6OLoMBp3u99w8-jXYTOmXBn
+X-Proofpoint-GUID: I7V-918uXgSUN3wJksp4lQ7YQiYuCSZl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-18_12,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ impostorscore=0 mlxscore=0 priorityscore=1501 mlxlogscore=999
+ malwarescore=0 clxscore=1015 lowpriorityscore=0 bulkscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208180038
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The last test patch accidentally left out less-than-zero checks...
 
-Is there a way to cancel previously requested tests?
+On 10/08/22 14:04, Christophe Leroy wrote:
+>
+> Le 08/08/2022 à 13:48, Sathvika Vasireddy a écrit :
+>> With objtool enabled, below warnings are seen when trying to build:
+>>
+>> drivers/crypto/vmx/aesp8-ppc.o: warning: objtool: aes_p8_set_encrypt_key+0x44: unannotated intra-function call
+>>
+>> drivers/crypto/vmx/aesp8-ppc.o: warning: objtool: .text+0x2448: unannotated intra-function call
+>>
+>> drivers/crypto/vmx/aesp8-ppc.o: warning: objtool: .text+0x2d68: unannotated intra-function call
+>>
+>> Skip objtool from running on this file, as
+>> there are no calls to _mcount.
+> Why not fix it the same way as for other files ? Please explain.
+For two main reasons:
 
-#syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
+1. Since this file comes from OpenSSL, and since it is a perl file which 
+generates a .S file,  it may not
+     be the best choice to make too many code changes to such files, 
+unless absolutely necessary.
 
----
- drivers/block/loop.c      |  3 +++
- include/uapi/linux/loop.h | 12 ++++++------
- 2 files changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index e3c0ba93c1a3..4ca20ce3158d 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -977,6 +977,9 @@ loop_set_status_from_info(struct loop_device *lo,
- =09=09return -EINVAL;
- =09}
-=20
-+=09if (info->lo_offset < 0 || info->lo_sizelimit < 0)
-+=09=09return -EINVAL;
-+
- =09lo->lo_offset =3D info->lo_offset;
- =09lo->lo_sizelimit =3D info->lo_sizelimit;
- =09memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
-diff --git a/include/uapi/linux/loop.h b/include/uapi/linux/loop.h
-index 6f63527dd2ed..973565f38f9d 100644
---- a/include/uapi/linux/loop.h
-+++ b/include/uapi/linux/loop.h
-@@ -53,12 +53,12 @@ struct loop_info64 {
- =09__u64=09=09   lo_device;=09=09=09/* ioctl r/o */
- =09__u64=09=09   lo_inode;=09=09=09/* ioctl r/o */
- =09__u64=09=09   lo_rdevice;=09=09=09/* ioctl r/o */
--=09__u64=09=09   lo_offset;
--=09__u64=09=09   lo_sizelimit;/* bytes, 0 =3D=3D max available */
--=09__u32=09=09   lo_number;=09=09=09/* ioctl r/o */
--=09__u32=09=09   lo_encrypt_type;=09=09/* obsolete, ignored */
--=09__u32=09=09   lo_encrypt_key_size;=09=09/* ioctl w/o */
--=09__u32=09=09   lo_flags;
-+=09__s64=09=09   lo_offset;
-+=09__s64=09=09   lo_sizelimit;/* bytes, 0 =3D=3D max available */
-+=09__s32=09=09   lo_number;=09=09=09/* ioctl r/o */
-+=09__s32=09=09   lo_encrypt_type;=09=09/* obsolete, ignored */
-+=09__s32=09=09   lo_encrypt_key_size;=09=09/* ioctl w/o */
-+=09__s32=09=09   lo_flags;
- =09__u8=09=09   lo_file_name[LO_NAME_SIZE];
- =09__u8=09=09   lo_crypt_name[LO_NAME_SIZE];
- =09__u8=09=09   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
---=20
-2.35.1
-
-
+2. Second reason is that, at least as far as the objtool --mcount 
+functionality is concerned, we do not
+     have to run objtool on that file because that file does not have 
+any calls to _mcount.
+>
+>> Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
+>> ---
+>>    drivers/crypto/vmx/Makefile | 2 ++
+>>    1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/crypto/vmx/Makefile b/drivers/crypto/vmx/Makefile
+>> index 2560cfea1dec..7b41f0da6807 100644
+>> --- a/drivers/crypto/vmx/Makefile
+>> +++ b/drivers/crypto/vmx/Makefile
+>> @@ -9,3 +9,5 @@ targets += aesp8-ppc.S ghashp8-ppc.S
+>>    
+>>    $(obj)/aesp8-ppc.S $(obj)/ghashp8-ppc.S: $(obj)/%.S: $(src)/%.pl FORCE
+>>    	$(call if_changed,perl)
+>> +
+>> +OBJECT_FILES_NON_STANDARD_aesp8-ppc.o := y
