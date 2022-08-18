@@ -2,122 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCC5C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 06:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D43C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 06:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243583AbiHRGSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 02:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35884 "EHLO
+        id S243596AbiHRGTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 02:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243195AbiHRGSo (ORCPT
+        with ESMTP id S233179AbiHRGTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 02:18:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DD8696D9
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 23:18:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660803521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0NAawQ9XBYnysJg3OwdeE4npc8jcs/ow05KJCd8jCZk=;
-        b=TbNlaemT3ybw3lHAWM4iq9AlI7b9AM3CFjLWTeLCQE/XgZEo1B5N4OLT+WRajB+t7IUpAc
-        tH0l99UMF2/RKMbnK3kh5I94aofxNHhB1n7xYk+jn9VayrIXL462J3rHk0eAO78LetWXD7
-        YOUhJ3ypDZNSEYuAm/8Lm8dxxxBc3zA=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-39-KrdojIf1PSy8ZZaY93NXNQ-1; Thu, 18 Aug 2022 02:18:38 -0400
-X-MC-Unique: KrdojIf1PSy8ZZaY93NXNQ-1
-Received: by mail-qv1-f72.google.com with SMTP id c1-20020a0cfb01000000b00495ad218c74so460314qvp.20
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 23:18:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=0NAawQ9XBYnysJg3OwdeE4npc8jcs/ow05KJCd8jCZk=;
-        b=1xLxL1XMdr2NNIriwSdku3PNlXumrmq9Gye7Dw9k6PUlOhgxjzh5O9Hlz4Od7UWxWV
-         ULPNJPzbtXCBAqLAvT21qLXEaCeKqWjiex8wEYzEsyz95dIvG549XGzGW3g0Y8ULwI5o
-         0tMGmjk2gcU5vuu9jcuZTDSt9+xJMqA6thE/dMUp+T5dnm/svb063LRKsnRpWWRjYfxb
-         rKrUStE9/c4E968XozqjWq9Jg2dgG/sQ3aZMM88G/raDRTnRHa1DDz5Xk9QK8paJ3jRY
-         9bmzfk2FEgxUzBS89bpO1d+zLnDZaSszmNi4FcdsGAv7DIjsNK5f9WvBtFvGCSviNIVQ
-         Qy4g==
-X-Gm-Message-State: ACgBeo31Q7A+EppPrtOyl04OD7nOkgttmdqeVl1C8A1fjBaGHJSQejG7
-        Js6I5mfpl71tFTO6lepggMrx+IpyI1zjdaUpoXidgqJ9hACgQtDH3yiSfEWis7dbs4jTfUlPp7g
-        0YkIxsZQQrAdym54BdI409DTCAi0bchKqKl1ivvxR
-X-Received: by 2002:ad4:5bc7:0:b0:48b:e9ed:47a8 with SMTP id t7-20020ad45bc7000000b0048be9ed47a8mr1226315qvt.108.1660803517637;
-        Wed, 17 Aug 2022 23:18:37 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7i9tzI1gIYnxOQajZ5xPDocGxVzPwJg4mYMy5d4vyh7LD7T4c/zanv9nEMIkZnzlA6roXFACDL2aVIZunCvdQ=
-X-Received: by 2002:ad4:5bc7:0:b0:48b:e9ed:47a8 with SMTP id
- t7-20020ad45bc7000000b0048be9ed47a8mr1226308qvt.108.1660803517434; Wed, 17
- Aug 2022 23:18:37 -0700 (PDT)
+        Thu, 18 Aug 2022 02:19:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2686367477;
+        Wed, 17 Aug 2022 23:19:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 68AA1CE1FC4;
+        Thu, 18 Aug 2022 06:19:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D59C433D7;
+        Thu, 18 Aug 2022 06:19:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660803572;
+        bh=hM1mBVLqbFsDP5tgvV4YmWcCLqFBhCnzo6UTUeNmQDo=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=mEv6NfFYVoSdIwb8atzrvqGLvmWgbcRIWv7lJ6KpRzgn5bPzSEKKBr4xBo0xmf3Y2
+         IzdkDdFlgwjQNpRWm4imudEgu4D2HioJisnLN9vGJwd8BAJAfyurlS1LvTGd7xeyjy
+         qMeyGc/+/hClxttZww39er6UFJX1g7OwdRhj+v2ZpL+TBNJhIMrNQo5mIUyovEmsop
+         uNP7QhXQaufrRx+toXjG7Gvn5Tyju1YNhsBRsy/G5xBsZpEda0Tey54V4/b4vV3Fn+
+         6jQV47Gv0nEVEcJVct+J6X3IkMmFRIAg3HtFfG1XneyrvWvt0K0vsjKQXYw+rXeLEg
+         9ERQGh6kyJ+zA==
+Received: by mail-oi1-f176.google.com with SMTP id c185so611311oia.7;
+        Wed, 17 Aug 2022 23:19:32 -0700 (PDT)
+X-Gm-Message-State: ACgBeo15IHyIRFcLjH/y+8h6E3btK6TS462yAM2VXQ2J8gyeUteQ+Bls
+        4yjabm/+qL95Klydtqq00lUHhrjPtWpcs3FI1Bs=
+X-Google-Smtp-Source: AA6agR4A7YMR8rdH+T3to9r6ulvjKEH1r7K5iASABwfYd4uwUNu0EtoocSVHyFy50wklDI4ktWK10Yw5TNuM64q+dhg=
+X-Received: by 2002:a05:6808:14d5:b0:344:8f50:1f0f with SMTP id
+ f21-20020a05680814d500b003448f501f0fmr700783oiw.257.1660803571711; Wed, 17
+ Aug 2022 23:19:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 18 Aug 2022 08:18:01 +0200
-Message-ID: <CAJaqyWdTjREaPLHLfo8ZyHoA3u5PpdX_=5-iTZOfa9fGpLMnfw@mail.gmail.com>
-Subject: Re: [RFC v2 2/7] vhost_test: batch used buffer
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
+Received: by 2002:a05:6838:27c7:0:0:0:0 with HTTP; Wed, 17 Aug 2022 23:19:31
+ -0700 (PDT)
+In-Reply-To: <Yv2qyayq+Jo/+Uvs@ZenIV>
+References: <Yv2qoNQg48rtymGE@ZenIV> <Yv2qyayq+Jo/+Uvs@ZenIV>
+From:   Namjae Jeon <linkinjeon@kernel.org>
+Date:   Thu, 18 Aug 2022 15:19:31 +0900
+X-Gmail-Original-Message-ID: <CAKYAXd-8v8KGofNjCwMeH9Sq-WGK0roRdiTLZ42eUdkpkPnOHw@mail.gmail.com>
+Message-ID: <CAKYAXd-8v8KGofNjCwMeH9Sq-WGK0roRdiTLZ42eUdkpkPnOHw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] ksmbd: don't open-code file_path()
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        CIFS <linux-cifs@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 3:58 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
->
-> Only add to used ring when a batch of buffer have all been used.  And if
-> in order feature negotiated, only add the last used descriptor for a
-> batch of buffer.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->  drivers/vhost/test.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
-> index bc8e7fb1e635..57cdb3a3edf6 100644
-> --- a/drivers/vhost/test.c
-> +++ b/drivers/vhost/test.c
-> @@ -43,6 +43,9 @@ struct vhost_test {
->  static void handle_vq(struct vhost_test *n)
->  {
->         struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
-> +       struct vring_used_elem *heads = kmalloc(sizeof(*heads)
-> +                       * vq->num, GFP_KERNEL);
-
-It seems to me we can use kmalloc_array here.
+2022-08-18 11:58 GMT+09:00, Al Viro <viro@zeniv.linux.org.uk>:
+> Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Acked-by: Namjae Jeon <linkinjeon@kernel.org>
 
 Thanks!
-
-> +       int batch_idx = 0;
->         unsigned out, in;
->         int head;
->         size_t len, total_len = 0;
-> @@ -84,11 +87,14 @@ static void handle_vq(struct vhost_test *n)
->                         vq_err(vq, "Unexpected 0 len for TX\n");
->                         break;
->                 }
-> -               vhost_add_used_and_signal(&n->dev, vq, head, 0);
-> +               heads[batch_idx].id = cpu_to_vhost32(vq, head);
-> +               heads[batch_idx++].len = cpu_to_vhost32(vq, len);
->                 total_len += len;
->                 if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
->                         break;
->         }
-> +       if (batch_idx)
-> +               vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
+> ---
+>  fs/ksmbd/smb2pdu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
->         mutex_unlock(&vq->mutex);
->  }
+> diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+> index 9751cc92c111..0e1924a6476d 100644
+> --- a/fs/ksmbd/smb2pdu.c
+> +++ b/fs/ksmbd/smb2pdu.c
+> @@ -5416,7 +5416,7 @@ static int smb2_rename(struct ksmbd_work *work,
+>  	if (!pathname)
+>  		return -ENOMEM;
+>
+> -	abs_oldname = d_path(&fp->filp->f_path, pathname, PATH_MAX);
+> +	abs_oldname = file_path(fp->filp, pathname, PATH_MAX);
+>  	if (IS_ERR(abs_oldname)) {
+>  		rc = -EINVAL;
+>  		goto out;
+> @@ -5551,7 +5551,7 @@ static int smb2_create_link(struct ksmbd_work *work,
+>  	}
+>
+>  	ksmbd_debug(SMB, "link name is %s\n", link_name);
+> -	target_name = d_path(&filp->f_path, pathname, PATH_MAX);
+> +	target_name = file_path(filp, pathname, PATH_MAX);
+>  	if (IS_ERR(target_name)) {
+>  		rc = -EINVAL;
+>  		goto out;
 > --
-> 2.17.1
+> 2.30.2
 >
-
+>
