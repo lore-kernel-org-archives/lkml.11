@@ -2,123 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3002EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB66C28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346047AbiHRU1k (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 16:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S239542AbiHRU2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 16:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346007AbiHRU1f (ORCPT
+        with ESMTP id S1346048AbiHRU2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 16:27:35 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E2E12D09;
-        Thu, 18 Aug 2022 13:27:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=pYW7sT3jh29AWNhJvTI8IlA/O24S5q/YAiEWOzJFAt8=; b=LB
-        OZg4+L7ld0yvUo5vbEosaxy60S2JN+n31F0W6bAtTFxLs6MQHJpgBz+L31v9WbvWlpUf41AMDwhhO
-        XYWuUBnJkNcFq8kiK1vx0Jh6LC0lDUoHRL5aQkgtR97Kc66Rn6kcDbYfQVzbLwD8fwFAnvozum9Dv
-        LGhS1mJtgGWliC0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oOm6u-00DqE5-L3; Thu, 18 Aug 2022 22:27:24 +0200
-Date:   Thu, 18 Aug 2022 22:27:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/4] PCI: mvebu: Implement support for interrupts on
- emulated bridge
-Message-ID: <Yv6grNn5BDFjctFP@lunn.ch>
-References: <20220817230036.817-1-pali@kernel.org>
- <20220817230036.817-3-pali@kernel.org>
- <Yv6YOZ2FuTn8D5qS@lunn.ch>
- <20220818200737.7w2wqh62arfrskks@pali>
+        Thu, 18 Aug 2022 16:28:45 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408E310D3;
+        Thu, 18 Aug 2022 13:28:42 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id r22so2145837pgm.5;
+        Thu, 18 Aug 2022 13:28:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=0S9pswd0lTMDAoOgJNHN+XxSC6Y9mGzIwVS4d8zY1N8=;
+        b=E/rJybmsbBHMKkh5f9OrGyDmQ9hv7D0HN0E6tJ2fom+248IJqK4aQpe2Ah1SDzVzkN
+         yOtJwOfFWNtrtaFLPsbmG8KDTyrX6OOp5L6tZSTF/pqEmAVXUhOPagt+1R8SpOnZbFrC
+         ksH12jYXNj3wm459DXRP69ZaYafKXhDj8G5XvwMJzLeIMhWLCb311F0adAjCUpAwq0ym
+         1W8RwRJ3BjWjX75AQZ0kdKl9Gn4sxz46GiwyWWA/DyKKc/VMhFKonmMccYshkHYdzU9n
+         T1K/CzGqo0PQ9DE37IgfGfqLFC6MwKsUcPqTAWZjDwMTxc1+K7/ZD7FNEuV2tvuekuwU
+         FcRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=0S9pswd0lTMDAoOgJNHN+XxSC6Y9mGzIwVS4d8zY1N8=;
+        b=U21P2yxlROo+kUzczilsJ5Iu3NN7pqsvLQQanFPPRwWylu3//dnNg8Juc4E+43bvF/
+         elOdkZSgn97737CKuArQ6+D2siQe/uiDSQoMm9r2y8VjZZdS2MkHGxhStELUT0WmCxu2
+         zrM/oOaMSyup4ZY/jCwNUOu1ALot8e3U7fqYVolTr6dvnw6bpldt7MNKOHTBj1WPVZSM
+         13ufhBI40ByZraNujO9rKP9ElUja+qJnjF6JaDH55GXXeyL8oKmzaxMAm0wZ8Dgf4uCj
+         67hFts3ki7wCB52DoKyM08g16KIp8dBXQKPhLP6oGk2kpqjrpu1MH2bwax8Siiom7Brr
+         v7Kw==
+X-Gm-Message-State: ACgBeo3S16ea8n7JIEsWA9d8JVwegl7MwbH78WMXC0UTvqXjkgeAodeE
+        ONF7HJgNiB3orADrrVZ+a28=
+X-Google-Smtp-Source: AA6agR69yMkB0QYmmTxyIbimAV01u677JPoOEX75/EsidU+JD+0KFzfUJ5UdMucRJKxTGN1JIsME1Q==
+X-Received: by 2002:a05:6a00:88f:b0:530:dec:81fd with SMTP id q15-20020a056a00088f00b005300dec81fdmr4536094pfj.64.1660854522402;
+        Thu, 18 Aug 2022 13:28:42 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id p124-20020a62d082000000b0052dd95e72bcsm2022083pfg.193.2022.08.18.13.28.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 13:28:41 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 18 Aug 2022 13:28:39 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eliav Farber <farbere@amazon.com>
+Cc:     jdelvare@suse.com, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
+        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
+        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
+        amitlavi@amazon.com, almogbs@amazon.com, dwmw@amazon.co.uk,
+        rtanwar@maxlinear.com
+Subject: Re: [PATCH v2 14/16] hwmon: (mr75203) parse thermal coefficients
+ from device-tree
+Message-ID: <20220818202839.GA3431511@roeck-us.net>
+References: <20220817054321.6519-1-farbere@amazon.com>
+ <20220817054321.6519-15-farbere@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220818200737.7w2wqh62arfrskks@pali>
+In-Reply-To: <20220817054321.6519-15-farbere@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:07:37PM +0200, Pali Rohár wrote:
-> On Thursday 18 August 2022 21:51:21 Andrew Lunn wrote:
-> > > -static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
-> > > +static irqreturn_t mvebu_pcie_error_irq_handler(int irq, void *arg)
-> > > +{
-> > > +	struct mvebu_pcie_port *port = arg;
-> > > +	struct device *dev = &port->pcie->pdev->dev;
-> > > +	u32 cause, unmask, status;
-> > > +
-> > > +	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
-> > > +	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-> > > +	status = cause & unmask;
-> > > +
-> > > +	/* "error" interrupt handler does not process INTX interrupts */
-> > > +	status &= ~(PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
-> > > +		    PCIE_INT_INTX(2) | PCIE_INT_INTX(3));
-> > 
-> > Just for my understanding...
-> > 
-> > There are two interrupts
+On Wed, Aug 17, 2022 at 05:43:19AM +0000, Eliav Farber wrote:
+> Use thermal coefficients from the device tree if they exist.
+> Otherwise, use default values.
 > 
-> yes
+> The equation used in the driver is:
+>   T = G + H * (n / cal5 - 0.5) + J * F
 > 
-> > but the status information what those
-> > interrupts actually mean are all packed into one register?
+> With this change we can support also Mode 1 Conversion, which
+> uses A instead of G, and B instead of H.
 > 
-> yes
+> We can also support the series 6 equation that has different
+> coefficients and has a slightly different format:
+>   T = G + H * (n / cal5 - 0.5)
+> by setting J to 0.
 > 
-> for masking individual interrupt events there is just one shared
-> register for both "intx" and "error" interrupt source.
-> 
-> and also there is also just one shared "cause" register which says which
-> individual interrupt events happened.
-> 
-> > I assume reading the clause register does not clear set bits?
-> 
-> yes, reading does not clear any interrupt event.
-> 
-> > Otherwise there
-> > would be a race condition.
-> 
-> > Are these actually level interrupts
-> 
-> yes
-> 
-> > and in order to clear them you need to poke some other register?
-> 
-> to clear individual interrupt event you have to write corresponding 1b
-> bit into that cause register.
-> 
-> so if interrupts events BIT(24), BIT(16) and BIT(17) happened and
-> BIT(24), BIT(25), BIT(26), BIT(27) and BIT(16) are unmasked then CPU
-> receives two interrupts (one for intx:24-27 and one for err:16). kernel
-> will call interrupt handlers for both intx and err (possible also in
-> parallel if it unmasked on different CPUs) and each handler just clears
-> events which process. So writing BIT(16) into cause register clears only
-> event 16 and all other (24-27, 17) are still active. And level interrupt
-> (the correct one intx or err) is then triggered again.
 
-Thanks for the explanation.
+The calculation was just changed to use new defaults in a previous
+patch. This patch makes it quite clear that the coefficients
+are implementation (?) dependent. So the previous patch just changes
+the defaults to (presumably) the coefficients used in your system.
+That is inappropriate. Adding non-default corefficients is ok
+and makes sense is supported by the chip, but changing defaults
+isn't.
 
-I don't know enough about PCI to be able to give a meaningful
-Reviewed-by, so i will leave that to the PCI maintainer. But the DT
-bits look good to me.
+Guenter
 
-     Andrew
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
+> ---
+>  drivers/hwmon/mr75203.c | 44 +++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 40 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+> index e500897585e4..e54a4d1803e4 100644
+> --- a/drivers/hwmon/mr75203.c
+> +++ b/drivers/hwmon/mr75203.c
+> @@ -131,6 +131,10 @@ struct pvt_device {
+>  	u32			p_num;
+>  	u32			v_num;
+>  	u32			ip_freq;
+> +	u32			ts_coeff_h;
+> +	u32			ts_coeff_g;
+> +	s32			ts_coeff_j;
+> +	u32			ts_coeff_cal5;
+>  	u8			vm_ch_max;
+>  	u8			vm_ch_total;
+>  };
+> @@ -179,10 +183,10 @@ static int pvt_read_temp(struct device *dev, u32 attr, int channel, long *val)
+>  		 * Convert the register value to degrees centigrade temperature:
+>  		 * T = G + H * (n / cal5 - 0.5) + J * F
+>  		 */
+> -		*val = PVT_G_CONST;
+> -		*val += PVT_H_CONST * nbs / PVT_CAL5_CONST;
+> -		*val -= PVT_H_CONST / 2;
+> -		*val += PVT_J_CONST * pvt->ip_freq / HZ_PER_MHZ;
+> +		*val = pvt->ts_coeff_g;
+> +		*val += pvt->ts_coeff_h * nbs / pvt->ts_coeff_cal5;
+> +		*val -= pvt->ts_coeff_h / 2;
+> +		*val += pvt->ts_coeff_j * pvt->ip_freq / HZ_PER_MHZ;
+>  
+>  		return 0;
+>  	default:
+> @@ -619,6 +623,38 @@ static int mr75203_probe(struct platform_device *pdev)
+>  		memset32(temp_config, HWMON_T_INPUT, ts_num);
+>  		pvt_temp.config = temp_config;
+>  		pvt_info[index++] = &pvt_temp;
+> +
+> +		/*
+> +		 * Incase ts-coeff-h/g/j/cal5 property is not defined, use
+> +		 * default value.
+> +		 */
+> +		ret = of_property_read_u32(np, "ts-coeff-h", &pvt->ts_coeff_h);
+> +		if (ret)
+> +			pvt->ts_coeff_h = PVT_H_CONST;
+> +
+> +		ret = of_property_read_u32(np, "ts-coeff-g", &pvt->ts_coeff_g);
+> +		if (ret)
+> +			pvt->ts_coeff_g = PVT_G_CONST;
+> +
+> +		ret = of_property_read_s32(np, "ts-coeff-j", &pvt->ts_coeff_j);
+> +		if (ret)
+> +			pvt->ts_coeff_j = PVT_J_CONST;
+> +
+> +		ret = of_property_read_u32(np, "ts-coeff-cal5",
+> +					   &pvt->ts_coeff_cal5);
+> +		if (ret) {
+> +			pvt->ts_coeff_cal5 = PVT_CAL5_CONST;
+> +		} else {
+> +			if (pvt->ts_coeff_cal5 == 0) {
+> +				dev_err(dev, "invalid ts-coeff-cal5 (%u)\n",
+> +					pvt->ts_coeff_cal5);
+> +				return -EINVAL;
+> +			}
+> +		}
+> +
+> +		dev_dbg(dev, "ts-coeff: h = %u, g = %u, j = %d, cal5 = %u\n",
+> +			pvt->ts_coeff_h, pvt->ts_coeff_g, pvt->ts_coeff_j,
+> +			pvt->ts_coeff_cal5);
+>  	}
+>  
+>  	if (pd_num) {
