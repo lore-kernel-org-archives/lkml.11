@@ -2,188 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A140CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB50EC28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243434AbiHREhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        id S243442AbiHREio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242800AbiHREhb (ORCPT
+        with ESMTP id S242800AbiHREim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:37:31 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419A8AE216
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 21:37:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660797450; x=1692333450;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=81jUUNyzCAon/9Nzz1FCyJShXw4Sn6g9H/uIWqld/7w=;
-  b=aOZqfbpSZ6txptHxb0LmozIF46OhKOJXKLiINgOl5uwF4ct44JNo8Ae9
-   G2u/dpumrEecArMzSrFQ8kxAwFxE6n9bfnUJO3mceRwJ9aXfhC72vs94V
-   e+cY9m5WUuvRMTCrZzc/QM5oYcS8OfN0x778CMjAPyl3JUEeitIb3lfnp
-   2FiUGuUEk5WhyW0QPpaZWY1JQBgxuHLHsNh7z5du8sKhAnxGNSkafGut7
-   w5cM2WeY8TeZDuWpGzP55choUba61YTyvN8XeAd7YFqlfVpBPgAMUUtf6
-   T9OyuvwC/D//vAUwL9SmdP4p10HPiJtPVEPU/I4XGIWqQOpaXDzvkQITr
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="291417417"
-X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
-   d="scan'208";a="291417417"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 21:37:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
-   d="scan'208";a="675912723"
-Received: from lkp-server01.sh.intel.com (HELO 6cc724e23301) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Aug 2022 21:37:28 -0700
-Received: from kbuild by 6cc724e23301 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOXHc-00002h-0l;
-        Thu, 18 Aug 2022 04:37:28 +0000
-Date:   Thu, 18 Aug 2022 12:36:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- 8bc016bdd48d43d8c202f8c1d1615b92be373df7
-Message-ID: <62fdc1e1.MZdQiR56zreLC/Sd%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 18 Aug 2022 00:38:42 -0400
+Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455862CCA4;
+        Wed, 17 Aug 2022 21:38:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R781e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VMZPVz8_1660797509;
+Received: from 192.168.1.120(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VMZPVz8_1660797509)
+          by smtp.aliyun-inc.com;
+          Thu, 18 Aug 2022 12:38:31 +0800
+Message-ID: <5b7b3f1c-637c-37bf-9a32-244eb62d543d@linux.alibaba.com>
+Date:   Thu, 18 Aug 2022 12:38:29 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH V2 1/2] riscv: kexec: Disable all interrupts in kexec
+ crash path
+To:     guoren@kernel.org, palmer@dabbelt.com, heiko@sntech.de,
+        conor.dooley@microchip.com
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, liaochang1@huawei.com,
+        mick@ics.forth.gr, jszhang@kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Will Deacon <will.deacon@arm.com>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>
+References: <20220817161258.748836-1-guoren@kernel.org>
+ <20220817161258.748836-2-guoren@kernel.org>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+In-Reply-To: <20220817161258.748836-2-guoren@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-branch HEAD: 8bc016bdd48d43d8c202f8c1d1615b92be373df7  Merge branch into tip/master: 'core/urgent'
+It is ok for me
 
-elapsed time: 726m
+Reviewed-by: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-configs tested: 110
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-riscv                randconfig-r042-20220818
-s390                 randconfig-r044-20220818
-arc                  randconfig-r043-20220818
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-arm                            zeus_defconfig
-nios2                         3c120_defconfig
-sh                           se7712_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-x86_64                           rhel-8.3-kvm
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arm                         s3c6400_defconfig
-sh                             sh03_defconfig
-arm                             ezx_defconfig
-mips                        vocore2_defconfig
-arm                        oxnas_v6_defconfig
-i386                             allyesconfig
-i386                                defconfig
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arc                          axs101_defconfig
-sh                   rts7751r2dplus_defconfig
-powerpc                 mpc837x_mds_defconfig
-powerpc                       maple_defconfig
-alpha                            alldefconfig
-sparc                       sparc32_defconfig
-sh                          r7785rp_defconfig
-mips                  decstation_64_defconfig
-arm                         cm_x300_defconfig
-loongarch                           defconfig
-loongarch                         allnoconfig
-mips                      loongson3_defconfig
-sh                          polaris_defconfig
-arc                          axs103_defconfig
-sh                        edosk7705_defconfig
-arm                           tegra_defconfig
-mips                           ip32_defconfig
-m68k                            mac_defconfig
-riscv                    nommu_k210_defconfig
-arm                             pxa_defconfig
-powerpc                      ppc40x_defconfig
-powerpc                      mgcoge_defconfig
-powerpc                      cm5200_defconfig
-arm                          simpad_defconfig
-sh                        edosk7760_defconfig
-powerpc                 mpc834x_mds_defconfig
-m68k                        m5307c3_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-arm                          pxa3xx_defconfig
-arm                            xcep_defconfig
-sh                               alldefconfig
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-ia64                         bigsur_defconfig
-nios2                            allyesconfig
-arm                          exynos_defconfig
-nios2                               defconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-
-clang tested configs:
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-arm                        multi_v5_defconfig
-mips                      pic32mzda_defconfig
-riscv                    nommu_virt_defconfig
-mips                        qi_lb60_defconfig
-powerpc                 mpc8560_ads_defconfig
-arm                           spitz_defconfig
-powerpc                 xes_mpc85xx_defconfig
-powerpc                          g5_defconfig
-arm64                            allyesconfig
-arm                          ixp4xx_defconfig
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+在 2022/8/18 上午12:12, guoren@kernel.org 写道:
+> From: Guo Ren <guoren@linux.alibaba.com>
+>
+> If a crash happens on cpu3 and all interrupts are binding on cpu0, the
+> bad irq routing will cause a crash kernel which can't receive any irq.
+> Because crash kernel won't clean up all harts' PLIC enable bits in
+> enable registers. This patch is similar to 9141a003a491 ("ARM: 7316/1:
+> kexec: EOI active and mask all interrupts in kexec crash path") and
+> 78fd584cdec0 ("arm64: kdump: implement machine_crash_shutdown()"), and
+> PowerPC also has the same mechanism.
+>
+> Fixes: fba8a8674f68 ("RISC-V: Add kexec support")
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: AKASHI Takahiro <takahiro.akashi@linaro.org>
+> Cc: Nick Kossifidis <mick@ics.forth.gr>
+> ---
+>   arch/riscv/kernel/machine_kexec.c | 35 +++++++++++++++++++++++++++++++
+>   1 file changed, 35 insertions(+)
+>
+> diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
+> index ee79e6839b86..db41c676e5a2 100644
+> --- a/arch/riscv/kernel/machine_kexec.c
+> +++ b/arch/riscv/kernel/machine_kexec.c
+> @@ -15,6 +15,8 @@
+>   #include <linux/compiler.h>	/* For unreachable() */
+>   #include <linux/cpu.h>		/* For cpu_down() */
+>   #include <linux/reboot.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+>   
+>   /*
+>    * kexec_image_info - Print received image details
+> @@ -154,6 +156,37 @@ void crash_smp_send_stop(void)
+>   	cpus_stopped = 1;
+>   }
+>   
+> +static void machine_kexec_mask_interrupts(void)
+> +{
+> +	unsigned int i;
+> +	struct irq_desc *desc;
+> +
+> +	for_each_irq_desc(i, desc) {
+> +		struct irq_chip *chip;
+> +		int ret;
+> +
+> +		chip = irq_desc_get_chip(desc);
+> +		if (!chip)
+> +			continue;
+> +
+> +		/*
+> +		 * First try to remove the active state. If this
+> +		 * fails, try to EOI the interrupt.
+> +		 */
+> +		ret = irq_set_irqchip_state(i, IRQCHIP_STATE_ACTIVE, false);
+> +
+> +		if (ret && irqd_irq_inprogress(&desc->irq_data) &&
+> +		    chip->irq_eoi)
+> +			chip->irq_eoi(&desc->irq_data);
+> +
+> +		if (chip->irq_mask)
+> +			chip->irq_mask(&desc->irq_data);
+> +
+> +		if (chip->irq_disable && !irqd_irq_disabled(&desc->irq_data))
+> +			chip->irq_disable(&desc->irq_data);
+> +	}
+> +}
+> +
+>   /*
+>    * machine_crash_shutdown - Prepare to kexec after a kernel crash
+>    *
+> @@ -169,6 +202,8 @@ machine_crash_shutdown(struct pt_regs *regs)
+>   	crash_smp_send_stop();
+>   
+>   	crash_save_cpu(regs, smp_processor_id());
+> +	machine_kexec_mask_interrupts();
+> +
+>   	pr_info("Starting crashdump kernel...\n");
+>   }
+>   
