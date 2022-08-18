@@ -2,114 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA918C25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 584E8C25B08
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 02:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242772AbiHRCcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 22:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
+        id S242788AbiHRCia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 22:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233588AbiHRCcW (ORCPT
+        with ESMTP id S240545AbiHRCi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 22:32:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838A880516
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 19:32:20 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M7TPV00KfzmVqL;
-        Thu, 18 Aug 2022 10:30:05 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 10:32:18 +0800
-Received: from [10.67.111.205] (10.67.111.205) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 10:32:17 +0800
-Subject: Re: [PATCH] ftrace: Fix NULL pointer dereference in
- is_ftrace_trampoline when ftrace is dead
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     <mingo@redhat.com>, <linux-kernel@vger.kernel.org>
-References: <20220804021610.209791-1-yangjihong1@huawei.com>
- <20220817104115.0ec6b90b@gandalf.local.home>
- <dcbc9c43-486d-e045-1e35-4226233981ea@huawei.com>
- <20220817221422.295db316@gandalf.local.home>
-From:   Yang Jihong <yangjihong1@huawei.com>
-Message-ID: <472bdcc7-c35c-0306-5642-3eaf9061909d@huawei.com>
-Date:   Thu, 18 Aug 2022 10:32:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Wed, 17 Aug 2022 22:38:27 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA82F6527F;
+        Wed, 17 Aug 2022 19:38:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660790306; x=1692326306;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HeFoWCJ9GssholJv33MN3cVjscg4wW4frE7g9VETT9U=;
+  b=QRQo+wEuHQYq435+8Ge4Rgh9MmC2N4lDQ1HBcRqX7TEVyX8Xbpca0cIQ
+   VtJiUUvplSkkteIY45Zezzs9A5tanXb4pszIfb4I0so6CLvMMH6dSNRRN
+   4sNIrKkfP4jVBCM67Af7a0XgXryWJzhEmbQPY1QTKhlJfagf6YydxHiIv
+   SK1G+T5rCyywJSfPvFHJAJ3vP35PsRA4CsKeyKRWZSbAGDC2pVA/xSH0j
+   emkbx/CSCTgzw290jGZ+0kdk+emrXn3Z3p1UgooKsQep4xl1ruHS6dRI3
+   pAXE8L3bcczsohJ6CuntmoegGHKwAmZ5jctVfE68bBjif5mYON4+klAPJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="378942813"
+X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
+   d="scan'208";a="378942813"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 19:38:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
+   d="scan'208";a="636632537"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orsmga008.jf.intel.com with ESMTP; 17 Aug 2022 19:38:17 -0700
+Date:   Thu, 18 Aug 2022 10:29:11 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     "Manne, Nava kishore" <nava.kishore.manne@amd.com>
+Cc:     Nava kishore Manne <nava.manne@xilinx.com>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "hao.wu@intel.com" <hao.wu@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        "mdf@kernel.org" <mdf@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
+        "rajan.vaja@xilinx.com" <rajan.vaja@xilinx.com>,
+        "abhyuday.godhasara@xilinx.com" <abhyuday.godhasara@xilinx.com>,
+        "piyush.mehta@xilinx.com" <piyush.mehta@xilinx.com>,
+        "harsha.harsha@xilinx.com" <harsha.harsha@xilinx.com>,
+        "lakshmi.sai.krishna.potthuri@xilinx.com" 
+        <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "git@xilinx.com" <git@xilinx.com>
+Subject: Re: [PATCH v2 1/3] fpga: manager: change status api prototype, don't
+ use older
+Message-ID: <Yv2j99FceGrYrG1E@yilunxu-OptiPlex-7050>
+References: <20220621092833.1057408-1-nava.manne@xilinx.com>
+ <20220621092833.1057408-2-nava.manne@xilinx.com>
+ <20220628083158.GA2442728@yilunxu-OptiPlex-7050>
+ <DM6PR12MB39934EC6FB92A46CEA8645E5CD6A9@DM6PR12MB3993.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20220817221422.295db316@gandalf.local.home>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.205]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB39934EC6FB92A46CEA8645E5CD6A9@DM6PR12MB3993.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 2022-08-17 at 11:16:14 +0000, Manne, Nava kishore wrote:
+> Hi Yilun,
+> 
+> 	Please find my response inline.
+> 
+> > -----Original Message-----
+> > From: Xu Yilun <yilun.xu@intel.com>
+> > Sent: Tuesday, June 28, 2022 2:02 PM
+> > To: Nava kishore Manne <nava.manne@xilinx.com>
+> > Cc: michal.simek@xilinx.com; hao.wu@intel.com; trix@redhat.com;
+> > mdf@kernel.org; gregkh@linuxfoundation.org; ronak.jain@xilinx.com;
+> > rajan.vaja@xilinx.com; abhyuday.godhasara@xilinx.com;
+> > piyush.mehta@xilinx.com; harsha.harsha@xilinx.com;
+> > lakshmi.sai.krishna.potthuri@xilinx.com; linux-arm-
+> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org; linux-
+> > fpga@vger.kernel.org; git@xilinx.com
+> > Subject: Re: [PATCH v2 1/3] fpga: manager: change status api prototype,
+> > don't use older
+> > 
+> > On Tue, Jun 21, 2022 at 02:58:31PM +0530, Nava kishore Manne wrote:
+> > > Different vendors have different error sets defined by Hardware.
+> > > If we always define the new bits when we cannot find an exact 1:1
+> > > mapping in the core the 64 bits would soon be used out. Also, it's
+> > > hard to understand the mixture of different error sets.
+> > >
+> > > To address these issues updated the status interface to handle the
+> > > vendor-specific messages in a generic way. With the updated status
+> > > interface the vendor-specific driver files can independently handle
+> > > the error messages.
+> > 
+> > I think we don't have to provide the vendor specific HW errors in a generic
+> > way, maybe the vendor specific drivers could handle them by its own device
+> > attributes.
+> > 
+> > Since the output value set of the interface is specific to each driver, users
+> > should still interpret them in specific manners. So doesn't see much value for
+> > a class interface.
+> >
+> 
+> Agree,  vendor specific drivers could handle them by its own device attributes.
+> If it is the case, can we remove the existing status interface relevant changes from the core?
 
-On 2022/8/18 10:14, Steven Rostedt wrote:
-> On Thu, 18 Aug 2022 09:50:40 +0800
-> Yang Jihong <yangjihong1@huawei.com> wrote:
-> 
->> Thanks for the detailed explanation.
->> If panic_on_warn is not set, FTRACE_WARN_ON{_ONCE} only sets
->> ftrace_disabled, but will not reboot.
-> 
-> Correct. But whenever there's a WARN_ON() the administrator of the machine
-> should think about rebooting it ASAP. That's because all WARN_ON()s are
-> suppose to only happen when the system does something that was not
-> expected, putting it into an inconsistent state. And could be a dangerous
-> one. This is why all WARN_ON()s that are triggered are considered bugs and
-> must be fixed.
-> 
-> 
->> I think this is to limit the problem to ftrace itself and not spread to
->> other subsystems(I don't know if that's right. If it's not right, please
->> correct it).
-> 
-> Yes, the ftrace_disable means that ftrace just found itself in a situation
-> that it does not understand, and nothing can be trusted. As ftrace modifies
-> kernel code, it basically stops everything and WARNs about it. Because
-> anything else it does can make things worse.
-> 
->> Because is_ftrace_trampoline is a common and public interface  (This
->> interface is called in many places in the kernel).
->> If is_ftrace_trampoline interface is not restricted (for example, just
->> return true if ftrace_disabled is set), the preceding Syzkaller scenario
->> may be triggered when this interface is called.
-> 
-> If ftrace_disabled is set, then any operations should fail, and any tests
-> should fail with it.
-> 
->>
->> Therefore, my idea is to restrict the is_ftrace_trampoline or roll back
->>    _unregister_ftrace_function when ftrace_disabled is set, so that the
->> interface can be invoked normally. Or keep the current code and do not
->> modify.
-> 
-> Once ftrace_disabled is set, none of its interfaces should perform
-> normally.
-> 
-> But you reported that you could hit a NULL pointer from the
-> is_ftrace_trampoline() which was caused by the failure adding the dynamic
-> trampoline, and then the ops is on the list but later freed.
-> 
-> My suggestion above is to just call _unregister_ftrace_function(ops) to
-> take it off the list and prevent the NULL pointer.
-> 
-> Doesn't that fix the bug?
-> 
-> I don't want to totally roll it back and free the trampoline, because those
-> actions could cause further damage, depending on the failed state ftrace is
-> in.
-OK, I understand, and will be modified in this way in next version.
+We don't have to. Some *user* interfaces may become hard to use as time
+goes, but we still try to make them stable as there are exsiting users
+working on them once they are released.
+
+That also means we should be more careful when introducing new user
+interfaces.
 
 Thanks,
-Yang
+Yilun
+
+> 
+> Regards,
+> Navakishore
