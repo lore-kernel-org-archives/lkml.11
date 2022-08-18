@@ -2,205 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE20C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 19:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 202F7C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 19:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242480AbiHRTsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 15:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S244523AbiHRTvd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 15:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241954AbiHRTso (ORCPT
+        with ESMTP id S234438AbiHRTvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 15:48:44 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A141A5B7B9
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 12:48:39 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-335624d1e26so69575747b3.4
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 12:48:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kylehuey.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pN7pqer4VDQBcNszwXCuWriKzSK5JQuQKVaTrQYaltM=;
-        b=eJZZyDCvZFocEY1mnX4gNhf3oRrBiDSGvqtESvQlFghziy9F09FK0NXWYew7+Kje/t
-         EYiUjzXF8F1SfwY5eTJn/SlOMC0eAYlX6vXlI6BBe3iss3srKpP32vCLpr1Tm1oKMUMN
-         zg87bqYehNGX06yEK48vPXzcnNUkWK0MFSTmjqiX9GT4kQYkEBsKVx36aCMAt82aWbJe
-         I3tpfUL3jqS3znRjqVz6Nais3mhbhgsyExZDigC6az9B/idmpcCqQsrbFUurVcbQ03qr
-         VBPmy9U+vgbenggQVkmWLrNUBZx6y+nko5YSj1QAgdiIO6xqEJT7OVRswPbW8u68PuP3
-         71lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pN7pqer4VDQBcNszwXCuWriKzSK5JQuQKVaTrQYaltM=;
-        b=li4/JMMoQL8OBmhee3aCrKKbSP9g0Oz+wNrqCf9qNzeqFWHzs7F2SR89r764I0e0H/
-         vBEAhu3SHF6cAht2AjMe/ymhHMXYNufvQWIKW/ARhr96mp/pensEnV323aIJQDqIFTdl
-         odoWzxxsCCtrRRNzs5UR5n+DfqETjt/3pDFS0e2LLCWMNeRZujRSqLdSkeU8VXecmcWb
-         CQ7NyNPTg74uW9ync6GxkZyfw9AjDbqchbDR/x508PkHC5yL2OdW9t9Qwm7O8TAym3tc
-         g49w+0bST7kcIRcU1IXDk1CpPlqdpYSLKiPDfwHtsp7lJaAUJEcTPp/YhglfZezLLl4F
-         gItw==
-X-Gm-Message-State: ACgBeo31OkCFZR4wsZKDw1WTVTDWE8Q8neUTZa1hrTlTe2UwLNVM+xmF
-        V+pwXM7XAx4U6WplB4Yl7zLsEO/J7QBkHKuOR4u6mmPBr4lYmA==
-X-Google-Smtp-Source: AA6agR4vFLdh+IPAYOERtSDAXoJ0znqtPFPClNRqMqibtcNloaQO1xQtmwFz06X3LDoLAF00jqv2MeLkBbP6KHyle2c=
-X-Received: by 2002:a25:bd3:0:b0:691:d47a:be78 with SMTP id
- 202-20020a250bd3000000b00691d47abe78mr4145138ybl.574.1660852118761; Thu, 18
- Aug 2022 12:48:38 -0700 (PDT)
+        Thu, 18 Aug 2022 15:51:31 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18CD8B980;
+        Thu, 18 Aug 2022 12:51:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=WoNpxThHsB/AIg/LI6tXaaPBhVhciQC5vd6xYrqwv5Q=; b=xASG6ipwpLLNcj5P+2kBITSNI0
+        EPfy7+9c0YpmfEOCxpwwhyu/FleN0yW2i3Eed0JD4n0NiEJHpJZoMfJ19M9DrSD7da4YCoxWkU5rM
+        Uy9jE/WaoHnIlqC9oLHSd1GMAJ6Rd0rjRGPwJwnn06CEg7omvHjA7BzGZxcizEGbIpy0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oOlY1-00Dpra-DR; Thu, 18 Aug 2022 21:51:21 +0200
+Date:   Thu, 18 Aug 2022 21:51:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/4] PCI: mvebu: Implement support for interrupts on
+ emulated bridge
+Message-ID: <Yv6YOZ2FuTn8D5qS@lunn.ch>
+References: <20220817230036.817-1-pali@kernel.org>
+ <20220817230036.817-3-pali@kernel.org>
 MIME-Version: 1.0
-References: <20220808141538.102394-1-khuey@kylehuey.com> <87ilmpzunz.ffs@tglx>
-In-Reply-To: <87ilmpzunz.ffs@tglx>
-From:   Kyle Huey <me@kylehuey.com>
-Date:   Thu, 18 Aug 2022 12:48:23 -0700
-Message-ID: <CAP045Ao7hb4kXajkWnMxqawBzFGUZJtSuRRn1kbmjOF=mcTcoA@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] x86/fpu: Allow PKRU to be (once again) written by ptrace.
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        "Robert O'Callahan" <robert@ocallahan.org>,
-        David Manouchehri <david.manouchehri@riseup.net>,
-        Borislav Petkov <bp@suse.de>, kvm@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817230036.817-3-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 3:57 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> Kyle!
-
-Hi.
-
-> On Mon, Aug 08 2022 at 07:15, Kyle Huey wrote:
-> > When management of the PKRU register was moved away from XSTATE, emulation
-> > of PKRU's existence in XSTATE was added for APIs that read XSTATE, but not
-> > for APIs that write XSTATE. This can be seen by running gdb and executing
-> > `p $pkru`, `set $pkru = 42`, and `p $pkru`. On affected kernels (5.14+) the
-> > write to the PKRU register (which gdb performs through ptrace) is ignored.
-> >
-> > There are three relevant APIs: PTRACE_SETREGSET with NT_X86_XSTATE,
-> > sigreturn, and KVM_SET_XSAVE. KVM_SET_XSAVE has its own special handling to
-> > make PKRU writes take effect (in fpu_copy_uabi_to_guest_fpstate). Push that
-> > down into copy_uabi_to_xstate and have PTRACE_SETREGSET with NT_X86_XSTATE
-> > and sigreturn pass in pointers to the appropriate PKRU value.
-> >
-> > This also adds code to initialize the PKRU value to the hardware init value
-> > (namely 0) if the PKRU bit is not set in the XSTATE header to match XRSTOR.
-> > This is a change to the current KVM_SET_XSAVE behavior.
->
-> You are stating a fact here, but provide 0 justification why this is
-> correct.
-
-Well, the justification is that this *is* the behavior we want for
-ptrace/sigreturn, and it's very likely the existing KVM_SET_XSAVE
-behavior in this edge case is an oversight rather than intentional,
-and in the absence of confirmation that KVM wants the existing
-behavior (the KVM mailing list and maintainer are CCd) one correct
-code path is better than one correct code path and one buggy code
-path.
-
-> >
-> > Changelog since v4:
->
-> Can you please put the change log past the --- seperator line, so it
-> gets stripped off when the patch is applied? That spares manual fixups.
-
-Ok.
-
-> >
-> > Signed-off-by: Kyle Huey <me@kylehuey.com>
-> > Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Borislav Petkov <bp@suse.de>
-> > Cc: kvm@vger.kernel.org # For edge case behavior of KVM_SET_XSAVE
-> > Cc: stable@vger.kernel.org # 5.14+
-> > Fixes: e84ba47e313d ("x86/fpu: Hook up PKRU into ptrace()")
->
-> Can you please use the documented tag ordering?
->
-> https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#patch-submission-notes
-
-Ok.
-
-> > @@ -1235,6 +1235,24 @@ static int copy_uabi_to_xstate(struct fpstate *fpstate, const void *kbuf,
-> >       for (i = 0; i < XFEATURE_MAX; i++) {
-> >               mask = BIT_ULL(i);
-> >
-> > +             if (i == XFEATURE_PKRU) {
-> > +                     /*
-> > +                      * Retrieve PKRU if not in init state, otherwise
-> > +                      * initialize it.
-> > +                      */
-> > +                     if (hdr.xfeatures & mask) {
-> > +                             struct pkru_state xpkru = {0};
-> > +
-> > +                             if (copy_from_buffer(&xpkru, xstate_offsets[i],
-> > +                                                  sizeof(xpkru), kbuf, ubuf))
-> > +                                     return -EFAULT;
-> > +
-> > +                             *pkru = xpkru.pkru;
-> > +                     } else {
-> > +                             *pkru = 0;
-> > +                     }
-> > +             }
->
-> That's really horrible and there is no point in copying the stuff from
-> the buffer twice:
->
-> @@ -1246,6 +1246,15 @@ static int copy_uabi_to_xstate(struct fp
->                 }
->         }
->
-> +       /* Update the user protection key storage */
-> +       *pkru = 0;
-> +       if (hdr.xfeatures & XFEATURE_MASK_PKRU) {
-> +               struct pkru_state *xpkru;
+> -static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
+> +static irqreturn_t mvebu_pcie_error_irq_handler(int irq, void *arg)
+> +{
+> +	struct mvebu_pcie_port *port = arg;
+> +	struct device *dev = &port->pcie->pdev->dev;
+> +	u32 cause, unmask, status;
 > +
-> +               xpkru = get_xsave_addr(xsave, XFEATURE_PKRU);
-> +               *pkru = xpkru->pkru;
-> +       }
+> +	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
+> +	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
+> +	status = cause & unmask;
 > +
->
-> Hmm?
+> +	/* "error" interrupt handler does not process INTX interrupts */
+> +	status &= ~(PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
+> +		    PCIE_INT_INTX(2) | PCIE_INT_INTX(3));
 
-It took me a bit to figure out what this is actually trying to do. To
-work, it would need to come at the very end of copy_uabi_to_xstate
-after xsave->header.xfeatures is updated. If you just want to avoid
-two copies I would counter-propose this though:
+Just for my understanding...
 
-@@ -1235,7 +1235,19 @@ static int copy_uabi_to_xstate(struct fpstate
-*fpstate, const void *kbuf,
-        for (i = 0; i < XFEATURE_MAX; i++) {
-                mask = BIT_ULL(i);
+There are two interrupts, but the status information what those
+interrupts actually mean are all packed into one register? I assume
+reading the clause register does not clear set bits? Otherwise there
+would be a race condition. Are these actually level interrupts, and in
+order to clear them you need to poke some other register?
 
--               if (hdr.xfeatures & mask) {
-+               if (i == XFEATURE_PKRU) {
-+                       /* Update the user protection key storage */
-+                       *pkru = 0;
-+                       if (hdr.xfeatures & XFEATURE_MASK_PKRU) {
-+                               struct pkru_state xpkru = {0};
-+
-+                               if (copy_from_buffer(&xpkru, xstate_offsets[i],
-+                                                    sizeof(xpkru), kbuf, ubuf))
-+                                       return -EFAULT;
-+
-+                               *pkru = xpkru.pkru;
-+                       }
-+               } else if (hdr.xfeatures & mask) {
-                        void *dst = __raw_xsave_addr(xsave, i);
+> +	/*
+> +	 * Old DT bindings do not contain "error" interrupt
+> +	 * so do not fail probing driver when interrupt does not exist.
+> +	 */
+> +	port->error_irq = of_irq_get_byname(child, "error");
+> +	if (port->error_irq == -EPROBE_DEFER) {
+> +		ret = port->error_irq;
+> +		goto err;
+> +	}
+> +	if (port->error_irq <= 0) {
+> +		dev_warn(dev, "%s: interrupts on Root Port are unsupported, "
 
-                        offset = xstate_offsets[i];
+Maybe that should be "Error interrupts on Root..." ?
 
-Thoughts? This avoids a second copy and avoids having to calculate the
-offset into the (now potentially compressed) XSTATE.
-
-- Kyle
-
->
-> Thanks,
->
->         tglx
+      Andrew
