@@ -2,72 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F39C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E845C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344359AbiHRRQe (ORCPT
+        id S1344652AbiHRRQk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44192 "EHLO
+        Thu, 18 Aug 2022 13:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344995AbiHRRQM (ORCPT
+        with ESMTP id S1344939AbiHRRQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:16:12 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B78C0CD7B6;
-        Thu, 18 Aug 2022 10:09:34 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27IGwdQV019170;
-        Thu, 18 Aug 2022 11:58:39 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27IGwca8019169;
-        Thu, 18 Aug 2022 11:58:38 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 18 Aug 2022 11:58:38 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>, kuba@kernel.org,
-        miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        asml.silence@gmail.com, imagedong@tencent.com,
+        Thu, 18 Aug 2022 13:16:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778FFD6307;
+        Thu, 18 Aug 2022 10:09:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE985B8203A;
+        Thu, 18 Aug 2022 17:09:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06933C433D6;
+        Thu, 18 Aug 2022 17:09:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660842587;
+        bh=X/mzeR/Hc1T7Mm4M+QCP88igzJY+5Z5jIMLSgCc/aNY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IjDMjn6dusOsplNQVuak1CIKAleHvck0KLlOabTaUIDzwUrSy/8zwz9BUzHIhf5Ia
+         fHDIfTZsv85UApg86VFDYEnKKHpfW57AaHpPFBTxh89RGAmtruV0+ajHW1WkIPY+U8
+         OVz3PTnqkZXmjkeEi4BGFtxhWlzU+Pvy4RgHt5pmMVWcIUQlFuRan/mJqmeprPYF5K
+         IxI2IaucrfyOb7BhjYYMCGoKsbzC7hUG9KowaRpBoCR7Vb3l1Uxw6xYU9b6Gp3V6oJ
+         Y+XjJbPQ1BF9QHzxx0tzZzABG1VFBDN/19LoFrwJbwUQPlLquXbGy3PGDAoTvojgcU
+         s5V1DkjWdFnag==
+Date:   Thu, 18 Aug 2022 10:09:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
+        ndesaulniers@google.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, asml.silence@gmail.com, imagedong@tencent.com,
         luiz.von.dentz@intel.com, vasily.averin@linux.dev,
         jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH net-next v4] net: skb: prevent the split of kfree_skb_reason() by gcc
-Message-ID: <20220818165838.GM25951@gate.crashing.org>
-References: <20220816032846.2579217-1-imagedong@tencent.com> <CAKwvOd=accNK7t_SOmybo3e4UcBKoZ6TBPjCHT3eSSpSUouzEA@mail.gmail.com> <CADxym3Yxq0k_W43kVjrofjNoUUag3qwmpRGLLAQL1Emot3irPQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADxym3Yxq0k_W43kVjrofjNoUUag3qwmpRGLLAQL1Emot3irPQ@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next v4] net: skb: prevent the split of
+ kfree_skb_reason() by gcc
+Message-ID: <20220818100946.6ad96b06@kernel.org>
+In-Reply-To: <20220816032846.2579217-1-imagedong@tencent.com>
+References: <20220816032846.2579217-1-imagedong@tencent.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-
-On Fri, Aug 19, 2022 at 12:31:44AM +0800, Menglong Dong wrote:
-> On Wed, Aug 17, 2022 at 11:54 PM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
-> > Perhaps noipa might also work here?
+On Tue, 16 Aug 2022 11:28:46 +0800 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> In my testing, both 'noclone' and 'noipa' both work! As for the
-> '-fdisable-ipa-fnsplit', it seems it's not supported by gcc, and I
-> failed to find any documentation of it.
+> Sometimes, gcc will optimize the function by spliting it to two or
+> more functions. In this case, kfree_skb_reason() is splited to
+> kfree_skb_reason and kfree_skb_reason.part.0. However, the
+> function/tracepoint trace_kfree_skb() in it needs the return address
+> of kfree_skb_reason().
+> 
+> This split makes the call chains becomes:
+>   kfree_skb_reason() -> kfree_skb_reason.part.0 -> trace_kfree_skb()
+> 
+> which makes the return address that passed to trace_kfree_skb() be
+> kfree_skb().
+> 
+> Therefore, prevent this kind of optimization to kfree_skb_reason() by
+> making the optimize level to "O1". I think these should be better
+> method instead of this "O1", but I can't figure it out......
+> 
+> This optimization CAN happen, which depend on the behavior of gcc.
+> I'm not able to reproduce it in the latest kernel code, but it happens
+> in my kernel of version 5.4.119. Maybe the latest code already do someting
+> that prevent this happen?
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
 
-noipa is noinline+noclone+no_icf plus assorted not separately enablable
-things.  There is no reason you would want to disable all
-inter-procedural optimisations here, so you don't need noipa.
-
-You need both noinline and no_icf if you want all calls to this to be
-actual function calls, and using this specific function name.  If you
-don't have noinline some calls may go missing (which may be fine for
-how you use it).  If you don't have no_icf the compiler may replace the
-call with a call to another function, if that does the same thing
-semantically.  You may want to prevent that as well, depending on
-exactly what you have this for.
-
-
-Segher
+Sorry for a late and possibly off-topic chime in, is the compiler
+splitting it because it thinks that skb_unref() is going to return 
+true? I don't think that's the likely case, so maybe we're better 
+off wrapping that skb_unref() in unlikely()?
