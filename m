@@ -2,162 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87ABDC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 07:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77555C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 07:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243841AbiHRHXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 03:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
+        id S243362AbiHRH2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 03:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243791AbiHRHXf (ORCPT
+        with ESMTP id S241717AbiHRH2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 03:23:35 -0400
-X-Greylist: delayed 91376 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 18 Aug 2022 00:23:31 PDT
-Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3F461DAB
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 00:23:30 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1660807358thkgk558
-Received: from localhost.localdomain ( [123.114.60.34])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 18 Aug 2022 15:22:36 +0800 (CST)
-X-QQ-SSF: 01400000002000D0U000B00A0000000
-X-QQ-FEAT: eCJvJF4ptHBiBmR9azarm3lgcJ4dN65tE+tjAFsTWkhYPsqr/69XgUGBD+grm
-        yR7HtMUrVdsfxz2r73Dl3qSc+ZIzIxF7xdtYffxYAUwW+v1GB93w9ae0izDtxWhoGpHfRgI
-        yyjhBmJb1PyglhGtlONaCLJEEKFFVDixfKO9hMEA9KNsIXHvOqiY9uwtJLukLTdD1Y2vkV2
-        u1bTHEohr7O9wO9llyQiSb/7nGsYSLa0o0JfFa8AiGyzrb8YLM3I49D+Imkehu68pVryty6
-        YGrvsfsXi8k0kxfekvlptbZDoO0riJcwg+IAHsYDVdMUeGn1OAi/xFvlFOk50fE32l+wthU
-        wtxq7ZE5iTdFNjs0z88xZpSMOR9V8WEj4wwUS2dLLIuRztK1aXx9if4iNPFew==
-X-QQ-GoodBg: 2
-From:   zhaoxiao <zhaoxiao@uniontech.com>
-To:     thierry.reding@gmail.com, narmstrong@baylibre.com,
-        khilman@baylibre.com
-Cc:     u.kleine-koenig@pengutronix.de, jbrunet@baylibre.com,
-        martin.blumenstingl@googlemail.com, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        zhaoxiao <zhaoxiao@uniontech.com>
-Subject: [PATCH] pwm: meson: Simplify probe function with dev_err_probe()
-Date:   Thu, 18 Aug 2022 15:22:34 +0800
-Message-Id: <20220818072234.9640-1-zhaoxiao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 18 Aug 2022 03:28:50 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC9E4E613
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 00:28:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=pW1/5rYq0S/VSHO+khmNewkH3TTeLKwfeQrhQZaS0bE=; b=JmPNsclJgWX0IB/5CwfFlGKdzP
+        PoK1LL9VsZvW5crT4lLZAyHbxBTAJBe8dIXfOF7uoXL1bOh85p3DkdQWf2hgC4AfhkYmToJZP9biK
+        xVbjLMknEjiP9D3RbXVP5IEOVrANxZIWW+rFb/D2sZH3qQIiRo/ceRw9DcQ+1Wdh7A9efjllGNJvj
+        lqTbcvUelfHeKMoStByY8KBcgLIUfOp0+i4oO3R+O1fNXMZzx2voQe5+PAys7HpR16Bn35xisWmNa
+        lnDrLvSwIua3YA6JvboJudfnn9J6cLndBW5vRwmvfm5Etm6HOtmtSQTGNSJv5kxfZkxw1TFRKsask
+        8Iv5znxw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oOZxA-003WFE-HT; Thu, 18 Aug 2022 07:28:33 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B99A1980083; Thu, 18 Aug 2022 09:28:28 +0200 (CEST)
+Date:   Thu, 18 Aug 2022 09:28:28 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     "Xu, Pengfei" <pengfei.xu@intel.com>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "Su, Heng" <heng.su@intel.com>, linux-kernel@vger.kernel.org,
+        Josh Poimboeuf <jpoimboe@redhat.com>, pbonzini@redhat.com,
+        x86@kernel.org
+Subject: Re: [PATCH] x86/kvm, objtool: Avoid fastop ENDBR from being sealed
+Message-ID: <Yv3qHNGBM2aU2NuA@worktop.programming.kicks-ass.net>
+References: <PH0PR11MB4839B4D2FB8B8D8D52A62C7F9A629@PH0PR11MB4839.namprd11.prod.outlook.com>
+ <YvzJTxOwmikAlZ6j@worktop.programming.kicks-ass.net>
+ <20220818011045.v4baekgxajylqxvh@treble>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818011045.v4baekgxajylqxvh@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to dev_err_probe() to remove all dev_err() -> return repeated
-patterns, simplifying and shortening the probe function.
+On Wed, Aug 17, 2022 at 06:10:45PM -0700, Josh Poimboeuf wrote:
+> On Wed, Aug 17, 2022 at 12:56:15PM +0200, Peter Zijlstra wrote:
+> > Add (yet another) annotation to inhibit objtool from sealing a specific
+> > ENDBR instance.
+> 
+> Nah, just add a throwaway reference to the function.  Then no objtool
+> change is needed:
 
-Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
----
- drivers/pwm/pwm-meson.c | 53 ++++++++++++++---------------------------
- 1 file changed, 18 insertions(+), 35 deletions(-)
+Nice!, should I 'borrow' this and respin the patch or you want to make a
+real patch out of it?
 
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 57112f438c6d..43ce8d9a33d2 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -126,20 +126,16 @@ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 
- 	if (channel->clk_parent) {
- 		err = clk_set_parent(channel->clk, channel->clk_parent);
--		if (err < 0) {
--			dev_err(dev, "failed to set parent %s for %s: %d\n",
-+		if (err < 0)
-+			return dev_err_probe(dev, err, "failed to set parent %s for %s\n",
- 				__clk_get_name(channel->clk_parent),
--				__clk_get_name(channel->clk), err);
--			return err;
--		}
-+				__clk_get_name(channel->clk));
- 	}
- 
- 	err = clk_prepare_enable(channel->clk);
--	if (err < 0) {
--		dev_err(dev, "failed to enable clock %s: %d\n",
--			__clk_get_name(channel->clk), err);
--		return err;
--	}
-+	if (err < 0)
-+		return dev_err_probe(dev, err, "failed to enable clock %s\n",
-+			__clk_get_name(channel->clk));
- 
- 	return 0;
- }
-@@ -166,24 +162,18 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 		duty = period - duty;
- 
- 	fin_freq = clk_get_rate(channel->clk);
--	if (fin_freq == 0) {
--		dev_err(meson->chip.dev, "invalid source clock frequency\n");
--		return -EINVAL;
--	}
-+	if (fin_freq == 0)
-+		return dev_err_probe(meson->chip.dev, -EINVAL, "invalid source clock frequency\n");
- 
- 	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
- 
- 	pre_div = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * 0xffffLL);
--	if (pre_div > MISC_CLK_DIV_MASK) {
--		dev_err(meson->chip.dev, "unable to get period pre_div\n");
--		return -EINVAL;
--	}
-+	if (pre_div > MISC_CLK_DIV_MASK)
-+		return dev_err_probe(meson->chip.dev, -EINVAL, "unable to get period pre_div\n");
- 
- 	cnt = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * (pre_div + 1));
--	if (cnt > 0xffff) {
--		dev_err(meson->chip.dev, "unable to get period cnt\n");
--		return -EINVAL;
--	}
-+	if (cnt > 0xffff)
-+		return dev_err_probe(meson->chip.dev, -EINVAL, "unable to get period cnt\n");
- 
- 	dev_dbg(meson->chip.dev, "period=%u pre_div=%u cnt=%u\n", period,
- 		pre_div, cnt);
-@@ -200,10 +190,8 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 		/* Then check is we can have the duty with the same pre_div */
- 		duty_cnt = div64_u64(fin_freq * (u64)duty,
- 				     NSEC_PER_SEC * (pre_div + 1));
--		if (duty_cnt > 0xffff) {
--			dev_err(meson->chip.dev, "unable to get duty cycle\n");
--			return -EINVAL;
--		}
-+		if (duty_cnt > 0xffff)
-+			return dev_err_probe(meson->chip.dev, -EINVAL, "unable to get duty cycle\n");
- 
- 		dev_dbg(meson->chip.dev, "duty=%u pre_div=%u duty_cnt=%u\n",
- 			duty, pre_div, duty_cnt);
-@@ -509,11 +497,8 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
- 		channel->mux.hw.init = &init;
- 
- 		channel->clk = devm_clk_register(dev, &channel->mux.hw);
--		if (IS_ERR(channel->clk)) {
--			err = PTR_ERR(channel->clk);
--			dev_err(dev, "failed to register %s: %d\n", name, err);
--			return err;
--		}
-+		if (IS_ERR(channel->clk))
-+			return dev_err_probe(dev, PTR_ERR(channel->clk), "failed to register %s\n", name);
- 
- 		snprintf(name, sizeof(name), "clkin%u", i);
- 
-@@ -550,10 +535,8 @@ static int meson_pwm_probe(struct platform_device *pdev)
- 		return err;
- 
- 	err = devm_pwmchip_add(&pdev->dev, &meson->chip);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", err);
--		return err;
--	}
-+	if (err < 0)
-+		return dev_err_probe(&pdev->dev, err, "failed to register PWM chip\n");
- 
- 	return 0;
- }
--- 
-2.20.1
-
+> diff --git a/arch/x86/include/asm/ibt.h b/arch/x86/include/asm/ibt.h
+> index 689880eca9ba..3ae795150374 100644
+> --- a/arch/x86/include/asm/ibt.h
+> +++ b/arch/x86/include/asm/ibt.h
+> @@ -31,6 +31,16 @@
+>  
+>  #define __noendbr	__attribute__((nocf_check))
+>  
+> +/*
+> + * Create a dummy function pointer reference to prevent objtool from marking
+> + * the function as needing to be "sealed" (i.e. ENDBR converted to NOP by
+> + * apply_ibt_endbr()).
+> + */
+> +#define IBT_NOSEAL(fname)				\
+> +	".pushsection .discard.endbr.noseal\n\t"	\
+> +	_ASM_PTR fname "\n\t"				\
+> +	".popsection\n\t"
+> +
+>  static inline __attribute_const__ u32 gen_endbr(void)
+>  {
+>  	u32 endbr;
+> diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+> index f8382abe22ff..88623add0db4 100644
+> --- a/arch/x86/kvm/emulate.c
+> +++ b/arch/x86/kvm/emulate.c
+> @@ -316,7 +316,8 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
+>  	".align " __stringify(FASTOP_SIZE) " \n\t" \
+>  	".type " name ", @function \n\t" \
+>  	name ":\n\t" \
+> -	ASM_ENDBR
+> +	ASM_ENDBR \
+> +	IBT_NOSEAL(name)
+>  
+>  #define FOP_FUNC(name) \
+>  	__FOP_FUNC(#name)
