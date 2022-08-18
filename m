@@ -2,149 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D886FC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 11:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9475C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 11:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244241AbiHRLxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 07:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
+        id S244076AbiHRLym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 07:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244197AbiHRLxs (ORCPT
+        with ESMTP id S244197AbiHRLyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 07:53:48 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6D272B76
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 04:53:47 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IBkfkR014068;
-        Thu, 18 Aug 2022 11:51:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=2niajSUWwyfNezhmeCwyuZ51ZScavh+uEqc8QUsfdjw=;
- b=V4Qyk2YL0ZcuuOMN9quDWDXaUbkkXrajdBwmZPVICCAaGoOwJMhj22szYOT33WXmcITR
- O7Moqi6SGsoFq9hQgyi43FG/f/XnoEKWB9RHN0BkhVeEYk73k/+IdjAZNlYlLT5OFtrN
- GGzQ+OBeE/pAyfKBWcrzdX+4KM9tMXfiVkDuuhRSmkaMGmsd4A9/vd6UUIJYZuFOZb8E
- KVKUNh8jeTu9qhtv2b20XDUJKlHrfQJrdFzw/zvSeeFTCwrkuR3fDV10lhPxt5KoH9Es
- vYgoctqphN9jVFsOyEcmzk/HDvflbEabGElc5QmWNWTgPKP2iAfunuyHVNTlHysxHrf3 Uw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1mupg39n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 11:51:58 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27IBlZd1022443;
-        Thu, 18 Aug 2022 11:51:57 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1mupg38r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 11:51:57 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27IBptQG028038;
-        Thu, 18 Aug 2022 11:51:55 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3hx3k8vbvq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 11:51:54 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27IBppuK26804614
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 18 Aug 2022 11:51:51 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D3E16A405B;
-        Thu, 18 Aug 2022 11:51:51 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0F395A4054;
-        Thu, 18 Aug 2022 11:51:51 +0000 (GMT)
-Received: from thinkpad (unknown [9.171.7.173])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Thu, 18 Aug 2022 11:51:50 +0000 (GMT)
-Date:   Thu, 18 Aug 2022 13:51:49 +0200
-From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     "Wang, Haiyue" <haiyue.wang@intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "david@redhat.com" <david@redhat.com>,
-        "apopple@nvidia.com" <apopple@nvidia.com>,
-        "linmiaohe@huawei.com" <linmiaohe@huawei.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        "songmuchun@bytedance.com" <songmuchun@bytedance.com>,
-        "naoya.horiguchi@linux.dev" <naoya.horiguchi@linux.dev>,
-        "alex.sierra@amd.com" <alex.sierra@amd.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: Re: [PATCH v6 1/2] mm: migration: fix the FOLL_GET failure on
- following huge page
-Message-ID: <20220818135149.7b043a58@thinkpad>
-In-Reply-To: <20220816224322.33e0dfbcbf522fcdc2026f0e@linux-foundation.org>
-References: <20220812084921.409142-1-haiyue.wang@intel.com>
-        <20220816022102.582865-1-haiyue.wang@intel.com>
-        <20220816022102.582865-2-haiyue.wang@intel.com>
-        <20220816175838.211a1b1e85bc68c439101995@linux-foundation.org>
-        <BYAPR11MB3495F747CBF95E079E8FC8A5F76A9@BYAPR11MB3495.namprd11.prod.outlook.com>
-        <20220816224322.33e0dfbcbf522fcdc2026f0e@linux-foundation.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Thu, 18 Aug 2022 07:54:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702CB7F12D;
+        Thu, 18 Aug 2022 04:54:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22C1EB8203A;
+        Thu, 18 Aug 2022 11:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EB17C433C1;
+        Thu, 18 Aug 2022 11:54:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660823673;
+        bh=OOp4XCPaOSFAdQWQdL7x7S/vwQa/o7fKz+ynmdHyLg4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DV2MuYBkRWWKa0Rs0voJoSLDxQUKzzOSYe//JgzHbHdSieYD7vWcHpu2Q8LoPSaI3
+         FnZqOspjyW2rNi6V6qpw1SQK2+fwaxpAGvK2k4+LSD9O3ZLiUXeoCq1F54Jjv3OeOF
+         NYuTsRPKmmWPX6JVM3bvHxW6aOcu6+OoZgK9EhnW/YuvhBAMoICkRcaP0kJBFre+Dm
+         JMxHe1yocZDaGtIZwU2vsmxf55iLt12gUUG2tjGMk5a7ko/bARUZAV7vcn5ZTVqOja
+         21TqUfUXsYqq0IH+tl6Opvtn5sB38Fu5rm0QFGx7bKdL0fLyrkFSOyysCuQRPZCgdU
+         IeQpBLkC3FoHA==
+Date:   Thu, 18 Aug 2022 12:54:22 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        dri-devel@lists.freedesktop.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        linux-amlogic@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-doc@vger.kernel.org,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-hwmon@vger.kernel.org, linux-clk@vger.kernel.org,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        David Airlie <airlied@linux.ie>, linux-iio@vger.kernel.org
+Subject: Re: (subset) [PATCH v2 0/7] Devm helpers for regulator get and enable
+Message-ID: <Yv4obo9MUw+Lc+nr@sirena.org.uk>
+References: <cover.1660292316.git.mazziesaccount@gmail.com>
+ <166057828406.697572.228317501909350108.b4-ty@kernel.org>
+ <52d307d7-04f2-89fd-ff4b-9a6c0d247350@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: knKAC2mxPJcLC3W1uyqRiO_FoewM-wzI
-X-Proofpoint-ORIG-GUID: mc_Fvgv_KXXsVr_p5tcssbH3JiBSfKO_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-18_12,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- suspectscore=0 adultscore=0 spamscore=0 malwarescore=0 phishscore=0
- priorityscore=1501 mlxscore=0 bulkscore=0 impostorscore=0 clxscore=1011
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180040
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="MKmYY9GsmMLl3nVC"
+Content-Disposition: inline
+In-Reply-To: <52d307d7-04f2-89fd-ff4b-9a6c0d247350@gmail.com>
+X-Cookie: Logic is the chastity belt of the mind!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 22:43:22 -0700
-Andrew Morton <akpm@linux-foundation.org> wrote:
 
-> On Wed, 17 Aug 2022 03:31:37 +0000 "Wang, Haiyue" <haiyue.wang@intel.com> wrote:
-> 
-> > > >  		}
-> > > 
-> > > I would be better to fix this for real at those three client code sites?
-> > 
-> > Then 5.19 will break for a while to wait for the final BIG patch ?
-> 
-> If that's the proposal then your [1/2] should have had a cc:stable and
-> changelog words describing the plan for 6.0.
-> 
-> But before we do that I'd like to see at least a prototype of the final
-> fixes to s390 and hugetlb, so we can assess those as preferable for
-> backporting.  I don't think they'll be terribly intrusive or risky?
-> 
+--MKmYY9GsmMLl3nVC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The private follow_huge_pud() for s390 is just some leftover, and the
-only reason is / was that the generic version was using pte_page()
-instead of pud_page(), which would not work for s390. See also commit
-97534127012f ("mm/hugetlb: use pmd_page() in follow_huge_pmd()").
+On Thu, Aug 18, 2022 at 02:33:53PM +0300, Matti Vaittinen wrote:
+> On 8/15/22 18:44, Mark Brown wrote:
 
-Since commit 3a194f3f8ad01 ("mm/hugetlb: make pud_huge() and
-follow_huge_pud() aware of non-present pud entry") made
-follow_huge_pud() behave similar to follow_huge_pmd(), in particular
-also adding pud_page(), we can now switch to the generic version.
+> > [2/7] regulator: Add devm helpers for get and enable
+> >        (no commit info)
 
-Note that we cannot support migration / hwpoison for hugetlb or THP,
-because of different layout for PTE and PMD/PUD on s390. The generic
-swp_entry functions all require proper PTEs, which wouldn't work on
-PMD/PUD entries. In theory, at least for hugetlb, due to the "fake
-PTE" conversion logic in huge_ptep_get(), we might be able to also
-fake swp_entries, but the other problem is that we do not have enough
-free bits in the PMD/PUD, so there probably will never be migration
-support for huge pages on s390.
+> I was planning to send out the v3 (where IIO patches are no longer squashed
+> into one). I didn't spot the above mentioned patch 2/7 from
+> regulator/for-next. I'd just like to get confirmation the 2/7 was not merged
+> even though it's mentioned in this mail before re-spinning the series with
+> it.
 
-Anyway, that should not matter wrt to switching to the generic
-follow_huge_pud(), because is_hugetlb_entry_migration() should always
-return false, and no special change to pud_huge() check should be
-needed like on x86.
+It's not there yet (that's the "no commit info"), but it is queued for
+today.
+
+--MKmYY9GsmMLl3nVC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL+KG4ACgkQJNaLcl1U
+h9ChKgf+MqQYNLGgZ/WEAylHrK/Uzrw+LnjUXAyMBb/vZjdl3DVYOv+/LtcGpk2B
+vMl+H2cT2aA3eF56DroX4dIyRauM8a7w9PNeqKCTRYzdeJ91Vp1q0gOUIbKHxfmu
+LJkxtl3b2n7/O7J+OrJ1HljR3z2JxBD4lmqH4+vKKMNwPIh0fn5GAbg8/O2M0yv5
+NEJYI6TxlO4FG1bncptZI3H7tlGjV+MAYgemtJlJnLkpiS3OaOfTS6QeDAtgI0QE
+oU6UoQtU2ZSP0W/dlLys3zAGz2wI7/vlprZAeabP2UyUWDIRlRN8GjTI/YkwClpr
+VsgNrCyAZbv1afHLckm3stj8/Czk8Q==
+=mvEp
+-----END PGP SIGNATURE-----
+
+--MKmYY9GsmMLl3nVC--
