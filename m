@@ -2,112 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F34C32773
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD90C32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344117AbiHRPKq (ORCPT
+        id S1344214AbiHRPKx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46666 "EHLO
+        Thu, 18 Aug 2022 11:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344108AbiHRPK2 (ORCPT
+        with ESMTP id S1344173AbiHRPKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:10:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0D1BD4EE
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:10:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660835426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XUULX76OiwNqXhgv8GeiwLzhHZ06NzNoZnvqLZsNeCY=;
-        b=De8NT+9mTACVr8eiO9Y5fQb6Nh2obi0gHNT1/rwqlbftcB+KQnVKk284LO92VpQa9eYCmD
-        4W7m4ztz+80IQqlixp7iCcQm9aDmkPPdydM8TzavyeudZ8qJcyj9aFIM5Yu67LnKW1dHNx
-        S0Wc+lESZKcWofpvxcaudlqq4iSX4uA=
-Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com
- [209.85.128.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-56-UmDcstfaOn-GVXgAtFjmtw-1; Thu, 18 Aug 2022 11:10:25 -0400
-X-MC-Unique: UmDcstfaOn-GVXgAtFjmtw-1
-Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-335cf0fd1a4so31201197b3.11
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:10:25 -0700 (PDT)
+        Thu, 18 Aug 2022 11:10:44 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17940BD742;
+        Thu, 18 Aug 2022 08:10:44 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id a4so2096583wrq.1;
+        Thu, 18 Aug 2022 08:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=HDI1guW7fTa+RVY8P7QOf7gM0cs1vrvzc2yBNv9u5SE=;
+        b=pi18Uu3bBrZTRbAXiS6PuQjqgRje84joS1DXu7tygGEijyzcK9P+MFJZcya/f8R+ZN
+         /r3sAu7PcgwrG8tjJABO5xNZd32kSvx+hrg4SNO5XKW7rhc+ZKrgDeeuhKCq25nHaRuX
+         fQRJGdnjnKXf5wvjzF+sQtXu0GLKBnpQdE6/c+H4CMLkqZgB0N8QTJxfHBruKMhm1tr8
+         hjpxtzDdiVNQxjjGEO3L5yhAQaR+DLNahI9yvN589uvWkW4o87iuepUGrPNnqyDtAHio
+         m/R5qvSWifN/WGVBGnwUFDU+I9dOedFeW5FujqJgkrngnYJir7Ey3UBIB0Zp+qPjei6C
+         Q9RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=XUULX76OiwNqXhgv8GeiwLzhHZ06NzNoZnvqLZsNeCY=;
-        b=SXCcoOvPX9UAWrmsVN/r0Bum4gPUpEWt8sXsA3XwhC0qtsHpiCH+W4bMwMF6nEhYY1
-         MfArA2CvLcu5EpAwN27uVlINV4gXcekMvouf5025fKR8H8hUkwq2HzkNhbnQtn1Pp3uJ
-         zfdbEfzAiUSn1sZzrbnQCSVn9XP2R/Ga81DN+pHkAqxgvACZSYI1uL1jjbS52vwE8J7j
-         R+haWYUkS1xHGuOvakLseGVzGhWub9jOizCCx+88h1uVCmuhaU5n7qsBTCWO6TU9U4IC
-         9dNuavIHsSqZnRNI6WI29ufPPxiIDhHDzLJX0L2eNcoH6y77Mfv1Ex1YasefzxA+GWtt
-         JsyQ==
-X-Gm-Message-State: ACgBeo3zLBjScsTymo96sE8Ua1tXTBittiXZn+jVGBst/kCK34/Ox+vs
-        Cj6l5Y2c0r9erZkIbegUVxDJBNJP36wBRC5xBycS1K6N04R0vmlGHEV3tpWePYxT94FNdE72nuS
-        sNHvM0ebbabeOMQimETD5RX++GuDcfBTsBYynMolN
-X-Received: by 2002:a81:86c2:0:b0:332:a104:f7e4 with SMTP id w185-20020a8186c2000000b00332a104f7e4mr3238160ywf.505.1660835424786;
-        Thu, 18 Aug 2022 08:10:24 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR69OHtBUziCmC0IN9+McDoaQN+ei985YjilNjNksbt69AggGTnrOajU0/534Va/bKw++/9Ocx4DaI6fh5BH4gA=
-X-Received: by 2002:a81:86c2:0:b0:332:a104:f7e4 with SMTP id
- w185-20020a8186c2000000b00332a104f7e4mr3238114ywf.505.1660835424442; Thu, 18
- Aug 2022 08:10:24 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=HDI1guW7fTa+RVY8P7QOf7gM0cs1vrvzc2yBNv9u5SE=;
+        b=Ub1GeEYOV/ciO/MijcfL0JWLWetVzFpJwvvvtb8gXv478F7FnNSvZ9TMf+p1PJinzp
+         5bWLX76Y91IqouyvisX8ID+XVib59iPJ4cAAVv7i1LmEvi8HUrOT/wqCiUipU1dQ30Tj
+         cObeAsJPcejtEv571FLKrXyzj7OtI1yRwJo4LaZhH2bEJ5ItI67Zmq3IXKt7JRfnzylc
+         3xWSxcSQx76FU3A5L1P283+SyGhSl7VI+3OdwF4hiBsFrklPKFpYJW2LPWSTkbFssd7U
+         vAKQjX4M/kSf2ovA/NVv53yWZVYI2Otv5GLA1TWkcgmO2Cbf5tzb7Yj/Ljaf+UV5Gh10
+         jSsQ==
+X-Gm-Message-State: ACgBeo01mtl3Szgv68KZy0Q5/24gxszeZ4fvMOMNhiS/U8rE7V3Y5Ir2
+        mI3ftSZLaNQMP0bnSKt4qnw=
+X-Google-Smtp-Source: AA6agR5sKQZY1jZx3FWEs8Qil3XXRCsi5pQaditAs9pKXE5Vd5G0X3PIU8DmysByDd5tYjAjOC3RvQ==
+X-Received: by 2002:a5d:4907:0:b0:21f:bc42:989 with SMTP id x7-20020a5d4907000000b0021fbc420989mr1894232wrq.375.1660835442418;
+        Thu, 18 Aug 2022 08:10:42 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([185.228.40.98])
+        by smtp.gmail.com with ESMTPSA id q1-20020a056000136100b0021d80f53324sm1763997wrz.7.2022.08.18.08.10.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 08:10:41 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 08:10:39 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Tony Lindgren <tony@atomide.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Mark Brown <broonie@kernel.org>,
+        William Zhang <william.zhang@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org
+Subject: Re: [PATCH 06/11] ARM: defconfig: drop CONFIG_PTP_1588_CLOCK=y
+Message-ID: <Yv5Wb/nbOW2vJH5Y@hoboy.vegasvil.org>
+References: <20220818135522.3143514-1-arnd@kernel.org>
+ <20220818135737.3143895-1-arnd@kernel.org>
+ <20220818135737.3143895-5-arnd@kernel.org>
 MIME-Version: 1.0
-References: <Yv0A6UhioH3rbi0E@T590> <f633c476-bdc9-40e2-a93f-29601979f833@www.fastmail.com>
- <Yv0KmT8UYos2/4SX@T590> <35f0d608-7448-4276-8922-19a23d8f9049@www.fastmail.com>
- <Yv2P0zyoVvz35w/m@T590> <568465de-5c3b-4d94-a74b-5b83ce2f942f@www.fastmail.com>
- <Yv2w+Tuhw1RAoXI5@T590> <9f2f608a-cd5f-4736-9e6d-07ccc2eca12c@www.fastmail.com>
- <a817431f-276f-4aab-9ff8-c3e397494339@www.fastmail.com> <5426d0f9-6539-477d-8feb-2b49136b960f@www.fastmail.com>
- <Yv3NIQlDL0T3lstU@T590> <aadeb600-4e3a-4b69-bc17-fd2918c5b061@www.fastmail.com>
-In-Reply-To: <aadeb600-4e3a-4b69-bc17-fd2918c5b061@www.fastmail.com>
-From:   Ming Lei <ming.lei@redhat.com>
-Date:   Thu, 18 Aug 2022 23:10:13 +0800
-Message-ID: <CAFj5m9JGGMOc1k71KbiHWu07Vh5FucOtR_yU35eDAfX_2GL0TQ@mail.gmail.com>
-Subject: Re: stalling IO regression since linux 5.12, through 5.18
-To:     Chris Murphy <lists@colorremedies.com>
-Cc:     Nikolay Borisov <nborisov@suse.com>, Jens Axboe <axboe@kernel.dk>,
-        Jan Kara <jack@suse.cz>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
-        Linux-RAID <linux-raid@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818135737.3143895-5-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 9:50 PM Chris Murphy <lists@colorremedies.com> wrote:
->
->
->
-> On Thu, Aug 18, 2022, at 1:24 AM, Ming Lei wrote:
->
-> >
-> > Also please test the following one too:
-> >
-> >
-> > diff --git a/block/blk-mq.c b/block/blk-mq.c
-> > index 5ee62b95f3e5..d01c64be08e2 100644
-> > --- a/block/blk-mq.c
-> > +++ b/block/blk-mq.c
-> > @@ -1991,7 +1991,8 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx
-> > *hctx, struct list_head *list,
-> >               if (!needs_restart ||
-> >                   (no_tag && list_empty_careful(&hctx->dispatch_wait.entry)))
-> >                       blk_mq_run_hw_queue(hctx, true);
-> > -             else if (needs_restart && needs_resource)
-> > +             else if (needs_restart && (needs_resource ||
-> > +                                     blk_mq_is_shared_tags(hctx->flags)))
-> >                       blk_mq_delay_run_hw_queue(hctx, BLK_MQ_RESOURCE_DELAY);
-> >
-> >               blk_mq_update_dispatch_busy(hctx, true);
-> >
->
-> Should I test both patches at the same time, or separately? On top of v5.17 clean, or with b6e68ee82585 still reverted?
+On Thu, Aug 18, 2022 at 03:57:15PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> PTP support is now enabled by default for configurations with
+> ethernet support, so drop the redundant entries in defconfig
+> files.
+> 
+> Fixes: e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Please test it separately against v5.17.
-
-thanks,
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
