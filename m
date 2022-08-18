@@ -2,87 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E845C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D91DC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344652AbiHRRQk (ORCPT
+        id S1344303AbiHRRRI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44356 "EHLO
+        Thu, 18 Aug 2022 13:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344939AbiHRRQR (ORCPT
+        with ESMTP id S1344995AbiHRRQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:16:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778FFD6307;
-        Thu, 18 Aug 2022 10:09:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE985B8203A;
-        Thu, 18 Aug 2022 17:09:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06933C433D6;
-        Thu, 18 Aug 2022 17:09:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660842587;
-        bh=X/mzeR/Hc1T7Mm4M+QCP88igzJY+5Z5jIMLSgCc/aNY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IjDMjn6dusOsplNQVuak1CIKAleHvck0KLlOabTaUIDzwUrSy/8zwz9BUzHIhf5Ia
-         fHDIfTZsv85UApg86VFDYEnKKHpfW57AaHpPFBTxh89RGAmtruV0+ajHW1WkIPY+U8
-         OVz3PTnqkZXmjkeEi4BGFtxhWlzU+Pvy4RgHt5pmMVWcIUQlFuRan/mJqmeprPYF5K
-         IxI2IaucrfyOb7BhjYYMCGoKsbzC7hUG9KowaRpBoCR7Vb3l1Uxw6xYU9b6Gp3V6oJ
-         Y+XjJbPQ1BF9QHzxx0tzZzABG1VFBDN/19LoFrwJbwUQPlLquXbGy3PGDAoTvojgcU
-         s5V1DkjWdFnag==
-Date:   Thu, 18 Aug 2022 10:09:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     menglong8.dong@gmail.com
-Cc:     miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
-        ndesaulniers@google.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, asml.silence@gmail.com, imagedong@tencent.com,
-        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
-        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next v4] net: skb: prevent the split of
- kfree_skb_reason() by gcc
-Message-ID: <20220818100946.6ad96b06@kernel.org>
-In-Reply-To: <20220816032846.2579217-1-imagedong@tencent.com>
-References: <20220816032846.2579217-1-imagedong@tencent.com>
+        Thu, 18 Aug 2022 13:16:46 -0400
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2E810FFE;
+        Thu, 18 Aug 2022 10:11:15 -0700 (PDT)
+Received: by mail-pl1-f169.google.com with SMTP id m2so2038853pls.4;
+        Thu, 18 Aug 2022 10:11:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=UkBra3gVOO8ib+l1PZXu0p1ulXBzkwr8s3bUgaBZ/K8=;
+        b=E6OC5YabVe0YV4FZEz1aEuJMfJyzp294Qzv581wUl5pLLor045eeP7XolWqITLIe3U
+         WsmEahN5NWUH7ClUd6cEBLMaBEUnIM9rFXJ75eF63bmWlJSke6ne4ieElda1HTmYuiHk
+         nRn3R2lx8EPCex3Zd/G/jtfsDOftz4OVBwKJPvrGT2S5/Vce3vMqZ1A32oPfDJoHDZH1
+         WmOwgCqOOhcXIUnVMiKAnZkjWmSFJa7+AweOf17FICCmY7cvIAwc02L6ADzXnxOPK/MR
+         KfvlqJu2fCUTYgbDkuzwReDBYUndRucT9hzKnwt24XRGtF/WrCPSeVipIySJeha7Kpla
+         3Onw==
+X-Gm-Message-State: ACgBeo0YAxbWiZRFZyOjyoD0PfyJowpm/xHsePRxPdU/+2lRx5hqaVlX
+        eMRH9N8bVj1otl0Cp1ca/w==
+X-Google-Smtp-Source: AA6agR7B6dYCsFfF4wBcu8MtvLiFnN/aVGCtQghP/Tl/gPgbvyxd+EHMIWOZik0LVYNMxuQPMADzrw==
+X-Received: by 2002:a17:90b:48d0:b0:1fa:b438:1b20 with SMTP id li16-20020a17090b48d000b001fab4381b20mr9048996pjb.239.1660842674884;
+        Thu, 18 Aug 2022 10:11:14 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:647:4ff2:3529:f8cd:d6cd:ac54])
+        by smtp.gmail.com with ESMTPSA id q4-20020a170902eb8400b0016c9e5f291bsm1592907plg.111.2022.08.18.10.11.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 10:11:14 -0700 (PDT)
+Received: (nullmailer pid 2044597 invoked by uid 1000);
+        Thu, 18 Aug 2022 17:11:11 -0000
+Date:   Thu, 18 Aug 2022 11:11:11 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     broonie@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/6] ASoC: qcom: dt-bindings: add sm8450 and sc8280xp
+ compatibles
+Message-ID: <20220818171111.GF1978870-robh@kernel.org>
+References: <20220818134619.3432-1-srinivas.kandagatla@linaro.org>
+ <20220818134619.3432-2-srinivas.kandagatla@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818134619.3432-2-srinivas.kandagatla@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 11:28:46 +0800 menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On Thu, Aug 18, 2022 at 02:46:14PM +0100, Srinivas Kandagatla wrote:
+> This patch adds SM8450 and SC8280XP compatible entry for LPASS TX, RX, WSA
+> and VA codec macros.
 > 
-> Sometimes, gcc will optimize the function by spliting it to two or
-> more functions. In this case, kfree_skb_reason() is splited to
-> kfree_skb_reason and kfree_skb_reason.part.0. However, the
-> function/tracepoint trace_kfree_skb() in it needs the return address
-> of kfree_skb_reason().
-> 
-> This split makes the call chains becomes:
->   kfree_skb_reason() -> kfree_skb_reason.part.0 -> trace_kfree_skb()
-> 
-> which makes the return address that passed to trace_kfree_skb() be
-> kfree_skb().
-> 
-> Therefore, prevent this kind of optimization to kfree_skb_reason() by
-> making the optimize level to "O1". I think these should be better
-> method instead of this "O1", but I can't figure it out......
-> 
-> This optimization CAN happen, which depend on the behavior of gcc.
-> I'm not able to reproduce it in the latest kernel code, but it happens
-> in my kernel of version 5.4.119. Maybe the latest code already do someting
-> that prevent this happen?
-> 
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  .../devicetree/bindings/sound/qcom,lpass-rx-macro.yaml          | 2 ++
+>  .../devicetree/bindings/sound/qcom,lpass-tx-macro.yaml          | 2 ++
+>  .../devicetree/bindings/sound/qcom,lpass-va-macro.yaml          | 2 ++
+>  .../devicetree/bindings/sound/qcom,lpass-wsa-macro.yaml         | 2 ++
+>  4 files changed, 8 insertions(+)
 
-Sorry for a late and possibly off-topic chime in, is the compiler
-splitting it because it thinks that skb_unref() is going to return 
-true? I don't think that's the likely case, so maybe we're better 
-off wrapping that skb_unref() in unlikely()?
+Acked-by: Rob Herring <robh@kernel.org>
+
