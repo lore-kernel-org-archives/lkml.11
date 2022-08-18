@@ -2,134 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02605C32773
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1076BC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245752AbiHRRTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
+        id S1345003AbiHRRUS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 13:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344776AbiHRRSR (ORCPT
+        with ESMTP id S1344440AbiHRRT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:18:17 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FA8632A
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:16:00 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id C1FDA5FD07;
-        Thu, 18 Aug 2022 20:03:09 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660842189;
-        bh=atXpTlwNr2VDFs9Q61PO9a8prLefTCao1wO5y6uExg0=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=tEs7q3aYiwGnbqBFVe+MnHxp+B0OKjYH6KvyJcMqI41PoNCNd78dWsrI6dYw4Abzs
-         O5vPMthR/i4Dj2LV+uNQaJ5CRuI8UBEZEYbyfDEPQytxXpysGzzKBW8mVl9nj/g//Q
-         oMuZqSdORfjN+xM/tCH12azZ2k2lXTyonTV9WIQE3dUiWsheekGC9rnIusksikDaNK
-         zEQoLWGBohr7oaottclVATIWkTRTy3vqkeODEsRme5Q55ou5m9KstpoRTf0wI1s4M6
-         XTXvxoGdtTBnsloz6WzEjRgBZKMUOZjhQdr7aFm6qxIgi10WXX/n+Gkq/Fl/jzvgJc
-         4IpyZ00useUjA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 18 Aug 2022 20:03:08 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Marc Zyngier <maz@kernel.org>
-CC:     "broonie@kernel.org" <broonie@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-Thread-Topic: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-Thread-Index: AQHYsZwRTOzZdLxKvkqpBNcAgWIdzq20YtWAgAAaSQCAADYjgA==
-Date:   Thu, 18 Aug 2022 17:02:46 +0000
-Message-ID: <20220818170305.kxtgpmulyditol6r@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
- <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
- <87mtc1wtjz.wl-maz@kernel.org>
-In-Reply-To: <87mtc1wtjz.wl-maz@kernel.org>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <8A8E25C78C2041488D21CB9D2855371C@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Thu, 18 Aug 2022 13:19:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C79A181;
+        Thu, 18 Aug 2022 10:18:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BC3BB82305;
+        Thu, 18 Aug 2022 17:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CB3C433C1;
+        Thu, 18 Aug 2022 17:18:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660843083;
+        bh=Fvr29lWD5OIUEN35R23Bjt8QeBsONWcWpcpJpOcymIU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pRnCaxOFGvyUfTtD5W+19BBAQpvjB3MxSsGi48BpacNyVtfyKzpF4amNJBsB8ScIn
+         OH8K9FTD2N4n1zCxqNG81VN1/DpfeGG56QSORAJrih1j69YF6ghLFspJ3nNOpj70wJ
+         pV6057MGc86jiuR7U2fdz+md6d+yLFS4+qTZJB22U4CUZnu6pq7nsnBz3tOFJ2k88Y
+         n7x9xsPHTeShbYJJ/EDf/ta7+APT2sUXDTb1Cr6OTOVxo+QfjmQK7g1vdsWTRwTA90
+         sfg2l2pC1LxfpxSCobQS+n3hDqB8ozF/k5UWEHwH7ZcnS/3MIRnt/G9Kh0/E58OUsY
+         tpeLzSwhhuBsA==
+Date:   Thu, 18 Aug 2022 18:17:59 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Martin =?utf-8?B?TGnFoWth?= <mliska@suse.cz>
+Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        corbet@lwn.net, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] docs/arm64: elf_hwcaps: unify newlines in HWCAP lists
+Message-ID: <Yv50RxlDf0qpK9v8@sirena.org.uk>
+References: <49253b17-738d-795e-f539-55857fdaee64@suse.cz>
+ <2bac83ef-d5a9-b8c4-0fb3-cef4272e7156@suse.cz>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/18 13:09:00 #20118254
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="JCZdgl1Eo0V8MWR1"
+Content-Disposition: inline
+In-Reply-To: <2bac83ef-d5a9-b8c4-0fb3-cef4272e7156@suse.cz>
+X-Cookie: Logic is the chastity belt of the mind!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Marc,
 
-Thank you for quick feedback. Please find my comments below.
+--JCZdgl1Eo0V8MWR1
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 18, 2022 at 02:49:20PM +0100, Marc Zyngier wrote:
+On Mon, Aug 15, 2022 at 03:37:58PM +0200, Martin Li=C5=A1ka wrote:
+> In git revision 94bdaa7d9a9d778d893c670d494c06d8e007c1cd I unified
+> vertical spaces in a list of features.
 
-[...]
+The normal way of describing commits in a human readable fashion is to
+include their title as is done in Fixes: tags.
 
-> > > Currently, only one-register io operations support tracepoints with
-> > > value logging. For the regmap bulk operations developer can view
-> > > hw_start/hw_done tracepoints with starting reg number and registers
-> > > count to be reading or writing. This patch injects tracepoints with
-> > > dumping registers values in the hex format to regmap bulk reading
-> > > and writing.
->=20
-> I don't care much about regmap as a MMIO backend, but it strikes me as
-> odd that you end up with multiple ways of logging the same stuff (with
-> a memcpy in the middle of it).
->=20
-> Why can't this be done with a small amount of trace post-processing?
+> Since the revision, another commits added new features that have a differ=
+ent
+> horizontal spacing.
+> Fix these extra newlines.
 
-Sorry, actually, I don't get you. What do you mean by "same stuff"?
-For now, regmap bulk I/O operations don't log data buffers, because
-current regmap trace classes don't have a dynamic trace arrays inside.
-We should use dynamic array here because bulk I/O operations can vary
-buffer size from call to call.
-Function memcpy() is used to copy original buffer data to a trace array
-when tracepoint is enabled. In other words, per my understanding,
-when tracepoint is disabled we do not call TP_fast_assign instructions.
+This new format .rst is forcing does seem less than ideal for people
+reading the actual file but oh well
 
-Trace event documentation says about dynamic array:
+Reviewed-by: Mark Brown <broonie@kernel.org>
 
- *   __dynamic_array: This is similar to array, but can vary its size from
- *         instance to instance of the tracepoint being called.
- *         Like __array, this too has three elements (type, name, size);
- *         type is the type of the element, name is the name of the array.
- *         The size is different than __array. It is not a static number,
- *         but the algorithm to figure out the length of the array for the
- *         specific instance of tracepoint. Again, size is the number of
- *         items in the array, not the total length in bytes.
- *
- *         __dynamic_array( int, foo, bar) is similar to: int foo[bar];
- *
- *         Note, unlike arrays, you must use the __get_dynamic_array() macr=
-o
- *         to access the array.
- *
- *         memcpy(__get_dynamic_array(foo), bar, 10);
- *
- *         Notice, that "__entry" is not needed here.
+--JCZdgl1Eo0V8MWR1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-BTW, I've tried to use the already existing TRACE CLASS regmap_block, but
-it's difficult to integrate dynamic array to that, because sometimes we
-do not have a reg data (for example, regmap_hw_read_start event).
+-----BEGIN PGP SIGNATURE-----
 
-[...]
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL+dEYACgkQJNaLcl1U
+h9ACcAf+Lg5+ZgAxlKsyQN51MJ8HJxveKjnMSstP0dARwR4ZNx3qcJOgAF0iyhbV
+5rejBUUwdmHpSCP1JC756Eh3cW/z+cEIX4lKUZvKl5161Njpl+2xIGKHU7nEISnu
+goBRBfFuUqBklZvZMr8uVELcvq4EXy/jv5lTxUsShuEuKEpZKYL9uiVplfnLE872
+h/Q7T5ZgIUYsg+VhYcRoFlKKABJEKniSkyrWrc/Xku9tNlBoHCe1X9+ezD3g81qK
+gue8lJHkLTZESos7enzxR7dq1sfm6rLAn4DKhIdbDCtjn+CJDwBrsJaMiKaIbaLm
+VlNIn/14Ye3Xlpb6KviND/d4NDELWg==
+=zsTW
+-----END PGP SIGNATURE-----
 
---=20
-Thank you,
-Dmitry=
+--JCZdgl1Eo0V8MWR1--
