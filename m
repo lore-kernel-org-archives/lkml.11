@@ -2,83 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92DCC32772
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF9F5C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244935AbiHRNi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
+        id S244781AbiHRNjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245102AbiHRNi1 (ORCPT
+        with ESMTP id S244977AbiHRNjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:38:27 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992D927CDB
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:38:24 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id 10so1095871iou.2
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:38:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:cc:to:from:from:to:cc;
-        bh=8JryTZJNmVWftlwTMNbthawYc3h5N+iWyPdLImn/rhU=;
-        b=ANqNZEUHI7+wP4NYhu071IcgKY/pbUo0Jc7YUGZDe5EjyYYFFTq19ZfItZNiOi9yHT
-         qYWwsIg6ApohVdq8GbdRMeaejcgBpmPhbt/w45CsEK+VfDz1cRHvFQRGKqmRGsVuRFAE
-         l/EnFWvqHHV/kQ3w9mdlbOBIml+B4NYIXwMQOSdffkdKSdbbWkS63wtPcP7plpOk3T/T
-         gxiiRmhSd5VyoEFkG8gL7BQWRurl41qAEuHOhE8ttv11oPJGXBPiWap7k0TX1FoBhTq5
-         Z7+uqHY1Pc8BTVJWlLR/ygv29g9WsJYm29GaAJgpuWoNS8kidRgCTCHza/dC/GNXYUd5
-         KTSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=8JryTZJNmVWftlwTMNbthawYc3h5N+iWyPdLImn/rhU=;
-        b=Z/rPUiKcpZHP3KJHIDxx09Sj/+dEJVczZS3v+ev7CqGdRPjS62nwNmA2FmGpuFIgVp
-         R8qMD585XfGsjidMhhQXOwAO17vUdnShjDQtfT06tmMwklMagh9uAH5w1SvjEw92F1Uv
-         eqZjuWk9Z6+tABYTvbzM2ScaS9cjJ0Jls/eApAVLHeoy3OUPojXven2UantWL9aaE/El
-         fxzo79ZzXbRO7VeS8blS51UTUg9qnOtZ/TVtbr8f676G975ffKQUmSFyi2Lwf8HWs/di
-         ck4XB4NXHNY+qp+XwShg8i+PeYncKOoZgwJDxvG709gSs6NHcPqwclemZMhXFoZz/G5/
-         BPtg==
-X-Gm-Message-State: ACgBeo0PFnPlc2WWDQRg6VV5ILiTeu/AElNrI0G61VMCJCuKmdSWGkVO
-        I5fbtxaaXyOnyvXihJ1x+QljoK/Y3DivFg==
-X-Google-Smtp-Source: AA6agR5GO6dK3qh5UFIJI0QSIsZKPHlzjRYAMGhwn/k21OENaC9qZYx7DI7DYUIuf04jS3IvLjKoGw==
-X-Received: by 2002:a05:6638:2708:b0:346:8b3d:c18e with SMTP id m8-20020a056638270800b003468b3dc18emr1448630jav.272.1660829903737;
-        Thu, 18 Aug 2022 06:38:23 -0700 (PDT)
-Received: from [127.0.1.1] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id b16-20020a05663801b000b0034602e741f0sm629071jaq.67.2022.08.18.06.38.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 06:38:23 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     yukuai1@huaweicloud.com
-Cc:     yukuai3@huawei.com, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com, linux-block@vger.kernel.org
-In-Reply-To: <20220818063555.3741222-1-yukuai1@huaweicloud.com>
-References: <20220818063555.3741222-1-yukuai1@huaweicloud.com>
-Subject: Re: [PATCH -next] blk-mq: remove unused function blk_mq_queue_stopped()
-Message-Id: <166082990303.8966.13019066479952675350.b4-ty@kernel.dk>
-Date:   Thu, 18 Aug 2022 07:38:23 -0600
+        Thu, 18 Aug 2022 09:39:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEAD578A9;
+        Thu, 18 Aug 2022 06:39:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E8ED61698;
+        Thu, 18 Aug 2022 13:39:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B790C433B5;
+        Thu, 18 Aug 2022 13:39:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660829947;
+        bh=VQmGTfSrvFIP3MfRDNx6mjCCstDhvHzDAUp/pstKmuo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nTEQAhEE4+OT+Bk7IzBjnKGkTmEeh6Mr4bZx6hm1nfTe6oOnSrSmhcAMUnQi8dHQR
+         YEkTGl9yK+R7VBvG2Zh/+hNwJgjpYRiDEIaPGpg6XAeCb3aDARQg/iwVvGCcOiut7p
+         GnCb5aGxzARs/8AeS5U/PWX1T3T8meU2WAqgfDZxD1UtxxCq7+hDHN6qZZct2oHkl/
+         BjgFoyZ3Jr8bwLl7KW/8CIom2/bmVMlu+Zkf5YSnHYD5AdjZoAwDe6jYYdjGy5YAX0
+         pDZHAXa2a5HriYnXlLHE2IkFlvth/S1OHYcqn2ZElPxd4R26q+27iQpac/tWgKYaUR
+         OBnM/g4TU+jxw==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1oOfjl-00AY7R-AJ;
+        Thu, 18 Aug 2022 15:39:05 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 04/13] docs: zh_CN: remove references to rust documentation
+Date:   Thu, 18 Aug 2022 15:38:50 +0200
+Message-Id: <d0b2ead8c86cb1820695f400156b0be435aa7b74.1660829433.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <cover.1660829433.git.mchehab@kernel.org>
+References: <cover.1660829433.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 14:35:55 +0800, Yu Kuai wrote:
-> From: Yu Kuai <yukuai3@huawei.com>
-> 
-> blk_mq_queue_stopped() doesn't have any caller, which was found by
-> code coverage test, thus remove it.
-> 
-> 
+There is a note on this file that, using a robot to translate,
+says:
 
-Applied, thanks!
+	"The kernel-doc cannot contain Rust code: please refer
+	 to Documentation/rust/general-information.rst."
 
-[1/1] blk-mq: remove unused function blk_mq_queue_stopped()
-      commit: a8239f0342bae5a51acca967ba95b9a8ad56dd62
+Such note doesn't exist at the original file anymore, so, just remove
+it from the translation, in order to solve this warning:
 
-Best regards,
+	Warning: Documentation/translations/zh_CN/doc-guide/kernel-doc.rst references a file that doesn't exist: Documentation/rust/general-information.rst
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+
+See [PATCH 00/13] at: https://lore.kernel.org/all/cover.1660829433.git.mchehab@kernel.org/
+
+ Documentation/translations/zh_CN/doc-guide/kernel-doc.rst | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst b/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst
+index ccfb9b8329c2..9fd170faf951 100644
+--- a/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst
++++ b/Documentation/translations/zh_CN/doc-guide/kernel-doc.rst
+@@ -14,8 +14,6 @@ Linux内核源文件可以包含kernel-doc格式的结构化文档注释，用
+           实际有着明显的不同。内核源包含成千上万个kernel-doc注释。请坚持遵循
+           此处描述的风格。
+ 
+-.. note:: kernel-doc无法包含Rust代码：请参考 Documentation/rust/general-information.rst 。
+-
+ 从注释中提取kernel-doc结构，并从中生成适当的 `Sphinx C 域`_ 函数和带有锚点的
+ 类型描述。这些注释将被过滤以生成特殊kernel-doc高亮和交叉引用。详见下文。
+ 
 -- 
-Jens Axboe
-
+2.37.1
 
