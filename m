@@ -2,199 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B803FC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC508C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343606AbiHROlz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
+        id S244891AbiHROl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343637AbiHROlg (ORCPT
+        with ESMTP id S1343609AbiHROlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:41:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C35BA9FF
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:41:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660833694;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OkFj5M32VI+ukonzc2IR4oi+Zt5/O5PaJTN7Z3PSmpA=;
-        b=PZtNWKBIvKcmbOTdRv7MADhx8GaB5vyHIXSJX+xsC6UK5QtewBGDQqLTS0Z6AzLPYbRpDR
-        8gjOQNUpshA0RMupTl7WMn+81OK+uZtzsMe5db1lwAFPf7FYbFQfwACz3JgKgwx930LsfO
-        JhLJB0l8HHYxAW5TGueJRMR9kpLIFCs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-343-z_0rLG8APkiuHurukGa-xQ-1; Thu, 18 Aug 2022 10:41:28 -0400
-X-MC-Unique: z_0rLG8APkiuHurukGa-xQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 18 Aug 2022 10:41:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A19ABB6A4
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:41:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5C00F1C01B43;
-        Thu, 18 Aug 2022 14:41:27 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.33.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B2D7640CFD0A;
-        Thu, 18 Aug 2022 14:41:26 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org, jay.vosburgh@canonical.com
-Cc:     liuhangbin@gmail.com, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v4 2/3] bonding: 802.3ad: fix no transmission of LACPDUs
-Date:   Thu, 18 Aug 2022 10:41:11 -0400
-Message-Id: <5fe2a41fa0c2d726a9ba92244b272b21d4bae3a4.1660832962.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1660832962.git.jtoppins@redhat.com>
-References: <cover.1660832962.git.jtoppins@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3349FB821C7
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:41:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08482C433D6;
+        Thu, 18 Aug 2022 14:41:40 +0000 (UTC)
+Date:   Thu, 18 Aug 2022 10:41:51 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Alexandre Vicenzi <alexandre.vicenzi@suse.com>,
+        Ben Hutchings <benh@debian.org>
+Subject: [GIT PULL] rtla: Fixes for 6.0
+Message-ID: <20220818104151.524f3df2@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is caused by the global variable ad_ticks_per_sec being zero as
-demonstrated by the reproducer script discussed below. This causes
-all timer values in __ad_timer_to_ticks to be zero, resulting
-in the periodic timer to never fire.
 
-To reproduce:
-Run the script in
-`tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
-puts bonding into a state where it never transmits LACPDUs.
+Linus,
 
-line 44: ip link add fbond type bond mode 4 miimon 200 \
-            xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
+Fixes for the RTLA tooling:
 
-line 48: ip link set fbond address 52:54:00:3B:7C:A6
-setting bond MAC addr
-call stack:
-    bond->dev->dev_addr = new_mac
+- Fix tracer name in comments and prints
 
-line 52: ip link set fbond type bond ad_actor_sys_prio 65535
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
+- Fix setting up symlinks
 
-line 60: ip link set veth1-bond down master fbond
-given:
-    params.ad_actor_system = 0
-    params.mode = BOND_MODE_8023AD
-    ad.system.sys_mac_addr == bond->dev->dev_addr
-call stack:
-    bond_enslave
-    -> bond_3ad_initialize(); because first slave
-       -> if ad.system.sys_mac_addr != bond->dev->dev_addr
-          return
-results:
-     Nothing is run in bond_3ad_initialize() because dev_addr equals
-     sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
-     never initialized anywhere else.
+- Allow extra flags to be set in build
 
-The if check around the contents of bond_3ad_initialize() is no longer
-needed due to commit 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings
-changes immediately") which sets ad.system.sys_mac_addr if any one of
-the bonding parameters whos set function calls
-bond_3ad_update_ad_actor_settings(). This is because if
-ad.system.sys_mac_addr is zero it will be set to the current bond mac
-address, this causes the if check to never be true.
+- Consolidate and show all necessary libraries not found in build error
 
-Fixes: 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
 
-Notes:
-    v2:
-     * split this fix from the reproducer
-    v3:
-     * rebased to latest net/master
-    v4:
-     * instead of setting ad_ticks_per_sec remove the if statement around the
-       body of the function of bond_3ad_initialize().
+Please pull the latest trace-rtla-v6.0 tree, which can be found at:
 
- drivers/net/bonding/bond_3ad.c | 38 ++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index d7fb33c078e8..1f0120cbe9e8 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2007,30 +2007,24 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
-  */
- void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
- {
--	/* check that the bond is not initialized yet */
--	if (!MAC_ADDRESS_EQUAL(&(BOND_AD_INFO(bond).system.sys_mac_addr),
--				bond->dev->dev_addr)) {
--
--		BOND_AD_INFO(bond).aggregator_identifier = 0;
--
--		BOND_AD_INFO(bond).system.sys_priority =
--			bond->params.ad_actor_sys_prio;
--		if (is_zero_ether_addr(bond->params.ad_actor_system))
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->dev->dev_addr);
--		else
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->params.ad_actor_system);
-+	BOND_AD_INFO(bond).aggregator_identifier = 0;
-+	BOND_AD_INFO(bond).system.sys_priority =
-+		bond->params.ad_actor_sys_prio;
-+	if (is_zero_ether_addr(bond->params.ad_actor_system))
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->dev->dev_addr);
-+	else
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->params.ad_actor_system);
+  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+trace-rtla-v6.0
+
+Tag SHA1: a54079a2b9a25f6cf1229b053ef2f4fa71d6cee5
+Head SHA1: 20aec89aac7761e3c096004f5c819aacc86fc542
+
+
+Alexandre Vicenzi (1):
+      rtla: Fix tracer name
+
+Ben Hutchings (2):
+      tools/rtla: Fix command symlinks
+      tools/rtla: Build with EXTRA_{C,LD}FLAGS
+
+Steven Rostedt (Google) (1):
+      rtla: Consolidate and show all necessary libraries that failed for building
+
+----
+ Documentation/tools/rtla/rtla-timerlat-hist.rst |  2 +-
+ tools/tracing/rtla/Makefile                     | 70 ++++++++++++++-----------
+ tools/tracing/rtla/src/timerlat_hist.c          |  2 +-
+ tools/tracing/rtla/src/timerlat_top.c           |  2 +-
+ 4 files changed, 43 insertions(+), 33 deletions(-)
+---------------------------
+diff --git a/Documentation/tools/rtla/rtla-timerlat-hist.rst b/Documentation/tools/rtla/rtla-timerlat-hist.rst
+index e12eae1f3301..6bf7f0ca4556 100644
+--- a/Documentation/tools/rtla/rtla-timerlat-hist.rst
++++ b/Documentation/tools/rtla/rtla-timerlat-hist.rst
+@@ -33,7 +33,7 @@ EXAMPLE
+ =======
+ In the example below, **rtla timerlat hist** is set to run for *10* minutes,
+ in the cpus *0-4*, *skipping zero* only lines. Moreover, **rtla timerlat
+-hist** will change the priority of the *timelat* threads to run under
++hist** will change the priority of the *timerlat* threads to run under
+ *SCHED_DEADLINE* priority, with a *10us* runtime every *1ms* period. The
+ *1ms* period is also passed to the *timerlat* tracer::
  
--		/* initialize how many times this module is called in one
--		 * second (should be about every 100ms)
--		 */
--		ad_ticks_per_sec = tick_resolution;
-+	/* initialize how many times this module is called in one
-+	 * second (should be about every 100ms)
-+	 */
-+	ad_ticks_per_sec = tick_resolution;
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 1bea2d16d4c1..22e28b76f800 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -30,8 +30,8 @@ WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_A
  
--		bond_3ad_initiate_agg_selection(bond,
--						AD_AGGREGATOR_SELECTION_TIMER *
--						ad_ticks_per_sec);
--	}
-+	bond_3ad_initiate_agg_selection(bond,
-+					AD_AGGREGATOR_SELECTION_TIMER *
-+					ad_ticks_per_sec);
- }
+ TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
  
- /**
--- 
-2.31.1
-
+-CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS)
+-LDFLAGS	:=	-ggdb
++CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS) $(EXTRA_CFLAGS)
++LDFLAGS	:=	-ggdb $(EXTRA_LDFLAGS)
+ LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
+ 
+ SRC	:=	$(wildcard src/*.c)
+@@ -61,40 +61,50 @@ endif
+ LIBTRACEEVENT_MIN_VERSION = 1.5
+ LIBTRACEFS_MIN_VERSION = 1.3
+ 
++.PHONY:	all warnings show_warnings
++all:	warnings rtla
++
+ TEST_LIBTRACEEVENT = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEEVENT_MIN_VERSION) libtraceevent > /dev/null 2>&1 || echo n")
+ ifeq ("$(TEST_LIBTRACEEVENT)", "n")
+-.PHONY: warning_traceevent
+-warning_traceevent:
+-	@echo "********************************************"
+-	@echo "** NOTICE: libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher not found"
+-	@echo "**"
+-	@echo "** Consider installing the latest libtraceevent from your"
+-	@echo "** distribution, e.g., 'dnf install libtraceevent' on Fedora,"
+-	@echo "** or from source:"
+-	@echo "**"
+-	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ "
+-	@echo "**"
+-	@echo "********************************************"
++WARNINGS = show_warnings
++MISSING_LIBS += echo "**   libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher";
++MISSING_PACKAGES += "libtraceevent-devel"
++MISSING_SOURCE += echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ ";
+ endif
+ 
+ TEST_LIBTRACEFS = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEFS_MIN_VERSION) libtracefs > /dev/null 2>&1 || echo n")
+ ifeq ("$(TEST_LIBTRACEFS)", "n")
+-.PHONY: warning_tracefs
+-warning_tracefs:
+-	@echo "********************************************"
+-	@echo "** NOTICE: libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher not found"
+-	@echo "**"
+-	@echo "** Consider installing the latest libtracefs from your"
+-	@echo "** distribution, e.g., 'dnf install libtracefs' on Fedora,"
+-	@echo "** or from source:"
+-	@echo "**"
+-	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ "
+-	@echo "**"
+-	@echo "********************************************"
++WARNINGS = show_warnings
++MISSING_LIBS += echo "**   libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher";
++MISSING_PACKAGES += "libtracefs-devel"
++MISSING_SOURCE += echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ ";
+ endif
+ 
+-.PHONY:	all
+-all:	rtla
++define show_dependencies
++	@echo "********************************************";				\
++	echo "** NOTICE: Failed build dependencies";					\
++	echo "**";									\
++	echo "** Required Libraries:";							\
++	$(MISSING_LIBS)									\
++	echo "**";									\
++	echo "** Consider installing the latest libtracefs from your";			\
++	echo "** distribution, e.g., 'dnf install $(MISSING_PACKAGES)' on Fedora,";	\
++	echo "** or from source:";							\
++	echo "**";									\
++	$(MISSING_SOURCE)								\
++	echo "**";									\
++	echo "********************************************"
++endef
++
++show_warnings:
++	$(call show_dependencies);
++
++ifneq ("$(WARNINGS)", "")
++ERROR_OUT = $(error Please add the necessary dependencies)
++
++warnings: $(WARNINGS)
++	$(ERROR_OUT)
++endif
+ 
+ rtla: $(OBJ)
+ 	$(CC) -o rtla $(LDFLAGS) $(OBJ) $(LIBS)
+@@ -108,9 +118,9 @@ install: doc_install
+ 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
+ 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
+ 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
+-	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/osnoise
++	ln -s rtla $(DESTDIR)$(BINDIR)/osnoise
+ 	@test ! -f $(DESTDIR)$(BINDIR)/timerlat || rm $(DESTDIR)$(BINDIR)/timerlat
+-	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/timerlat
++	ln -s rtla $(DESTDIR)$(BINDIR)/timerlat
+ 
+ .PHONY: clean tarball
+ clean: doc_clean
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index f3ec628f5e51..4b48af8a8309 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -892,7 +892,7 @@ int timerlat_hist_main(int argc, char *argv[])
+ 	return_value = 0;
+ 
+ 	if (trace_is_off(&tool->trace, &record->trace)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla timerlat hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
+diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
+index 35452a1d45e9..334271935222 100644
+--- a/tools/tracing/rtla/src/timerlat_top.c
++++ b/tools/tracing/rtla/src/timerlat_top.c
+@@ -687,7 +687,7 @@ int timerlat_top_main(int argc, char *argv[])
+ 	return_value = 0;
+ 
+ 	if (trace_is_off(&top->trace, &record->trace)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla timerlat hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
