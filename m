@@ -2,86 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA44FC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A11AAC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244875AbiHRN6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:58:09 -0400
+        id S245459AbiHRN6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:58:13 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245419AbiHRN6C (ORCPT
+        with ESMTP id S245447AbiHRN6G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:58:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF370B72AA
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:57:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2246761615
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 13:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6497C433C1;
-        Thu, 18 Aug 2022 13:57:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660831074;
-        bh=CjHA+Zh75d5rWqfjbpWtK92dqJGzZIO1E1GyDNKRaaM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/0u8jaUB0Z3wK9a9YliLIj4Mq4YHp549umNwYgvzlFYCcbqRQwuqTlAGXFGrcEvA
-         iqNB4WgUCPX8995eVBFx1cGoGcT2aaHhuqVyfejAMe+vf5Z8pLkm8K9LFp1tlECjfg
-         96kqKlJJ1K3RxtFKbWa5DIVsdSDYopY41tlRfCi5I2Vhq8CbJdaPuOSXIsYmZt1N+f
-         ZfR5TXU6zAJENYlATYTw1Rz948sy/Ym0xjDc93+IcxKGuu4vakF0v/fWwU+EvdQhHL
-         XIVzsQvQKflUmCy0SK6mK+q3V+Bc6OnCLgbKGZQ9tF92CQ2/5+KWaMZl4vbgjJrVO+
-         3pk4MoFYtx7dg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org,
-        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Joel Stanley <joel@jms.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        William Zhang <william.zhang@broadcom.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 03/11] ARM: defconfig: drop CONFIG_NET_VENDOR_ASIX=y
-Date:   Thu, 18 Aug 2022 15:57:12 +0200
-Message-Id: <20220818135737.3143895-2-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220818135737.3143895-1-arnd@kernel.org>
-References: <20220818135522.3143514-1-arnd@kernel.org>
- <20220818135737.3143895-1-arnd@kernel.org>
+        Thu, 18 Aug 2022 09:58:06 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113C1B8F04;
+        Thu, 18 Aug 2022 06:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660831085; x=1692367085;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2uQ8ZqwhaKWZGyHK1hdjtqgV8mwfjZOfwxAYm1oawKM=;
+  b=QvWNx/QK1ioH0VCwK1aHORXuNv2zXRhBff4MlNGXPtWMoV/N+JBS2kzg
+   +U9wqaHyLL5zA3nJz1G1GcSk1pF8JvIkIVOjWK4bIgw/Z+aKdmpId+v/p
+   ksV73Y8abMuSm2jRSlviEv+jkQRyjJtsOLNs6b+TG/ehv9i3TN7PfM2uX
+   lzJXzKie6RMnJielAQhL6/Zpeq+DitK4cYFJYlr2l0MYGKqlG9np4Iqw6
+   +ygrJFTilELehIEbTCtQfaLDFKtYLvW5NvBIsVkjPPRLr6W7eQWncEqWU
+   OalsZzrVYM/CQV+Ucg5YRD6IGBJOdw28k//q0b1FfG5zll3O7bWVVJZ2v
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="318783417"
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="318783417"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 06:58:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="935815162"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga005.fm.intel.com with ESMTP; 18 Aug 2022 06:58:01 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27IDvxBD016488;
+        Thu, 18 Aug 2022 14:57:59 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
+        lkp@intel.com, stable@vger.kernel.org
+Subject: Re: [RFC PATCH 3/3] kallsyms: add option to include relative filepaths into kallsyms
+Date:   Thu, 18 Aug 2022 15:56:29 +0200
+Message-Id: <20220818135629.1113036-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <Yv4vT6s6UHYvXOlX@kroah.com>
+References: <20220818115306.1109642-1-alexandr.lobakin@intel.com> <20220818115306.1109642-4-alexandr.lobakin@intel.com> <Yv4vT6s6UHYvXOlX@kroah.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Date: Thu, 18 Aug 2022 14:23:43 +0200
 
-This option is 'default y' and has always been this way, the
-line was added in error.
+> On Thu, Aug 18, 2022 at 01:53:06PM +0200, Alexander Lobakin wrote:
+> > Currently, kallsyms kernel code copes with symbols with the same
+> > name by indexing them according to their position in vmlinux and
+> > requiring to provide an index of the desired symbol. This is not
+> > really quite reliable and is fragile to any features performing
+> > symbol or section manipulations such as FG-KASLR.
+> 
+> Ah, here's the reasoning, stuff like this should go into the 0/X message
+> too, right?
+> 
+> Anyway, what is currently broken that requires this?  What will this
+> make easier in the future?  What in the future will depend on this?
 
-Fixes: dfe21dcabac0 ("ARM: defconfig: Enable ax88796c driver for Exynos boards")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/configs/multi_v7_defconfig | 1 -
- 1 file changed, 1 deletion(-)
+2) FG-KASLR will depend and probably some more crazy hardening
+   stuff. And/or perf-based function/symbol placement, which is
+   in the "discuss and dream sometimes" stage.
 
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 7ac539231a90..ecf743b3409d 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -254,7 +254,6 @@ CONFIG_SATA_HIGHBANK=y
- CONFIG_SATA_MV=y
- CONFIG_SATA_RCAR=y
- CONFIG_NETDEVICES=y
--CONFIG_NET_VENDOR_ASIX=y
- CONFIG_VIRTIO_NET=y
- CONFIG_B53_SPI_DRIVER=m
- CONFIG_B53_MDIO_DRIVER=m
--- 
-2.29.2
+> 
+> > So, in order to make kallsyms immune to object code modification
+> 
+> What do you mean by "object code modification"?
 
+Yeah, probably not a good term. Anything that can change symbol
+order in the decompressed kernel in the memory. As for FG-KASLR,
+it shuffles functions on each boot randomly, so
+
+> 
+> Can that happen now?  What causes it?  What happens if it does happen?
+
+So then, if e.g. we have two functions with the same name:
+
+ffffffff81133700 t func (func one)
+ffffffff81733100 t func (func two)
+
+and they got reordered by FG-KASLR
+
+ffffffffdeadbeef t func (func two)
+ffffffffe0fffeed t func (func one)
+
+and kallsyms table got reordered too.
+So, utilities that rely on vmlinux and kallsyms, like probes,
+livepatch etc. will have mismatch in "symbol positions" with the
+kernel, so wrong symbols will be patched. So the code will get
+broken.
+
+> 
+> And why are any of these being cc:ed to the stable mailing list?
+
+I Cced stable in 1/3 and I don't like when someone receives only
+some parts of a series, and not only me. So I usually collect all
+addresses and make one Tos and Ccs for the whole stuff.
+
+> 
+> confused,
+> 
+> greg k-h
+
+Thanks,
+Olek
