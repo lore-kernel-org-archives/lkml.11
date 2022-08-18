@@ -2,190 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9EB0C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB430C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244655AbiHRNkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        id S242702AbiHRNlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245165AbiHRNjf (ORCPT
+        with ESMTP id S245342AbiHRNkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:39:35 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25785FF6B
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:39:17 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id u9so2145482lfg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:39:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=KSIaXxhyUIHIxlq/rUi5FI75cBAK/krT+tEUbMY1wsg=;
-        b=FVZCcLXPj781ifyjzK4x11TqiJbBkK38M1Eu90Wi1nIRgof+t5RQw3C1TLIuCf8jA4
-         8uE6TaW8l1RgH66BeiDgE11x/bvPDdmWLSgkCACrV2/Sfvr50y8qWg08VlyiL/X9UG3U
-         Di13Pc9xKdvDfsC5F42PTVGkuoi44qFlJZRoAF9ygwVQx9d/mVNHkmtJFRlmnSJ2dDhB
-         DgTt68Ej89TbqUgrvw+fnUvus5ZCbQ+Paa9UAT2oI/xA8RpdO7jCASTSP1i7N/Zq7ge/
-         oFOIAi5VpcARVyez12RNr3dbrCDpa2h9tpD4Zy8f5/p/qv8kg3RD7NtIKuPV+zx17pFO
-         7odg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=KSIaXxhyUIHIxlq/rUi5FI75cBAK/krT+tEUbMY1wsg=;
-        b=Pli9q9JzC7C+GTvQMdv/aeIpXjVFnlDFcyTsltnkZq3IF4Lahd0+qdY9orwDdN+Q+U
-         Wivl7vjjPoYgzfsg434rDdFuEFjRVb7x4Ps01H0law9v8UW7EL5EwIiB2rTMsym4JN/9
-         WpCeT16U/Fl7kYqwtri6lWKfngUm4NrGui3YF0A+NNZErN4hGsZIlR9OazRGI0IXZEnl
-         Jm568zWPKPR7J5JwvSAoc5KN6Qa4aTethq7CJFnY0cXIPukPKPQx5RulE7VpmgoMAA93
-         XsfsXel28McZzOw9eNyhuzJFfAPnKIr2NSK+EBzIOv9Zz5odOjVgBHlDS6wKNW4+kw5H
-         3d8w==
-X-Gm-Message-State: ACgBeo1g6FLF5PoPfm6MVcsNTkRRPEenXsLYzVWZA6tBlaTgrhD+e/Pq
-        vEYaD7+xjYxa3vD19kBWJAWHPQ==
-X-Google-Smtp-Source: AA6agR5WaeCT380GrnAMAJDvP+dDmL6sElrkgK5h271JvA81tOxhuMDA3YDK2SzQRVeHLS8LmdKuMA==
-X-Received: by 2002:a05:6512:3f02:b0:48d:244e:426f with SMTP id y2-20020a0565123f0200b0048d244e426fmr910569lfa.333.1660829956324;
-        Thu, 18 Aug 2022 06:39:16 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
-        by smtp.gmail.com with ESMTPSA id d23-20020a193857000000b0048b4690c78esm219975lfj.288.2022.08.18.06.39.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 06:39:15 -0700 (PDT)
-Message-ID: <7f8305ee-d706-a5a3-0691-1aa296a65125@linaro.org>
-Date:   Thu, 18 Aug 2022 16:39:13 +0300
+        Thu, 18 Aug 2022 09:40:41 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C5EA6C0F
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:40:05 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98ec329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98ec:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 045341EC0629;
+        Thu, 18 Aug 2022 15:39:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660829999;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=zwPlC5rl838F3z1Af5qijAM7dgfF+8E3ih+zEH2G/fc=;
+        b=hh2VA3um5AUKWqT+5TojJMSAm2qQPvZQhWSkGSVFiL64dVvVRAlof5c46Yi8vIql5atOrj
+        EUes+8eLbXmDv3Yohj3AHoPJOHC/yfmiiAzwxCVSxbbggYCl9WgVmvHRHOvCpsUCjL2KDE
+        7OLG9TVuyTwA7NROu4qsrctiuF50dlQ=
+Date:   Thu, 18 Aug 2022 15:39:54 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v3 2/2] x86/sev: Add SNP-specific unaccepted memory
+ support
+Message-ID: <Yv5BKgbwNC2WY2/+@zn.tnic>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <cover.1660579062.git.thomas.lendacky@amd.com>
+ <202f4e1ed9fc585f503da57cb8a8dd35e83758d1.1660579062.git.thomas.lendacky@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] dt-bindings: Convert Xilinx watchdog bindings to
- json-schema
-Content-Language: en-US
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>, linux@roeck-us.net,
-        krzysztof.kozlowski+dt@linaro.org, wim@linux-watchdog.org,
-        michal.simek@xilinx.com, shubhrajyoti.datta@xilinx.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        git@xilinx.com, git@amd.com, sgoud@xilinx.com,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-References: <20220818124207.61313-1-srinivas.neeli@xilinx.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220818124207.61313-1-srinivas.neeli@xilinx.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202f4e1ed9fc585f503da57cb8a8dd35e83758d1.1660579062.git.thomas.lendacky@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/2022 15:42, Srinivas Neeli wrote:
-> Convert Xilinx watchdog bindings to DT schema format using json-schema
+On Mon, Aug 15, 2022 at 10:57:43AM -0500, Tom Lendacky wrote:
+> Add SNP-specific hooks to the unaccepted memory support in the boot
+> path (__accept_memory()) and the core kernel (accept_memory()) in order
+> to support booting SNP guests when unaccepted memory is present. Without
+> this support, SNP guests will fail to boot and/or panic() when unaccepted
+> memory is present in the EFI memory map.
 > 
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> The process of accepting memory under SNP involves invoking the hypervisor
+> to perform a page state change for the page to private memory and then
+> issuing a PVALIDATE instruction to accept the page.
+> 
+> Create the new header file arch/x86/boot/compressed/sev.h because adding
+> the function declaration to any of the existing SEV related header files
+> pulls in too many other header files, causing the build to fail.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/Kconfig                |  1 +
+>  arch/x86/boot/compressed/mem.c  |  3 +++
+>  arch/x86/boot/compressed/sev.c  | 10 +++++++++-
+>  arch/x86/boot/compressed/sev.h  | 23 +++++++++++++++++++++++
+>  arch/x86/include/asm/sev.h      |  3 +++
+>  arch/x86/kernel/sev.c           | 16 ++++++++++++++++
+>  arch/x86/mm/unaccepted_memory.c |  4 ++++
+>  7 files changed, 59 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/x86/boot/compressed/sev.h
 
-Use subject perfixes matching the subsystem (git log --oneline -- ...).
+Looks mostly ok to me...
 
+> diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
+> index 730c4677e9db..d4b06c862094 100644
+> --- a/arch/x86/boot/compressed/sev.c
+> +++ b/arch/x86/boot/compressed/sev.c
+> @@ -115,7 +115,7 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
+>  /* Include code for early handlers */
+>  #include "../../kernel/sev-shared.c"
+>  
+> -static inline bool sev_snp_enabled(void)
+> +bool sev_snp_enabled(void)
+>  {
+>  	return sev_status & MSR_AMD64_SEV_SNP_ENABLED;
+>  }
 
-> diff --git a/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase.yaml b/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase.yaml
-> new file mode 100644
-> index 000000000000..fd2e3f2df54c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase.yaml
+This is another one of my pet peeves and now it even gets exported but
+it is the early decompressor crap so I won't even try to mention cc_*
+helpers...
 
-xlnx,xps-timebase-wdt.yaml
-(name should be matching compatibles)
+-- 
+Regards/Gruss,
+    Boris.
 
-> @@ -0,0 +1,71 @@
-> +# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/watchdog/xlnx,xps-timebase.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Xilinx AXI/PLB softcore and window Watchdog Timer
-> +
-> +allOf:
-> +  - $ref: "watchdog.yaml#"
-
-No need for quotes. Put the allOf just above "properties".
-
-> +
-> +maintainers:
-> +  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> +  - Srinivas Neeli <srinivas.neeli@xilinx.com>
-> +
-> +description:
-> +  The Timebase watchdog timer(WDT) is a free-running 32 bit counter.
-> +  WDT uses a dual-expiration architecture. After one expiration of
-> +  the timeout interval, an interrupt is generated and the WDT state
-> +  bit is set to one in the status register. If the state bit is not
-> +  cleared (by writing a one to the state bit) before the next
-> +  expiration of the timeout interval, a WDT reset is generated.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-
-There is no other option, so no need for oneOf.
-
-> +      - items:
-
-You do not have items, just one item. Drop items as well.
-
-> +          - enum:
-> +              - xlnx,xps-timebase-wdt-1.01.a
-> +              - xlnx,xps-timebase-wdt-1.00.a
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    minItems: 1
-
-instead maxItems
-
-> +
-> +  clock-frequency:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-
-No need for ref. This is a standard property.
-
-> +    description: Frequency of clock in Hz
-
-Would be useful to add constraints (minimum/maximum and default), but
-that's not a big deal.
-
-> +
-> +  xlnx,wdt-interval:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: Watchdog timeout interval
-> +    minimum: 8
-> +    maximum: 32
-> +
-> +  xlnx,wdt-enable-once:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1]
-> +    description: If watchdog is configured as enable once,
-> +                 then the watchdog cannot be disabled after
-> +                 it has been enabled.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    watchdog@40100000 {
-> +      compatible = "xlnx,xps-timebase-wdt-1.00.a";
-> +      reg = <0x40100000 0x1000>;
-> +      clock-frequency = <50000000>;
-> +      clocks = <&clkc 15>;
-> +      xlnx,wdt-enable-once = <0x0>;
-> +      xlnx,wdt-interval = <0x1b>;
-> +    } ;
-
-No need for space after ';'
-
-
-
-Best regards,
-Krzysztof
+https://people.kernel.org/tglx/notes-about-netiquette
