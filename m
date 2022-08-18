@@ -2,91 +2,321 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 918A9C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E905C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245043AbiHRNj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        id S244883AbiHRNjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245124AbiHRNjK (ORCPT
+        with ESMTP id S245102AbiHRNjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 09:39:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D7657E35;
-        Thu, 18 Aug 2022 06:39:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39361616A0;
-        Thu, 18 Aug 2022 13:39:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B27C43140;
-        Thu, 18 Aug 2022 13:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660829947;
-        bh=/u+oKcPW6ChqPyJvj84EmuaOgNhqaFaZAyoGnBvxnqY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hwvQJkMP7sKAup+IMRAOJNCY/nR4UeVdNyY2tX4e7ZQsZanBK+lHhogPva3aYdsDG
-         gy4izYE4OrQgFZNdfjd2LTIV6emUljpX9KX4Tk3bc3PlsFIahl0GnFkr/UBtauykhM
-         /Npqeb0StGezUcBbZobOdkRiHVrag8XH80kgaLEee/yPQHO2ldQHgFMsuUUEpDCRuX
-         P0OV8x9XNvESfil84IBv6N3Iu+Su0eCttqi52LYDgwofn7qQIAwGpswtyuTeLnX/dJ
-         /iGU/k8CvnbTOMskvWketZ4l/IRVBca6b0gz60lc9sSo79Rbvhkq4zDWVo8MiCRHZk
-         3y/fm7ozACUeg==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1oOfjl-00AY7V-CG;
-        Thu, 18 Aug 2022 15:39:05 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 05/13] dt-bindings: arm: update arm,coresight-cpu-debug.yaml reference
-Date:   Thu, 18 Aug 2022 15:38:51 +0200
-Message-Id: <20815dbff3d27f5d3e6876363f052d2a08ad2e72.1660829433.git.mchehab@kernel.org>
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76050558DC;
+        Thu, 18 Aug 2022 06:39:06 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4M7mFN2Jnqz9sf9;
+        Thu, 18 Aug 2022 15:39:04 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Erh0UQaaA8rp; Thu, 18 Aug 2022 15:39:04 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4M7mFN1HSBz9sdy;
+        Thu, 18 Aug 2022 15:39:04 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1C0458B767;
+        Thu, 18 Aug 2022 15:39:04 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id tN3eUpb6DCTz; Thu, 18 Aug 2022 15:39:04 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.235.236])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id CFD0A8B763;
+        Thu, 18 Aug 2022 15:39:03 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 27IDcuWs1990416
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 15:38:56 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 27IDcurF1990411;
+        Thu, 18 Aug 2022 15:38:56 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-spi@vger.kernel.org
+Subject: [RFC PATCH v1] spi: fsl_spi: Convert to transfer_one
+Date:   Thu, 18 Aug 2022 15:38:37 +0200
+Message-Id: <753266abafe81722d86c3ddb8bac8ef1cb00fe8c.1660829841.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1660829433.git.mchehab@kernel.org>
-References: <cover.1660829433.git.mchehab@kernel.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1660829916; l=8159; s=20211009; h=from:subject:message-id; bh=LNAq5UhTOCPEZGjCjrn7GGg4JHqTr8kNFadZBFaEwyE=; b=pKsC+3TfhJs6DpJ59Zh8GgeIa3HpCCBZlfrMX2OxmthAwhD49P3NF63PytKMmrQucexPbX7grARY I9mLyA/5B82wwh0SV4VFI8utQVfHbulzFPTdUbuGl/QPaKid1eh+
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset 66d052047ca8 ("dt-bindings: arm: Convert CoreSight CPU debug to DT schema")
-renamed: Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
-to: Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml.
+Let the core handle all the chipselect bakery and replace
+transfer_one_message() by transfer_one() and prepare_message().
 
-Update its cross-reference accordingly.
+At the time being, there is fsl_spi_cs_control() to handle
+chipselects. That function handles both GPIO and non-GPIO
+chipselects. The GPIO chipselects will now be handled by
+the core directly, so only handle non-GPIO chipselects and
+hook it to ->set_cs
 
-Fixes: 66d052047ca8 ("dt-bindings: arm: Convert CoreSight CPU debug to DT schema")
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
+Sending as an RFC as I'm not 100% sure of the correctness.
+I successfully tested it on the hardware I have though.
+Not sure about the change from m->is_dma_mapped to !!t->tx_dma || !!t->rx_dma
+---
+ drivers/spi/spi-fsl-spi.c | 157 +++++++++++---------------------------
+ 1 file changed, 43 insertions(+), 114 deletions(-)
 
-See [PATCH 00/13] at: https://lore.kernel.org/all/cover.1660829433.git.mchehab@kernel.org/
-
- Documentation/trace/coresight/coresight-cpu-debug.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/trace/coresight/coresight-cpu-debug.rst b/Documentation/trace/coresight/coresight-cpu-debug.rst
-index 993dd294b81b..79bbe587e5e8 100644
---- a/Documentation/trace/coresight/coresight-cpu-debug.rst
-+++ b/Documentation/trace/coresight/coresight-cpu-debug.rst
-@@ -117,7 +117,7 @@ divide into below cases:
- Device Tree Bindings
- --------------------
+diff --git a/drivers/spi/spi-fsl-spi.c b/drivers/spi/spi-fsl-spi.c
+index bdf94cc7be1a..731624f157fc 100644
+--- a/drivers/spi/spi-fsl-spi.c
++++ b/drivers/spi/spi-fsl-spi.c
+@@ -111,32 +111,6 @@ static void fsl_spi_change_mode(struct spi_device *spi)
+ 	local_irq_restore(flags);
+ }
  
--See Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt for details.
-+See Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml for details.
+-static void fsl_spi_chipselect(struct spi_device *spi, int value)
+-{
+-	struct mpc8xxx_spi *mpc8xxx_spi = spi_master_get_devdata(spi->master);
+-	struct fsl_spi_platform_data *pdata;
+-	struct spi_mpc8xxx_cs	*cs = spi->controller_state;
+-
+-	pdata = spi->dev.parent->parent->platform_data;
+-
+-	if (value == BITBANG_CS_INACTIVE) {
+-		if (pdata->cs_control)
+-			pdata->cs_control(spi, false);
+-	}
+-
+-	if (value == BITBANG_CS_ACTIVE) {
+-		mpc8xxx_spi->rx_shift = cs->rx_shift;
+-		mpc8xxx_spi->tx_shift = cs->tx_shift;
+-		mpc8xxx_spi->get_rx = cs->get_rx;
+-		mpc8xxx_spi->get_tx = cs->get_tx;
+-
+-		fsl_spi_change_mode(spi);
+-
+-		if (pdata->cs_control)
+-			pdata->cs_control(spi, true);
+-	}
+-}
+-
+ static void fsl_spi_qe_cpu_set_shifts(u32 *rx_shift, u32 *tx_shift,
+ 				      int bits_per_word, int msb_first)
+ {
+@@ -354,15 +328,11 @@ static int fsl_spi_bufs(struct spi_device *spi, struct spi_transfer *t,
+ 	return mpc8xxx_spi->count;
+ }
  
+-static int fsl_spi_do_one_msg(struct spi_master *master,
+-			      struct spi_message *m)
++static int fsl_spi_prepare_message(struct spi_controller *ctlr,
++				   struct spi_message *m)
+ {
+-	struct mpc8xxx_spi *mpc8xxx_spi = spi_master_get_devdata(master);
+-	struct spi_device *spi = m->spi;
+-	struct spi_transfer *t, *first;
+-	unsigned int cs_change;
+-	const int nsecs = 50;
+-	int status, last_bpw;
++	struct mpc8xxx_spi *mpc8xxx_spi = spi_controller_get_devdata(ctlr);
++	struct spi_transfer *t;
  
- How to use the module
+ 	/*
+ 	 * In CPU mode, optimize large byte transfers to use larger
+@@ -378,62 +348,30 @@ static int fsl_spi_do_one_msg(struct spi_master *master,
+ 				t->bits_per_word = 16;
+ 		}
+ 	}
++	return 0;
++}
+ 
+-	/* Don't allow changes if CS is active */
+-	cs_change = 1;
+-	list_for_each_entry(t, &m->transfers, transfer_list) {
+-		if (cs_change)
+-			first = t;
+-		cs_change = t->cs_change;
+-		if (first->speed_hz != t->speed_hz) {
+-			dev_err(&spi->dev,
+-				"speed_hz cannot change while CS is active\n");
+-			return -EINVAL;
+-		}
+-	}
+-
+-	last_bpw = -1;
+-	cs_change = 1;
+-	status = -EINVAL;
+-	list_for_each_entry(t, &m->transfers, transfer_list) {
+-		if (cs_change || last_bpw != t->bits_per_word)
+-			status = fsl_spi_setup_transfer(spi, t);
+-		if (status < 0)
+-			break;
+-		last_bpw = t->bits_per_word;
+-
+-		if (cs_change) {
+-			fsl_spi_chipselect(spi, BITBANG_CS_ACTIVE);
+-			ndelay(nsecs);
+-		}
+-		cs_change = t->cs_change;
+-		if (t->len)
+-			status = fsl_spi_bufs(spi, t, m->is_dma_mapped);
+-		if (status) {
+-			status = -EMSGSIZE;
+-			break;
+-		}
+-		m->actual_length += t->len;
+-
+-		spi_transfer_delay_exec(t);
+-
+-		if (cs_change) {
+-			ndelay(nsecs);
+-			fsl_spi_chipselect(spi, BITBANG_CS_INACTIVE);
+-			ndelay(nsecs);
+-		}
+-	}
++static int fsl_spi_transfer_one(struct spi_controller *controller,
++				struct spi_device *spi,
++				struct spi_transfer *t)
++{
++	int status;
+ 
+-	m->status = status;
++	status = fsl_spi_setup_transfer(spi, t);
++	if (status < 0)
++		return status;
++	if (t->len)
++		status = fsl_spi_bufs(spi, t, !!t->tx_dma || !!t->rx_dma);
++	if (status > 0)
++		return -EMSGSIZE;
+ 
+-	if (status || !cs_change) {
+-		ndelay(nsecs);
+-		fsl_spi_chipselect(spi, BITBANG_CS_INACTIVE);
+-	}
++	return status;
++}
+ 
+-	fsl_spi_setup_transfer(spi, NULL);
+-	spi_finalize_current_message(master);
+-	return 0;
++static int fsl_spi_unprepare_message(struct spi_controller *controller,
++				     struct spi_message *msg)
++{
++	return fsl_spi_setup_transfer(msg->spi, NULL);
+ }
+ 
+ static int fsl_spi_setup(struct spi_device *spi)
+@@ -482,9 +420,6 @@ static int fsl_spi_setup(struct spi_device *spi)
+ 		return retval;
+ 	}
+ 
+-	/* Initialize chipselect - might be active for SPI_CS_HIGH mode */
+-	fsl_spi_chipselect(spi, BITBANG_CS_INACTIVE);
+-
+ 	return 0;
+ }
+ 
+@@ -557,9 +492,7 @@ static void fsl_spi_grlib_cs_control(struct spi_device *spi, bool on)
+ 	u32 slvsel;
+ 	u16 cs = spi->chip_select;
+ 
+-	if (spi->cs_gpiod) {
+-		gpiod_set_value(spi->cs_gpiod, on);
+-	} else if (cs < mpc8xxx_spi->native_chipselects) {
++	if (cs < mpc8xxx_spi->native_chipselects) {
+ 		slvsel = mpc8xxx_spi_read_reg(&reg_base->slvsel);
+ 		slvsel = on ? (slvsel | (1 << cs)) : (slvsel & ~(1 << cs));
+ 		mpc8xxx_spi_write_reg(&reg_base->slvsel, slvsel);
+@@ -568,7 +501,6 @@ static void fsl_spi_grlib_cs_control(struct spi_device *spi, bool on)
+ 
+ static void fsl_spi_grlib_probe(struct device *dev)
+ {
+-	struct fsl_spi_platform_data *pdata = dev_get_platdata(dev);
+ 	struct spi_master *master = dev_get_drvdata(dev);
+ 	struct mpc8xxx_spi *mpc8xxx_spi = spi_master_get_devdata(master);
+ 	struct fsl_spi_reg __iomem *reg_base = mpc8xxx_spi->reg_base;
+@@ -588,7 +520,18 @@ static void fsl_spi_grlib_probe(struct device *dev)
+ 		mpc8xxx_spi_write_reg(&reg_base->slvsel, 0xffffffff);
+ 	}
+ 	master->num_chipselect = mpc8xxx_spi->native_chipselects;
+-	pdata->cs_control = fsl_spi_grlib_cs_control;
++	master->set_cs = fsl_spi_grlib_cs_control;
++}
++
++static void fsl_spi_cs_control(struct spi_device *spi, bool on)
++{
++	struct device *dev = spi->dev.parent->parent;
++	struct fsl_spi_platform_data *pdata = dev_get_platdata(dev);
++	struct mpc8xxx_spi_probe_info *pinfo = to_of_pinfo(pdata);
++
++	if (WARN_ON_ONCE(!pinfo->immr_spi_cs))
++		return;
++	iowrite32be(on ? 0 : SPI_BOOT_SEL_BIT, pinfo->immr_spi_cs);
+ }
+ 
+ static struct spi_master *fsl_spi_probe(struct device *dev,
+@@ -613,8 +556,11 @@ static struct spi_master *fsl_spi_probe(struct device *dev,
+ 
+ 	master->setup = fsl_spi_setup;
+ 	master->cleanup = fsl_spi_cleanup;
+-	master->transfer_one_message = fsl_spi_do_one_msg;
++	master->prepare_message = fsl_spi_prepare_message;
++	master->transfer_one = fsl_spi_transfer_one;
++	master->unprepare_message = fsl_spi_unprepare_message;
+ 	master->use_gpio_descriptors = true;
++	master->set_cs = fsl_spi_cs_control;
+ 
+ 	mpc8xxx_spi = spi_master_get_devdata(master);
+ 	mpc8xxx_spi->max_bits_per_word = 32;
+@@ -688,21 +634,6 @@ static struct spi_master *fsl_spi_probe(struct device *dev,
+ 	return ERR_PTR(ret);
+ }
+ 
+-static void fsl_spi_cs_control(struct spi_device *spi, bool on)
+-{
+-	if (spi->cs_gpiod) {
+-		gpiod_set_value(spi->cs_gpiod, on);
+-	} else {
+-		struct device *dev = spi->dev.parent->parent;
+-		struct fsl_spi_platform_data *pdata = dev_get_platdata(dev);
+-		struct mpc8xxx_spi_probe_info *pinfo = to_of_pinfo(pdata);
+-
+-		if (WARN_ON_ONCE(!pinfo->immr_spi_cs))
+-			return;
+-		iowrite32be(on ? 0 : SPI_BOOT_SEL_BIT, pinfo->immr_spi_cs);
+-	}
+-}
+-
+ static int of_fsl_spi_probe(struct platform_device *ofdev)
+ {
+ 	struct device *dev = &ofdev->dev;
+@@ -744,12 +675,10 @@ static int of_fsl_spi_probe(struct platform_device *ofdev)
+ 		ret = gpiod_count(dev, "cs");
+ 		if (ret < 0)
+ 			ret = 0;
+-		if (ret == 0 && !spisel_boot) {
++		if (ret == 0 && !spisel_boot)
+ 			pdata->max_chipselect = 1;
+-		} else {
++		else
+ 			pdata->max_chipselect = ret + spisel_boot;
+-			pdata->cs_control = fsl_spi_cs_control;
+-		}
+ 	}
+ 
+ 	ret = of_address_to_resource(np, 0, &mem);
 -- 
 2.37.1
 
