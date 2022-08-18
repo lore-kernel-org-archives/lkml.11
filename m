@@ -2,109 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BFDC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DB0C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245701AbiHROio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
+        id S1343576AbiHROjK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245646AbiHROil (ORCPT
+        with ESMTP id S1343538AbiHROjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:38:41 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D042A27B
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:38:40 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 18 Aug 2022 10:39:06 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB741CB21;
+        Thu, 18 Aug 2022 07:39:05 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98ec329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98ec:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id AED423F1B0;
-        Thu, 18 Aug 2022 14:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660833518; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jUOvmGlI7wKmxNcPCdGuGwwDa2NbX/abFNr9NqvjZw0=;
-        b=WTIWY82Tw3Hdv5YfNhdNbZM8aNcndiPzlXWodezlbSWP76veCfJVWjrJRKLlP4PpYEP5Dz
-        t4jwu7T0cSGfyQoAApWGJ6k39sZ8cq/C5QGyp3jaTn9GiJXy0jCbRiWUe7IvV7Zx/i4svV
-        8WCM+aoixUtRivXbxcgX5ZnquJ3Q/ow=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660833518;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jUOvmGlI7wKmxNcPCdGuGwwDa2NbX/abFNr9NqvjZw0=;
-        b=Qvtj/6cdFermErecQBQFHbe+hG4VSqe3HCWyLb1VdkqMFe7kYXdMih9LM1ncjvIeE7EDOa
-        bhh8Bd9qWXAQkDCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0F466139B7;
-        Thu, 18 Aug 2022 14:38:38 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id BYdTAe5O/mJ0AQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 18 Aug 2022 14:38:38 +0000
-Message-ID: <5679405a-b3c3-6dc5-783f-7ebeda7c9bf0@suse.cz>
-Date:   Thu, 18 Aug 2022 16:37:06 +0200
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B9A951EC0575;
+        Thu, 18 Aug 2022 16:38:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660833539;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=g2YL7kh6clXEuknks5MxIzMwgBzNRg9SU8LpO1P7yIE=;
+        b=UUPNhVpC1nJs8S6GR9rbE/LCJ5GGypAQXnws+gBg8kpr0anG6hrMsxpKD3JOAYD+5jPAce
+        RblEzbEkn40zlzyyz95apBsukGMkp6Y6gfOfgThZtHGefttQmdKNjYIrlNQ6+Trz2usFaX
+        qRUHlNVpUkfrxN57kjKdGmbzi2nF0m4=
+Date:   Thu, 18 Aug 2022 16:38:55 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jia He <justin.he@arm.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Len Brown <lenb@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-edac@vger.kernel.org, devel@acpica.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, linux-efi@vger.kernel.org,
+        toshi.kani@hpe.com, nd@arm.com
+Subject: Re: [PATCH v2 1/7] efi/cper: export several helpers for ghes edac to
+ use
+Message-ID: <Yv5O/9WZ6sKwKWF8@zn.tnic>
+References: <20220817143458.335938-1-justin.he@arm.com>
+ <20220817143458.335938-2-justin.he@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/9] slub: Make PREEMPT_RT support less convoluted
-Content-Language: en-US
-To:     Christoph Lameter <cl@gentwo.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>, linux-mm@kvack.org
-References: <20220817162703.728679-1-bigeasy@linutronix.de>
- <20220817162703.728679-2-bigeasy@linutronix.de>
- <alpine.DEB.2.22.394.2208181136560.1901102@gentwo.de>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <alpine.DEB.2.22.394.2208181136560.1901102@gentwo.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220817143458.335938-2-justin.he@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/18/22 11:42, Christoph Lameter wrote:
-> On Wed, 17 Aug 2022, Sebastian Andrzej Siewior wrote:
-> 
->> + *   On PREEMPT_RT, the local lock neither disables interrupts nor preemption
->> + *   which means the lockless fastpath cannot be used as it might interfere with
->> + *   an in-progress slow path operations. In this case the local lock is always
->> + *   taken but it still utilizes the freelist for the common operations.
-> 
-> The slub fastpath does not interfere with slow path operations and the
+On Wed, Aug 17, 2022 at 02:34:52PM +0000, Jia He wrote:
+> Subject: Re: [PATCH v2 1/7] efi/cper: export several helpers for ghes edac to use
 
-That's true on !PREEMPT_RT because a slowpath operation under
-local_lock_irqsave() will disable interrupts, so there can't be a
-fastpath operation in an interrupt handler appearing in the middle of a
-slowpath operation.
+"ghes_edac"
 
-On PREEMPT_RT local_lock_irqsave() doesn't actually disable interrupts,
-so that can happen. IIRC we learned that the hard way when Mike
-Galbraith was testing early versions of my PREEMPT_RT changes for SLUB.
+> Before the ghes_edac codes are modularized, export several efi/cper helpers
 
-> fastpath does not require disabling preemption or interrupts if the
-> processor supports local rmv operations. So you should be able to use the
-> fastpath on PREEMPT_RT.
-> 
-> If the fastpath is not possible then you need to disable preemption and
-> eventually take locks etc and then things may get a bit more complicated.
+"Before ghes_edac can be turned back into a proper module again, export
+several helpers which are going to be used by it."
 
-Yeah that's basically the solution for PREEMPT_RT, take the local_lock.
+Thx.
 
+-- 
+Regards/Gruss,
+    Boris.
 
-
+https://people.kernel.org/tglx/notes-about-netiquette
