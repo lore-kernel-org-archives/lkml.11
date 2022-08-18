@@ -2,87 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BA8C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 07:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CF7C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 07:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239383AbiHRHzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 03:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
+        id S243960AbiHRHzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 03:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239693AbiHRHzl (ORCPT
+        with ESMTP id S243928AbiHRHzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 03:55:41 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6DA5A89B;
-        Thu, 18 Aug 2022 00:55:40 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id m17-20020a7bce11000000b003a5bedec07bso2193139wmc.0;
-        Thu, 18 Aug 2022 00:55:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=N8163GDxT/V70KLJ/27Rndv21wKXDLINtjwcMLb2kOA=;
-        b=Jdd9X9K+VkVBPE+9TBX1m+lOy5EdIcVIIYm/gJLhd22iEKZTqgyH6JgCSDZumjVMM4
-         orEaVkVr5L/FhKSueIwVQIeghAVaNROoFnjZELWJujqKYJym+eMkT2B0nW2YeX07QHFm
-         yuyy9fY4r8LdDeco3SRyGIwNFdzEd6Q1C8rxa9xVTHaIO/0caJvWOi3ONzkh0v9V63pN
-         /aam/EqPMvUkJEjeu0dYHDkGrwEjifDSDQts5ywuf33kQODKK6ji1xvIcjozoMUzhOQz
-         j4LOAMMsy2elIO0M5lycE+3b7uCLSjmmbKuCKRUm73hdp8SpTVPcJbXe8eI/DRie2RbT
-         rwUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=N8163GDxT/V70KLJ/27Rndv21wKXDLINtjwcMLb2kOA=;
-        b=gtEl+ZvYhiw6iwMhpJkB0z9l/Ey8zvULVD8X9ME8nptXZt8/V+FNVaUxIx0B1VIA//
-         wxOqn6jl5QaIOvpIrbwJP/1yZuQgPU2NYTLmvOHC2kiWixxkDKWDawN1WknnJz6QOXd5
-         CNv29GAwy+JSk/9VKJY5HhpIDp+F3xWuizN+niRhKhwokUM2+H9+k6Q+VRjntgL+4k6M
-         07Ee7xIgRfDOTokxSSXHTMpyWiuy9RmXVfDheKkgSsYUvCRpRTSOpOn/KeFhsdPyNxF5
-         xgWbE40NDJHQYjNlizthPkhlbz2VSwMGtidY2p5Znypa7zOyK380h2f/ivYlU85hlOGx
-         HuZA==
-X-Gm-Message-State: ACgBeo0WxlOMWQHLXWZSo363nWKp/K/6xddxm6BTLp6oEprFJ05w9AWN
-        +wWVHTwhycD/Y3EXDxcMiIk=
-X-Google-Smtp-Source: AA6agR7TsG+ox8UNe7WR1JIRWeyTOZdcW8xXglKJt+5UNt/Tj3yrnuAzIK0GhjF4XKQaRDLerIZthw==
-X-Received: by 2002:a05:600c:2cc5:b0:3a5:4fae:1288 with SMTP id l5-20020a05600c2cc500b003a54fae1288mr4316159wmc.79.1660809338692;
-        Thu, 18 Aug 2022 00:55:38 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id p22-20020a7bcc96000000b003a52969e89csm4448559wma.4.2022.08.18.00.55.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 00:55:38 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] btrfs: Fix spelling mistake "deivce" -> "device"
-Date:   Thu, 18 Aug 2022 08:55:37 +0100
-Message-Id: <20220818075537.117851-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Thu, 18 Aug 2022 03:55:47 -0400
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4D35A89B;
+        Thu, 18 Aug 2022 00:55:45 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1660809306tfbj0d7x
+Received: from localhost.localdomain ( [123.114.60.34])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 18 Aug 2022 15:55:04 +0800 (CST)
+X-QQ-SSF: 01400000002000D0U000B00A0000000
+X-QQ-FEAT: swyrzWPvyR126b+3X45NGrMtYKOIt069w4aDNOSi6iisZMf2/tX68YoUumWdU
+        dYtu6KOzDzJp5DTHprLCLdTDk/HozhmpvMBqO50ftUSwnZ1sEFsZzUY+9P+BnMWGgmIRf0J
+        Pi+oXlJurIxQ4+Tp0mNse+USKqXdq/BeQ/c5FoaIOncNBctTd6orLUGUU7UONotXwlUmi/X
+        5b3blDEg4Qk0h+3VS7CmGAn/LfYKvk9f4fLpioRYrxAfe+Yebwkfor6t7znjPu0hSN/NyGA
+        Leh0PteLePdOFDYWTU0d0NK4S2i7QyB12JHw7Qgks7Lidg1ps0FZfxlH9yMMsvzOzGsfpwk
+        m/yZizGAVWtsrZo0rlk683Cd6cpHIqk4mulVFef0SvOq99CblVLwx8k/X47uw==
+X-QQ-GoodBg: 2
+From:   zhaoxiao <zhaoxiao@uniontech.com>
+To:     thierry.reding@gmail.com, heiko@sntech.de
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        zhaoxiao <zhaoxiao@uniontech.com>
+Subject: [PATCH v2] pwm: rockchip: Convert to use dev_err_probe()
+Date:   Thu, 18 Aug 2022 15:55:03 +0800
+Message-Id: <20220818075503.18442-1-zhaoxiao@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a spelling mistake in a btrfs_info message. Fix it.
+It's fine to call dev_err_probe() in ->probe() when error code is known.
+Convert the driver to use dev_err_probe().
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
 ---
- fs/btrfs/dev-replace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ v2: remove the %d in the message.
 
-diff --git a/fs/btrfs/dev-replace.c b/fs/btrfs/dev-replace.c
-index 7202b76ce59f..773f1caab126 100644
---- a/fs/btrfs/dev-replace.c
-+++ b/fs/btrfs/dev-replace.c
-@@ -167,7 +167,7 @@ int btrfs_init_dev_replace(struct btrfs_fs_info *fs_info)
- 			btrfs_err(fs_info,
- 			"replace devid present without an active replace item");
- 			btrfs_info(fs_info,
--	"mount after the command 'btrfs deivce scan --forget <devpath-of-id-0>'");
-+	"mount after the command 'btrfs device scan --forget <devpath-of-id-0>'");
- 			ret = -EUCLEAN;
- 		} else {
- 			dev_replace->srcdev = NULL;
+ drivers/pwm/pwm-rockchip.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index f3647b317152..c6e088c1a6bf 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -330,16 +330,12 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 
+ 	if (IS_ERR(pc->pclk)) {
+ 		ret = PTR_ERR(pc->pclk);
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "Can't get APB clk: %d\n", ret);
+-		return ret;
++		return dev_err_probe(&pdev->dev, ret, "Can't get APB clk\n");
+ 	}
+ 
+ 	ret = clk_prepare_enable(pc->clk);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Can't prepare enable PWM clk: %d\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		dev_err_probe(&pdev->dev, ret, "Can't prepare enable PWM clk\n");
+ 
+ 	ret = clk_prepare_enable(pc->pclk);
+ 	if (ret) {
 -- 
-2.37.1
+2.20.1
 
