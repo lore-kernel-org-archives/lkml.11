@@ -2,92 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DE1C32773
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 757FAC32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344557AbiHRRkp (ORCPT
+        id S1343654AbiHRRlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
+        Thu, 18 Aug 2022 13:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345219AbiHRRkk (ORCPT
+        with ESMTP id S239531AbiHRRll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:40:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D7F696FF;
-        Thu, 18 Aug 2022 10:40:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 060F3B82357;
-        Thu, 18 Aug 2022 17:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C93FC433C1;
-        Thu, 18 Aug 2022 17:40:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660844436;
-        bh=yNeFws/1Db4rGKVqEFTLGuONzvqcqQUN7ZodpwwhCmU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fgLXQbFEcJQkozcIVtrGPmx0kFbkR0CRxU8sgIUbagwA8UnFrHtD0A2z0rF4L+Zzq
-         sCYvgLVILtpUERgXpzSekRXMQoUux0EOztlOJb+xSdA3btxru7Mwl97ykGR07raqvD
-         WRCxR4IT+/NB+UtIhL/RxuSi6wQutEXFnYi+QcdTplP4q+FRjy47228anQoatr1VGQ
-         Yemk+5CcrEU39LLSnQyyGQLCKtHrTbTYpICaD2jEATdI6Pj9aIoDWugGkTuZLNplhm
-         Q/GIxBlub1f06XFnyFkXl7yIJIljxqf6adxOuv8O4TnNH7PDk23brfdFXfAcgDfb/E
-         3UoNLMOkAOszg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5DBDDE2A058;
-        Thu, 18 Aug 2022 17:40:36 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 18 Aug 2022 13:41:41 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E744726AD
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:41:40 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id gk3so4544410ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=0jCSeYuVem/2OAtn8dTIxb5LJZ9dGd+2D6DlFBKaPvM=;
+        b=VibKS/V+5mUSpao1nLTrlaWPzLxq3Mk23Nf/zGYGyNOUUDGMAPDPwNjBDUOYXx45dS
+         68rSYHEPOqGL5VXWod4uWFm9eAMAoMLwkQBLkV1tD84lhjNctLRULE+L5oXnTZHOe25+
+         ZwnwLkDL/C2qvAlhTXZWnT/X907+UP7yCr0PI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0jCSeYuVem/2OAtn8dTIxb5LJZ9dGd+2D6DlFBKaPvM=;
+        b=p7MCC61xn621SJZF2vj871DzyNYRq5mYidRP6orP63eOSx4PWRpyfAY/Le+dhq7WKl
+         LkQuVIAumhYhT/mmYlzBPkln8FhONxjNHadsu+mjlHGIGVh8/3rcZDAQuhsozXMuzzpR
+         ipflF1ieUzM9Gf2JCsvaJZ+dRhVipy34nxZTQBueW6BrmZEcbZX19emdr+aPncyDFSnj
+         M1w9m2z9KrXnjRn4IBe7rYgCwDQaLjr2vyVUcz7DTHD7kGAclgT0kI+8P9Gk7NTDIqRL
+         oU2NMlf+0zkH5SUoQ7mBDuZ/0EODijEu7C1SUtHg2AiDirssYYUBJkAMTcRYBfSIfXrb
+         VFrg==
+X-Gm-Message-State: ACgBeo3hLqzc0KSgEJhWd1B8KrcudDKxXiuHFSRf5c0g5lPpBGeKaoMj
+        3T3Qj/v5eZe5LK1qvFg7Prn47ioDnx0No/hL
+X-Google-Smtp-Source: AA6agR4Fmud58iQjHYeU3KL9UTwLO9jbLh3yKmdklx7qaSpc2xWAwiUqI75ax0QtHeISdev4Od6Dgg==
+X-Received: by 2002:a17:907:2816:b0:731:5103:baf2 with SMTP id eb22-20020a170907281600b007315103baf2mr2450653ejc.429.1660844498546;
+        Thu, 18 Aug 2022 10:41:38 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id d25-20020aa7ce19000000b0043cfc872e7dsm1487294edv.10.2022.08.18.10.41.38
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 10:41:38 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id n4so2522297wrp.10
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:41:38 -0700 (PDT)
+X-Received: by 2002:adf:e843:0:b0:225:221f:262 with SMTP id
+ d3-20020adfe843000000b00225221f0262mr2244715wrn.193.1660844497723; Thu, 18
+ Aug 2022 10:41:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] stmmac: intel: Add a missing clk_disable_unprepare()
- call in intel_eth_pci_remove()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166084443637.19225.202296976141883530.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Aug 2022 17:40:36 +0000
-References: <d7c8c1dadf40df3a7c9e643f76ffadd0ccc1ad1b.1660659689.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <d7c8c1dadf40df3a7c9e643f76ffadd0ccc1ad1b.1660659689.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
-        qiangqing.zhang@nxp.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        andriy.shevchenko@linux.intel.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
+References: <20220817162703.728679-1-bigeasy@linutronix.de>
+In-Reply-To: <20220817162703.728679-1-bigeasy@linutronix.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 18 Aug 2022 10:41:21 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wia=RhHOsbBpMT9qP2Vkig=P0=kAWnx6OoJuZjwck7kBw@mail.gmail.com>
+Message-ID: <CAHk-=wia=RhHOsbBpMT9qP2Vkig=P0=kAWnx6OoJuZjwck7kBw@mail.gmail.com>
+Subject: Re: [PATCH 0/9] Replace PREEMPT_RT ifdefs with preempt_[dis|en]able_nested().
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Wed, Aug 17, 2022 at 9:27 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> This series introduces the macro and converts already existing users to
+> that macro. The u64_stat interface was simplified to make the change
+> simpler and code easier to follow.
 
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Thanks. Apart from 1/9 where I had just that "this visually looks odd
+and threw me" comment, this all looks like good nice cleanups to me.
 
-On Tue, 16 Aug 2022 16:23:57 +0200 you wrote:
-> Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
-> paths") removed this clk_disable_unprepare()
-> 
-> This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
-> handling on remove path") which removed this clk_disable_unprepare()
-> because:
-> "
->    While unloading the dwmac-intel driver, clk_disable_unprepare() is
->    being called twice in stmmac_dvr_remove() and
->    intel_eth_pci_remove(). This causes kernel panic on the second call.
-> "
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,1/2] stmmac: intel: Add a missing clk_disable_unprepare() call in intel_eth_pci_remove()
-    https://git.kernel.org/netdev/net/c/5c23d6b717e4
-  - [v2,2/2] stmmac: intel: Simplify intel_eth_pci_remove()
-    (no matching commit)
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+             Linus
