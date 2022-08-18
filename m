@@ -2,155 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B82C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C57C28B2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345981AbiHRU1P (ORCPT
+        id S1346003AbiHRU1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 16:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        Thu, 18 Aug 2022 16:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234198AbiHRU1N (ORCPT
+        with ESMTP id S1345985AbiHRU1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 16:27:13 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F592DEE;
-        Thu, 18 Aug 2022 13:27:11 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id o22so3262270edc.10;
-        Thu, 18 Aug 2022 13:27:11 -0700 (PDT)
+        Thu, 18 Aug 2022 16:27:18 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9ADDF26
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 13:27:16 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id l1so3040866lfk.8
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 13:27:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc;
-        bh=I/1x6/iHbBuNqucpvMeT3iP7IohY0BCErMO71CeWc6A=;
-        b=lLyif36eNB+DAogNmA5rnBXdV/1pETqV7lgGpvKAhSEYYdb1pAZfd2RwZEc2T7x9OE
-         NCxLOysq7OH6CwI5g6fTQUhus7zn4IbH8C/77i2svSh1GokhKe6yn8lEPq8UTB98F5G7
-         aIYtXX9tKlBmqRSk0AZKVNd355lHaYvzlxKzYN1lqC0axaPMAmlUBfOXwLV6QJrkMj9G
-         tLTOKQNoAnwmIBs2V6yZKyUHbNMbQfP/5SjX4/x3iNj3N7sZC6tWxUK/q4VjFdipZhD7
-         2Gqh+8xNmZtSTRIpg6trp4Y5kBXUzYU71HeKWmGgjmbpBSgAssjNcMXhbDDguo8Zqqqz
-         JXwg==
+        d=semihalf.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=YFGXFQYXoVmCKVOEKwu97UXFn2U3AKJvDm+SfaJoYO4=;
+        b=Kg/+UwF/PjZcgJojrLe8crYywuCgJF7fjAMH2vaga51BWn+eB6q5UyWDZ2vLdYlygw
+         qwAxfaqxP53PQsYqxKHaDfOE4fH2r4F/YowOx0s6zlpcdliIE86AjWo3KtTM0eLty4zN
+         0pE3IvZDVjOKNHoMWtDUt7ukVUPX35N11KgzJXwajQuP3z7vazO96b7FVKgs6QqkmyqR
+         S4SdIywqI/Ayi22lUmsuFJQds2UWcT7CI1kjxYM1N2ooPGmdYea5rjqzOv8BI+gn+buN
+         wOWn3yuNVo06C1BNb1Kbt34iKicwruuYFIaN0ZVmHZ1xljDUu6xVP0AwZsPXL3V8qHiU
+         BNqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
-        bh=I/1x6/iHbBuNqucpvMeT3iP7IohY0BCErMO71CeWc6A=;
-        b=qu1jGvtXl/g1M1FQ3iuTkVHLszrFt7RhWfThZMZvdLqv6A1sLNExnBzRwuDC2619Ef
-         0e4iqzFx/jDXMXQ4OB6lj+i3SvfkyKej4bEa7s2HniIoSoBdDrR3kDcU0gcvCd4M30yz
-         b7qbLpMzq+HPw2g0HiovFdysjgTxtMyHwbqL4zanhra8bKb3x6j/dCw8AzJWvqSQgODe
-         sJWsmJBC91+jSjvkTOon/vVRROTzEh8HnkOOFmtfkUlx0nnHbu5qPO54FTfBsqzzfVu4
-         YcpTjT283oFKo1WMcyHLHBgHuLb0v8PWxI3lJ6TWjyN6LSxMCSbuyBph1i/Ou+l2I8/F
-         qFtw==
-X-Gm-Message-State: ACgBeo1Nk1QiZj2Z0GgHDPpTgNPjv2Ac3DewYnyXn0Pynlfyip3QN9Mq
-        boo8lT0G4/RkXQVFVt1uCdk=
-X-Google-Smtp-Source: AA6agR7M243Vcesn4ldSGw0kbmEGw+WsqdE1ru718eTLRausIEArDnC9nXlkVqfieFHIbDx40Pw0Tg==
-X-Received: by 2002:a05:6402:28ca:b0:43b:5235:f325 with SMTP id ef10-20020a05640228ca00b0043b5235f325mr3481566edb.320.1660854430167;
-        Thu, 18 Aug 2022 13:27:10 -0700 (PDT)
-Received: from krava ([83.240.63.36])
-        by smtp.gmail.com with ESMTPSA id h17-20020a056402095100b0044629b54b00sm633182edz.46.2022.08.18.13.27.09
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=YFGXFQYXoVmCKVOEKwu97UXFn2U3AKJvDm+SfaJoYO4=;
+        b=s9zMhwXEkdlU9o8q1wz6aKkCDtu6ClCXr8n3bHFRhbTKnTdqMXp5rHCijsQBp/WWSr
+         yj6ZMvVqLG++vGgMY/descHKTpEnpeSuT1bYs6ijUR65f/j8lXB+jtjAvGJEZr3v6hm+
+         x60Q+NFv0HdTz7ni6plIs8oK2g68/bdr0aWWUy1hyQipgraSo19lfTKhw+r4Ge7aEwJ9
+         iG8+6HLvw+TNHsClOcK7QDQ9a86rrD2YdB07P64vuMUXW7iexl/yUXbGDA/3IgAYckCI
+         1P4LSz1iUqggb5jjL7lW9cdvuEobufBBcOLufoZs7bbwGXrcNNpDA9hrCMBmzhR56d5Z
+         WaqA==
+X-Gm-Message-State: ACgBeo1T6kU+Tx/QCSBAdtKlgzlLv6+VuDzO2IhaNnSmKv66maCKRyyd
+        40lk7EdqM5j2HiXQ3UnlE8cf2Q==
+X-Google-Smtp-Source: AA6agR435eQ7zhcL0O1VLmN9oVGRJLUlszDqf0RCJ5hJP92A+zPLJKKglvEexuf6VCP8p99DlW5YGg==
+X-Received: by 2002:ac2:4c41:0:b0:48b:3b16:1bd7 with SMTP id o1-20020ac24c41000000b0048b3b161bd7mr1333516lfk.562.1660854434812;
+        Thu, 18 Aug 2022 13:27:14 -0700 (PDT)
+Received: from dmaluka.office.semihalf.net ([83.142.187.84])
+        by smtp.gmail.com with ESMTPSA id b5-20020a056512070500b0048b0c59ed9asm341400lfs.227.2022.08.18.13.27.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 13:27:09 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Thu, 18 Aug 2022 22:27:07 +0200
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <olsajiri@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-Message-ID: <Yv6gm09CMdZ/HMr5@krava>
-References: <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
- <YvoVgMzMuQbAEayk@krava>
- <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
- <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
- <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
- <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
- <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
- <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
- <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
- <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
+        Thu, 18 Aug 2022 13:27:14 -0700 (PDT)
+From:   Dmytro Maluka <dmy@semihalf.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Rong L Liu <rong.l.liu@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        Dmitry Torokhov <dtor@google.com>,
+        "Dong, Eddie" <eddie.dong@intel.com>,
+        Dmytro Maluka <dmy@semihalf.com>
+Subject: [PATCH v3 0/2] KVM: x86/ioapic: Fix oneshot interrupts forwarding
+Date:   Thu, 18 Aug 2022 22:26:59 +0200
+Message-Id: <20220818202701.3314045-1-dmy@semihalf.com>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 05:41:27PM +0200, Peter Zijlstra wrote:
-> On Mon, Aug 15, 2022 at 05:28:02PM +0200, Peter Zijlstra wrote:
-> > On Mon, Aug 15, 2022 at 08:17:42AM -0700, Alexei Starovoitov wrote:
-> > > It's hiding a fake function from ftrace, since it's not a function
-> > > and ftrace infra shouldn't show it tracing logs.
-> > > In other words it's a _notrace_ function with nop5.
-> > 
-> > Then make it a notrace function with a nop5 in it. That isn't hard.
-> > 
-> > The whole problem is that it isn't a notrace function and you're abusing
-> > a __fentry__ site.
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?h=x86/fineibt&id=8d075bdf11193f1d276bf19fa56b4b8dfe24df9e
-> 
-> foo.c:
-> 
-> __attribute__((__no_instrument_function__))
-> __attribute__((patchable_function_entry(5)))
-> void my_func(void)
-> {
-> }
-> 
-> void my_foo(void)
-> {
-> }
-> 
-> gcc -c foo.c -pg -mfentry -mcmodel=kernel -fno-PIE -O2
-> 
-> foo.o:     file format elf64-x86-64
-> 
-> 
-> Disassembly of section .text:
-> 
-> 0000000000000000 <my_func>:
->    0:   f3 0f 1e fa             endbr64 
->    4:   90                      nop
->    5:   90                      nop
->    6:   90                      nop
->    7:   90                      nop
->    8:   90                      nop
->    9:   c3                      ret    
->    a:   66 0f 1f 44 00 00       nopw   0x0(%rax,%rax,1)
-> 
-> 0000000000000010 <my_foo>:
->   10:   f3 0f 1e fa             endbr64 
->   14:   e8 00 00 00 00          call   19 <my_foo+0x9>  15: R_X86_64_PLT32      __fentry__-0x4
->   19:   c3                      ret    
-> 
+KVM irqfd based emulation of level-triggered interrupts doesn't work
+quite correctly in some cases, particularly in the case of interrupts
+that are handled in a Linux guest as oneshot interrupts (IRQF_ONESHOT).
+Such an interrupt is acked to the device in its threaded irq handler,
+i.e. later than it is acked to the interrupt controller (EOI at the end
+of hardirq), not earlier.
 
-ok, so the problem with __attribute__((patchable_function_entry(5))) is that
-it puts function address into __patchable_function_entries section, which is
-one of ftrace locations source:
+Linux keeps such interrupt masked until its threaded handler finishes,
+to prevent the EOI from re-asserting an unacknowledged interrupt.
+However, with KVM + vfio (or whatever is listening on the resamplefd)
+we always notify resamplefd at the EOI, so vfio prematurely unmasks the
+host physical IRQ, thus a new physical interrupt is fired in the host.
+This extra interrupt in the host is not a problem per se. The problem is
+that it is unconditionally queued for injection into the guest, so the
+guest sees an extra bogus interrupt. [*]
 
-  #define MCOUNT_REC()    . = ALIGN(8);     \
-    __start_mcount_loc = .;                 \
-    KEEP(*(__mcount_loc))                   \
-    KEEP(*(__patchable_function_entries))   \
-    __stop_mcount_loc = .;                  \
-   ...
+There are observed at least 2 user-visible issues caused by those
+extra erroneous interrupts for a oneshot irq in the guest:
+
+1. System suspend aborted due to a pending wakeup interrupt from
+   ChromeOS EC (drivers/platform/chrome/cros_ec.c).
+2. Annoying "invalid report id data" errors from ELAN0000 touchpad
+   (drivers/input/mouse/elan_i2c_core.c), flooding the guest dmesg
+   every time the touchpad is touched.
+
+The core issue here is that by the time when the guest unmasks the IRQ,
+the physical IRQ line is no longer asserted (since the guest has
+acked the interrupt to the device in the meantime), yet we
+unconditionally inject the interrupt queued into the guest by the
+previous resampling. So to fix the issue, we need a way to detect that
+the IRQ is no longer pending, and cancel the queued interrupt in this
+case.
+
+With IOAPIC we are not able to probe the physical IRQ line state
+directly (at least not if the underlying physical interrupt controller
+is an IOAPIC too), so in this patch series we use irqfd resampler for
+that. Namely, instead of injecting the queued interrupt, we just notify
+the resampler that this interrupt is done. If the IRQ line is actually
+already deasserted, we are done. If it is still asserted, a new
+interrupt will be shortly triggered through irqfd and injected into the
+guest.
+
+In the case if there is no irqfd resampler registered for this IRQ, we
+cannot fix the issue, so we keep the existing behavior: immediately
+unconditionally inject the queued interrupt.
+
+This patch series fixes the issue for x86 IOAPIC only. In the long run,
+we can fix it for other irqchips and other architectures too, possibly
+taking advantage of reading the physical state of the IRQ line, which is
+possible with some other irqchips (e.g. with arm64 GIC, maybe even with
+the legacy x86 PIC).
+
+[*] In this description we assume that the interrupt is a physical host
+    interrupt forwarded to the guest e.g. by vfio. Potentially the same
+    issue may occur also with a purely virtual interrupt from an
+    emulated device, e.g. if the guest handles this interrupt, again, as
+    a oneshot interrupt.
 
 
-it looks like __patchable_function_entries is used for other than x86 archs,
-so we perhaps we could have x86 specific MCOUNT_REC macro just with
-__mcount_loc section?
+v3:
+  - Completely reworked: instead of postponing resamplefd notify until
+    unmask (to avoid extra interrupts in the host), resample the pending
+    status at unmask to avoid erroneous propagation of those extra
+    interrupts to the guest.
+    Thanks to Marc Zyngier for helping to identify the core issue, which
+    resulted in a simpler and probably more sensible implementation
+    (even though Marc's concern about presenting inaccurate pending
+    status to the guest is a non-issue in the case of IOAPIC, since
+    IOAPIC doesn't present this information anyway).
 
-jirka
+v2:
+  - Fixed compilation failure on non-x86: mask_notifier_list moved from
+    x86 "struct kvm_arch" to generic "struct kvm".
+  - kvm_fire_mask_notifiers() also moved from x86 to generic code, even
+    though it is not called on other architectures for now.
+  - Instead of kvm_irq_is_masked() implemented
+    kvm_register_and_fire_irq_mask_notifier() to fix potential race
+    when reading the initial IRQ mask state.
+  - Renamed for clarity:
+      - irqfd_resampler_mask() -> irqfd_resampler_mask_notify()
+      - kvm_irq_has_notifier() -> kvm_irq_has_ack_notifier()
+      - resampler->notifier -> resampler->ack_notifier
+  - Reorganized code in irqfd_resampler_ack() and
+    irqfd_resampler_mask_notify() to make it easier to follow.
+  - Don't follow unwanted "return type on separate line" style for
+    irqfd_resampler_mask_notify().
+
+Dmytro Maluka (2):
+  KVM: irqfd: Make resampler_list an RCU list
+  KVM: x86/ioapic: Resample the pending state of an IRQ when unmasking
+
+ arch/x86/kvm/ioapic.c     | 36 ++++++++++++++++++++++++++++--
+ include/linux/kvm_host.h  |  9 ++++++++
+ include/linux/kvm_irqfd.h |  2 +-
+ virt/kvm/eventfd.c        | 47 ++++++++++++++++++++++++++++++++-------
+ 4 files changed, 83 insertions(+), 11 deletions(-)
+
+-- 
+2.37.1.595.g718a3a8f04-goog
+
