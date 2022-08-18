@@ -2,156 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75B0C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 030C0C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236033AbiHRIKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45094 "EHLO
+        id S238873AbiHRIOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233455AbiHRIKM (ORCPT
+        with ESMTP id S231430AbiHRIOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 04:10:12 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA1182864
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:10:11 -0700 (PDT)
+        Thu, 18 Aug 2022 04:14:51 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC37719AE
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:14:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660810211; x=1692346211;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UYCEeNzGzCw/D2zg9WoiBkJE/KYCqvcExvYG19ZIXSc=;
-  b=OVgODjheLdD7+f3zipdJgHKIpdw4Bv8E1KP5Yta2MF/TAfxBL685Qr4e
-   MYcWY0OPjFptINBsk/Qg29yjNN9lOg+HoOjRAR5c3qbfnlvuqS4rWZ0SS
-   Hs/9on2poCRV6Jy0haRw4vq4UpZ8QPliAgmkDxk1e+jeqwNbLJBsn7+Py
-   G7cmGsjwFpUIAwrKA3a8iNdKFTiGz6hs37gjGAu/5iFFendFVII4NGaWa
-   vtaRc9q/9ci1wymxCZO7yEmqrwH3yHqAk8SW5rdIOnuVJ+kQw8jWgn6G0
-   m4T22FcdYo7K0j671vMRyGkuCDeMDroTTyTHaBdaz83x/o7mOBy5qmWD3
+  t=1660810491; x=1692346491;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1pMu3yuAB0gQ8wwcQ/V5v3DSCGyeUtyrelY95YGU83k=;
+  b=c7nYK41rKoCvjjQG8QfQni8lc5/zUZsK9ZKoQqUNvzgi8Vshcr8U6ILi
+   CgB2FlFLzGFiPQXdCT4CBzwYDfNmPorGCViS+cH/mVYtFwCfSwEYYBZKi
+   mNrJBKv7SqAOVU9Rvhs9BGPC9bnXNJDWs4UKB/95Odgs1T7sx0SPbVQIe
+   fRYZ3NvJL+s/E5VqD21Lxmh7NjA3Qu2WQDGTLFUmHhz5+poIUncRGUz/I
+   D8EHfE3f56JvHXR1OBP+C/0pSRLgIZB9s64eLpmSqXwFVRLQapr3d/h2h
+   WpJlFs1pKKQ4RfE+gIGoUjvP6WKngd92nFT20P5Cful7sCHDkUT8xFgn+
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="290263462"
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="292697341"
 X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
-   d="scan'208";a="290263462"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 01:09:36 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="292697341"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 01:14:51 -0700
 X-IronPort-AV: E=Sophos;i="5.93,245,1654585200"; 
-   d="scan'208";a="935711314"
-Received: from lkp-server01.sh.intel.com (HELO 6cc724e23301) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 18 Aug 2022 01:09:35 -0700
-Received: from kbuild by 6cc724e23301 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOaat-0000Eb-0a;
-        Thu, 18 Aug 2022 08:09:35 +0000
-Date:   Thu, 18 Aug 2022 16:08:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:bits/130-cpufreq 3/4]
- drivers/cpufreq/apple-soc-cpufreq.c:67:19: error: implicit declaration of
- function 'readq_relaxed'; did you mean 'readl_relaxed'?
-Message-ID: <202208181649.iKMgImPW-lkp@intel.com>
+   d="scan'208";a="604176061"
+Received: from jiayiwan-mobl1.ccr.corp.intel.com (HELO [10.249.254.115]) ([10.249.254.115])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 01:14:48 -0700
+Message-ID: <afcaffc6-aa07-d95f-6823-a858b53ee978@linux.intel.com>
+Date:   Thu, 18 Aug 2022 11:14:41 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.12.0
+Subject: Re: [PATCH -next] ASoC: SOF: ipc4-topology: fix wrong use of sizeof
+ in sof_ipc4_widget_setup_comp_src()
+Content-Language: en-US
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        sound-open-firmware@alsa-project.org
+Cc:     rander.wang@intel.com, pierre-louis.bossart@linux.intel.com,
+        ranjani.sridharan@linux.intel.com, broonie@kernel.org
+References: <20220818081751.2407066-1-yangyingliang@huawei.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
+In-Reply-To: <20220818081751.2407066-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/130-cpufreq
-head:   15652b46c23d23d9cddae0f85071af0cd492436d
-commit: 42927fc2e2bc9096a31f4a7c5ef7073765ecde43 [3/4] cpufreq: apple-soc: Add new driver to control Apple SoC CPU P-states
-config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220818/202208181649.iKMgImPW-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/42927fc2e2bc9096a31f4a7c5ef7073765ecde43
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/130-cpufreq
-        git checkout 42927fc2e2bc9096a31f4a7c5ef7073765ecde43
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_get_rate':
->> drivers/cpufreq/apple-soc-cpufreq.c:67:19: error: implicit declaration of function 'readq_relaxed'; did you mean 'readl_relaxed'? [-Werror=implicit-function-declaration]
-      67 |         u64 reg = readq_relaxed(priv->reg_base + APPLE_DVFS_STATUS);
-         |                   ^~~~~~~~~~~~~
-         |                   readl_relaxed
-   In file included from drivers/cpufreq/apple-soc-cpufreq.c:18:
-   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_set_target':
->> include/linux/iopoll.h:165:35: error: implicit declaration of function 'readq'; did you mean 'readl'? [-Werror=implicit-function-declaration]
-     165 |         readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
-         |                                   ^~~~~
-   include/linux/iopoll.h:88:25: note: in definition of macro 'read_poll_timeout_atomic'
-      88 |                 (val) = op(args); \
-         |                         ^~
-   include/linux/iopoll.h:165:9: note: in expansion of macro 'readx_poll_timeout_atomic'
-     165 |         readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/cpufreq/apple-soc-cpufreq.c:87:13: note: in expansion of macro 'readq_poll_timeout_atomic'
-      87 |         if (readq_poll_timeout_atomic(priv->reg_base + APPLE_DVFS_CMD, reg,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/cpufreq/apple-soc-cpufreq.c:98:9: error: implicit declaration of function 'writeq_relaxed'; did you mean 'writeb_relaxed'? [-Werror=implicit-function-declaration]
-      98 |         writeq_relaxed(reg, priv->reg_base + APPLE_DVFS_CMD);
-         |         ^~~~~~~~~~~~~~
-         |         writeb_relaxed
-   drivers/cpufreq/apple-soc-cpufreq.c: At top level:
-   drivers/cpufreq/apple-soc-cpufreq.c:291:27: warning: initialized field overwritten [-Woverride-init]
-     291 |         .attr           = apple_soc_cpufreq_hw_attr,
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/cpufreq/apple-soc-cpufreq.c:291:27: note: (near initialization for 'apple_soc_cpufreq_driver.attr')
-   cc1: some warnings being treated as errors
 
 
-vim +67 drivers/cpufreq/apple-soc-cpufreq.c
+On 18/08/2022 11:17, Yang Yingliang wrote:
+> It should be size of the struct sof_ipc4_src, not data pointer pass to
+> sof_update_ipc_object().
 
-    62	
-    63	static unsigned int apple_soc_cpufreq_get_rate(unsigned int cpu)
-    64	{
-    65		struct cpufreq_policy *policy = cpufreq_cpu_get_raw(cpu);
-    66		struct apple_cpu_priv *priv = policy->driver_data;
-  > 67		u64 reg = readq_relaxed(priv->reg_base + APPLE_DVFS_STATUS);
-    68		unsigned int pstate = FIELD_GET(APPLE_DVFS_STATUS_CUR_PS, reg);
-    69		unsigned int i;
-    70	
-    71		for (i = 0; policy->freq_table[i].frequency != CPUFREQ_TABLE_END; i++)
-    72			if (policy->freq_table[i].driver_data == pstate)
-    73				return policy->freq_table[i].frequency;
-    74	
-    75		dev_err(priv->cpu_dev, "could not find frequency for pstate %d\n",
-    76			pstate);
-    77		return 0;
-    78	}
-    79	
-    80	static int apple_soc_cpufreq_set_target(struct cpufreq_policy *policy,
-    81						unsigned int index)
-    82	{
-    83		struct apple_cpu_priv *priv = policy->driver_data;
-    84		unsigned int pstate = policy->freq_table[index].driver_data;
-    85		u64 reg;
-    86	
-    87		if (readq_poll_timeout_atomic(priv->reg_base + APPLE_DVFS_CMD, reg,
-    88					      !(reg & APPLE_DVFS_CMD_BUSY), 2,
-    89					      APPLE_DVFS_TRANSITION_TIMEOUT)) {
-    90			return -EIO;
-    91		}
-    92	
-    93		reg &= ~(APPLE_DVFS_CMD_PS1 | APPLE_DVFS_CMD_PS2);
-    94		reg |= FIELD_PREP(APPLE_DVFS_CMD_PS1, pstate);
-    95		reg |= FIELD_PREP(APPLE_DVFS_CMD_PS2, pstate);
-    96		reg |= APPLE_DVFS_CMD_SET;
-    97	
-  > 98		writeq_relaxed(reg, priv->reg_base + APPLE_DVFS_CMD);
-    99	
-   100		return 0;
-   101	}
-   102	
+Good find, thank you.
+
+Acked-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+
+> Fixes: b85f4fc40d56 ("ASoC: SOF: add ipc4 SRC module support")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  sound/soc/sof/ipc4-topology.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/sound/soc/sof/ipc4-topology.c b/sound/soc/sof/ipc4-topology.c
+> index af072b484a60..c6abfaf5d532 100644
+> --- a/sound/soc/sof/ipc4-topology.c
+> +++ b/sound/soc/sof/ipc4-topology.c
+> @@ -771,7 +771,7 @@ static int sof_ipc4_widget_setup_comp_src(struct snd_sof_widget *swidget)
+>  		goto err;
+>  
+>  	ret = sof_update_ipc_object(scomp, src, SOF_SRC_TOKENS, swidget->tuples,
+> -				    swidget->num_tuples, sizeof(src), 1);
+> +				    swidget->num_tuples, sizeof(*src), 1);
+>  	if (ret) {
+>  		dev_err(scomp->dev, "Parsing SRC tokens failed\n");
+>  		goto err;
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Péter
