@@ -2,68 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 155E7C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF2FFC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344096AbiHRPJF (ORCPT
+        id S1344103AbiHRPK0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:09:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
+        Thu, 18 Aug 2022 11:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344008AbiHRPJA (ORCPT
+        with ESMTP id S1344008AbiHRPKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:09:00 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654EA65261;
-        Thu, 18 Aug 2022 08:08:59 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Thu, 18 Aug 2022 11:10:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B2FBD4F5;
+        Thu, 18 Aug 2022 08:10:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DD36F2224D;
-        Thu, 18 Aug 2022 17:08:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1660835337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jILUvoK/4AEf5bTCKpEzMwlbbfJmxcZFklruzntVamw=;
-        b=eGmR782JLnGqJKNqspUkU1vyHqk5kYPWehPZNE/MZ/AhjFRY0lTddJeoxyCAp81gQZFkjg
-        qpofYnCMEW8U7yNU5BsQ2HR51e2VPKPuEARSwN2Z5A5wJyE3W5pjtTsyxaNZc6CVTGtxXN
-        xrdtbNVz4rifSwjvNpuYC8OhB7sJh0Y=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5625A61387;
+        Thu, 18 Aug 2022 15:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C9C6C433D7;
+        Thu, 18 Aug 2022 15:10:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660835422;
+        bh=TFT981KA1z88bdfmVM6dWKjQo4+fr9d18AcL6r2aUkU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g7mdPuercpoeoSSesI+jL2yDTSLEGB9hSyprievGFNm8dcjGrDOJO+X6y31GciGct
+         BXJzgxjuDMAqZEjdXPwr9RvUhKporhaOLdgt27mRQF118NgfmWSSJZbPOzkO77Yf+A
+         wDuF/Z6CFQzxjNrAQAKrvqIBYTm8VwpdALfFO2wo=
+Date:   Thu, 18 Aug 2022 17:10:19 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     shaomin Deng <dengshaomin@cdjrlc.com>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: usbtest: Fix typo in comments
+Message-ID: <Yv5WW7vuLskqwP4c@kroah.com>
+References: <20220810103000.8721-1-dengshaomin@cdjrlc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 18 Aug 2022 17:08:57 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH devicetree 2/3] arm64: dts: ls1028a: mark enetc port 3 as
- a DSA master too
-In-Reply-To: <20220818144521.sctrmqcfzi6e6l3e@skbuf>
-References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
- <20220818140519.2767771-3-vladimir.oltean@nxp.com>
- <f646670f8ebc64cf1a3080330d54d733@walle.cc>
- <20220818144521.sctrmqcfzi6e6l3e@skbuf>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <830a44530ce643aa111e74aa5815babf@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810103000.8721-1-dengshaomin@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-08-18 16:45, schrieb Vladimir Oltean:
-> On Thu, Aug 18, 2022 at 04:44:28PM +0200, Michael Walle wrote:
->> status should be the last property, no?
+On Wed, Aug 10, 2022 at 06:30:00AM -0400, shaomin Deng wrote:
+> Delete the rebundant word "with" in comments.
 > 
-> idk, should it?
+> Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
+> ---
+>  drivers/usb/misc/usbtest.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/misc/usbtest.c b/drivers/usb/misc/usbtest.c
+> index 150090ee4ec1..ac0d75ac2d2f 100644
+> --- a/drivers/usb/misc/usbtest.c
+> +++ b/drivers/usb/misc/usbtest.c
+> @@ -2638,7 +2638,7 @@ usbtest_do_ioctl(struct usb_interface *intf, struct usbtest_param_32 *param)
+>   * different busses) to use when testing, and allocate one thread per
+>   * test.  So discovery is simplified, and we have no device naming issues.
+>   *
+> - * Don't use these only as stress/load tests.  Use them along with with
+> + * Don't use these only as stress/load tests.  Use them along with
+>   * other USB bus activity:  plugging, unplugging, mousing, mp3 playback,
+>   * video capture, and so on.  Run different tests at different times, in
+>   * different sequences.  Nothing here should interact with other devices,
+> -- 
+> 2.35.1
+> 
 
-IIRC Shawn pointed that out. If I'm mistaken, then do it for the
-consistency within fsl-ls1028a.dtsi :)
+Hi,
 
--michael
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- Your patch did not apply to any known trees that Greg is in control
+  of.  Possibly this is because you made it against Linus's tree, not
+  the linux-next tree, which is where all of the development for the
+  next version of the kernel is at.  Please refresh your patch against
+  the linux-next tree, or even better yet, the development tree
+  specified in the MAINTAINERS file for the subsystem you are submitting
+  a patch for, and resend it.
+
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
