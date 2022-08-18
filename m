@@ -2,50 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5A5C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FC5C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343636AbiHROlf (ORCPT
+        id S1343666AbiHROlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
+        Thu, 18 Aug 2022 10:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343589AbiHROlb (ORCPT
+        with ESMTP id S1343623AbiHROld (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:41:31 -0400
+        Thu, 18 Aug 2022 10:41:33 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC01BA9E4
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:41:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8713BBA9EB
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:41:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660833690;
+        s=mimecast20190719; t=1660833691;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pXyPb8ie44mgN3nyP6ok6kS6T5MRdJAreHuUq8jouGM=;
-        b=YtmlWA2PXSjsfTCLJMQ5/ba6EYTdioW7G5fms62+03HQOOEi918PC6eDjotluxXI0Tjwg6
-        HhSgbMSXOhVyjOjhwbqbm5BfxPiX9zn3V0NHcsX54sQWqtc22ZE0uPw/OtWgmb0FAfyywP
-        BE3ecVYEzJhLCU1mvci8gGGq7dz3UmE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=0pjfkbUvBiJzKdQKwHEM6d08ZGwc4hgOmUXE/oC5QcU=;
+        b=NQJMYVnw13aQ1xWFVOKpRJJkBjKKyveom1C6nGyQix/QF5iNmYsPzUPcBkkGupPNva/81a
+        fIQIYFHIbaCDpkLIz1nVlyXxPJ/fTSozrPwQm2BuAHC+fAlwzrt5NNHSWOaet3ugT6WJd9
+        CfMUaUSoLvwiyZGnhCt4UGmy7tx0gHs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-588-F4esNa3GNv6ire3Nqnskmw-1; Thu, 18 Aug 2022 10:41:26 -0400
-X-MC-Unique: F4esNa3GNv6ire3Nqnskmw-1
+ us-mta-274-xdB4WKmLM-69nHyXEUe2rQ-1; Thu, 18 Aug 2022 10:41:28 -0400
+X-MC-Unique: xdB4WKmLM-69nHyXEUe2rQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 754523C025C6;
-        Thu, 18 Aug 2022 14:41:26 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 17C6A1824602;
+        Thu, 18 Aug 2022 14:41:28 +0000 (UTC)
 Received: from jtoppins.rdu.csb (unknown [10.22.33.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 31FE1404C6DE;
-        Thu, 18 Aug 2022 14:41:26 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A655840CFD05;
+        Thu, 18 Aug 2022 14:41:27 +0000 (UTC)
 From:   Jonathan Toppins <jtoppins@redhat.com>
 To:     netdev@vger.kernel.org, jay.vosburgh@canonical.com
-Cc:     liuhangbin@gmail.com, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH net v4 1/3] selftests: include bonding tests into the kselftest infra
-Date:   Thu, 18 Aug 2022 10:41:10 -0400
-Message-Id: <3258bfc0586d79b1420526e7f718a678c62aefd9.1660832962.git.jtoppins@redhat.com>
+Cc:     liuhangbin@gmail.com, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH net v4 3/3] bonding: 3ad: make ad_ticks_per_sec a const
+Date:   Thu, 18 Aug 2022 10:41:12 -0400
+Message-Id: <2d2bdb267ac504b1e197fa7316470462a2e8b7a7.1660832962.git.jtoppins@redhat.com>
 In-Reply-To: <cover.1660832962.git.jtoppins@redhat.com>
 References: <cover.1660832962.git.jtoppins@redhat.com>
 MIME-Version: 1.0
@@ -56,178 +61,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This creates a test collection in drivers/net/bonding for bonding
-specific kernel selftests.
-
-The first test is a reproducer that provisions a bond and given the
-specific order in how the ip-link(8) commands are issued the bond never
-transmits an LACPDU frame on any of its slaves.
+The value is only ever set once in bond_3ad_initialize and only ever
+read otherwise. There seems to be no reason to set the variable via
+bond_3ad_initialize when setting the global variable will do. Change
+ad_ticks_per_sec to a const to enforce its read-only usage.
 
 Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
 ---
 
 Notes:
-    v2:
-     * fully integrated the test into the kselftests infrastructure
-     * moved the reproducer to under
-       tools/testing/selftests/drivers/net/bonding
-     * reduced the test to its minimial amount and used ip-link(8) for
-       all bond interface configuration
-    v3:
-     * rebase to latest net/master
-     * remove `#set -x` requested by Hangbin
     v4:
-     * no changes
+     * remove passing the value of ad_ticks_per_sec on the stack and
+       set ad_ticks_per_sec and make as const
 
- MAINTAINERS                                   |  1 +
- tools/testing/selftests/Makefile              |  1 +
- .../selftests/drivers/net/bonding/Makefile    |  6 ++
- .../net/bonding/bond-break-lacpdu-tx.sh       | 81 +++++++++++++++++++
- .../selftests/drivers/net/bonding/config      |  1 +
- .../selftests/drivers/net/bonding/settings    |  1 +
- 6 files changed, 91 insertions(+)
- create mode 100644 tools/testing/selftests/drivers/net/bonding/Makefile
- create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh
- create mode 100644 tools/testing/selftests/drivers/net/bonding/config
- create mode 100644 tools/testing/selftests/drivers/net/bonding/settings
+ drivers/net/bonding/bond_3ad.c  | 10 +++-------
+ drivers/net/bonding/bond_main.c |  2 +-
+ include/net/bond_3ad.h          |  2 +-
+ 3 files changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f2d64020399b..e5fb14dc302d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3672,6 +3672,7 @@ F:	Documentation/networking/bonding.rst
- F:	drivers/net/bonding/
- F:	include/net/bond*
- F:	include/uapi/linux/if_bonding.h
-+F:	tools/testing/selftests/net/bonding/
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 1f0120cbe9e8..2946290ca517 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -84,7 +84,8 @@ enum ad_link_speed_type {
+ static const u8 null_mac_addr[ETH_ALEN + 2] __long_aligned = {
+ 	0, 0, 0, 0, 0, 0
+ };
+-static u16 ad_ticks_per_sec;
++
++static const u16 ad_ticks_per_sec = 1000 / AD_TIMER_INTERVAL;
+ static const int ad_delta_in_ticks = (AD_TIMER_INTERVAL * HZ) / 1000;
  
- BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
- M:	Dan Robertson <dan@dlrobertson.com>
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 10b34bb03bc1..c2064a35688b 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -12,6 +12,7 @@ TARGETS += cpu-hotplug
- TARGETS += damon
- TARGETS += drivers/dma-buf
- TARGETS += drivers/s390x/uvdevice
-+TARGETS += drivers/net/bonding
- TARGETS += efivarfs
- TARGETS += exec
- TARGETS += filesystems
-diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-new file mode 100644
-index 000000000000..ab6c54b12098
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Makefile for net selftests
-+
-+TEST_PROGS := bond-break-lacpdu-tx.sh
-+
-+include ../../../lib.mk
-diff --git a/tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh b/tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh
-new file mode 100755
-index 000000000000..47ab90596acb
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh
-@@ -0,0 +1,81 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# Regression Test:
-+#   Verify LACPDUs get transmitted after setting the MAC address of
-+#   the bond.
-+#
-+# https://bugzilla.redhat.com/show_bug.cgi?id=2020773
-+#
-+#       +---------+
-+#       | fab-br0 |
-+#       +---------+
-+#            |
-+#       +---------+
-+#       |  fbond  |
-+#       +---------+
-+#        |       |
-+#    +------+ +------+
-+#    |veth1 | |veth2 |
-+#    +------+ +------+
-+#
-+# We use veths instead of physical interfaces
-+
-+set -e
-+tmp=$(mktemp -q dump.XXXXXX)
-+cleanup() {
-+	ip link del fab-br0 >/dev/null 2>&1 || :
-+	ip link del fbond  >/dev/null 2>&1 || :
-+	ip link del veth1-bond  >/dev/null 2>&1 || :
-+	ip link del veth2-bond  >/dev/null 2>&1 || :
-+	modprobe -r bonding  >/dev/null 2>&1 || :
-+	rm -f -- ${tmp}
-+}
-+
-+trap cleanup 0 1 2
-+cleanup
-+sleep 1
-+
-+# create the bridge
-+ip link add fab-br0 address 52:54:00:3B:7C:A6 mtu 1500 type bridge \
-+	forward_delay 15
-+
-+# create the bond
-+ip link add fbond type bond mode 4 miimon 200 xmit_hash_policy 1 \
-+	ad_actor_sys_prio 65535 lacp_rate fast
-+
-+# set bond address
-+ip link set fbond address 52:54:00:3B:7C:A6
-+ip link set fbond up
-+
-+# set again bond sysfs parameters
-+ip link set fbond type bond ad_actor_sys_prio 65535
-+
-+# create veths
-+ip link add name veth1-bond type veth peer name veth1-end
-+ip link add name veth2-bond type veth peer name veth2-end
-+
-+# add ports
-+ip link set fbond master fab-br0
-+ip link set veth1-bond down master fbond
-+ip link set veth2-bond down master fbond
-+
-+# bring up
-+ip link set veth1-end up
-+ip link set veth2-end up
-+ip link set fab-br0 up
-+ip link set fbond up
-+ip addr add dev fab-br0 10.0.0.3
-+
-+tcpdump -n -i veth1-end -e ether proto 0x8809 >${tmp} 2>&1 &
-+sleep 15
-+pkill tcpdump >/dev/null 2>&1
-+rc=0
-+num=$(grep "packets captured" ${tmp} | awk '{print $1}')
-+if test "$num" -gt 0; then
-+	echo "PASS, captured ${num}"
-+else
-+	echo "FAIL"
-+	rc=1
-+fi
-+exit $rc
-diff --git a/tools/testing/selftests/drivers/net/bonding/config b/tools/testing/selftests/drivers/net/bonding/config
-new file mode 100644
-index 000000000000..dc1c22de3c92
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/config
-@@ -0,0 +1 @@
-+CONFIG_BONDING=y
-diff --git a/tools/testing/selftests/drivers/net/bonding/settings b/tools/testing/selftests/drivers/net/bonding/settings
-new file mode 100644
-index 000000000000..867e118223cd
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/settings
-@@ -0,0 +1 @@
-+timeout=60
+ static const u8 lacpdu_mcast_addr[ETH_ALEN + 2] __long_aligned =
+@@ -2005,7 +2006,7 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
+  *
+  * Can be called only after the mac address of the bond is set.
+  */
+-void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
++void bond_3ad_initialize(struct bonding *bond)
+ {
+ 	BOND_AD_INFO(bond).aggregator_identifier = 0;
+ 	BOND_AD_INFO(bond).system.sys_priority =
+@@ -2017,11 +2018,6 @@ void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
+ 		BOND_AD_INFO(bond).system.sys_mac_addr =
+ 		    *((struct mac_addr *)bond->params.ad_actor_system);
+ 
+-	/* initialize how many times this module is called in one
+-	 * second (should be about every 100ms)
+-	 */
+-	ad_ticks_per_sec = tick_resolution;
+-
+ 	bond_3ad_initiate_agg_selection(bond,
+ 					AD_AGGREGATOR_SELECTION_TIMER *
+ 					ad_ticks_per_sec);
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 50e60843020c..2f4da2c13c0a 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2081,7 +2081,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 			/* Initialize AD with the number of times that the AD timer is called in 1 second
+ 			 * can be called only after the mac address of the bond is set
+ 			 */
+-			bond_3ad_initialize(bond, 1000/AD_TIMER_INTERVAL);
++			bond_3ad_initialize(bond);
+ 		} else {
+ 			SLAVE_AD_INFO(new_slave)->id =
+ 				SLAVE_AD_INFO(prev_slave)->id + 1;
+diff --git a/include/net/bond_3ad.h b/include/net/bond_3ad.h
+index 184105d68294..be2992e6de5d 100644
+--- a/include/net/bond_3ad.h
++++ b/include/net/bond_3ad.h
+@@ -290,7 +290,7 @@ static inline const char *bond_3ad_churn_desc(churn_state_t state)
+ }
+ 
+ /* ========== AD Exported functions to the main bonding code ========== */
+-void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution);
++void bond_3ad_initialize(struct bonding *bond);
+ void bond_3ad_bind_slave(struct slave *slave);
+ void bond_3ad_unbind_slave(struct slave *slave);
+ void bond_3ad_state_machine_handler(struct work_struct *);
 -- 
 2.31.1
 
