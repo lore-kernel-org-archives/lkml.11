@@ -2,181 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0D5C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 23:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA27C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 23:12:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343536AbiHRXLj (ORCPT
+        id S1344597AbiHRXMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 19:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
+        Thu, 18 Aug 2022 19:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238901AbiHRXLd (ORCPT
+        with ESMTP id S241453AbiHRXL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 19:11:33 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE6BCE471
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 16:11:32 -0700 (PDT)
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IMrC9L011384;
-        Thu, 18 Aug 2022 23:11:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=LwMe9vWTBIKzX8q+kA+JWETXwlgC1hWx7z5/AwjqoIg=;
- b=AY73Xy/KGHNTwZHgBpUWWLzgqJEXxKfgpJPcf4IVDE+Uk+64Srg7aMZJQ7geeRR5jEqU
- n8/ewv+FE5/q7ejCN4T/zG8zAlsVBhWLMdwCr13XNupB0VYxbZlFP3viI7HG8EM4u4R5
- nCH5YK9s7jz/xQcmEJwRLu3DQYNux9lyN71AHg4EPnMkHwu8bM/7UO/ASUmhe92OJH/J
- mRVvDrxt8mW9ANs9HwOZqTAuOrm+DvD2mg/xPyQos181xnwgD/oEzTPwYwbdHMDQT757
- hjmp6/TYclBaNJgK9+b4GADEimdCccEH/2D3qL71PQZ9KI0tgHiuLEl4wWFewuagM99Y kw== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1hhp2u79-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 23:11:22 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27INBLMT019869
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 23:11:21 GMT
-Received: from [10.111.166.229] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 18 Aug
- 2022 16:11:19 -0700
-Message-ID: <eca58cbc-dc7e-98d3-7618-858742b82614@quicinc.com>
-Date:   Thu, 18 Aug 2022 16:11:17 -0700
+        Thu, 18 Aug 2022 19:11:58 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D59D075E
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 16:11:57 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id p5so734528qvz.6
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 16:11:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=JxopBh8HkyBkhRSXNYJZ9c/ibzZWN5l/rUoK8TuOX2E=;
+        b=iC+fZT3dlJvUKuKtlV48BgZMVi5cgLckf98h3Odsln7D0P1vjmxRyrmDeTJuYXy8IH
+         EQApL5yeY0dyQ2tsCWKu/NzConaTwfRZk1kM2sH8PfORdch+wfEAOM52CN0HS59+BT8N
+         06YZ6tQcs3XhGRJCpDxzjlQohUrimOBJa+PTFyoSeKj6H8q8M+fquSoZzz8GYwfELBAb
+         DzrHffMKlr8M7i+XxKFObuJxSvTpg+MMj87vIHIVobjd1m54YOCsq/ADZwu0SAzuauD7
+         PSsmaq/EGBdwZqv3jcNT22E6xojVI14ljhVNOA0BcW0CjyXrDATAUA0twA1Q2JOeGeIJ
+         kdOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=JxopBh8HkyBkhRSXNYJZ9c/ibzZWN5l/rUoK8TuOX2E=;
+        b=d8FWmxJxzD+SN+kAvlLCWJBCIN4KnSs5GSYI3Ti1MPLKVMBTuhx/hocmKCQKfe3fsD
+         UeZJf6EljjyCm/fKb1Qe/DkqCSKG7A5vqgwWrxqMRX1wEHE2Jx3AO/vX/DV4+DynHH7H
+         WAvnb74fZKrTJdI184FX+4eY1BXutopIsylBBtlktM9b/7P67LqjdlCxpV4oFf+0qsez
+         +PYS5gekJgC1uAAymTcmnJiiuup8Y0+ZHp2iS+HaFDvlgeAeb3YwNuJYfB4q6tzbSGFs
+         Vbth6o1ZLP9lFu7Ulvpjs6m2Sn4wytnVHj7UlK+8s3JExtLd5H2enTProLUj1wKvn0Jx
+         ayGQ==
+X-Gm-Message-State: ACgBeo29KMWvX7qf8oFUUlEhNMw3vQWVPqQf65NW/gUTzUrrbW3gMudd
+        lWjQcKcDyuqVRnf6QPwVH3bg8A==
+X-Google-Smtp-Source: AA6agR6JFebgufNISDLa/5GzivziP1PbzXx5oI5c8sUtOaFjejEBHcQqXYr+1ptbJBY0I7zCalGLcw==
+X-Received: by 2002:a0c:e482:0:b0:496:c63a:a3a3 with SMTP id n2-20020a0ce482000000b00496c63aa3a3mr113741qvl.28.1660864316805;
+        Thu, 18 Aug 2022 16:11:56 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id h16-20020a05620a245000b006b5f06186aesm2864801qkn.65.2022.08.18.16.11.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 16:11:56 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linux-iio@vger.kernel.or, linux-gpio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linus.walleij@linaro.org,
+        brgl@bgdev.pl, William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH 0/6] isa: Ensure number of irq matches number of base
+Date:   Thu, 18 Aug 2022 12:28:09 -0400
+Message-Id: <cover.1660839809.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [Freedreno] [PATCH] drm/msm/dsi: Set panel orientation when
- directly connected
-Content-Language: en-US
-To:     Doug Anderson <dianders@chromium.org>,
-        Rob Clark <robdclark@gmail.com>
-CC:     freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        <patches@lists.linux.dev>, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>, Sean Paul <sean@poorly.run>
-References: <20220706191442.1150634-1-swboyd@chromium.org>
- <CAD=FV=UrYCwm2ByN_5EN3fq-ayMJNjmWfJ5sooRy51ZiCoMcjA@mail.gmail.com>
- <CAF6AEGt_J6f1T+-6KtyCrUJrY2fh7Sz10L1AV1FSe8hueGREtQ@mail.gmail.com>
- <CAD=FV=W+VWtpTKAoyQpYMFteZy8iYB7-o=ACqkjr7YX7uCxZvg@mail.gmail.com>
- <CAD=FV=W9Gr9MyCg2rsKaA-ssSi5e3W5zO9sC56At+ceN4A2XtA@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAD=FV=W9Gr9MyCg2rsKaA-ssSi5e3W5zO9sC56At+ceN4A2XtA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: FAtIbuZ2YlaJUXcNJf6H83gb0f5mPJda
-X-Proofpoint-ORIG-GUID: FAtIbuZ2YlaJUXcNJf6H83gb0f5mPJda
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-18_16,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
- adultscore=0 suspectscore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=999 spamscore=0 phishscore=0 malwarescore=0 lowpriorityscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180085
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug
+Several ISA drivers support IRQ and call devm_request_irq() in their
+device probe callbacks. These drivers typically provide an "irq" array
+module parameter, which matches with the respective "base" array module
+parameter, to specify what IRQ lines are used for each device. To reduce
+code repetition, a module_isa_driver_with_irq helper macro is introduced
+providing a check ensuring that the number of "irq" passed to the module
+matches with the respective number of "base". The relevant ISA drivers
+are updated accordingly to utilize the new module_isa_driver_with_irq
+macro.
 
-On 8/17/2022 1:48 PM, Doug Anderson wrote:
-> Hi,
-> 
-> On Wed, Jul 20, 2022 at 3:42 PM Doug Anderson <dianders@chromium.org> wrote:
->>
->> Hi,
->>
->> On Wed, Jul 20, 2022 at 1:46 PM Rob Clark <robdclark@gmail.com> wrote:
->>>
->>> On Fri, Jul 8, 2022 at 8:25 AM Doug Anderson <dianders@chromium.org> wrote:
->>>>
->>>> Hi,
->>>>
->>>> On Wed, Jul 6, 2022 at 12:14 PM Stephen Boyd <swboyd@chromium.org> wrote:
->>>>>
->>>>> Set the panel orientation in drm when the panel is directly connected,
->>>>> i.e. we're not using an external bridge. The external bridge case is
->>>>> already handled by the panel bridge code, so we only update the path we
->>>>> take when the panel is directly connected/internal. This silences a
->>>>> warning splat coming from __drm_mode_object_add() on Wormdingler boards.
->>>>>
->>>>> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
->>>>> Cc: Douglas Anderson <dianders@chromium.org>
->>>>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
->>>>> ---
->>>>>
->>>>> This relies on commit 5e41b01a7808 ("drm/panel: Add an API to allow drm
->>>>> to set orientation from panel") which is in drm-misc
->>>>>
->>>>>   drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 ++
->>>>>   1 file changed, 2 insertions(+)
->>>>
->>>> I don't personally have objections to this, but (to my understanding)
->>>> "the future" is that everyone should use panel_bridge. If we made the
->>>> move to panel_bridge today then we wouldn't need to do this. In
->>>> general I think panel_bridge would end up letting us delete a bunch of
->>>> code...
->>>>
->>>> See commit 4e5763f03e10 ("drm/bridge: ti-sn65dsi86: Wrap panel with
->>>> panel-bridge") for when this was done by ti-sn65dsi86.
->>>>
->>>> Then again, I spent a small amount of time looking into this and it's
->>>> definitely non-trivial. Still likely worthwhile, but not worth
->>>> blocking a tiny fix like this. It also should be fairly obvious that
->>>> we should delete this when we switch to panel_bridge.
->>>>
->>>> Thus:
->>>>
->>>> Reviewed-by: Douglas Anderson <dianders@chromium.org>
->>>>
->>>> I'll assume that we'll just snooze this commit until drm-misc-next
->>>> merges into a tree that msm-next is based on, which will probably be
->>>> the next -rc1. If desired and Acked I could land this in
->>>> drm-misc-next, but it's probably not worth it?
->>>
->>> if you want to land this patch via drm-misc, which might be the
->>> easier/faster route, then:
->>>
->>> Acked-by: Rob Clark <robdclark@gmail.com>
->>
->> As per discussion on IRC, I'm not going to apply this to drm-misc-next.
->>
->> Given where we are in the cycle landing in drm-misc-next means it
->> won't be in mainline for a couple versions and I suspect that'll cause
->> merge conflicts with Dmitry's series [1]. ...and, of course, if
->> Dmitry's series lands then we don't even need ${SUBJECT} patch...
->>
->> So I think the plan is:
->>
->> 1. Snooze waiting for the next -rc1 since
->> drm_connector_set_orientation_from_panel() won't be in mainline until
->> then.
->>
->> 2. If Dmitry's series looks like a long way off, we could land
->> ${SUBJECT} patch in msm-next as a stopgap fix.
->>
->>
->> [1] https://lore.kernel.org/r/20220711094320.368062-5-dmitry.baryshkov@linaro.org/
-> 
-> Just checking up. What's the latest thinking here? Do we want to land
-> Stephen's change as a stopgap?
-> drm_connector_set_orientation_from_panel() is available in v6.0-rc1.
-> 
-> -Doug
+William Breathitt Gray (6):
+  isa: Introduce the module_isa_driver_with_irq helper macro
+  counter: 104-quad-8: Ensure number of irq matches number of base
+  gpio: 104-dio-48e: Ensure number of irq matches number of base
+  gpio: 104-idi-48: Ensure number of irq matches number of base
+  gpio: 104-idio-16: Ensure number of irq matches number of base
+  gpio: ws16c48: Ensure number of irq matches number of base
 
-As per todays discussion with Rob on IRC, we will start preparing the 
-tree for the next release. So lets drop this one and take the panel 
-bridge change instead since my comments on that were minor and can also 
-be addressed in a follow up change, will take it up and send it over to 
-Rob with some other changes.
+ drivers/counter/104-quad-8.c    |  5 ++--
+ drivers/gpio/gpio-104-dio-48e.c |  5 ++--
+ drivers/gpio/gpio-104-idi-48.c  |  5 ++--
+ drivers/gpio/gpio-104-idio-16.c |  5 ++--
+ drivers/gpio/gpio-ws16c48.c     |  5 ++--
+ include/linux/isa.h             | 52 ++++++++++++++++++++++++++-------
+ 6 files changed, 57 insertions(+), 20 deletions(-)
 
-Thanks
 
-Abhinav
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.37.2
+
