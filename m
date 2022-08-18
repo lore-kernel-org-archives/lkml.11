@@ -2,105 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76184C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3F7C32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235917AbiHRJPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 05:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42666 "EHLO
+        id S237080AbiHRJRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 05:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiHRJPm (ORCPT
+        with ESMTP id S229986AbiHRJRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 05:15:42 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B05766A64;
-        Thu, 18 Aug 2022 02:15:40 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M7fJY3TlTzXdf3;
-        Thu, 18 Aug 2022 17:11:25 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 17:15:38 +0800
-Received: from [10.67.110.237] (10.67.110.237) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 18 Aug 2022 17:15:37 +0800
-Subject: Re: [PATCH v3 0/4] ARM: Convert to ARCH_STACKWALK
-To:     <linux@armlinux.org.uk>
-CC:     <mark.rutland@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <arnd@arndb.de>,
-        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
-        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
-        <ndesaulniers@google.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <rmk+kernel@armlinux.org.uk>, <ardb@kernel.org>, <will@kernel.org>,
-        <broonie@kernel.org>, <linus.walleij@linaro.org>
-References: <20220727040022.139387-1-lihuafei1@huawei.com>
-From:   Li Huafei <lihuafei1@huawei.com>
-Message-ID: <13e8c9ba-c5ec-a231-5493-3255e1ef9db8@huawei.com>
-Date:   Thu, 18 Aug 2022 17:15:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        Thu, 18 Aug 2022 05:17:31 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480D867447;
+        Thu, 18 Aug 2022 02:17:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660814211; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=iSK5aEHEz2NKsaTUHblmGN+Z5pVtKSH8OgDzOFj90fAKga+dH50mWMB9+qQ7wUeS8p5Aaq1L93RomIW68+f1aO3raNjWOiQiXvxud03HAW7x9MVD8IoJ/7J35hBQAEVQwMBf6rpDYsrXyuZ280X98RTlrbEdO0URdGE4oQdtIbw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1660814211; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=tUPXDCTkwC2zhPMuq078yFzwDdf8nbUXFo0CgcNnnAg=; 
+        b=SiwuLfHgKVmz2KSkESTYCsRYuMieBJ3R2/dW6MpFew/z5WE2kcRKBFDiLZko/l27wovFFuW95VJ0jv72wPPShWaRb/+kNwNlDBgcwND4epKAlS8H6IxvFYx1QgeIBNHnlXgQ/S/wItwFP1lxDhrKGhI7BN0q4uR6UUdFMiNUhWg=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660814211;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=tUPXDCTkwC2zhPMuq078yFzwDdf8nbUXFo0CgcNnnAg=;
+        b=CVZZLg4CvcouhU8MKyUBZAC4OlA5yIlRgBNdecIalutTdo3sCj8ZJvJl/8dGyI+r
+        mcWNof2dn8s2LNljHEV+1TkQ2dEI/9P/g7BoQIlo01pD1aKImlKckIoufMANtE48z6H
+        AcHdkPNQwyAtj4j6EqtOvjzFFREpnqUjNH2Dwu/Q=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1660814210407956.4809054082643; Thu, 18 Aug 2022 02:16:50 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v3 2/6] dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
+Date:   Thu, 18 Aug 2022 12:16:23 +0300
+Message-Id: <20220818091627.51878-3-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220818091627.51878-1-arinc.unal@arinc9.com>
+References: <20220818091627.51878-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-In-Reply-To: <20220727040022.139387-1-lihuafei1@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.237]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+- Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
+- Add description for reset-gpios.
+- Invalidate reset-gpios if mediatek,mcm is used. We cannot use multiple
+reset lines at the same time.
+- Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
+There is no multi-chip module version of mediatek,mt7531.
+- Require mediatek,mcm for mediatek,mt7621 as the compatible string is only
+used for the multi-chip module version of MT7530.
 
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
-On 2022/7/27 12:00, Li Huafei wrote:
-> This series mainly updates the ARM stack trace code to use the newer and
-> simpler arch_stack_walk() interface (see patches 3 and 4). Two issues
-> were fixed before that (see patches 1 and 2).
-> 
-> v3:
->  - According to the discussion with Linus and Russell in v1:
->    - Add a comment about "regs[1]" in patch 2, and remove the
->      unnecessary ternary operator in the initialization of
->      "frame->ex_frame".
->    - Remove the patch "ARM: stacktrace: Allow stack trace saving for
->      non-current tasks", and keep the check for not being able to
->      unwind non-current tasks (including tasks running on other CPUs)
->      when CONFIG_SMP=y in patch 4.
->  - Rebase to linux-5.19-rc8.
-> 
-> v2: https://lore.kernel.org/lkml/20220713110020.85511-1-lihuafei1@huawei.com/
->  - As suggested by Mark, the commit logs for patch 4 and 5 were
->    refined for easy review.
-> 
-> v1: https://lore.kernel.org/lkml/20220712021527.109921-1-lihuafei1@huawei.com/
-> 
-> Li Huafei (4):
->   ARM: stacktrace: Skip frame pointer boundary check for
->     call_with_stack()
->   ARM: stacktrace: Avoid duplicate saving of exception PC value
->   ARM: stacktrace: Make stack walk callback consistent with generic code
->   ARM: stacktrace: Convert stacktrace to generic ARCH_STACKWALK
-> 
->  arch/arm/Kconfig                  |   1 +
->  arch/arm/include/asm/stacktrace.h |   8 +-
->  arch/arm/kernel/perf_callchain.c  |   9 +-
->  arch/arm/kernel/return_address.c  |   9 +-
->  arch/arm/kernel/stacktrace.c      | 191 ++++++++++++++----------------
->  arch/arm/lib/call_with_stack.S    |   2 +
->  6 files changed, 110 insertions(+), 110 deletions(-)
-> 
+diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+index edf48e917173..4c99266ce82a 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+@@ -110,11 +110,15 @@ properties:
+   mediatek,mcm:
+     type: boolean
+     description:
+-      if defined, indicates that either MT7530 is the part on multi-chip
+-      module belong to MT7623A has or the remotely standalone chip as the
+-      function MT7623N reference board provided for.
++      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
++      switch is a part of the multi-chip module.
+ 
+   reset-gpios:
++    description:
++      GPIO to reset the switch. Use this if mediatek,mcm is not used.
++      This property is optional because some boards share the reset line with
++      other components which makes it impossible to probe the switch if the
++      reset line is used.
+     maxItems: 1
+ 
+   reset-names:
+@@ -165,6 +169,9 @@ allOf:
+       required:
+         - mediatek,mcm
+     then:
++      properties:
++        reset-gpios: false
++
+       required:
+         - resets
+         - reset-names
+@@ -182,6 +189,24 @@ allOf:
+         - core-supply
+         - io-supply
+ 
++  - if:
++      properties:
++        compatible:
++          items:
++            - const: mediatek,mt7531
++    then:
++      properties:
++        mediatek,mcm: false
++
++  - if:
++      properties:
++        compatible:
++          items:
++            - const: mediatek,mt7621
++    then:
++      required:
++        - mediatek,mcm
++
+ unevaluatedProperties: false
+ 
+ examples:
+-- 
+2.34.1
 
-
-Hi Russell，
-
-Do you have any more comments on this patch set? Can you add this patch
-set to your patch tracker? Thanks!
-
-Thanks,
-Huafei
