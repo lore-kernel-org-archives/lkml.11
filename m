@@ -2,192 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C90CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11426C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243355AbiHRE3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S243360AbiHRE3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242748AbiHRE3H (ORCPT
+        with ESMTP id S238358AbiHRE3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:29:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486F744579
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 21:29:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660796944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KCPrqwMbhashZs9ajDG3ZLy61/uPNuf+3BvVHV/Odhk=;
-        b=foaSqwItVnI8ICNq1K7ko3JxdBUXZvRJJaOg/Fl3pjIX99+9XB5WO8h5kgYyza3pChWPfs
-        JIz/gepQ8FUQoTM49Vf5FO0S5UNqUi9pB6lecqEVoEP41QIYfTFK6K/JeCi0FpcO0616CH
-        jA7agAuOlveUci3RUa07Leqt2OBXzrE=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-253-mEfAZoXmOPO1ZsC-WGfEPg-1; Thu, 18 Aug 2022 00:29:02 -0400
-X-MC-Unique: mEfAZoXmOPO1ZsC-WGfEPg-1
-Received: by mail-pl1-f199.google.com with SMTP id e15-20020a17090301cf00b0016dc94ddcc5so435312plh.3
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 21:29:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=KCPrqwMbhashZs9ajDG3ZLy61/uPNuf+3BvVHV/Odhk=;
-        b=c4uor5yCFahmdVTGtqjPZYlG/iWSAG57ys4k5KMV9CRo+x8ay+bYnK5UlmUVJg1qgp
-         f/wvkX+OlJOhZFzJ+kSgoj3e2OWMTHB3VmnLwOg04MzGsdDQoE1/q5vJ6xGKzPsKmB3N
-         tHiAVA4HOlDLGEKHRgTZDvQmdkMeTFbdd2MHcyl6SbLT9FnQMWBLHJE75hpnw08OHinx
-         qaE3bx2xUvnPCfvRLZj7HhEO9Pp9dfrS1DAUc/yww7/EarDiskSGSHSfEJpWBJ41x44c
-         PNgFz1MajTz+BwHU8DQIcrxhJyICOPdN4tGic/xfi2qvHtuUccQSiO8QVq/GKfKUvvDq
-         hjmA==
-X-Gm-Message-State: ACgBeo3ESqHDtCT+jVhSCqKkGOpa//jXf1caC79+cHkKOxkq+3yHDIlb
-        0UNMw/NzYXpVHoKPU+ooSqo/13jtYkAEXs+gMMTi6eJgfnsm4OR8rtFoGM7dO2pGRiPowjt0h9A
-        6c/EbPiQ2SgYfNQm1CwfAOnox
-X-Received: by 2002:a05:6a00:2446:b0:528:5da9:cc7 with SMTP id d6-20020a056a00244600b005285da90cc7mr1293852pfj.51.1660796941420;
-        Wed, 17 Aug 2022 21:29:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7NMD4EVf5aRXovcw/8GOgAQdQuu/1flQGm1/lUUdQvP3AM0nmVQZrsmhqQ7p+cfFoK7Zf2dQ==
-X-Received: by 2002:a05:6a00:2446:b0:528:5da9:cc7 with SMTP id d6-20020a056a00244600b005285da90cc7mr1293831pfj.51.1660796941080;
-        Wed, 17 Aug 2022 21:29:01 -0700 (PDT)
-Received: from [10.72.13.223] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o21-20020a170903211500b00170a757a191sm296595ple.9.2022.08.17.21.28.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 21:29:00 -0700 (PDT)
-Message-ID: <3abb1be9-b12c-e658-0391-8461e28f1b33@redhat.com>
-Date:   Thu, 18 Aug 2022 12:28:48 +0800
+        Thu, 18 Aug 2022 00:29:22 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B58E6069E;
+        Wed, 17 Aug 2022 21:29:21 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M7X1G34J7zGpXn;
+        Thu, 18 Aug 2022 12:27:46 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 12:29:19 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
+ 2022 12:29:19 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <den@openvz.org>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>
+Subject: [PATCH -next] net: neigh: use dev_kfree_skb_irq instead of kfree_skb()
+Date:   Thu, 18 Aug 2022 12:37:29 +0800
+Message-ID: <20220818043729.412753-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>
-Cc:     Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <20220817025250-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220817025250-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+It is not allowed to call kfree_skb() from hardware interrupt
+context or with interrupts being disabled. So replace kfree_skb()
+with dev_kfree_skb_irq() under spin_lock_irqsave().
 
-在 2022/8/17 14:54, Michael S. Tsirkin 写道:
-> On Mon, Aug 15, 2022 at 10:56:03AM -0700, Bobby Eshleman wrote:
->> Hey everybody,
->>
->> This series introduces datagrams, packet scheduling, and sk_buff usage
->> to virtio vsock.
->>
->> The usage of struct sk_buff benefits users by a) preparing vsock to use
->> other related systems that require sk_buff, such as sockmap and qdisc,
->> b) supporting basic congestion control via sock_alloc_send_skb, and c)
->> reducing copying when delivering packets to TAP.
->>
->> The socket layer no longer forces errors to be -ENOMEM, as typically
->> userspace expects -EAGAIN when the sk_sndbuf threshold is reached and
->> messages are being sent with option MSG_DONTWAIT.
->>
->> The datagram work is based off previous patches by Jiang Wang[1].
->>
->> The introduction of datagrams creates a transport layer fairness issue
->> where datagrams may freely starve streams of queue access. This happens
->> because, unlike streams, datagrams lack the transactions necessary for
->> calculating credits and throttling.
->>
->> Previous proposals introduce changes to the spec to add an additional
->> virtqueue pair for datagrams[1]. Although this solution works, using
->> Linux's qdisc for packet scheduling leverages already existing systems,
->> avoids the need to change the virtio specification, and gives additional
->> capabilities. The usage of SFQ or fq_codel, for example, may solve the
->> transport layer starvation problem. It is easy to imagine other use
->> cases as well. For example, services of varying importance may be
->> assigned different priorities, and qdisc will apply appropriate
->> priority-based scheduling. By default, the system default pfifo qdisc is
->> used. The qdisc may be bypassed and legacy queuing is resumed by simply
->> setting the virtio-vsock%d network device to state DOWN. This technique
->> still allows vsock to work with zero-configuration.
-> The basic question to answer then is this: with a net device qdisc
-> etc in the picture, how is this different from virtio net then?
-> Why do you still want to use vsock?
+Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ net/core/neighbour.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Or maybe it's time to revisit an old idea[1] to unify at least the 
-driver part (e.g using virtio-net driver for vsock then we can all 
-features that vsock is lacking now)?
-
-Thanks
-
-[1] 
-https://lists.linuxfoundation.org/pipermail/virtualization/2018-November/039783.html
-
-
->
->> In summary, this series introduces these major changes to vsock:
->>
->> - virtio vsock supports datagrams
->> - virtio vsock uses struct sk_buff instead of virtio_vsock_pkt
->>    - Because virtio vsock uses sk_buff, it also uses sock_alloc_send_skb,
->>      which applies the throttling threshold sk_sndbuf.
->> - The vsock socket layer supports returning errors other than -ENOMEM.
->>    - This is used to return -EAGAIN when the sk_sndbuf threshold is
->>      reached.
->> - virtio vsock uses a net_device, through which qdisc may be used.
->>   - qdisc allows scheduling policies to be applied to vsock flows.
->>    - Some qdiscs, like SFQ, may allow vsock to avoid transport layer congestion. That is,
->>      it may avoid datagrams from flooding out stream flows. The benefit
->>      to this is that additional virtqueues are not needed for datagrams.
->>    - The net_device and qdisc is bypassed by simply setting the
->>      net_device state to DOWN.
->>
->> [1]: https://lore.kernel.org/all/20210914055440.3121004-1-jiang.wang@bytedance.com/
->>
->> Bobby Eshleman (5):
->>    vsock: replace virtio_vsock_pkt with sk_buff
->>    vsock: return errors other than -ENOMEM to socket
->>    vsock: add netdev to vhost/virtio vsock
->>    virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
->>    virtio/vsock: add support for dgram
->>
->> Jiang Wang (1):
->>    vsock_test: add tests for vsock dgram
->>
->>   drivers/vhost/vsock.c                   | 238 ++++----
->>   include/linux/virtio_vsock.h            |  73 ++-
->>   include/net/af_vsock.h                  |   2 +
->>   include/uapi/linux/virtio_vsock.h       |   2 +
->>   net/vmw_vsock/af_vsock.c                |  30 +-
->>   net/vmw_vsock/hyperv_transport.c        |   2 +-
->>   net/vmw_vsock/virtio_transport.c        | 237 +++++---
->>   net/vmw_vsock/virtio_transport_common.c | 771 ++++++++++++++++--------
->>   net/vmw_vsock/vmci_transport.c          |   9 +-
->>   net/vmw_vsock/vsock_loopback.c          |  51 +-
->>   tools/testing/vsock/util.c              | 105 ++++
->>   tools/testing/vsock/util.h              |   4 +
->>   tools/testing/vsock/vsock_test.c        | 195 ++++++
->>   13 files changed, 1176 insertions(+), 543 deletions(-)
->>
->> -- 
->> 2.35.1
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 5b669eb80270..167826200f3e 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -328,7 +328,7 @@ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ 			__skb_unlink(skb, list);
+ 
+ 			dev_put(dev);
+-			kfree_skb(skb);
++			dev_kfree_skb_irq(skb);
+ 		}
+ 		skb = skb_next;
+ 	}
+-- 
+2.25.1
 
