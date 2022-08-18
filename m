@@ -2,53 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC8DBC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 704BDC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245170AbiHRNjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
+        id S245030AbiHRNjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245126AbiHRNjK (ORCPT
+        with ESMTP id S245131AbiHRNjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:39:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B07C3AE47;
-        Thu, 18 Aug 2022 06:39:09 -0700 (PDT)
+        Thu, 18 Aug 2022 09:39:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433935A3D7;
+        Thu, 18 Aug 2022 06:39:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B12F3616BD;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5D39B82188;
         Thu, 18 Aug 2022 13:39:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879DFC43144;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 692C9C433D7;
         Thu, 18 Aug 2022 13:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660829947;
-        bh=Gr+WTBMpsUX+XAe05AEyOnHiXOlilMHU7yC/Y/6/lMM=;
+        bh=8OYtYLNr9+M4D0TzZjuyhL9R+YeFezzuOwbR4acU9MI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RSnWzXOFd5o4iXvFNL3WRvxE6qY1gux2sGl5Ud43H6kboOxE5edq360GzqbCigMv9
-         r83oaUMFqR9YOu1zwNL0zMyqUq3FqMVM2LHE8wgpcYD7V7K9QwL3sK9IIknrVI05tE
-         guDfkC9M9rbBM6lGR8GhFWw1tU0q3Qyhd+sWZgp1okQldF341jfQL24ENTiFjkvtvw
-         6qVwDI0OsoIfavnKIIStVc2ghnLOivsJ5lsYc5Y1+ziBZ9QSlvrj2FYY+QucVnE//9
-         VDqwJeg5AxVHNkL+fJLRyINTdndnmSoXkjQKFInsA02QW3btXHpU/phKG6Qe5TjEqM
-         neEWJa0f5f/zQ==
+        b=bh2cJqm3Ox9a+GSvMnaiVt4Vd/2dIfWVyHPu5WLBQrisZcpX9bw2YH/gP0XtshtZU
+         UlnNgrT1LHoN4Y9uYzsoUwW8lQNdpaeAOEuUHXxNtgrqj3BefeA/n7Jd7VFAbfahWv
+         Jz2MfKShJVxb3ersk8N6x/HVLwACphYrC59m+Ulj5EIJ4XSfr5j/WRYPOIuyzlmdSp
+         nE+IBXhRZ0ZhYo4z6aGAKC7kPX2vyn1mOtdKrVNUn5okegYEO7zZBeWJQM0UMn/HPl
+         h7MdbZX4Z5xTfPZoxmYVgyw+mxqSPdZZf0Gr9TKpDAoL6hOJIRZCT1ZZm9EeJ4FxBS
+         av8XQ+nUfVElQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oOfjl-00AY7Z-E7;
+        id 1oOfjl-00AY7E-3A;
         Thu, 18 Aug 2022 15:39:05 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>, corbet@lwn.net
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 06/13] Documentation: coresight: fix a documentation build warning
-Date:   Thu, 18 Aug 2022 15:38:52 +0200
-Message-Id: <ff5c57f03d106dc5cc14448ec0db224267fb1bfb.1660829433.git.mchehab@kernel.org>
+Subject: [PATCH 01/13] scripts: kernel-doc: add support for EXPORT_SYMBOL variants
+Date:   Thu, 18 Aug 2022 15:38:47 +0200
+Message-Id: <9e15cf41b5258ad95a144d87996a3448ae8180e3.1660829433.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <cover.1660829433.git.mchehab@kernel.org>
 References: <cover.1660829433.git.mchehab@kernel.org>
@@ -58,41 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using wildcards for cross-reference doesn't work, as the Sphinx
-automarkup plugin is not smart enough. So, changeset
-c06475910b52 ("Documentation: coresight: Escape coresight bindings file wildcard")
-tried to fix it, but at the wrong way, as it the building system
-will keep producing warnings about that:
+There are now several new EXPORT_SYMBOL variants. Add support for
+them.
 
-	Warning: Documentation/trace/coresight/coresight.rst references a file that doesn't exist: Documentation/devicetree/bindings/arm/arm,coresight-
-
-As automarkup will still try (and fail) to create a cross reference.
-So, instead, change the markup to ensure that the warning won't be
-reported.
-
-Fixes: c06475910b52 ("Documentation: coresight: Escape coresight bindings file wildcard")
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 See [PATCH 00/13] at: https://lore.kernel.org/all/cover.1660829433.git.mchehab@kernel.org/
 
- Documentation/trace/coresight/coresight.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ scripts/kernel-doc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/trace/coresight/coresight.rst b/Documentation/trace/coresight/coresight.rst
-index 4a71ea6cb390..826e59a698da 100644
---- a/Documentation/trace/coresight/coresight.rst
-+++ b/Documentation/trace/coresight/coresight.rst
-@@ -130,7 +130,7 @@ Misc:
- Device Tree Bindings
- --------------------
+diff --git a/scripts/kernel-doc b/scripts/kernel-doc
+index aea04365bc69..94a062ef1835 100755
+--- a/scripts/kernel-doc
++++ b/scripts/kernel-doc
+@@ -255,7 +255,7 @@ my $doc_inline_start = '^\s*/\*\*\s*$';
+ my $doc_inline_sect = '\s*\*\s*(@\s*[\w][\w\.]*\s*):(.*)';
+ my $doc_inline_end = '^\s*\*/\s*$';
+ my $doc_inline_oneline = '^\s*/\*\*\s*(@[\w\s]+):\s*(.*)\s*\*/\s*$';
+-my $export_symbol = '^\s*EXPORT_SYMBOL(_GPL)?\s*\(\s*(\w+)\s*\)\s*;';
++my $export_symbol = '^\s*(EXPORT_SYMBOL|EXPORT_SYMBOL_GPL|EXPORT_SYMBOL_NS|EXPORT_SYMBOL_NS_GPL|EXPORT_SYMBOL_ACPI_LIB|EXPORT_INDIRECT_CALLABLE)\s*\(\s*(\w+)[,\w\s]*\)\s*;';
+ my $function_pointer = qr{([^\(]*\(\*)\s*\)\s*\(([^\)]*)\)};
+ my $attribute = qr{__attribute__\s*\(\([a-z0-9,_\*\s\(\)]*\)\)}i;
  
--See Documentation/devicetree/bindings/arm/arm,coresight-\*.yaml for details.
-+See ``Documentation/devicetree/bindings/arm/arm,coresight-*.yaml`` for details.
+@@ -2419,12 +2419,12 @@ found on PATH.
+ =item -export
  
- As of this writing drivers for ITM, STMs and CTIs are not provided but are
- expected to be added as the solution matures.
+ Only output documentation for the symbols that have been exported using
+-EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++EXPORT_SYMBOL() and variants in any input FILE or -export-file FILE.
+ 
+ =item -internal
+ 
+ Only output documentation for the symbols that have NOT been exported using
+-EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++EXPORT_SYMBOL() nor variants in any input FILE or -export-file FILE.
+ 
+ =item -function NAME
+ 
+@@ -2452,7 +2452,7 @@ Do not output DOC: sections.
+ =item -export-file FILE
+ 
+ Specify an additional FILE in which to look for EXPORT_SYMBOL() and
+-EXPORT_SYMBOL_GPL().
++variants.
+ 
+ To be used with -export or -internal.
+ 
 -- 
 2.37.1
 
