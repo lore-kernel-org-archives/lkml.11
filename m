@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB09C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63923C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:01:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244441AbiHRNBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        id S244897AbiHRNBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244842AbiHRNAq (ORCPT
+        with ESMTP id S244886AbiHRNBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:00:46 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCC766A57
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:00:45 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M7lKY569pzlWJd;
-        Thu, 18 Aug 2022 20:57:37 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
- 2022 21:00:42 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH 5/6] mm, hwpoison: kill procs if unmap fails
-Date:   Thu, 18 Aug 2022 21:00:15 +0800
-Message-ID: <20220818130016.45313-6-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220818130016.45313-1-linmiaohe@huawei.com>
-References: <20220818130016.45313-1-linmiaohe@huawei.com>
+        Thu, 18 Aug 2022 09:01:07 -0400
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0511975CC8;
+        Thu, 18 Aug 2022 06:01:07 -0700 (PDT)
+Received: by mail-qt1-f171.google.com with SMTP id c20so1003335qtw.8;
+        Thu, 18 Aug 2022 06:01:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=G6NRVtnuSqWqwGqpWt9DLp5hNULRC9LvfIAkNgdvtjM=;
+        b=kJlGbGfmxfBqf+bVVh1QtEbfOKf4xTrV9NX0JzY8WP2LZQ5OM1y9CAD0vWzGEG4Vbc
+         y0cTvjr7k8yiqbGarpUAFzx+Y6c/N9E98NxDQPJxD2wAkyiKgL+PnhGsU5umWk0qnyiZ
+         ctEv0IQVLBpH4hBb0o6W5aheZcorfIsj6QjuoRcdY9S05iDuGO0/e9+FOiCYw1/IV3cx
+         6lpZu8eCgnSve26GBIPYxqA00xxopWjum8UPHglF3rXQpjhmPNl5ZpIEyKsqL7TLzMn4
+         6RzK/ht5jG9siNtp97ntMTc77gHdBBoR2VqOXS7zwfVuBA+hw0cqcHxhpNVH5BLV9ant
+         4c8w==
+X-Gm-Message-State: ACgBeo0KOUzAV1rn9SNnpToWhrZtnAfC5Otg6a2UAf7QqWqCg9ayZA7k
+        LfT9VJCT6DObk5I8Twh5A4ee/qaww3znXg==
+X-Google-Smtp-Source: AA6agR75szNWxxDWZq4k1aFKjLruPb048asQ5OckjyQNTnlEAHYjLNCu5y8pFD5TXmxu7gn1BzFIYg==
+X-Received: by 2002:ac8:58c6:0:b0:343:6ea4:c5d with SMTP id u6-20020ac858c6000000b003436ea40c5dmr2339896qta.371.1660827665177;
+        Thu, 18 Aug 2022 06:01:05 -0700 (PDT)
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
+        by smtp.gmail.com with ESMTPSA id 19-20020ac84e93000000b0033e51aea00esm1025051qtp.25.2022.08.18.06.01.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 06:01:05 -0700 (PDT)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-31f445bd486so38260767b3.13;
+        Thu, 18 Aug 2022 06:01:04 -0700 (PDT)
+X-Received: by 2002:a05:6902:100a:b0:676:ed53:25b0 with SMTP id
+ w10-20020a056902100a00b00676ed5325b0mr2514289ybt.365.1660827625358; Thu, 18
+ Aug 2022 06:00:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220815151451.23293-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220815151451.23293-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 18 Aug 2022 15:00:13 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWWv0MUsxJgy1XLNm3CENoAkRgZ2dwcYDgPdAkApA4=fQ@mail.gmail.com>
+Message-ID: <CAMuHMdWWv0MUsxJgy1XLNm3CENoAkRgZ2dwcYDgPdAkApA4=fQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/8] dt-bindings: riscv: Sort the CPU core list alphabetically
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If try_to_unmap() fails, the hwpoisoned page still resides in the address
-space of some processes. We should kill these processes or the hwpoisoned
-page might be consumed later. collect_procs() is always called to collect
-relevant processes now so they can be killed later if unmap fails.
+On Mon, Aug 15, 2022 at 5:16 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Sort the CPU cores list alphabetically for maintenance.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/memory-failure.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index a2f4e8b00a26..5f9615a86296 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1396,7 +1396,7 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
- 	struct address_space *mapping;
- 	LIST_HEAD(tokill);
- 	bool unmap_success;
--	int kill = 1, forcekill;
-+	int forcekill;
- 	bool mlocked = PageMlocked(hpage);
- 
- 	/*
-@@ -1437,7 +1437,6 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
- 		if (page_mkclean(hpage)) {
- 			SetPageDirty(hpage);
- 		} else {
--			kill = 0;
- 			ttu |= TTU_IGNORE_HWPOISON;
- 			pr_info("%#lx: corrupted page was clean: dropped without side effects\n",
- 				pfn);
-@@ -1452,8 +1451,7 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
- 	 * Error handling: We ignore errors here because
- 	 * there's nothing that can be done.
- 	 */
--	if (kill)
--		collect_procs(hpage, &tokill, flags & MF_ACTION_REQUIRED);
-+	collect_procs(hpage, &tokill, flags & MF_ACTION_REQUIRED);
- 
- 	if (PageHuge(hpage) && !PageAnon(hpage)) {
- 		/*
-@@ -1495,7 +1493,8 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
- 	 * use a more force-full uncatchable kill to prevent
- 	 * any accesses to the poisoned memory.
- 	 */
--	forcekill = PageDirty(hpage) || (flags & MF_MUST_KILL);
-+	forcekill = PageDirty(hpage) || (flags & MF_MUST_KILL) ||
-+		    !unmap_success;
- 	kill_procs(&tokill, forcekill, !unmap_success, pfn, flags);
- 
- 	return unmap_success;
--- 
-2.23.0
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
