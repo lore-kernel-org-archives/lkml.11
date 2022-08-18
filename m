@@ -2,161 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D38CEC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E695DC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344842AbiHRRXE (ORCPT
+        id S1345243AbiHRRXw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58824 "EHLO
+        Thu, 18 Aug 2022 13:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344699AbiHRRWe (ORCPT
+        with ESMTP id S1345149AbiHRRXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:22:34 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE61F5B6
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:22:32 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id b15so1131745ilq.10
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:22:32 -0700 (PDT)
+        Thu, 18 Aug 2022 13:23:25 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C773DBD6
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:23:04 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id z72so1578663iof.12
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:23:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :from:to:cc;
-        bh=jH2VlH2vwqX5qxVWjudYS+DqwE3jxZzRobXXOdNN1PA=;
-        b=fIMLDjhPlqtyKIGWal957mZqvdDJwRo/FxSUBuh9Zg2aufKTVm+F5hPo7qYebI/OnS
-         YsaOrfi5k9v3CF8ptF2rlnSdiVXHNAuST2BPEgU9ZIaGaVai45462/2h7xe/8JzhyO7k
-         i0rVwx9VnqAZy1S5AFLmfD2ZbKKwhpL4Cby+4=
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Bd32rmK/FOJLR3DhtOUdTvKf+a9Teo/sBKjuQ/ElSZg=;
+        b=XlCrOgXemDYs5Gm1ZIOksFTqGZKJJh1hGJ5FiZ/gBNvZlCJoKWIFIhrOP6jcsNcZg8
+         nsUv5cuyppKGA9pojhWsrVbxqQNk9M+rs6BsIhJvbCKfFS7En6R216VnbucNPbV6UqJu
+         gFhqNjW0Z3wyX/v6unNEZXn/nYFuw58v1FdugaIM8korrBWM0ULmCWalgxkcsTvstTYF
+         2dpqn3K+xtvSW+ChNPAlFgqvqaJcQR1TiMmUcWlah6pmdFqo7CJY1Lhcjc2my+dwuDFF
+         He4LDfJIcqaWnuQBMW0MitXidT3AJ0yuvz4ZsinCZ3Oz4svSW745OwxEYBDWuSYgJjBb
+         0gAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=jH2VlH2vwqX5qxVWjudYS+DqwE3jxZzRobXXOdNN1PA=;
-        b=o+avUmwRwwkCJb25tj4lpWUHIrGlpvm+A4NxTIBy0T/58MhyOuN/mQTgvomMEBXgn2
-         rVdNjEcc8baiwCUoCnkhoAN+asnpQeVuIOISDC9W2oSHJ1JKMzTa3RKkzeZdpxHw0fTi
-         O/lnW4HBxjsfmCUyLhROiH2yQ+YQaxRUurFl4z3oK8jJ86QXshTENjR3HUTqFKc365cv
-         Mrys++d7hwRYsTGFJXHTi0cma9pCVBMQgIoLSqC6j6R4EO88nGDH8Gw97t8/WrY1Somu
-         54Cx+4Y8IaxKB/6yjV1isThspQ8tHZVcjNeEWjkzUDcjjAtnPOdqRV4s3/DwyF2CxvY6
-         9DJg==
-X-Gm-Message-State: ACgBeo0ZRcY9rwFPCevGRrC0gGYrC367x416YDYyWNzywwunYFdrlunE
-        q46ROQcucWh19/awsMy6Q4zEE55o2cVb9xh5cEedOWKtyU6Xsg==
-X-Google-Smtp-Source: AA6agR56YpcxhvGBL8DRhBX8nAjPsZ11NEeok4yV/vqvGdMAe6CkrAzrZjozA/qqKnWkAI1TnNwn9b7JPLpuymji6fE=
-X-Received: by 2002:a05:6e02:20eb:b0:2df:302c:fb10 with SMTP id
- q11-20020a056e0220eb00b002df302cfb10mr1931040ilv.35.1660843351572; Thu, 18
- Aug 2022 10:22:31 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Bd32rmK/FOJLR3DhtOUdTvKf+a9Teo/sBKjuQ/ElSZg=;
+        b=oKNh96VxIrMjug24lZKDMxfn+QWMRNtYaLJr2FMU6YaqcFnALcUBEcAC+5AfCtmorv
+         CbYoGMCC/uimo0UgmoNN+Rj9Cd6UQyfZbJOV7wGJCtWiher3KFvof8vz+jydBZ6wQseD
+         WhM2MYiGrjElZiK04Plr0LFdd4hWedGEdT8ba7LHos4qMb6aE14pyl5iXyJVJvOWexLX
+         4i5quq0WYnev8/qoMfVu52igLH7B727V6dkH8wHH2TIVE/n9L7wM5kCRHd0B0KPfhK8F
+         ytjIp9yFjReMMX+ziUuLcqW4qpkdpahamYSwzqB+NMWkuGNISJZ2aTutxQJe0/kv6PpV
+         CNaw==
+X-Gm-Message-State: ACgBeo2WF+E9/6VvKv6edraowPFLWwPAu9G3Hls7wLXQM0q6gglWIki/
+        7PURjYYnwBcEV0Zu+NJmwDmRELrYB0veuITk/BNQMw==
+X-Google-Smtp-Source: AA6agR7BxSEK9TZMmEIhvaOX697zBF3ihw3R6j2eoMtnNit2ewt69TP6LFyP0vkczM3B3jRpPt3WlelDN3UHLFuji6A=
+X-Received: by 2002:a05:6602:2f03:b0:678:9c7c:97a5 with SMTP id
+ q3-20020a0566022f0300b006789c7c97a5mr1830797iow.32.1660843383117; Thu, 18 Aug
+ 2022 10:23:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220809034517.3867176-1-joel@joelfernandes.org> <20220809034517.3867176-5-joel@joelfernandes.org>
-In-Reply-To: <20220809034517.3867176-5-joel@joelfernandes.org>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Thu, 18 Aug 2022 13:22:20 -0400
-Message-ID: <CAEXW_YSMYj6DN+ps09SkU2t1hNNg+xGf-6c0rL8dBoy262_-ew@mail.gmail.com>
-Subject: Re: [PATCH v3 resend 4/6] fs: Move call_rcu() to call_rcu_lazy() in
- some paths
-To:     LKML <linux-kernel@vger.kernel.org>
+References: <20220817214728.489904-1-axelrasmussen@google.com>
+ <20220817214728.489904-3-axelrasmussen@google.com> <Yv3bnouKb7242Ama@kroah.com>
+ <Yv3c9jYkyWfe2zMM@kroah.com>
+In-Reply-To: <Yv3c9jYkyWfe2zMM@kroah.com>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Thu, 18 Aug 2022 10:22:27 -0700
+Message-ID: <CAJHvVcjSjk15TVRTi9x+CMjrWoNeUJBiZiH1boQvQzwd-pdOtQ@mail.gmail.com>
+Subject: Re: [PATCH v6 2/5] userfaultfd: add /dev/userfaultfd for fine grained
+ access control
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linuxkselftest <linux-kselftest@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-security-module@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 11:45 PM Joel Fernandes (Google)
-<joel@joelfernandes.org> wrote:
+On Wed, Aug 17, 2022 at 11:32 PM Greg KH <gregkh@linuxfoundation.org> wrote:
 >
-> This is required to prevent callbacks triggering RCU machinery too
-> quickly and too often, which adds more power to the system.
+> On Thu, Aug 18, 2022 at 08:26:38AM +0200, Greg KH wrote:
+> > On Wed, Aug 17, 2022 at 02:47:25PM -0700, Axel Rasmussen wrote:
+> > > +static int userfaultfd_dev_open(struct inode *inode, struct file *file)
+> > > +{
+> > > +   return 0;
+> >
+> > If your open does nothing, no need to list it here at all, right?
+> >
+> > > +}
+> > > +
+> > > +static long userfaultfd_dev_ioctl(struct file *file, unsigned int cmd, unsigned long flags)
+> > > +{
+> > > +   if (cmd != USERFAULTFD_IOC_NEW)
+> > > +           return -EINVAL;
+> > > +
+> > > +   return new_userfaultfd(flags);
+> > > +}
+> > > +
+> > > +static const struct file_operations userfaultfd_dev_fops = {
+> > > +   .open = userfaultfd_dev_open,
+> > > +   .unlocked_ioctl = userfaultfd_dev_ioctl,
+> > > +   .compat_ioctl = userfaultfd_dev_ioctl,
+> >
+> > Why do you need to set compat_ioctl?  Shouldn't it just default to the
+> > existing one?
+> >
+> > And why is this a device node at all?  Shouldn't the syscall handle all
+> > of this (to be honest, I didn't read anything but the misc code, sorry.)
 >
-> When testing, we found that these paths were invoked often when the
-> system is not doing anything (screen is ON but otherwise idle).
+> Ah, read the documentation now.  Seems you want to make it easier for
+> people to get permissions on a system.  Doesn't seem wise, but hey, it's
+> not my feature...
 
-Unfortunately, I am seeing a slow down in ChromeOS boot performance
-after applying this particular patch. It is the first time I could
-test ChromeOS boot times with the series since it was hard to find a
-ChromeOS device that runs the upstream kernel.
+Thanks for taking a look Greg!
 
-Anyway, Vlad, Neeraj, do you guys also see slower boot times with this
-patch? I wonder if the issue is with wake up interaction with the nocb
-GP threads.
+WIth the syscall, the only way to get access to this feature is to
+have CAP_SYS_PTRACE. Which gives you access to this, *plus* a bunch
+more stuff.
 
-We ought to disable lazy RCU during boot since it would have little
-benefit anyway. But I am also concerned about some deeper problem I
-did not catch before.
+My basic goal is to grant access to just this feature by itself, not
+really just to make it easier to access. I think a device node is the
+simplest way to achieve that (see the cover letter for considered
+alternatives).
 
-I'll look into tracing the fs paths to see if I can narrow down what's
-causing it. Will also try a newer kernel, I am currently testing on
-5.19-rc4.
-
-Thanks,
-
- - Joel
+The other feedback looks like good simplification to me - I'll send
+another version with those changes. I have to admit this is the first
+time I've messed with misc device nodes, so apologies for being overly
+explicit. :)
 
 >
-> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> ---
->  fs/dcache.c     | 4 ++--
->  fs/eventpoll.c  | 2 +-
->  fs/file_table.c | 2 +-
->  fs/inode.c      | 2 +-
->  4 files changed, 5 insertions(+), 5 deletions(-)
+> thanks,
 >
-> diff --git a/fs/dcache.c b/fs/dcache.c
-> index 93f4f5ee07bf..7f51bac390c8 100644
-> --- a/fs/dcache.c
-> +++ b/fs/dcache.c
-> @@ -366,7 +366,7 @@ static void dentry_free(struct dentry *dentry)
->         if (unlikely(dname_external(dentry))) {
->                 struct external_name *p = external_name(dentry);
->                 if (likely(atomic_dec_and_test(&p->u.count))) {
-> -                       call_rcu(&dentry->d_u.d_rcu, __d_free_external);
-> +                       call_rcu_lazy(&dentry->d_u.d_rcu, __d_free_external);
->                         return;
->                 }
->         }
-> @@ -374,7 +374,7 @@ static void dentry_free(struct dentry *dentry)
->         if (dentry->d_flags & DCACHE_NORCU)
->                 __d_free(&dentry->d_u.d_rcu);
->         else
-> -               call_rcu(&dentry->d_u.d_rcu, __d_free);
-> +               call_rcu_lazy(&dentry->d_u.d_rcu, __d_free);
->  }
->
->  /*
-> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-> index 971f98af48ff..57b3f781760c 100644
-> --- a/fs/eventpoll.c
-> +++ b/fs/eventpoll.c
-> @@ -729,7 +729,7 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
->          * ep->mtx. The rcu read side, reverse_path_check_proc(), does not make
->          * use of the rbn field.
->          */
-> -       call_rcu(&epi->rcu, epi_rcu_free);
-> +       call_rcu_lazy(&epi->rcu, epi_rcu_free);
->
->         percpu_counter_dec(&ep->user->epoll_watches);
->
-> diff --git a/fs/file_table.c b/fs/file_table.c
-> index 5424e3a8df5f..417f57e9cb30 100644
-> --- a/fs/file_table.c
-> +++ b/fs/file_table.c
-> @@ -56,7 +56,7 @@ static inline void file_free(struct file *f)
->         security_file_free(f);
->         if (!(f->f_mode & FMODE_NOACCOUNT))
->                 percpu_counter_dec(&nr_files);
-> -       call_rcu(&f->f_u.fu_rcuhead, file_free_rcu);
-> +       call_rcu_lazy(&f->f_u.fu_rcuhead, file_free_rcu);
->  }
->
->  /*
-> diff --git a/fs/inode.c b/fs/inode.c
-> index bd4da9c5207e..38fe040ddbd6 100644
-> --- a/fs/inode.c
-> +++ b/fs/inode.c
-> @@ -312,7 +312,7 @@ static void destroy_inode(struct inode *inode)
->                         return;
->         }
->         inode->free_inode = ops->free_inode;
-> -       call_rcu(&inode->i_rcu, i_callback);
-> +       call_rcu_lazy(&inode->i_rcu, i_callback);
->  }
->
->  /**
-> --
-> 2.37.1.559.g78731f0fdb-goog
->
+> greg k-h
