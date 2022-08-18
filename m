@@ -2,78 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50BB5C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A40C32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343895AbiHRO7s (ORCPT
+        id S1343959AbiHRPAO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
+        Thu, 18 Aug 2022 11:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343959AbiHRO7M (ORCPT
+        with ESMTP id S1343968AbiHRO7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:59:12 -0400
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFEB3D5AE;
-        Thu, 18 Aug 2022 07:58:51 -0700 (PDT)
-Received: by mail-qt1-f179.google.com with SMTP id l5so1286462qtv.4;
-        Thu, 18 Aug 2022 07:58:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=fPoxGBPf5NZE66FQhKWYb3s56+gNdfQUrK1EC5WHaTg=;
-        b=vTjqruJbEUjKzzkzrmLbrucZ925+PMA7buaADNLtUmbboJBwhNuYXwehHpcGAP5DKM
-         rvWm1De3sxong74kvTjOslfHzthqIkAO4lrm74mQ6RvgF5p1kPz20qo6MnSt6q9PvKHM
-         wFp22fOvVP+ytRkTm5g5zWix33PUEtZzzhFeu7pQrcsiJJXUHHkSTNq2pQPyX3hqthC/
-         27Nd2SBTSE8MN2Pt4s35lMiFRYOGpi1Wg5H6QSMRUzVGlbZOrhMUguBseNmh/KvjhplV
-         bRYlJ79zbWruxz/BQsyxH7JhinlXg7eosZwwEpc4bdMxAYhADt1a4+kmkDylK/J36vlO
-         CAZg==
-X-Gm-Message-State: ACgBeo02g33GQUp0l0tNrBS/GtS0Gkra+maQjYxp+uN0SuqbuSX+RwQc
-        HEyfTaWb9AzuJ7HkrkPnEA==
-X-Google-Smtp-Source: AA6agR6nblJYoeb1H2gBXIhyMUJf+lUVbU/lrXRwPfE27ZZOAGg07tCHpKSQCRMpP9h7iUKbmKd9ug==
-X-Received: by 2002:a05:622a:410:b0:33b:72b2:6038 with SMTP id n16-20020a05622a041000b0033b72b26038mr3024805qtx.627.1660834730751;
-        Thu, 18 Aug 2022 07:58:50 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:c63:5705:782e:33fb:22e5:50bd])
-        by smtp.gmail.com with ESMTPSA id b22-20020a05620a119600b006b9576cd060sm1614260qkk.21.2022.08.18.07.58.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 07:58:50 -0700 (PDT)
-Received: (nullmailer pid 1859341 invoked by uid 1000);
-        Thu, 18 Aug 2022 14:58:48 -0000
-Date:   Thu, 18 Aug 2022 08:58:48 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: pinctrl: samsung: stop using
- bindings header with constants
-Message-ID: <20220818145848.GG1829017-robh@kernel.org>
-References: <20220816133016.77553-1-krzysztof.kozlowski@linaro.org>
- <20220816133016.77553-2-krzysztof.kozlowski@linaro.org>
+        Thu, 18 Aug 2022 10:59:48 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6DF5FF4D;
+        Thu, 18 Aug 2022 07:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=6c4QysROy06K/91x+ohSegEy2p9PNnWFSwlPmnPSrdU=; b=im
+        zUTTwakwMwtAoKlWoVJL1jRlo8hQyDC6xmQ4GPcLRFgPu+GWy1XZUKxmHa5jygoA+rxtAZHfe7j1b
+        cLkaGn7eJhltxAtMx+M2T8KsZBlppuuSiTNnmQqOphIDEmYDtkpUWBfzO7YMXHR9UwhCVGMVoh9/5
+        0MSGCUuUDN3aUI0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oOgzd-00Dl09-Fe; Thu, 18 Aug 2022 16:59:33 +0200
+Date:   Thu, 18 Aug 2022 16:59:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] PCI: Assign PCI domain by ida_alloc()
+Message-ID: <Yv5T1dcIIOPy3KvB@lunn.ch>
+References: <20220702204737.7719-1-pali@kernel.org>
+ <20220714184130.5436-1-pali@kernel.org>
+ <20220818135009.zlivavgw6547hh4s@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220816133016.77553-2-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220818135009.zlivavgw6547hh4s@pali>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 04:30:15PM +0300, Krzysztof Kozlowski wrote:
-> The bindings header with pin controller register values is being
-> deprecated and DTS already switched to a DTS-local header.
-> 
-> Do not reference the bindings header in schema and replace the defines
-> with raw values.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  .../pinctrl/samsung,pinctrl-pins-cfg.yaml     |  1 -
->  .../bindings/pinctrl/samsung,pinctrl.yaml     | 63 ++++++++-----------
->  2 files changed, 27 insertions(+), 37 deletions(-)
+On Thu, Aug 18, 2022 at 03:50:09PM +0200, Pali Rohár wrote:
+> PING?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Pretty much anything sent during the merge window, and just before the
+merge window gets thrown away. Please rebase onto the current pci tree
+and repost.
+
+    Andrew
+ 
