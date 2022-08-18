@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D2FC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B793C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345375AbiHRRDe (ORCPT
+        id S1345458AbiHRRDj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32968 "EHLO
+        Thu, 18 Aug 2022 13:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345446AbiHRRAv (ORCPT
+        with ESMTP id S1345224AbiHRRAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:00:51 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C59BA9DB
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:40 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id r16so2424310wrm.6
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:40 -0700 (PDT)
+        Thu, 18 Aug 2022 13:00:55 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6231769F71
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:46 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id r16so2424602wrm.6
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:00:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Vl3yGL/PUaCIxre193KL2lb6Hcy5Glf78MX+zPmFUzs=;
-        b=Ie4SYam5PwhmHTZToBLLVZBDuFDHvvr32ZMUj4Q2syjfZlxLvU3X8grU2uxi4H+7+X
-         TuLsYtHOTvEFIor/cOf3rI7hXWWxs+XGfLsGan85GUfF/2fbFx3LkOPW7wx3t5KfjIWr
-         HSzQcvNHW06PcQG/DbDlMXnsDa2JuL5kaEX69Hlzs4DDa/QJmJJsyn3wzyMSYUlzQ0Fm
-         VEdegkikb2njM2vu57PTUvTyCKpRUYzOM/c9eZg0S8G97Lo3DUg7sP3NvYRVlNxlDynx
-         F6yjl2byasM02fdi2FlNaiGejGGpBUlOs1N8LPbig5RRFq8CHQvyCR3MHERZ/IHMlOeI
-         S2bQ==
+        bh=E96d+BUrTn5halPp8rfKr4BR8z1gBILVpe/NiX4cSOM=;
+        b=eslQLaOzrcgU+TRthmIrk4mKFUgv2ctqWMVMZzQP0h0E239TBd1c7aKhEo7C/YzZ/C
+         n7qHTZ6qwnHwfEsyv3qjq4zdUnTSfph5M85c2pNWOQGAOexNTh9GYAIZFMPu/I222L9d
+         Mj+MEHoAnDCvD4C5aeMu+PBR7/Ka8JntqGQ9nNqXI9KTFsSJg2M5EbK+I6qTeVcf4hVE
+         TaNmgPLUqAEB4woL44kBOYSY5eqB8JRJnDJo4o7VirvB2PPy5MnHrZwXoWOckXR/DmEF
+         wv9LZpATOuEKyUYgXls4Qc48x1Cx/RXWfTZuJcv6SH1tOUV+reeKOAAqF7hL9Hcs4D04
+         kEig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Vl3yGL/PUaCIxre193KL2lb6Hcy5Glf78MX+zPmFUzs=;
-        b=GLwo/QgJPdng4S+YOCL2/RasSDrcx8TluvSgrb3aLusjQpeANxlTdLF5KhyAEbC5IF
-         MDgRMaGgUckx+vP3MRxRxPGgpmnnhyrzAMLiuJ4wb0Mrl0ru2j/F065Kd8SZDN1iUldc
-         0Klqx0jNE8Eun2CY2oB/xk7w7NB7azxeGcUKHjKASIUlAj9T2sJyKOMhL4yfAPclx5Dx
-         CaO19eMoawhKcwN3HeVNwmfi33mWAevc6XUQSj1Y/Xk4gef66Nj8fFdrSmpwuydpQ7AE
-         r1iFIaPHvbOfQnExLjaAPrQetfrWsZkhqpjoH+1Ip4ikvbmNeit2ThpWVdxwmTLGcS/G
-         FgZg==
-X-Gm-Message-State: ACgBeo2ktkVHasIHTFKqB4Psz16T8N2Lj27dHauChJ2FDjTW92aEnbCV
-        kcicXOGd6WPVfsa6dm8gXdblUQ==
-X-Google-Smtp-Source: AA6agR6+5D0a9Xx14dQ7kPxF8PcZW9AFWmJ5SzJa/C+s7AY/zMXSCcX3So4yeHtKzO9g0xeou5lbzw==
-X-Received: by 2002:a05:6000:18a2:b0:221:7db8:de02 with SMTP id b2-20020a05600018a200b002217db8de02mr2162370wri.132.1660842040330;
-        Thu, 18 Aug 2022 10:00:40 -0700 (PDT)
+        bh=E96d+BUrTn5halPp8rfKr4BR8z1gBILVpe/NiX4cSOM=;
+        b=rbQ6HP6m7SQBaqZAq4eUKicS+Lf8ueDwoi+/y2sfReS3S/70t3hhHqNqpjtsRHxs20
+         Fg/MnRhBBV1SyzTZIQQTXWakA9MuHgokLyBPFklEWrb/LQV/olv2MdvANNHTrbSVQUrx
+         AP/xzZ39hyHDCRH1DWQOcdzwpPtZkCi7R95HW4hYwfqOPpdOF0y2I425hEukaiIwrQJH
+         td1zPVuRkMcDRuDVYe96fqvTKQB5UzEadTsYP6pKctQLZZ/qrIytH6jC0GuxjiJCRB1f
+         t8U1k5gZDec5UN+fsxaKiup1NfmdRHdjuXE4bOfddQDjh43dsiXSpKia261bP+5l3Rxp
+         vHXA==
+X-Gm-Message-State: ACgBeo0TdH86i7k2qdfgHAFZiHvmY33LBRrr1OXtwZsWV+TZavYhWKZ0
+        JyhefGx10QmoLsyqNvoO52j3Jw==
+X-Google-Smtp-Source: AA6agR4jWu5q16URuIM703Kk3SvvJ3fM5QAgSFFuhVHEhWOkBCOL26w1vKN1rgalbG1P0R6Kg4uQJw==
+X-Received: by 2002:adf:e10c:0:b0:225:3168:c261 with SMTP id t12-20020adfe10c000000b002253168c261mr1433771wrz.159.1660842045923;
+        Thu, 18 Aug 2022 10:00:45 -0700 (PDT)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.38
+        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:00:39 -0700 (PDT)
+        Thu, 18 Aug 2022 10:00:45 -0700 (PDT)
 From:   Dmitry Safonov <dima@arista.com>
 To:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -70,9 +70,9 @@ Cc:     Dmitry Safonov <dima@arista.com>,
         Salam Noureddine <noureddine@arista.com>,
         Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org
-Subject: [PATCH 18/31] net/tcp: Add TCP-AO segments counters
-Date:   Thu, 18 Aug 2022 17:59:52 +0100
-Message-Id: <20220818170005.747015-19-dima@arista.com>
+Subject: [PATCH 22/31] net/tcp: Add option for TCP-AO to (not) hash header
+Date:   Thu, 18 Aug 2022 17:59:56 +0100
+Message-Id: <20220818170005.747015-23-dima@arista.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220818170005.747015-1-dima@arista.com>
 References: <20220818170005.747015-1-dima@arista.com>
@@ -82,9 +82,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce segment counters that are useful for troubleshooting/debugging
-as well as for writing tests.
-Now there are global snmp counters as well as per-socket and per-key.
+Provide setsockopt() key flag that makes TCP-AO exclude hashing TCP
+header for peers that match the key. This is needed for interraction
+with middleboxes that may change TCP options, see RFC5925 (9.2).
 
 Co-developed-by: Francesco Ruggeri <fruggeri@arista.com>
 Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
@@ -92,204 +92,56 @@ Co-developed-by: Salam Noureddine <noureddine@arista.com>
 Signed-off-by: Salam Noureddine <noureddine@arista.com>
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- include/net/dropreason.h  | 15 +++++++++++----
- include/net/tcp.h         |  9 ++++++++-
- include/net/tcp_ao.h      | 10 ++++++++++
- include/uapi/linux/snmp.h |  4 ++++
- net/ipv4/proc.c           |  4 ++++
- net/ipv4/tcp_ao.c         | 25 ++++++++++++++++++++++---
- 6 files changed, 59 insertions(+), 8 deletions(-)
+ include/uapi/linux/tcp.h | 2 ++
+ net/ipv4/tcp_ao.c        | 8 +++++---
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index b4906323b9a7..dd90cca282eb 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason.h
-@@ -81,17 +81,24 @@ enum skb_drop_reason {
- 	 */
- 	SKB_DROP_REASON_TCP_MD5FAILURE,
- 	/**
--	 * @SKB_DROP_REASON_TCP_AONOTFOUND: no TCP-AO hash and one was expected
-+	 * @SKB_DROP_REASON_TCP_AONOTFOUND: no TCP-AO hash and one was expected,
-+	 * corresponding to LINUX_MIB_TCPAOREQUIRED
- 	 */
- 	SKB_DROP_REASON_TCP_AONOTFOUND,
- 	/**
- 	 * @SKB_DROP_REASON_TCP_AOUNEXPECTED: TCP-AO hash is present and it
--	 * was not expected.
-+	 * was not expected, corresponding to LINUX_MIB_TCPAOKEYNOTFOUND
- 	 */
- 	SKB_DROP_REASON_TCP_AOUNEXPECTED,
--	/** @SKB_DROP_REASON_TCP_AOKEYNOTFOUND: TCP-AO key is unknown */
-+	/**
-+	 * @SKB_DROP_REASON_TCP_AOKEYNOTFOUND: TCP-AO key is unknown,
-+	 * corresponding to LINUX_MIB_TCPAOKEYNOTFOUND
-+	 */
- 	SKB_DROP_REASON_TCP_AOKEYNOTFOUND,
--	/** @SKB_DROP_REASON_TCP_AOFAILURE: TCP-AO hash is wrong */
-+	/**
-+	 * @SKB_DROP_REASON_TCP_AOFAILURE: TCP-AO hash is wrong,
-+	 * corresponding to LINUX_MIB_TCPAOBAD
-+	 */
- 	SKB_DROP_REASON_TCP_AOFAILURE,
- 	/**
- 	 * @SKB_DROP_REASON_SOCKET_BACKLOG: failed to add skb to socket backlog (
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 2e75c542e7ed..94573219f58d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2538,8 +2538,15 @@ tcp_inbound_hash(struct sock *sk, const struct request_sock *req,
- 		 * always at least one current_key.
- 		 */
- #ifdef CONFIG_TCP_AO
--		if (unlikely(tcp_ao_do_lookup(sk, saddr, family, -1, -1, 0)))
-+		if (unlikely(tcp_ao_do_lookup(sk, saddr, family, -1, -1, 0))) {
-+			struct tcp_ao_info *ao_info;
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index 508bedbc6ad8..b60933ee2a27 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -347,6 +347,8 @@ struct tcp_diag_md5sig {
+ 
+ #define TCP_AO_MAXKEYLEN	80
+ 
++#define TCP_AO_KEYF_EXCLUDE_OPT	(1 << 0)
 +
-+			ao_info = rcu_dereference_check(tcp_sk(sk)->ao_info,
-+					lockdep_sock_is_held(sk));
-+			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAOREQUIRED);
-+			atomic64_inc(&ao_info->counters.ao_required);
- 			return SKB_DROP_REASON_TCP_AONOTFOUND;
-+		}
- #endif
- 		if (unlikely(tcp_md5_do_lookup(sk, l3index, saddr, family))) {
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
-diff --git a/include/net/tcp_ao.h b/include/net/tcp_ao.h
-index 7cb802de49ba..dbeaa7d4e212 100644
---- a/include/net/tcp_ao.h
-+++ b/include/net/tcp_ao.h
-@@ -20,6 +20,13 @@ struct tcp_ao_hdr {
- 	u8	rnext_keyid;
- };
- 
-+struct tcp_ao_counters {
-+	atomic64_t	pkt_good;
-+	atomic64_t	pkt_bad;
-+	atomic64_t	key_not_found;
-+	atomic64_t	ao_required;
-+};
-+
- struct tcp_ao_key {
- 	struct hlist_node	node;
- 	union tcp_ao_addr	addr;
-@@ -35,6 +42,8 @@ struct tcp_ao_key {
- 	u8			maclen;
- 	u8			digest_size;
- 	struct rcu_head		rcu;
-+	atomic64_t		pkt_good;
-+	atomic64_t		pkt_bad;
- 	u8			traffic_keys[];
- };
- 
-@@ -78,6 +87,7 @@ struct tcp_ao_info {
- 	 */
- 	struct tcp_ao_key	*volatile current_key;
- 	struct tcp_ao_key	*rnext_key;
-+	struct tcp_ao_counters	counters;
- 	u8			ao_flags;
- 	__be32			lisn;
- 	__be32			risn;
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 4d7470036a8b..f09119db8b40 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -292,6 +292,10 @@ enum
- 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
- 	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
- 	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
-+	LINUX_MIB_TCPAOREQUIRED,		/* TCPAORequired */
-+	LINUX_MIB_TCPAOBAD,			/* TCPAOBad */
-+	LINUX_MIB_TCPAOKEYNOTFOUND,		/* TCPAOKeyNotFound */
-+	LINUX_MIB_TCPAOGOOD,			/* TCPAOGood */
- 	__LINUX_MIB_MAX
- };
- 
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 0088a4c64d77..1b5a078adcf1 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -297,6 +297,10 @@ static const struct snmp_mib snmp4_net_list[] = {
- 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
- 	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
- 	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
-+	SNMP_MIB_ITEM("TCPAORequired", LINUX_MIB_TCPAOREQUIRED),
-+	SNMP_MIB_ITEM("TCPAOBad", LINUX_MIB_TCPAOBAD),
-+	SNMP_MIB_ITEM("TCPAOKeyNotFound", LINUX_MIB_TCPAOKEYNOTFOUND),
-+	SNMP_MIB_ITEM("TCPAOGood", LINUX_MIB_TCPAOGOOD),
- 	SNMP_MIB_SENTINEL
- };
- 
+ #define TCP_AO_CMDF_CURR	(1 << 0)	/* Only checks field sndid */
+ #define TCP_AO_CMDF_NEXT	(1 << 1)	/* Only checks field rcvid */
+ #define TCP_AO_CMDF_ACCEPT_ICMP	(1 << 2)	/* Accept incoming ICMPs */
 diff --git a/net/ipv4/tcp_ao.c b/net/ipv4/tcp_ao.c
-index 10cd6af3c45f..3a33733a714d 100644
+index 858295393643..6e18a8cdee90 100644
 --- a/net/ipv4/tcp_ao.c
 +++ b/net/ipv4/tcp_ao.c
-@@ -216,6 +216,8 @@ struct tcp_ao_key *tcp_ao_copy_key(struct sock *sk, struct tcp_ao_key *key)
- 	*new_key = *key;
- 	INIT_HLIST_NODE(&new_key->node);
- 	crypto_pool_add(new_key->crypto_pool_id);
-+	atomic64_set(&new_key->pkt_good, 0);
-+	atomic64_set(&new_key->pkt_bad, 0);
- 
- 	return new_key;
- }
-@@ -656,14 +658,25 @@ tcp_ao_verify_hash(const struct sock *sk, const struct sk_buff *skb,
- 	u8 maclen = aoh->length - sizeof(struct tcp_ao_hdr);
- 	const struct tcphdr *th = tcp_hdr(skb);
- 
--	if (maclen != tcp_ao_maclen(key))
-+	if (maclen != tcp_ao_maclen(key)) {
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAOBAD);
-+		atomic64_inc(&info->counters.pkt_bad);
-+		atomic64_inc(&key->pkt_bad);
- 		return SKB_DROP_REASON_TCP_AOFAILURE;
-+	}
- 
- 	/* XXX: make it per-AF callback? */
- 	tcp_ao_hash_skb(family, newhash, key, sk, skb, traffic_key,
- 			(phash - (u8 *)th), sne);
--	if (memcmp(phash, newhash, maclen))
-+	if (memcmp(phash, newhash, maclen)) {
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAOBAD);
-+		atomic64_inc(&info->counters.pkt_bad);
-+		atomic64_inc(&key->pkt_bad);
- 		return SKB_DROP_REASON_TCP_AOFAILURE;
-+	}
-+	NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAOGOOD);
-+	atomic64_inc(&info->counters.pkt_good);
-+	atomic64_inc(&key->pkt_good);
- 	return SKB_NOT_DROPPED_YET;
+@@ -586,7 +586,8 @@ int tcp_ao_hash_hdr(unsigned short int family, char *ao_hash,
+ 						&saddr->a6, th->doff * 4))
+ 			goto clear_hash;
+ 	}
+-	if (tcp_ao_hash_header(&hp, th, false,
++	if (tcp_ao_hash_header(&hp, th,
++			       !!(key->keyflags & TCP_AO_KEYF_EXCLUDE_OPT),
+ 			       ao_hash, hash_offset, tcp_ao_maclen(key)))
+ 		goto clear_hash;
+ 	ahash_request_set_crypt(hp.req, NULL, ao_hash, 0);
+@@ -628,7 +629,8 @@ int tcp_ao_hash_skb(unsigned short int family,
+ 		goto clear_hash;
+ 	if (tcp_ao_hash_pseudoheader(family, sk, skb, &hp, skb->len))
+ 		goto clear_hash;
+-	if (tcp_ao_hash_header(&hp, th, false,
++	if (tcp_ao_hash_header(&hp, th,
++			       !!(key->keyflags & TCP_AO_KEYF_EXCLUDE_OPT),
+ 			       ao_hash, hash_offset, tcp_ao_maclen(key)))
+ 		goto clear_hash;
+ 	if (tcp_ao_hash_skb_data(&hp, skb, th->doff << 2))
+@@ -1416,7 +1418,7 @@ static bool tcp_ao_mkt_overlap_v6(struct tcp_ao *cmd,
+ 	return false;
  }
  
-@@ -683,8 +696,10 @@ tcp_inbound_ao_hash(struct sock *sk, const struct sk_buff *skb,
- 	u32 sne;
- 
- 	info = rcu_dereference(tcp_sk(sk)->ao_info);
--	if (!info)
-+	if (!info) {
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAOKEYNOTFOUND);
- 		return SKB_DROP_REASON_TCP_AOUNEXPECTED;
-+	}
- 
- 	/* Fast-path */
- 	/* TODO: fix fastopen and simultaneous open (TCPF_SYN_RECV) */
-@@ -763,6 +778,8 @@ tcp_inbound_ao_hash(struct sock *sk, const struct sk_buff *skb,
- 				  traffic_key, phash, sne);
- 
- key_not_found:
-+	NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAOKEYNOTFOUND);
-+	atomic64_inc(&info->counters.key_not_found);
- 	return SKB_DROP_REASON_TCP_AOKEYNOTFOUND;
- }
- 
-@@ -1416,6 +1433,8 @@ static int tcp_ao_add_cmd(struct sock *sk, unsigned short int family,
- 	key->keyflags	= cmd.tcpa_keyflags;
- 	key->sndid	= cmd.tcpa_sndid;
- 	key->rcvid	= cmd.tcpa_rcvid;
-+	atomic64_set(&key->pkt_good, 0);
-+	atomic64_set(&key->pkt_bad, 0);
- 
- 	ret = tcp_ao_parse_crypto(&cmd, key);
- 	if (ret < 0)
+-#define TCP_AO_KEYF_ALL		(0)
++#define TCP_AO_KEYF_ALL		(TCP_AO_KEYF_EXCLUDE_OPT)
+ #define TCP_AO_CMDF_ADDMOD_VALID					\
+ 	(TCP_AO_CMDF_CURR | TCP_AO_CMDF_NEXT | TCP_AO_CMDF_ACCEPT_ICMP)
+ #define TCP_AO_CMDF_DEL_VALID						\
 -- 
 2.37.2
 
