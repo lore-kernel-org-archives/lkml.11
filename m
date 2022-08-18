@@ -2,134 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D5BC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375BEC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344002AbiHRRoC (ORCPT
+        id S1344250AbiHRRon (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
+        Thu, 18 Aug 2022 13:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239531AbiHRRn6 (ORCPT
+        with ESMTP id S245444AbiHRRod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:43:58 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B79E61D47
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:43:56 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id i2so1124506vkk.13
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:43:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=1b9aTxIIz9/74/jYE0z5xvzqLFfDp/MoiZcviUgQWJ8=;
-        b=Du+adRQQBzyfPvEtwcg6Q6ErkgIm3DL4MsEH4J9V/VihvaXqlIpoazABA4ake/s+QY
-         SdIjmTgU4xgML/xDG3oW1BVlUEHH50QwzUHSU8HexnO1MQjTKXqD0ZxuQToamtoYJ55g
-         LJF93G4W48p1Eqd9GdnglIwVnNmxi7s6oGhC4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=1b9aTxIIz9/74/jYE0z5xvzqLFfDp/MoiZcviUgQWJ8=;
-        b=CRUTiFa8Gxrb/h4mzmEkHVD2TwknSJMeL8M0oZ+OXliacrYY761F8wFE0dv06bVLN3
-         UzhALVjAEXAc4O11jLoGbYLYElORLlckuw/9G2VcODFVY2O23xX9lz7HClByVw1V+GSy
-         /VLG1s8WXN9guzugoY3o870iw19kBH9LtUlnNcoQH5GvVSE5QtGm5UXlY8FXPNgWQNzd
-         p93Z1D7nBp9i8S1qKz4VAHHNyM7XNdSYKCFfUgoMTOHEcRJFKmvxEktF+AFQYcgVP8Gt
-         XnlhGIP7YXSHgHARkwHrMHe3XPd/oRhjaNqVOpAYxnhekfl0LbYm4ifg9bhqzgh1cbWM
-         x9Ig==
-X-Gm-Message-State: ACgBeo2DrVMxipJHShzsFYkr/mYZ9rvAcY/yXhaQcL5zXMnU9xly6Awp
-        dwQ2KWUodaf2QLIMd04GV4ErOcegAUcqtg==
-X-Google-Smtp-Source: AA6agR6Ed3bJ1tj/eY87c9qpCUscsbdXgkaboJGfRdNeE6zRI15LSQjq+lxuIgjOSciGs8M3sKk2Ww==
-X-Received: by 2002:a1f:2d06:0:b0:380:679d:fb9b with SMTP id t6-20020a1f2d06000000b00380679dfb9bmr1667591vkt.25.1660844635509;
-        Thu, 18 Aug 2022 10:43:55 -0700 (PDT)
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
-        by smtp.gmail.com with ESMTPSA id q206-20020a1fa7d7000000b0038030db4c79sm1266049vke.54.2022.08.18.10.43.54
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 10:43:54 -0700 (PDT)
-Received: by mail-vs1-f51.google.com with SMTP id k2so2197875vsk.8
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:43:54 -0700 (PDT)
-X-Received: by 2002:a67:a20d:0:b0:388:5ed2:7c7b with SMTP id
- l13-20020a67a20d000000b003885ed27c7bmr1621593vse.5.1660844633605; Thu, 18 Aug
- 2022 10:43:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220818084216.1.I5c2b6fea19c4c0dec67fd4931f03df8e5ccaca95@changeid>
-In-Reply-To: <20220818084216.1.I5c2b6fea19c4c0dec67fd4931f03df8e5ccaca95@changeid>
-From:   Alexandru M Stan <amstan@chromium.org>
-Date:   Thu, 18 Aug 2022 10:43:17 -0700
-X-Gmail-Original-Message-ID: <CAHNYxRzRgqXPq0s3Pop_t0K+yAyO4MX1D1jY0buqw7s8kv0F=A@mail.gmail.com>
-Message-ID: <CAHNYxRzRgqXPq0s3Pop_t0K+yAyO4MX1D1jY0buqw7s8kv0F=A@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sc7180: Add sleep state for alc5682 codec
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     linux-arm-msm@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Judy Hsiao <judyhsiao@chromium.org>,
+        Thu, 18 Aug 2022 13:44:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200696DF83;
+        Thu, 18 Aug 2022 10:44:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2A0061483;
+        Thu, 18 Aug 2022 17:44:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9FFC433D6;
+        Thu, 18 Aug 2022 17:44:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660844671;
+        bh=F0dLsyFk+o04xQlOLvO9/Ou9gm/M3ttHAiXvV1wwzFg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xAmI1EyszQXo/zES8oOcW78m1v9hPkneNL/rjhzSZ9vcX+mr3e9hDWl1mEwUqAZZE
+         QT3SQTI+ZC4OvKT3hwqJbnhVbthdhfnF9gjCZicApPv1s9PLqQ06nusOsIPkftvmBQ
+         RZ5XuI9CVOdHuIh1osj/84BrTy6ageTDQaLCEceM=
+Date:   Thu, 18 Aug 2022 19:44:28 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2 3/9] usb: dwc3: qcom: fix gadget-only builds
+Message-ID: <Yv56fFpuUsxCSxJ8@kroah.com>
+References: <20220804151001.23612-1-johan+linaro@kernel.org>
+ <20220804151001.23612-4-johan+linaro@kernel.org>
+ <YvEKIJ+GujHt7XvT@kroah.com>
+ <YvEQ0hpTRvAPStHU@hovoldconsulting.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvEQ0hpTRvAPStHU@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 8:42 AM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
->
-> Add sleep state to acl5682. In default, gpio28 (HP_IRQ) is bias-pull-up.
-> To save power, in the new sleep state, gpio28 is bias-disable.
->
-> sleeping, /sys/kernel/debug/gpio shows gpio28 as "no pull". When codec
-> is awake (microphone plugged in and in use), it shows gpio28 as "pull up".
->
-> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
-> ---
->
->  arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-> index b5f534db135a..94dd6c34d997 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-> @@ -755,8 +755,9 @@ hp_i2c: &i2c9 {
->         alc5682: codec@1a {
->                 compatible = "realtek,rt5682i";
->                 reg = <0x1a>;
-> -               pinctrl-names = "default";
-> +               pinctrl-names = "default", "sleep";
->                 pinctrl-0 = <&hp_irq>;
-> +               pinctrl-1 = <&hp_sleep>;
->
->                 #sound-dai-cells = <1>;
->
-> @@ -1336,6 +1337,18 @@ pinconf {
->                 };
->         };
->
-> +       hp_sleep: hp-sleep {
-> +               pinmux {
-> +                       pins = "gpio28";
-> +                       function = "gpio";
-> +               };
-> +
-> +               pinconf {
-> +                       pins = "gpio28";
-> +                       bias-disable;
-> +               };
-> +       };
-> +
->         pen_irq_l: pen-irq-l {
->                 pinmux {
->                         pins = "gpio21";
-> --
-> 2.31.0
->
+On Mon, Aug 08, 2022 at 03:34:10PM +0200, Johan Hovold wrote:
+> On Mon, Aug 08, 2022 at 03:05:36PM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Aug 04, 2022 at 05:09:55PM +0200, Johan Hovold wrote:
+> > > A recent change added a dependency to the USB host stack and broke
+> > > gadget-only builds of the driver.
+> > > 
+> > > Fixes: 6895ea55c385 ("usb: dwc3: qcom: Configure wakeup interrupts during suspend")
+> > > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > > ---
+> > > 
+> > > Changes in v2
+> > >  - new patch
+> > > 
+> > >  drivers/usb/dwc3/dwc3-qcom.c | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+> > > index be2e3dd36440..e9364141661b 100644
+> > > --- a/drivers/usb/dwc3/dwc3-qcom.c
+> > > +++ b/drivers/usb/dwc3/dwc3-qcom.c
+> > > @@ -310,8 +310,11 @@ static enum usb_device_speed dwc3_qcom_read_usb2_speed(struct dwc3_qcom *qcom)
+> > >  	 * currently supports only 1 port per controller. So
+> > >  	 * this is sufficient.
+> > >  	 */
+> > > +#ifdef CONFIG_USB
+> > >  	udev = usb_hub_find_child(hcd->self.root_hub, 1);
+> > 
+> > If a gadget driver needs this for some reason, then the #ifdef should be
+> > put in a .h file, not in a .c file.
+> 
+> Yeah, if we're keeping this long-term then yes, and possibly also
+> otherwise.
+> 
+> > But step back a minute and ask why a host-config-only function is being
+> > called when a device is in gadget-only mode?  This feels like a
+> > design/logic issue in this file, NOT something to paper over with a
+> > #ifdef in a .c file
+> 
+> We're not as I'm fixing that bug in later in the series. I should
+> probably have put this one after that fix, but figured fixing the build
+> was more important than a harder-to-hit NULL-deref due to non-host mode
+> not being considered when the offending series was merged.
+> 
+> > This implies that if this device is NOT in a host configuration, then
+> > the suspend path of it is not configured properly at all, as why would
+> > it be checking or caring about this at all if this is in gadget-only
+> > mode?
+> 
+> Right, so see path 6/9 which addresses this by only calling this hack
+> when in host mode:
+> 
+> 	https://lore.kernel.org/all/20220804151001.23612-7-johan+linaro@kernel.org/
+> 
+> > Something else is wrong here, let's fix the root problem please.  Maybe
+> > this driver should just never be built in gadget-only mode, as it is
+> > never intended to support that option?
+> 
+> The problem is commit 6895ea55c385 ("usb: dwc3: qcom: Configure wakeup
+> interrupts during suspend"), which I considered simply reverting but as
+> that breaks suspend completely on some boards I decided to try and fix
+> it up while we work on a proper long-term solution (i.e. for how the
+> dwc/xhci layers should be communicating to implement this).
+> 
+> Remember that it took two years and 21 revisions to get to the state
+> we're at now after you merged the wakeup series in June.
 
-Thanks, this should save us a current leak.
+Very good point.  This is a mess, thanks for cleaning it up.  I've
+applied this series now and will get it into 6.0-final, hopefully all
+should be good now.
 
-Reviewed-by: Alexandru Stan <amstan@chromium.org>
+thanks for doing this work.
+
+greg k-h
