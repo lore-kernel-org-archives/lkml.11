@@ -2,161 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666B5C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3BBC2BB41
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343641AbiHROnG (ORCPT
+        id S1343675AbiHROnj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        Thu, 18 Aug 2022 10:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245512AbiHROnE (ORCPT
+        with ESMTP id S1343670AbiHROnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:43:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828DBBB682
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:43:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 3FFE05C0E6;
-        Thu, 18 Aug 2022 14:43:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660833781; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ehxxtYiT/7vGJ/TPD19SxbCiDD4CS1ffwYO+jD11F24=;
-        b=x2Oooyr1rv5hXpbjYlHXDOOrE7K3hD6lAiVEA/XSyALwUdztMiSJmLy/KS/ZdGualdBWTt
-        e/krfuSrm5lscR0XntpSI3/pHprH8hNZt/eLknXIuEzKfhpbu0cyb6e7VQmHAGONS1IeOv
-        ytEJ2cMsMP8GH/7JrD6tFG8Pmvc2vE0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660833781;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ehxxtYiT/7vGJ/TPD19SxbCiDD4CS1ffwYO+jD11F24=;
-        b=moUWDkKjDbNLwr6Zj/MMtN8mOrAGY4g+PoTls3SPvljI+DDA29zMEAeHT0nC40swNDfHxf
-        Nza99WP4WdzTTkAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C8032133B5;
-        Thu, 18 Aug 2022 14:43:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id zlr7LfRP/mJNAwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 18 Aug 2022 14:43:00 +0000
-Message-ID: <9ef46ec0-f0fc-3712-b140-53e1471dd5d2@suse.cz>
-Date:   Thu, 18 Aug 2022 16:41:28 +0200
+        Thu, 18 Aug 2022 10:43:35 -0400
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F886277;
+        Thu, 18 Aug 2022 07:43:32 -0700 (PDT)
+Received: by mail-pj1-f43.google.com with SMTP id s3-20020a17090a2f0300b001facfc6fdbcso1379195pjd.1;
+        Thu, 18 Aug 2022 07:43:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=7IrASqplrkVpiIiYhE5AJVZ21/g9GJs8NehtB1NbKQo=;
+        b=O1rX+4vyvcZ1+ChzNRfjvogwelOlPltwxrBtxH+m5zikEWlAoFoEfUhIXnF7XZFA7B
+         g20deZBsLSDbxFSjn7MTh1GX1sWzPiwthgt6lSoqQUQyhU1F7RhSseXP6uT1p9fek5IT
+         xT+nKp5EnkJarL6eMOV2ecvzJtR5Z8z91Xy3ElYPUgcxWbeS2ODQY/BYm9Tz+gB/9iYu
+         I6XBAriZ96RNuBkcI7RSsK+y3YYXUmRkTk8XVeIO7MbK54X5QiSERfgOoislkzjolEHo
+         29dFr8nKnee4h87j6tMK/2To8mShxAwLZHQLeEVbLv1oQob01D3yRMq3/lfBR8RUtkE6
+         ZanA==
+X-Gm-Message-State: ACgBeo083RBP6XqPr0Jl6rldDUip+fWJgxirQk2M+txSHazLB8kVPK/Q
+        GGPgS8+RUmwp4mI/Jc9m6w==
+X-Google-Smtp-Source: AA6agR4Ukpo8yvJAoeBSb8oFuIf6y3f7mzBWJQVcAch9qQg64UnhWee8W2i84xMGO7MLrU5vbciCvg==
+X-Received: by 2002:a17:902:ecce:b0:16e:e6e9:69ba with SMTP id a14-20020a170902ecce00b0016ee6e969bamr3177308plh.97.1660833812118;
+        Thu, 18 Aug 2022 07:43:32 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:80c2:7290:7acd:8d54:3db6:21d4])
+        by smtp.gmail.com with ESMTPSA id y8-20020a170902864800b0016f8e8032c4sm762868plt.129.2022.08.18.07.43.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 07:43:31 -0700 (PDT)
+Received: (nullmailer pid 1837696 invoked by uid 1000);
+        Thu, 18 Aug 2022 14:43:26 -0000
+Date:   Thu, 18 Aug 2022 08:43:26 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     lee.jones@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        kishon@ti.com, vkoul@kernel.org, dan.carpenter@oracle.com,
+        grygorii.strashko@ti.com, rogerq@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: phy: ti: phy-gmii-sel: Add bindings
+ for J7200
+Message-ID: <20220818144326.GA1829017-robh@kernel.org>
+References: <20220816055848.111482-1-s-vadapalli@ti.com>
+ <20220816055848.111482-2-s-vadapalli@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v9] mm/page_owner.c: add llseek for page_owner
-Content-Language: en-US
-To:     Kassey Li <quic_yingangl@quicinc.com>, akpm@linux-foundation.org,
-        vbabka@kernel.org
-Cc:     minchan@kernel.org, iamjoonsoo.kim@lge.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <20220818022425.31056-1-quic_yingangl@quicinc.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220818022425.31056-1-quic_yingangl@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816055848.111482-2-s-vadapalli@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/18/22 04:24, Kassey Li wrote:
-> It is too slow to dump all the pages, in some usage we just want dump
-> a given start pfn, for example: CMA range or a single page.
+On Tue, Aug 16, 2022 at 11:28:47AM +0530, Siddharth Vadapalli wrote:
+> TI's J7200 SoC supports additional PHY modes like QSGMII and SGMII
+> that are not supported on earlier SoCs. Add a compatible for it.
 > 
-> To speed up and save time, this change allows specify start pfn
-> by add llseek for page_onwer.
-> 
-> Suggested-by: Vlastimil Babka <vbabka@suse.cz>
-> Signed-off-by: Kassey Li <quic_yingangl@quicinc.com>
-
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-
+> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 > ---
->  Documentation/mm/page_owner.rst |  5 +++++
->  mm/page_owner.c                 | 24 +++++++++++++++++++++---
->  2 files changed, 26 insertions(+), 3 deletions(-)
+>  .../mfd/ti,j721e-system-controller.yaml       |  5 ++++
+>  .../bindings/phy/ti,phy-gmii-sel.yaml         | 27 ++++++++++++++++++-
+>  2 files changed, 31 insertions(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/mm/page_owner.rst b/Documentation/mm/page_owner.rst
-> index f5c954afe97c..f18fd8907049 100644
-> --- a/Documentation/mm/page_owner.rst
-> +++ b/Documentation/mm/page_owner.rst
-> @@ -94,6 +94,11 @@ Usage
->  	Page allocated via order XXX, ...
->  	PFN XXX ...
->  	// Detailed stack
-> +    By default, it will do full pfn dump, to start with a given pfn,
-> +    page_owner supports fseek.
-> +
-> +    FILE *fp = fopen("/sys/kernel/debug/page_owner", "r");
-> +    fseek(fp, pfn_start, SEEK_SET);
+> diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+> index 73cffc45e056..527fd47b648b 100644
+> --- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+> @@ -54,6 +54,11 @@ patternProperties:
+>      description:
+>        Clock provider for TI EHRPWM nodes.
 >  
->     The ``page_owner_sort`` tool ignores ``PFN`` rows, puts the remaining rows
->     in buf, uses regexp to extract the page order value, counts the times
-> diff --git a/mm/page_owner.c b/mm/page_owner.c
-> index e4c6f3f1695b..25720d81bc26 100644
-> --- a/mm/page_owner.c
-> +++ b/mm/page_owner.c
-> @@ -497,8 +497,10 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
->  		return -EINVAL;
->  
->  	page = NULL;
-> -	pfn = min_low_pfn + *ppos;
-> -
-> +	if (*ppos == 0)
-> +		pfn = min_low_pfn;
-> +	else
-> +		pfn = *ppos;
->  	/* Find a valid PFN or the start of a MAX_ORDER_NR_PAGES area */
->  	while (!pfn_valid(pfn) && (pfn & (MAX_ORDER_NR_PAGES - 1)) != 0)
->  		pfn++;
-> @@ -561,7 +563,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
->  			continue;
->  
->  		/* Record the next PFN to read in the file offset */
-> -		*ppos = (pfn - min_low_pfn) + 1;
-> +		*ppos = pfn + 1;
->  
->  		return print_page_owner(buf, count, pfn, page,
->  				page_owner, handle);
-> @@ -570,6 +572,21 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
->  	return 0;
->  }
->  
-> +static loff_t lseek_page_owner(struct file *file, loff_t offset, int orig)
-> +{
-> +	switch (orig) {
-> +	case SEEK_SET:
-> +		file->f_pos = offset;
-> +		break;
-> +	case SEEK_CUR:
-> +		file->f_pos += offset;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +	return file->f_pos;
-> +}
-> +
->  static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
->  {
->  	unsigned long pfn = zone->zone_start_pfn;
-> @@ -660,6 +677,7 @@ static void init_early_allocated_pages(void)
->  
->  static const struct file_operations proc_page_owner_operations = {
->  	.read		= read_page_owner,
-> +	.llseek		= lseek_page_owner,
->  };
->  
->  static int __init pageowner_init(void)
+> +  "phy@[0-9a-f]+$":
+> +    type: object
+> +    description:
+> +      This is the register to set phy mode through phy-gmii-sel driver.
 
+No properties for this node? A whole node for 1 register?
+
+Or this node is ti,phy-gmii-sel.yaml? If so, add a $ref to it.
+
+> +
+>  required:
+>    - compatible
+>    - reg
+> diff --git a/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml b/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
+> index ff8a6d9eb153..54da408d0360 100644
+> --- a/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
+> +++ b/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
+> @@ -53,12 +53,21 @@ properties:
+>        - ti,am43xx-phy-gmii-sel
+>        - ti,dm814-phy-gmii-sel
+>        - ti,am654-phy-gmii-sel
+> +      - ti,j7200-cpsw5g-phy-gmii-sel
+>  
+>    reg:
+>      maxItems: 1
+>  
+>    '#phy-cells': true
+>  
+> +  ti,qsgmii-main-ports:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: |
+> +      Required only for QSGMII mode. Array to select the port for
+> +      QSGMII main mode. Rest of the ports are selected as QSGMII_SUB
+> +      ports automatically. Any one of the 4 CPSW5G ports can act as the
+> +      main port with the rest of them being the QSGMII_SUB ports.
+
+Constraints? 
+
+> +
+>  allOf:
+>    - if:
+>        properties:
+> @@ -73,6 +82,22 @@ allOf:
+>          '#phy-cells':
+>            const: 1
+>            description: CPSW port number (starting from 1)
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - ti,j7200-cpsw5g-phy-gmii-sel
+> +    then:
+> +      properties:
+> +        '#phy-cells':
+> +          const: 1
+> +          description: CPSW port number (starting from 1)
+> +        ti,qsgmii-main-ports:
+> +          maxItems: 1
+
+An array, but only 1 entry allowed?
+
+> +          items:
+> +            minimum: 1
+> +            maximum: 4
+
+Can't this be up above?
+
+>    - if:
+>        properties:
+>          compatible:
+> @@ -97,7 +122,7 @@ additionalProperties: false
+>  
+>  examples:
+>    - |
+> -    phy_gmii_sel: phy-gmii-sel@650 {
+> +    phy_gmii_sel: phy@650 {
+>          compatible = "ti,am3352-phy-gmii-sel";
+>          reg = <0x650 0x4>;
+>          #phy-cells = <2>;
+> -- 
+> 2.25.1
+> 
