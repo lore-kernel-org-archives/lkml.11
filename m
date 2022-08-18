@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5217C28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:29:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F366C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241602AbiHRJ3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 05:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+        id S241825AbiHRJcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 05:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbiHRJ3q (ORCPT
+        with ESMTP id S233816AbiHRJcO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 05:29:46 -0400
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429297F112;
-        Thu, 18 Aug 2022 02:29:43 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.169])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4M7fgv49wJzKMvT;
-        Thu, 18 Aug 2022 17:28:11 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP4 (Coremail) with SMTP id gCh0CgAXHfqDBv5ibCYCAg--.62434S3;
-        Thu, 18 Aug 2022 17:29:41 +0800 (CST)
-Subject: Re: [PATCH v7 9/9] blk-throttle: clean up flag 'THROTL_TG_PENDING'
-To:     Tejun Heo <tj@kernel.org>, Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        "yukuai (C)" <yukuai3@huawei.com>
-References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
- <20220802140415.2960284-10-yukuai1@huaweicloud.com>
- <Yvv6kk/RD5LT+3dk@slm.duckdns.org>
- <65d93ec6-2465-35f1-314f-f092ce631100@huaweicloud.com>
- <Yv0rR9gBL0qbYeXp@slm.duckdns.org>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <841b7b5a-b908-649a-c09d-32c8de5f1c14@huaweicloud.com>
-Date:   Thu, 18 Aug 2022 17:29:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 18 Aug 2022 05:32:14 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E509A954
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 02:32:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VMaE0Lu_1660815129;
+Received: from 30.227.66.106(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VMaE0Lu_1660815129)
+          by smtp.aliyun-inc.com;
+          Thu, 18 Aug 2022 17:32:10 +0800
+Message-ID: <16a13735-1349-9927-0f7b-1c5622198e2a@linux.alibaba.com>
+Date:   Thu, 18 Aug 2022 17:32:09 +0800
 MIME-Version: 1.0
-In-Reply-To: <Yv0rR9gBL0qbYeXp@slm.duckdns.org>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgAXHfqDBv5ibCYCAg--.62434S3
-X-Coremail-Antispam: 1UD129KBjvdXoWrZr1xAr1xGFyfAr13Xw1fWFg_yoWkZFbE93
-        4YkrZ7Kwn5ZrsxAanxKrn0va9rWF1rWry7Xry8Jw1DXryfXFn8GFWqqw4fuay5C3yfAFnx
-        ur1DJa18Ar12gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb3AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kI
-        c2xKxwCYjI0SjxkI62AI1cAE67vIY487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
-        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-        17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-        IF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq
-        3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
-        nIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [Linux-cachefs] [PATCH v2] fscache: fix misdocumented parameter
+Content-Language: en-US
+To:     Khalid Masum <khalid.masum.92@gmail.com>, linux-cachefs@redhat.com,
+        linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>
+References: <20220818040738.12036-1-khalid.masum.92@gmail.com>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <20220818040738.12036-1-khalid.masum.92@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Tejun!
 
-ÔÚ 2022/08/18 1:54, Tejun Heo Ð´µÀ:
-> Hello,
+
+On 8/18/22 12:07 PM, Khalid Masum wrote:
+> This patch fixes two warnings generated by make docs. The functions
+> fscache_use_cookie and fscache_unuse_cookie, both have a parameter
+> named cookie. But they are documented with the name "object" with
+> unclear description. Which generates the warning when creating docs.
 > 
-> On Wed, Aug 17, 2022 at 09:45:13AM +0800, Yu Kuai wrote:
->>> I don't know whether this is better or not. It's minutely less lines of code
->>> but also makes the code a bit more fragile. I'm ambivalent. At any rate,
->>> please move these trivial patches to the head of the series or post them
->>> separately.
->>
->> Can I ask why do you think this patch makes the code a bit more fragile?
+> This commit will replace the currently misdocumented parameter names
+> with the correct ones while adding proper descriptions.
 > 
-> It's just one step further removed. Before, the flag was trivially in sync
-> with the on queue status. After, the relationship is more indirect and
-> easier to break accidentally. Not that it's a major problem. Just not sure
-> what the benefit of the change is.
+> CC: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
 
-If you are worried about that, I can keep the flag, then the last two
-patches will cleanup:
+LGTM.
 
-Before, the flag will be set and cleared frequently when each each bio
-is handled.
+Reviewed-by: Jingbo Xu <jefflexu@linux.alibaba.com>
 
-After, the flag will only set then the first bio is throttled, and
-it's cleared when last bio is dispatched.
+> ---
+> Changes since v1:
+> - Update commit message.
+> - Link: https://lore.kernel.org/lkml/20220521142446.4746-1-khalid.masum.92@gmail.com/
+> 
+>  include/linux/fscache.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/fscache.h b/include/linux/fscache.h
+> index 720874e6ee94..36e5dd84cf59 100644
+> --- a/include/linux/fscache.h
+> +++ b/include/linux/fscache.h
+> @@ -258,7 +258,7 @@ struct fscache_cookie *fscache_acquire_cookie(struct fscache_volume *volume,
+>  
+>  /**
+>   * fscache_use_cookie - Request usage of cookie attached to an object
+> - * @object: Object description
+> + * @cookie: The cookie representing the cache object
+>   * @will_modify: If cache is expected to be modified locally
+>   *
+>   * Request usage of the cookie attached to an object.  The caller should tell
+> @@ -274,7 +274,7 @@ static inline void fscache_use_cookie(struct fscache_cookie *cookie,
+>  
+>  /**
+>   * fscache_unuse_cookie - Cease usage of cookie attached to an object
+> - * @object: Object description
+> + * @cookie: The cookie representing the cache object
+>   * @aux_data: Updated auxiliary data (or NULL)
+>   * @object_size: Revised size of the object (or NULL)
+>   *
 
-Of course, if you think this cleanup is not necessary, I'll drop the
-last two patches.
-
+-- 
 Thanks,
-Kuai
-> 
->> By the way, I'll post these trivial patches separately.
-> 
-> Sounds great.
-> 
-> Thanks.
-> 
-
+Jingbo
