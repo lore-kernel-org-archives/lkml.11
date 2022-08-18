@@ -2,95 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88F2C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A68CEC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346455AbiHRVCR (ORCPT
+        id S1346461AbiHRVCV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
+        Thu, 18 Aug 2022 17:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346340AbiHRVA6 (ORCPT
+        with ESMTP id S1346336AbiHRVA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 17:00:58 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96D8D3ED6
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:00:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=WtvTAC5ZD4N+PzddPjm5D168ql3
-        1UqoRPHsJbSZHi7A=; b=UTeXbl0qmrIH1t44oG6Y+4clodv8yc7lJrLW7xX6N13
-        GAIWHm+5sa1wlthFSs6pU+eLulNCsj9YMf690daNaeloVxkB+IzHOCKsq6U94cMV
-        HvOODlHLu3OKyYnMwfMas0qAnEuDXYl67vdhG8446JvYlt62dIjFQUSjroaLM598
-        =
-Received: (qmail 3960593 invoked from network); 18 Aug 2022 23:00:30 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:00:30 +0200
-X-UD-Smtp-Session: l3s3148p1@LniKRYrmycMucref
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Lee Jones <lee@kernel.org>, Peter Tyser <ptyser@xes-inc.com>
-Subject: [PATCH] mfd: move from strlcpy with unused retval to strscpy
-Date:   Thu, 18 Aug 2022 23:00:29 +0200
-Message-Id: <20220818210030.7012-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED1BD3ECE;
+        Thu, 18 Aug 2022 14:00:34 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a7so5472747ejp.2;
+        Thu, 18 Aug 2022 14:00:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=A32HPAP5Od3KT+F9QIsj7jmUdN0RqSZ7BrLG62V5DEQ=;
+        b=EiftZ2/VM3oMS8+3i8v5hmQJ7gd+jj9Nf4+FG1BUSy1bOtagUF0gdo7NXGpTDkTiV4
+         krvqNoexSpttqYfC2DiaUJbkZiavbyqRJWAwcwjAvcGuNBGgSlpQfJ96GtYq81176VNh
+         zty2bVEkWJyGMMt6MxgqI4tJXq0/mkCnlHQlTnECgC5C0OHS4zbw7JE6BE2/HzkcKSRj
+         oLKKYFMwEFlk1p2K9MQ7ebeEqci6tLIgJ3LgPDKDrUG1/82fMnvJ9TiEHgTs4DCvVoii
+         /mLKKcEFlJhRRLEknCVTDHajSGUZJ58XWqj0GCdgTK3r9CmhEjrfVsupepMKXI+i6rW6
+         BFOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=A32HPAP5Od3KT+F9QIsj7jmUdN0RqSZ7BrLG62V5DEQ=;
+        b=aTDtIBxeRSKRa7oa6Idj+1w+FMOgQ0sAS8+g9rQwEzMY0VRY2iqobB1jX/PAjcs+hM
+         VBhDgq6RlYIy62BjuUsfSEO6/DAVJ3XWIn1seqzQyNK7n1qa9N49Zn4UqdWWVUAN6Wtq
+         hdNWPGY8uFogtx0t8JtbvSeaAe53Oa2oho0p4l5v4TYojp4Ir4eZ9pm+PrEyl5/I+yIh
+         gL1C7mxBT2eQHjpT3gz8m3dNOfbfMlSJGsvGIgTXhEBU//0cjJKX1LsNku3BvmYfaI86
+         AcyyC4Z88l7i6uQAK6kO53c2K0vbJ/B+BoxJc6ccFGg20YLij7TfZQ67NwMM7iiOuYXa
+         OgYw==
+X-Gm-Message-State: ACgBeo3ip/55BczYjCnw1ik/8uHWb7k6zzDjsuONvXHW3HrULQfETVTJ
+        X+LoQBlmr2jRVqoVDrU1rN45bZZAM1rQgL5pn+LooIrPy/k=
+X-Google-Smtp-Source: AA6agR7aQiGzTiYfENEZTzgyWjIg+8U1NkzkYo7M9PDX9EYfCqoeF8HY7s/XnhGCss7xqrObq8l/Ir8cbgHuZaJKfDk=
+X-Received: by 2002:a17:906:a089:b0:72f:826b:e084 with SMTP id
+ q9-20020a170906a08900b0072f826be084mr3061943ejy.708.1660856432758; Thu, 18
+ Aug 2022 14:00:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
+ <YvoVgMzMuQbAEayk@krava> <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
+ <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
+ <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net> <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
+ <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net> <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
+ <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net> <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
+ <Yv6gm09CMdZ/HMr5@krava> <20220818165024.433f56fd@gandalf.local.home>
+In-Reply-To: <20220818165024.433f56fd@gandalf.local.home>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 18 Aug 2022 14:00:21 -0700
+Message-ID: <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow the advice of the below link and prefer 'strscpy' in this
-subsystem. Conversion is 1:1 because the return value is not used.
-Generated by a coccinelle script.
+On Thu, Aug 18, 2022 at 1:50 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Thu, 18 Aug 2022 22:27:07 +0200
+> Jiri Olsa <olsajiri@gmail.com> wrote:
+>
+> > ok, so the problem with __attribute__((patchable_function_entry(5))) is that
+> > it puts function address into __patchable_function_entries section, which is
+> > one of ftrace locations source:
+> >
+> >   #define MCOUNT_REC()    . = ALIGN(8);     \
+> >     __start_mcount_loc = .;                 \
+> >     KEEP(*(__mcount_loc))                   \
+> >     KEEP(*(__patchable_function_entries))   \
+> >     __stop_mcount_loc = .;                  \
+> >    ...
+> >
+> >
+> > it looks like __patchable_function_entries is used for other than x86 archs,
+> > so we perhaps we could have x86 specific MCOUNT_REC macro just with
+> > __mcount_loc section?
+>
+> So something like this:
+>
+> #ifdef CONFIG_X86
+> # define NON_MCOUNT_PATCHABLE KEEP(*(__patchable_function_entries))
+> # define MCOUNT_PATCHABLE
+> #else
+> # define NON_MCOUNT_PATCHABLE
+> # define MCOUNT_PATCHABLE  KEEP(*(__patchable_function_entries))
+> #endif
+>
+>   #define MCOUNT_REC()    . = ALIGN(8);     \
+>     __start_mcount_loc = .;                 \
+>     KEEP(*(__mcount_loc))                   \
+>     MCOUNT_PATCHABLE                        \
+>     __stop_mcount_loc = .;                  \
+>     NON_MCOUNT_PATCHABLE                    \
+>    ...
+>
+> ??
 
-Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/mfd/htc-i2cpld.c | 2 +-
- drivers/mfd/lpc_ich.c    | 2 +-
- drivers/mfd/mfd-core.c   | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/mfd/htc-i2cpld.c b/drivers/mfd/htc-i2cpld.c
-index 417b0355d904..9232b4ba034d 100644
---- a/drivers/mfd/htc-i2cpld.c
-+++ b/drivers/mfd/htc-i2cpld.c
-@@ -352,7 +352,7 @@ static int htcpld_register_chip_i2c(
- 
- 	memset(&info, 0, sizeof(struct i2c_board_info));
- 	info.addr = plat_chip_data->addr;
--	strlcpy(info.type, "htcpld-chip", I2C_NAME_SIZE);
-+	strscpy(info.type, "htcpld-chip", I2C_NAME_SIZE);
- 	info.platform_data = chip;
- 
- 	/* Add the I2C device.  This calls the probe() function. */
-diff --git a/drivers/mfd/lpc_ich.c b/drivers/mfd/lpc_ich.c
-index 650951f89f1c..7b1c597b6879 100644
---- a/drivers/mfd/lpc_ich.c
-+++ b/drivers/mfd/lpc_ich.c
-@@ -959,7 +959,7 @@ static int lpc_ich_finalize_wdt_cell(struct pci_dev *dev)
- 	info = &lpc_chipset_info[priv->chipset];
- 
- 	pdata->version = info->iTCO_version;
--	strlcpy(pdata->name, info->name, sizeof(pdata->name));
-+	strscpy(pdata->name, info->name, sizeof(pdata->name));
- 
- 	cell->platform_data = pdata;
- 	cell->pdata_size = sizeof(*pdata);
-diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-index 8b058200d5ad..a4479c1fc5a7 100644
---- a/drivers/mfd/mfd-core.c
-+++ b/drivers/mfd/mfd-core.c
-@@ -105,7 +105,7 @@ static void mfd_acpi_add_device(const struct mfd_cell *cell,
- 				.ids = ids,
- 			};
- 
--			strlcpy(ids[0].id, match->pnpid, sizeof(ids[0].id));
-+			strscpy(ids[0].id, match->pnpid, sizeof(ids[0].id));
- 			acpi_dev_for_each_child(parent, match_device_ids, &wd);
- 			adev = wd.adev;
- 		} else {
--- 
-2.35.1
-
+That's what more or less Peter's patch is doing:
+Here it is again for reference:
+https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=8d075bdf11193f1d276bf19fa56b4b8dfe24df9e
