@@ -2,77 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D9ACC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC9FC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241978AbiHRI0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        id S238336AbiHRI17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239174AbiHRIZ6 (ORCPT
+        with ESMTP id S231430AbiHRI15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 04:25:58 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46035AFAE7
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:25:45 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VMZx.RB_1660811142;
-Received: from localhost.localdomain(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VMZx.RB_1660811142)
-          by smtp.aliyun-inc.com;
-          Thu, 18 Aug 2022 16:25:43 +0800
-From:   Xin Hao <xhao@linux.alibaba.com>
-To:     sj@kernel.org
-Cc:     akpm@linux-foundation.org, damon@lists.linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        xhao@linux.alibaba.com
-Subject: [PATCH] mm/damon/lru_sort: Move target memory region check to head of func
-Date:   Thu, 18 Aug 2022 16:25:38 +0800
-Message-Id: <20220818082538.67825-1-xhao@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
+        Thu, 18 Aug 2022 04:27:57 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FEFAF4BF
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:27:56 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id 130so898366pfy.6
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=EmRObFLBYlo/QTIFOmKwyNbAwrACrTIX9zYb5ZW9YpQ=;
+        b=ZnFbnLt+FmH/S92YpyR3SthYc2Q1rZs+3KQgNhRfnSuREc+qoFxX6gtyU3tRPSBXlQ
+         ywvhMZRNfJw2m16v1N8UNmBzIWu/K+ar8pEtCvgXYfOcrzWZHezwXsdko0iBBBoec0zG
+         2u9/hXyGsaaJKrnqpEoaHCSbauNEoaUB7ms8jnTIuikzM77pfGuqn58nDXiXAXYAHmSA
+         0gGj3P9rJo5p8/gVuDiQxalHRsb8Uqe2uzB54CoE1OUtP+L2Gc2deo27RhrgntpbUspc
+         NpuDf2+WvZ443nhrYEjvcwDb0+3zB/lJaOyqZahjtFwmaI8KVmdu7BGxOaowdS7P1QeA
+         l69Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=EmRObFLBYlo/QTIFOmKwyNbAwrACrTIX9zYb5ZW9YpQ=;
+        b=5eyrHx2DDwgf9Int+S9Titk2Y9OwOlDL4MbzpLNu+KqMa/Qw5VI7+TJdmAxAiuVzmS
+         f4UiklWg8ucnUis7YgI8eXfJKnSbC9mDmlpFmy4MmqheUtrt0bgWN7FQ3vf4kV9rGwc3
+         FPGSGUIbyaDR+p4arWCrfPSODIgj1XbdPKmxLCmuRSKAYUfnvzH+PVEFq76Tbvhgc68z
+         x+LagYJfir09S3lTaS4bwM/L2WlmbLgS7ysYMIcmOiTJQhgjFTD4uLuSC5nXbbsvdqp1
+         4XBPraQZfhv8VguAHSIDQ5K92/UIHicsc4YYCWrX0mvsxmNMrMbD3Ox2I68CT++FwsOF
+         AVjQ==
+X-Gm-Message-State: ACgBeo2tUkrT9bsi6Itdw/egxe8jlaKG8XliUya8DXQudUCScXJZbStc
+        9pR6QnROoSdaGglyKrZVGt+LGw==
+X-Google-Smtp-Source: AA6agR5DTxmJDTqZ0OLuFeuGqsM5XgRBq8GRImtxLazznsQnmAtoenqlD5ZooU2acz1nq4rvKV7k/w==
+X-Received: by 2002:a63:82c6:0:b0:41c:d253:a446 with SMTP id w189-20020a6382c6000000b0041cd253a446mr1623984pgd.125.1660811275880;
+        Thu, 18 Aug 2022 01:27:55 -0700 (PDT)
+Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id 83-20020a621756000000b0052b84ca900csm971920pfx.62.2022.08.18.01.27.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 01:27:55 -0700 (PDT)
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Qi Zheng <zhengqi.arch@bytedance.com>
+Subject: [PATCH] mm: thp: remove redundant pgtable check in set_huge_zero_page()
+Date:   Thu, 18 Aug 2022 16:27:48 +0800
+Message-Id: <20220818082748.40021-1-zhengqi.arch@bytedance.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In damon_lru_sort_apply_parameters(), if "monitor_region_start"
-and "monitor_region_end" is not a valid physical address range,
-There no need to run the remainder codes in it.
+When the pgtable is NULL in the set_huge_zero_page(), we should
+not increment the count of PTE page table pages by calling
+mm_inc_nr_ptes(). Otherwise we may receive the following warning
+when the mm exits:
 
-Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
+	BUG: non-zero pgtables_bytes on freeing mm
+
+Now we can't observe the above warning since only
+do_huge_pmd_anonymous_page() invokes set_huge_zero_page() and the
+pgtable can not be NULL.
+
+Therefore, instead of moving mm_inc_nr_ptes() to the non-NULL
+branch of pgtable, it is better to remove the redundant pgtable
+check directly.
+
+Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
 ---
- mm/damon/lru_sort.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ mm/huge_memory.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/mm/damon/lru_sort.c b/mm/damon/lru_sort.c
-index 9de6f00a71c5..ac50dca026f9 100644
---- a/mm/damon/lru_sort.c
-+++ b/mm/damon/lru_sort.c
-@@ -378,6 +378,13 @@ static int damon_lru_sort_apply_parameters(void)
- 	unsigned int hot_thres, cold_thres;
- 	int err = 0;
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 83c47a989260..655da0b4fea0 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -770,8 +770,7 @@ static void set_huge_zero_page(pgtable_t pgtable, struct mm_struct *mm,
+ 		return;
+ 	entry = mk_pmd(zero_page, vma->vm_page_prot);
+ 	entry = pmd_mkhuge(entry);
+-	if (pgtable)
+-		pgtable_trans_huge_deposit(mm, pmd, pgtable);
++	pgtable_trans_huge_deposit(mm, pmd, pgtable);
+ 	set_pmd_at(mm, haddr, pmd, entry);
+ 	mm_inc_nr_ptes(mm);
+ }
+-- 
+2.20.1
 
-+	if (monitor_region_start > monitor_region_end)
-+		return -EINVAL;
-+	if (!monitor_region_start && !monitor_region_end &&
-+			!get_monitoring_region(&monitor_region_start,
-+				&monitor_region_end))
-+		return -EINVAL;
-+
- 	err = damon_set_attrs(ctx, sample_interval, aggr_interval, 0,
- 			min_nr_regions, max_nr_regions);
- 	if (err)
-@@ -401,12 +408,6 @@ static int damon_lru_sort_apply_parameters(void)
- 		return -ENOMEM;
- 	damon_add_scheme(ctx, scheme);
-
--	if (monitor_region_start > monitor_region_end)
--		return -EINVAL;
--	if (!monitor_region_start && !monitor_region_end &&
--			!get_monitoring_region(&monitor_region_start,
--				&monitor_region_end))
--		return -EINVAL;
- 	addr_range.start = monitor_region_start;
- 	addr_range.end = monitor_region_end;
- 	return damon_set_regions(target, &addr_range, 1);
---
-2.31.0
