@@ -2,71 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E6DC32772
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB24FC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 09:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232903AbiHRJxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 05:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        id S237775AbiHRJye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 05:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235407AbiHRJxU (ORCPT
+        with ESMTP id S235407AbiHRJyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 05:53:20 -0400
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31792E44;
-        Thu, 18 Aug 2022 02:53:12 -0700 (PDT)
-X-QQ-mid: bizesmtp79t1660816263t2r7wq2p
-Received: from localhost.localdomain ( [123.114.60.34])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 18 Aug 2022 17:51:01 +0800 (CST)
-X-QQ-SSF: 01400000002000D0U000B00A0000000
-X-QQ-FEAT: CR3LFp2JE4kURDf+4uuh2+zQhPnPITI1fI4gczptBrkPfssSVdeqy5HVNYgoy
-        43l7uVO6L0BCDUgiGR3TabhUghhlUQTqjU6dR2XRicWt9v6p3xBXGv6mxfZSSFS8Yc5n5wd
-        393aFiT+PHViazcxL8TPsBZBi+i5sbLDtrNmfT0QXOuHSlQpaR74bfsBcKmyYQwAg6S/mkR
-        IeObbFMT/Ye2O3C7CLrXerzV99GOA8NRyng4wOLDeMX/kDhE3BbgG9pcY4kp3k0Fq4iA3qN
-        UROKQwnq6gX4FFXWLsSjozhsHwbWCuy23Ff6d7GkUz9uCT9OwMVT/R3IcwLHoO3QSl/oPOO
-        +yusaqWqIRhb05xnAX6h+a0DcYAqL3P3mtiwkwEZz/sdn9rxGhd95u0tCypN2HIlj1xIzKi
-X-QQ-GoodBg: 2
-From:   zhaoxiao <zhaoxiao@uniontech.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, morbo@google.com, weiyongjun1@huawei.com,
-        colin.king@intel.com
-Cc:     tobias@waldekranz.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhaoxiao <zhaoxiao@uniontech.com>
-Subject: [PATCH] net: freescale: xgmac: Do not dereference fwnode in struct device
-Date:   Thu, 18 Aug 2022 17:50:59 +0800
-Message-Id: <20220818095059.8870-1-zhaoxiao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 18 Aug 2022 05:54:31 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDD49F753
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 02:54:27 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id l21so1226118ljj.2
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 02:54:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=pXQ90ApN4EsEH9C/Yy70+EtmgpkmYE8dXAbZvg4RS0s=;
+        b=zhmvIkxOa0hVGga4d/DM+ZLt86lGWaPMX9AVQvDvDh0NGkh6cpRV+Dq7Ol6pr/p9oY
+         xqya+/Fmbyol/ohUSvKUkOsIpabMaJM6BV0BrqVTkasX1WDpmJpB4ptWckwHr3YW42es
+         qbRRzW/7fWcQG6PqXseEIiybx/kw02+vbXmcBRM6QjCCpFEybiKM0qkCQJY+OqTHFhNT
+         Vv5lEstUeU4ms58k1AYDEVgFImJ3YJsmIzSeYRbbo3TT32J/BPN1s/PsxeNziNWHiaMi
+         ZNIu2QSRcAKWxO49n6kQ2ZDpRrSw6gTzbm2+gdQkC6lBPhQ2FN2eOxL4jDS3nwsKiv4D
+         FvcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=pXQ90ApN4EsEH9C/Yy70+EtmgpkmYE8dXAbZvg4RS0s=;
+        b=OFbpFS/IyXijeMB5y4fNvIQ9YLgOdJ7ylrgAyZeRMzBszeEFfPst1iht439jwj5Ggu
+         JlZluI8MbHLgMeFamEpYtMJN0F88/f8bzKzLl48qN1D4Ei9bfYIWru4KjbVQQsSp+4j0
+         y6jXu4m/CD66bwXEFryxGsQlntcqbZ4OdcaHmQXMmEKRWdrstvyzT+BGAi2bdztlmlHx
+         Ze9kqytQ9v3+YLB7QP4dQhvzFKN+Wjuhqc8anL9r2n61ODqoom2D1wPemr3NUvsHvFFO
+         JdmGx9jbdD5tLlqUnuMeSXBH2BiVsHpEu/oTIf9B51jKXq/3yHmWp87CDu1bfG14eZL+
+         lcSQ==
+X-Gm-Message-State: ACgBeo0mHlHtURFMav5aR8iBPUdT4u2U76COt1ZDbIg/ccD18nKpBp9v
+        nu/uOaZAa5wKCaGwzvpYs5k1Dw==
+X-Google-Smtp-Source: AA6agR6ZbcoCJtdddNSemEv9Xvgy5ZNrc4euVYcJckphXGdDZ36YVJHB6DIj47UKq1STClnTgNsehg==
+X-Received: by 2002:a2e:864a:0:b0:25e:4e27:56d4 with SMTP id i10-20020a2e864a000000b0025e4e2756d4mr653005ljj.252.1660816466149;
+        Thu, 18 Aug 2022 02:54:26 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id be24-20020a05651c171800b0025dfe45c031sm163246ljb.27.2022.08.18.02.54.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 02:54:25 -0700 (PDT)
+Message-ID: <93f080cd-e586-112f-bac8-fa2a7f69efb3@linaro.org>
+Date:   Thu, 18 Aug 2022 12:54:23 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH v2 1/6] Documentation: DT: Add entry for CDX
+ controller
+Content-Language: en-US
+To:     Nipun Gupta <nipun.gupta@amd.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, eric.auger@redhat.com,
+        alex.williamson@redhat.com, cohuck@redhat.com,
+        puneet.gupta@amd.com, song.bao.hua@hisilicon.com,
+        mchehab+huawei@kernel.org, maz@kernel.org, f.fainelli@gmail.com,
+        jeffrey.l.hugo@gmail.com, saravanak@google.com,
+        Michael.Srba@seznam.cz, mani@kernel.org, yishaih@nvidia.com,
+        jgg@ziepe.ca, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, kvm@vger.kernel.org
+Cc:     okaya@kernel.org, harpreet.anand@amd.com, nikhil.agarwal@amd.com,
+        michal.simek@amd.com, git@amd.com
+References: <20220803122655.100254-1-nipun.gupta@amd.com>
+ <20220817150542.483291-1-nipun.gupta@amd.com>
+ <20220817150542.483291-2-nipun.gupta@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220817150542.483291-2-nipun.gupta@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to make the underneath API easier to change in the future,
-prevent users from dereferencing fwnode from struct device.
-Instead, use the specific dev_fwnode() API for that.
+On 17/08/2022 18:05, Nipun Gupta wrote:
+> This patch adds a devicetree binding documentation for CDX
+> controller.
+> 
+Does not look like you tested the bindings. Please run `make
+dt_binding_check` (see
+Documentation/devicetree/bindings/writing-schema.rst for instructions).
 
-Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
----
- drivers/net/ethernet/freescale/xgmac_mdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> CDX bus controller dynamically detects CDX bus and the
+> devices on these bus using CDX firmware.
+> 
+> Signed-off-by: Nipun Gupta <nipun.gupta@amd.com>
 
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index ec90da1de030..d7d39a58cd80 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -355,7 +355,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	fwnode = pdev->dev.fwnode;
-+	fwnode = dev_fwnode(&pdev->dev);
- 	if (is_of_node(fwnode))
- 		ret = of_mdiobus_register(bus, to_of_node(fwnode));
- 	else if (is_acpi_node(fwnode))
--- 
-2.20.1
+Use subject perfixes matching the subsystem (git log --oneline -- ...).
 
+> ---
+>  .../devicetree/bindings/bus/xlnx,cdx.yaml     | 108 ++++++++++++++++++
+>  MAINTAINERS                                   |   6 +
+>  2 files changed, 114 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/bus/xlnx,cdx.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/bus/xlnx,cdx.yaml b/Documentation/devicetree/bindings/bus/xlnx,cdx.yaml
+> new file mode 100644
+> index 000000000000..4247a1cff3c1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/bus/xlnx,cdx.yaml
+> @@ -0,0 +1,108 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/misc/xlnx,cdx.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Xilinx CDX bus controller
+> +
+> +description: |
+> +  CDX bus controller for Xilinx devices is implemented to
+
+You need to describe what is this CDX bus. Google says nothing...
+
+> +  dynamically detect CDX bus and devices on these bus using the
+> +  firmware. The CDX bus manages multiple FPGA based hardware
+> +  devices, which can support network, crypto or any other specialized
+> +  type of device. These FPGA based devices can be added/modified
+> +  dynamically on run-time.
+> +
+> +  All devices on the CDX bus will have a unique streamid (for IOMMU)
+> +  and a unique device ID (for MSI) corresponding to a requestor ID
+> +  (one to one associated with the device). The streamid and deviceid
+> +  are used to configure SMMU and GIC-ITS respectively.
+> +
+> +  iommu-map property is used to define the set of stream ids
+> +  corresponding to each device and the associated IOMMU.
+> +
+> +  For generic IOMMU bindings, see:
+> +  Documentation/devicetree/bindings/iommu/iommu.txt.
+
+Drop sentence.
+
+> +
+> +  For arm-smmu binding, see:
+> +  Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
+
+Drop sentence.
+
+> +
+> +  The MSI writes are accompanied by sideband data (Device ID).
+> +  The msi-map property is used to associate the devices with the
+> +  device ID as well as the associated ITS controller.
+> +
+> +  For generic MSI bindings, see:
+> +  Documentation/devicetree/bindings/interrupt-controller/msi.txt.
+
+Drop sentence.
+
+> +
+> +  For GICv3 and GIC ITS bindings, see:
+> +  Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.yaml.
+
+Drop sentence.
+
+> +
+> +maintainers:
+> +  - Nipun Gupta <nipun.gupta@amd.com>
+> +  - Nikhil Agarwal <nikhil.agarwal@amd.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: "xlnx,cdxbus-controller-1.0"
+
+No quotes.
+
+> +
+> +  reg:
+> +    description: |
+> +      specifies the CDX firmware region shared memory accessible by the
+> +      ARM cores.
+
+You need to describe the items instead (e.g. maxItems:1).
+
+> +
+> +  iommu-map:
+> +    description: |
+> +      Maps device Requestor ID to a stream ID and associated IOMMU. The
+> +      property is an arbitrary number of tuples of
+> +      (rid-base,iommu,streamid-base,length).
+> +
+> +      Any Requestor ID i in the interval [rid-base, rid-base + length) is
+> +      associated with the listed IOMMU, with the iommu-specifier
+> +      (i - streamid-base + streamid-base).
+
+You need type and constraints.
+
+> +
+> +  msi-map:
+> +    description:
+> +      Maps an Requestor ID to a GIC ITS and associated msi-specifier
+> +      data (device ID). The property is an arbitrary number of tuples of
+> +      (rid-base,gic-its,deviceid-base,length).
+> +
+> +      Any Requestor ID in the interval [rid-base, rid-base + length) is
+> +      associated with the listed GIC ITS, with the msi-specifier
+> +      (i - rid-base + deviceid-base).
+
+You need type and constraints.
+
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - iommu-map
+> +  - msi-map
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    smmu@ec000000 {
+> +        compatible = "arm,smmu-v3";
+> +        #iommu-cells = <1>;
+> +        ...
+
+???
+
+> +
+> +    gic@e2000000 {
+> +        compatible = "arm,gic-v3";
+> +        interrupt-controller;
+> +        ...
+> +        its: gic-its@e2040000 {
+> +            compatible = "arm,gic-v3-its";
+> +            msi-controller;
+> +            ...
+> +        }
+> +    };
+> +
+> +    cdxbus: cdxbus@@4000000 {
+
+Node names should be generic, so "cdx"
+
+https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
+
+Drop the label.
+
+
+> +        compatible = "xlnx,cdxbus-controller-1.0";
+> +        reg = <0x00000000 0x04000000 0 0x1000>;
+> +        /* define map for RIDs 250-259 */
+> +        iommu-map = <250 &smmu 250 10>;
+> +        /* define msi map for RIDs 250-259 */
+> +        msi-map = <250 &its 250 10>;
+> +    };
+Best regards,
+Krzysztof
