@@ -2,112 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FE0C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 19:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F67BC32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 19:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345620AbiHRTrk (ORCPT
+        id S1345631AbiHRTst (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 15:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
+        Thu, 18 Aug 2022 15:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236627AbiHRTri (ORCPT
+        with ESMTP id S1345624AbiHRTsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 15:47:38 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68ED6DF4A;
-        Thu, 18 Aug 2022 12:47:37 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id 2so2398369pll.0;
-        Thu, 18 Aug 2022 12:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=D+Y8CteJgMixNET3rM8bosPRl8cJEoA+Fl+sHN052Sc=;
-        b=OBifYf4Jna9bbUewT4D+0/ADl/ZLgiwW0AOV9sjFoTFpE/M0+1RybUFYw1GsfwpDlW
-         Pjkp/Ht62GbswAO6ds5PTKbyC8IG1ZsF+HUx/UzWS2CdbDb8b/8nTpYzm0bNpLWjkne2
-         ESZtUgyodyoyW4qZ7Oh+1t/utJ03zqlJicddU5ilTSzPSO2itTaIG04b/eqD6N7B90B2
-         t0LdmURHW8dI1vpNnMs1nkMKMFkHOlm+xGfABPn9dBbc4hiP0mTckUsNImI+1jq94X1B
-         W/McfL0RlXEPTToLGfMvSrmJl7XOUMyDO1hwx2K5NEUj3eXDWrAr8mWEI9YiwfJcK40M
-         e3tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=D+Y8CteJgMixNET3rM8bosPRl8cJEoA+Fl+sHN052Sc=;
-        b=qfFlq0cwT0G0nDglXJNnCmC3KHMLPb4dvldNzT4TUT5rrm78FotKZ/q5bM1V8Q1zUi
-         zDeTlSaN6hiP2YWQn3SQw0Wsov3LA4lE96OYW9/Vcg6HKLk5Q7XVQBKTDl02rF6rhzHc
-         rbYaMIzffj29iZW7+q2Scq63hodUh2Tce5FgjZqYNMGpn9OJKHTfm72nOj/ET3jMneG/
-         3jzuqhSX2cHmQsj5nQRGRV2FQZR/GT2veovgOL2jM96wm77a5R5eYPRzILyaK2ZupOO6
-         ztV1C7BFOqpUzC0oCsbu1TjoDG1rvQT7Fr5PqGBDBgBmMSsTOZj1TpEoJZTb+xMfwXEN
-         hWvQ==
-X-Gm-Message-State: ACgBeo0kvstSjNiFbv7cJL4ytWM31avmzaM0l8sOvrV6nkewrMy/sxTj
-        Wf4MXg/AU2vCv7BzSA23F6s=
-X-Google-Smtp-Source: AA6agR5eVP/JuOmNRZ2PnXGZmybLUtrlEy9/6hn594HN8kcLmV4rDc0B13E/HZoUuegH1JRv6mjymg==
-X-Received: by 2002:a17:902:e3d5:b0:172:a78f:dbc with SMTP id r21-20020a170902e3d500b00172a78f0dbcmr3844013ple.144.1660852056984;
-        Thu, 18 Aug 2022 12:47:36 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id li2-20020a17090b48c200b001f320faea95sm1910798pjb.2.2022.08.18.12.47.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 12:47:36 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 18 Aug 2022 12:47:35 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Eliav Farber <farbere@amazon.com>
-Cc:     jdelvare@suse.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
-        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
-        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
-        amitlavi@amazon.com, almogbs@amazon.com, dwmw@amazon.co.uk,
-        rtanwar@maxlinear.com
-Subject: Re: [PATCH v2 03/16] hwmon: (mr75203) update Moortec PVT controller
- intel,vm-map property
-Message-ID: <20220818194735.GA3279179@roeck-us.net>
-References: <20220817054321.6519-1-farbere@amazon.com>
- <20220817054321.6519-4-farbere@amazon.com>
+        Thu, 18 Aug 2022 15:48:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869FE5A813
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 12:48:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36149B82415
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 19:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07503C433C1;
+        Thu, 18 Aug 2022 19:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660852114;
+        bh=LbfCHFjKk6kzGgxEEUBJgU/bUqUM3IB8CCxE0P4a6bY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OzoOBygBfdk21arMXR12/gapkYCLUl5DIZIjGoyLdNfq6LLBUnayGq4VlmnHl323L
+         iZx3xye5Bssk3Ez9gQME9SMvSAdHMUaNueGBEKGwyKqLyF/Z3A/8vDgmzU7vzj+YNw
+         /dPIV2coNRspoY2u0ns/Kb+OTFDInFA9saWHLRn66nOcXEeVl1eXzOTBvbcjbhI3GX
+         ueICF1IHxevnJkimJ5YUZ3bj14htoUYrdSQTyrUFmGovJVl1rh8VQd6p2LnCzKJO0C
+         M1R/9YezXiYJoWBw/nhVmU/GAhwePb02Ze6VKUNtoKK31e03j8DEFjuqjYdhHvrBBJ
+         bFRPejkcm5irw==
+Date:   Thu, 18 Aug 2022 21:48:28 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linux Phy <linux-phy@lists.infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        josef.schlehofer@nic.cz
+Subject: Re: [PATCH linux-phy v2 1/4] string.h: Add str_has_proper_prefix()
+Message-ID: <20220818214828.22023dc7@thinkpad>
+In-Reply-To: <CAHp75VecURpGCBY3WVKqhd64Ngobjvi-w=PuHQBH2V-MqCzkuw@mail.gmail.com>
+References: <20220817200335.911-1-kabel@kernel.org>
+        <20220817200335.911-2-kabel@kernel.org>
+        <CAHp75VecURpGCBY3WVKqhd64Ngobjvi-w=PuHQBH2V-MqCzkuw@mail.gmail.com>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817054321.6519-4-farbere@amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 05:43:08AM +0000, Eliav Farber wrote:
-> The "intel,vm-map property" is optional and not required.
-> 
-> Signed-off-by: Eliav Farber <farbere@amazon.com>
+On Thu, 18 Aug 2022 22:10:58 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Ah. This patch should come first, before making associated
-code changes, and there would need to be an explanation
-_why_ it is not a mandatory property. Also, some action
-is taken in the previous patches if the property is not
-there. That indicates that the driver is expected to
-use some defaults if the property is indeed not provided,
-and that expected default should be documented.
+> On Wed, Aug 17, 2022 at 11:06 PM Marek Beh=C3=BAn <kabel@kernel.org> wrot=
+e:
+> >
+> > Add str_has_proper_prefix(), similar to str_has_prefix(), but requires
+> > that the prefix is proper: the string itself must be longer than the
+> > prefix.
+> >
+> > Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
+> > ---
+> > Andy, Kees, could you ack this if it is ok? =20
+>=20
+> Seems to me there are too many strlen():s. One is hidden in strncmp().
 
-Guenter
+I thought this was ok cause gcc has optimizations for this in
+https://github.com/gcc-mirror/gcc/blob/master/gcc/tree-ssa-strlen.cc
 
-> ---
->  Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-> index 6f3e3c01f717..f9e849cc73e0 100644
-> --- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-> +++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-> @@ -48,12 +48,12 @@ required:
->    - compatible
->    - reg
->    - reg-names
-> -  - intel,vm-map
->    - clocks
->    - resets
->    - "#thermal-sensor-cells"
->  
-> -additionalProperties: false
-> +additionalProperties:
-> +  - intel,vm-map
->  
->  examples:
->    - |
+But now I see that kernel does not declare these functions as inline
+that call __builtin_strlen()... so probably the optimizations are not
+used.
+
+> Besides not the good naming (what 'proper' means),
+
+The naming comes from similar naming in math: proper subset is as
+subset that is not equal to the superset. See
+https://en.wikipedia.org/wiki/Substring :
+  "A proper prefix of a string is not equal to the string itself"
+
+> the entire function is not needed. You may simply call
+>=20
+>   str_has_prefix() && p[len] !=3D '\0';
+>=20
+> Correct?
+
+Do you mean that I should implement this function to simply return
+  str_has_prefix() && p[len] !=3D '\0'
+or that this function should not exist at all and I should do that in
+the code where I would have used the function?
+
+Thanks.
+
+Marek
