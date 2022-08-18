@@ -2,96 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE4CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA40C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346690AbiHRVO2 (ORCPT
+        id S1347055AbiHRVOe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
+        Thu, 18 Aug 2022 17:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346853AbiHRVKi (ORCPT
+        with ESMTP id S1346879AbiHRVKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:10:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA2DD8E3C;
-        Thu, 18 Aug 2022 14:05:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 615AACE22C3;
-        Thu, 18 Aug 2022 21:05:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D025FC433D7;
-        Thu, 18 Aug 2022 21:05:32 +0000 (UTC)
-Date:   Thu, 18 Aug 2022 17:05:43 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-Message-ID: <20220818170543.2e361e7d@gandalf.local.home>
-In-Reply-To: <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
-References: <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
-        <YvoVgMzMuQbAEayk@krava>
-        <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
-        <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
-        <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
-        <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
-        <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
-        <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
-        <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
-        <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
-        <Yv6gm09CMdZ/HMr5@krava>
-        <20220818165024.433f56fd@gandalf.local.home>
-        <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 18 Aug 2022 17:10:42 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A10D91F5
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=68cUqf9UrUT5mwycQFUojow6Y6Z
+        HyDepGewBH1vtON4=; b=IKvPdPTDAFBq8BfaK441XHm0H9AGwit8+TE+Xu63wHx
+        LWHQUip5dzx2uT1HAu4/HDjR11DP6lV+70mFCmgW0i7s2CIiHJSAkb8GX+lW9nul
+        CzG8T5QoMrfWMxB/j/0bKExNdXRC9QKXikTtFewArR+zUkPAgxqhYR5b9pvhJlLU
+        =
+Received: (qmail 3963281 invoked from network); 18 Aug 2022 23:02:26 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:02:26 +0200
+X-UD-Smtp-Session: l3s3148p1@+hZ1TIrmb8Uucref
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        dev@openvswitch.org
+Subject: [PATCH] openvswitch: move from strlcpy with unused retval to strscpy
+Date:   Thu, 18 Aug 2022 23:02:25 +0200
+Message-Id: <20220818210226.8587-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 14:00:21 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+Follow the advice of the below link and prefer 'strscpy' in this
+subsystem. Conversion is 1:1 because the return value is not used.
+Generated by a coccinelle script.
 
-> > #ifdef CONFIG_X86
-> > # define NON_MCOUNT_PATCHABLE KEEP(*(__patchable_function_entries))
-> > # define MCOUNT_PATCHABLE
-> > #else
-> > # define NON_MCOUNT_PATCHABLE
-> > # define MCOUNT_PATCHABLE  KEEP(*(__patchable_function_entries))
-> > #endif
-> >
-> >   #define MCOUNT_REC()    . = ALIGN(8);     \
-> >     __start_mcount_loc = .;                 \
-> >     KEEP(*(__mcount_loc))                   \
-> >     MCOUNT_PATCHABLE                        \
-> >     __stop_mcount_loc = .;                  \
-> >     NON_MCOUNT_PATCHABLE                    \
-> >    ...
-> >
-> > ??  
-> 
-> That's what more or less Peter's patch is doing:
+Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ net/openvswitch/vport-internal_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Heh.
+diff --git a/net/openvswitch/vport-internal_dev.c b/net/openvswitch/vport-internal_dev.c
+index 5b2ee9c1c00b..134bc8503461 100644
+--- a/net/openvswitch/vport-internal_dev.c
++++ b/net/openvswitch/vport-internal_dev.c
+@@ -65,7 +65,7 @@ static int internal_dev_stop(struct net_device *netdev)
+ static void internal_dev_getinfo(struct net_device *netdev,
+ 				 struct ethtool_drvinfo *info)
+ {
+-	strlcpy(info->driver, "openvswitch", sizeof(info->driver));
++	strscpy(info->driver, "openvswitch", sizeof(info->driver));
+ }
+ 
+ static const struct ethtool_ops internal_dev_ethtool_ops = {
+-- 
+2.35.1
 
-> Here it is again for reference:
-> https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=8d075bdf11193f1d276bf19fa56b4b8dfe24df9e
-
-Thanks, I missed seeing this.
-
--- Steve
