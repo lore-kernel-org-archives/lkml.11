@@ -2,78 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52ED2C2BB41
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 16:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064A2C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 16:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245322AbiHRQBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 12:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40724 "EHLO
+        id S1344552AbiHRQBS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 12:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343793AbiHRQBK (ORCPT
+        with ESMTP id S1344401AbiHRQBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 12:01:10 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A04B69F0;
-        Thu, 18 Aug 2022 09:01:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660838467; x=1692374467;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=8Zte+SHPEi9IiSQRFShm4rQo5XvZh/gTFcz3Y36+GZo=;
-  b=Rpht6uihESJfXG0mLgiC6992BylB0NIDH+7KftVXhT/O7dlNjhNuxpRY
-   vxIR+ZfQgvWTL5duvCSI0V2GPccgsIHv+DaN3MjjesypnoWP5P1eOin5M
-   8zi99tK3F2OTp4DPZcK5g24GnGtWGosO227DpDGeb/PLL0J/vEEJs7Glz
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.93,247,1654560000"; 
-   d="scan'208";a="120680565"
-Subject: Re: [PATCH 1/2] dt-bindings: at24: new optional property - enable-gpios
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:59:13 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id C9260E347C;
-        Thu, 18 Aug 2022 15:59:10 +0000 (UTC)
-Received: from EX19D013UWB001.ant.amazon.com (10.13.138.52) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 18 Aug 2022 15:59:09 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX19D013UWB001.ant.amazon.com (10.13.138.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 18 Aug 2022 15:59:09 +0000
-Received: from [192.168.92.216] (10.85.143.172) by mail-relay.amazon.com
- (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
- Transport; Thu, 18 Aug 2022 15:59:04 +0000
-Message-ID: <1d289cbb-58d9-613a-fc45-ef21c48a79b7@amazon.com>
-Date:   Thu, 18 Aug 2022 18:59:03 +0300
+        Thu, 18 Aug 2022 12:01:12 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD47B14F3
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 09:01:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660838470; x=1692374470;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tA8V1drYYYK0xzACszrVpyl5sQ8ISuTmC0FGyjDHVfk=;
+  b=d+NdoDfYiTsdWQD4tcGNoH+DCvh+luW1MUQ9l4J8M0aQHIU1S338QMMP
+   9wbL9GmrcuF+egN5iSxZ0r/L2Y8y4xhL1NoFvdgdkzbfzPvYXBROXhMRh
+   Hh5zKnS/l++EEwFsRKW2pKsjA6z8Wyv1czSCNAPAiw6DPGoaQs6oJZOpn
+   3ZNi/1HUKv+EA+/e8EpmS1Re2+CU7YDHRwr1Oz4CH8NJSoBFUUlJggVSW
+   CSh1/56HgK/l6VY4b88Vc4Gt/5Mm4/XxmsR4b+K/5Glkiy/a+u7V0Gw7w
+   lvjPMaIYGe6P/Jbi/UegsVPmES9+8ldf7E2RZBlVMRs2XL1sATD8RTjMJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="293588368"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="293588368"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 09:00:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="558581369"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 18 Aug 2022 09:00:53 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOhwy-0000Df-2E;
+        Thu, 18 Aug 2022 16:00:52 +0000
+Date:   Fri, 19 Aug 2022 00:00:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+Subject: [ammarfaizi2-block:tglx/devel/depthtracking 33/59]
+ arch/x86/kernel/ftrace_64.o: warning: objtool: ftrace_caller+0x0:
+ unreachable instruction
+Message-ID: <202208182339.nUcZuZWV-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <brgl@bgdev.pl>, <mark.rutland@arm.com>, <arnd@arndb.de>,
-        <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
-        <hanochu@amazon.com>, <ronenk@amazon.com>, <itamark@amazon.com>,
-        <shellykz@amazon.com>, <shorer@amazon.com>, <amitlavi@amazon.com>,
-        <almogbs@amazon.com>, <dwmw@amazon.co.uk>
-References: <20220816130002.41450-1-farbere@amazon.com>
- <20220816130002.41450-2-farbere@amazon.com>
- <20220818014839.GD921960-robh@kernel.org>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <20220818014839.GD921960-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/18/2022 4:48 AM, Rob Herring wrote:
-> If this is a power supply control, use a gpio regulator.
+tree:   https://github.com/ammarfaizi2/linux-block tglx/devel/depthtracking
+head:   7e7135a8ff18016dde7361f13b02c3d1f63edfdb
+commit: 301b621edaa301dc3936a386920008a689ddd988 [33/59] objtool: Fix find_{symbol,func}_containing()
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220818/202208182339.nUcZuZWV-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/301b621edaa301dc3936a386920008a689ddd988
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block tglx/devel/depthtracking
+        git checkout 301b621edaa301dc3936a386920008a689ddd988
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/
 
-It is indeed a power supply control.
-I'll push a new series that uses a gpio regulator.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
---
-Thanks, Eliav
+All warnings (new ones prefixed by >>):
 
+>> arch/x86/kernel/ftrace_64.o: warning: objtool: ftrace_caller+0x0: unreachable instruction
+
+
+objdump-func vmlinux.o ftrace_caller:
+0000 0000000000062370 <ftrace_caller>:
+0000    62370:	48 81 ec a8 00 00 00 	sub    $0xa8,%rsp
+0007    62377:	48 89 44 24 50       	mov    %rax,0x50(%rsp)
+000c    6237c:	48 89 4c 24 58       	mov    %rcx,0x58(%rsp)
+0011    62381:	48 89 54 24 60       	mov    %rdx,0x60(%rsp)
+0016    62386:	48 89 74 24 68       	mov    %rsi,0x68(%rsp)
+001b    6238b:	48 89 7c 24 70       	mov    %rdi,0x70(%rsp)
+0020    62390:	4c 89 44 24 48       	mov    %r8,0x48(%rsp)
+0025    62395:	4c 89 4c 24 40       	mov    %r9,0x40(%rsp)
+002a    6239a:	48 c7 44 24 78 00 00 00 00 	movq   $0x0,0x78(%rsp)
+0033    623a3:	48 89 ea             	mov    %rbp,%rdx
+0036    623a6:	48 89 54 24 20       	mov    %rdx,0x20(%rsp)
+003b    623ab:	48 8b b4 24 b0 00 00 00 	mov    0xb0(%rsp),%rsi
+0043    623b3:	48 8b bc 24 a8 00 00 00 	mov    0xa8(%rsp),%rdi
+004b    623bb:	48 89 bc 24 80 00 00 00 	mov    %rdi,0x80(%rsp)
+0053    623c3:	48 83 ef 05          	sub    $0x5,%rdi
+0057    623c7:	48 8d 8c 24 b0 00 00 00 	lea    0xb0(%rsp),%rcx
+005f    623cf:	48 89 8c 24 98 00 00 00 	mov    %rcx,0x98(%rsp)
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
