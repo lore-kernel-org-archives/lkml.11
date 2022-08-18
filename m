@@ -2,71 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F234CC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02605C32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344834AbiHRRTE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
+        id S245752AbiHRRTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 13:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344728AbiHRRSM (ORCPT
+        with ESMTP id S1344776AbiHRRSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:18:12 -0400
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37CB383;
-        Thu, 18 Aug 2022 10:15:46 -0700 (PDT)
-Received: by mail-il1-f173.google.com with SMTP id w8so1127434ilj.5;
-        Thu, 18 Aug 2022 10:15:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=UWsf+zlgyhNyjO5Y7JQSuQwv4XP3mzyiE5nZk/xIkL0=;
-        b=7Bzoe4HHwEj4+r84ZrUBQuQrj2NyjjuMXouAlWe/PBjWyOcAqK2sHncqnef2rSHHmt
-         u+fGx8MD8BIZ5S1fVQK5SLAvnlrsp4ZiV9W0npQV7EglxS6UCkC4JS0r141W3ZNbCESu
-         UFkwBqmhTu9Hvj7Zcqyk5ZpeN6DKc62N8RPOgwNUKTU/bqXFffsa69oRlbyL7+hmTmqs
-         TEmzhTn1EgNcb3+5/uwuzB4OxcMuVdJdJyBpAokJOyGJS2Lubt5oL1rFZIaYBhwc8qj9
-         rG/hl6ZWcAJWPDgabi5BXpPDeHT1dnd9ppZJVfJbF0K4j4EU1j6UWFjLPKmxfxF5FZra
-         4AuA==
-X-Gm-Message-State: ACgBeo0wVysaD4GgcLtoZz+A2jo/nGn0vuer//obfMvOaP7Q0FdOaMa+
-        0FsG4a277UgvJ37DTMZCSQ==
-X-Google-Smtp-Source: AA6agR5Veo8vJr6OZE+PXLhrBYUKE7szY3eTD73CFkv6Jb6VaIbgetV13AQzlMpPWH/NxWZ9e3NNVg==
-X-Received: by 2002:a05:6e02:1685:b0:2df:2dd5:80f3 with SMTP id f5-20020a056e02168500b002df2dd580f3mr1870031ila.17.1660842946004;
-        Thu, 18 Aug 2022 10:15:46 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:647:4ff2:3529:f8cd:d6cd:ac54])
-        by smtp.gmail.com with ESMTPSA id e4-20020a92de44000000b002e904093c5dsm828143ilr.44.2022.08.18.10.15.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:15:45 -0700 (PDT)
-Received: (nullmailer pid 2050959 invoked by uid 1000);
-        Thu, 18 Aug 2022 17:15:43 -0000
-Date:   Thu, 18 Aug 2022 11:15:43 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     broonie@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] ASoC: dt-bindings: qcom,sm8250: add compatibles for
- sm8450 and sm8250
-Message-ID: <20220818171543.GH1978870-robh@kernel.org>
-References: <20220818135817.10142-1-srinivas.kandagatla@linaro.org>
- <20220818135817.10142-2-srinivas.kandagatla@linaro.org>
+        Thu, 18 Aug 2022 13:18:17 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FA8632A
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:16:00 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id C1FDA5FD07;
+        Thu, 18 Aug 2022 20:03:09 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660842189;
+        bh=atXpTlwNr2VDFs9Q61PO9a8prLefTCao1wO5y6uExg0=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=tEs7q3aYiwGnbqBFVe+MnHxp+B0OKjYH6KvyJcMqI41PoNCNd78dWsrI6dYw4Abzs
+         O5vPMthR/i4Dj2LV+uNQaJ5CRuI8UBEZEYbyfDEPQytxXpysGzzKBW8mVl9nj/g//Q
+         oMuZqSdORfjN+xM/tCH12azZ2k2lXTyonTV9WIQE3dUiWsheekGC9rnIusksikDaNK
+         zEQoLWGBohr7oaottclVATIWkTRTy3vqkeODEsRme5Q55ou5m9KstpoRTf0wI1s4M6
+         XTXvxoGdtTBnsloz6WzEjRgBZKMUOZjhQdr7aFm6qxIgi10WXX/n+Gkq/Fl/jzvgJc
+         4IpyZ00useUjA==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 18 Aug 2022 20:03:08 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Marc Zyngier <maz@kernel.org>
+CC:     "broonie@kernel.org" <broonie@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
+ operations
+Thread-Topic: [PATCH v1] regmap: introduce value tracing for regmap bulk
+ operations
+Thread-Index: AQHYsZwRTOzZdLxKvkqpBNcAgWIdzq20YtWAgAAaSQCAADYjgA==
+Date:   Thu, 18 Aug 2022 17:02:46 +0000
+Message-ID: <20220818170305.kxtgpmulyditol6r@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
+ <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
+ <87mtc1wtjz.wl-maz@kernel.org>
+In-Reply-To: <87mtc1wtjz.wl-maz@kernel.org>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <8A8E25C78C2041488D21CB9D2855371C@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818135817.10142-2-srinivas.kandagatla@linaro.org>
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/18 13:09:00 #20118254
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 02:58:15PM +0100, Srinivas Kandagatla wrote:
-> Add compatibles for sm8450 and sm8250xp based soundcards.
-> 
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> ---
->  Documentation/devicetree/bindings/sound/qcom,sm8250.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+Hello Marc,
 
-Acked-by: Rob Herring <robh@kernel.org>
+Thank you for quick feedback. Please find my comments below.
+
+On Thu, Aug 18, 2022 at 02:49:20PM +0100, Marc Zyngier wrote:
+
+[...]
+
+> > > Currently, only one-register io operations support tracepoints with
+> > > value logging. For the regmap bulk operations developer can view
+> > > hw_start/hw_done tracepoints with starting reg number and registers
+> > > count to be reading or writing. This patch injects tracepoints with
+> > > dumping registers values in the hex format to regmap bulk reading
+> > > and writing.
+>=20
+> I don't care much about regmap as a MMIO backend, but it strikes me as
+> odd that you end up with multiple ways of logging the same stuff (with
+> a memcpy in the middle of it).
+>=20
+> Why can't this be done with a small amount of trace post-processing?
+
+Sorry, actually, I don't get you. What do you mean by "same stuff"?
+For now, regmap bulk I/O operations don't log data buffers, because
+current regmap trace classes don't have a dynamic trace arrays inside.
+We should use dynamic array here because bulk I/O operations can vary
+buffer size from call to call.
+Function memcpy() is used to copy original buffer data to a trace array
+when tracepoint is enabled. In other words, per my understanding,
+when tracepoint is disabled we do not call TP_fast_assign instructions.
+
+Trace event documentation says about dynamic array:
+
+ *   __dynamic_array: This is similar to array, but can vary its size from
+ *         instance to instance of the tracepoint being called.
+ *         Like __array, this too has three elements (type, name, size);
+ *         type is the type of the element, name is the name of the array.
+ *         The size is different than __array. It is not a static number,
+ *         but the algorithm to figure out the length of the array for the
+ *         specific instance of tracepoint. Again, size is the number of
+ *         items in the array, not the total length in bytes.
+ *
+ *         __dynamic_array( int, foo, bar) is similar to: int foo[bar];
+ *
+ *         Note, unlike arrays, you must use the __get_dynamic_array() macr=
+o
+ *         to access the array.
+ *
+ *         memcpy(__get_dynamic_array(foo), bar, 10);
+ *
+ *         Notice, that "__entry" is not needed here.
+
+BTW, I've tried to use the already existing TRACE CLASS regmap_block, but
+it's difficult to integrate dynamic array to that, because sometimes we
+do not have a reg data (for example, regmap_hw_read_start event).
+
+[...]
+
+--=20
+Thank you,
+Dmitry=
