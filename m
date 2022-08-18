@@ -2,260 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0569C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E84FC32772
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245624AbiHROEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
+        id S245626AbiHROF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245610AbiHROEo (ORCPT
+        with ESMTP id S245133AbiHROF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:04:44 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F924B7D3
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:04:37 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-333b049f231so44063717b3.1
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:04:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=+kv66vxJ0YAn/r791jElf5y4ZMDzSN2X5TyTuKb96rI=;
-        b=Au0+wmSCKtfaRR52iCMDAqCL12HsLn0096khZpro0Ew0t8wYVhkNmnONrg/gtX4k96
-         KqU6CYvipoE2ICrlq95wJSsHspIK/o59+FhEYt7MQMKWobALXS0x1LsWuzqHMFehUxCi
-         YP0NeqB5JRfRg5J2YPhbH/BLR9DJxpFCLU9HV7RdYVjX9Isft/lBxda118WZbu5BnSMs
-         Kyo6KpXeDbTmZ800Z4BwXZYzPm846I1ECGc4S8aoIBePMG2BUy9mKnT8Ch2JLiY1vxPi
-         Eu0W99CN6+L/UtTpVF6GeCVFx6gVAsBYqO9qS/Ps0Q2eYalNOwaGY1UvjyIB/GF4mKOi
-         r2uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+kv66vxJ0YAn/r791jElf5y4ZMDzSN2X5TyTuKb96rI=;
-        b=nPUZvAYpvYQqeFh3AaY1vhhdR/D9BYjWeopUK2YTmyIRdBDZjOZxMDIUgYnbBk2mB7
-         mszubXdt+j81g6T6Jq3kdLu0PfzKJezmopldLYwZRJRZ5SC/gPgkAf5zGiXfnqJ5ilqc
-         1Uo2OnxDqQZq2syP3M8q+0JMSdFWxwGg8qONHWsxdzy6hwEQU7SGr3LWyblkXHRrMrjh
-         URDPwgtAgJhJhMM1vQaXjkNufzRf2n85Z33uLowzRVzaWblofqDfWOF779ClFN497Cl3
-         bpX7JeGli0+5xyr43zjXpkyol3+oVNal8tta+wmhJifG6HzoO3rTQETzYs4ao6NSJna1
-         g/Ow==
-X-Gm-Message-State: ACgBeo1MsBqy/1yMmQxDnBLn0qzOq2b+CZu26QKjRK1drKFgTShiMWkU
-        74E6BDKRtW7RBKcFuz7SDxOEXr44+QPA2a7W8nlWBw==
-X-Google-Smtp-Source: AA6agR7q18DufKU0IAifoEXyfBzC9Ih5o9isetdzMCKDhC+zW7uCM8Mj8lYx0qEqPIvSPiHSqmk3+VqMyDhz+qXZCw4=
-X-Received: by 2002:a25:4986:0:b0:67b:c97f:6975 with SMTP id
- w128-20020a254986000000b0067bc97f6975mr2745146yba.520.1660831476550; Thu, 18
- Aug 2022 07:04:36 -0700 (PDT)
+        Thu, 18 Aug 2022 10:05:26 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6236F542;
+        Thu, 18 Aug 2022 07:05:23 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id BBD2A77A; Thu, 18 Aug 2022 09:05:21 -0500 (CDT)
+Date:   Thu, 18 Aug 2022 09:05:21 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+Message-ID: <20220818140521.GA1000@mail.hallyn.com>
+References: <20220815162028.926858-1-fred@cloudflare.com>
+ <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+ <8735dux60p.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
+ <871qte8wy3.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+ <8735du7fnp.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
+ <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-References: <20220817080757.352021-1-bchihi@baylibre.com> <20220817080757.352021-3-bchihi@baylibre.com>
- <18164de9-ad28-939c-a802-69647fc65a37@linaro.org>
-In-Reply-To: <18164de9-ad28-939c-a802-69647fc65a37@linaro.org>
-From:   Balsam CHIHI <bchihi@baylibre.com>
-Date:   Thu, 18 Aug 2022 16:04:00 +0200
-Message-ID: <CAGuA+op3tFL6M=H2rzAB4DJn+7ve4W5vUuRc+zBrq7zQY2CX7w@mail.gmail.com>
-Subject: Re: [PATCH v9,2/7] dt-bindings: thermal: Add dt-binding document for
- LVTS thermal controllers
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     rafael@kernel.org, rui.zhang@intel.com, daniel.lezcano@linaro.org,
-        amitk@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        mka@chromium.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, abailon@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-
-Thank you for the reviews.
-Would you please explain the meaning of "Rebase your patchset on
-decent kernel tree. You seem to use something a bit old"?
-It is rebased on top of linux-6.0.0-rc1.
-Am I missing something?
-
-Best regards,
-Balsam
-
-On Thu, Aug 18, 2022 at 3:48 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 17/08/2022 11:07, bchihi@baylibre.com wrote:
-> > From: Alexandre Bailon <abailon@baylibre.com>
+On Wed, Aug 17, 2022 at 04:24:28PM -0500, Eric W. Biederman wrote:
+> Paul Moore <paul@paul-moore.com> writes:
+> 
+> > On Wed, Aug 17, 2022 at 4:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> >> Paul Moore <paul@paul-moore.com> writes:
+> >> > On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> >> >> Paul Moore <paul@paul-moore.com> writes:
+> >> >>
+> >> >> > At the end of the v4 patchset I suggested merging this into lsm/next
+> >> >> > so it could get a full -rc cycle in linux-next, assuming no issues
+> >> >> > were uncovered during testing
+> >> >>
+> >> >> What in the world can be uncovered in linux-next for code that has no in
+> >> >> tree users.
+> >> >
+> >> > The patchset provides both BPF LSM and SELinux implementations of the
+> >> > hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
+> >> > If no one beats me to it, I plan to work on adding a test to the
+> >> > selinux-testsuite as soon as I'm done dealing with other urgent
+> >> > LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
+> >> > run these tests multiple times a week (multiple times a day sometimes)
+> >> > against the -rcX kernels with the lsm/next, selinux/next, and
+> >> > audit/next branches applied on top.  I know others do similar things.
+> >>
+> >> A layer of hooks that leaves all of the logic to userspace is not an
+> >> in-tree user for purposes of understanding the logic of the code.
 > >
-> > Add dt-binding document for mt8192 and mt8195 LVTS thermal controllers.
->
-> Rebase your patchset on decent kernel tree. You seem to use something a
-> bit old.
->
-> >
-> > Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-> > Co-developed-by: Balsam CHIHI <bchihi@baylibre.com>
-> > Signed-off-by: Balsam CHIHI <bchihi@baylibre.com>
-> > ---
-> >  .../thermal/mediatek,lvts-thermal.yaml        | 152 ++++++++++++++++++
-> >  1 file changed, 152 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/thermal/mediatek,lvts-thermal.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/thermal/mediatek,lvts-thermal.yaml b/Documentation/devicetree/bindings/thermal/mediatek,lvts-thermal.yaml
-> > new file mode 100644
-> > index 000000000000..31d9e220513a
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/thermal/mediatek,lvts-thermal.yaml
-> > @@ -0,0 +1,152 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/thermal/mediatek,lvts-thermal.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: MediaTek SoC LVTS thermal controller
-> > +
-> > +maintainers:
-> > +  - Yu-Chia Chang <ethan.chang@mediatek.com>
-> > +  - Ben Tseng <ben.tseng@mediatek.com>
-> > +
-> > +description: |
-> > +  LVTS (Low Voltage Thermal Sensor).
-> > +  The architecture will be first used on mt8192 and mt8195.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - mediatek,mt8192-lvts-ap
-> > +      - mediatek,mt8192-lvts-mcu
-> > +      - mediatek,mt8195-lvts-ap
-> > +      - mediatek,mt8195-lvts-mcu
-> > +
-> > +  "#thermal-sensor-cells":
-> > +    const: 1
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +    description: LVTS instance registers.
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +    description: LVTS instance interrupts.
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +    description: LVTS instance clock.
->
-> Skip all these three descriptions. They are obvious.
->
-> > +
-> > +  resets:
-> > +    maxItems: 1
-> > +    description: |
-> > +      LVTS instance SW reset for HW AP/MCU domain to clean temporary data
-> > +      on HW initialization/resume.
-> > +
-> > +  nvmem-cells:
-> > +    minItems: 1
-> > +    maxItems: 2
-> > +    description: Calibration efuse data for LVTS
-> > +
-> > +  nvmem-cell-names:
-> > +    minItems: 1
-> > +    maxItems: 2
-> > +    description: Calibration efuse cell names for LVTS
-> > +
-> > +allOf:
-> > +  - $ref: thermal-sensor.yaml#
-> > +
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - mediatek,mt8192-lvts-ap
-> > +              - mediatek,mt8192-lvts-mcu
-> > +    then:
-> > +      properties:
-> > +        nvmem-cells:
-> > +          items:
-> > +            - description: Calibration efuse data for LVTS
-> > +
-> > +        nvmem-cell-names:
-> > +          items:
-> > +            - const: lvts_calib_data1
-> > +
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - mediatek,mt8195-lvts-ap
-> > +              - mediatek,mt8195-lvts-mcu
-> > +    then:
-> > +      properties:
-> > +        nvmem-cells:
-> > +          items:
-> > +            - description: Calibration efuse data 1 for LVTS
-> > +            - description: Calibration efuse data 2 for LVTS
-> > +
-> > +        nvmem-cell-names:
-> > +          items:
-> > +            - const: lvts_calib_data1
-> > +            - const: lvts_calib_data2
-> > +
-> > +required:
-> > +  - compatible
-> > +  - '#thermal-sensor-cells'
->
-> Use consistent quotes: either ' or "
->
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +  - resets
-> > +  - nvmem-cells
-> > +  - nvmem-cell-names
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +    #include <dt-bindings/clock/mt8192-clk.h>
-> > +    #include <dt-bindings/reset/mt8192-resets.h>
-> > +
-> > +    soc {
-> > +      #address-cells = <2>;
-> > +      #size-cells = <2>;
-> > +
-> > +      lvts_ap: thermal-sensor@1100b000 {
-> > +        compatible = "mediatek,mt8192-lvts-ap";
-> > +        #thermal-sensor-cells = <1>;
-> > +        reg = <0 0x1100b000 0 0x1000>;
->
-> Convention is: compatible, then reg, then the rest of properties
->
-> > +        interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH 0>;
-> > +        clocks = <&infracfg CLK_INFRA_THERM>;
-> > +        resets = <&infracfg MT8192_INFRA_RST0_THERM_CTRL_SWRST>;
-> > +        nvmem-cells = <&lvts_e_data1>;
-> > +        nvmem-cell-names = "lvts_calib_data1";
-> > +      };
-> > +
-> > +      lvts_mcu: thermal-sensor@11278000 {
-> > +        compatible = "mediatek,mt8192-lvts-mcu";
-> > +        #thermal-sensor-cells = <1>;
-> > +        reg = <0 0x11278000 0 0x1000>;
-> > +        interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH 0>;
-> > +        clocks = <&infracfg CLK_INFRA_THERM>;
-> > +        resets = <&infracfg MT8192_INFRA_RST4_THERM_CTRL_MCU_SWRST>;
-> > +        nvmem-cells = <&lvts_e_data1>;
-> > +        nvmem-cell-names = "lvts_calib_data1";
-> > +      };
-> > +    };
->
-> This part is the same as previous, so just skip it or replace with an
-> example which is different somehow.
->
-> Best regards,
-> Krzysztof
+> > The BPF LSM selftests which are part of this patchset live in-tree.
+> > The SELinux hook implementation is completely in-tree with the
+> > subject/verb/object relationship clearly described by the code itself.
+> > After all, the selinux_userns_create() function consists of only two
+> > lines, one of which is an assignment.  Yes, it is true that the
+> > SELinux policy lives outside the kernel, but that is because there is
+> > no singular SELinux policy for everyone.  From a practical
+> > perspective, the SELinux policy is really just a configuration file
+> > used to setup the kernel at runtime; it is not significantly different
+> > than an iptables script, /etc/sysctl.conf, or any of the other myriad
+> > of configuration files used to configure the kernel during boot.
+> 
+> I object to adding the new system configuration knob.
+
+I do strongly sympathize with Eric's points.  It will be very easy, once
+user namespace creation has been further restricted in some distros, to
+say "well see this stuff is silly" and go back to simply requiring root
+to create all containers and namespaces, which is generally quite a bit
+easier anywway.  And then, of course, give everyone root so they can
+start containers.
+
+As Eric said,
+
+ | Further adding a random failure mode to user namespace creation if it is
+ | used at all will just encourage userspace to use a setuid application to
+ | perform the namespace creation instead.  Creating a less secure system
+ | overall.
+
+However, I'm also looking at e.g. CVE-2022-2588 and CVE-2022-2586, and
+yes there are two issues which do require discussion (three if you
+count reportability, which is mainly a tool in guarding against the others).
+
+The first is, indeed, configuration knobs.  There are tools, including
+chrome, which use user namespaces to make things better.  The hope is
+that more and more tools will do so.
+
+The second is damage control.  When an 0day has been announced, things
+change.  You can say "well the bug was there all along", but it is
+different when every lazy ne'erdowell can pick an exploit off a mailing
+list and use it against a product for which spinning a new version with
+a new kernel and getting customers to update is probably a months-long
+endeavor.  Some of these products do in fact require namespaces (user
+and otherwise) as part of their function.  And - to my chagrin - I suspect
+most of them create usernamespace as the root user, before possibly processing
+untrusted user input, so unprivileged_userns_clone isn't a good fit.
+
+SELinux (and LSMs in generaly) do in fact seem like a useful place to
+add some configuration, because they tend to assign different domains
+to tasks with different purposes and trust levels.  But another such
+place is the init system / service manager.  And in most cases these
+days, this will use cgroups to collect tasks of certain types.  So I
+wonder (this is ALMOST ENTIRELY thinking out loud, not thought through
+sufficiently) whether we should be setting a cgroup.nslock or
+somesuch.
+
+Of course, kernel livepatch is another potentially useful mitigation.
+Currently that's not possible for everyone.
+
+Maybe there is a more fundamental way we can approach this.  Part of me
+still likes the idea of splitting the id mapping and capability-in-userns
+parts, but that's not sufficient.  Maybe looking over all the relevant
+CVEs would give a better hint.
+
+Eric, you said
+
+ | If the concern is to reduce the attack surface everything this
+ | proposed hook can do is already possible with the security_capable
+ | security hook.
+
+I suppose I could envision an LSM which gets activated when we find
+out there was a net-ns-exacerbated 0-day, which refuses CAP_NET_ADMIN
+for a task not in init_user_ns?  Ideally it would be more flexible
+than that.
+
+> idea.  What is userspace going to do with this new feature that makes it
+> worth maintaining in the kernel?
+> 
+> That is always the conversation we have when adding new features, and
+> that is exactly the conversation that has not happened here.
+
+Eric and Paul, I wonder, will you - or some people you'd like to represent
+you - be at plumbers in September?  Should there be a BOF session there?  (I
+won't be there, but could join over video)  I think a brainstorming session 
+for solutions to the above problems would be good.
+
+> Adding a layer of indirection should not exempt a new feature from
+> needing to justify itself.
+> 
+> Eric
