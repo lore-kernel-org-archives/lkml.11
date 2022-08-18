@@ -2,258 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0165EC32772
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB239C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343700AbiHRPMH (ORCPT
+        id S1344160AbiHRPML (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
+        Thu, 18 Aug 2022 11:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344109AbiHRPL5 (ORCPT
+        with ESMTP id S1344118AbiHRPL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:11:57 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2044.outbound.protection.outlook.com [40.107.22.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F5ABE4F0;
-        Thu, 18 Aug 2022 08:11:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=byNOOTI1lEswpaJSWNeN8XEomafr0DR5y924QVwCW3nPH+qQ6aK+1ybT7mBm5rJniyKYQsYc3Ct0nQEEhQ4wfjkwwwpLdpIVOROURsrvly/8LLs2kU4nZlCk/j01IFYVQuHq8ixgE20zz5MBdL/Jijb3EEfeqmjeBTwmjS7uEOaGSN9OoNvqlrf35q+tSF5IfBD5xgw35+VVhf8Cbo2W711j9Q/tApHeqvgy6N/VUchP9tNQU54DYRrR+LaSmGSXw5xuS9zr+m0SRl4J6Qn6JbqRMq3CXIcZqcIr4CQhWaUO2gfyLtX+D6FYiYA53LNfBdpDN6zJzhG18ITblHyFYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NtMpNVplILGZi2u/dVsX903we9+baZrIzJYTfXjWhUk=;
- b=W7OaBtk1BhWxXHVJuB686zbPWPwUuPsKVgLx5ERz+jFyJKVLj3W4TAW2qRhK42bx1ERWtVuUwTQV+SmInjYjITmcAViFBvMsns2qG/UO6/d0PqJ9PQmYLXIwWG/6DZkbTkAD5/dCtD+4Kw8G2+0yd1NIHVX8InbxVLNY45sYRipMoGZTJUBNVzIdOj27yI2x8T/n0wAPBaEiGJY1MdSJEiVWuIhZ5DqS8A+KiU2EdpWo5hMVCpof2AroJXsUocvtGPn1HhJScmzOv+cW9/5boio8p7g4LyVKEo27gUZNv4YD4CaEmPINIoTYKnl+Zxh1RdiROK28zcME6dU8ai0B8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NtMpNVplILGZi2u/dVsX903we9+baZrIzJYTfXjWhUk=;
- b=WJoqDI3o8ocAv0UzWeDhYs0Axc/Pnojebb6J6q9zp0UzbZ18yvqNTfyuAhmgkicDl2qsAWAJh65xW+JlpbEBcfI2qGqFJXX7NOC3SjD9OF/EC3lz+uPV2cJ2tGkDKOHHpU/bKAh1aPDx6pqHkxwictj39YLpuj+VdmFGbiKQXRU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9186.eurprd04.prod.outlook.com (2603:10a6:102:232::18)
- by AM0PR04MB5713.eurprd04.prod.outlook.com (2603:10a6:208:125::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 15:11:48 +0000
-Received: from PAXPR04MB9186.eurprd04.prod.outlook.com
- ([fe80::40a9:93e4:75d4:f73c]) by PAXPR04MB9186.eurprd04.prod.outlook.com
- ([fe80::40a9:93e4:75d4:f73c%3]) with mapi id 15.20.5546.016; Thu, 18 Aug 2022
- 15:11:48 +0000
-From:   Frank Li <Frank.Li@nxp.com>
-To:     maz@kernel.org, tglx@linutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kw@linux.com, bhelgaas@google.com
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
-        peng.fan@nxp.com, aisheng.dong@nxp.com, jdmason@kudzu.us,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        kishon@ti.com, lorenzo.pieralisi@arm.com, ntb@lists.linux.dev,
-        lznuaa@gmail.com
-Subject: [PATCH v6 0/4] PCI EP driver support MSI doorbell from host
-Date:   Thu, 18 Aug 2022 10:11:23 -0500
-Message-Id: <20220818151127.2449064-1-Frank.Li@nxp.com>
-X-Mailer: git-send-email 2.35.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR13CA0141.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::26) To PAXPR04MB9186.eurprd04.prod.outlook.com
- (2603:10a6:102:232::18)
+        Thu, 18 Aug 2022 11:11:58 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E65BFA8B;
+        Thu, 18 Aug 2022 08:11:53 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id br15-20020a056830390f00b0061c9d73b8bdso1276800otb.6;
+        Thu, 18 Aug 2022 08:11:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=WfG6z66abqmikTTPic3DpB5e3H4wBaNLiClJ/rnvyVc=;
+        b=pucIdsytBnSNMGKOlVgFv3STr5Snk0UhtGcRmUKRjc4bdrWWDQYhYVXjamSzRZHy6p
+         hPF1R5isHYgas+hSi2WZl4QgedPu6Kp48hmz7IWIQunNfS8XRX0jIY3t3Vfr/BISj/4D
+         npF2cw4mBemgkzafMr46F/RWnNvw6Au4Rhu06XdB//41cwfliJf3IsUNP8wJrcm/oIxh
+         BEKFrqvhlnUifiZX5zWWM+QOCKhcccWunvY5HADyYp8f3/123vdVYnxXgF/o4Zpy77/W
+         vPkNtfL87m1QzHboXV89XKdbP3ZBbThaxJpnA0J7OmXJ2OwOecoojVRsTzQ4sSZW2EII
+         Fh4g==
+X-Gm-Message-State: ACgBeo3WjPRZ1gVa9FVCzsFga6v1TJc8UPHSZ+dafCHl1n80UyR/y1aQ
+        Y2qupVrEIpXtPrjRzXYfywk2oACb3g==
+X-Google-Smtp-Source: AA6agR6o7rSkFIPBKN9it7S6e36TvpRIoeN+/X1zhFrbsie8UcZ/YzC4dQpBxe2obE3oQFSaW2ODvA==
+X-Received: by 2002:a9d:12a2:0:b0:638:937a:f620 with SMTP id g31-20020a9d12a2000000b00638937af620mr1239118otg.29.1660835512452;
+        Thu, 18 Aug 2022 08:11:52 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:5fe0:b4f5:6e22:4704:df60:73a3])
+        by smtp.gmail.com with ESMTPSA id v43-20020a056870b52b00b00116d5103487sm493752oap.31.2022.08.18.08.11.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 08:11:52 -0700 (PDT)
+Received: (nullmailer pid 1877668 invoked by uid 1000);
+        Thu, 18 Aug 2022 15:11:50 -0000
+Date:   Thu, 18 Aug 2022 09:11:50 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Asmaa Mnebhi <asmaa@nvidia.com>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Khalil Blaiech <kblaiech@nvidia.com>
+Subject: Re: [PATCH v1 6/7] i2c-mlxbf.c: support BlueField-3 SoC
+Message-ID: <20220818151150.GK1829017-robh@kernel.org>
+References: <20220816225412.9095-1-asmaa@nvidia.com>
+ <20220816225412.9095-7-asmaa@nvidia.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e5e39ade-f509-42e2-a94c-08da812bf862
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5713:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rwa7EjpSWXS2S/ESv3m/AGXPxJUlAQz56i44Wp1GGyYVSROll6vXeKR/e+IYzTo8Mc8RM2NnfrDTjpY6abk2eOiLunJDNO0XX32HFWL4f6ELjff/Sa2eo80BTK1HPRa1xAnPYkljpa+F+AucdUHTv0yXpAHvTZbC3fTM+Ds8tQFK6X/KWh0UEoeXW2ebij5FIRenCvehMf8E1S9yM7uVWmgf3eebpO2s3wc5EJjfriw6I3u7Mf2KoJuOonhZY4bQSj4rTmDwWJwwROzGSTRF5aMa5JB/33k07E6wwnBSp8JXfiL4XYa1nWJOZVL02ro9S3Ybs11aWZa72THxyRG7JLnfqiLyl0xmW7+AIEZWU62ZlcADTf3/8JgLTruEu1h0JIE7EW617gXZCwHHFRp01ykqCiK7ux1TYNuzuU5RO411J4IBiGHYaO+su5h6d6GFKR9b3BeIarlVo/C5Rh9axbj3/eTyUFd6LGZG+3IlyDf6A7dFMrUoS8aQ+lRoxvQookpzccX8O2Pzu0Q+EcveC65g+RayyPrqerYQJGpAAo427DFDBD9C5CB6EdhLrt1/IdlwostJhahz8UGjGzXv05sYtnY2IBuZHhti5wYnbSFeKVMpjmB62Et7ZKv5QJE3AAWtFkUmM3K2BwkV1SP7M5Zd1ahZJ5sbd0xDw4KD9dgoxRhSHbEuGjMo8S9+FjbT+w8fGv0+SPykVszGIvZ3nBrFvHNnD55K+9YgtT5RR+zTVbQjlqK3KdF9W23Z4hrDqCn6HyaLn3kGjD/OiXRyipHxzcyY2IFmEXjmrc6Q2/c=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9186.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(366004)(376002)(39860400002)(396003)(2616005)(316002)(1076003)(186003)(83380400001)(36756003)(38350700002)(38100700002)(6506007)(52116002)(4326008)(66946007)(66476007)(66556008)(2906002)(966005)(8676002)(6486002)(86362001)(6512007)(41300700001)(478600001)(26005)(6666004)(8936002)(5660300002)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TWpSZXFVR3pBbHdTYmFWcGtrQTBCZkxYQllFbVhzM2g1ZzJ5Kzk2TGF0Z09h?=
- =?utf-8?B?c1lHY0RzU2tJQndvc1FQZlFmTEdsV2o4Nkg3akF0VDRmeGtCL2lUdjRGNmd0?=
- =?utf-8?B?WjhDTjNPdnJydllHV0gwZ3JnRE02aUZYNWFWR2laT2VMVndNVDFkMXdxblVR?=
- =?utf-8?B?aUh0VUh1MjYzRjdvQlR4Ti82Y1RQZnFkQ2RMQVlSaTNFZTd5cGpObDhQZ29x?=
- =?utf-8?B?ekUrRGJOdFpqaVpPUElZOVg0SVZBdjdUc0RjWTBDcjdqOUtnWHlnS2ZsSzU5?=
- =?utf-8?B?YUFhbExGdktLc1B6UGdDZkxpRjBUeUMreWRTTEcvSTBpbnRLenR3T2FKenFm?=
- =?utf-8?B?RDFQWUJVK1BOVzVhUVFtbWVVWFZBejZUQ29VVFROcW5qS2lDQWdSSDh1YWtG?=
- =?utf-8?B?cExjRW9LOGpkS003Q0hWR0kxS2QzVUI0UGw1WjRjUGFCb2JQdS9YSXQxRVh2?=
- =?utf-8?B?S3luWU5iK1dNSG9JM1JpNjdkT1NmdTdEREtXY0NEUEx1TFBpeTNTcjZjVGxW?=
- =?utf-8?B?UzFrWG9PU2syQWhaWkNBWU91NmI5SDdhazV3T3BLQm5BUlgxSGh3TnVnNWVV?=
- =?utf-8?B?SFRKTjJ4NmlmbjRxSXJFeXNURmZ1Z1dpaHVUbUp3SW8vdjdyTGREQVNjTCtU?=
- =?utf-8?B?ZWxuNFJIamswUDkrNDF2NkovaE5ja09iZWNXbUtTM1kwd0QySEFkdzhNbnpp?=
- =?utf-8?B?bzRDMjRHZ2EwS21LSjh5QmRZY3ZROGczaVVUQlNuaEtDVW9ibUFIZEdyTktn?=
- =?utf-8?B?aVlwbzBaZlVPdXM3TVFlZm5xNXJwNEY5YnNXbnd6WEZxRVhYWGdCcjAvczFq?=
- =?utf-8?B?QmdubU5FSStxd0xzdUsxUkoxQ3NUL1QxT21FL1BwOUROWmFIL1orTDFFVC8w?=
- =?utf-8?B?bmZoOHpvYmEzODlpbE9CYUlRU0VVdW9XaFMwLzhnbk9hRUdUT0VxY05lSHhm?=
- =?utf-8?B?S1RtWlZvY0M0NERqckVBNUp2WnZkMWdEMjVDUVRkZWpEQzlPMHJnM0kwdHQx?=
- =?utf-8?B?U0VEbXd6ZUFGcVMyZmQ5OHNQNjN6T2F5STNIcUUycjRjRVNPbHdINGRYS2RQ?=
- =?utf-8?B?eDJZS04xYUZ0eXNZYStKUnd5Q1VhdmlNMi9pUjRBaWovcWg5SXRSOVk5UVln?=
- =?utf-8?B?emdRTllsQUtFNzZlMFc0dE9BaFpBdEdHbG12Q3hkckpuWkZjQXBUNFRCNDlG?=
- =?utf-8?B?THhNYUpFSmdlL0tmNjY3UG1NRVNRRUM5dzhLc0tzQ0Rzdk1BZEdGMXZCVXdj?=
- =?utf-8?B?TUJFWUlaNkdnYW1DTTZSUmJMVHE3WDJSV0V4Zkk4SXRSUmplbFQ1b2JXQWp5?=
- =?utf-8?B?elc0bHVqQXFPZDYzYnBIYkVNT3l5MzR5V1IrZHpMZVNEZWQrQU1JT0pNamZk?=
- =?utf-8?B?eDlWaDQ1c3E4V0h6eDdaZnlTb1ZwQ1c3SVVNTXFFWVpEUmw1eWYyNEdXcjMy?=
- =?utf-8?B?T0lnSWVBa3FFWDBBZjFoVE5qdTM1ME02STR3ejVZMHRLWHhGYmhYdUdnbksw?=
- =?utf-8?B?TEQrQkJiOGpiVFpIcDdXOGVuUnNCTFdEaTg1VGwvRFFITHYraG0ydUl1VTlu?=
- =?utf-8?B?Sk9QZHdmQmJkQzcwUUdMR1hBNS9HMHlvc2NtZVlYQmIraVN0cC9jdHlMRFEz?=
- =?utf-8?B?Q0hOK3kwMVJEajdrbW1kNnFYMzRPbU85cE1PTkxORm1IaytYaHZEbVVoTnpj?=
- =?utf-8?B?ZmVXR2o3TllEZWlaYzRzTmNScitXb3c3Nnk3TE10SDQyWC9ydzhKUzJpZG4y?=
- =?utf-8?B?Mk0rT1o3bEpEZ2V0eWtsSWpmV0ZONFBmMUJBQWU0VVZKOHMzampEakVYeUN3?=
- =?utf-8?B?U3VLOFJHQmo4Z2ZscU9VL3lyQmZBNGVSWVpmVDZ1cjR0UlhUS2hUUHhrb2kr?=
- =?utf-8?B?djRaVEZuTXVQajNRTDFSV2labnRqTzM0d1d4dW5rcVI3VllqdER4blZOU2Iw?=
- =?utf-8?B?eVNVRzAyeEppRk9TTE9aWndKSk5RYVA4REozWGFOMDUzdzh2emNuNDVTV3N3?=
- =?utf-8?B?RjNhbnEwU0hLcHZOb0ttVmpQRk54eG95Qjc0V0ZiMGg1TDFVL3J1T255enJG?=
- =?utf-8?B?aGJwU09qSFcyaCtuRUdWTWV3ZGFid08rcnBlcjMyYWZCOTM2Uys5eE9BSEdE?=
- =?utf-8?Q?mF0Q=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5e39ade-f509-42e2-a94c-08da812bf862
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9186.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 15:11:47.9794
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /UHUOvq4jDxB6UOVnCPPmfZWhir5zpMVg0uf5vYdzjqf1osklMi6h36uOtGnscg5X2pkaCxivpyEedDRLFYZjQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5713
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816225412.9095-7-asmaa@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 16, 2022 at 06:54:11PM -0400, Asmaa Mnebhi wrote:
+> BlueField-3 SoC has the same I2C IP logic as previous
+> BlueField-1 and 2 SoCs but it has different registers' addresses.
+> This is an effort to keep this driver generic accross all
+> BlueField generations.
+> This patch breaks down the "smbus" resource into 3 separate
+> resources to enable us to use common registers' offsets for all
+> BlueField SoCs:
+> struct mlxbf_i2c_resource *timer;
+> struct mlxbf_i2c_resource *mst;
+> struct mlxbf_i2c_resource *slv;
+> 
+> Of course, all offsets had to be adjusted accordingly, and we took
+> this chance to reorganize the macros depending on the register block
+> they target.
+> 
+> There are only 2 registers' offsets that do not fit within this
+> schema so their offsets are passed as SoC-specific parameters:
+> smbus_master_rs_bytes_off
+> smbus_master_fsm_off
+> 
+> Reviewed-by: Khalil Blaiech <kblaiech@nvidia.com>
+> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+> ---
+>  .../bindings/i2c/mellanox,i2c-mlxbf.yaml      |  30 +-
 
-                  ┌───────┐          ┌──────────┐
-                  │       │          │          │
-┌─────────────┐   │       │          │ PCI Host │
-│ MSI         │◄┐ │       │          │          │
-│ Controller  │ │ │       │          │          │
-└─────────────┘ └─┼───────┼──────────┼─Bar0     │
-                  │ PCI   │          │ Bar1     │
-                  │ Func  │          │ Bar2     │
-                  │       │          │ Bar3     │
-                  │       │          │ Bar4     │
-                  │       ├─────────►│          │
-                  └───────┘          └──────────┘
+Bindings go in a separate patch.
 
-Many PCI controllers provided Endpoint functions.
-Generally PCI endpoint is hardware, which is not running a rich OS,
-like linux.
+>  MAINTAINERS                                   |   1 +
+>  drivers/i2c/busses/i2c-mlxbf.c                | 397 ++++++++++--------
+>  3 files changed, 258 insertions(+), 170 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml b/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml
+> index 93198d5d43a6..cb3a012914e0 100644
+> --- a/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml
+> @@ -8,6 +8,7 @@ title: Mellanox I2C SMBus on BlueField SoCs
+>  
+>  maintainers:
+>    - Khalil Blaiech <kblaiech@nvidia.com>
+> +  - Asmaa Mnebhi <asmaa@nvidia.com>
+>  
+>  allOf:
+>    - $ref: /schemas/i2c/i2c-controller.yaml#
+> @@ -17,11 +18,15 @@ properties:
+>      enum:
+>        - mellanox,i2c-mlxbf1
+>        - mellanox,i2c-mlxbf2
+> +      - mellanox,i2c-mlxbf3
+>  
+>    reg:
+> -    minItems: 3
+> +    minItems: 5
 
-But Linux also supports endpoint functions.  PCI Host write BAR<n> space
-like write to memory. The EP side can't know memory changed by the Host
-driver. 
+You just broke platforms with 3 entries.
 
-PCI Spec has not defined a standard method to do that.  Only define
-MSI(x) to let EP notified RC status change. 
+> +    maxItems: 6
+>      items:
+> -      - description: Smbus block registers
+> +      - description: Smbus timer registers
+> +      - description: Smbus master registers
+> +      - description: Smbus slave registers
 
-The basic idea is to trigger an IRQ when PCI RC writes to a memory
-address. That's what MSI controller provided.  EP drivers just need to
-request a platform MSI interrupt, struct MSI_msg *msg will pass down a
-memory address and data.  EP driver will map such memory address to
-one of PCI BAR<n>.  Host just writes such an address to trigger EP side
-IRQ.
+You can't add new registers at the beginning of the list for existing 
+users.
 
-If system have gic-its, only need update PCI EP side driver. But i.MX
-have not chip support gic-its yet. So we have to use MU to simulate a
-MSI controller. Although only 4 MSI IRQs are simulated, it matched
-vntb(pci-epf-vntb) network requirement.
+Either add to the end or it has to be conditional (if/then schema).
 
-After enable MSI, ping delay reduce < 1ms from ~8ms
-
-IRQchip: imx mu worked as MSI controller: 
-     let imx mu worked as MSI controllers. Although IP is not design
-as MSI controller, we still can use it if limited IRQ number to 4.
-
-pcie: endpoint: pci-epf-vntb: add endpoint MSI support
-	 Based on ntb-next branch. https://github.com/jonmason/ntb/commits/ntb-next
-	 Using MSI as door bell registers
-	 This patch is totally independent on previous on. It can be
-applied to ntb-next seperately.
-
-i.MX EP function driver is upstreaming by Richard Zhu.
-Some dts change missed at this patches. below is reference dts change
-
---- a/arch/arm64/boot/dts/freescale/imx8-ss-hsio.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8-ss-hsio.dtsi
-@@ -160,5 +160,6 @@ pcieb_ep: pcie_ep@5f010000 {
-                num-ib-windows = <6>;
-                num-ob-windows = <6>;
-                status = "disabled";
-+               MSI-parent = <&lsio_mu12>;
-        };
-
---- a/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
-@@ -172,6 +172,19 @@ lsio_mu6: mailbox@5d210000 {
-                status = "disabled";
-        };
-
-+       lsio_mu12: mailbox@5d270000 {
-+               compatible = "fsl,imx6sx-mu-MSI";
-+               msi-controller;
-+               interrupt-controller;
-+               reg = <0x5d270000 0x10000>,     /* A side */
-+                     <0x5d300000 0x10000>;     /* B side */
-+               reg-names = "a", "b";
-+               interrupts = <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>;
-+               power-domains = <&pd IMX_SC_R_MU_12A>,
-+                               <&pd IMX_SC_R_MU_12B>;
-+               power-domain-names = "a", "b";
-+       };
-+
-
-Change Log
-- Change from v5 to v6
-  Fixed build error found by kernel test robot
-
-- Change from v4 to v5
-  Fixed dt-binding document
-        add msi-cell
-        add interrupt max number
-	update naming reg-names and power-domain-names.
-  Fixed irqchip-Add-IMX-MU-MSI-controller-driver.patch
-        rework commit message
-        remove some field in struct imx_mu_dcfg
-	error handle when link power domain failure.
-	add irq_domain_update_bus_token
-
-- Change from v3 to v4
-  Fixed dt-binding document according to Krzysztof Kozlowski's feedback
-  Fixed irqchip-imx-mu-worked-as-msi-controller according to Marc Zyngier's
-        comments.
-
-	There are still two important points, which I am not sure.
-	1. clean irq_set_affinity after platform_msi_create_irq_domain.
-	   Some function, like platform_msi_write_msg() is static.
-	   so I have to set MSI_FLAG_USE_DEF_CHIP_OPS flags, which will
-	   set irq_set_affinity to default one.
-	2. about comments
-
-	> +	msi_data->msi_domain = platform_msi_create_irq_domain(
-	> +				of_node_to_fwnode(msi_data->pdev->dev.of_node),
-	> +				&imx_mu_msi_domain_info,
-	> +				msi_data->parent);
-
-	"And you don't get an error due to the fact that you use the same
-	fwnode for both domains without overriding the domain bus token?"
-
- 	I did not understand yet. 
-
-  Fixed static check warning, reported by Dan Carpenter
-	pcie: endpoint: pci-epf-vntb: add endpoint MSI support
-
-- Change from v2 to v3
-  Fixed dt-binding docment check failure
-  Fixed typo a cover letter.
-  Change according Bjorn's comments at patch 
-	pcie: endpoint: pci-epf-vntb: add endpoint MSI support
-	 
-
-- from V1 to V2
-  Fixed fsl,mu-msi.yaml's problem
-  Fixed irq-imx-mu-msi.c problem according Marc Zyngier's feeback 
-  Added a new patch to allow pass down .pm by IRQCHIP_PLATFORM_DRIVER_END
-
--- 
-2.35.1
-
+>        - description: Cause master registers
+>        - description: Cause slave registers
+>        - description: Cause coalesce registers
+> @@ -58,7 +63,9 @@ examples:
+>    - |
+>      i2c@2804000 {
+>          compatible = "mellanox,i2c-mlxbf1";
+> -        reg = <0x02804000 0x800>,
+> +        reg = <0x02804000 0x40>,
+> +              <0x02804200 0x200>,
+> +              <0x02804400 0x200>,
+>                <0x02801200 0x020>,
+>                <0x02801260 0x020>;
+>          interrupts = <57>;
+> @@ -68,10 +75,25 @@ examples:
+>    - |
+>      i2c@2808800 {
+>          compatible = "mellanox,i2c-mlxbf2";
+> -        reg = <0x02808800 0x600>,
+> +        reg = <0x02808800 0x40>,
+> +              <0x02808a00 0x200>,
+> +              <0x02808c00 0x200>,
+>                <0x02808e00 0x020>,
+>                <0x02808e20 0x020>,
+>                <0x02808e40 0x010>;
+>          interrupts = <57>;
+>          clock-frequency = <400000>;
+>      };
+> +
+> +  - |
+> +    i2c@2808800 {
+> +        compatible = "mellanox,i2c-mlxbf3";
+> +        reg = <0x13404480 0x40>,
+> +              <0x13404200 0x200>,
+> +              <0x13404000 0x200>,
+> +              <0x13404400 0x020>,
+> +              <0x13404420 0x020>,
+> +              <0x13404440 0x010>;
+> +        interrupts = <35>;
+> +        clock-frequency = <400000>;
+> +    };
