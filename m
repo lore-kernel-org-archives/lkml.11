@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69529C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C555C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244737AbiHRNNA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
+        id S244817AbiHRNND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244548AbiHRNMs (ORCPT
+        with ESMTP id S244979AbiHRNMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:12:48 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC69B2493
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:12:47 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27ID0jUx004836;
-        Thu, 18 Aug 2022 13:11:35 GMT
+        Thu, 18 Aug 2022 09:12:47 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6660E90800
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:12:44 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27ICC2aS006710;
+        Thu, 18 Aug 2022 13:10:58 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=SgB1OBJ+aT4fKrCirlggMMGrMcGU1lu023bf/o8Sw4M=;
- b=Wlv78d4F+GU0V4YStCFHd5GtSHDiHSgU8ovslbjVH7A6swQTUkOfQLAXqDVylDzP7gfN
- W6yM/gGjBYoMmR1lNBkMs4e6LDwMay+CY7a0koX+x8T6uzRdvSgKdnFl41pD3bxTm7Xe
- /RIFZLwV02L2aOFPdUn2QBua3ElmahtYhM3OTIifT5d4N60WHB7vPCN61OLInJBzM0Cq
- K+WrO4ppXhlw3US8FDSwpffKX6m37kZgQTd5por4EvnI/rnPntwXV2YIhdT8RxKoV4nX
- UARoawmgwlthWy5VreaxP9ZTi6QgBtdhshnVpTDvNf1pTpnuOhigat7Npw/B6S8XkCkO Ag== 
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=L5TWbRjfImzKrEffubUu44UbEic2E79aSms+3T/91u8=;
+ b=Q1YIxUu0fkVCVBG2A2nzjGSV9WIhorYJYJMzK6wfEhvs0SIF9yB53R70rK9JsnOfAyUJ
+ +aEV25v9/RTmLLSQuYnyBhj85mBVfKaHikaC91Mf9jg7AO4GuxK+7LdpnxueQgg3tbrU
+ Xg5q8+4yraCbnQmNERZLb77ip87R5UKvDtI2YphFW4az9CAcTA6zuShagBkYUdjn6RX/
+ Vhiy375ns4BJm3W693C1MY4Pjh2YO3Oa70CF/2y5/ZfEZxWnUepuZXb8DSaYF8nFxcTf
+ dxsOg8EsldEdk2zYTcx/Ta9w3DzhI6OaDAYx+tvuqoa7yx8gr9CPzW1wxR4mNHAYHaZJ 8g== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1nxerf3j-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1n7cj4nx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 13:11:35 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27ID1DvF006707;
-        Thu, 18 Aug 2022 13:11:34 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1nxerf2n-1
+        Thu, 18 Aug 2022 13:10:57 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27ICDUW3012176;
+        Thu, 18 Aug 2022 13:10:56 GMT
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1n7cj4n3-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 13:11:33 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27ID5dD3002954;
-        Thu, 18 Aug 2022 13:11:32 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma03dal.us.ibm.com with ESMTP id 3hx3kaehtn-1
+        Thu, 18 Aug 2022 13:10:56 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27ID6VX7003245;
+        Thu, 18 Aug 2022 13:10:55 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma01wdc.us.ibm.com with ESMTP id 3hx3k9pyda-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 13:11:32 +0000
+        Thu, 18 Aug 2022 13:10:55 +0000
 Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27IDBVIV1311356
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27IDAsGB3015388
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 18 Aug 2022 13:11:32 GMT
+        Thu, 18 Aug 2022 13:10:54 GMT
 Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DCED5124053;
-        Thu, 18 Aug 2022 13:11:31 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id C8929124053;
+        Thu, 18 Aug 2022 13:10:54 +0000 (GMT)
 Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DAA8F124052;
-        Thu, 18 Aug 2022 13:11:26 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id D00A2124052;
+        Thu, 18 Aug 2022 13:10:49 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.111.107])
         by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 18 Aug 2022 13:11:26 +0000 (GMT)
+        Thu, 18 Aug 2022 13:10:49 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -74,146 +73,201 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
         Bharata B Rao <bharata@amd.com>,
         "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v15 06/10] mm/demotion: Add pg_data_t member to track node memory tier details
-Date:   Thu, 18 Aug 2022 18:40:38 +0530
-Message-Id: <20220818131042.113280-7-aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v15 00/10] mm/demotion: Memory tiers and demotion
+Date:   Thu, 18 Aug 2022 18:40:32 +0530
+Message-Id: <20220818131042.113280-1-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220818131042.113280-1-aneesh.kumar@linux.ibm.com>
-References: <20220818131042.113280-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: v9nEluJdfDt2HY6hBTW5UjrvGDtDlk4J
-X-Proofpoint-ORIG-GUID: iRErj2z7V2Pqzx7rEKjNCSlj6_HoxJMH
+X-Proofpoint-GUID: Pm2csQK-EUBzD4TY3JJzYqWQTkZXcJeV
+X-Proofpoint-ORIG-GUID: xbfyysA_svCvPRaOawPVTgU7yK5euI4e
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_12,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
- mlxlogscore=999 malwarescore=0 lowpriorityscore=0 impostorscore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180045
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
+ bulkscore=0 impostorscore=0 phishscore=0 priorityscore=1501 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxlogscore=999 suspectscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208180045
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Also update different helpes to use NODE_DATA()->memtier. Since
-node specific memtier can change based on the reassignment of
-NUMA node to a different memory tiers, accessing NODE_DATA()->memtier
-needs to happen under an rcu read lock or memory_tier_lock.
+The current kernel has the basic memory tiering support: Inactive pages on a
+higher tier NUMA node can be migrated (demoted) to a lower tier NUMA node to
+make room for new allocations on the higher tier NUMA node. Frequently accessed
+pages on a lower tier NUMA node can be migrated (promoted) to a higher tier NUMA
+node to improve the performance.
 
-Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
----
- include/linux/mmzone.h |  3 +++
- mm/memory-tiers.c      | 40 +++++++++++++++++++++++++++++++++++-----
- 2 files changed, 38 insertions(+), 5 deletions(-)
+In the current kernel, memory tiers are defined implicitly via a demotion path
+relationship between NUMA nodes, which is created during the kernel
+initialization and updated when a NUMA node is hot-added or hot-removed. The
+current implementation puts all nodes with CPU into the highest tier, and builds the
+tier hierarchy tier-by-tier by establishing the per-node demotion targets based
+on the distances between nodes.
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index e24b40c52468..7d78133fe8dd 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1012,6 +1012,9 @@ typedef struct pglist_data {
- 	/* Per-node vmstats */
- 	struct per_cpu_nodestat __percpu *per_cpu_nodestats;
- 	atomic_long_t		vm_stat[NR_VM_NODE_STAT_ITEMS];
-+#ifdef CONFIG_NUMA
-+	struct memory_tier __rcu *memtier;
-+#endif
- } pg_data_t;
- 
- #define node_present_pages(nid)	(NODE_DATA(nid)->node_present_pages)
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index c29bb24449b8..2b7e91b45a75 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -4,6 +4,7 @@
- #include <linux/sysfs.h>
- #include <linux/kobject.h>
- #include <linux/memory.h>
-+#include <linux/mmzone.h>
- #include <linux/memory-tiers.h>
- 
- #include "internal.h"
-@@ -136,12 +137,18 @@ static struct memory_tier *find_create_memory_tier(struct memory_dev_type *memty
- 
- static struct memory_tier *__node_get_memory_tier(int node)
- {
--	struct memory_dev_type *memtype;
-+	pg_data_t *pgdat;
- 
--	memtype = node_memory_types[node];
--	if (memtype && node_isset(node, memtype->nodes))
--		return memtype->memtier;
--	return NULL;
-+	pgdat = NODE_DATA(node);
-+	if (!pgdat)
-+		return NULL;
-+	/*
-+	 * Since we hold memory_tier_lock, we can avoid
-+	 * RCU read locks when accessing the details. No
-+	 * parallel updates are possible here.
-+	 */
-+	return rcu_dereference_check(pgdat->memtier,
-+				     lockdep_is_held(&memory_tier_lock));
- }
- 
- #ifdef CONFIG_MIGRATION
-@@ -294,6 +301,8 @@ static struct memory_tier *set_node_memory_tier(int node)
- {
- 	struct memory_tier *memtier;
- 	struct memory_dev_type *memtype;
-+	pg_data_t *pgdat = NODE_DATA(node);
-+
- 
- 	lockdep_assert_held_once(&memory_tier_lock);
- 
-@@ -305,24 +314,45 @@ static struct memory_tier *set_node_memory_tier(int node)
- 	memtype = node_memory_types[node];
- 	node_set(node, memtype->nodes);
- 	memtier = find_create_memory_tier(memtype);
-+	if (!IS_ERR(memtier))
-+		rcu_assign_pointer(pgdat->memtier, memtier);
- 	return memtier;
- }
- 
- static void destroy_memory_tier(struct memory_tier *memtier)
- {
- 	list_del(&memtier->list);
-+	/*
-+	 * synchronize_rcu in clear_node_memory_tier makes sure
-+	 * we don't have rcu access to this memory tier.
-+	 */
- 	kfree(memtier);
- }
- 
- static bool clear_node_memory_tier(int node)
- {
- 	bool cleared = false;
-+	pg_data_t *pgdat;
- 	struct memory_tier *memtier;
- 
-+	pgdat = NODE_DATA(node);
-+	if (!pgdat)
-+		return false;
-+
-+	/*
-+	 * Make sure that anybody looking at NODE_DATA who finds
-+	 * a valid memtier finds memory_dev_types with nodes still
-+	 * linked to the memtier. We achieve this by waiting for
-+	 * rcu read section to finish using synchronize_rcu.
-+	 * This also enables us to free the destroyed memory tier
-+	 * with kfree instead of kfree_rcu
-+	 */
- 	memtier = __node_get_memory_tier(node);
- 	if (memtier) {
- 		struct memory_dev_type *memtype;
- 
-+		rcu_assign_pointer(pgdat->memtier, NULL);
-+		synchronize_rcu();
- 		memtype = node_memory_types[node];
- 		node_clear(node, memtype->nodes);
- 		if (nodes_empty(memtype->nodes)) {
+This current memory tier kernel implementation needs to be improved for several
+important use cases:
+
+* The current tier initialization code always initializes each memory-only NUMA
+  node into a lower tier. But a memory-only NUMA node may have a high
+  performance memory device (e.g. a DRAM-backed memory-only node on a virtual
+  machine) and that should be put into a higher tier.
+
+* The current tier hierarchy always puts CPU nodes into the top tier. But on a
+  system with HBM (e.g. GPU memory) devices, these memory-only HBM NUMA nodes
+  should be in the top tier, and DRAM nodes with CPUs are better to be placed
+  into the next lower tier.
+
+* Also because the current tier hierarchy always puts CPU nodes into the top
+  tier, when a CPU is hot-added (or hot-removed) and triggers a memory node from
+  CPU-less into a CPU node (or vice versa), the memory tier hierarchy gets
+  changed, even though no memory node is added or removed. This can make the
+  tier hierarchy unstable and make it difficult to support tier-based memory
+  accounting.
+
+* A higher tier node can only be demoted to nodes with shortest distance on the
+  next lower tier as defined by the demotion path, not any other node from any
+  lower tier. This strict, demotion order does not work in all use
+  cases (e.g. some use cases may want to allow cross-socket demotion to another
+  node in the same demotion tier as a fallback when the preferred demotion node
+  is out of space), and has resulted in the feature request for an interface to
+  override the system-wide, per-node demotion order from the userspace. This
+  demotion order is also inconsistent with the page allocation fallback order
+  when all the nodes in a higher tier are out of space: The page allocation can
+  fall back to any node from any lower tier, whereas the demotion order doesn't
+  allow that.
+
+This patch series make the creation of memory tiers explicit under
+the control of device driver.
+
+Memory Tier Initialization
+==========================
+
+Linux kernel presents memory devices as NUMA nodes and each memory device is of
+a specific type. The memory type of a device is represented by its abstract 
+distance. A memory tier corresponds to a range of abstract distance. This allows
+for classifying memory devices with a specific performance range into a memory
+tier.
+
+By default, all memory nodes are assigned to the default tier with
+abstract distance 512.
+
+A device driver can move its memory nodes from the default tier. For example,
+PMEM can move its memory nodes below the default tier, whereas GPU can move its
+memory nodes above the default tier.
+
+The kernel initialization code makes the decision on which exact tier a memory
+node should be assigned to based on the requests from the device drivers as well
+as the memory device hardware information provided by the firmware.
+
+Hot-adding/removing CPUs doesn't affect memory tier hierarchy.
+
+Changes from v14
+* Add Reviewed-by:
+* Address review feedback w.r.t default adistance value
+
+Changes from v13
+* Address review feedback.
+* Add path dropping memtier from struct memory_dev_type
+
+Changes from v12
+* Fix kernel crash on module unload
+* Address review feedback.
+* Add node_random patch to this series based on review feedback
+
+Changes from v11:
+* smaller abstract distance imply faster(higher) memory tier.
+
+Changes from v10:
+* rename performance level to abstract distance
+* Thanks to all the good feedback from Huang, Ying <ying.huang@intel.com>.
+  Updated the patchset to cover most of the review feedback.
+
+Changes from v9:
+* Use performance level for initializing memory tiers.
+
+Changes from v8:
+* Drop the sysfs interface patches and  related documentation changes.
+
+Changes from v7:
+* Fix kernel crash with demotion.
+* Improve documentation.
+
+Changes from v6:
+* Drop the usage of rank.
+* Address other review feedback.
+
+Changes from v5:
+* Remove patch supporting N_MEMORY node removal from memory tiers. memory tiers
+  are going to be used for features other than demotion. Hence keep all N_MEMORY
+  nodes in memory tiers irrespective of whether they want to participate in promotion or demotion.
+* Add NODE_DATA->memtier
+* Rearrage patches to add sysfs files later.
+* Add support to create memory tiers from userspace.
+* Address other review feedback.
+
+
+Changes from v4:
+* Address review feedback.
+* Reverse the meaning of "rank": higher rank value means higher tier.
+* Add "/sys/devices/system/memtier/default_tier".
+* Add node_is_toptier
+
+v4:
+Add support for explicit memory tiers and ranks.
+
+v3:
+- Modify patch 1 subject to make it more specific
+- Remove /sys/kernel/mm/numa/demotion_targets interface, use
+  /sys/devices/system/node/demotion_targets instead and make
+  it writable to override node_states[N_DEMOTION_TARGETS].
+- Add support to view per node demotion targets via sysfs
+
+v2:
+In v1, only 1st patch of this patch series was sent, which was
+implemented to avoid some of the limitations on the demotion
+target sharing, however for certain numa topology, the demotion
+targets found by that patch was not most optimal, so 1st patch
+in this series is modified according to suggestions from Huang
+and Baolin. Different examples of demotion list comparasion
+between existing implementation and changed implementation can
+be found in the commit message of 1st patch.
+
+
+Aneesh Kumar K.V (9):
+  mm/demotion: Add support for explicit memory tiers
+  mm/demotion: Move memory demotion related code
+  mm/demotion: Add hotplug callbacks to handle new numa node onlined
+  mm/demotion/dax/kmem: Set node's abstract distance to
+    MEMTIER_DEFAULT_DAX_ADISTANCE
+  mm/demotion: Build demotion targets based on explicit memory tiers
+  mm/demotion: Add pg_data_t member to track node memory tier details
+  mm/demotion: Drop memtier from memtype
+  mm/demotion: Update node_is_toptier to work with memory tiers
+  lib/nodemask: Optimize node_random for nodemask with single NUMA node
+
+Jagdish Gediya (1):
+  mm/demotion: Demote pages according to allocation fallback order
+
+ drivers/dax/kmem.c           |  42 ++-
+ include/linux/memory-tiers.h | 102 ++++++
+ include/linux/migrate.h      |  15 -
+ include/linux/mmzone.h       |   3 +
+ include/linux/node.h         |   5 -
+ include/linux/nodemask.h     |  15 +-
+ mm/Makefile                  |   1 +
+ mm/huge_memory.c             |   1 +
+ mm/memory-tiers.c            | 645 +++++++++++++++++++++++++++++++++++
+ mm/migrate.c                 | 453 +-----------------------
+ mm/mprotect.c                |   1 +
+ mm/vmscan.c                  |  59 +++-
+ mm/vmstat.c                  |   4 -
+ 13 files changed, 849 insertions(+), 497 deletions(-)
+ create mode 100644 include/linux/memory-tiers.h
+ create mode 100644 mm/memory-tiers.c
+
 -- 
 2.37.2
 
