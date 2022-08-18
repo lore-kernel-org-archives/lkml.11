@@ -2,171 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86600C32774
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3478C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245065AbiHRNYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
+        id S245071AbiHRNZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245047AbiHRNYp (ORCPT
+        with ESMTP id S245048AbiHRNYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 09:24:45 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A00D5722E;
-        Thu, 18 Aug 2022 06:24:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660829074; x=1692365074;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5TUL0pMN1Ch62fh0N5bHXldv3b4lhkGVjVf4Q20K7N8=;
-  b=af/BoiSPNPjYdKoxzwvWQjR04f450FFqdvSqTtbYlKSF+bXLbM7dBxul
-   8PnI3RY2FleRWHpdaa3hTAJMMBHjSDf7/9peNbvrJGfy4K98ikKV2nqhY
-   W1IXett9S+pL5UysC8cCbVRgd5YTJnUTn9RxH6B1a+GuhB6LPqEZZZDkU
-   +mAA9ZIKN37uYxkTmO0Ckumj2itTgIfFAQGQ5UBlmPVkgJaMypGNwVk14
-   5oWbjszXN5VwxNqm6fiWWLJmEX2pbW+QtfEH0D0+yQLAITSCaTjQmx42E
-   tU8kRPN80gMfuHYVsH/A2TRkgUGO+jS4S4P+Od9qsl7CJDmvhk4oVqqk6
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="279720468"
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="279720468"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 06:24:33 -0700
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="604253471"
-Received: from geigerri-mobl1.ger.corp.intel.com (HELO box.shutemov.name) ([10.251.215.246])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 06:24:24 -0700
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id 68132104AA0; Thu, 18 Aug 2022 16:24:21 +0300 (+03)
-Date:   Thu, 18 Aug 2022 16:24:21 +0300
-From:   "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
-        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
-        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220818132421.6xmjqduempmxnnu2@box>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <ff5c5b97-acdf-9745-ebe5-c6609dd6322e@google.com>
+        Thu, 18 Aug 2022 09:24:54 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B1B979DF
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 06:24:52 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M7ls40JkFz1N7H3;
+        Thu, 18 Aug 2022 21:21:28 +0800 (CST)
+Received: from dggpeml500002.china.huawei.com (7.185.36.158) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 21:24:50 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpeml500002.china.huawei.com (7.185.36.158) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 18 Aug 2022 21:24:49 +0800
+From:   Junhao He <hejunhao3@huawei.com>
+To:     <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>
+CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>,
+        <rdunlap@infradead.org>, <liuqi115@huawei.com>,
+        <f.fangjian@huawei.com>, <prime.zeng@hisilicon.com>,
+        <hejunhao3@huawei.com>
+Subject: [PATCH v9 0/2] Add support for UltraSoc System Memory Buffer
+Date:   Thu, 18 Aug 2022 21:22:29 +0800
+Message-ID: <20220818132231.28240-1-hejunhao3@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff5c5b97-acdf-9745-ebe5-c6609dd6322e@google.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500002.china.huawei.com (7.185.36.158)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 10:40:12PM -0700, Hugh Dickins wrote:
-> On Wed, 6 Jul 2022, Chao Peng wrote:
-> > This is the v7 of this series which tries to implement the fd-based KVM
-> > guest private memory.
-> 
-> Here at last are my reluctant thoughts on this patchset.
-> 
-> fd-based approach for supporting KVM guest private memory: fine.
-> 
-> Use or abuse of memfd and shmem.c: mistaken.
-> 
-> memfd_create() was an excellent way to put together the initial prototype.
-> 
-> But since then, TDX in particular has forced an effort into preventing
-> (by flags, seals, notifiers) almost everything that makes it shmem/tmpfs.
-> 
-> Are any of the shmem.c mods useful to existing users of shmem.c? No.
-> Is MFD_INACCESSIBLE useful or comprehensible to memfd_create() users? No.
-> 
-> What use do you have for a filesystem here?  Almost none.
-> IIUC, what you want is an fd through which QEMU can allocate kernel
-> memory, selectively free that memory, and communicate fd+offset+length
-> to KVM.  And perhaps an interface to initialize a little of that memory
-> from a template (presumably copied from a real file on disk somewhere).
-> 
-> You don't need shmem.c or a filesystem for that!
-> 
-> If your memory could be swapped, that would be enough of a good reason
-> to make use of shmem.c: but it cannot be swapped; and although there
-> are some references in the mailthreads to it perhaps being swappable
-> in future, I get the impression that will not happen soon if ever.
-> 
-> If your memory could be migrated, that would be some reason to use
-> filesystem page cache (because page migration happens to understand
-> that type of memory): but it cannot be migrated.
+Add support for UltraSoc System Memory Buffer.
 
-Migration support is in pipeline. It is part of TDX 1.5 [1]. And swapping
-theoretically possible, but I'm not aware of any plans as of now.
+Change since v8:
+- Insert a blank line at the end of the config tag in Kconfig.
+- Fix the "llseek" initialization.
+- Link: https://lore.kernel.org/linux-arm-kernel/20220816131634.38195-1-hejunhao3@huawei.com/
 
-[1] https://www.intel.com/content/www/us/en/developer/articles/technical/intel-trust-domain-extensions.html
+Change since v7:
+- Use the macros for register bit flags and numbers of resource.
+- Fix punctuation.
+- Update the Date tag and the KernelVersion tag in the document.
+- Link: https://lore.kernel.org/lkml/20220712091353.34540-1-hejunhao3@huawei.com/
 
-> Some of these impressions may come from earlier iterations of the
-> patchset (v7 looks better in several ways than v5).  I am probably
-> underestimating the extent to which you have taken on board other
-> usages beyond TDX and SEV private memory, and rightly want to serve
-> them all with similar interfaces: perhaps there is enough justification
-> for shmem there, but I don't see it.  There was mention of userfaultfd
-> in one link: does that provide the justification for using shmem?
-> 
-> I'm afraid of the special demands you may make of memory allocation
-> later on - surprised that huge pages are not mentioned already;
-> gigantic contiguous extents? secretmem removed from direct map?
+Change since v6:
+- Modify the code style and driver description according to Suzuki's comment.
+- Modify configuration of "drvdata->reading", to void problems in open/read
+  concurrency scenario.
+- Rename the macro of "SMB_FLOW_MASK".
+- Use the "handle->head" to determine the page number and offset.
+- Link: https://lore.kernel.org/linux-arm-kernel/20220606130223.57354-1-liuqi115@huawei.com/
 
-The design allows for extension to hugetlbfs if needed. Combination of
-MFD_INACCESSIBLE | MFD_HUGETLB should route this way. There should be zero
-implications for shmem. It is going to be separate struct memfile_backing_store.
+Change since v5:
+- Address the comments from Suzuki, add some comments in SMB document, and modify
+  configuration of "drvdata->reading", to void problems in multi-core concurrency scenario
+- Link: https://lore.kernel.org/linux-arm-kernel/20220416083953.52610-1-liuqi115@huawei.com/
 
-I'm not sure secretmem is a fit here as we want to extend MFD_INACCESSIBLE
-to be movable if platform supports it and secretmem is not migratable by
-design (without direct mapping fragmentations).
+Change since v4:
+- Add a simple document of SMB driver according to Suzuki's comment.
+- Address the comments from Suzuki.
+- Link: https://lore.kernel.org/linux-arm-kernel/20220128061755.31909-1-liuqi115@huawei.com/
 
-> Here's what I would prefer, and imagine much easier for you to maintain;
-> but I'm no system designer, and may be misunderstanding throughout.
-> 
-> QEMU gets fd from opening /dev/kvm_something, uses ioctls (or perhaps
-> the fallocate syscall interface itself) to allocate and free the memory,
-> ioctl for initializing some of it too.  KVM in control of whether that
-> fd can be read or written or mmap'ed or whatever, no need to prevent it
-> in shmem.c, no need for flags, seals, notifications to and fro because
-> KVM is already in control and knows the history.  If shmem actually has
-> value, call into it underneath - somewhat like SysV SHM, and /dev/zero
-> mmap, and i915/gem make use of it underneath.  If shmem has nothing to
-> add, just allocate and free kernel memory directly, recorded in your
-> own xarray.
+Change since v3:
+- Modify the file header according to community specifications.
+- Address the comments from Mathieu.
+- Link: https://lore.kernel.org/linux-arm-kernel/20211118110016.40398-1-liuqi115@huawei.com/
 
-I guess shim layer on top of shmem *can* work. I don't see immediately why
-it would not. But I'm not sure it is right direction. We risk creating yet
-another parallel VM with own rules/locking/accounting that opaque to
-core-mm.
+Change since v2:
+- Move ultrasoc driver to drivers/hwtracing/coresight.
+- Link: https://lists.linaro.org/pipermail/coresight/2021-November/007310.html
 
-Note that on machines that run TDX guests such memory would likely be the
-bulk of memory use. Treating it as a fringe case may bite us one day.
+Change since v1:
+- Drop the document of UltraSoc according to Mathieu's comment.
+- Add comments to explain some private hardware settings.
+- Address the comments from Mathieu.
+- Link: https://lists.linaro.org/pipermail/coresight/2021-August/006842.html
+
+Change since RFC:
+- Move driver to drivers/hwtracing/coresight/ultrasoc.
+- Remove ultrasoc-axi-com.c, as AXI-COM doesn't need to be configured in
+  basic tracing function.
+- Remove ultrasoc.c as SMB does not need to register with the ultrasoc core.
+- Address the comments from Mathieu and Suzuki.
+- Link: https://lists.linaro.org/pipermail/coresight/2021-June/006535.html
+
+Qi Liu (2):
+  drivers/coresight: Add UltraSoc System Memory Buffer driver
+  Documentation: Add document for UltraSoc SMB drivers
+
+ .../sysfs-bus-coresight-devices-ultra_smb     |  31 +
+ .../trace/coresight/ultrasoc-smb.rst          |  80 +++
+ drivers/hwtracing/coresight/Kconfig           |  11 +
+ drivers/hwtracing/coresight/Makefile          |   1 +
+ drivers/hwtracing/coresight/ultrasoc-smb.c    | 636 ++++++++++++++++++
+ drivers/hwtracing/coresight/ultrasoc-smb.h    | 115 ++++
+ 6 files changed, 874 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-ultra_smb
+ create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
+ create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.c
+ create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.h
 
 -- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+2.33.0
+
