@@ -2,185 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7130C2BB41
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 16:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DE2C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 16:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343507AbiHRQGU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 12:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
+        id S239750AbiHRQGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 12:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239750AbiHRQGS (ORCPT
+        with ESMTP id S245752AbiHRQGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 12:06:18 -0400
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B4DBC801;
-        Thu, 18 Aug 2022 09:06:16 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4M7pcP6cZ2z9v7YZ;
-        Thu, 18 Aug 2022 23:25:41 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP1 (Coremail) with SMTP id LxC2BwAX5hHpWv5iycQwAA--.23244S4;
-        Thu, 18 Aug 2022 16:30:26 +0100 (CET)
-From:   roberto.sassu@huaweicloud.com
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        corbet@lwn.net, dhowells@redhat.com, jarkko@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, paul@paul-moore.com,
-        jmorris@namei.org, serge@hallyn.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-doc@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, Roberto Sassu <roberto.sassu@huawei.com>,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH v12 02/10] btf: Handle dynamic pointer parameter in kfuncs
-Date:   Thu, 18 Aug 2022 17:29:21 +0200
-Message-Id: <20220818152929.402605-3-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220818152929.402605-1-roberto.sassu@huaweicloud.com>
-References: <20220818152929.402605-1-roberto.sassu@huaweicloud.com>
+        Thu, 18 Aug 2022 12:06:44 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9D8BC12C;
+        Thu, 18 Aug 2022 09:06:43 -0700 (PDT)
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IFrR4d009879;
+        Thu, 18 Aug 2022 16:06:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=sjDjAQnJv+oym65id1D4iYi4CjbwvuRwU/uJHJdLZVc=;
+ b=Pp+/ajHMJpqLwx3kzQ0CV1LK0jYw1wuPEau1YEW6OcPIIsjdBHth51liaZ767qwm4Fay
+ ALCySy+FnAKeUi/ydw9qtr90nS1ZqIJlAJvIUOj28nM80NrxENGHBOxaKAl31369s3Vp
+ LR9bk9NwKEkS12W0dhY9FtHlSr1sn3G1hBkoDLJuZIkyVsYtXZT2yvf+c3rlSRF02wh8
+ rs6oyEWoN33ZS8cym6b/mQ1N8JWuyxVTORGxecsRhXm62q2F3oxcVsqS3Q4BYZFAXN5I
+ CndVSE5D6CRtVicZXkks94CpqX6YQtEg+BJR96B8tIRAfnY3VZ58NDOSCoqHpY5bO61U yA== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j0wynp68n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 16:06:33 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27IG6W8K024383
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 16:06:32 GMT
+Received: from [10.111.166.229] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 18 Aug
+ 2022 09:06:29 -0700
+Message-ID: <5d2bd7db-801a-838e-1e47-2cbb9cfe445f@quicinc.com>
+Date:   Thu, 18 Aug 2022 09:06:26 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3] drm/msm/dp: check hpd_state before push idle pattern
+ at dp_bridge_disable()
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dianders@chromium.org>,
+        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_aravindh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1660159551-13828-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n533SUb3Bg=pR8Fhwo-M5qLWiti4nzLR-rSGVAsrXgEYNQ@mail.gmail.com>
+ <dbda8bce-2890-e5e3-4052-073a52eb06a6@quicinc.com>
+ <CAE-0n51NyrP8CikcK_3wj4EEsurmmSZ4RY3pLhJJmkY2_8wNZw@mail.gmail.com>
+ <0641a116-5b58-4305-bf2d-f53dcb747276@quicinc.com>
+ <1e792f49-febf-43bf-d828-8ecf99cbeba3@quicinc.com>
+ <CAE-0n50QXiJs=k78Tmd7om28MgWChypwC8LPRzF2jx_qB5+0FQ@mail.gmail.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <CAE-0n50QXiJs=k78Tmd7om28MgWChypwC8LPRzF2jx_qB5+0FQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: LxC2BwAX5hHpWv5iycQwAA--.23244S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxWryfCFW5Kr48Wr17Jw4fXwb_yoWrCFWxpF
-        n3Cas7Zr4vyr4xuw17AF4UArW5K3W0qw12kFWrC34FkF17Xr1DXF1DKryrA3sYkrWkCw1x
-        Ar1jgrW5ua48CrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUP0b4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1j6r18M7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
-        A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-        w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-        WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
-        Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
-        Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY
-        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7M4kE6xkIj40Ew7
-        xC0wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v2
-        6r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2
-        Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_
-        Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJw
-        CI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7IU85ku7UU
-        UUU==
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAIBF1jj34W2AAJsG
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: YDa1b5-Qnmed3qS8RnJmromVm4v5x4LQ
+X-Proofpoint-GUID: YDa1b5-Qnmed3qS8RnJmromVm4v5x4LQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-18_12,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 adultscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ mlxlogscore=999 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208180059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+Hi Stephen
 
-Allow the bpf_dynptr_kern parameter to be specified in kfuncs. Also, ensure
-that the dynamic pointer is valid and initialized.
+On 8/15/2022 10:08 AM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-08-11 08:20:01)
+>>
+>> On 8/10/2022 6:00 PM, Abhinav Kumar wrote:
+>>>
+>>> Even then, you do have a valid point. DRM framework should not have
+>>> caused the disable path to happen without an enable.
+>>>
+>>> I went through the stack mentioned in the issue.
+>>>
+>>> Lets see this part of the stack:
+>>>
+>>> dp_ctrl_push_idle+0x40/0x88
+>>>   dp_bridge_disable+0x24/0x30
+>>>   drm_atomic_bridge_chain_disable+0x90/0xbc
+>>>   drm_atomic_helper_commit_modeset_disables+0x198/0x444
+>>>   msm_atomic_commit_tail+0x1d0/0x374
+>>>
+>>> In drm_atomic_helper_commit_modeset_disables(), we call
+>>> disable_outputs().
+>>>
+>>> AFAICT, this is the only place which has a protection to not call the
+>>> disable() flow if it was not enabled here:
+>>>
+>>> https://gitlab.freedesktop.org/drm/msm/-/blob/msm-next/drivers/gpu/drm/drm_atomic_helper.c#L1063
+>>>
+>>>
+>>> But that function is only checking crtc_state->active. Thats set by
+>>> the usermode:
+>>>
+>>> https://gitlab.freedesktop.org/drm/msm/-/blob/msm-next/drivers/gpu/drm/drm_atomic_uapi.c#L407
+>>>
+>>>
+>>> Now, if usermode sets that to true and then crashed it can bypass this
+>>> check and we will crash in the location kuogee is trying to fix.
+> 
+> That seems bad, no? We don't want userspace to be able to crash and then
+> be able to call the disable path when enable never succeeded.
+> 
+>>>
+>>>  From the issue mentioned in
+>>> https://gitlab.freedesktop.org/drm/msm/-/issues/17, the reporter did
+>>> mention the usermode crashed.
+>>>
+>>> So this is my tentative analysis of whats happening here.
+>>>
+>>> Ideally yes, we should have been protected by the location mentioned
+>>> above in disable_outputs() but looks to me due to the above hypothesis
+>>> its getting bypassed.
+> 
+> Can you fix the problem there? Not fixing it means that every driver out
+> there has to develop the same "fix", when it could be fixed in the core
+> one time.
+> 
 
-To properly detect whether a parameter is of the desired type, introduce
-the stringify_struct() macro to compare the returned structure name with
-the desired name. In addition, protect against structure renames, by
-halting the build with BUILD_BUG_ON(), so that developers have to revisit
-the code.
+As per discussion on IRC with Rob, we have pushed another fix for this 
+issue 
+https://lore.kernel.org/all/1660759314-28088-1-git-send-email-quic_khsieh@quicinc.com/.
 
-Cc: Joanne Koong <joannelkoong@gmail.com>
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- include/linux/bpf_verifier.h |  3 +++
- include/linux/btf.h          |  9 +++++++++
- kernel/bpf/btf.c             | 18 ++++++++++++++++++
- kernel/bpf/verifier.c        |  4 ++--
- 4 files changed, 32 insertions(+), 2 deletions(-)
+So, we can drop this one in favor of the other.
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 2e3bad8640dc..55876fbdbae2 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -560,6 +560,9 @@ int check_kfunc_mem_size_reg(struct bpf_verifier_env *env, struct bpf_reg_state
- 			     u32 regno);
- int check_mem_reg(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
- 		   u32 regno, u32 mem_size);
-+bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env,
-+			      struct bpf_reg_state *reg,
-+			      enum bpf_arg_type arg_type);
- 
- /* this lives here instead of in bpf.h because it needs to dereference tgt_prog */
- static inline u64 bpf_trampoline_compute_key(const struct bpf_prog *tgt_prog,
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index ad93c2d9cc1c..f546d368ac5d 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -52,6 +52,15 @@
- #define KF_SLEEPABLE    (1 << 5) /* kfunc may sleep */
- #define KF_DESTRUCTIVE  (1 << 6) /* kfunc performs destructive actions */
- 
-+/*
-+ * Return the name of the passed struct, if exists, or halt the build if for
-+ * example the structure gets renamed. In this way, developers have to revisit
-+ * the code using that structure name, and update it accordingly.
-+ */
-+#define stringify_struct(x)			\
-+	({ BUILD_BUG_ON(sizeof(struct x) < 0);	\
-+	   __stringify(x); })
-+
- struct btf;
- struct btf_member;
- struct btf_type;
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index e49b3b6d48ad..26cb548420af 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6362,15 +6362,20 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 
- 			if (is_kfunc) {
- 				bool arg_mem_size = i + 1 < nargs && is_kfunc_arg_mem_size(btf, &args[i + 1], &regs[regno + 1]);
-+				bool arg_dynptr = btf_type_is_struct(ref_t) &&
-+						  !strcmp(ref_tname,
-+							  stringify_struct(bpf_dynptr_kern));
- 
- 				/* Permit pointer to mem, but only when argument
- 				 * type is pointer to scalar, or struct composed
- 				 * (recursively) of scalars.
- 				 * When arg_mem_size is true, the pointer can be
- 				 * void *.
-+				 * Also permit initialized dynamic pointers.
- 				 */
- 				if (!btf_type_is_scalar(ref_t) &&
- 				    !__btf_type_is_scalar_struct(log, btf, ref_t, 0) &&
-+				    !arg_dynptr &&
- 				    (arg_mem_size ? !btf_type_is_void(ref_t) : 1)) {
- 					bpf_log(log,
- 						"arg#%d pointer type %s %s must point to %sscalar, or struct with scalar\n",
-@@ -6378,6 +6383,19 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 					return -EINVAL;
- 				}
- 
-+				if (arg_dynptr) {
-+					if (!is_dynptr_reg_valid_init(env, reg,
-+							ARG_PTR_TO_DYNPTR)) {
-+						bpf_log(log,
-+							"arg#%d pointer type %s %s must be initialized\n",
-+							i, btf_type_str(ref_t),
-+							ref_tname);
-+						return -EINVAL;
-+					}
-+
-+					continue;
-+				}
-+
- 				/* Check for mem, len pair */
- 				if (arg_mem_size) {
- 					if (check_kfunc_mem_size_reg(env, &regs[regno + 1], regno + 1)) {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 2c1f8069f7b7..aa834e7bb296 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -779,8 +779,8 @@ static bool is_dynptr_reg_valid_uninit(struct bpf_verifier_env *env, struct bpf_
- 	return true;
- }
- 
--static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
--				     enum bpf_arg_type arg_type)
-+bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
-+			      enum bpf_arg_type arg_type)
- {
- 	struct bpf_func_state *state = func(env, reg);
- 	int spi = get_spi(reg->off);
--- 
-2.25.1
+Thanks
 
+Abhinav
+> Ideally drivers are simple. They configure the hardware for what the
+> function pointer is asking for. State management and things like that
+> should be pushed into the core framework so that we don't have to
+> duplicate that multiple times.
+> 
+>>>
+>>> Thanks
+>>>
+>>> Abhinav
+>>>
+>>>
+>> Ii sound likes that there is a hole either at user space or drm.
+>>
+>> But that should not cause dp_bridge_disable() at dp driver to crash.
+> 
+> Agreed.
+> 
+>>
+>> Therefore it is properly to check hdp_state condition at
+>> dp_bridge_disable() to prevent it from crashing.
+>>
+> 
+> Disagree. Userspace shouldn't be able to get drm into a wedged state.
