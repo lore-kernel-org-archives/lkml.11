@@ -2,98 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A92A1C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09084C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244014AbiHRIFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
+        id S244052AbiHRIFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240356AbiHRIE6 (ORCPT
+        with ESMTP id S244019AbiHRIFV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 04:04:58 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB8B6B8FA;
-        Thu, 18 Aug 2022 01:04:56 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I7qSC8004059;
-        Thu, 18 Aug 2022 08:04:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=d9/IoJLc0k+bSkJU+0AY+sj4CSQp3FbnOb1W0cKbLhU=;
- b=mt1/f/jim1XscfPoRTnECBp6YObFTg6Et9t51fryFByIhu2FLPHuH1zvuVDBQEWjPqEI
- 0NSOagKErprQQEgmXUeOzQ/OhsFqb9x6f6Tb0VIn7NKdxK4qt4aJkssowmnd9EHUzyOA
- BltqIkirDVrmwo9F3nQOP14hgLu5roDQB8lZj4CQKso79DyNvTGdtwe9NLWOBbYYjSV1
- qtjjB52OU/0HCUyvvudq1uRO2Zoo8kTqPaOVZEEoxdZpcFRCEO3n2lsyPERQvRYf4MBk
- t25wteHWFwu/Ka9rnX/jjVa2+ZspfUfQRyDIP/TrQBJzeIjbx+0pCJXkorwKPYbysetz AQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1hdp8ba3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 08:04:54 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27I7vxUg020795;
-        Thu, 18 Aug 2022 08:04:54 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1hdp8b97-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 08:04:53 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27I7oH6u019867;
-        Thu, 18 Aug 2022 08:04:51 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3hx3k8whyp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 08:04:51 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27I821xo25035086
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 18 Aug 2022 08:02:01 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 416B2AE053;
-        Thu, 18 Aug 2022 08:04:48 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5B71AE045;
-        Thu, 18 Aug 2022 08:04:47 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.17.18])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Thu, 18 Aug 2022 08:04:47 +0000 (GMT)
-Date:   Thu, 18 Aug 2022 10:04:46 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Tony Krowiak <akrowiak@linux.ibm.com>
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, jjherne@linux.ibm.com, borntraeger@de.ibm.com,
-        cohuck@redhat.com, mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com
-Subject: Re: [PATCH 0/2] s390/vfio-ap: fix two problems discovered in the
- vfio_ap driver
-Message-ID: <Yv3ynhVYegld5MsO@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220817225242.188805-1-akrowiak@linux.ibm.com>
+        Thu, 18 Aug 2022 04:05:21 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4C86BCC1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:05:18 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id u1so1151704lfq.4
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=gfZ6MsoFE5jfEV37UdOoYOaar2s4GNvRAwl/M63/AlI=;
+        b=rQMuU2eWLhIM2a+DQocFMdsW206Zcmqv+rKhQZt78H44OXhXo4oH57q6ZzfkW5iQzc
+         UojmU46AxmoaNGK6L2iL3pdUapy2Vk4DZrlhHvzPAjzvXB56FksFaDzTlAKZhIOJUWqh
+         MnoGok23tPObs/uTcHZoPRXuj2AOMBudfJ4zV/LMfEjrLBT3ixeQqRuzH6VSNRxLtU6I
+         5qQtpDm1jX5dQoJHobwSSHKmebkQfrFngswDfBbsM5+nIsmnYeP1k+qmHP0t4eW4RknC
+         7uOFFJvCCJJDJDQoU5eNUgKDFhc8RiNktfStUVjMEsVs/EbLKOxt/N2VyGsrSvcYIGJw
+         tJ3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=gfZ6MsoFE5jfEV37UdOoYOaar2s4GNvRAwl/M63/AlI=;
+        b=YIc4r6rpakNrNZ4zrORcEBtynk6bLekMdZszrFvwm53Ix6kQODwegIKqjEUAZeMQ7j
+         PMK4gbIEh8YiPcU+xVl3/EZMrpzf13kwBTgyKJvMBwvOUoO2ifdN1qNDIcx+9miJzV2A
+         kb28V9Z+TnvN/Uq+Kf92VlQ1IP/xqSlG4c/Op8ikRI/qRSP77/2IuPlfBls7jZRTTDXX
+         jCc+ZrglndiM+R2vC13LYYrMqth7Z3SKcBeHZFaUwzsTt1EQsO2gPHHPby+1EJLinN6C
+         MYR+CmWd19SuSJDN4QLeQgC6NYvuYiR4OCmqNBW7q7TZWItLrgnigEdKzCxA6WMC+2r1
+         5qPA==
+X-Gm-Message-State: ACgBeo0C+cXebOcRTmWPrTXxZICOdtv5gGaL9Y8e/RjkfpGfkg7vHc1l
+        Nnjt79N12kvvyxYHsxGpA/P/ag==
+X-Google-Smtp-Source: AA6agR4MY5zLrsvPl+gMCyCecVO9jEL8G+mcnFJIwfzsMgLHb8ic2PChW5wYutO7CRXiGU4QAXL47w==
+X-Received: by 2002:a05:6512:10c3:b0:491:d857:f35e with SMTP id k3-20020a05651210c300b00491d857f35emr554119lfg.102.1660809916496;
+        Thu, 18 Aug 2022 01:05:16 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id y27-20020ac255bb000000b0048b17ecee71sm121441lfg.302.2022.08.18.01.05.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 01:05:15 -0700 (PDT)
+Message-ID: <685783e3-9636-e512-7810-1f87ac5d9328@linaro.org>
+Date:   Thu, 18 Aug 2022 11:05:14 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817225242.188805-1-akrowiak@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Z3PFzFEDMlgNzjNt9aMokVoMQc4ZMlzO
-X-Proofpoint-GUID: HxUaGertC9txwSh598lezo0-xotfAzUI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=777 malwarescore=0 spamscore=0 priorityscore=1501 bulkscore=0
- clxscore=1011 impostorscore=0 suspectscore=0 adultscore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208180025
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/4] soc: qcom: pmic_glink: Introduce base PMIC GLINK
+ driver
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+References: <20220818031512.319310-1-bjorn.andersson@linaro.org>
+ <20220818031512.319310-3-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220818031512.319310-3-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 06:52:40PM -0400, Tony Krowiak wrote:
-> Two problems have been discovered with the vfio_ap device driver since the
-> hot plug support was recently introduced:
+On 18/08/2022 06:15, Bjorn Andersson wrote:
+> The PMIC GLINK service runs on one of the co-processors of some modern
+> Qualcomm platforms and implements USB-C and battery managements. It uses
+> a message based protocol over GLINK for communication with the OS, hence
+> the name.
+> 
+> The driver implemented provides the rpmsg device for communication and
+> uses auxilirary bus to spawn off individual devices in respsective
 
-Hi Tony,
+typos:
+auxiliary
+respective
+> subsystem. The auxilirary devices are spawned off from a
 
-Could you please add Fixes tags to the patches?
+auxiliary
 
-Thanks!
+> platform_device, so that the drm_bridge is available early, to allow the
+> DisplayPort driver to probe even before the remoteproc has spun up.
+> 
+
+(...)
+
+> +
+> +static int pmic_glink_init(void)
+> +{
+> +	platform_driver_register(&pmic_glink_driver);
+> +	register_rpmsg_driver(&pmic_glink_rpmsg_driver);
+> +
+> +	return 0;
+> +};
+> +module_init(pmic_glink_init);
+> +
+> +static void pmic_glink_exit(void)
+> +{
+> +	platform_driver_unregister(&pmic_glink_driver);
+> +	unregister_rpmsg_driver(&pmic_glink_rpmsg_driver);
+
+Shouldn't this be in reversed order of init()? So first unregister
+rpmsg, then platform driver.
+
+> +};
+> +module_exit(pmic_glink_exit);
+> +
+> +MODULE_DESCRIPTION("Qualcomm PMIC GLINK driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/include/linux/soc/qcom/pmic_glink.h b/include/linux/soc/qcom/pmic_glink.h
+> new file mode 100644
+> index 000000000000..40470f8dfc1e
+> --- /dev/null
+> +++ b/include/linux/soc/qcom/pmic_glink.h
+> @@ -0,0 +1,32 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022, Linaro Ltd
+> + */
+> +#ifndef __PMIC_GLINK_H__
+
+I propose more detailed guard:
+__SOC_QCOM_PMIC_GLINK_H__
+
+> +#define __PMIC_GLINK_H__
+
+
+Best regards,
+Krzysztof
