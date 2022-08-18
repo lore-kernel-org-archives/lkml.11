@@ -2,156 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E96C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:05:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5D0C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 08:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244066AbiHRIFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 04:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35040 "EHLO
+        id S244030AbiHRIH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244025AbiHRIFX (ORCPT
+        with ESMTP id S241967AbiHRIH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 04:05:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBF413F5C
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:05:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660809922;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EEvqUcQmIj9/YAiae1HApl/DsVDoyFZBZ0Um99hdIHI=;
-        b=XwXG5oLzMM1reTPaOKruoN2KUIcD4fN+yWwOyEc5XX0FgTq7Izpo5a6TW2RkyutUg19nGB
-        kteY6NvIYUEtBrAY/CoQFyiVnj/4rhjyKwRlaBxNZP615/5pfS1dP/2mDF1FtUrplD5Sw/
-        gisYiJ5TPRyG787bwFFy0Nj1GUh6diM=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-623-Jj2tTpd2PzeaKeW9Y156ug-1; Thu, 18 Aug 2022 04:05:20 -0400
-X-MC-Unique: Jj2tTpd2PzeaKeW9Y156ug-1
-Received: by mail-lf1-f72.google.com with SMTP id i41-20020a0565123e2900b00492bf8db976so222515lfv.3
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 01:05:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=EEvqUcQmIj9/YAiae1HApl/DsVDoyFZBZ0Um99hdIHI=;
-        b=de8CxawVFZAOV7iF38G3kWOCUMnT94cMeFracKtF0FRlT0ZBGNIWw61xEx63g/YKLH
-         W4z/tydh5biYUjskXSb2xSd48Ll2OxsKeTRip+8BF8TZJS8cutbvXSemLG8Y5A+aHQ9C
-         XDzx4aMfqliqIK0f3geXTcstzN9B938oKXgVwfZ6H2lNst552A1sOTQACUFUWvd3L/Wo
-         FJmgm4E1kAQYwkQcBJQOJum5TQd6HOmUQAtoUYnwnwuH6rzjOfZv6YWBTx1EzZgXVesk
-         0zsNjoJZynpCFBWNalfBPzh45KDZIyi65u2whveHtkqFVkfZVHNQQry+wwT/AAIj+FUP
-         uGxQ==
-X-Gm-Message-State: ACgBeo0Eluc8vJFHqUW5XEbxX3g+hxszcBO0tfUD2OZx/dafXKjLXSWW
-        NbrGTrusbLpP83i60ph3Elfo1unyuu0HpVrzxefToyjlVdZ3tfc08tsWMaGU/6Ns7DlD6ElNt+b
-        RpZJ2MtaFzqwqELZJoJOk4dccokToNZpybZ/nev0M
-X-Received: by 2002:a2e:a983:0:b0:25f:f273:548e with SMTP id x3-20020a2ea983000000b0025ff273548emr501671ljq.141.1660809919377;
-        Thu, 18 Aug 2022 01:05:19 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR46k09nEp5PaxhgcHPz5gwgI+Ykd3f40dyd6/GHGaPhn/5mLrbuDJ2nPozxQfzCNGN6SkupyPLl1nyRciLhMUE=
-X-Received: by 2002:a2e:a983:0:b0:25f:f273:548e with SMTP id
- x3-20020a2ea983000000b0025ff273548emr501666ljq.141.1660809919211; Thu, 18 Aug
- 2022 01:05:19 -0700 (PDT)
+        Thu, 18 Aug 2022 04:07:28 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 642006C107;
+        Thu, 18 Aug 2022 01:07:25 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27I86wwP6021090, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27I86wwP6021090
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 18 Aug 2022 16:06:58 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 18 Aug 2022 16:07:10 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Thu, 18 Aug
+ 2022 16:07:09 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>,
+        Mark Blakeney <mark.blakeney@bullet-systems.net>
+Subject: [PATCH net 2/2] r8152: fix the RX FIFO settings when suspending
+Date:   Thu, 18 Aug 2022 16:06:20 +0800
+Message-ID: <20220818080620.14538-394-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.34.3
+In-Reply-To: <20220818080620.14538-392-nic_swsd@realtek.com>
+References: <20220818080620.14538-392-nic_swsd@realtek.com>
 MIME-Version: 1.0
-References: <20220817221956.1149183-1-stefanha@redhat.com>
-In-Reply-To: <20220817221956.1149183-1-stefanha@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 18 Aug 2022 16:05:08 +0800
-Message-ID: <CACGkMEuVama8zsPmf48t0LwEor1-+ihzajeU3=PdYjKGafdg3g@mail.gmail.com>
-Subject: Re: [PATCH] Documentation: add basic information on vDPA
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/18/2022 07:48:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvMTggpFekyCAwNjowMDowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 6:20 AM Stefan Hajnoczi <stefanha@redhat.com> wrote:
->
-> The vDPA driver framework is largely undocumented. Add a basic page that
-> describes what vDPA is, where to get more information, and how to use
-> the simulator for testing.
->
-> In the future it would be nice to add an overview of the driver API as
-> well as comprehensive doc comments.
+The RX FIFO would be changed when suspending, so the related settings
+have to be modified, too. Otherwise, the flow control would work
+abnormally.
 
-+1
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216333
+Reported-by: Mark Blakeney <mark.blakeney@bullet-systems.net>
+Fixes: cdf0b86b250f ("r8152: fix a WOL issue")
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+---
+ drivers/net/usb/r8152.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
->
-> Cc: "Michael S. Tsirkin" <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: Stefano Garzarella <sgarzare@redhat.com>
-> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-> ---
->  Documentation/driver-api/index.rst |  1 +
->  Documentation/driver-api/vdpa.rst  | 40 ++++++++++++++++++++++++++++++
->  2 files changed, 41 insertions(+)
->  create mode 100644 Documentation/driver-api/vdpa.rst
->
-> diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-> index d3a58f77328e..e307779568d4 100644
-> --- a/Documentation/driver-api/index.rst
-> +++ b/Documentation/driver-api/index.rst
-> @@ -103,6 +103,7 @@ available subsections can be seen below.
->     switchtec
->     sync_file
->     tty/index
-> +   vdpa
->     vfio-mediated-device
->     vfio
->     vfio-pci-device-specific-driver-acceptance
-> diff --git a/Documentation/driver-api/vdpa.rst b/Documentation/driver-api/vdpa.rst
-> new file mode 100644
-> index 000000000000..75c666548e1d
-> --- /dev/null
-> +++ b/Documentation/driver-api/vdpa.rst
-> @@ -0,0 +1,40 @@
-> +====================================
-> +vDPA - VIRTIO Data Path Acceleration
-> +====================================
-> +
-> +The vDPA driver framework can be used to implement VIRTIO devices that are
-> +backed by physical hardware or by software. While the device's data path
-> +complies with the VIRTIO specification, the control path is driver-specific and
-> +a netlink interface exists for instantiating devices.
-> +
-> +vDPA devices can be attached to the kernel's VIRTIO device drivers or exposed
-> +to userspace emulators/virtualizers such as QEMU through vhost.
-> +
-> +The driver API is not documented beyond the doc comments in <linux/vdpa.h>. The
-> +netlink API is not documented beyond the doc comments in <linux/uapi/vdpa.h>.
-> +The existing vDPA drivers serve as reference code for those wishing to develop
-> +their own drivers.
-> +
-> +See https://vdpa-dev.gitlab.io/ for more information about vDPA.
-> +
-> +Questions can be sent to the virtualization@lists.linux-foundation.org mailing
-> +list.
-> +
-> +Device simulators
-> +-----------------
-> +
-> +There are software vDPA device simulators for testing, prototyping, and
-> +development purposes. The simulators do not require physical hardware.
-> +
-> +Available simulators include:
-> +
-> +- `vdpa_sim_net` implements a virtio-net loopback device.
-> +- `vdpa_sim_blk` implements a memory-backed virtio-blk device.
-> +
-> +To use `vdpa_sim_blk` through vhost::
-> +
-> +  # modprobe vhost_vdpa
-> +  # modprobe vdpa_sim_blk
-> +  # vdpa dev add name vdpa-blk1 mgmtdev vdpasim_blk
-> +  ...use /dev/vhost-dev-0...
-> +  # vdpa dev del vdpa-blk1
-> --
-> 2.37.2
->
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 46c7954d2762..d142ac8fcf6e 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -5906,6 +5906,11 @@ static void r8153_enter_oob(struct r8152 *tp)
+ 	ocp_data &= ~NOW_IS_OOB;
+ 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
+ 
++	/* RX FIFO settings for OOB */
++	ocp_write_dword(tp, MCU_TYPE_PLA, PLA_RXFIFO_CTRL0, RXFIFO_THR1_OOB);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RXFIFO_CTRL1, RXFIFO_THR2_OOB);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RXFIFO_CTRL2, RXFIFO_THR3_OOB);
++
+ 	rtl_disable(tp);
+ 	rtl_reset_bmu(tp);
+ 
+@@ -6544,6 +6549,11 @@ static void rtl8156_down(struct r8152 *tp)
+ 	ocp_data &= ~NOW_IS_OOB;
+ 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
+ 
++	/* RX FIFO settings for OOB */
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RXFIFO_FULL, 64 / 16);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, 1024 / 16);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, 4096 / 16);
++
+ 	rtl_disable(tp);
+ 	rtl_reset_bmu(tp);
+ 
+-- 
+2.34.3
 
