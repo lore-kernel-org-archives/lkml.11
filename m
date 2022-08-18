@@ -2,134 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D4AC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:26:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1E4C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 13:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245100AbiHRN0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 09:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        id S244717AbiHRN0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 09:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245076AbiHRN0Q (ORCPT
+        with ESMTP id S245087AbiHRN0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 09:26:16 -0400
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6CAB3B37;
-        Thu, 18 Aug 2022 06:26:13 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4M7lrW4NjZz9xHdY;
-        Thu, 18 Aug 2022 21:20:59 +0800 (CST)
-Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
-        by APP1 (Coremail) with SMTP id LxC2BwB3RhLaPf5iVW0wAA--.23197S2;
-        Thu, 18 Aug 2022 14:25:54 +0100 (CET)
-Message-ID: <71544d2970e246e1f0d5f5ec065ea2437df58cd9.camel@huaweicloud.com>
-Subject: Re: [PATCH 3/3] tools/build: Display logical OR of a feature flavors
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, quentin@isovalent.com,
-        linux-perf-users@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Date:   Thu, 18 Aug 2022 15:25:36 +0200
-In-Reply-To: <Yv46EW6KbUe9zjur@kernel.org>
-References: <20220818120957.319995-1-roberto.sassu@huaweicloud.com>
-         <20220818120957.319995-3-roberto.sassu@huaweicloud.com>
-         <Yv46EW6KbUe9zjur@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0E6B2493;
+        Thu, 18 Aug 2022 06:26:15 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27ICimRF025753;
+        Thu, 18 Aug 2022 13:26:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=gGbwGSZztbIxZzV+S0y6tRfatsi96ZLFsT2xrbTxVng=;
+ b=YtM71PizdDHkHPacgMW0VgCr3q+LDSAX5yia6fontFe92kETBiijUW549D79YdcsIixt
+ vHiZ0WFewByCXQuOuPqfIaMokWcpMf+8+IEB6HIlPO4/1moRuiTEXdYq2ZTy/QL5Kpzf
+ Ik4cvC9r81wDonn2Y6FCEcH205GCJHEqoLb3/YFqUl259A+8sTtGofG389WDYnBbdRrn
+ 2OVPjlpzDenwt81alPp0Hf2/JJ9NJBKvggU0qJhVyArpQTMPtMvCGWv5t3u2fPx+/Uyh
+ Dm6vzrEVIETP1u1WZAFgs3yzHsfgRVqDrW3wVWJJZ58PFdVGmEEYFD71iXkl8edAarlY dg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1npxhcpu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 13:26:14 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27ICwYRd032374;
+        Thu, 18 Aug 2022 13:26:13 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j1npxhcpf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 13:26:13 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27IDKjMZ003771;
+        Thu, 18 Aug 2022 13:26:12 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma04dal.us.ibm.com with ESMTP id 3hx3kaek2d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Aug 2022 13:26:12 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27IDQBZw50725132
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 18 Aug 2022 13:26:11 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 181306E050;
+        Thu, 18 Aug 2022 13:26:11 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 133346E04E;
+        Thu, 18 Aug 2022 13:26:10 +0000 (GMT)
+Received: from li-2c1e724c-2c76-11b2-a85c-ae42eaf3cb3d.ibm.com.com (unknown [9.160.64.167])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 18 Aug 2022 13:26:09 +0000 (GMT)
+From:   Tony Krowiak <akrowiak@linux.ibm.com>
+To:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     jjherne@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
+        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
+        alex.williamson@redhat.com, kwankhede@nvidia.com,
+        fiuczy@linux.ibm.com, stable@vger.kernel.org
+Subject: [PATCH v2 2/2] s390/vfio-ap: fix unlinking of queues from the mdev
+Date:   Thu, 18 Aug 2022 09:26:06 -0400
+Message-Id: <20220818132606.13321-3-akrowiak@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220818132606.13321-1-akrowiak@linux.ibm.com>
+References: <20220818132606.13321-1-akrowiak@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LxC2BwB3RhLaPf5iVW0wAA--.23197S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7urW8ZF48ZF15WrWkXw47urg_yoW8urW8pa
-        4rG3WUKrsrKr1Ikw42kr18ta1F9w4Iy3yUXFy0yw17AF4UWF17KF1a9FWrWFyDurn3u3Wa
-        vrWSq34ru3WDZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkFb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1j6r18M7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
-        AFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFV
-        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI
-        7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
-        Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY
-        6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6x
-        AIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280
-        aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07UR7KsUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAIBF1jj34VsAAAsk
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: NSKZkpMTEJpZWlXcSOuXS1I3RvXps_y0
+X-Proofpoint-GUID: Uuf19tzZwRiT3p_Qth9vnnowfmEdz48y
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-18_12,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 clxscore=1015 bulkscore=0 mlxlogscore=926 adultscore=0
+ suspectscore=0 mlxscore=0 impostorscore=0 priorityscore=1501 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208180045
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-08-18 at 10:09 -0300, Arnaldo Carvalho de Melo wrote:
-> Em Thu, Aug 18, 2022 at 02:09:57PM +0200, 
-> roberto.sassu@huaweicloud.com escreveu:
-> > From: Roberto Sassu <roberto.sassu@huawei.com>
-> > 
-> > Sometimes, features are simply different flavors of another
-> > feature, to
-> > properly detect the exact dependencies needed by different Linux
-> > distributions.
-> > 
-> > For example, libbfd has three flavors: libbfd if the distro does
-> > not
-> > require any additional dependency; libbfd-liberty if it requires
-> > libiberty;
-> > libbfd-liberty-z if it requires libiberty and libz.
-> > 
-> > It might not be clear to the user whether a feature has been
-> > successfully
-> > detected or not, given that some of its flavors will be set to OFF,
-> > others
-> > to ON.
-> > 
-> > Instead, display only the feature main flavor if not in verbose
-> > mode
-> > (VF != 1), and set it to ON if at least one of its flavors has been
-> > successfully detected (logical OR), OFF otherwise. Omit the other
-> > flavors.
-> > 
-> > Accomplish that by declaring a FEATURE_GROUP_MEMBERS-<feature main
-> > flavor>
-> > variable, with the list of the other flavors as variable value. For
-> > now, do
-> > it just for libbfd.
-> > 
-> > In verbose mode, of if no group is defined for a feature, show the
-> > feature
-> > detection result as before.
-> 
-> Looks cool, tested and added this to the commit log message here in
-> my
-> local branch, that will go public after further tests for the other
-> csets in it:
-> 
-> Committer testing:
-> 
-> Collecting the output from:
-> 
->   $ make -C tools/bpf/bpftool/ clean
->   $ make -C tools/bpf/bpftool/ |& grep "Auto-detecting system
-> features" -A10
-> 
->   $ diff -u before after
->   --- before    2022-08-18 10:06:40.422086966 -0300
->   +++ after     2022-08-18 10:07:59.202138282 -0300
->   @@ -1,6 +1,4 @@
->    Auto-detecting system features:
->    ...                                  libbfd: [ on  ]
->   -...                          libbfd-liberty: [ on  ]
->   -...                        libbfd-liberty-z: [ on  ]
->    ...                                  libcap: [ on  ]
->    ...                         clang-bpf-co-re: [ on  ]
->   $
-> 
-> Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-> 
-> Thanks for working on this!
+The vfio_ap_mdev_unlink_adapter and vfio_ap_mdev_unlink_domain functions
+add the associated vfio_ap_queue objects to the hashtable that links them
+to the matrix mdev to which their APQN is assigned. In order to unlink
+them, they must be deleted from the hashtable; if not, they will continue
+to be reset whenever userspace closes the mdev fd or removes the mdev.
+This patch fixes that issue.
 
-Thanks for testing and for adapting/pushing the other patches!
+Cc: stable@vger.kernel.org
+Fixes: 2838ba5bdcd6 ("s390/vfio-ap: reset queues after adapter/domain unassignment")
+Reported-by: Tony Krowiak <akrowiak@linux.ibm.com>
+Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
+---
+ drivers/s390/crypto/vfio_ap_ops.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Roberto
+diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto/vfio_ap_ops.c
+index ee82207b4e60..2493926b5dfb 100644
+--- a/drivers/s390/crypto/vfio_ap_ops.c
++++ b/drivers/s390/crypto/vfio_ap_ops.c
+@@ -1049,8 +1049,7 @@ static void vfio_ap_mdev_unlink_adapter(struct ap_matrix_mdev *matrix_mdev,
+ 		if (q && qtable) {
+ 			if (test_bit_inv(apid, matrix_mdev->shadow_apcb.apm) &&
+ 			    test_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm))
+-				hash_add(qtable->queues, &q->mdev_qnode,
+-					 q->apqn);
++				vfio_ap_unlink_queue_fr_mdev(q);
+ 		}
+ 	}
+ }
+@@ -1236,8 +1235,7 @@ static void vfio_ap_mdev_unlink_domain(struct ap_matrix_mdev *matrix_mdev,
+ 		if (q && qtable) {
+ 			if (test_bit_inv(apid, matrix_mdev->shadow_apcb.apm) &&
+ 			    test_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm))
+-				hash_add(qtable->queues, &q->mdev_qnode,
+-					 q->apqn);
++				vfio_ap_unlink_queue_fr_mdev(q);
+ 		}
+ 	}
+ }
+-- 
+2.31.1
 
