@@ -2,98 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE459C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D123FC32773
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345011AbiHRRox (ORCPT
+        id S1345058AbiHRRpP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
+        Thu, 18 Aug 2022 13:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234283AbiHRRot (ORCPT
+        with ESMTP id S1345082AbiHRRpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:44:49 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEE9696FD
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 10:44:48 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 4C4FD5FD07;
-        Thu, 18 Aug 2022 20:44:46 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660844686;
-        bh=SPQown7D6eau6+lPgoeRlXVRqqpCJI7GDEyMPHoMJK8=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=jR2ws1rykr2GX3Qp7N1cataO0iPtc6bli8ohSPrPYLInGR+BSZS83QXHE4hlHcVMw
-         oHvZZQWzsT0vl8idnYgo6F7LMpzZ1SG99L2jO9BHi5xHu2OL7pU4LnpwT1K919EE9C
-         fx0rOqMrR7+XAz93EDbh5l9CHfKK5JCFHV/10+tzjv5ynePfsfvjgeKz0CQ8qltCZH
-         IpUM1/PFq/AbBIusvSzl4vG12KkEVfgqKbgt5dIR2ue2mHpKfYLarPw5uxmA9YLk4O
-         CeC3D2g5yP2rIuEvwtfkJUfwBAjU3uwO65zVOP2Y3EgkO2Gky0zWiZJGRU18wMz5Cn
-         MlxzRhxo2fy/A==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 18 Aug 2022 20:44:45 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Marc Zyngier <maz@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-Thread-Topic: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-Thread-Index: AQHYsZwRTOzZdLxKvkqpBNcAgWIdzq20YtWAgAAaSQCAAB/4gIAAIcqA
-Date:   Thu, 18 Aug 2022 17:44:23 +0000
-Message-ID: <20220818174441.arh7otvrkzg5uk3s@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
- <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
- <87mtc1wtjz.wl-maz@kernel.org> <Yv5eMcmNOmyLmd++@sirena.org.uk>
-In-Reply-To: <Yv5eMcmNOmyLmd++@sirena.org.uk>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <637D660D6248DF408AD56AA98766E706@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Thu, 18 Aug 2022 13:45:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D44C7172B;
+        Thu, 18 Aug 2022 10:45:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D15F9CE2245;
+        Thu, 18 Aug 2022 17:45:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBD4C433D6;
+        Thu, 18 Aug 2022 17:45:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660844707;
+        bh=Yy+ZnKIzuSTYizYHaXdO9bWgHRUoHQWc79KX44UlvY4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DH2c+E+iUEBbOPOkg3JnkMIfh2S9eUN+Ph2tqIo7cnYaoMvXzKjwg2PvcSxggEyWA
+         xDeJAejwcJPD8pZ3xuJ7bXMxXIfjKxNEtGy96/yXsYb5U5Bc106kr/y/P4hYbkdOAy
+         OhwQ5O4ImY4ap94LKkm15HQphjZDS8KOuMcystSwpopcP7j3t0ObIdCeo9+yZbDETs
+         kkTgnYuSyfjbq14PHiZ9z3dds9CIYihMEnppb1gNBSSGIP5fqrM5xaHfDKydKMWtUK
+         MmIu/y8g5jlm43FO7k9gmOwEp9ko0UQc49D1uWmCvKElcP5xoyOWAM6bQC/0j/RU0e
+         i4rW8G2pylAQQ==
+Date:   Thu, 18 Aug 2022 10:45:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
+Message-ID: <20220818104505.010ff950@kernel.org>
+In-Reply-To: <Yv5v1E6mfpcxjnLV@linutronix.de>
+References: <20220817162703.728679-1-bigeasy@linutronix.de>
+        <20220817162703.728679-10-bigeasy@linutronix.de>
+        <20220817112745.4efd8217@kernel.org>
+        <Yv5aSquR9S2KxUr2@linutronix.de>
+        <20220818090200.4c6889f2@kernel.org>
+        <Yv5v1E6mfpcxjnLV@linutronix.de>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/18 13:09:00 #20118254
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Mark,
+On Thu, 18 Aug 2022 18:59:00 +0200 Sebastian Andrzej Siewior wrote:
+> On 2022-08-18 09:02:00 [-0700], Jakub Kicinski wrote:
+> > No ack, I'd much rather you waited for after the next merge window 
+> > and queued this refactoring to net-next. Patch 9 is changing 70
+> > files in networking. Unless I'm missing something and this is time
+> > sensitive.  
+> 
+> It started with the clean up of the mess that has been made in the merge
+> and then it went on a little.
+> 
+> Any opinion on 8/9? It could wait for the next merge window if you want
+> to avoid a feature branch to pull from.
 
-On Thu, Aug 18, 2022 at 04:43:45PM +0100, Mark Brown wrote:
-> On Thu, Aug 18, 2022 at 02:49:20PM +0100, Marc Zyngier wrote:
->=20
-> > I don't care much about regmap as a MMIO backend, but it strikes me as
-> > odd that you end up with multiple ways of logging the same stuff (with
-> > a memcpy in the middle of it).
->=20
-> > Why can't this be done with a small amount of trace post-processing?
->=20
-> At the minute we don't put the actual data for the bulk transfers into
-> the trace so the information simply isn't there.
+A question of priority, hard for me to judge how urgent any of it is.
+But practically speaking the chances of a conflict on that one header
+are pretty small, so ack if needed.
 
-What do you think about the patch? Can we use the separate trace event
-class, or do we have to add these tracepoints to some existing class, like
-regmap_block?
+> Regarding 9/9. This is a clean up, which is possible after 8/9. It can
+> definitely be applied later.
+> I assume you want only see the networking bits so I would split the
+> other subsystem out. I guess instead the big net patch I split them on
+> per driver vendor basis + net/ subsys?
 
-Appreciate any thoughts and feedback.
+Oh, don't care for per vendor split on a big refactoring like that.
+You can split out the SPI patch and maybe BPF, the rest can be one 
+big chunk AFAICT.
 
---=20
-Thank you,
-Dmitry=
+BTW, I have a hazy memory of people saying they switched to the _irq()
+version because it reduced the number of retries significantly under
+traffic. Dunno how practical that is but would you be willing to scan
+the git history to double check that's not some of the motivation?
