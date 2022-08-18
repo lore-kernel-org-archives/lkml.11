@@ -2,139 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD3FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 06:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FB5C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 06:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243623AbiHRGVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 02:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
+        id S243627AbiHRGYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 02:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243477AbiHRGVB (ORCPT
+        with ESMTP id S243477AbiHRGYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 02:21:01 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2044.outbound.protection.outlook.com [40.107.223.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7543F9E119;
-        Wed, 17 Aug 2022 23:21:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DyVanlHyqgEwGmUDGWncTr4tZDuC0iw5j6QPm3RpHVHue8sv0NA2j2EXOHvuBNRuoxxX0UN+JACvmRZTyImH4BS/j8GoUmcdfgaQ1Xayju8eknmgBj7XOYKjCxoiJWYDf8UrvdaB57Sa8kL5WhZ/1yaZ2Fs+sTU4l8/h6ZUsV4/yMvNcNJMlT/zr7vO93kpGENdchaRhzvJ2u0VYjAJnvA7SI/ryBhWZE4cskW9LJ5MYgiJt+N6w/3T0d+nKbuPQOlzdu6zik+5A730wpQByD0rcJG+8tInOpckeZ6Wk8iuG/ifPi5I8QnEiOBx1TFtlgPMjd2XwYNm6acIh9cz51w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9F6C3l/WxpG2/eOFv8ywXdy6+inr8QKYW+D6GkzJU5g=;
- b=lvjYdEope0cpfbM5plbqNn2gpk2eTxjt/xRd9wXh+Wx4y8+eBRDqucdxubrURcnGJ6kl6qKekiNGprU0l3ss2BXZbDxGgAFoPxLiasoURCAZW51NLndi+l8DP56kHo8TjgW//0OTH1Bl286V4tkyJUpsreBMsg7Q1VS9FEqry2Lt5Yvwd1cc4Wav0U7z+B47CbYfqsdly/rMggnGnx+6344xmlcHE5F6yoJNbNU1d9j5dSnlb//wGUeHNkkSuhTTzPBeuqY1BZeKd7nOsUpJMRgwP1ARGByfjvGYnpGv78zbXozvGRVRyDztY4nT8UFUQo8OjB+QdMGa3x2ZE94UwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9F6C3l/WxpG2/eOFv8ywXdy6+inr8QKYW+D6GkzJU5g=;
- b=GptSZQB5RlqTzA39YFCQhuKHawjNS2k0V7nZ2005aqJHBijXm4Fpj4Yztxx8lHN/XLVVrXVMOdISxjn1fvz9PlUk0rK/odDQsg6OilZYE4N9WL2cZJg/vnHhMdP07xPBXAEW4fE5v131ZaF9QTSZbG9+XSSLPUzg0Odbk+sni3PqzfkI4VTPLbGZjAPakMnLA3C6JyLgqjLyr6zZD1fsSV1myuD8ob0IY7z5P94lTIy8azaptV7EGaVDsAF5DOd789tTvGo643BTByN/DN1eBEdwoUX6wY4VGhOiWIhxIgoq80Tue4xE+IdwOjxIZWiL7dUt4R96T3dUw8WNsplEUQ==
-Received: from MW3PR05CA0002.namprd05.prod.outlook.com (2603:10b6:303:2b::7)
- by DM6PR12MB4073.namprd12.prod.outlook.com (2603:10b6:5:217::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Thu, 18 Aug
- 2022 06:20:59 +0000
-Received: from CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:2b:cafe::49) by MW3PR05CA0002.outlook.office365.com
- (2603:10b6:303:2b::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.4 via Frontend
- Transport; Thu, 18 Aug 2022 06:20:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT053.mail.protection.outlook.com (10.13.175.63) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5546.15 via Frontend Transport; Thu, 18 Aug 2022 06:20:58 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 18 Aug
- 2022 06:20:58 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 17 Aug
- 2022 23:20:57 -0700
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server id 15.2.986.29 via Frontend Transport; Wed, 17 Aug
- 2022 23:20:54 -0700
-From:   Emeel Hakim <ehakim@nvidia.com>
-To:     <edumazet@google.com>, <mayflowerera@gmail.com>
-CC:     <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Emeel Hakim <ehakim@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH net-next v2 1/1] net: macsec: Expose MACSEC_SALT_LEN definition to user space
-Date:   Thu, 18 Aug 2022 09:20:34 +0300
-Message-ID: <20220818062034.8308-1-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
+        Thu, 18 Aug 2022 02:24:23 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8B265541;
+        Wed, 17 Aug 2022 23:24:21 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4M7ZZ11GNkzKPyP;
+        Thu, 18 Aug 2022 14:22:49 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP2 (Coremail) with SMTP id Syh0CgCnkb0R2_1i+pULAg--.32172S4;
+        Thu, 18 Aug 2022 14:24:19 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH -next] blk-mq: remove unused function blk_mq_queue_stopped()
+Date:   Thu, 18 Aug 2022 14:35:55 +0800
+Message-Id: <20220818063555.3741222-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8eccd9d6-9252-4b92-7799-08da80e1d0e7
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4073:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UkiGsbqfvX2nnYpjbCI5NjLq3p7iDuA22D3tHgUMY84WgYZyVO5tjCZS8+qWmJ+B+R5PzdAWDdyjyX1/YkwUjl3tsy5Q/WCBwbCPbsVlzKn71DUjL+gVu3Wh5ij1gYVFaUn8axelOtWpyoLS21r5eHJIspgkeY+KZN6a3NuzGjZDXuDhDg08QKtfiOkNQYXd08q1+W0NdRihNPyLyF5w9NNO8+zum06LFt+7jq/XgG7Nn6LGybpp54BkuauVJXdjywvqjKBLUT3Qe50g+3db3SgJqMcS5y6s589VqUQfvkr5lXRgGVBjHl5CrCkkG4a3ebqXih9OXpMfq5/pm98aa/FezEeRSq9AGhZHs1Ice5oYr0h+idsAep+Krzqs658keYUL0Vf79jSz/FguFxBK3X5PW+TRD7ImQ++IVHJZYvpvf98KZJj8++FgnZ71FlDJMCmaMa/nD7c5fZ3Fvt0a/WSuyzf7tscGBjNZG+9hMr9AgzkkyFpim1Csc6Z62/TrqC4yeZtnd3q32YjvDA699uYTwGI6cCZGvJ/Ak1hmwOMHGAuiXLesfVNXFSihwfNNwjeHaj5KW6eSiV0c0uKDFHuFwGwvmqPm1C/jHUtfpCmsfNlC0ycmXFSLjGqU/qjbQVtnJkvJkcvYAKV1T36EbVc5BFBleO/zMaYF25geQZ5g86lzVuLAQc81t98o/rRjmtS3A4Nciprlda5U0rYmT1RGvx5GJHbRDyS3eTlxrGlGAmm6i7DWPzFU/M53H/TxYnTnOXyC+0M/brCWhnW23OPH1rSGRgsKOsfA77UTVBIGw/EDNvtCNhyS/gxz5C/U
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(136003)(376002)(396003)(40470700004)(36840700001)(46966006)(6666004)(47076005)(2616005)(36756003)(110136005)(8936002)(5660300002)(478600001)(86362001)(70586007)(40460700003)(426003)(1076003)(36860700001)(316002)(40480700001)(186003)(83380400001)(336012)(81166007)(54906003)(7696005)(4326008)(8676002)(2906002)(82310400005)(82740400003)(70206006)(41300700001)(356005)(26005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 06:20:58.6392
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8eccd9d6-9252-4b92-7799-08da80e1d0e7
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4073
+X-CM-TRANSID: Syh0CgCnkb0R2_1i+pULAg--.32172S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7tF4DWw47Cw1DtF13tF1xAFb_yoW8ZryrpF
+        ZxGa12kw4vgw4UZ348Jw4xZrnxWws0krW7J3yftrWFvw1qkr1rXr10ya1UXrW0yrZ5AFW3
+        CrnrJrWDGr1kXrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
+        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Expose MACSEC_SALT_LEN definition to user space to be
-used in various user space applications such as iproute.
-iprotue will use this as part of adding macsec extended
-packet number support.
+From: Yu Kuai <yukuai3@huawei.com>
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+blk_mq_queue_stopped() doesn't have any caller, which was found by
+code coverage test, thus remove it.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- include/net/macsec.h           | 1 -
- include/uapi/linux/if_macsec.h | 2 ++
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ block/blk-mq.c         | 20 --------------------
+ include/linux/blk-mq.h |  1 -
+ 2 files changed, 21 deletions(-)
 
-diff --git a/include/net/macsec.h b/include/net/macsec.h
-index d6fa6b97f6ef..73780aa73644 100644
---- a/include/net/macsec.h
-+++ b/include/net/macsec.h
-@@ -14,7 +14,6 @@
- #define MACSEC_DEFAULT_PN_LEN 4
- #define MACSEC_XPN_PN_LEN 8
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 5ee62b95f3e5..5568c7d09114 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2229,26 +2229,6 @@ void blk_mq_delay_run_hw_queues(struct request_queue *q, unsigned long msecs)
+ }
+ EXPORT_SYMBOL(blk_mq_delay_run_hw_queues);
  
--#define MACSEC_SALT_LEN 12
- #define MACSEC_NUM_AN 4 /* 2 bits for the association number */
- 
- typedef u64 __bitwise sci_t;
-diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
-index 3af2aa069a36..d5b6d1f37353 100644
---- a/include/uapi/linux/if_macsec.h
-+++ b/include/uapi/linux/if_macsec.h
-@@ -22,6 +22,8 @@
- 
- #define MACSEC_KEYID_LEN 16
- 
-+#define MACSEC_SALT_LEN 12
-+
- /* cipher IDs as per IEEE802.1AE-2018 (Table 14-1) */
- #define MACSEC_CIPHER_ID_GCM_AES_128 0x0080C20001000001ULL
- #define MACSEC_CIPHER_ID_GCM_AES_256 0x0080C20001000002ULL
+-/**
+- * blk_mq_queue_stopped() - check whether one or more hctxs have been stopped
+- * @q: request queue.
+- *
+- * The caller is responsible for serializing this function against
+- * blk_mq_{start,stop}_hw_queue().
+- */
+-bool blk_mq_queue_stopped(struct request_queue *q)
+-{
+-	struct blk_mq_hw_ctx *hctx;
+-	unsigned long i;
+-
+-	queue_for_each_hw_ctx(q, hctx, i)
+-		if (blk_mq_hctx_stopped(hctx))
+-			return true;
+-
+-	return false;
+-}
+-EXPORT_SYMBOL(blk_mq_queue_stopped);
+-
+ /*
+  * This function is often used for pausing .queue_rq() by driver when
+  * there isn't enough resource or some conditions aren't satisfied, and
+diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
+index effee1dc715a..92294a5fb083 100644
+--- a/include/linux/blk-mq.h
++++ b/include/linux/blk-mq.h
+@@ -857,7 +857,6 @@ void blk_mq_kick_requeue_list(struct request_queue *q);
+ void blk_mq_delay_kick_requeue_list(struct request_queue *q, unsigned long msecs);
+ void blk_mq_complete_request(struct request *rq);
+ bool blk_mq_complete_request_remote(struct request *rq);
+-bool blk_mq_queue_stopped(struct request_queue *q);
+ void blk_mq_stop_hw_queue(struct blk_mq_hw_ctx *hctx);
+ void blk_mq_start_hw_queue(struct blk_mq_hw_ctx *hctx);
+ void blk_mq_stop_hw_queues(struct request_queue *q);
 -- 
-2.21.3
+2.31.1
 
