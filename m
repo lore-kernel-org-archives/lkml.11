@@ -2,92 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1076BC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8206FC00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 17:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345003AbiHRRUS (ORCPT
+        id S1344437AbiHRRVq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 13:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        Thu, 18 Aug 2022 13:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344440AbiHRRT6 (ORCPT
+        with ESMTP id S245653AbiHRRVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 13:19:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C79A181;
-        Thu, 18 Aug 2022 10:18:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 18 Aug 2022 13:21:10 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F0F5C362;
+        Thu, 18 Aug 2022 10:19:27 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BC3BB82305;
-        Thu, 18 Aug 2022 17:18:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CB3C433C1;
-        Thu, 18 Aug 2022 17:18:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660843083;
-        bh=Fvr29lWD5OIUEN35R23Bjt8QeBsONWcWpcpJpOcymIU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pRnCaxOFGvyUfTtD5W+19BBAQpvjB3MxSsGi48BpacNyVtfyKzpF4amNJBsB8ScIn
-         OH8K9FTD2N4n1zCxqNG81VN1/DpfeGG56QSORAJrih1j69YF6ghLFspJ3nNOpj70wJ
-         pV6057MGc86jiuR7U2fdz+md6d+yLFS4+qTZJB22U4CUZnu6pq7nsnBz3tOFJ2k88Y
-         n7x9xsPHTeShbYJJ/EDf/ta7+APT2sUXDTb1Cr6OTOVxo+QfjmQK7g1vdsWTRwTA90
-         sfg2l2pC1LxfpxSCobQS+n3hDqB8ozF/k5UWEHwH7ZcnS/3MIRnt/G9Kh0/E58OUsY
-         tpeLzSwhhuBsA==
-Date:   Thu, 18 Aug 2022 18:17:59 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Martin =?utf-8?B?TGnFoWth?= <mliska@suse.cz>
-Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        corbet@lwn.net, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2] docs/arm64: elf_hwcaps: unify newlines in HWCAP lists
-Message-ID: <Yv50RxlDf0qpK9v8@sirena.org.uk>
-References: <49253b17-738d-795e-f539-55857fdaee64@suse.cz>
- <2bac83ef-d5a9-b8c4-0fb3-cef4272e7156@suse.cz>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 1BBF31F8C9;
+        Thu, 18 Aug 2022 17:19:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1660843166;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NRvraFGp4jiu+Zv6R16UajS2/oeIiXb+VaX74HP2TW4=;
+        b=bjjh35Iv4gxwXIPmtG7SfCHHnPd5p5v80PuTaeTC3aPB99KurVwUZyewv9e3rE1Rx9P+Sp
+        Qiun7yKw7BJPdYlrJ+EUFQr0fIJz6X3czrNu8a3j633IDs+EjDqYAuNXlS2pv5MA/UuZ3v
+        tDvm9ImOJlrA0aN8rCow6nrdlhnt/vo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1660843166;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NRvraFGp4jiu+Zv6R16UajS2/oeIiXb+VaX74HP2TW4=;
+        b=m9yyGEmSUbV95zuM+a0Lg/Fc1vmv/i81uHckjP11hrIxu3AExfAaEbKun/ESKLiEAUE0mb
+        zPzQn78ne6R1VEDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E2D10133B5;
+        Thu, 18 Aug 2022 17:19:25 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 5FVfNp10/mLmQAAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 18 Aug 2022 17:19:25 +0000
+Date:   Thu, 18 Aug 2022 19:14:14 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Uros Bizjak <ubizjak@gmail.com>
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Subject: Re: [PATCH] fs/btrfs: Use atomic_try_cmpxchg in free_extent_buffer
+Message-ID: <20220818171414.GM13489@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Uros Bizjak <ubizjak@gmail.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+References: <20220809163633.8255-1-ubizjak@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="JCZdgl1Eo0V8MWR1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2bac83ef-d5a9-b8c4-0fb3-cef4272e7156@suse.cz>
-X-Cookie: Logic is the chastity belt of the mind!
+In-Reply-To: <20220809163633.8255-1-ubizjak@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 09, 2022 at 06:36:33PM +0200, Uros Bizjak wrote:
+> Use `atomic_try_cmpxchg(ptr, &old, new)` instead of
+> `atomic_cmpxchg(ptr, old, new) == old` in free_extent_buffer. This
+> has two benefits:
+> 
+> - The x86 cmpxchg instruction returns success in the ZF flag, so this
+>   change saves a compare after cmpxchg, as well as a related move
+>   instruction in the front of cmpxchg.
+> 
+> - atomic_try_cmpxchg implicitly assigns the *ptr value to &old when
+>   cmpxchg fails, enabling further code simplifications.
+> 
+> This patch has no functional change.
+> 
+> Cc: Chris Mason <clm@fb.com>
+> Cc: Josef Bacik <josef@toxicpanda.com>
+> Cc: David Sterba <dsterba@suse.com>
+> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
 
---JCZdgl1Eo0V8MWR1
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Aug 15, 2022 at 03:37:58PM +0200, Martin Li=C5=A1ka wrote:
-> In git revision 94bdaa7d9a9d778d893c670d494c06d8e007c1cd I unified
-> vertical spaces in a list of features.
-
-The normal way of describing commits in a human readable fashion is to
-include their title as is done in Fixes: tags.
-
-> Since the revision, another commits added new features that have a differ=
-ent
-> horizontal spacing.
-> Fix these extra newlines.
-
-This new format .rst is forcing does seem less than ideal for people
-reading the actual file but oh well
-
-Reviewed-by: Mark Brown <broonie@kernel.org>
-
---JCZdgl1Eo0V8MWR1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL+dEYACgkQJNaLcl1U
-h9ACcAf+Lg5+ZgAxlKsyQN51MJ8HJxveKjnMSstP0dARwR4ZNx3qcJOgAF0iyhbV
-5rejBUUwdmHpSCP1JC756Eh3cW/z+cEIX4lKUZvKl5161Njpl+2xIGKHU7nEISnu
-goBRBfFuUqBklZvZMr8uVELcvq4EXy/jv5lTxUsShuEuKEpZKYL9uiVplfnLE872
-h/Q7T5ZgIUYsg+VhYcRoFlKKABJEKniSkyrWrc/Xku9tNlBoHCe1X9+ezD3g81qK
-gue8lJHkLTZESos7enzxR7dq1sfm6rLAn4DKhIdbDCtjn+CJDwBrsJaMiKaIbaLm
-VlNIn/14Ye3Xlpb6KviND/d4NDELWg==
-=zsTW
------END PGP SIGNATURE-----
-
---JCZdgl1Eo0V8MWR1--
+It's not in a performance critical code but resulting code is slightly
+more efficient. Added to misc-next, thanks.
