@@ -2,185 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4329AC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE51C25B0E
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 21:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346577AbiHRVH4 (ORCPT
+        id S1346588AbiHRVID (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        Thu, 18 Aug 2022 17:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346540AbiHRVHK (ORCPT
+        with ESMTP id S1346451AbiHRVHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:07:10 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6DC2CCAD
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=tsWKS3d35QyTwcmz7lMsj1/ck+C
-        2gXW06lmGcMlEZCw=; b=wo/ZfRyiN9VVd98YePWKp3gq9ipNRyPLfkDX2yZ1hky
-        vAi/O80zq5hoEVlL5UOoQO+twzqD/ZHTwPcBIjhnQo+/wl93/3APsneulTb+ukY0
-        GMCdkvWXN6FASmY2lykMVcXbhS6leoH/uJnIwCZuIQGChBJllHceif3qSjc6tOYc
-        =
-Received: (qmail 3961549 invoked from network); 18 Aug 2022 23:01:11 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:01:11 +0200
-X-UD-Smtp-Session: l3s3148p1@i5vyR4rm7skucref
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-Subject: [PATCH] scsi: target: move from strlcpy with unused retval to strscpy
-Date:   Thu, 18 Aug 2022 23:01:09 +0200
-Message-Id: <20220818210110.7421-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+        Thu, 18 Aug 2022 17:07:12 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D505A6D560
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:03:28 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id 20so2497530plo.10
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 14:03:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc;
+        bh=ELcoH5gVXXKNS9r6sQsd+O52/5TSkTBmTFm8K7ORsqw=;
+        b=WQMubBKNaph5pwkxw2tnVEU0ZXHH7pZR6cqKz2+4Y3c+DRJMOIgdDbs/2ixVID2UDH
+         L252bhKG5xAJo4hv5C6IBtfHRds9CMD8/2+vXivSdO3nGtQBlwD0QpJSPL2F0q7jDC2i
+         rSZj8Nce0eQstqKUlGuh50H7apLZ9mCKA8o5C8S/oZooXR0XcOc86Jg5x3yGTlyN4sYk
+         wSCQOcGBlIQZKHy56IPcxXtlS2ic1hlsZ1RJTn2rNtP30mQvs67WG1XR4YP0H8TtIFhh
+         cPoWKCVxqtC9WDJU0MZxBCSgc8NnQUJj+x0VNHc+WQ5d2d4nWwwcMAWE2h09J93p8hkX
+         Zsow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc;
+        bh=ELcoH5gVXXKNS9r6sQsd+O52/5TSkTBmTFm8K7ORsqw=;
+        b=PzK+9BA0fVSqGtFXoNbivWAhJkk1Zv0x0spIAhK/3ClLH4zC8F3iz0Pbg8jC34VAFh
+         KkunGo2nXUupirgGgn2Vvzd5QSjZx6sSTOxvQqJUYldyPz5VRxFokMnuUAgHlWhIYRkh
+         HQ6Jbwa52tkkyFmeyiBAGij//As9O0FcpS5QAwYgSdIPnu0uxF5Bxk1YD4bXHEot8uA7
+         OrgM8wC9T+45EkYHgW/uV8wkSAuxoxxGN2ZAxLVGgUW7WRpih6c/TwOy6WzGiCd6nCgk
+         QuWepE2Q9c0rkYFypv9+ZK0Kn1YFbFQG0zZUUkyvZW3UTvKNHEqeOGt67OQUPv6FJnX9
+         XKPw==
+X-Gm-Message-State: ACgBeo2axXHat6y1zY4kuE/vsJcjM8WslBWMS7nqW6M10LBVYK15XJ4h
+        lpKL/mt81RkvjLSHHtZE3AvCfw==
+X-Google-Smtp-Source: AA6agR77U4vTHE89v0SovmRRB/C5pTdUWWokk9RXeAPG/OObpqvPuOsLYN1eeILaWp+6/QyC455uOA==
+X-Received: by 2002:a17:902:c602:b0:170:bf85:8ccb with SMTP id r2-20020a170902c60200b00170bf858ccbmr4024845plr.38.1660856606246;
+        Thu, 18 Aug 2022 14:03:26 -0700 (PDT)
+Received: from localhost ([50.221.140.186])
+        by smtp.gmail.com with ESMTPSA id u16-20020a17090341d000b00172aa97b628sm1801658ple.186.2022.08.18.14.03.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 14:03:25 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 14:03:25 -0700 (PDT)
+X-Google-Original-Date: Thu, 18 Aug 2022 14:03:22 PDT (-0700)
+Subject:     Re: [GIT PULL] Fix RISC-V's arch-topology reporting
+In-Reply-To: <4849490e-b362-c13a-c2e4-82acc3268a3f@microchip.com>
+CC:     sudeep.holla@arm.com, catalin.marinas@arm.com,
+        Will Deacon <will@kernel.org>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        atishp@atishpatra.org, Brice.Goglin@inria.fr,
+        Greg KH <gregkh@linuxfoundation.org>
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     Conor.Dooley@microchip.com
+Message-ID: <mhng-fc4d9b57-2284-40dd-97f6-d32369b41cde@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow the advice of the below link and prefer 'strscpy' in this
-subsystem. Conversion is 1:1 because the return value is not used.
-Generated by a coccinelle script.
+On Mon, 15 Aug 2022 15:14:55 PDT (-0700), Conor.Dooley@microchip.com wrote:
+> Hey Will/Palmer/Sudeep,
+> 
+> Catalin suggested [0] dropping the CC: stable for the arm64 patch and
+> instead making it a specific prereq of the RISC-V patch & making a PR,
+> so here we are.. I was still up when -rc1 came out so pushed it last
+> night to get the test coverage, but LKP seems to not have reported a
+> build success since early on the 13th so not holding my horses! I built
+> it again for both ARMs and RISC-V myself.
+> 
+> I tagged it tonight, so it's on conor/linux.git as riscv-topo-on-6.0-rc1
+> with the prereq specified.
+> 
+> Not sure if you want to merge this too Sudeep or if that's up to Greg?
 
-Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/target/iscsi/iscsi_target_parameters.c |  4 ++--
- drivers/target/iscsi/iscsi_target_util.c       |  4 ++--
- drivers/target/target_core_configfs.c          | 10 +++++-----
- drivers/target/target_core_device.c            |  6 +++---
- drivers/target/target_core_user.c              |  4 ++--
- 5 files changed, 14 insertions(+), 14 deletions(-)
+It's a little bit vague what you're asking for here, so I'm just going 
+to kind of guessing here but this on riscv/for-next.  I'm not sure if 
+you were looking for me to just merge the arch/riscv bits or if this 
+should be on fixes (just looking at the patch makes it look like it 
+should be), but I don't want to send up some arm64 code to fixes without 
+it being pretty explicit that I should do so
 
-diff --git a/drivers/target/iscsi/iscsi_target_parameters.c b/drivers/target/iscsi/iscsi_target_parameters.c
-index 2317fb077db0..990dd2bc2f19 100644
---- a/drivers/target/iscsi/iscsi_target_parameters.c
-+++ b/drivers/target/iscsi/iscsi_target_parameters.c
-@@ -726,8 +726,8 @@ static int iscsi_add_notunderstood_response(
- 	}
- 	INIT_LIST_HEAD(&extra_response->er_list);
- 
--	strlcpy(extra_response->key, key, sizeof(extra_response->key));
--	strlcpy(extra_response->value, NOTUNDERSTOOD,
-+	strscpy(extra_response->key, key, sizeof(extra_response->key));
-+	strscpy(extra_response->value, NOTUNDERSTOOD,
- 		sizeof(extra_response->value));
- 
- 	list_add_tail(&extra_response->er_list,
-diff --git a/drivers/target/iscsi/iscsi_target_util.c b/drivers/target/iscsi/iscsi_target_util.c
-index 8d9f21372b67..5a166f1a1453 100644
---- a/drivers/target/iscsi/iscsi_target_util.c
-+++ b/drivers/target/iscsi/iscsi_target_util.c
-@@ -1321,7 +1321,7 @@ void iscsit_collect_login_stats(
- 		if (conn->param_list)
- 			intrname = iscsi_find_param_from_key(INITIATORNAME,
- 							     conn->param_list);
--		strlcpy(ls->last_intr_fail_name,
-+		strscpy(ls->last_intr_fail_name,
- 		       (intrname ? intrname->value : "Unknown"),
- 		       sizeof(ls->last_intr_fail_name));
- 
-@@ -1360,7 +1360,7 @@ void iscsit_fill_cxn_timeout_err_stats(struct iscsit_session *sess)
- 		return;
- 
- 	spin_lock_bh(&tiqn->sess_err_stats.lock);
--	strlcpy(tiqn->sess_err_stats.last_sess_fail_rem_name,
-+	strscpy(tiqn->sess_err_stats.last_sess_fail_rem_name,
- 			sess->sess_ops->InitiatorName,
- 			sizeof(tiqn->sess_err_stats.last_sess_fail_rem_name));
- 	tiqn->sess_err_stats.last_sess_failure_type =
-diff --git a/drivers/target/target_core_configfs.c b/drivers/target/target_core_configfs.c
-index 416514c5c7ac..f6db6677a1b7 100644
---- a/drivers/target/target_core_configfs.c
-+++ b/drivers/target/target_core_configfs.c
-@@ -619,7 +619,7 @@ static void dev_set_t10_wwn_model_alias(struct se_device *dev)
- 	 * here without potentially breaking existing setups, so continue to
- 	 * truncate one byte shorter than what can be carried in INQUIRY.
- 	 */
--	strlcpy(dev->t10_wwn.model, configname, INQUIRY_MODEL_LEN);
-+	strscpy(dev->t10_wwn.model, configname, INQUIRY_MODEL_LEN);
- }
- 
- static ssize_t emulate_model_alias_store(struct config_item *item,
-@@ -645,7 +645,7 @@ static ssize_t emulate_model_alias_store(struct config_item *item,
- 	if (flag) {
- 		dev_set_t10_wwn_model_alias(dev);
- 	} else {
--		strlcpy(dev->t10_wwn.model, dev->transport->inquiry_prod,
-+		strscpy(dev->t10_wwn.model, dev->transport->inquiry_prod,
- 			sizeof(dev->t10_wwn.model));
- 	}
- 	da->emulate_model_alias = flag;
-@@ -1379,7 +1379,7 @@ static ssize_t target_wwn_vendor_id_store(struct config_item *item,
- 	}
- 
- 	BUILD_BUG_ON(sizeof(dev->t10_wwn.vendor) != INQUIRY_VENDOR_LEN + 1);
--	strlcpy(dev->t10_wwn.vendor, stripped, sizeof(dev->t10_wwn.vendor));
-+	strscpy(dev->t10_wwn.vendor, stripped, sizeof(dev->t10_wwn.vendor));
- 
- 	pr_debug("Target_Core_ConfigFS: Set emulated T10 Vendor Identification:"
- 		 " %s\n", dev->t10_wwn.vendor);
-@@ -1435,7 +1435,7 @@ static ssize_t target_wwn_product_id_store(struct config_item *item,
- 	}
- 
- 	BUILD_BUG_ON(sizeof(dev->t10_wwn.model) != INQUIRY_MODEL_LEN + 1);
--	strlcpy(dev->t10_wwn.model, stripped, sizeof(dev->t10_wwn.model));
-+	strscpy(dev->t10_wwn.model, stripped, sizeof(dev->t10_wwn.model));
- 
- 	pr_debug("Target_Core_ConfigFS: Set emulated T10 Model Identification: %s\n",
- 		 dev->t10_wwn.model);
-@@ -1491,7 +1491,7 @@ static ssize_t target_wwn_revision_store(struct config_item *item,
- 	}
- 
- 	BUILD_BUG_ON(sizeof(dev->t10_wwn.revision) != INQUIRY_REVISION_LEN + 1);
--	strlcpy(dev->t10_wwn.revision, stripped, sizeof(dev->t10_wwn.revision));
-+	strscpy(dev->t10_wwn.revision, stripped, sizeof(dev->t10_wwn.revision));
- 
- 	pr_debug("Target_Core_ConfigFS: Set emulated T10 Revision: %s\n",
- 		 dev->t10_wwn.revision);
-diff --git a/drivers/target/target_core_device.c b/drivers/target/target_core_device.c
-index b7f16ee8aa0e..0eec5a3217b9 100644
---- a/drivers/target/target_core_device.c
-+++ b/drivers/target/target_core_device.c
-@@ -809,10 +809,10 @@ struct se_device *target_alloc_device(struct se_hba *hba, const char *name)
- 	xcopy_lun->lun_tpg = &xcopy_pt_tpg;
- 
- 	/* Preload the default INQUIRY const values */
--	strlcpy(dev->t10_wwn.vendor, "LIO-ORG", sizeof(dev->t10_wwn.vendor));
--	strlcpy(dev->t10_wwn.model, dev->transport->inquiry_prod,
-+	strscpy(dev->t10_wwn.vendor, "LIO-ORG", sizeof(dev->t10_wwn.vendor));
-+	strscpy(dev->t10_wwn.model, dev->transport->inquiry_prod,
- 		sizeof(dev->t10_wwn.model));
--	strlcpy(dev->t10_wwn.revision, dev->transport->inquiry_rev,
-+	strscpy(dev->t10_wwn.revision, dev->transport->inquiry_rev,
- 		sizeof(dev->t10_wwn.revision));
- 
- 	return dev;
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 3deaeecb712e..64ad7d7483b6 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -2819,14 +2819,14 @@ static ssize_t tcmu_dev_config_store(struct config_item *item, const char *page,
- 			pr_err("Unable to reconfigure device\n");
- 			return ret;
- 		}
--		strlcpy(udev->dev_config, page, TCMU_CONFIG_LEN);
-+		strscpy(udev->dev_config, page, TCMU_CONFIG_LEN);
- 
- 		ret = tcmu_update_uio_info(udev);
- 		if (ret)
- 			return ret;
- 		return count;
- 	}
--	strlcpy(udev->dev_config, page, TCMU_CONFIG_LEN);
-+	strscpy(udev->dev_config, page, TCMU_CONFIG_LEN);
- 
- 	return count;
- }
--- 
-2.35.1
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com> # arch/riscv bits, for 6.0-rc
 
+in case someone else wants to send it up before I get back to this, I'm 
+fine either way.
+
+Thanks!
+
+> 
+> Thanks,
+> Conor.
+> 
+> 0 - https://lore.kernel.org/linux-riscv/Ytac7G1zlq6WW4jt@arm.com/
+> 
+> The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
+> 
+>   Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/conor/linux.git/ tags/riscv-topo-on-6.0-rc1
+> 
+> for you to fetch changes up to fbd92809997a391f28075f1c8b5ee314c225557c:
+> 
+>   riscv: topology: fix default topology reporting (2022-08-15 22:07:34 +0100)
+> 
+> ----------------------------------------------------------------
+> Fix RISC-V's topology reporting
+> 
+> The goal here is the fix the incorrectly reported arch topology on
+> RISC-V which seems to have been broken since it was added.
+> cpu, package and thread IDs are all currently reported as -1, so tools
+> like lstopo think systems have multiple threads on the same core when
+> this is not true:
+> https://github.com/open-mpi/hwloc/issues/536
+> 
+> arm64's topology code basically applies to RISC-V too, so it has been
+> made generic along with the removal of MPIDR related code, which
+> appears to be redudant code since '3102bc0e6ac7 ("arm64: topology: Stop
+> using MPIDR for topology information")' replaced the code that actually
+> interacted with MPIDR with default values.
+> 
+> ----------------------------------------------------------------
+> Conor Dooley (2):
+>       arm64: topology: move store_cpu_topology() to shared code
+>       riscv: topology: fix default topology reporting
+> 
+>  arch/arm64/kernel/topology.c | 40 ----------------------------------------
+>  arch/riscv/Kconfig           |  2 +-
+>  arch/riscv/kernel/smpboot.c  |  3 ++-
+>  drivers/base/arch_topology.c | 19 +++++++++++++++++++
+>  4 files changed, 22 insertions(+), 42 deletions(-)
