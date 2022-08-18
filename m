@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E15C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB416C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 20:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346020AbiHRUX4 (ORCPT
+        id S1345974AbiHRUYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 16:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
+        Thu, 18 Aug 2022 16:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345936AbiHRUXX (ORCPT
+        with ESMTP id S1346025AbiHRUYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 16:23:23 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04000D11D0;
-        Thu, 18 Aug 2022 13:23:08 -0700 (PDT)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IFrp8X004931;
-        Thu, 18 Aug 2022 20:22:59 GMT
+        Thu, 18 Aug 2022 16:24:03 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F396712A8F;
+        Thu, 18 Aug 2022 13:23:18 -0700 (PDT)
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27IFseMc015415;
+        Thu, 18 Aug 2022 20:23:11 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=Zjal31pio/4HU2RAjvphbmY0ZR1i1UoN7g5gEWFxqyM=;
- b=JND7XcAdpYctMrFXoaGEdQDSv6G0PuxJWsPXbY+lcb1UjUH60Rpi7JMGxwlVKGFXlvqq
- oLxtjkImPOy+R0IS2bN5KcLIV4JXkmQHBv0POnGxR3+pSzyly3SpmxguAkMgqgm9IbSs
- Ed8984/vziIMVUeKPx9X+9xY7sSAIG+RGc/3Ny3ZHsPUQbcwSZT6tjnYYmMPkghdnrgH
- 1995LkYDKJr5jUAZhs6+WVJZa1KeZIpiEMcPoZwSTr4MggVLgwLWCOY8QJj2pU58IQKY
- o3wi1fItGXWnfw9zoOAHlYhxWqHN8tSV6aEzxNjUsR43DyyyDPodpDvil1wxkdnPmZGf Qw== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1hbqajk1-1
+ bh=7/Dlb7opb1zHeDvNOlDvqLTNKaGONEslYGnrJDLSevg=;
+ b=bFKMVOwFLzkM2VSQVIyo81skadGLII1c+trgYqoqskbbT+3d73k80Oy9rWtEPbacp+IK
+ zwhsw7scYm4xzN43dR2bit1V1p7Kq30TPtfS+AcBUj3G9/Ge2OKta1HsKflheHQkIfKY
+ eE6t2iLLiPqznBIM74qUdHPTaJi6h9LY5opd/q8MQa3CI0gxRMOhAYpSVvWUhYRQtdLa
+ rWaoz9qqlcsSa45Je6PQsy4nevQAaTzCHP7PKbQlyucvATbsfYzZh2ef9nwujTmk15mP
+ V2n2JYlLOVHxoyPUAAh3bZyv3HoTVDqfIJ3VXA5W/VY/eI+gv/AR2X8O4q3EJiBd4LXL SA== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1d803f61-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 20:22:59 +0000
+        Thu, 18 Aug 2022 20:23:11 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27IKMwL3006078
+        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27IKNAQe023554
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Aug 2022 20:22:58 GMT
+        Thu, 18 Aug 2022 20:23:10 GMT
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 18 Aug 2022 13:22:52 -0700
+ 15.2.986.22; Thu, 18 Aug 2022 13:23:04 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
@@ -52,13 +52,13 @@ CC:     Jordan Crouse <jordan@cosmicpenguin.net>,
         Douglas Anderson <dianders@chromium.org>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
         "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        "Daniel Vetter" <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sean Paul <sean@poorly.run>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 5/7] drm/msm/a6xx: Ensure CX collapse during gpu recovery
-Date:   Fri, 19 Aug 2022 01:52:13 +0530
-Message-ID: <20220819015030.v5.5.I176567525af2b9439a7e485d0ca130528666a55c@changeid>
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+        Wang Qing <wangqing@vivo.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 7/7] drm/msm/a6xx: Handle GMU prepare-slumber hfi failure
+Date:   Fri, 19 Aug 2022 01:52:15 +0530
+Message-ID: <20220819015030.v5.7.I54815c7c36b80d4725cd054e536365250454452f@changeid>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1660854135-1667-1-git-send-email-quic_akhilpo@quicinc.com>
 References: <1660854135-1667-1-git-send-email-quic_akhilpo@quicinc.com>
@@ -69,111 +69,48 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: QXofy9Rzdd5eNSNd35_RfbKChX6qzviG
-X-Proofpoint-ORIG-GUID: QXofy9Rzdd5eNSNd35_RfbKChX6qzviG
+X-Proofpoint-GUID: 7-UNUdfGEDKs2BOZkGLE4qVK8kNlPcmt
+X-Proofpoint-ORIG-GUID: 7-UNUdfGEDKs2BOZkGLE4qVK8kNlPcmt
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_14,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 phishscore=0 lowpriorityscore=0 impostorscore=0
- bulkscore=0 adultscore=0 priorityscore=1501 clxscore=1015 mlxscore=0
- malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 impostorscore=0
+ mlxlogscore=862 mlxscore=0 adultscore=0 lowpriorityscore=0 phishscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208180074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because there could be transient votes from other drivers/tz/hyp which
-may keep the cx gdsc enabled, we should poll until cx gdsc collapses.
-We can use the reset framework to poll for cx gdsc collapse from gpucc
-clk driver.
-
-This feature requires support from the platform's gpucc driver.
+When prepare-slumber hfi fails, we should follow a6xx_gmu_force_off()
+sequence.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
 
-Changes in v5:
-- Replace devm_reset_control_get_optional() with
-devm_reset_control_get_optional_exclusive() (Philipp)
+(no changes since v1)
 
-Changes in v3:
-- Use reset interface from gpucc driver to poll for cx gdsc collapse
-  https://patchwork.freedesktop.org/series/106860/
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 4 ++++
- drivers/gpu/drm/msm/msm_gpu.c         | 4 ++++
- drivers/gpu/drm/msm/msm_gpu.h         | 4 ++++
- 3 files changed, 12 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 0c8f19e..0ec4fcd 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -10,6 +10,7 @@
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+index db05942..3d00ef9 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+@@ -1082,7 +1082,11 @@ static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
+ 		a6xx_bus_clear_pending_transactions(adreno_gpu);
  
- #include <linux/bitfield.h>
- #include <linux/devfreq.h>
-+#include <linux/reset.h>
- #include <linux/soc/qcom/llcc-qcom.h>
+ 		/* tell the GMU we want to slumber */
+-		a6xx_gmu_notify_slumber(gmu);
++		ret = a6xx_gmu_notify_slumber(gmu);
++		if (ret) {
++			a6xx_gmu_force_off(gmu);
++			return;
++		}
  
- #define GPU_PAS_ID 13
-@@ -1229,6 +1230,9 @@ static void a6xx_recover(struct msm_gpu *gpu)
- 	/* And the final one from recover worker */
- 	pm_runtime_put_sync(&gpu->pdev->dev);
- 
-+	/* Call into gpucc driver to poll for cx gdsc collapse */
-+	reset_control_reset(gpu->cx_collapse);
-+
- 	pm_runtime_use_autosuspend(&gpu->pdev->dev);
- 
- 	if (active_submits)
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 07e55a6..2b6f9d4 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -14,6 +14,7 @@
- #include <generated/utsrelease.h>
- #include <linux/string_helpers.h>
- #include <linux/devcoredump.h>
-+#include <linux/reset.h>
- #include <linux/sched/task.h>
- 
- /*
-@@ -903,6 +904,9 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	if (IS_ERR(gpu->gpu_cx))
- 		gpu->gpu_cx = NULL;
- 
-+	gpu->cx_collapse = devm_reset_control_get_optional_exclusive(&pdev->dev,
-+			"cx_collapse");
-+
- 	gpu->pdev = pdev;
- 	platform_set_drvdata(pdev, &gpu->adreno_smmu);
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 6def008..ab59fd2 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -13,6 +13,7 @@
- #include <linux/interconnect.h>
- #include <linux/pm_opp.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
- 
- #include "msm_drv.h"
- #include "msm_fence.h"
-@@ -268,6 +269,9 @@ struct msm_gpu {
- 	bool hw_apriv;
- 
- 	struct thermal_cooling_device *cooling;
-+
-+	/* To poll for cx gdsc collapse during gpu recovery */
-+	struct reset_control *cx_collapse;
- };
- 
- static inline struct msm_gpu *dev_to_gpu(struct device *dev)
+ 		ret = gmu_poll_timeout(gmu,
+ 			REG_A6XX_GPU_GMU_AO_GPU_CX_BUSY_STATUS, val,
 -- 
 2.7.4
 
