@@ -2,124 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9404AC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E821C2BB41
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 15:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344399AbiHRP7d (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 11:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
+        id S245520AbiHRP7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 11:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343598AbiHRP72 (ORCPT
+        with ESMTP id S1344398AbiHRP7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 11:59:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552145851A
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:59:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660838366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s6slTsTy/Pyr3LUrFg5ZWWvb0V6yCPma3CmmqBIOSdY=;
-        b=UdJsMMTAldvfaFvCpb85Gwl8SuROWrZFGfHqiNl5xT1QU0H1pWcbrcNdr1UUq4OKm16tVg
-        zpOt8GrjdIjZoYrsgXp0FCWdUcziga8pIJqVgk9+t2bXRDgdJ4H+XqGLjVFwUKPfjRkxRR
-        lZG1ntQTzAfLZbO8jZg/2FDhbSSh8Do=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-145-Vfsq65s3OUCQiQwi3j1tHg-1; Thu, 18 Aug 2022 11:59:25 -0400
-X-MC-Unique: Vfsq65s3OUCQiQwi3j1tHg-1
-Received: by mail-ed1-f71.google.com with SMTP id o2-20020a056402438200b0043d552deb2aso1198670edc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 08:59:25 -0700 (PDT)
+        Thu, 18 Aug 2022 11:59:41 -0400
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA856582A;
+        Thu, 18 Aug 2022 08:59:40 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id m5so1437085qkk.1;
+        Thu, 18 Aug 2022 08:59:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=s6slTsTy/Pyr3LUrFg5ZWWvb0V6yCPma3CmmqBIOSdY=;
-        b=biF4uilW1JijNlmIsihj3vA5y6uXlfQT3kHtgkBZ0Z4CQzQL1zX3PPNhPfitgE8Exx
-         hmBryalLvtVQKwaqggnKVOj0zpGmS4WdMUcV3+Bu/Q/1t78MfbFha77Cmog69AOX81E8
-         +jB/Xz5MdxrWkf11ki44rQ2VfJRETYC0W+G7nFQ6Msb6t7lp/278I9OpIuouxmL1ssLs
-         iCnU9MMftKSHY4HeXT50pF8Yx6tZdW6G3nZogMXNWZNKDgTUgs1p2G4CAVj2dbbfGoyP
-         d7S+0Qy4ogIqEJUfxBcNL7FAHrzUTcTy951BCWv5ZvVaJfwLQ2E4NyuCff+njI/HpfWv
-         vQLA==
-X-Gm-Message-State: ACgBeo3EZqiTb3Sq1j2iZCX5McYGvKidNFCvMbq1fvhkrPhNxvrzSIr9
-        LeHORRFHuy+LwpByISznKaREqjSFfX5RhRnjfh3rwlF+NIzMzNds2mGTEH231huokCixeXFXPO6
-        CelBj0x92F6j7dDM4jHcfHkLu/rt+vRgY9zgX1VSzBjSVuGlOC2OepDnkyf1IFQuG3AV+RhLInG
-        BD
-X-Received: by 2002:a17:907:16ab:b0:731:55c0:e7a1 with SMTP id hc43-20020a17090716ab00b0073155c0e7a1mr2262771ejc.154.1660838364250;
-        Thu, 18 Aug 2022 08:59:24 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR43/Fekyuhe13hqCkeDMRAWKoBKaprssqUdg/IBU7sIkeVPGzkM+98pWaDy6eX29y9yAdIC3Q==
-X-Received: by 2002:a17:907:16ab:b0:731:55c0:e7a1 with SMTP id hc43-20020a17090716ab00b0073155c0e7a1mr2262742ejc.154.1660838363940;
-        Thu, 18 Aug 2022 08:59:23 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id v2-20020a170906292200b0071cef6c53aesm1000562ejd.0.2022.08.18.08.59.22
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=ft7syFxOrP4aJLTQXIUXbtfRGNP6T0lVtoxSFHX+FuE=;
+        b=SjA4VrmdhbZiBJ+6BKxPl5jpzQrZ+lGYWk6YyFPYsjGLQ9aaCoNSUM0FCY9Ur87IET
+         MsD7+KJeyB7bQ6MAR75wg7dOtq0puH05CzyhomCW67TFCvSH2emSMhYAzmBLjeJiy4ZD
+         F3t+jTzTcEd/f+MZYpLwQzJCxf2UdOS2ccLtifzVHVmfgZV8/Kwwnsj816SrmNR+kIva
+         XKNMvMtW4BL0feQ73R3bJl0W+QSvG8qBX96qBgdeTl1kugxuAHBqxPevmNJX9wnRuiqX
+         MF0F1KwOf4E162dkNI2lGHkvDWT9NSRJ/JWzYJnmoL4ZoQ1E1zP5amq9q/1A6waeZwnx
+         snxQ==
+X-Gm-Message-State: ACgBeo2hqsrnr232a6yvH0aIE1PjQLtubOSqD56yd/jPfAYGenyw/AqM
+        dsftklRucqMJzk8us81Atg==
+X-Google-Smtp-Source: AA6agR5NvYrKQ62k6Kl+Kw3FF5Qy1VODaNH3U1iEyCrKosc4Df416Wur5ma52Q0L6bVTET9h/GP+YA==
+X-Received: by 2002:a05:620a:12fb:b0:6bb:4ba4:aa85 with SMTP id f27-20020a05620a12fb00b006bb4ba4aa85mr2626845qkl.704.1660838379962;
+        Thu, 18 Aug 2022 08:59:39 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:126a:8e5d:1fb3:c355:1e65:cdac])
+        by smtp.gmail.com with ESMTPSA id m13-20020aed27cd000000b003422c7ccbc5sm1277320qtg.59.2022.08.18.08.59.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 08:59:23 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 01/26] KVM: x86: hyper-v: Expose access to debug MSRs
- in the partition privilege flags
-In-Reply-To: <Yv5fcKOEVAlAh0px@google.com>
-References: <20220802160756.339464-1-vkuznets@redhat.com>
- <20220802160756.339464-2-vkuznets@redhat.com>
- <Yv5XPnSRwKduznWI@google.com> <878rnltw7b.fsf@redhat.com>
- <Yv5fcKOEVAlAh0px@google.com>
-Date:   Thu, 18 Aug 2022 17:59:22 +0200
-Message-ID: <8735dttued.fsf@redhat.com>
+        Thu, 18 Aug 2022 08:59:39 -0700 (PDT)
+Received: (nullmailer pid 1911722 invoked by uid 1000);
+        Thu, 18 Aug 2022 15:36:13 -0000
+Date:   Thu, 18 Aug 2022 09:36:13 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Li Yang <leoyang.li@nxp.com>
+Cc:     Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-binding: i2c-imx: add SoC specific compatible strings
+ for layerscape
+Message-ID: <20220818153613.GP1829017-robh@kernel.org>
+References: <20220817205623.22104-1-leoyang.li@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817205623.22104-1-leoyang.li@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+On Wed, Aug 17, 2022 at 03:56:22PM -0500, Li Yang wrote:
+> Add chip specific compatible strings for layerscape platforms to make it
+> possible to do SoC specific fix-ups in the driver.
+> 
+> Signed-off-by: Li Yang <leoyang.li@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/i2c/i2c-imx.yaml | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 
-> On Thu, Aug 18, 2022, Vitaly Kuznetsov wrote:
->> Sean Christopherson <seanjc@google.com> writes:
->> 
->> > On Tue, Aug 02, 2022, Vitaly Kuznetsov wrote:
->> >> For some features, Hyper-V spec defines two separate CPUID bits: one
->> >> listing whether the feature is supported or not and another one showing
->> >> whether guest partition was granted access to the feature ("partition
->> >> privilege mask"). 'Debug MSRs available' is one of such features. Add
->> >> the missing 'access' bit.
->> >> 
->> >> Note: hv_check_msr_access() deliberately keeps checking
->> >> HV_FEATURE_DEBUG_MSRS_AVAILABLE bit instead of the new HV_ACCESS_DEBUG_MSRS
->> >> to not break existing VMMs (QEMU) which only expose one bit. Normally, VMMs
->> >> should set either both these bits or none.
->> >
->> > This is not the right approach long term.  If KVM absolutely cannot unconditionally
->> > switch to checking HV_ACCESS_DEBUG_MSRS because it would break QEMU users, then we
->> > should add a quirk, but sweeping the whole thing under the rug is wrong.
->> >
->> 
->> First, this patch is kind of unrelated to the series so in case it's the
->> only thing which blocks it from being merged -- let's just pull it out
->> and discuss separately.
->
-> Regarding the series, are there any true dependencies between the eVMCS patches
-> (1 - 11) and the VMCS sanitization rework (12 - 26)?  I.e. can the VMCS rework
-> be queued ahead of the eVMCS v1 support?
-
-My memory is a bit blurry already but I think PATCH11 ("KVM: VMX: Get
-rid of eVMCS specific VMX controls sanitization") needs to go before
-PATCH24 ("KVM: nVMX: Use sanitized allowed-1 bits for VMX control MSRs")
-to have "bug compatibility" and resolve Jim's concern: guest visible
-VMX feature MSR values are not supposed to change. Currently, we filter
-out unsupported features from eVMCS for KVM itself but not for L1 as we
-expose raw host MSR values there. This is likely broken if L1 decides to
-*use* these features for real but that's another story.
-
--- 
-Vitaly
+Acked-by: Rob Herring <robh@kernel.org>
 
