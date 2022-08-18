@@ -2,83 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CF7C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 07:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB3EC32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 07:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243960AbiHRHzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 03:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
+        id S243957AbiHRHzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 03:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243928AbiHRHzr (ORCPT
+        with ESMTP id S243964AbiHRHzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 03:55:47 -0400
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4D35A89B;
-        Thu, 18 Aug 2022 00:55:45 -0700 (PDT)
-X-QQ-mid: bizesmtp84t1660809306tfbj0d7x
-Received: from localhost.localdomain ( [123.114.60.34])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 18 Aug 2022 15:55:04 +0800 (CST)
-X-QQ-SSF: 01400000002000D0U000B00A0000000
-X-QQ-FEAT: swyrzWPvyR126b+3X45NGrMtYKOIt069w4aDNOSi6iisZMf2/tX68YoUumWdU
-        dYtu6KOzDzJp5DTHprLCLdTDk/HozhmpvMBqO50ftUSwnZ1sEFsZzUY+9P+BnMWGgmIRf0J
-        Pi+oXlJurIxQ4+Tp0mNse+USKqXdq/BeQ/c5FoaIOncNBctTd6orLUGUU7UONotXwlUmi/X
-        5b3blDEg4Qk0h+3VS7CmGAn/LfYKvk9f4fLpioRYrxAfe+Yebwkfor6t7znjPu0hSN/NyGA
-        Leh0PteLePdOFDYWTU0d0NK4S2i7QyB12JHw7Qgks7Lidg1ps0FZfxlH9yMMsvzOzGsfpwk
-        m/yZizGAVWtsrZo0rlk683Cd6cpHIqk4mulVFef0SvOq99CblVLwx8k/X47uw==
-X-QQ-GoodBg: 2
-From:   zhaoxiao <zhaoxiao@uniontech.com>
-To:     thierry.reding@gmail.com, heiko@sntech.de
-Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        zhaoxiao <zhaoxiao@uniontech.com>
-Subject: [PATCH v2] pwm: rockchip: Convert to use dev_err_probe()
-Date:   Thu, 18 Aug 2022 15:55:03 +0800
-Message-Id: <20220818075503.18442-1-zhaoxiao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 18 Aug 2022 03:55:52 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B812B7EFDF
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 00:55:50 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id s9so952746ljs.6
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 00:55:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=dawxEcQT0OhFPG9l9jRrsFoKv486Saz+4v6DaJSObPA=;
+        b=EmOrw6T67t6JXnuPoMeZH07x7nMOn5ucQd9RoTd9bOMFEKuUgtrZta0s5paZoxZ9Je
+         qHtrH+AQmv/+uh0Wkvu4yEo4vvvOhgYGeHDj6dINWfirYLVZvHjh4oBwWWXujjwuYK7W
+         IyhV+YsFaoube+2i/I3eRX+qjTCQ5pbINij6ehzTR/F46fRZT2POawSEQhx7Cxmj6Qkw
+         91lOK8BpeWpSNFUMzUazcGLXvoQxnH6SbpqvDnkgNqU7QlKfX3AMqye8CvLEhFYY5qpp
+         E9/CCwT5A937l9YPLB1sVhzaCcRscQjVwFgdybaMnE6WtPfNFNxYOFNPZxSEiRU3tyK+
+         gUbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=dawxEcQT0OhFPG9l9jRrsFoKv486Saz+4v6DaJSObPA=;
+        b=SPv066l2dw6hR7Tbpbrh1sgqbfXnZ8bt8XkuK7/01s8F/fiXqrRkg28UQM/duHE5Yl
+         qvuhXqpZsKhMyZgLHi9jp6EdoGw3LLllB2xsWzBfSbJOFrV++VYoRaf/DBLa+SGrwqRy
+         X9lEwNO8U/sQhtSAMuITQnDWXE7Eb0rMu2bgyeopNhOwxiFLS5809ix0oL19PgJRCwo/
+         e+6cJaiN0h1R/nM8EVCEtDKuC5PiRR5PnP1FOiSkZ002DzOqR7VDILz+j/YmPLOBqC69
+         YkgRX0Yzqx7iEiVqTEG3D/rdPJSyVxx/aSUuPi6P4hJB1hJkRGA5LTEFvdKTLLIHEd28
+         GVBw==
+X-Gm-Message-State: ACgBeo0nWmKRYKIo+y3GhNgk8a4TRHhKGMFsANhBYKJRuCF2uoYaV599
+        DpXYsaTvjV2aCcJxjv/oIMhl1w==
+X-Google-Smtp-Source: AA6agR5VQUbfnby25Lc9unAu/HapmYL6K0oRaQ5+TLbZmOxeBd1NTB+IoxnuUO/L553aVNdK54dOwA==
+X-Received: by 2002:a2e:bc12:0:b0:25e:59e7:8def with SMTP id b18-20020a2ebc12000000b0025e59e78defmr563029ljf.249.1660809349142;
+        Thu, 18 Aug 2022 00:55:49 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id u18-20020a056512129200b0048afa870525sm127379lfs.65.2022.08.18.00.55.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 00:55:48 -0700 (PDT)
+Message-ID: <88393f56-69b5-65d8-9acd-373e069c750f@linaro.org>
+Date:   Thu, 18 Aug 2022 10:55:47 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/4] dt-bindings: soc: qcom: Introduce PMIC GLINK binding
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+References: <20220818031512.319310-1-bjorn.andersson@linaro.org>
+ <20220818031512.319310-2-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220818031512.319310-2-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's fine to call dev_err_probe() in ->probe() when error code is known.
-Convert the driver to use dev_err_probe().
+On 18/08/2022 06:15, Bjorn Andersson wrote:
+> The PMIC GLINK service, running on a coprocessor on some modern Qualcomm
+> platforms and implement USB Type-C handling and battery management.
+> This binding describes the component in the OS used to communicate with
+> the firmware and connect it's resources to those described in the
+> Devicetree, particularly the USB Type-C controllers relationship with
+> USB and DisplayPort components.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  .../bindings/soc/qcom/qcom,pmic-glink.yaml    | 98 +++++++++++++++++++
 
-Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
----
- v2: remove the %d in the message.
 
- drivers/pwm/pwm-rockchip.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index f3647b317152..c6e088c1a6bf 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -330,16 +330,12 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 
- 	if (IS_ERR(pc->pclk)) {
- 		ret = PTR_ERR(pc->pclk);
--		if (ret != -EPROBE_DEFER)
--			dev_err(&pdev->dev, "Can't get APB clk: %d\n", ret);
--		return ret;
-+		return dev_err_probe(&pdev->dev, ret, "Can't get APB clk\n");
- 	}
- 
- 	ret = clk_prepare_enable(pc->clk);
--	if (ret) {
--		dev_err(&pdev->dev, "Can't prepare enable PWM clk: %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		dev_err_probe(&pdev->dev, ret, "Can't prepare enable PWM clk\n");
- 
- 	ret = clk_prepare_enable(pc->pclk);
- 	if (ret) {
--- 
-2.20.1
 
+Best regards,
+Krzysztof
