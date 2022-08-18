@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 357CCC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B59C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 14:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343532AbiHROZd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
+        id S245164AbiHROZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343525AbiHROZX (ORCPT
+        with ESMTP id S244870AbiHROZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 10:25:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7C1B2DB4
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FA5AB199
         for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 07:25:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660832721;
+        s=mimecast20190719; t=1660832722;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LLHkOHpskLBhdOQCELAfMzjLuxK41Cq788s3q0r056g=;
-        b=IFdXA8P64B4XizHQL+lyGHd0xDZ3sAnoJbBQo4kwMsq6LZz8RKWztC9adsec5IosVja4b3
-        IBpUjC8R6owfYf9NXFeVVRSa2Z/bq3HmhnjQTn3ONjfFoX9SVHmthDB7znsEC3DvybioRp
-        r89QHxQ0AwArUgC3UyIyfjb79CIw4jA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=V3EBiorc36K9lFac0YV8mycE+/askbIgPzPBST6q2Ao=;
+        b=GWskFMMZi2PKwYwviFoXbH1xEenV70rrUAugo5HNr/bZjibPgzJ/LXvZ1sHaMJlN5GJAks
+        itHbbUfzS7aWBtrly1EyU8RrnUEVHSCGJs5o/7x9b1JRd20JB4k/G/irfFIaqcXqImabr5
+        5CZbizCc58/BM0boMrIOZvNb/uYJcYk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-125-fQYrB49ePfeQ3WwQzOBzXQ-1; Thu, 18 Aug 2022 10:25:16 -0400
-X-MC-Unique: fQYrB49ePfeQ3WwQzOBzXQ-1
+ us-mta-222-mL-b56yZPmavJRyjnPYJZg-1; Thu, 18 Aug 2022 10:25:21 -0400
+X-MC-Unique: mL-b56yZPmavJRyjnPYJZg-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8B78B811E76;
-        Thu, 18 Aug 2022 14:25:15 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5E22B3C01DE7;
+        Thu, 18 Aug 2022 14:25:20 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 85E16C15BB8;
-        Thu, 18 Aug 2022 14:25:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0EF31C15BB8;
+        Thu, 18 Aug 2022 14:25:17 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     linux-hyperv@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -49,9 +48,9 @@ Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         Stephen Hemminger <sthemmin@microsoft.com>,
         Dexuan Cui <decui@microsoft.com>,
         Michael Kelley <mikelley@microsoft.com>
-Subject: [PATCH v1 2/4] drm/hyperv: Don't forget to put PCI device when removing conflicting FB fails
-Date:   Thu, 18 Aug 2022 16:25:06 +0200
-Message-Id: <20220818142508.402273-3-vkuznets@redhat.com>
+Subject: [PATCH v1 4/4] Drivers: hv: Never allocate anything besides framebuffer from framebuffer memory region
+Date:   Thu, 18 Aug 2022 16:25:08 +0200
+Message-Id: <20220818142508.402273-5-vkuznets@redhat.com>
 In-Reply-To: <20220818142508.402273-1-vkuznets@redhat.com>
 References: <20220818142508.402273-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -62,28 +61,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When drm_aperture_remove_conflicting_pci_framebuffers() fails, 'pdev'
-needs to be released with pci_dev_put().
+Passed through PCI device sometimes misbehave on Gen1 VMs when Hyper-V
+DRM driver is also loaded. Looking at IOMEM assignment, we can see e.g.
 
-Fixes: 76c56a5affeb ("drm/hyperv: Add DRM driver for hyperv synthetic video device")
+$ cat /proc/iomem
+...
+f8000000-fffbffff : PCI Bus 0000:00
+  f8000000-fbffffff : 0000:00:08.0
+    f8000000-f8001fff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+...
+fe0000000-fffffffff : PCI Bus 0000:00
+  fe0000000-fe07fffff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+    fe0000000-fe07fffff : 2ba2:00:02.0
+      fe0000000-fe07fffff : mlx4_core
+
+the interesting part is the 'f8000000' region as it is actually the
+VM's framebuffer:
+
+$ lspci -v
+...
+0000:00:08.0 VGA compatible controller: Microsoft Corporation Hyper-V virtual VGA (prog-if 00 [VGA controller])
+	Flags: bus master, fast devsel, latency 0, IRQ 11
+	Memory at f8000000 (32-bit, non-prefetchable) [size=64M]
+...
+
+ hv_vmbus: registering driver hyperv_drm
+ hyperv_drm 5620e0c7-8062-4dce-aeb7-520c7ef76171: [drm] Synthvid Version major 3, minor 5
+ hyperv_drm 0000:00:08.0: vgaarb: deactivate vga console
+ hyperv_drm 0000:00:08.0: BAR 0: can't reserve [mem 0xf8000000-0xfbffffff]
+ hyperv_drm 5620e0c7-8062-4dce-aeb7-520c7ef76171: [drm] Cannot request framebuffer, boot fb still active?
+
+Note: "Cannot request framebuffer" is not a fatal error in
+hyperv_setup_gen1() as the code assumes there's some other framebuffer
+device there but we actually have some other PCI device (mlx4 in this
+case) config space there!
+
+The problem appears to be that vmbus_allocate_mmio() can allocate from
+the reserved framebuffer region (fb_overlap_ok), however, if the
+request to allocate MMIO comes from some other device before
+framebuffer region is taken, it can happily use framebuffer region for
+it. Note, Gen2 VMs are usually unaffected by the issue because
+framebuffer region is already taken by EFI fb (in case kernel supports
+it) but Gen1 VMs may have this region unclaimed by the time Hyper-V PCI
+pass-through driver tries allocating MMIO space if Hyper-V DRM/FB drivers
+load after it. Devices can be brought up in any sequence so let's
+resolve the issue by always ignoring 'fb_mmio' region for non-FB
+requests, even if the region is unclaimed.
+
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/gpu/drm/hyperv/hyperv_drm_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hv/vmbus_drv.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-index 46f6c454b820..ca4e517b95ca 100644
---- a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-+++ b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-@@ -82,7 +82,7 @@ static int hyperv_setup_gen1(struct hyperv_drm_device *hv)
- 	ret = drm_aperture_remove_conflicting_pci_framebuffers(pdev, &hyperv_driver);
- 	if (ret) {
- 		drm_err(dev, "Not able to remove boot fb\n");
--		return ret;
-+		goto error;
- 	}
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 6edaeefa2c3c..54ace5c6b990 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -2328,7 +2328,7 @@ int vmbus_allocate_mmio(struct resource **new, struct hv_device *device_obj,
+ 			bool fb_overlap_ok)
+ {
+ 	struct resource *iter, *shadow;
+-	resource_size_t range_min, range_max, start;
++	resource_size_t range_min, range_max, start, end;
+ 	const char *dev_n = dev_name(&device_obj->device);
+ 	int retval;
  
- 	if (pci_request_region(pdev, 0, DRIVER_NAME) != 0)
+@@ -2363,6 +2363,14 @@ int vmbus_allocate_mmio(struct resource **new, struct hv_device *device_obj,
+ 		range_max = iter->end;
+ 		start = (range_min + align - 1) & ~(align - 1);
+ 		for (; start + size - 1 <= range_max; start += align) {
++			end = start + size - 1;
++
++			/* Skip the whole fb_mmio region if not fb_overlap_ok */
++			if (!fb_overlap_ok && fb_mmio &&
++			    (((start >= fb_mmio->start) && (start <= fb_mmio->end)) ||
++			     ((end >= fb_mmio->start) && (end <= fb_mmio->end))))
++				continue;
++
+ 			shadow = __request_region(iter, start, size, NULL,
+ 						  IORESOURCE_BUSY);
+ 			if (!shadow)
 -- 
 2.37.1
 
