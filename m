@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7D9C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF23C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350071AbiHSPqL (ORCPT
+        id S1349723AbiHSPqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:46:11 -0400
+        Fri, 19 Aug 2022 11:46:17 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349903AbiHSPqC (ORCPT
+        with ESMTP id S1349949AbiHSPqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:46:02 -0400
+        Fri, 19 Aug 2022 11:46:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF073E23;
-        Fri, 19 Aug 2022 08:46:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA5D63BA;
+        Fri, 19 Aug 2022 08:46:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E4BCB827F8;
-        Fri, 19 Aug 2022 15:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84C4C433C1;
-        Fri, 19 Aug 2022 15:45:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D2A8B8280D;
+        Fri, 19 Aug 2022 15:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A33D9C433D6;
+        Fri, 19 Aug 2022 15:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660923958;
-        bh=BskiOcygZDnKCjEtWX7rGX+jjb5kSQVz2n/d/kxc8x0=;
+        s=korg; t=1660923961;
+        bh=zDIsjvB1zaceBEQxhFZyjkWIxHiGpirY64Nllca6dP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CrYROKtdxZSkkJrjp4bmx2DjUaQjzZODxyQLy2VgNyl0GV70fCkP8u0IC8OiPu1KI
-         uR/eilOHvgS7KoEif6r9N8XZBpY6mPa3yI5WR6tToNz1IYlDtpBesuD4XY6RuSNC32
-         X7b7Cxi1/b4bjSkGS86ikJt+6l0yD5MTm6mii+u4=
+        b=PW3J6rkicwoQNaWCH9VaFP9h+zRdCDuZiC4zMHsD80HeZOIzvakKt1kZbPzENB7oz
+         sTLYYr2vEwptKNcDPDTQDNb8NGYZTcRbei9GRpCmmSKERavfuSawZ9ye5uSvWC7tBb
+         WcdzeYzTr6PnqryHywvqQTBTtjhHsZRxDrUCS5SM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 001/545] Makefile: link with -z noexecstack --no-warn-rwx-segments
-Date:   Fri, 19 Aug 2022 17:36:11 +0200
-Message-Id: <20220819153829.220984987@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Jeongik Cha <jeongik@google.com>
+Subject: [PATCH 5.10 010/545] wifi: mac80211_hwsim: use 32-bit skb cookie
+Date:   Fri, 19 Aug 2022 17:36:20 +0200
+Message-Id: <20220819153829.631387242@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
 User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,59 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
+commit cc5250cdb43d444061412df7fae72d2b4acbdf97 upstream.
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+We won't really have enough skbs to need a 64-bit cookie,
+and on 32-bit platforms storing the 64-bit cookie into the
+void *rate_driver_data doesn't work anyway. Switch back to
+using just a 32-bit cookie and uintptr_t for the type to
+avoid compiler warnings about all this.
 
-  ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: vmlinux has a LOAD segment with RWX permissions
-
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
-
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 4ee186fa7e40 ("wifi: mac80211_hwsim: fix race condition in pending packet")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Cc: Jeongik Cha <jeongik@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Makefile |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/mac80211_hwsim.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/Makefile
-+++ b/Makefile
-@@ -983,6 +983,11 @@ KBUILD_CFLAGS   += $(KCFLAGS)
- KBUILD_LDFLAGS_MODULE += --build-id=sha1
- LDFLAGS_vmlinux += --build-id=sha1
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -593,7 +593,7 @@ struct mac80211_hwsim_data {
+ 	bool ps_poll_pending;
+ 	struct dentry *debugfs;
  
-+KBUILD_LDFLAGS	+= -z noexecstack
-+ifeq ($(CONFIG_LD_IS_BFD),y)
-+KBUILD_LDFLAGS	+= $(call ld-option,--no-warn-rwx-segments)
-+endif
-+
- ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
- LDFLAGS_vmlinux	+= $(call ld-option, -X,)
- endif
+-	atomic64_t pending_cookie;
++	atomic_t pending_cookie;
+ 	struct sk_buff_head pending;	/* packets pending */
+ 	/*
+ 	 * Only radios in the same group can communicate together (the
+@@ -1200,7 +1200,7 @@ static void mac80211_hwsim_tx_frame_nl(s
+ 	int i;
+ 	struct hwsim_tx_rate tx_attempts[IEEE80211_TX_MAX_RATES];
+ 	struct hwsim_tx_rate_flag tx_attempts_flags[IEEE80211_TX_MAX_RATES];
+-	u64 cookie;
++	uintptr_t cookie;
+ 
+ 	if (data->ps != PS_DISABLED)
+ 		hdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
+@@ -1269,7 +1269,7 @@ static void mac80211_hwsim_tx_frame_nl(s
+ 		goto nla_put_failure;
+ 
+ 	/* We create a cookie to identify this skb */
+-	cookie = (u64)atomic64_inc_return(&data->pending_cookie);
++	cookie = atomic_inc_return(&data->pending_cookie);
+ 	info->rate_driver_data[0] = (void *)cookie;
+ 	if (nla_put_u64_64bit(skb, HWSIM_ATTR_COOKIE, cookie, HWSIM_ATTR_PAD))
+ 		goto nla_put_failure;
+@@ -3537,10 +3537,10 @@ static int hwsim_tx_info_frame_received_
+ 	/* look for the skb matching the cookie passed back from user */
+ 	spin_lock_irqsave(&data2->pending.lock, flags);
+ 	skb_queue_walk_safe(&data2->pending, skb, tmp) {
+-		u64 skb_cookie;
++		uintptr_t skb_cookie;
+ 
+ 		txi = IEEE80211_SKB_CB(skb);
+-		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
++		skb_cookie = (uintptr_t)txi->rate_driver_data[0];
+ 
+ 		if (skb_cookie == ret_skb_cookie) {
+ 			__skb_unlink(skb, &data2->pending);
 
 
