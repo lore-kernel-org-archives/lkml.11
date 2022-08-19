@@ -2,211 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5AEC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6777DC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349096AbiHSMwr (ORCPT
+        id S1349108AbiHSMwv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        Fri, 19 Aug 2022 08:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349072AbiHSMwn (ORCPT
+        with ESMTP id S1349075AbiHSMwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 08:52:43 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465A9DAB9D
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C64BDAEEA
         for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:42 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBix0Q020060;
-        Fri, 19 Aug 2022 07:52:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=nKtJZgoVT5msd6d2g2FF3eUTwfX6urlD3iU/MkRT4Ow=;
- b=DIFGxJiK1LabfmgyE6ysA2LXVuQ6SFYPkvYOvc6XP0XOt3vXgCCIfOgYx8eeu7FKCytN
- +SRg9IMu2MvwreA3vOffGlSEb4U6QGh+AztP6PjLYjITvF4420IUZ7bXhUKydLP03urT
- ERkaOXndxklQYvBdxV/d8Ec1INJB3YBuMWChXDUej9H7jDORi4flNfMp4hKWzmpPdXsj
- xvTa/07OhsaLvTL6YXxSBtlD52zctqI7M3KNel+hBUzy595TcPSfHRE5F3p2/JssgacX
- FjuZ9dCcgOUC/T0Xpi+nE5k4Q4pluS2J2aKrd17qsruU7Rhzyv9cwZUxtExXYgYlgvuM yQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hx8cpfuvn-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 07:52:36 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 19 Aug
- 2022 07:52:34 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
- Transport; Fri, 19 Aug 2022 07:52:34 -0500
-Received: from edi-sw-dsktp-006.ad.cirrus.com (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A4A43B0E;
-        Fri, 19 Aug 2022 12:52:34 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH 04/12] ASoC: cs42l42: Separate ASP config from PLL config
-Date:   Fri, 19 Aug 2022 13:52:22 +0100
-Message-ID: <20220819125230.42731-5-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220819125230.42731-1-rf@opensource.cirrus.com>
-References: <20220819125230.42731-1-rf@opensource.cirrus.com>
+Received: by mail-lj1-x234.google.com with SMTP id by6so4421271ljb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=mu4cs57so/hm5H36zlHi+oMf19bmDRm3sZ5zNgNtxQw=;
+        b=hNhliri7Zq4aZR+zeEMCZ3lQ5ZYBtWNy2tq1eX2FnOUex3MB2/WSBsLtkv/Z5TzQeY
+         zmY4neIXhtWCN5O8TJxlGZeZoO0EVY78CjIM1XKxHSKNcZSuwhcly4clBIh6BuJd1KBw
+         /ICBLHjVgOgsoiIinTgW6BtGwpPC8bqf6Z36kq5FGi048T2GQRGNxl8iqK9u7WYUqTwa
+         N7Xj2QJCQybpwQdQqpHze8XBJSRAGU6TPCy+3Lq4KZ4k8K9pYyrXWTA34Xx25dP9fmUz
+         mtStDwoNwY4y27TMTTQvgYMgcpT8k+gjdvfJegMD1z6IZBkfcm/YftwrsKU7UILwaSC3
+         PhHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=mu4cs57so/hm5H36zlHi+oMf19bmDRm3sZ5zNgNtxQw=;
+        b=wCyMcPOuryaCPxGDwARboy31GgWpVIxQbaNTOJj842bkvYYcX1NYu9k1MZubAMDz/e
+         c989KF/ZDHqVUbNRVh7Jx8w0/x1nduaWSlZGr955EWrKXtCGwIsaVY//r5DczyRyxw4c
+         Q6eHYqX1V1ohk3biioDISN204E0uUhtjAIs2/nSIDEydZfh4saS37nNkdmD/q9atuOe+
+         PVsCquvuDetZGhCJytcI7ApJVKju0YCgABJKA33Gkw51lD61Ejt/9wbF26hZqIlw4fw4
+         x77DatXXm/Xgt1DygllMMfaF1jISa/MHw5QyYiDgt9rVqcaWdKp89HA69wk6liP+o5Xq
+         kZoA==
+X-Gm-Message-State: ACgBeo1sNVgptoH3UBpmHamPK9SUJ71kC6bvFNVM2Wyrygf4EUNwwgZj
+        POnzoNmpaFt1YuI+/JQQn/7rgg==
+X-Google-Smtp-Source: AA6agR6E41JWNeYbhnyaHiir5IGmfC6Jpna2d622TenkdJ160D+d3YEw6fp21X0jdpUta0fOc4uQ3g==
+X-Received: by 2002:a05:651c:12c4:b0:25d:fe06:8658 with SMTP id 4-20020a05651c12c400b0025dfe068658mr2017908lje.301.1660913560695;
+        Fri, 19 Aug 2022 05:52:40 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id e16-20020ac24e10000000b00492ba56995asm630824lfr.101.2022.08.19.05.52.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 05:52:40 -0700 (PDT)
+Message-ID: <55c53ba1-8e13-599d-1b16-5dab417a3059@linaro.org>
+Date:   Fri, 19 Aug 2022 15:52:38 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: nlssAeiSidrrLH-vAN240o8wIKYT_HaR
-X-Proofpoint-GUID: nlssAeiSidrrLH-vAN240o8wIKYT_HaR
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add nxp,refclk_in
+ property
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Wei Fang <wei.fang@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220819074729.1496088-1-wei.fang@nxp.com>
+ <20220819074729.1496088-2-wei.fang@nxp.com>
+ <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
+ <DB9PR04MB81064199835C0E44B997DE06886C9@DB9PR04MB8106.eurprd04.prod.outlook.com>
+ <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org> <Yv+FuiUoTjpoUZ32@lunn.ch>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Yv+FuiUoTjpoUZ32@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setup of the ASP (audio serial port) was being done as a side-effect of
-cs42l42_pll_config() and forces a restriction on the ratio of sample_rate
-to bit_clock that is invalid for Soundwire.
+On 19/08/2022 15:44, Andrew Lunn wrote:
+> On Fri, Aug 19, 2022 at 02:37:36PM +0300, Krzysztof Kozlowski wrote:
+>> On 19/08/2022 12:37, Wei Fang wrote:
+>>>>
+>>>>> +          in RMII mode. This clock signal is provided by the PHY and is
+>>>>> +          typically derived from an external 25MHz crystal. Alternatively,
+>>>>> +          a 50MHz clock signal generated by an external oscillator can be
+>>>>> +          connected to pin REF_CLK. A third option is to connect a 25MHz
+>>>>> +          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
+>>>>> +          as input or output according to the actual circuit connection.
+>>>>> +          If present, indicates that the REF_CLK will be configured as
+>>>>> +          interface reference clock input when RMII mode enabled.
+>>>>> +          If not present, the REF_CLK will be configured as interface
+>>>>> +          reference clock output when RMII mode enabled.
+>>>>> +          Only supported on TJA1100 and TJA1101.
+>>>>
+>>>> Then disallow it on other variants.
+>>>>
+>>>> Shouldn't this be just "clocks" property?
+>>>>
+>>>>
+>>> This property is to configure the pin REF_CLK of PHY as a input pin through phy register,
+>>> indicates that the REF_CLK signal is provided by an external oscillator. so I don't think it's a
+>>> "clock" property.
+>>
+>> clocks, not clock.
+>>
+>> You just repeated pieces of description as an counter-argument, so this
+>> does not explain anything.
+>>
+>> If it is external oscillator shouldn't it be represented in DTS and then
+>> obtained by driver (clk_get + clk_prepare_enable)? Otherwise how are you
+>> sure that clock is actually enabled? And the lack of presence of the
+>> external clock means it is derived from PHY?
+> 
+> Using the common clock framework has been discussed in the past. But
+> no PHY actually does this. When the SoC provides the clock, a few PHYs
+> do make use of the common clock framework as clock consumers to ensure
+> the clock is ticking.
 
-Move the ASP setup into a dedicated function.
+IOW, all DTSes would have a fixed clock stub without any logic usable by
+Common CF (like enabling)?
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- sound/soc/codecs/cs42l42.c | 81 +++++++++++++++++++++-----------------
- sound/soc/codecs/cs42l42.h |  1 -
- 2 files changed, 44 insertions(+), 38 deletions(-)
+> Plus, as the description says, this pin can be either a clock producer
+> or a consumer. I don't think the common clock code allows this. It is
+> also not something you negotiate between the MAC and PHY. The hardware
+> designer typically decides based on the MAC and PHY actually used. So
+> this is a fixed hardware property.
 
-diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
-index 66c10d24169d..946b2a935256 100644
---- a/sound/soc/codecs/cs42l42.c
-+++ b/sound/soc/codecs/cs42l42.c
-@@ -654,7 +654,6 @@ static int cs42l42_pll_config(struct snd_soc_component *component, unsigned int
- {
- 	struct cs42l42_private *cs42l42 = snd_soc_component_get_drvdata(component);
- 	int i;
--	u32 fsync;
- 
- 	/* Don't reconfigure if there is an audio stream running */
- 	if (cs42l42->stream_use) {
-@@ -680,40 +679,6 @@ static int cs42l42_pll_config(struct snd_soc_component *component, unsigned int
- 					(pll_ratio_table[i].mclk_int !=
- 					24000000)) <<
- 					CS42L42_INTERNAL_FS_SHIFT);
--
--			/* Set up the LRCLK */
--			fsync = clk / cs42l42->srate;
--			if (((fsync * cs42l42->srate) != clk)
--				|| ((fsync % 2) != 0)) {
--				dev_err(component->dev,
--					"Unsupported sclk %d/sample rate %d\n",
--					clk,
--					cs42l42->srate);
--				return -EINVAL;
--			}
--			/* Set the LRCLK period */
--			snd_soc_component_update_bits(component,
--					CS42L42_FSYNC_P_LOWER,
--					CS42L42_FSYNC_PERIOD_MASK,
--					CS42L42_FRAC0_VAL(fsync - 1) <<
--					CS42L42_FSYNC_PERIOD_SHIFT);
--			snd_soc_component_update_bits(component,
--					CS42L42_FSYNC_P_UPPER,
--					CS42L42_FSYNC_PERIOD_MASK,
--					CS42L42_FRAC1_VAL(fsync - 1) <<
--					CS42L42_FSYNC_PERIOD_SHIFT);
--			/* Set the LRCLK to 50% duty cycle */
--			fsync = fsync / 2;
--			snd_soc_component_update_bits(component,
--					CS42L42_FSYNC_PW_LOWER,
--					CS42L42_FSYNC_PULSE_WIDTH_MASK,
--					CS42L42_FRAC0_VAL(fsync - 1) <<
--					CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
--			snd_soc_component_update_bits(component,
--					CS42L42_FSYNC_PW_UPPER,
--					CS42L42_FSYNC_PULSE_WIDTH_MASK,
--					CS42L42_FRAC1_VAL(fsync - 1) <<
--					CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
- 			if (pll_ratio_table[i].mclk_src_sel == 0) {
- 				/* Pass the clock straight through */
- 				snd_soc_component_update_bits(component,
-@@ -805,6 +770,46 @@ static void cs42l42_src_config(struct snd_soc_component *component, unsigned int
- 				      fs << CS42L42_CLK_OASRC_SEL_SHIFT);
- }
- 
-+static int cs42l42_asp_config(struct snd_soc_component *component,
-+			      unsigned int sclk, unsigned int sample_rate)
-+{
-+	u32 fsync = sclk / sample_rate;
-+
-+	/* Set up the LRCLK */
-+	if (((fsync * sample_rate) != sclk) || ((fsync % 2) != 0)) {
-+		dev_err(component->dev,
-+			"Unsupported sclk %d/sample rate %d\n",
-+			sclk,
-+			sample_rate);
-+		return -EINVAL;
-+	}
-+	/* Set the LRCLK period */
-+	snd_soc_component_update_bits(component,
-+				      CS42L42_FSYNC_P_LOWER,
-+				      CS42L42_FSYNC_PERIOD_MASK,
-+				      CS42L42_FRAC0_VAL(fsync - 1) <<
-+				      CS42L42_FSYNC_PERIOD_SHIFT);
-+	snd_soc_component_update_bits(component,
-+				      CS42L42_FSYNC_P_UPPER,
-+				      CS42L42_FSYNC_PERIOD_MASK,
-+				      CS42L42_FRAC1_VAL(fsync - 1) <<
-+				      CS42L42_FSYNC_PERIOD_SHIFT);
-+	/* Set the LRCLK to 50% duty cycle */
-+	fsync = fsync / 2;
-+	snd_soc_component_update_bits(component,
-+				      CS42L42_FSYNC_PW_LOWER,
-+				      CS42L42_FSYNC_PULSE_WIDTH_MASK,
-+				      CS42L42_FRAC0_VAL(fsync - 1) <<
-+				      CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
-+	snd_soc_component_update_bits(component,
-+				      CS42L42_FSYNC_PW_UPPER,
-+				      CS42L42_FSYNC_PULSE_WIDTH_MASK,
-+				      CS42L42_FRAC1_VAL(fsync - 1) <<
-+				      CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
-+
-+	return 0;
-+}
-+
- static int cs42l42_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
- {
- 	struct snd_soc_component *component = codec_dai->component;
-@@ -900,8 +905,6 @@ static int cs42l42_pcm_hw_params(struct snd_pcm_substream *substream,
- 	unsigned int bclk;
- 	int ret;
- 
--	cs42l42->srate = params_rate(params);
--
- 	if (cs42l42->sclk) {
- 		/* machine driver has set the SCLK */
- 		bclk = cs42l42->sclk;
-@@ -959,6 +962,10 @@ static int cs42l42_pcm_hw_params(struct snd_pcm_substream *substream,
- 	if (ret)
- 		return ret;
- 
-+	ret = cs42l42_asp_config(component, bclk, sample_rate);
-+	if (ret)
-+		return ret;
-+
- 	cs42l42_src_config(component, sample_rate);
- 
- 	return 0;
-diff --git a/sound/soc/codecs/cs42l42.h b/sound/soc/codecs/cs42l42.h
-index b4ba1467c558..2e4e01f9e389 100644
---- a/sound/soc/codecs/cs42l42.h
-+++ b/sound/soc/codecs/cs42l42.h
-@@ -31,7 +31,6 @@ struct  cs42l42_private {
- 	struct mutex irq_lock;
- 	int pll_config;
- 	u32 sclk;
--	u32 srate;
- 	u8 plug_state;
- 	u8 hs_type;
- 	u8 ts_inv;
--- 
-2.30.2
+Indeed.
 
+Anyway the property name and typo need fixes.
+Best regards,
+Krzysztof
