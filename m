@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C477FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64272C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352275AbiHSQY7 (ORCPT
+        id S1352598AbiHSQZB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
+        Fri, 19 Aug 2022 12:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352388AbiHSQUp (ORCPT
+        with ESMTP id S1352405AbiHSQUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:20:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C59310A76A;
-        Fri, 19 Aug 2022 09:01:38 -0700 (PDT)
+        Fri, 19 Aug 2022 12:20:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568AAB5A47;
+        Fri, 19 Aug 2022 09:01:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05E1FB8280C;
-        Fri, 19 Aug 2022 16:01:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFA27C433D6;
-        Fri, 19 Aug 2022 16:01:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 773AF61644;
+        Fri, 19 Aug 2022 16:01:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57728C433C1;
+        Fri, 19 Aug 2022 16:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924895;
-        bh=fDMiJkUJXq/6ql0CIBkC7iDv1sl3hWmBD+OxG2A8bEE=;
+        s=korg; t=1660924904;
+        bh=2BxS2z9fUVXK8JFR2a1gYx1ckx/r6/L7iaArnJXsr20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ylGYYiUnlY+L3T2kFBWtwGIjq8Alq6SVGIWRkXqDZszQamL4msPmWQCLxkPC9GGET
-         z1ijpY5QZ7px+6+rdtvWmzH+Y41KsQ5dl5ztaqBgqMQXt9CPgjQcsn3+B9EPr7ZG1C
-         yztbUtcOWSYGnYKx0mP7+Ha4Ph25Xh8bazxXUawY=
+        b=o998yzDJmdi5oAR93vUEzdBtZtWqepvIaUyl+eDURFKysX753l9JW4OUOI/iCBR7l
+         8feRryuFb8nV3IPimkQUtlXmaPevTzO0V4eohndyT5j34DIR0zkeTokzDsY/v3+iiu
+         SbIwj5IyDZ+hTdpueAyObdmeJF9yYen87mxTjL1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
+        Scott Teel <scott.teel@microchip.com>,
+        Mike McGowen <mike.mcgowen@microchip.com>,
+        Kevin Barnett <kevin.barnett@microchip.com>,
+        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
+        Don Brace <don.brace@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 277/545] mtd: st_spi_fsm: Add a clk_disable_unprepare() in .probe()s error path
-Date:   Fri, 19 Aug 2022 17:40:47 +0200
-Message-Id: <20220819153841.719713866@linuxfoundation.org>
+Subject: [PATCH 5.10 321/545] scsi: smartpqi: Fix DMA direction for RAID requests
+Date:   Fri, 19 Aug 2022 17:41:31 +0200
+Message-Id: <20220819153843.713394651@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,43 +55,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
 
-[ Upstream commit 28607b426c3d050714f250d0faeb99d2e9106e90 ]
+[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
 
-For all but one error path clk_disable_unprepare() is already there. Add
-it to the one location where it's missing.
+Correct a SOP READ and WRITE DMA flags for some requests.
 
-Fixes: 481815a6193b ("mtd: st_spi_fsm: Handle clk_prepare_enable/clk_disable_unprepare.")
-Fixes: 69d5af8d016c ("mtd: st_spi_fsm: Obtain and use EMI clock")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220607152458.232847-2-u.kleine-koenig@pengutronix.de
+This update corrects DMA direction issues with SCSI commands removed from
+the controller's internal lookup table.
+
+Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
+lookup table and exposed a DMA direction flag issue.
+
+SCSI READ BLOCK LIMITS was recently removed from our controller lookup
+table so the controller uses the respective IU flag field to set the DMA
+data direction. Since the DMA direction is incorrect the FW never completes
+the request causing a hang.
+
+Some SCSI commands which use SCSI READ BLOCK LIMITS
+
+      * sg_map
+      * mt -f /dev/stX status
+
+After updating controller firmware, users may notice their tape units
+failing. This patch resolves the issue.
+
+Also, the AIO path DMA direction is correct.
+
+The DMA direction flag is a day-one bug with no reported BZ.
+
+Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
+Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
+Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
+Reviewed-by: Scott Teel <scott.teel@microchip.com>
+Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
+Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
+Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+Signed-off-by: Don Brace <don.brace@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/devices/st_spi_fsm.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
-index 1888523d9745..9bee99f07af0 100644
---- a/drivers/mtd/devices/st_spi_fsm.c
-+++ b/drivers/mtd/devices/st_spi_fsm.c
-@@ -2115,10 +2115,12 @@ static int stfsm_probe(struct platform_device *pdev)
- 		(long long)fsm->mtd.size, (long long)(fsm->mtd.size >> 20),
- 		fsm->mtd.erasesize, (fsm->mtd.erasesize >> 10));
+diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
+index de73ade70c24..fcff35e20a4a 100644
+--- a/drivers/scsi/smartpqi/smartpqi_init.c
++++ b/drivers/scsi/smartpqi/smartpqi_init.c
+@@ -4997,10 +4997,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
+ 	}
  
--	return mtd_device_register(&fsm->mtd, NULL, 0);
--
-+	ret = mtd_device_register(&fsm->mtd, NULL, 0);
-+	if (ret) {
- err_clk_unprepare:
--	clk_disable_unprepare(fsm->clk);
-+		clk_disable_unprepare(fsm->clk);
-+	}
-+
- 	return ret;
- }
- 
+ 	switch (scmd->sc_data_direction) {
+-	case DMA_TO_DEVICE:
++	case DMA_FROM_DEVICE:
+ 		request->data_direction = SOP_READ_FLAG;
+ 		break;
+-	case DMA_FROM_DEVICE:
++	case DMA_TO_DEVICE:
+ 		request->data_direction = SOP_WRITE_FLAG;
+ 		break;
+ 	case DMA_NONE:
 -- 
 2.35.1
 
