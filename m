@@ -2,137 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9712CC28D13
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C81C32792
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243874AbiHSXud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 19:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        id S243774AbiHSXvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 19:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243493AbiHSXuV (ORCPT
+        with ESMTP id S243674AbiHSXvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 19:50:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1515E108F17;
-        Fri, 19 Aug 2022 16:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A57F616D5;
-        Fri, 19 Aug 2022 23:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ED0A4C433B5;
-        Fri, 19 Aug 2022 23:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660953019;
-        bh=CuQ5Q9EewpvW9DDE3E3uqhT70iZXoQdmu06/1ktmPDM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=U6GGTPHDLBiPb6MzRyp9FD9HLvdHJrDRAg5X6mhXZAklnI+bG32ezr0sXqJqavBci
-         ww6FIALOoXsGymiY1anis2yA91KWRNY0k8QOiZKCqbfg5C6fqUqsSlWp2MWkc+RwGH
-         ARJHFbtLS1Cbz0SHzAiAPIpb8w1Cjgf6x4ITmJhm3EYASqnZ+fczLJfaaT4X5Yd8cA
-         OsSZKyhLHSFqB3mycA21dkHMnG0I+GOmxJg6M5oh60bXL05wUMjoTGxum4M1ejfxII
-         u5YLBHCk7y8gkIRO/4nRi9cFltqV2W2G1CzGIwMI+2fYZD9aksbS4zig6NUibhgs/M
-         GkL1PWICRzHEA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C389DE2A05E;
-        Fri, 19 Aug 2022 23:50:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 19 Aug 2022 19:51:17 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6384112FB0;
+        Fri, 19 Aug 2022 16:51:15 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id r83-20020a1c4456000000b003a5cb389944so4817609wma.4;
+        Fri, 19 Aug 2022 16:51:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=6K+Gbut6C3SMWqkBrTWvK/kA2LBhPOCWJd8A9mugSZw=;
+        b=X+1fqQVkRUblp4KR6kQj5KcuWemgxb/9Z2iRuoaU0t8ckKnPN7NEnVNwKZdP/jvHXh
+         wg4E6fzr9hCqdobcCjVq7fmn+G6Mb9CAfDYkMkQbe/IjVYyMMJqXcA+jStFvaVfDCjAe
+         /kd1O8Kf9KIbm2/b501QcWJumkW/XVZzC8dJcLWqSmqnBo/DPTT0JuxYx3NpVwHyi6A1
+         jjIewqaaLaA+lC3ix7py13wa7/o22OO6nWDf7bDg3FJd891fvKfd86Qz4NuahwrW+L6v
+         zJUvW3aEXaA/nThO3eN2jhDxbTJvp7WswHFbZx3SspIK78zOY3H44/fC00uurj1/xtSE
+         wvng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=6K+Gbut6C3SMWqkBrTWvK/kA2LBhPOCWJd8A9mugSZw=;
+        b=52K2aueEZrKY3KJqc6ejmHEUP6V+1PS6esFb6IPVMNyU6RWIoywfcQFeDBXbZLA5XT
+         N8V73aMDN3Ld6gZbiI1eTpHEjzRscf0/ckR46t84y70TZ0xnWuke4M3z7CPY6bYVQ/P7
+         /uTPgIF2/Mr/3xr2DoMUvWX61Q65O4BT7185Ayt+zwEJsigD79UTlVa4LlpvZkBAD7la
+         PDwpUA1p5LIzDNtpd//PUs3G8SZfXlEfsVICJtiAJRtYNiK7uQK1Gqmm1LBnuzkOqf8b
+         NNfpHPi4x6gnUSKSbAXUWjJ11flktkBzALWyBKw1Uj03g0xBe+tDTEweW/a+KLMyERKj
+         TbSg==
+X-Gm-Message-State: ACgBeo0Pm7EFs58xqMOGGSPWid1bdgMm1/KGoMYwhi5xz4l4ExYlsvNL
+        /7Ne3MNceOCtqWukoA5kb10=
+X-Google-Smtp-Source: AA6agR47Np9Ok78NyHzV8nhmUyE67a78+p7tAZ5Cjr/2TXypthFIBb8X6ZXHpuPJw8fcw1o8HqY8tw==
+X-Received: by 2002:a05:600c:1550:b0:3a6:1d8c:247e with SMTP id f16-20020a05600c155000b003a61d8c247emr6019877wmg.63.1660953074286;
+        Fri, 19 Aug 2022 16:51:14 -0700 (PDT)
+Received: from archbook.localnet (84-72-105-84.dclient.hispeed.ch. [84.72.105.84])
+        by smtp.gmail.com with ESMTPSA id r38-20020a05600c322600b003a2e92edeccsm9026113wmp.46.2022.08.19.16.51.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 16:51:13 -0700 (PDT)
+From:   Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] arm64: dts: rockchip: Add analog audio output on quartz64-b
+Date:   Sat, 20 Aug 2022 01:51:12 +0200
+Message-ID: <10732790.V6xDz3LDya@archbook>
+In-Reply-To: <20220721083301.3711-1-frattaroli.nicolas@gmail.com>
+References: <20220721083301.3711-1-frattaroli.nicolas@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [RESEND PATCH net-next v4 00/25] net: dpaa: Cleanups in preparation
- for phylink conversion
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166095301878.11596.4206338454317459884.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Aug 2022 23:50:18 +0000
-References: <20220818161649.2058728-1-sean.anderson@seco.com>
-In-Reply-To: <20220818161649.2058728-1-sean.anderson@seco.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, camelia.groza@nxp.com,
-        linux-kernel@vger.kernel.org, madalin.bucur@nxp.com,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski+dt@linaro.org, leoyang.li@nxp.com,
-        robh+dt@kernel.org, devicetree@vger.kernel.org
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 18 Aug 2022 12:16:24 -0400 you wrote:
-> This series contains several cleanup patches for dpaa/fman. While they
-> are intended to prepare for a phylink conversion, they stand on their
-> own. This series was originally submitted as part of [1].
+On Donnerstag, 21. Juli 2022 10:33:00 CEST Nicolas Frattaroli wrote:
+> This adds the necessary device tree changes to enable analog
+> audio output on the PINE64 Quartz64 Model B with its RK809
+> codec.
 > 
-> [1] https://lore.kernel.org/netdev/20220715215954.1449214-1-sean.anderson@seco.com
+> The headphone detection pin is left out for now because I couldn't
+> get it to work and am not sure if it even matters, but for future
+> reference: It's pin GPIO4 RK_PC4, named HP_DET_L_GPIO4_C4 in the
+> schematic.
 > 
-> Changes in v4:
-> - Clarify commit message
-> - weer -> were
-> - tricy -> tricky
-> - Use mac_dev for calling change_addr
-> - qman_cgr_create -> qman_create_cgr
+> Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+> ---
+> Changes since v1:
+>  - use generic node name for the simple-audio-card node
 > 
-> [...]
+> ---
+>  .../boot/dts/rockchip/rk3566-quartz64-b.dts   | 32 ++++++++++++++++++-
+>  1 file changed, 31 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+> index 02d5f5a8ca03..3897980d69d1 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+> +++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+> @@ -42,6 +42,21 @@ led-user {
+>  		};
+>  	};
+>  
+> +	sound {
+> +		compatible = "simple-audio-card";
+> +		simple-audio-card,format = "i2s";
+> +		simple-audio-card,name = "Analog RK809";
+> +		simple-audio-card,mclk-fs = <256>;
+> +
+> +		simple-audio-card,cpu {
+> +			sound-dai = <&i2s1_8ch>;
+> +		};
+> +
+> +		simple-audio-card,codec {
+> +			sound-dai = <&rk809>;
+> +		};
+> +	};
+> +
+>  	sdio_pwrseq: sdio-pwrseq {
+>  		status = "okay";
+>  		compatible = "mmc-pwrseq-simple";
+> @@ -177,11 +192,16 @@ rk809: pmic@20 {
+>  		reg = <0x20>;
+>  		interrupt-parent = <&gpio0>;
+>  		interrupts = <RK_PA7 IRQ_TYPE_LEVEL_LOW>;
+> +		assigned-clocks = <&cru I2S1_MCLKOUT_TX>;
+> +		assigned-clock-parents = <&cru CLK_I2S1_8CH_TX>;
+> +		clock-names = "mclk";
+> +		clocks = <&cru I2S1_MCLKOUT_TX>;
+>  		clock-output-names = "rk808-clkout1", "rk808-clkout2";
+>  
+>  		pinctrl-names = "default";
+> -		pinctrl-0 = <&pmic_int>;
+> +		pinctrl-0 = <&pmic_int>, <&i2s1m0_mclk>;
+>  		rockchip,system-power-controller;
+> +		#sound-dai-cells = <0>;
+>  		wakeup-source;
+>  		#clock-cells = <1>;
+>  
+> @@ -420,6 +440,16 @@ &i2c5 {
+>  	status = "disabled";
+>  };
+>  
+> +&i2s1_8ch {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&i2s1m0_sclktx
+> +		     &i2s1m0_lrcktx
+> +		     &i2s1m0_sdi0
+> +		     &i2s1m0_sdo0>;
+> +	rockchip,trcm-sync-tx-only;
+> +	status = "okay";
+> +};
+> +
+>  &mdio1 {
+>  	rgmii_phy1: ethernet-phy@1 {
+>  		compatible = "ethernet-phy-ieee802.3-c22";
+> 
 
-Here is the summary with links:
-  - [RESEND,net-next,v4,01/25] dt-bindings: net: Convert FMan MAC bindings to yaml
-    https://git.kernel.org/netdev/net-next/c/ee8433da085e
-  - [RESEND,net-next,v4,02/25] net: fman: Convert to SPDX identifiers
-    https://git.kernel.org/netdev/net-next/c/8585bdadc247
-  - [RESEND,net-next,v4,03/25] net: fman: Don't pass comm_mode to enable/disable
-    https://git.kernel.org/netdev/net-next/c/b7d852566a52
-  - [RESEND,net-next,v4,04/25] net: fman: Store en/disable in mac_device instead of mac_priv_s
-    https://git.kernel.org/netdev/net-next/c/e61406a1955e
-  - [RESEND,net-next,v4,05/25] net: fman: dtsec: Always gracefully stop/start
-    https://git.kernel.org/netdev/net-next/c/aae73fde7eb3
-  - [RESEND,net-next,v4,06/25] net: fman: Get PCS node in per-mac init
-    https://git.kernel.org/netdev/net-next/c/478eb957ced6
-  - [RESEND,net-next,v4,07/25] net: fman: Store initialization function in match data
-    https://git.kernel.org/netdev/net-next/c/28c3948a018d
-  - [RESEND,net-next,v4,08/25] net: fman: Move struct dev to mac_device
-    https://git.kernel.org/netdev/net-next/c/7bd63966f0cc
-  - [RESEND,net-next,v4,09/25] net: fman: Configure fixed link in memac_initialization
-    https://git.kernel.org/netdev/net-next/c/9ea4742a55ca
-  - [RESEND,net-next,v4,10/25] net: fman: Export/rename some common functions
-    https://git.kernel.org/netdev/net-next/c/c496e4d686aa
-  - [RESEND,net-next,v4,11/25] net: fman: memac: Use params instead of priv for max_speed
-    https://git.kernel.org/netdev/net-next/c/c0e36be156c2
-  - [RESEND,net-next,v4,12/25] net: fman: Move initialization to mac-specific files
-    (no matching commit)
-  - [RESEND,net-next,v4,13/25] net: fman: Mark mac methods static
-    (no matching commit)
-  - [RESEND,net-next,v4,14/25] net: fman: Inline several functions into initialization
-    (no matching commit)
-  - [RESEND,net-next,v4,15/25] net: fman: Remove internal_phy_node from params
-    (no matching commit)
-  - [RESEND,net-next,v4,16/25] net: fman: Map the base address once
-    (no matching commit)
-  - [RESEND,net-next,v4,17/25] net: fman: Pass params directly to mac init
-    (no matching commit)
-  - [RESEND,net-next,v4,18/25] net: fman: Use mac_dev for some params
-    (no matching commit)
-  - [RESEND,net-next,v4,19/25] net: fman: Specify type of mac_dev for exception_cb
-    (no matching commit)
-  - [RESEND,net-next,v4,20/25] net: fman: Clean up error handling
-    (no matching commit)
-  - [RESEND,net-next,v4,21/25] net: fman: Change return type of disable to void
-    (no matching commit)
-  - [RESEND,net-next,v4,22/25] net: dpaa: Use mac_dev variable in dpaa_netdev_init
-    (no matching commit)
-  - [RESEND,net-next,v4,23/25] soc: fsl: qbman: Add helper for sanity checking cgr ops
-    (no matching commit)
-  - [RESEND,net-next,v4,24/25] soc: fsl: qbman: Add CGR update function
-    (no matching commit)
-  - [RESEND,net-next,v4,25/25] net: dpaa: Adjust queue depth on rate change
-    (no matching commit)
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Gentle ping, it has been a month with no response so I assume
+there's nothing egregiously wrong here.
 
 
