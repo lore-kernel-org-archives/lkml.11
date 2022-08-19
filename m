@@ -2,135 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0665C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1508DC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350863AbiHSR4v (ORCPT
+        id S1350755AbiHSR5Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40486 "EHLO
+        Fri, 19 Aug 2022 13:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354002AbiHSR4H (ORCPT
+        with ESMTP id S1350635AbiHSR4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:56:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC65E117C;
-        Fri, 19 Aug 2022 10:38:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7639617D8;
-        Fri, 19 Aug 2022 17:38:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53DE7C433C1;
-        Fri, 19 Aug 2022 17:38:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660930724;
-        bh=OKpgMPnKr9d9cTKpfOdmcjkXXNEfExuYIhIkIm7K3RQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uixDXXWkvtEq9Gd/b2RZf6otlbMU4JEP/iz6Ag940SJHlUdBVfDY0VH5ysVrdmg+L
-         zx4mu+vd7OTagl1pX06kbIqOG6r94+Rep+EBnNNhUEaIq7YpP3kJPGNFCDv1B6qO6F
-         zKu+LVkcpyxVXINVvt3c9M2c5hOIS/S+i2gqYefwgF+X1alSoQl16XqNGxrYZfYq18
-         1zCf9Qdz5aCCOlrWUscIXFo7hIYXz4h+5YZDPRMuT1xg5yr41DTzb1ETVaoEhcZ0Lw
-         cJ8qz3H20ycCUoL1odKIeaSC0e1MDB1c78CTX7JtGaIR0tBXtpDLi/nbD/U4KgVGgI
-         R/SwKz7rl06Ng==
-Date:   Fri, 19 Aug 2022 18:49:19 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Artur Rojek <contact@artur-rojek.eu>
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: add helper function for reading channel offset
- in buffer
-Message-ID: <20220819184919.6e08ae06@jic23-huawei>
-In-Reply-To: <20220817105643.95710-4-contact@artur-rojek.eu>
-References: <20220817105643.95710-1-contact@artur-rojek.eu>
-        <20220817105643.95710-4-contact@artur-rojek.eu>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 19 Aug 2022 13:56:48 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D664F220C3;
+        Fri, 19 Aug 2022 10:39:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Np1ibAFNVnfFgg0QIFE24X+BInAHnXNFqAN1Bvj0a9E=; b=U2083fO9ZNK/aBkQR0OkRDk/CH
+        G2fmVJE+JuoZnt3CkavmBH9hR+4HGl8o6KO+H6aAGlwS2SfY5H6d1mL5wqvUqv+lXcHpWaKU1H74+
+        ZXDojIUpeFnZh4aY1sQeFg+5ftuV39ggf6KataTvlcxGF33dgx6VglYXSpKjt6hlYjOQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oP5xg-00DwBs-9v; Fri, 19 Aug 2022 19:39:12 +0200
+Date:   Fri, 19 Aug 2022 19:39:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcus Carlberg <marcus.carlberg@axis.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@axis.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: support RGMII cmode
+Message-ID: <Yv/KwIDbYewAGD/d@lunn.ch>
+References: <20220819135629.32590-1-marcus.carlberg@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819135629.32590-1-marcus.carlberg@axis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 12:56:42 +0200
-Artur Rojek <contact@artur-rojek.eu> wrote:
-
-> This is useful for consumers that wish to parse raw buffer data.
+On Fri, Aug 19, 2022 at 03:56:29PM +0200, Marcus Carlberg wrote:
+> Since the probe defaults all interfaces to the highest speed possible
+> (10GBASE-X in mv88e6393x) before the phy mode configuration from the
+> devicetree is considered it is currently impossible to use port 0 in
+> RGMII mode.
 > 
-> Tested-by: Paul Cercueil <paul@crapouillou.net>
-> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-> ---
->  drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++++++++
->  include/linux/iio/buffer.h        |  4 ++++
->  2 files changed, 32 insertions(+)
+> This change will allow RGMII modes to be configurable for port 0
+> enabling port 0 to be configured as RGMII as well as serial depending
+> on configuration.
 > 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 228598b82a2f..cf23736610d9 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -691,6 +691,34 @@ static unsigned int iio_storage_bytes_for_si(struct iio_dev *indio_dev,
->  	return bytes;
->  }
->  
-> +int iio_find_channel_offset_in_buffer(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      struct iio_buffer *buffer)
-> +{
-> +	int length, offset = 0;
-> +	unsigned int si;
-> +
-> +	if (chan->scan_index < 0 ||
-> +	    !test_bit(chan->scan_index, buffer->scan_mask)) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	for (si = 0; si < chan->scan_index; ++si) {
-> +		if (!test_bit(si, buffer->scan_mask))
+> Signed-off-by: Marcus Carlberg <marcus.carlberg@axis.com>
 
-You are walking channels that the consumer should not even know about
-here.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I think you can establish the same easily enough from the channels it
-does know about.  It would be fiddly if you had lots of channels (as
-you might be best off sorting them) but for small numbers of channels
-loop over the array to find lowest scan_index - compute offset due
-to that then move on to next one etc until you reach the scan index
-of the channel you want.
-
-
-> +			continue;
-> +
-> +		length = iio_storage_bytes_for_si(indio_dev, si);
-> +
-> +		/* Account for channel alignment. */
-> +		if (offset % length)
-> +			offset += length - (offset % length);
-> +		offset += length;
-> +	}
-> +
-> +	return offset;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_find_channel_offset_in_buffer);
-> +
->  static unsigned int iio_storage_bytes_for_timestamp(struct iio_dev *indio_dev)
->  {
->  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-> index 418b1307d3f2..b1db74772e77 100644
-> --- a/include/linux/iio/buffer.h
-> +++ b/include/linux/iio/buffer.h
-> @@ -16,6 +16,10 @@ enum iio_buffer_direction {
->  	IIO_BUFFER_DIRECTION_OUT,
->  };
->  
-> +int iio_find_channel_offset_in_buffer(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      struct iio_buffer *buffer);
-> +
->  int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data);
->  
->  int iio_pop_from_buffer(struct iio_buffer *buffer, void *data);
-
+    Andrew
