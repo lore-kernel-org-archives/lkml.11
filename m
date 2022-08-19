@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF907C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654FBC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351103AbiHSQGt (ORCPT
+        id S1351248AbiHSQGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
+        Fri, 19 Aug 2022 12:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351248AbiHSQBE (ORCPT
+        with ESMTP id S1351383AbiHSQB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9459DB4428;
-        Fri, 19 Aug 2022 08:52:47 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3275106507;
+        Fri, 19 Aug 2022 08:53:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0900061714;
-        Fri, 19 Aug 2022 15:52:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C78C433D6;
-        Fri, 19 Aug 2022 15:52:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA051B82816;
+        Fri, 19 Aug 2022 15:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26628C433C1;
+        Fri, 19 Aug 2022 15:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924333;
-        bh=mxljtDHMst5iwqEorc0AT/oDFsf1xLqdqqSlxIcDaPk=;
+        s=korg; t=1660924362;
+        bh=3tFU0RALqLW5JN6MV6N14f8LFsMgS4qHKoAsJEOW3Lo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0YN4qs4aQC0V/c+ccIIix1VM+cTTY9VHSlraVJQlepE3jRWhazoS/fq5hFjbsejp
-         3MHRlTAqGTm0Hkglty4XhYR8unIVrhqFrHqd/BtqyUPTHjTIruqg0OO8+LHDwqICuK
-         lidq2mifO3Ug7uhlh/e9s+UwKx7G9so132MxalOE=
+        b=SCpMQ0f15Ot30rQZ86gq3JarPwhP3HvOUluYiYUUrGLp49qIbgpe8evX411LT3/gP
+         WBxzPOabaCcC3Kz4fVMHDnXNavZmx54WzJ+7Y0mqyvh7LYYFDfWAC3UnJ2FSSCkWcx
+         g7eJkYYBh4LiNvcjxutaJfG1RxXpJsOmk4DtCLWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 135/545] bus: hisi_lpc: fix missing platform_device_put() in hisi_lpc_acpi_probe()
-Date:   Fri, 19 Aug 2022 17:38:25 +0200
-Message-Id: <20220819153835.383298485@linuxfoundation.org>
+Subject: [PATCH 5.10 144/545] soc: qcom: Make QCOM_RPMPD depend on PM
+Date:   Fri, 19 Aug 2022 17:38:34 +0200
+Message-Id: <20220819153835.773555839@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,72 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 54872fea6a5ac967ec2272aea525d1438ac6735a ]
+[ Upstream commit a6232f2aa99ce470799992e99e0012945bb5308f ]
 
-In error case in hisi_lpc_acpi_probe() after calling platform_device_add(),
-hisi_lpc_acpi_remove() can't release the failed 'pdev', so it will be leak,
-call platform_device_put() to fix this problem.
-I'v constructed this error case and tested this patch on D05 board.
+QCOM_RPMPD requires PM_GENERIC_DOMAINS/_OF, which in turns requires
+CONFIG_PM. I forgot about the latter in my earlier patch (it's still
+in -next as of the time of committing, hence no Fixes: tag). Fix it.
 
-Fixes: 99c0228d6ff1 ("HISI LPC: Re-Add ACPI child enumeration support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220707212158.32684-1-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/hisi_lpc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/soc/qcom/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 378f5d62a991..e7eaa8784fee 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -503,13 +503,13 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- {
- 	struct acpi_device *adev = ACPI_COMPANION(hostdev);
- 	struct acpi_device *child;
-+	struct platform_device *pdev;
- 	int ret;
+diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
+index 6a3b69b43ad5..d0cf969a8fb5 100644
+--- a/drivers/soc/qcom/Kconfig
++++ b/drivers/soc/qcom/Kconfig
+@@ -128,6 +128,7 @@ config QCOM_RPMHPD
  
- 	/* Only consider the children of the host */
- 	list_for_each_entry(child, &adev->children, node) {
- 		const char *hid = acpi_device_hid(child);
- 		const struct hisi_lpc_acpi_cell *cell;
--		struct platform_device *pdev;
- 		const struct resource *res;
- 		bool found = false;
- 		int num_res;
-@@ -571,22 +571,24 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- 
- 		ret = platform_device_add_resources(pdev, res, num_res);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add_data(pdev, cell->pdata,
- 					       cell->pdata_size);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add(pdev);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		acpi_device_set_enumerated(child);
- 	}
- 
- 	return 0;
- 
-+fail_put_device:
-+	platform_device_put(pdev);
- fail:
- 	hisi_lpc_acpi_remove(hostdev);
- 	return ret;
+ config QCOM_RPMPD
+ 	tristate "Qualcomm RPM Power domain driver"
++	depends on PM
+ 	depends on QCOM_SMD_RPM
+ 	help
+ 	  QCOM RPM Power domain driver to support power-domains with
 -- 
 2.35.1
 
