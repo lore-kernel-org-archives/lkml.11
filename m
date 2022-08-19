@@ -2,173 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B565DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 243C4C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353855AbiHSQo5 (ORCPT
+        id S1353861AbiHSQpD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        Fri, 19 Aug 2022 12:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354121AbiHSQlw (ORCPT
+        with ESMTP id S1354122AbiHSQlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:41:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5ECA1296DD;
-        Fri, 19 Aug 2022 09:10:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4B21296E1;
+        Fri, 19 Aug 2022 09:10:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63A59B82819;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBE99B82822;
         Fri, 19 Aug 2022 16:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F0DC433C1;
-        Fri, 19 Aug 2022 16:09:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925356;
-        bh=vBcnp/8+3iltka4BgipB5G0+Hb2FRfuz7ajUL1671+Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1d56JLka8DnbxaQzgfSX0RUvQIUCB6CdyIocJTM/ubhjlLUe7BJ8iCmYfxNfScU1X
-         HJAMFrXgWz60Sh2tWWZg5HeLitvi10XqVXuPSZXDWmaJSuaphJP+3gP6cn99bs9qeu
-         IWiICy4FeLyIGQSSXY97OWLpaubIPR6gfQCnFd8Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: [PATCH 5.10 465/545] usbnet: smsc95xx: Avoid link settings race on interrupt reception
-Date:   Fri, 19 Aug 2022 17:43:55 +0200
-Message-Id: <20220819153850.209594560@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A702FC433D6;
+        Fri, 19 Aug 2022 16:09:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660925356;
+        bh=4Qe5bnMK7e8Vdu1dOTSY/frhtjwhHd6k+3/lBQwHc18=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cOBQl1LU96kx800WoiXna18ama0ZZh7LmAxs/US+MaNABdfaawbENZ/FLRBbNwRfw
+         IHmh6x8+DK59rMZqFx8FE57uNfSoGtm+rpkl89KfnmQ/oAzDyWWX/TW5tQvgxRy+2H
+         P8Bf95Ota2+1Hg5DzVnh5/WJL2Ye0uFJwIuJPE8FjjyD2z7qs8HwYt9FVF+SPRLF/Y
+         BJCh5QublDGpsA4dqcGAIMx1AJC5boXCj1Z5op2KVD9NYzCItaYpbq5OfE6B4A8yOH
+         Dkn3UGrRTG+12EPjm7/tJtFN2n4kc85MYBhzzDKgCQK5PsFDX6Ij5LW2HwgDCyNfvG
+         WH9pxh6FhqYOA==
+Received: by mail-ua1-f52.google.com with SMTP id e3so1955013uax.4;
+        Fri, 19 Aug 2022 09:09:16 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3kqTzeyHmgmtj8tYSbgO8gOvjEpPRLp9EIVX4uTBKVHJlfO0ll
+        8XqCrsmnQPpcVuclT+TrBcHWZO4/ap5DTGx18A==
+X-Google-Smtp-Source: AA6agR4hVMZMGFZWoej1ekKhG9RcXxu/9rbogNBLoJnqbvFaaQCfUcXi+i0wkukb0+iHaKryynQ6hedqvzUCuuYfcVk=
+X-Received: by 2002:ab0:4565:0:b0:395:b672:508 with SMTP id
+ r92-20020ab04565000000b00395b6720508mr3119861uar.63.1660925355671; Fri, 19
+ Aug 2022 09:09:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220819153829.135562864@linuxfoundation.org> <20220819153835.859060503@linuxfoundation.org>
+In-Reply-To: <20220819153835.859060503@linuxfoundation.org>
+From:   Rob Herring <robh@kernel.org>
+Date:   Fri, 19 Aug 2022 11:09:04 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKY_Bq_-hd6xS-XSA9KZdDLUyj8PevD-_HniPyg9JqjRA@mail.gmail.com>
+Message-ID: <CAL_JsqKY_Bq_-hd6xS-XSA9KZdDLUyj8PevD-_HniPyg9JqjRA@mail.gmail.com>
+Subject: Re: [PATCH 5.10 146/545] dt-bindings: Update QCOM USB subsystem
+ maintainer information
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+On Fri, Aug 19, 2022 at 10:52 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> From: Wesley Cheng <quic_wcheng@quicinc.com>
+>
+> [ Upstream commit e059da384ffdc93778e69a5f212c2ac7357ec09a ]
+>
+> Update devicetree binding files with the proper maintainer, and updated
+> contact email.
 
-[ Upstream commit 8960f878e39fadc03d74292a6731f1e914cf2019 ]
+I don't think this needs to go to stable.
 
-When a PHY interrupt is signaled, the SMSC LAN95xx driver updates the
-MAC full duplex mode and PHY flow control registers based on cached data
-in struct phy_device:
-
-  smsc95xx_status()                 # raises EVENT_LINK_RESET
-    usbnet_deferred_kevent()
-      smsc95xx_link_reset()         # uses cached data in phydev
-
-Simultaneously, phylib polls link status once per second and updates
-that cached data:
-
-  phy_state_machine()
-    phy_check_link_status()
-      phy_read_status()
-        lan87xx_read_status()
-          genphy_read_status()      # updates cached data in phydev
-
-If smsc95xx_link_reset() wins the race against genphy_read_status(),
-the registers may be updated based on stale data.
-
-E.g. if the link was previously down, phydev->duplex is set to
-DUPLEX_UNKNOWN and that's what smsc95xx_link_reset() will use, even
-though genphy_read_status() may update it to DUPLEX_FULL afterwards.
-
-PHY interrupts are currently only enabled on suspend to trigger wakeup,
-so the impact of the race is limited, but we're about to enable them
-perpetually.
-
-Avoid the race by delaying execution of smsc95xx_link_reset() until
-phy_state_machine() has done its job and calls back via
-smsc95xx_handle_link_change().
-
-Signaling EVENT_LINK_RESET on wakeup is not necessary because phylib
-picks up link status changes through polling.  So drop the declaration
-of a ->link_reset() callback.
-
-Note that the semicolon on a line by itself added in smsc95xx_status()
-is a placeholder for a function call which will be added in a subsequent
-commit.  That function call will actually handle the INT_ENP_PHY_INT_
-interrupt.
-
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/smsc95xx.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index b1d7331c3c5c..65d42f5d42a3 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -564,7 +564,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev)
- 	return smsc95xx_write_reg(dev, AFC_CFG, afc_cfg);
- }
- 
--static int smsc95xx_link_reset(struct usbnet *dev)
-+static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
- {
- 	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	unsigned long flags;
-@@ -581,14 +581,16 @@ static int smsc95xx_link_reset(struct usbnet *dev)
- 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
- 
- 	ret = smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
--	if (ret < 0)
--		return ret;
-+	if (ret < 0) {
-+		if (ret != -ENODEV)
-+			netdev_warn(dev->net,
-+				    "Error updating MAC full duplex mode\n");
-+		return;
-+	}
- 
- 	ret = smsc95xx_phy_update_flowcontrol(dev);
- 	if (ret < 0)
- 		netdev_warn(dev->net, "Error updating PHY flow control\n");
--
--	return ret;
- }
- 
- static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
-@@ -605,7 +607,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
- 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
- 
- 	if (intdata & INT_ENP_PHY_INT_)
--		usbnet_defer_kevent(dev, EVENT_LINK_RESET);
-+		;
- 	else
- 		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
- 			    intdata);
-@@ -1062,6 +1064,7 @@ static void smsc95xx_handle_link_change(struct net_device *net)
- 	struct usbnet *dev = netdev_priv(net);
- 
- 	phy_print_status(net->phydev);
-+	smsc95xx_mac_update_fullduplex(dev);
- 	usbnet_defer_kevent(dev, EVENT_LINK_CHANGE);
- }
- 
-@@ -1968,7 +1971,6 @@ static const struct driver_info smsc95xx_info = {
- 	.description	= "smsc95xx USB 2.0 Ethernet",
- 	.bind		= smsc95xx_bind,
- 	.unbind		= smsc95xx_unbind,
--	.link_reset	= smsc95xx_link_reset,
- 	.reset		= smsc95xx_reset,
- 	.check_connect	= smsc95xx_start_phy,
- 	.stop		= smsc95xx_stop,
--- 
-2.35.1
-
-
-
+> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> Link: https://lore.kernel.org/r/20220603021432.13365-1-quic_wcheng@quicinc.com
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml | 2 +-
+>  Documentation/devicetree/bindings/phy/qcom,qusb2-phy.yaml       | 2 +-
+>  .../devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml         | 2 +-
+>  .../devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml  | 2 +-
+>  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml            | 2 +-
+>  5 files changed, 5 insertions(+), 5 deletions(-)
