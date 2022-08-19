@@ -2,64 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868E7C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C678C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349119AbiHSMuo (ORCPT
+        id S1349090AbiHSMwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
+        Fri, 19 Aug 2022 08:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348843AbiHSMum (ORCPT
+        with ESMTP id S1348843AbiHSMwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:50:42 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2056CD7420;
-        Fri, 19 Aug 2022 05:50:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fr7QhwkLwW6Fg6KpvaCA3xcPZXCiv8cagCz8y0W6tfU=; b=vn/10w0ZffFTAgGrt9HcUXwWhm
-        CXp0/SpdRITOdrUWFA18C156SubgIE/UpY5jKpPEqW65QQGIavky6LtT9idbPom4fh3bqJZXKenjs
-        h6BQ12S9MEm/+1f3XVjYsEcZwCCXlLHBxXcUH4Q1K/9XhhVp774o/+d/Et3ITg3KbN+E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oP1SJ-00Dui5-Df; Fri, 19 Aug 2022 14:50:31 +0200
-Date:   Fri, 19 Aug 2022 14:50:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     wei.fang@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: phy: tja11xx: add interface mode and
- RMII REF_CLK support
-Message-ID: <Yv+HFz/q1iGFfQ+m@lunn.ch>
-References: <20220819074729.1496088-1-wei.fang@nxp.com>
- <20220819074729.1496088-3-wei.fang@nxp.com>
+        Fri, 19 Aug 2022 08:52:42 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D07D86FD
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:41 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBix0P020060;
+        Fri, 19 Aug 2022 07:52:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=fRxAdbE57d0qiTBUvDtalLSnCO5ib5KMTH5zZplYHSE=;
+ b=WRMPe6IsGN6KjPBo/mSLOJD1f7lSd/FBuQ/iTtxmLeOVy6AS+Xp/lR5M5Fz5C0QACVea
+ KxbezR8Bb+YY6rhU4bUx0zh1THNvisXfW+4v54NpA8KcsmrAfKD/vdsOzE0oZxwj0fEh
+ W7xzszTWUOK6TefZvb8ma1iyCQ3WqpMFnmXkgvosXy+FpCWwOeSUimnjbUG8lMcoYIE0
+ 695a7sMW+omoGswvosSZloaVhyWz7lwzehMg6UXYNpJ/STq4rXQwwdqKTbYZ5byaRjJz
+ ybuLBLcGPSly0OnV+3ChzZ9Nb/LVVP0YN3WjKMtxrLx5o679/Z/DjiZKsgSpExV/746+ SQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hx8cpfuvn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 07:52:36 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 19 Aug
+ 2022 07:52:34 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
+ Transport; Fri, 19 Aug 2022 07:52:34 -0500
+Received: from edi-sw-dsktp-006.ad.cirrus.com (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 40B07B16;
+        Fri, 19 Aug 2022 12:52:32 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH 01/12] ASoC: cs42l42: Add SOFT_RESET_REBOOT register
+Date:   Fri, 19 Aug 2022 13:52:19 +0100
+Message-ID: <20220819125230.42731-2-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220819125230.42731-1-rf@opensource.cirrus.com>
+References: <20220819125230.42731-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819074729.1496088-3-wei.fang@nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: xs4AYtngnCc7SOo6tZI9rnjN33jkVlp4
+X-Proofpoint-GUID: xs4AYtngnCc7SOo6tZI9rnjN33jkVlp4
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +/* Configure REF_CLK as input in RMII mode */
-> +#define TJA110X_RMII_MODE_REFCLK_IN       BIT(0)
-> +
->  struct tja11xx_priv {
->  	char		*hwmon_name;
->  	struct device	*hwmon_dev;
->  	struct phy_device *phydev;
->  	struct work_struct phy_register_work;
-> +	u32 quirks;
+The SOFT_RESET_REBOOT register is needed to recover CS42L42 state after
+a Soundwire bus reset.
 
-A quirk is generally a workaround for a bug. Configuring a clock is
-not a quirk. I would rename this flags.
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+---
+ include/sound/cs42l42.h    | 5 +++++
+ sound/soc/codecs/cs42l42.c | 2 ++
+ 2 files changed, 7 insertions(+)
 
-    Andrew
+diff --git a/include/sound/cs42l42.h b/include/sound/cs42l42.h
+index a55d522f1772..9cf4baabea52 100644
+--- a/include/sound/cs42l42.h
++++ b/include/sound/cs42l42.h
+@@ -34,6 +34,7 @@
+ #define CS42L42_PAGE_24		0x2400
+ #define CS42L42_PAGE_25		0x2500
+ #define CS42L42_PAGE_26		0x2600
++#define CS42L42_PAGE_27		0x2700
+ #define CS42L42_PAGE_28		0x2800
+ #define CS42L42_PAGE_29		0x2900
+ #define CS42L42_PAGE_2A		0x2A00
+@@ -719,6 +720,10 @@
+ 
+ #define CS42L42_SRC_SDOUT_FS		(CS42L42_PAGE_26 + 0x09)
+ 
++/* Page 0x27 DMA */
++#define CS42L42_SOFT_RESET_REBOOT	(CS42L42_PAGE_27 + 0x01)
++#define CS42L42_SFT_RST_REBOOT_MASK	BIT(1)
++
+ /* Page 0x28 S/PDIF Registers */
+ #define CS42L42_SPDIF_CTL1		(CS42L42_PAGE_28 + 0x01)
+ #define CS42L42_SPDIF_CTL2		(CS42L42_PAGE_28 + 0x02)
+diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
+index 42cdb051e0fb..440d414efe0a 100644
+--- a/sound/soc/codecs/cs42l42.c
++++ b/sound/soc/codecs/cs42l42.c
+@@ -294,6 +294,7 @@ static bool cs42l42_readable_register(struct device *dev, unsigned int reg)
+ 	case CS42L42_SPDIF_SW_CTL1:
+ 	case CS42L42_SRC_SDIN_FS:
+ 	case CS42L42_SRC_SDOUT_FS:
++	case CS42L42_SOFT_RESET_REBOOT:
+ 	case CS42L42_SPDIF_CTL1:
+ 	case CS42L42_SPDIF_CTL2:
+ 	case CS42L42_SPDIF_CTL3:
+@@ -358,6 +359,7 @@ static bool cs42l42_volatile_register(struct device *dev, unsigned int reg)
+ 	case CS42L42_LOAD_DET_DONE:
+ 	case CS42L42_DET_STATUS1:
+ 	case CS42L42_DET_STATUS2:
++	case CS42L42_SOFT_RESET_REBOOT:
+ 		return true;
+ 	default:
+ 		return false;
+-- 
+2.30.2
+
