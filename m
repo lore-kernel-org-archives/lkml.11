@@ -2,119 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0F6C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CCDC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351726AbiHSUGK (ORCPT
+        id S1351698AbiHSUJR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 16:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
+        Fri, 19 Aug 2022 16:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351558AbiHSUGG (ORCPT
+        with ESMTP id S1351558AbiHSUJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 16:06:06 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE57EC4CD;
-        Fri, 19 Aug 2022 13:06:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660939524; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=YmzNaWO54q/8fCTIN4jaIZ5Ndxwp9+YSr/ByeZ1N7fM3t9mAdvJ8y6JVwVmhL749gAw2Crf1yFMBP/hmDlyxgG/vh5Z+ClbSGKiIy3i2NJwXvskTK6FyVe5N4KEHj2guGG5g6uEOd1go6jtRcc5iu0jDV2Sp2RVUv6Q4zeceEyk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660939524; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=ZbOmMhea6mo0GiKmo4Riv4/f27wDQaFeMZfT8F4TkaM=; 
-        b=OTX/jA3DUnqGI4oQNVaV6ZBR9X9H6EIAEQjLXa/wZaMOl2Z3TZz6wxSZaDXy6qqFp6N63Js0NPNTVCPXH/86DU53MrALzPgxdKM/rLiqEHfJ+Mwd1ibKenRYgvk9gbnU3Bpi+dALQyCOps/2DnjxwkyK+0mLveRSoXh3t9vdtSg=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660939524;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=ZbOmMhea6mo0GiKmo4Riv4/f27wDQaFeMZfT8F4TkaM=;
-        b=Neex3bMTcjTpaHR6LmwPqzEz9gmMywdSnuGnLC4/0PQxWQHeQgjvg/vIyndPhGIP
-        g5dCrqPdTnxpeuhMSYF1XsLA1i8oN+RIhwNXtxznyHNgESUSm8EUXMycuICmyI0cgU/
-        tX8mu62ADEKmBazZSC65bTiBd2o0Fmvhr3jTdaC0=
-Received: from localhost.localdomain (103.86.19.2 [103.86.19.2]) by mx.zoho.in
-        with SMTPS id 1660939523728629.6711836985853; Sat, 20 Aug 2022 01:35:23 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-Message-ID: <20220819200340.34826-1-code@siddh.me>
-Subject: [PATCH v3] wifi: mac80211: Fix UAF in ieee80211_scan_rx()
-Date:   Sat, 20 Aug 2022 01:33:40 +0530
-X-Mailer: git-send-email 2.35.1
+        Fri, 19 Aug 2022 16:09:14 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D01A9D11E
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:09:13 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-32a09b909f6so150506227b3.0
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YuF+xqYANb0UpSKdFXaPIjdGoUsETegDwAlHIfHh17s=;
+        b=SmwVsSxLi/TN3be8ePf4Zt26MSe+mpgAQ9Yj1M7BSIb+2/45bT5dcu90JsXbPBl5vH
+         caJzUu+A8tA+CqBs274jJpfoLUC/7GmPmhVg8b6otV8Dg+XUbZaq4LVnJUo5r2JnpOd1
+         oZC+HNnX9iXvL2IpKtVVL/slYa6BOXTlJ7kWQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YuF+xqYANb0UpSKdFXaPIjdGoUsETegDwAlHIfHh17s=;
+        b=6DLY+Piig78XU31U4zRz1FOCDRCHBu6Ir8N2XxQzzF/8jaTYqlHJMHHiXNskPjjvAg
+         I2qWq+8iybfEQZafHAZAI3nyJ4LreS8t7+wXElW7leXqtkIC+hXhClD+a1vvgRR8S/Hk
+         JOQ+I6rSgYYya5pubNUtrZSdV6HPqAagwof0wvSxni3h0g6imPhEEniU1mbHoIk8S/NY
+         9NMFiIt+QeuO4DEGKB4raL99NaI1kFdpF1ZB5vwk3Zg2PZGNL8Rjlunrxwrb3X/BHlat
+         DMwknjzjgzcpDzMzVLovtbiukL9bv0iIvUZljUZuwjTrE1g55grUgslS0rtdmOu/3Cnh
+         HoMA==
+X-Gm-Message-State: ACgBeo2Q9sm+vWgkVRn81YgvSf4vcoubYzyJqK/AigjXltkkmNubjl/R
+        4l71hJMPJUqMJSFYvGY8FK2QMkgInOaDh7SGYyHC
+X-Google-Smtp-Source: AA6agR7wQ8oKJPNlIuB55kWztWUPT4TZ4pt1foHS2qP00B5/o+HsUbPTDI0y9sCaodK5ZH30pxM3xwnr92xLtnZ6tlU=
+X-Received: by 2002:a25:5105:0:b0:692:17f6:62b6 with SMTP id
+ f5-20020a255105000000b0069217f662b6mr8381453ybb.361.1660939752536; Fri, 19
+ Aug 2022 13:09:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+References: <20220814141237.493457-1-mail@conchuod.ie> <20220814141237.493457-2-mail@conchuod.ie>
+In-Reply-To: <20220814141237.493457-2-mail@conchuod.ie>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Fri, 19 Aug 2022 13:09:01 -0700
+Message-ID: <CAOnJCU+gvVfqN6DHQRMtJ82xU4ZajHrANfeDjt21i9Om4r43eg@mail.gmail.com>
+Subject: Re: [PATCH 1/4] riscv: kvm: vcpu_timer: fix unused variable warnings
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     Anup Patel <anup@brainfault.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Guo Ren <guoren@kernel.org>,
+        Vincent Chen <vincent.chen@sifive.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ieee80211_scan_rx() tries to access scan_req->flags after a
-null check, but a UAF is observed when the scan is completed
-and __ieee80211_scan_completed() executes, which then calls
-cfg80211_scan_done() leading to the freeing of scan_req.
+On Sun, Aug 14, 2022 at 7:12 AM Conor Dooley <mail@conchuod.ie> wrote:
+>
+> From: Conor Dooley <conor.dooley@microchip.com>
+>
+> In two places, csr is set but never used:
+>
+> arch/riscv/kvm/vcpu_timer.c:302:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
+>         struct kvm_vcpu_csr *csr;
+>                              ^
+> arch/riscv/kvm/vcpu_timer.c:327:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
+>         struct kvm_vcpu_csr *csr;
+>                              ^
+>
+> Remove the variable.
+>
+> Fixes: 8f5cb44b1bae ("RISC-V: KVM: Support sstc extension")
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  arch/riscv/kvm/vcpu_timer.c | 4 ----
+>  1 file changed, 4 deletions(-)
+>
+> diff --git a/arch/riscv/kvm/vcpu_timer.c b/arch/riscv/kvm/vcpu_timer.c
+> index 16f50c46ba39..185f2386a747 100644
+> --- a/arch/riscv/kvm/vcpu_timer.c
+> +++ b/arch/riscv/kvm/vcpu_timer.c
+> @@ -299,7 +299,6 @@ static void kvm_riscv_vcpu_update_timedelta(struct kvm_vcpu *vcpu)
+>
+>  void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
+>  {
+> -       struct kvm_vcpu_csr *csr;
+>         struct kvm_vcpu_timer *t = &vcpu->arch.timer;
+>
+>         kvm_riscv_vcpu_update_timedelta(vcpu);
+> @@ -307,7 +306,6 @@ void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
+>         if (!t->sstc_enabled)
+>                 return;
+>
+> -       csr = &vcpu->arch.guest_csr;
+>  #if defined(CONFIG_32BIT)
+>         csr_write(CSR_VSTIMECMP, (u32)t->next_cycles);
+>         csr_write(CSR_VSTIMECMPH, (u32)(t->next_cycles >> 32));
+> @@ -324,13 +322,11 @@ void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
+>
+>  void kvm_riscv_vcpu_timer_save(struct kvm_vcpu *vcpu)
+>  {
+> -       struct kvm_vcpu_csr *csr;
+>         struct kvm_vcpu_timer *t = &vcpu->arch.timer;
+>
+>         if (!t->sstc_enabled)
+>                 return;
+>
+> -       csr = &vcpu->arch.guest_csr;
+>         t = &vcpu->arch.timer;
+>  #if defined(CONFIG_32BIT)
+>         t->next_cycles = csr_read(CSR_VSTIMECMP);
+> --
+> 2.37.1
+>
 
-Since scan_req is rcu_dereference()'d, prevent the racing in
-__ieee80211_scan_completed() by ensuring that from mac80211's
-POV it is no longer accessed from an RCU read critical section
-before we call cfg80211_scan_done().
-
-Bug report: https://syzkaller.appspot.com/bug?extid=3Df9acff9bf08a845f225d
-Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-Suggested-by: Johannes Berg <johannes@sipsolutions.net>
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
----
-Changes in v3:
-Use Johannes Berg's suggestion as-it-is:
-https://lore.kernel.org/netdev/18fd9b89d45aedc1504d0cbd299ffb289ae96438.cam=
-el@sipsolutions.net/
-
-v2 is now obsolete since it was an incorrect way to go about things.
-
- net/mac80211/scan.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
-index fa8ddf576bc1..c4f2aeb31da3 100644
---- a/net/mac80211/scan.c
-+++ b/net/mac80211/scan.c
-@@ -469,16 +469,19 @@ static void __ieee80211_scan_completed(struct ieee802=
-11_hw *hw, bool aborted)
- =09scan_req =3D rcu_dereference_protected(local->scan_req,
- =09=09=09=09=09     lockdep_is_held(&local->mtx));
-=20
--=09if (scan_req !=3D local->int_scan_req) {
--=09=09local->scan_info.aborted =3D aborted;
--=09=09cfg80211_scan_done(scan_req, &local->scan_info);
--=09}
- =09RCU_INIT_POINTER(local->scan_req, NULL);
- =09RCU_INIT_POINTER(local->scan_sdata, NULL);
-=20
- =09local->scanning =3D 0;
- =09local->scan_chandef.chan =3D NULL;
-=20
-+=09synchronize_rcu();
-+
-+=09if (scan_req !=3D local->int_scan_req) {
-+=09=09local->scan_info.aborted =3D aborted;
-+=09=09cfg80211_scan_done(scan_req, &local->scan_info);
-+=09}
-+
- =09/* Set power back to normal operating levels. */
- =09ieee80211_hw_config(local, 0);
-=20
---=20
-2.35.1
+Thanks for fixing this. Sorry for missing those.
 
 
+--
+Regards,
+Atish
