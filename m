@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F34F5C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEB9C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350369AbiHSPvm (ORCPT
+        id S1350381AbiHSPvq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
+        Fri, 19 Aug 2022 11:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350427AbiHSPuc (ORCPT
+        with ESMTP id S1350435AbiHSPud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921332CE26;
-        Fri, 19 Aug 2022 08:48:12 -0700 (PDT)
+        Fri, 19 Aug 2022 11:50:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BFA20BDD;
+        Fri, 19 Aug 2022 08:48:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F34C615D5;
-        Fri, 19 Aug 2022 15:48:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B969C433C1;
-        Fri, 19 Aug 2022 15:48:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD3B9B827F8;
+        Fri, 19 Aug 2022 15:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AF0C433C1;
+        Fri, 19 Aug 2022 15:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924091;
-        bh=Yr7okvVqXnDFjMSzgjiWDpsS49DA0YngByrlZroVnJU=;
+        s=korg; t=1660924088;
+        bh=eiBYGI/GfKKQfsl7Kp3lm0urt+HgH2Yhm6H9UA64sHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ijMILB8B8skguetVNVT2xFPMt0Al9sFNznmFgBOFl325ZSCwA3/PG5LPrlFs9crqu
-         oiVQkqUccyJu+DpHkyWR+9urVqzG16i/zzkkz1TW2kPx9Xdl9VWrKmAWbPEAY6TiFQ
-         CxT+a7uQAHuNv9oNh2XFtkH3G5a9YVy4PHZjk2lY=
+        b=EO63s94M5IzBU9lWewIZY1yksxaYTCM6MYPsw4jiRJ0SQNwA+fG9q0DaYudlznQeY
+         Zl/KzOAneQD9slwjVVfGcBs89rCpcMZz8sJ2cSb4KnPR+iS7RWneMzMSlEFje9gJ4T
+         JtLXYb+X58WV1MB/4XFQXZwo4GH/ffuN/6QWC3m4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
-        Anup Patel <anup@brainfault.org>,
-        Ron Economos <w6rz@comcast.net>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.10 022/545] riscv: set default pm_power_off to NULL
-Date:   Fri, 19 Aug 2022 17:36:32 +0200
-Message-Id: <20220819153830.184035307@linuxfoundation.org>
+        stable@vger.kernel.org, Kai Huang <kai.huang@intel.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 021/545] KVM: x86: Tag kvm_mmu_x86_module_init() with __init
+Date:   Fri, 19 Aug 2022 17:36:31 +0200
+Message-Id: <20220819153830.146714805@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,65 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit f2928e224d85e7cc139009ab17cefdfec2df5d11 upstream.
+commit 982bae43f11c37b51d2f1961bb25ef7cac3746fa upstream.
 
-Set pm_power_off to NULL like on all other architectures, check if it
-is set in machine_halt() and machine_power_off() and fallback to
-default_power_off if no other power driver got registered.
+Mark kvm_mmu_x86_module_init() with __init, the entire reason it exists
+is to initialize variables when kvm.ko is loaded, i.e. it must never be
+called after module initialization.
 
-This brings riscv architecture inline with all other architectures,
-and allows to reuse exiting power drivers unmodified.
-
-Kernels without legacy SBI v0.1 extensions (CONFIG_RISCV_SBI_V01 is
-not set), do not set pm_power_off to sbi_shutdown(). There is no
-support for SBI v0.3 system reset extension either. This prevents
-using gpio_poweroff on SiFive HiFive Unmatched.
-
-Tested on SiFive HiFive unmatched, with a dtb specifying gpio-poweroff
-node and kernel complied without CONFIG_RISCV_SBI_V01.
-
-BugLink: https://bugs.launchpad.net/bugs/1942806
-Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Tested-by: Ron Economos <w6rz@comcast.net>
-Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
+Fixes: 1d0e84806047 ("KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded")
+Cc: stable@vger.kernel.org
+Reviewed-by: Kai Huang <kai.huang@intel.com>
+Tested-by: Michael Roth <michael.roth@amd.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220803224957.1285926-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/reset.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/kvm_host.h |    2 +-
+ arch/x86/kvm/mmu/mmu.c          |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/kernel/reset.c
-+++ b/arch/riscv/kernel/reset.c
-@@ -12,7 +12,7 @@ static void default_power_off(void)
- 		wait_for_interrupt();
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1340,7 +1340,7 @@ static inline int kvm_arch_flush_remote_
+ 		return -ENOTSUPP;
  }
  
--void (*pm_power_off)(void) = default_power_off;
-+void (*pm_power_off)(void) = NULL;
- EXPORT_SYMBOL(pm_power_off);
+-void kvm_mmu_x86_module_init(void);
++void __init kvm_mmu_x86_module_init(void);
+ int kvm_mmu_vendor_module_init(void);
+ void kvm_mmu_vendor_module_exit(void);
  
- void machine_restart(char *cmd)
-@@ -23,10 +23,16 @@ void machine_restart(char *cmd)
- 
- void machine_halt(void)
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5886,7 +5886,7 @@ static int set_nx_huge_pages(const char
+  * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
+  * its default value of -1 is technically undefined behavior for a boolean.
+  */
+-void kvm_mmu_x86_module_init(void)
++void __init kvm_mmu_x86_module_init(void)
  {
--	pm_power_off();
-+	if (pm_power_off != NULL)
-+		pm_power_off();
-+	else
-+		default_power_off();
- }
- 
- void machine_power_off(void)
- {
--	pm_power_off();
-+	if (pm_power_off != NULL)
-+		pm_power_off();
-+	else
-+		default_power_off();
- }
+ 	if (nx_huge_pages == -1)
+ 		__set_nx_huge_pages(get_nx_auto_mode());
 
 
