@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E628DC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF059C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349600AbiHSPsv (ORCPT
+        id S1350262AbiHSPs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
+        Fri, 19 Aug 2022 11:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350117AbiHSPrZ (ORCPT
+        with ESMTP id S1350197AbiHSPr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:47:25 -0400
+        Fri, 19 Aug 2022 11:47:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7AB26DF;
-        Fri, 19 Aug 2022 08:47:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7633D5BC;
+        Fri, 19 Aug 2022 08:47:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85EE2616BD;
-        Fri, 19 Aug 2022 15:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91EB4C433D6;
-        Fri, 19 Aug 2022 15:47:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80D88616B3;
+        Fri, 19 Aug 2022 15:47:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612BAC433D6;
+        Fri, 19 Aug 2022 15:47:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924023;
-        bh=vTR0PrPgVmeQWORMSuwYWD0IQIU+J/c4E+LEqVxqI+w=;
+        s=korg; t=1660924029;
+        bh=IGDBEkHT1pZ8hKcwC2DsQNonTbxCMoyXiydF2Q3tDkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BPYqRWIwNLgHp9KtrggERWgJwMhSwA51vnQsEzD8buDyZhvVJriTi3N4vnnDcG1pH
-         /OvXmf3QA6vUOapciSM47lUXULGg1dnRM9lxMEJ4/YUZd3fQF2tZnB8iaBlSrrAt40
-         o0U/SGnC6IvhzRnytZge8j6SPUMH9InNN9sW9gSY=
+        b=uFUVVPqnauNjPJb4YAVIltsqia9lgtbq12WDCesUwq1OS0InH4yx8ggSyk6LCvMEa
+         W+PTLgnOAFUv+G897mnzlyiot54lnNE4+EsdFDtSG05NnIUZdtn9RvPUUFCQgSMd2U
+         Oa/SL9flsuLhcJ3j6dWRZIduCg+OG+QiMzwsAdjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedant Patnaik <bedant.patnaik@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 030/545] ALSA: hda/realtek: Add a quirk for HP OMEN 15 (8786) mute LED
-Date:   Fri, 19 Aug 2022 17:36:40 +0200
-Message-Id: <20220819153830.537271507@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Steve French <sfrench@samba.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 032/545] vfs: Check the truncate maximum size in inode_newsize_ok()
+Date:   Fri, 19 Aug 2022 17:36:42 +0200
+Message-Id: <20220819153830.630006776@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,31 +56,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bedant Patnaik <bedant.patnaik@gmail.com>
+From: David Howells <dhowells@redhat.com>
 
-commit 30267718fe2d4dbea49015b022f6f1fe16ca31ab upstream.
+commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
 
-Board ID 8786 seems to be another variant of the Omen 15 that needs
-ALC285_FIXUP_HP_MUTE_LED for working mute LED.
+If something manages to set the maximum file size to MAX_OFFSET+1, this
+can cause the xfs and ext4 filesystems at least to become corrupt.
 
-Signed-off-by: Bedant Patnaik <bedant.patnaik@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220809142455.6473-1-bedant.patnaik@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Ordinarily, the kernel protects against userspace trying this by
+checking the value early in the truncate() and ftruncate() system calls
+calls - but there are at least two places that this check is bypassed:
+
+ (1) Cachefiles will round up the EOF of the backing file to DIO block
+     size so as to allow DIO on the final block - but this might push
+     the offset negative. It then calls notify_change(), but this
+     inadvertently bypasses the checking. This can be triggered if
+     someone puts an 8EiB-1 file on a server for someone else to try and
+     access by, say, nfs.
+
+ (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
+     and then calls vfs_truncate() directly - which also bypasses the
+     check.
+
+In both cases, it is potentially possible for a network filesystem to
+cause a disk filesystem to be corrupted: cachefiles in the client's
+cache filesystem; ksmbd in the server's filesystem.
+
+nfsd is okay as it checks the value, but we can then remove this check
+too.
+
+Fix this by adding a check to inode_newsize_ok(), as called from
+setattr_prepare(), thereby catching the issue as filesystems set up to
+perform the truncate with minimal opportunity for bypassing the new
+check.
+
+Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
+Fixes: f44158485826 ("cifsd: add file operations")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reported-by: Jeff Layton <jlayton@kernel.org>
+Tested-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Cc: stable@kernel.org
+Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: Steve French <sfrench@samba.org>
+cc: Hyunchul Lee <hyc.lee@gmail.com>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Dave Wysochanski <dwysocha@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/attr.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8817,6 +8817,7 @@ static const struct snd_pci_quirk alc269
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
-+	SND_PCI_QUIRK(0x103c, 0x8786, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
+--- a/fs/attr.c
++++ b/fs/attr.c
+@@ -134,6 +134,8 @@ EXPORT_SYMBOL(setattr_prepare);
+  */
+ int inode_newsize_ok(const struct inode *inode, loff_t offset)
+ {
++	if (offset < 0)
++		return -EINVAL;
+ 	if (inode->i_size < offset) {
+ 		unsigned long limit;
+ 
 
 
