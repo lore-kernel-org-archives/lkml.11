@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07DBEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D7FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352926AbiHSQ3Q (ORCPT
+        id S1352935AbiHSQ3W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
+        Fri, 19 Aug 2022 12:29:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353078AbiHSQ0K (ORCPT
+        with ESMTP id S1353090AbiHSQ0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:26:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E99118DDC;
-        Fri, 19 Aug 2022 09:03:59 -0700 (PDT)
+        Fri, 19 Aug 2022 12:26:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9F1CAC94;
+        Fri, 19 Aug 2022 09:03:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E073C612DF;
-        Fri, 19 Aug 2022 16:03:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E00C3C433C1;
-        Fri, 19 Aug 2022 16:03:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9309BCE26AA;
+        Fri, 19 Aug 2022 16:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80370C433D6;
+        Fri, 19 Aug 2022 16:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925038;
-        bh=4kBoXY0BZDoFI4KFDOmjwABTYguL/gf9UutjHbV1I2E=;
+        s=korg; t=1660925019;
+        bh=atgAS25s2COpB8BFvUkh8vDm4Mkm8/SqFe6Oe0UtabQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pxV3vPGaQflxaon19vdEdAGOwFE8mKaeS0SK9F8ZjYTg/N+3Vmnno+3zHgNPSjxgh
-         1iJd/vOB+hkaQhFP6vNyWsRIh2I7+8PfTPXfRwlP3BvLqbuEgblN8T7xhTpqHpSbZD
-         VAnZK5+mugAQkk5VrT1eFMoZTkt5Jgk68ZOGzHCk=
+        b=LXDVnANnkSpwZKodoq03xC5hcl4Ppw7+2c4EahLZuZxIMChTlXl80jz10xcx4ZDMm
+         cItORCNUgv/VR+wOwkOtiGSLEk+FRB06ufDylX+RqkDKfWraql3WvV9UVEEyFsqaEg
+         eRpAowilaTX0DxKJpvFxEFFDYep3i+KXChckGhto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 363/545] opp: Fix error check in dev_pm_opp_attach_genpd()
-Date:   Fri, 19 Aug 2022 17:42:13 +0200
-Message-Id: <20220819153845.621941830@linuxfoundation.org>
+Subject: [PATCH 5.10 358/545] nvme: use command_id instead of req->tag in trace_nvme_complete_rq()
+Date:   Fri, 19 Aug 2022 17:42:08 +0200
+Message-Id: <20220819153845.402530904@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,37 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tang Bin <tangbin@cmss.chinamobile.com>
+From: Bean Huo <beanhuo@micron.com>
 
-[ Upstream commit 4ea9496cbc959eb5c78f3e379199aca9ef4e386b ]
+[ Upstream commit 679c54f2de672b7d79d02f8c4ad483ff6dd8ce2e ]
 
-dev_pm_domain_attach_by_name() may return NULL in some cases,
-so IS_ERR() doesn't meet the requirements. Thus fix it.
+Use command_id instead of req->tag in trace_nvme_complete_rq(),
+because of commit e7006de6c238 ("nvme: code command_id with a genctr
+for use authentication after release"), cmd->common.command_id is set to
+((genctl & 0xf)< 12 | req->tag), no longer req->tag, which makes cid in
+trace_nvme_complete_rq and trace_nvme_setup_cmd are not the same.
 
-Fixes: 6319aee10e53 ("opp: Attach genpds to devices from within OPP core")
-Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
-[ Viresh: Replace ENODATA with ENODEV ]
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fixes: e7006de6c238 ("nvme: code command_id with a genctr for use authentication after release")
+Signed-off-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/opp/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/nvme/host/trace.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 903b465c8568..7ed605ffb717 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -2052,8 +2052,8 @@ struct opp_table *dev_pm_opp_attach_genpd(struct device *dev,
- 		}
- 
- 		virt_dev = dev_pm_domain_attach_by_name(dev, *name);
--		if (IS_ERR(virt_dev)) {
--			ret = PTR_ERR(virt_dev);
-+		if (IS_ERR_OR_NULL(virt_dev)) {
-+			ret = PTR_ERR(virt_dev) ? : -ENODEV;
- 			dev_err(dev, "Couldn't attach to pm_domain: %d\n", ret);
- 			goto err;
- 		}
+diff --git a/drivers/nvme/host/trace.h b/drivers/nvme/host/trace.h
+index 35bac7a25422..aa8b0f86b2be 100644
+--- a/drivers/nvme/host/trace.h
++++ b/drivers/nvme/host/trace.h
+@@ -98,7 +98,7 @@ TRACE_EVENT(nvme_complete_rq,
+ 	    TP_fast_assign(
+ 		__entry->ctrl_id = nvme_req(req)->ctrl->instance;
+ 		__entry->qid = nvme_req_qid(req);
+-		__entry->cid = req->tag;
++		__entry->cid = nvme_req(req)->cmd->common.command_id;
+ 		__entry->result = le64_to_cpu(nvme_req(req)->result.u64);
+ 		__entry->retries = nvme_req(req)->retries;
+ 		__entry->flags = nvme_req(req)->flags;
 -- 
 2.35.1
 
