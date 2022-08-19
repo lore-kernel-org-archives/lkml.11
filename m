@@ -2,249 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0566C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E75C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345493AbiHSIkH (ORCPT
+        id S1346568AbiHSIkz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
+        Fri, 19 Aug 2022 04:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346618AbiHSIjh (ORCPT
+        with ESMTP id S1347656AbiHSIkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:39:37 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F05952FED
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:39:36 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id e28so2865914qts.1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:39:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ZVAH52wX+Vt0VKFbPcXrR0NQYeosP7RaFGxexdtx2/k=;
-        b=RBvhEylwETKO3LQxwWSeaQIT8zFQsVcb2ac4fQv65r4ZaKJOIxncaj3jU95FlpRq1C
-         miI4Mo+in6YwX1eXdwPiPt2Mf/MuUKer/ORZsLwibFNz2IYhiR261oGgJFHi/wofDzUl
-         6SvY+GbnuYbT23bJp2HASErvNrB5tVY7rlMIM1KFKh5v86IthHVkwds+7aErsgGTePLH
-         GvK7SijEyufalcqph/NO0rUf+Af2ZQw7X7P4sbIXHELV8ijwWDn0BM2Jt0MRIqCmK4tG
-         tA4v+A7Oro3k3VWl14IWMrKgTMrNwIZ8FMO/j2LhzneVE1FstWD0gvhVVXd3vrngiHlR
-         PzZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ZVAH52wX+Vt0VKFbPcXrR0NQYeosP7RaFGxexdtx2/k=;
-        b=GdG3Doedhh/4bJ66QigzS8ylByujHgEEPs089ycCMWB+3QBl4qVirHLatKMg/NIacv
-         M/4v/HpKr3CCw6w2QiSeiWBsA/GtbojIafkvkpw1hxWmaLZKwdWBhLwc5RhVlhBMpK5v
-         nuNw1wB/AJKOfUiWs4KqaUsQseWQK2WMrvpabBUuGgAeo9BPuuMIaE0lzt1hxoni8Lq/
-         DEEslsk0jCof8/9dodz39LehSzF3620UR+pS65R3fQ6YcAxsaNLAhqUjzdXfFyqqY+P9
-         HEHU6d385pdF0vYVwyTvLZ+uiiS9BsYDxBsE0l1a4QeGdF0YstmMr/YbKP88QQUZS/Ab
-         0w9w==
-X-Gm-Message-State: ACgBeo0xBowivm1wpxhvX2KTj34kwnS8B/q4GT9GPhgk0aGnsKM5mlqZ
-        0AREZcFIum56K80ad6/3lfk=
-X-Google-Smtp-Source: AA6agR63GuJ9BaRkAT1HJfWOqq0Tozm0ITWs+Ffdd9lihkVdVI6HsKLlY1QYEJeOEWwacxzbNVZz4w==
-X-Received: by 2002:a05:622a:1185:b0:343:7de8:c0f2 with SMTP id m5-20020a05622a118500b003437de8c0f2mr5509076qtk.256.1660898375533;
-        Fri, 19 Aug 2022 01:39:35 -0700 (PDT)
-Received: from sophie ([89.46.62.64])
-        by smtp.gmail.com with ESMTPSA id az41-20020a05620a172900b006bb8b5b79efsm3265212qkb.129.2022.08.19.01.39.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 01:39:35 -0700 (PDT)
-From:   Rebecca Mckeever <remckee0@gmail.com>
-To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     David Hildenbrand <david@redhat.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Shaoqin Huang <shaoqin.huang@intel.com>
-Subject: [PATCH v2 1/8] memblock tests: update tests to check if memblock_alloc zeroed memory
-Date:   Fri, 19 Aug 2022 01:34:49 -0700
-Message-Id: <669782f4f508c3dd60c5efd6d130d12a77573448.1660897732.git.remckee0@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1660897732.git.remckee0@gmail.com>
-References: <cover.1660897732.git.remckee0@gmail.com>
+        Fri, 19 Aug 2022 04:40:39 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E04B54C92;
+        Fri, 19 Aug 2022 01:40:36 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M8FZS6hrnz4wgr;
+        Fri, 19 Aug 2022 18:40:32 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1660898434;
+        bh=uisOxKW0IqlxNEUQLnJRe3FfZBB2ylgQjA49VP1OvrM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=m64tQGfYHHeiflTNxDIBVWx1fuCzvVEv5JrqculF+hMsKLbABD68To21ECRQhLeaj
+         jsWcgQY1DWabF/qbwpo0508Fi7vuoHxt47mXieDHF6TtdTNcRB4OK6YMOB/1lwzaC1
+         sVT3xPm+KUkQxVqoyFV8t1x+RRoKKi4ye1IBzTfOHC4H76oig9Ic6VnYV+dqfGfyEV
+         mEzj8WXUxA4/Yj1qOlXMdVV1zFhPNwLSptJCu0N54pLNDVWAW4HMOAQ7I81zto2nGT
+         dlsJPaz13oZ2plx2OznKrRrpR3L7D8enU1x3Vpn4LXZkQCFEEamn6APhqIOOMYp293
+         hqXQRYnwMuTJw==
+Date:   Fri, 19 Aug 2022 18:40:27 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Liam Howlett <liam.howlett@oracle.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the char-misc.current tree with the
+ mm-hotfixes tree
+Message-ID: <20220819184027.7b3fda3e@canb.auug.org.au>
+In-Reply-To: <Yv8vZQB25NE0r/uN@kroah.com>
+References: <20220819082714.5313827d@canb.auug.org.au>
+        <Yv8vZQB25NE0r/uN@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/R80RBNWmf__C1lGbMR.J92d";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an assert in memblock_alloc() tests where allocation is expected to
-occur. The assert checks whether the entire chunk of allocated memory is
-cleared.
+--Sig_/R80RBNWmf__C1lGbMR.J92d
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The current memblock_alloc() tests do not check whether the allocated
-memory was zeroed. memblock_alloc() should zero the allocated memory since
-it is a wrapper for memblock_alloc_try_nid().
+Hi Greg,
 
-Reviewed-by: Shaoqin Huang <shaoqin.huang@intel.com>
-Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
----
- tools/testing/memblock/tests/alloc_api.c | 23 +++++++++++++++++++++++
- tools/testing/memblock/tests/common.c    |  7 +++++++
- tools/testing/memblock/tests/common.h    | 12 ++++++++++++
- 3 files changed, 42 insertions(+)
+On Fri, 19 Aug 2022 08:36:21 +0200 Greg KH <greg@kroah.com> wrote:
+>
+> On Fri, Aug 19, 2022 at 08:28:18AM +1000, Stephen Rothwell wrote:
+> >=20
+> > Today's linux-next merge of the char-misc.current tree got a conflict i=
+n:
+> >=20
+> >   drivers/android/binder_alloc.c
+> >=20
+> > between commit:
+> >=20
+> >   b3bb668f3dc6 ("binder_alloc: add missing mmap_lock calls when using t=
+he VMA")
+> >=20
+> > from the mm-hotfixes tree and commit:
+> >=20
+> >   d6f35446d076 ("binder_alloc: Add missing mmap_lock calls when using t=
+he VMA")
+> >=20
+> > from the char-misc.current tree.
+> >=20
+> > I fixed it up (I used the latter as it was committed later even though
+> > the author times were the same) and can carry the fix as necessary. This
+> > is now fixed as far as linux-next is concerned, but any non trivial
+> > conflicts should be mentioned to your upstream maintainer when your tree
+> > is submitted for merging.  You may also want to consider cooperating
+> > with the maintainer of the conflicting tree to minimise any particularly
+> > complex conflicts. =20
+>=20
+> These should be identical, if not, something went wrong :(
 
-diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
-index a14f38eb8a89..aefb67557de9 100644
---- a/tools/testing/memblock/tests/alloc_api.c
-+++ b/tools/testing/memblock/tests/alloc_api.c
-@@ -22,6 +22,8 @@ static int alloc_top_down_simple_check(void)
- 	allocated_ptr = memblock_alloc(size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
-+
- 	ASSERT_EQ(rgn->size, size);
- 	ASSERT_EQ(rgn->base, expected_start);
- 
-@@ -80,6 +82,8 @@ static int alloc_top_down_disjoint_check(void)
- 	allocated_ptr = memblock_alloc(r2_size, alignment);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
-+
- 	ASSERT_EQ(rgn1->size, r1.size);
- 	ASSERT_EQ(rgn1->base, r1.base);
- 
-@@ -125,6 +129,8 @@ static int alloc_top_down_before_check(void)
- 	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
-+
- 	ASSERT_EQ(rgn->size, total_size);
- 	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - total_size);
- 
-@@ -173,6 +179,8 @@ static int alloc_top_down_after_check(void)
- 	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
-+
- 	ASSERT_EQ(rgn->size, total_size);
- 	ASSERT_EQ(rgn->base, r1.base - r2_size);
- 
-@@ -223,6 +231,8 @@ static int alloc_top_down_second_fit_check(void)
- 	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
-+
- 	ASSERT_EQ(rgn->size, r2.size + r3_size);
- 	ASSERT_EQ(rgn->base, r2.base - r3_size);
- 
-@@ -277,6 +287,8 @@ static int alloc_in_between_generic_check(void)
- 	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
-+
- 	ASSERT_EQ(rgn->size, total_size);
- 	ASSERT_EQ(rgn->base, r1.base - r2.size - r3_size);
- 
-@@ -418,6 +430,8 @@ static int alloc_limited_space_generic_check(void)
- 	allocated_ptr = memblock_alloc(available_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, available_size);
-+
- 	ASSERT_EQ(rgn->size, MEM_SIZE);
- 	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
-@@ -472,6 +486,8 @@ static int alloc_bottom_up_simple_check(void)
- 	allocated_ptr = memblock_alloc(SZ_2, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, SZ_2);
-+
- 	ASSERT_EQ(rgn->size, SZ_2);
- 	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
-@@ -528,6 +544,7 @@ static int alloc_bottom_up_disjoint_check(void)
- 	allocated_ptr = memblock_alloc(r2_size, alignment);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
- 
- 	ASSERT_EQ(rgn1->size, r1.size);
- 	ASSERT_EQ(rgn1->base, r1.base);
-@@ -571,6 +588,8 @@ static int alloc_bottom_up_before_check(void)
- 	allocated_ptr = memblock_alloc(r1_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r1_size);
-+
- 	ASSERT_EQ(rgn->size, total_size);
- 	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
-@@ -618,6 +637,8 @@ static int alloc_bottom_up_after_check(void)
- 	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
-+
- 	ASSERT_EQ(rgn->size, total_size);
- 	ASSERT_EQ(rgn->base, r1.base);
- 
-@@ -669,6 +690,8 @@ static int alloc_bottom_up_second_fit_check(void)
- 	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
- 
- 	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
-+
- 	ASSERT_EQ(rgn->size, r2.size + r3_size);
- 	ASSERT_EQ(rgn->base, r2.base);
- 
-diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
-index 76a8ad818f3a..eec6901081af 100644
---- a/tools/testing/memblock/tests/common.c
-+++ b/tools/testing/memblock/tests/common.c
-@@ -60,16 +60,23 @@ void reset_memblock_attributes(void)
- 	memblock.current_limit	= MEMBLOCK_ALLOC_ANYWHERE;
- }
- 
-+static inline void fill_memblock(void)
-+{
-+	memset(memory_block.base, 1, MEM_SIZE);
-+}
-+
- void setup_memblock(void)
- {
- 	reset_memblock_regions();
- 	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
-+	fill_memblock();
- }
- 
- void dummy_physical_memory_init(void)
- {
- 	memory_block.base = malloc(MEM_SIZE);
- 	assert(memory_block.base);
-+	fill_memblock();
- }
- 
- void dummy_physical_memory_cleanup(void)
-diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
-index d396e5423a8e..29756e652e3e 100644
---- a/tools/testing/memblock/tests/common.h
-+++ b/tools/testing/memblock/tests/common.h
-@@ -51,6 +51,18 @@
- 	assert((_expected) < (_seen)); \
- } while (0)
- 
-+/**
-+ * ASSERT_MEM_EQ():
-+ * Check that the first @_size bytes of @_seen are all equal to @_expected.
-+ * If false, print failed test message (if running with --verbose) and then
-+ * assert.
-+ */
-+#define ASSERT_MEM_EQ(_seen, _expected, _size) do { \
-+	for (int _i = 0; _i < (_size); _i++) { \
-+		ASSERT_EQ((_seen)[_i], (_expected)); \
-+	} \
-+} while (0)
-+
- #define PREFIX_PUSH() prefix_push(__func__)
- 
- /*
--- 
-2.25.1
+Something went wrong :-)
 
+$ git range-diff b3bb668f3dc6^..b3bb668f3dc6 d6f35446d076^..d6f35446d076
+1:  b3bb668f3dc6 ! 1:  d6f35446d076 binder_alloc: add missing mmap_lock cal=
+ls when using the VMA
+    @@ Metadata
+     Author: Liam Howlett <liam.howlett@oracle.com>
+    =20
+      ## Commit message ##
+    -    binder_alloc: add missing mmap_lock calls when using the VMA
+    +    binder_alloc: Add missing mmap_lock calls when using the VMA
+    =20
+    -    Take the mmap_read_lock() when using the VMA in binder_alloc_print=
+_pages()
+    -    and when checking for a VMA in binder_alloc_new_buf_locked().
+    +    Take the mmap_read_lock() when using the VMA in
+    +    binder_alloc_print_pages() and when checking for a VMA in
+    +    binder_alloc_new_buf_locked().
+    =20
+         It is worth noting binder_alloc_new_buf_locked() drops the VMA rea=
+d lock
+    -    after it verifies a VMA exists, but may be taken again deeper in t=
+he call
+    -    stack, if necessary.
+    +    after it verifies a VMA exists, but may be taken again deeper in t=
+he
+    +    call stack, if necessary.
+    =20
+    -    Link: https://lkml.kernel.org/r/20220810160209.1630707-1-Liam.Howl=
+ett@oracle.com
+    -    Fixes: a43cfc87caaf ("android: binder: stop saving a pointer to th=
+e VMA")
+    -    Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+    +    Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the=
+ VMA)
+    +    Cc: stable <stable@kernel.org>
+         Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+    -    Reported-by: <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.co=
+m>
+    -    Acked-by: Carlos Llamas <cmllamas@google.com>
+    +    Reported-by: syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com
+         Tested-by: Ondrej Mosnacek <omosnace@redhat.com>
+    -    Cc: Minchan Kim <minchan@kernel.org>
+    -    Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
+    -    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    -    Cc: Hridya Valsaraju <hridya@google.com>
+    -    Cc: Joel Fernandes <joel@joelfernandes.org>
+    -    Cc: Martijn Coenen <maco@android.com>
+    -    Cc: Suren Baghdasaryan <surenb@google.com>
+    -    Cc: Todd Kjos <tkjos@android.com>
+    -    Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+    -    Cc: "Arve Hj=C3=B8nnev=C3=A5g" <arve@android.com>
+    -    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+    +    Acked-by: Carlos Llamas <cmllamas@google.com>
+    +    Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+    +    Link: https://lore.kernel.org/r/20220810160209.1630707-1-Liam.Howl=
+ett@oracle.com
+    +    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    =20
+      ## drivers/android/binder_alloc.c ##
+     @@ drivers/android/binder_alloc.c: static struct binder_buffer *binder=
+_alloc_new_buf_locked(
+    @@ drivers/android/binder_alloc.c: void binder_alloc_print_pages(struct=
+ seq_file *m
+     -		}
+     +
+     +	mmap_read_lock(alloc->vma_vm_mm);
+    -+	if (binder_alloc_get_vma(alloc) =3D=3D NULL)
+    ++	if (binder_alloc_get_vma(alloc) =3D=3D NULL) {
+    ++		mmap_read_unlock(alloc->vma_vm_mm);
+     +		goto uninitialized;
+    + 	}
+     +
+    ++	mmap_read_unlock(alloc->vma_vm_mm);
+     +	for (i =3D 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
+     +		page =3D &alloc->pages[i];
+     +		if (!page->page_ptr)
+    @@ drivers/android/binder_alloc.c: void binder_alloc_print_pages(struct=
+ seq_file *m
+     +			active++;
+     +		else
+     +			lru++;
+    - 	}
+    ++	}
+     +
+     +uninitialized:
+    -+	mmap_read_unlock(alloc->vma_vm_mm);
+      	mutex_unlock(&alloc->mutex);
+      	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
+      	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/R80RBNWmf__C1lGbMR.J92d
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL/THsACgkQAVBC80lX
+0GzlYQf/ZYiupdmRuwv/uusPjCKYlvCSC+B4njyeYZhbU/23go92fAYcLO79l7y9
+bWUYYg8b3GMXAgykZDF8LOf5+itjGacVwrdMR7ImY9WDIhFoBJtYAtkxSb8fdv/P
+wPRxMHWEcVy5JvF+Unzfy/09uYiEATqwOkhExTNYgcYHfAfu3DWqIZBbJZ1n5cGd
+Cpi5tKeto5nkr1c0tRGXcyPuvz6fGnFtMLcwB9iMqTrcFyJuX+VYpuTePp5N2s/+
+X8lqvFMLRWhsHjCc0h6CL7Xo4r5P+22OLnVg9tI/a85wr3Dzs8DmffkoXWt1mVBR
+uFHuNc+0JMQeOFIoubQFNnegD7158A==
+=XhGU
+-----END PGP SIGNATURE-----
+
+--Sig_/R80RBNWmf__C1lGbMR.J92d--
