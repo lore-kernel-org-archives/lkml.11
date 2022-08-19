@@ -2,150 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 681CDC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B773AC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352137AbiHSQTm (ORCPT
+        id S1352151AbiHSQTq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
+        Fri, 19 Aug 2022 12:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352132AbiHSQPp (ORCPT
+        with ESMTP id S1352138AbiHSQPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:15:45 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A198D39A8;
-        Fri, 19 Aug 2022 08:58:45 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8RD641SmzkWQg;
-        Fri, 19 Aug 2022 23:55:18 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 23:58:33 +0800
-Received: from [10.174.176.245] (10.174.176.245) by
- kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 23:58:32 +0800
-Message-ID: <d1463bc2-6abd-7b01-5aac-8b7780b94cca@huawei.com>
-Date:   Fri, 19 Aug 2022 23:58:32 +0800
+        Fri, 19 Aug 2022 12:15:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A38EE4AB;
+        Fri, 19 Aug 2022 08:58:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C1B0B8281A;
+        Fri, 19 Aug 2022 15:58:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC698C433C1;
+        Fri, 19 Aug 2022 15:58:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660924732;
+        bh=GOWshVnBwy6EwloCgplMH55chcLT2EZdBYc4L1saBCk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=X0aeNuKnmhc02eh2wFM1UvxxH/F+xjwpfsJEXYhPvGbHATv+6vV1MUJkGDRgKC8Ky
+         W5iaTFyYeLiafTrh11vdn0OWN+ulWmUd8A15e118D+iVxF52Kiyx2UDMTUT+gDDvJw
+         lLDOOs0DBXifzX9yeIpXSnBxu2i/YoLvcbBQIfeQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 247/545] i2c: mux-gpmux: Add of_node_put() when breaking out of loop
+Date:   Fri, 19 Aug 2022 17:40:17 +0200
+Message-Id: <20220819153840.403541746@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net] net/sched: fix netdevice reference leaks in
- attach_one_default_qdisc()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <brouer@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220817104646.22861-1-wanghai38@huawei.com>
- <20220818105642.6d58e9d4@kernel.org>
-From:   "wanghai (M)" <wanghai38@huawei.com>
-In-Reply-To: <20220818105642.6d58e9d4@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.245]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Liang He <windhl@126.com>
 
-在 2022/8/19 1:56, Jakub Kicinski 写道:
-> On Wed, 17 Aug 2022 18:46:46 +0800 Wang Hai wrote:
->> In attach_default_qdiscs(), when attach default qdisc (fq_codel) fails
->> and fallback to noqueue, if the original attached qdisc is not released
->> and a new one is directly attached, this will cause netdevice reference
->> leaks.
-> Could you provide more details on the failure path? My preference would
-> be to try to clean up properly there, if possible.
-Hi Jakub.
+[ Upstream commit 6435319c34704994e19b0767f6a4e6f37439867b ]
 
-Here are the details of the failure. Do I need to do cleanup under the 
-failed path?
+In i2c_mux_probe(), we should call of_node_put() when breaking out
+of for_each_child_of_node() which will automatically increase and
+decrease the refcount.
 
-If a dev has multiple queues and queue 0 fails to attach qdisc
-because there is no memory in attach_one_default_qdisc(). Then
-dev->qdisc will be noop_qdisc by default. But the other queues
-may be able to successfully attach to default qdisc.
+Fixes: ac8498f0ce53 ("i2c: i2c-mux-gpmux: new driver")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Peter Rosin <peda@axentia.se>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/i2c/muxes/i2c-mux-gpmux.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-In this case, the fallback to noqueue process will be triggered
-
-static void attach_default_qdiscs(struct net_device *dev)
-{
-     ...
-     if (!netif_is_multiqueue(dev) ||
-         dev->priv_flags & IFF_NO_QUEUE) {
-             ...
-             netdev_for_each_tx_queue(dev, attach_one_default_qdisc, 
-NULL); // queue 0 attach failed because -ENOBUFS, but the other queues 
-attach successfully
-             qdisc = txq->qdisc_sleeping;
-             rcu_assign_pointer(dev->qdisc, qdisc); // dev->qdisc = 
-&noop_qdisc
-             ...
-     }
-     ...
-     if (qdisc == &noop_qdisc) {
-         ...
-         netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL); 
-// Re-attach, but not release the previously created qdisc
-         ...
-     }
-}
-
->> The following is the bug log:
->>
->> veth0: default qdisc (fq_codel) fail, fallback to noqueue
->> unregister_netdevice: waiting for veth0 to become free. Usage count = 32
->> leaked reference.
->>   qdisc_alloc+0x12e/0x210
->>   qdisc_create_dflt+0x62/0x140
->>   attach_one_default_qdisc.constprop.41+0x44/0x70
->>   dev_activate+0x128/0x290
->>   __dev_open+0x12a/0x190
->>   __dev_change_flags+0x1a2/0x1f0
->>   dev_change_flags+0x23/0x60
->>   do_setlink+0x332/0x1150
->>   __rtnl_newlink+0x52f/0x8e0
->>   rtnl_newlink+0x43/0x70
->>   rtnetlink_rcv_msg+0x140/0x3b0
->>   netlink_rcv_skb+0x50/0x100
->>   netlink_unicast+0x1bb/0x290
->>   netlink_sendmsg+0x37c/0x4e0
->>   sock_sendmsg+0x5f/0x70
->>   ____sys_sendmsg+0x208/0x280
->>
->> In attach_one_default_qdisc(), release the old one before attaching
->> a new qdisc to fix this bug.
->>
->> Fixes: bf6dba76d278 ("net: sched: fallback to qdisc noqueue if default qdisc setup fail")
->> Signed-off-by: Wang Hai <wanghai38@huawei.com>
->> ---
->>   net/sched/sch_generic.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
->> index d47b9689eba6..87b61ef14497 100644
->> --- a/net/sched/sch_generic.c
->> +++ b/net/sched/sch_generic.c
->> @@ -1140,6 +1140,11 @@ static void attach_one_default_qdisc(struct net_device *dev,
->>   
->>   	if (!netif_is_multiqueue(dev))
->>   		qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
->> +
->> +	if (dev_queue->qdisc_sleeping &&
->> +	    dev_queue->qdisc_sleeping != &noop_qdisc)
->> +		qdisc_put(dev_queue->qdisc_sleeping);
->> +
->>   	dev_queue->qdisc_sleeping = qdisc;
->>   }
->>   
-> .
-
+diff --git a/drivers/i2c/muxes/i2c-mux-gpmux.c b/drivers/i2c/muxes/i2c-mux-gpmux.c
+index d3acd8d66c32..33024acaac02 100644
+--- a/drivers/i2c/muxes/i2c-mux-gpmux.c
++++ b/drivers/i2c/muxes/i2c-mux-gpmux.c
+@@ -134,6 +134,7 @@ static int i2c_mux_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_children:
++	of_node_put(child);
+ 	i2c_mux_del_adapters(muxc);
+ err_parent:
+ 	i2c_put_adapter(parent);
 -- 
-Wang Hai
+2.35.1
+
+
 
