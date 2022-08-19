@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D674C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E39D7C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351736AbiHSQKR (ORCPT
+        id S1351743AbiHSQKX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
+        Fri, 19 Aug 2022 12:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351227AbiHSQGw (ORCPT
+        with ESMTP id S1351424AbiHSQH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FA610E7A5;
-        Fri, 19 Aug 2022 08:56:04 -0700 (PDT)
+        Fri, 19 Aug 2022 12:07:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0994108100;
+        Fri, 19 Aug 2022 08:56:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D918561745;
-        Fri, 19 Aug 2022 15:56:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA42DC433C1;
-        Fri, 19 Aug 2022 15:56:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9156061199;
+        Fri, 19 Aug 2022 15:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55E41C433D6;
+        Fri, 19 Aug 2022 15:56:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924563;
-        bh=Lr0HrZMd4wWj9MZOVXFZmFcxwZ0FXpH4x7qydVGbCis=;
+        s=korg; t=1660924572;
+        bh=0YmcELewkq0m2pG7nTjmkORBYFQKbDKx046uezXclag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pFYPVSv/yxRuREonCsirouRtlW0eNajFCWAox/T7Qc7fYgsMPgTPZCPxBSOTDr6Ir
-         QZ/cQQZnCIH8KzS8LYdjGNwC7lLXLN2rRCQFu/jM0JUQtlcFdVLmZ3jmJVmoJ4Q5Jv
-         hJzZ1TlJp1sA+P/QCZmANhpIQfPR4WnVMZ/pGtxs=
+        b=D6In01/FNI1SxcDhZK3qWR4O8S5620UiAM6km83lBTS2SyxkQ1Pfd6rNfWZwFZam5
+         CJpp9rIpPq3nn6Xic6lgbUCMVjFdGqDFnx89FiwAJfshtKditFG40vRmfDg4DPCRsw
+         ssdtVDD9F96b82FhntKFx0odEtQzH3CPx4eXdVWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 210/545] drm/mediatek: dpi: Only enable dpi after the bridge is enabled
-Date:   Fri, 19 Aug 2022 17:39:40 +0200
-Message-Id: <20220819153838.766202407@linuxfoundation.org>
+Subject: [PATCH 5.10 212/545] lib: bitmap: order includes alphabetically
+Date:   Fri, 19 Aug 2022 17:39:42 +0200
+Message-Id: <20220819153838.848648623@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,46 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-[ Upstream commit aed61ef6beb911cc043af0f2f291167663995065 ]
+[ Upstream commit c13656b904b6173aad723d9680a81c60de2f5edc ]
 
-Enabling the dpi too early causes glitches on screen.
+For better readability and maintenance: order the includes in bitmap
+source files alphabetically.
 
-Move the call to mtk_dpi_enable() at the end of the bridge_enable
-callback to ensure everything is setup properly before enabling dpi.
-
-Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-16-rex-bc.chen@mediatek.com/
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/bitmap.h | 4 ++--
+ lib/bitmap.c           | 9 +++++----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 554ad60af4e9..c1ae336df683 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -397,7 +397,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
- 	if (dpi->pinctrl && dpi->pins_dpi)
- 		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
+diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+index 99058eb81042..4dd2e1d39c74 100644
+--- a/include/linux/bitmap.h
++++ b/include/linux/bitmap.h
+@@ -4,10 +4,10 @@
  
--	mtk_dpi_enable(dpi);
- 	return 0;
+ #ifndef __ASSEMBLY__
  
- err_pixel:
-@@ -534,6 +533,7 @@ static void mtk_dpi_bridge_enable(struct drm_bridge *bridge)
+-#include <linux/types.h>
+ #include <linux/bitops.h>
+-#include <linux/string.h>
+ #include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/types.h>
  
- 	mtk_dpi_power_on(dpi);
- 	mtk_dpi_set_display_mode(dpi, &dpi->mode);
-+	mtk_dpi_enable(dpi);
- }
+ /*
+  * bitmaps provide bit arrays that consume one or more unsigned
+diff --git a/lib/bitmap.c b/lib/bitmap.c
+index 75006c4036e9..78f70d9007ad 100644
+--- a/lib/bitmap.c
++++ b/lib/bitmap.c
+@@ -3,17 +3,18 @@
+  * lib/bitmap.c
+  * Helper functions for bitmap.h.
+  */
+-#include <linux/export.h>
+-#include <linux/thread_info.h>
+-#include <linux/ctype.h>
+-#include <linux/errno.h>
++
+ #include <linux/bitmap.h>
+ #include <linux/bitops.h>
+ #include <linux/bug.h>
++#include <linux/ctype.h>
++#include <linux/errno.h>
++#include <linux/export.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include <linux/thread_info.h>
+ #include <linux/uaccess.h>
  
- static const struct drm_bridge_funcs mtk_dpi_bridge_funcs = {
+ #include <asm/page.h>
 -- 
 2.35.1
 
