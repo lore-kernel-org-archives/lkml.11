@@ -2,210 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB16FC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D21C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350070AbiHSPnD (ORCPT
+        id S1350126AbiHSPnG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        Fri, 19 Aug 2022 11:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350041AbiHSPmO (ORCPT
+        with ESMTP id S1349972AbiHSPmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:42:14 -0400
+        Fri, 19 Aug 2022 11:42:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F05102F3F;
-        Fri, 19 Aug 2022 08:41:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B01103625;
+        Fri, 19 Aug 2022 08:41:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F0D761630;
-        Fri, 19 Aug 2022 15:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10E18C433C1;
-        Fri, 19 Aug 2022 15:41:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECAEA6163B;
+        Fri, 19 Aug 2022 15:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D24E4C433C1;
+        Fri, 19 Aug 2022 15:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660923686;
-        bh=GmyLQo4ZOTkk3TH6XnGNNUHjOXkNC3XIh8LyzUnIjxs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zenOlyg5kHqNW0WWfhpAKzcoLbjnVIkhl211BAIN/aghyn/r/mYmF6EB/po1e8HUh
-         y4Fjt7rqpjYiuCzrOjZfuzjhzAmZ5G9ilCWw0OwhrZ4YvLcOojcEsKHtOPg/ZSZLiw
-         EWPaFPW7PwZej86FwuLpG1MamvBu87GErj6cstxY=
+        s=korg; t=1660923689;
+        bh=hiMg46p6NCJj1EV5/LXQXtG9v0apz6S0I5TWCJsZky4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BAZoJV2CHgW4ATH4c+yHqqa5Zpszb8O3yQA86JtY1EEgWRXmYlr4Bbs65tDSbrE8E
+         aR1kUAxpZXYsojmQUZSj68HnlxGXOg/3nnDZWjrMDF02zKaIWmDECqJtTLLVFoqeua
+         nsFJZCF+5cLaLf/CwRbe/mMWHLG3Ww0SP1LK6s6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
-        Qu Wenruo <wqu@suse.com>
-Subject: [PATCH 5.15 09/14] btrfs: only write the sectors in the vertical stripe which has data stripes
-Date:   Fri, 19 Aug 2022 17:40:25 +0200
-Message-Id: <20220819153711.977759356@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.15 00/14] 5.15.62-rc1 review
+Date:   Fri, 19 Aug 2022 17:40:16 +0200
+Message-Id: <20220819153711.658766010@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153711.658766010@linuxfoundation.org>
-References: <20220819153711.658766010@linuxfoundation.org>
-User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.62-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.62-rc1
+X-KernelTest-Deadline: 2022-08-21T15:37+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+This is the start of the stable review cycle for the 5.15.62 release.
+There are 14 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit bd8f7e627703ca5707833d623efcd43f104c7b3f upstream.
+Responses should be made by Sun, 21 Aug 2022 15:36:59 +0000.
+Anything received after that time might be too late.
 
-If we have only 8K partial write at the beginning of a full RAID56
-stripe, we will write the following contents:
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.62-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
 
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XXXXXXXXXXXXXXX|XXXXXXXXXXXXXXX|
+thanks,
 
-|X| means the sector will be written back to disk.
+greg k-h
 
-Note that, although we won't write any sectors from disk 2, but we will
-write the full 64KiB of parity to disk.
+-------------
+Pseudo-Shortlog of commits:
 
-This behavior is fine for now, but not for the future (especially for
-RAID56J, as we waste quite some space to journal the unused parity
-stripes).
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.62-rc1
 
-So here we will also utilize the btrfs_raid_bio::dbitmap, anytime we
-queue a higher level bio into an rbio, we will update rbio::dbitmap to
-indicate which vertical stripes we need to writeback.
+Coiby Xu <coxu@redhat.com>
+    arm64: kexec_file: use more system keyrings to verify kernel image signature
 
-And at finish_rmw(), we also check dbitmap to see if we need to write
-any sector in the vertical stripe.
+Coiby Xu <coxu@redhat.com>
+    kexec, KEYS: make the code in bzImage64_verify_sig generic
 
-So after the patch, above example will only lead to the following
-writeback pattern:
+Coiby Xu <coxu@redhat.com>
+    kexec: clean up arch_kexec_kernel_verify_sig
 
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XX|            |               |
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    kexec_file: drop weak attribute from functions
 
-Acked-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/btrfs/raid56.c |   55 ++++++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 51 insertions(+), 4 deletions(-)
+Qu Wenruo <wqu@suse.com>
+    btrfs: raid56: don't trust any cached sector in __raid56_parity_recover()
 
---- a/fs/btrfs/raid56.c
-+++ b/fs/btrfs/raid56.c
-@@ -324,6 +324,9 @@ static void merge_rbio(struct btrfs_raid
- {
- 	bio_list_merge(&dest->bio_list, &victim->bio_list);
- 	dest->bio_list_bytes += victim->bio_list_bytes;
-+	/* Also inherit the bitmaps from @victim. */
-+	bitmap_or(dest->dbitmap, victim->dbitmap, dest->dbitmap,
-+		  dest->stripe_npages);
- 	dest->generic_bio_cnt += victim->generic_bio_cnt;
- 	bio_list_init(&victim->bio_list);
- }
-@@ -865,6 +868,12 @@ static void rbio_orig_end_io(struct btrf
- 
- 	if (rbio->generic_bio_cnt)
- 		btrfs_bio_counter_sub(rbio->fs_info, rbio->generic_bio_cnt);
-+	/*
-+	 * Clear the data bitmap, as the rbio may be cached for later usage.
-+	 * do this before before unlock_stripe() so there will be no new bio
-+	 * for this bio.
-+	 */
-+	bitmap_clear(rbio->dbitmap, 0, rbio->stripe_npages);
- 
- 	/*
- 	 * At this moment, rbio->bio_list is empty, however since rbio does not
-@@ -1197,6 +1206,9 @@ static noinline void finish_rmw(struct b
- 	else
- 		BUG();
- 
-+	/* We should have at least one data sector. */
-+	ASSERT(bitmap_weight(rbio->dbitmap, rbio->stripe_npages));
-+
- 	/* at this point we either have a full stripe,
- 	 * or we've read the full stripe from the drive.
- 	 * recalculate the parity and write the new results.
-@@ -1268,6 +1280,11 @@ static noinline void finish_rmw(struct b
- 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1292,6 +1309,11 @@ static noinline void finish_rmw(struct b
- 
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1715,6 +1737,33 @@ static void btrfs_raid_unplug(struct blk
- 	run_plug(plug);
- }
- 
-+/* Add the original bio into rbio->bio_list, and update rbio::dbitmap. */
-+static void rbio_add_bio(struct btrfs_raid_bio *rbio, struct bio *orig_bio)
-+{
-+	const struct btrfs_fs_info *fs_info = rbio->fs_info;
-+	const u64 orig_logical = orig_bio->bi_iter.bi_sector << SECTOR_SHIFT;
-+	const u64 full_stripe_start = rbio->bioc->raid_map[0];
-+	const u32 orig_len = orig_bio->bi_iter.bi_size;
-+	const u32 sectorsize = fs_info->sectorsize;
-+	u64 cur_logical;
-+
-+	ASSERT(orig_logical >= full_stripe_start &&
-+	       orig_logical + orig_len <= full_stripe_start +
-+	       rbio->nr_data * rbio->stripe_len);
-+
-+	bio_list_add(&rbio->bio_list, orig_bio);
-+	rbio->bio_list_bytes += orig_bio->bi_iter.bi_size;
-+
-+	/* Update the dbitmap. */
-+	for (cur_logical = orig_logical; cur_logical < orig_logical + orig_len;
-+	     cur_logical += sectorsize) {
-+		int bit = ((u32)(cur_logical - full_stripe_start) >>
-+			   fs_info->sectorsize_bits) % rbio->stripe_npages;
-+
-+		set_bit(bit, rbio->dbitmap);
-+	}
-+}
-+
- /*
-  * our main entry point for writes from the rest of the FS.
-  */
-@@ -1731,9 +1780,8 @@ int raid56_parity_write(struct btrfs_fs_
- 		btrfs_put_bioc(bioc);
- 		return PTR_ERR(rbio);
- 	}
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
- 	rbio->operation = BTRFS_RBIO_WRITE;
-+	rbio_add_bio(rbio, bio);
- 
- 	btrfs_bio_counter_inc_noblocked(fs_info);
- 	rbio->generic_bio_cnt = 1;
-@@ -2135,8 +2183,7 @@ int raid56_parity_recover(struct btrfs_f
- 	}
- 
- 	rbio->operation = BTRFS_RBIO_READ_REBUILD;
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
-+	rbio_add_bio(rbio, bio);
- 
- 	rbio->faila = find_logical_bio_stripe(rbio, bio);
- 	if (rbio->faila == -1) {
+Qu Wenruo <wqu@suse.com>
+    btrfs: only write the sectors in the vertical stripe which has data stripes
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/ftrace: Use alternative RET encoding
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/ibt,ftrace: Make function-graph play nice
+
+Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+    Revert "x86/ftrace: Use alternative RET encoding"
+
+Namjae Jeon <linkinjeon@kernel.org>
+    ksmbd: fix heap-based overflow in set_ntacl_dacl()
+
+Hyunchul Lee <hyc.lee@gmail.com>
+    ksmbd: prevent out of bound read for SMB2_WRITE
+
+Jamal Hadi Salim <jhs@mojatatu.com>
+    net_sched: cls_route: disallow handle of 0
+
+Jens Wiklander <jens.wiklander@linaro.org>
+    tee: add overflow check in register_shm_helper()
+
+Jens Axboe <axboe@kernel.dk>
+    io_uring: use original request task for inflight tracking
+
+
+-------------
+
+Diffstat:
+
+ Makefile                          |   4 +-
+ arch/arm64/include/asm/kexec.h    |   4 +-
+ arch/arm64/kernel/kexec_image.c   |  11 +---
+ arch/powerpc/include/asm/kexec.h  |   9 +++
+ arch/s390/include/asm/kexec.h     |   3 +
+ arch/x86/include/asm/kexec.h      |   6 ++
+ arch/x86/kernel/ftrace.c          |   7 +-
+ arch/x86/kernel/ftrace_64.S       |  19 ++++--
+ arch/x86/kernel/kexec-bzimage64.c |  20 +-----
+ drivers/tee/tee_shm.c             |   3 +
+ fs/btrfs/raid56.c                 |  74 +++++++++++++++++-----
+ fs/io_uring.c                     |   2 +-
+ fs/ksmbd/smb2misc.c               |   7 +-
+ fs/ksmbd/smb2pdu.c                |  45 +++++++------
+ fs/ksmbd/smbacl.c                 | 130 ++++++++++++++++++++++++++------------
+ fs/ksmbd/smbacl.h                 |   2 +-
+ fs/ksmbd/vfs.c                    |   5 ++
+ include/linux/kexec.h             |  50 ++++++++++++---
+ kernel/kexec_file.c               |  83 +++++++++---------------
+ net/sched/cls_route.c             |  10 +++
+ 20 files changed, 312 insertions(+), 182 deletions(-)
 
 
