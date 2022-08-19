@@ -2,142 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537F5C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C80BDC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347048AbiHSISa (ORCPT
+        id S1347700AbiHSIS7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
+        Fri, 19 Aug 2022 04:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347625AbiHSIRn (ORCPT
+        with ESMTP id S1347260AbiHSISV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:17:43 -0400
-Received: from smtp2-g21.free.fr (smtp2-g21.free.fr [IPv6:2a01:e0c:1:1599::11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604AAE190D;
-        Fri, 19 Aug 2022 01:17:40 -0700 (PDT)
-Received: from debian-tgbt.home (unknown [IPv6:2a01:cb08:8f65:d300:4b96:ac4c:4229:8341])
-        (Authenticated sender: thierry.guibert@free.fr)
-        by smtp2-g21.free.fr (Postfix) with ESMTPSA id 68ED12003CA;
-        Fri, 19 Aug 2022 10:17:33 +0200 (CEST)
-From:   Thierry GUIBERT <thierry.guibert@croix-rouge.fr>
-To:     oneukum@suse.com, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.guibert@free.fr
-Cc:     Thierry GUIBERT <thierry.guibert@croix-rouge.fr>
-Subject: [PATCH] CDC-ACM : Add Icom PMR F3400 support (0c26:0020)
-Date:   Fri, 19 Aug 2022 10:17:02 +0200
-Message-Id: <20220819081702.84118-1-thierry.guibert@croix-rouge.fr>
-X-Mailer: git-send-email 2.37.2
+        Fri, 19 Aug 2022 04:18:21 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02A0E990D;
+        Fri, 19 Aug 2022 01:18:01 -0700 (PDT)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id DDF9120007;
+        Fri, 19 Aug 2022 08:17:56 +0000 (UTC)
+Date:   Fri, 19 Aug 2022 10:17:55 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Marco Felsch <m.felsch@pengutronix.de>
+Cc:     mchehab@kernel.org, sakari.ailus@linux.intel.com,
+        laurent.pinchart+renesas@ideasonboard.com,
+        jacopo+renesas@jmondi.org, akinobu.mita@gmail.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 4/4] media: mt9m111: remove .s_power callback
+Message-ID: <20220819081755.wlsryhcr7xjouor5@uno.localdomain>
+References: <20220818144712.997477-1-m.felsch@pengutronix.de>
+ <20220818144712.997477-4-m.felsch@pengutronix.de>
+ <20220818161408.76ofg2rjvp5whtof@uno.localdomain>
+ <20220819071832.3mr7u7jhp2ud4fv6@pengutronix.de>
+ <20220819073512.ulud7ppnrudxewdn@uno.localdomain>
+ <20220819080626.34ghffj6hmkk5ntm@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220819080626.34ghffj6hmkk5ntm@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Supports for ICOM F3400 and ICOM F4400 PMR radios in CDC-ACM driver
-enabling the AT serial port.
-The Vendor Id is 0x0C26
-The Product ID is 0x0020
+Hi Marco
 
-Output of lsusb :
-Bus 001 Device 009: ID 0c26:0020 Prolific Technology Inc. ICOM Radio
-Couldn't open device, some information will be missing
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass            2 Communications
-  bDeviceSubClass         0
-  bDeviceProtocol         0
-  bMaxPacketSize0        64
-  idVendor           0x0c26 Prolific Technology Inc.
-  idProduct          0x0020
-  bcdDevice            0.00
-  iManufacturer           1 ICOM Inc.
-  iProduct                2 ICOM Radio
-  iSerial                 3 *obfuscated*
-  bNumConfigurations      1
-  Configuration Descriptor:
-    bLength                 9
-    bDescriptorType         2
-    wTotalLength       0x0030
-    bNumInterfaces          2
-    bConfigurationValue     1
-    iConfiguration          0
-    bmAttributes         0xc0
-      Self Powered
-    MaxPower                0mA
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        0
-      bAlternateSetting       0
-      bNumEndpoints           1
-      bInterfaceClass         2 Communications
-      bInterfaceSubClass      2 Abstract (modem)
-      bInterfaceProtocol      1 AT-commands (v.25ter)
-      iInterface              0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x83  EP 3 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval              12
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        1
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass        10 CDC Data
-      bInterfaceSubClass      0
-      bInterfaceProtocol      0
-      iInterface              0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x82  EP 2 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x02  EP 2 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
+On Fri, Aug 19, 2022 at 10:06:26AM +0200, Marco Felsch wrote:
+> On 22-08-19, Jacopo Mondi wrote:
+> > Hi Marco
+> >
+> > On Fri, Aug 19, 2022 at 09:18:32AM +0200, Marco Felsch wrote:
+> > > Hi Jacopo,
+> > >
+> > > thanks for your fast feedback :)
+> > >
+> > > On 22-08-18, Jacopo Mondi wrote:
+> > > > Hi Marco
+> > > >
+> > > > On Thu, Aug 18, 2022 at 04:47:12PM +0200, Marco Felsch wrote:
+> > > > > This is in preparation of switching to the generic dev PM mechanism.
+> > > > > Since the .s_power callback will be removed in the near future move the
+> > > > > powering into the .s_stream callback. So this driver no longer depends
+> > > > > on the .s_power mechanism.
+> > > > >
+> > > > > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+> > > >
+> > > > If you want to move to runtime_pm, I would implement it first and have
+> > > > s_power call the _resume and _suspend routines, as some platform
+> > > > drivers still use s_power() and some of them might depend on it.
+> > >
+> > > Do we really have platforms which depend on this? IMHO if that is the
+> >
+> > $ git grep "v4l2_subdev_call(.*, s_power" drivers/media/platform/  | cut -d : -f1 | uniq  | wc -l
+> > 8
+> >
+> > > case than we should fix those platfoms. Since new drivers shouldn't use
+> > > this callback anymore.
+> >
+> > Patches are clearly welcome I guess..
+>
+> :)
+>
+> > > In my case, I worked on [1] and wondered why the sensor was enabled
+> > > before I told him to do so. Since I didn't implement the s_power()
+> > > callback, I had no chance to get enabled before.
+> > >
+> >
+> > I'm not sure I got this part
+>
+> What I mean is, that the MT9M131 sensor gets enabled and immediately
+> start sending frames before I told him to do so e.g. by calling
 
-Signed-off-by: Thierry GUIBERT <thierry.guibert@croix-rouge.fr>
----
- drivers/usb/class/cdc-acm.c | 3 +++
- 1 file changed, 3 insertions(+)
+Why does this happen ?
 
-diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 9b9aea24d58c..f3c6aad27789 100644
---- a/drivers/usb/class/cdc-acm.c
-+++ b/drivers/usb/class/cdc-acm.c
-@@ -1810,6 +1810,9 @@ static const struct usb_device_id acm_ids[] = {
- 	{ USB_DEVICE(0x09d8, 0x0320), /* Elatec GmbH TWN3 */
- 	.driver_info = NO_UNION_NORMAL, /* has misplaced union descriptor */
- 	},
-+	{ USB_DEVICE(0x0c26, 0x0020), /* Icom ICF3400 Serie */
-+	.driver_info = NO_UNION_NORMAL, /* reports zero length descriptor */
-+	},
- 	{ USB_DEVICE(0x0ca6, 0xa050), /* Castles VEGA3000 */
- 	.driver_info = NO_UNION_NORMAL, /* reports zero length descriptor */
- 	},
--- 
-2.37.2
+> s_stream(). This can confuse the downstream device. The only way to get
+> enable the downstream device first is to add the s_power() callback.
+>
+> > > Can we please decide:
+> > >  - Do we wanna get rid of the s_power() callback?
+> >
+> > I think that would be everyone's desire, but drivers have to be moved
+> > away from it
+> >
+> > >  - If not, how do we handle those devices then with drivers not
+> > >    implementing this callback?
+> >
+> > By maintaining compatibility. I suggested to move to runtime_pm() and
+> > wrap _resume/_suspend in s_power().
+>
+> But then you're introducing new drivers with s_power() callbacks and so
+> the behaviour isn't really changed.
+>
 
+I only meant in existing ones
+
+> > My understanding is that the two (runtime_pm/s_power) are mutually
+> > exclusive, but even if that was not the case, runtime_pm is reference
+> > counted, hence as long as calls are balanced this should work, right ?
+>
+> Right but the s_power() behaviour is not changed and drivers still rely
+> on it to work as right now.
+
+As long as we have bridge drivers using it, isn't this what we want ?
+>
+> Regards,
+>   Marco
