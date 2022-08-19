@@ -2,125 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05E1C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EBBC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348025AbiHSJOT (ORCPT
+        id S1348027AbiHSJOZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
+        Fri, 19 Aug 2022 05:14:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348004AbiHSJOI (ORCPT
+        with ESMTP id S1348005AbiHSJOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 05:14:08 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE0A3D598
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:14:05 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id n24so1928670ljc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=uuqghSHzNJr5H0vLiTIAXQb7NYP5yoc/bBfCNzDWdy4=;
-        b=l7cgJkJddLqTU0nf/69vRzamhM9l1ip2Xstft4D11LGWH1dpvWj14jzRf2oeNn62hH
-         XY/OI8AvAiKXRSqwT3Thr9/i8+CUxnG8RAPpumFO31V+Gl7Wkln/eBxJAASBTzaFpU44
-         VJimfC7jaaI1UQh13qEwJmgT2KEE8moI/PkeMF86v6/4F+v0DmaZZjuqmFaCCDcvNI5U
-         TOa7xVaHe/9r7WwDKWK3CtUsv3Moh7FVzSt6EEUQHlquYvpHAJffNusiHzqbPk0qgO1+
-         NRY6NQyVauCtloxOub3uIQ4zlaR6ojgUO54ibHERDO+tTuamJ+6jDh9/xjUCF1GOKoxN
-         Bbmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=uuqghSHzNJr5H0vLiTIAXQb7NYP5yoc/bBfCNzDWdy4=;
-        b=1MQi+hKpami8vQlZOYC2qJ6cYkjw+WLrA01QLZDsBKc6lIqVMqg9TaTEgU8TrgCytg
-         PKroqj0l7z++FZ/vscZBJ5RIONC+yclzKtenZhbaNMl4GyI4VX9mRLHrJ/1TUsaD2wO4
-         GEdOvYhiadKg0nvkZm7FwOScmLhVMq0rKXxtr1Bc5FwQ61kW9gv1uLG//QbAzd6t0yTO
-         mPw+V48Xh2K53Qk4tYfwp+rGldFlR0qvy9oPnBkk3BujhxEkx5WBF8QasS95oorOYkpP
-         JTVhIlQKft6Ga1Bg1XMOnkP9MyquKVhWki40hrk3mcSDW02U4olCPrZAAI8kI4QDVEyA
-         LEBw==
-X-Gm-Message-State: ACgBeo0RgY0tIUbLKudh8zxwXeM6Hh3EAjzl/QemV7byTpD8ropPUXl2
-        PLr4RniFFnOrCyDsF7BuVXqv7w==
-X-Google-Smtp-Source: AA6agR4hGCrfJ0FHTxXTCRDG3phtiDLv2uxyWd/UpXV2iEzQ5bMT16E59/9y8ArI9q3JbB7Owyfq+g==
-X-Received: by 2002:a2e:7e0a:0:b0:25e:63f2:bbb0 with SMTP id z10-20020a2e7e0a000000b0025e63f2bbb0mr2092765ljc.77.1660900444242;
-        Fri, 19 Aug 2022 02:14:04 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id m4-20020a056512114400b0048b969ac5cdsm568712lfg.5.2022.08.19.02.14.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 02:14:03 -0700 (PDT)
-Message-ID: <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
-Date:   Fri, 19 Aug 2022 12:14:01 +0300
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A463CBEC;
+        Fri, 19 Aug 2022 02:14:05 -0700 (PDT)
+X-UUID: 08f4bf579be848099ce0c98a3d95d658-20220819
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=lzuHN2o0PHCxOlCMC5PyS2eGduyQugC541Kw8Hzkdso=;
+        b=K73hn0vIol3GnwNvFZnyAp8pNlOXg0dTG25T919vti/sA0dqT4J8vKdX9i5P40SbmBZuJpoE4Tne02FAzXPmXUwAiR/6Z7Gi4dtcGpGwZdinMKLrF5Qa1GgdEBwFQtFkWnFYkHRkiYDBLDr/KPoI5rjp07TRyQkTFl1t/BNgTH8=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:481fa5bb-835b-44e4-a3f6-00b49bd1ec88,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:f82733c9-6b09-4f60-bf82-12f039f5d530,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
+        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 08f4bf579be848099ce0c98a3d95d658-20220819
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1860542636; Fri, 19 Aug 2022 17:13:57 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 19 Aug 2022 17:13:49 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 19 Aug 2022 17:13:49 +0800
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Eddie Hung <eddie.hung@mediatek.com>
+Subject: [PATCH 6/7] phy: phy-mtk-tphy: set utmi 0 register in init() ops
+Date:   Fri, 19 Aug 2022 17:13:43 +0800
+Message-ID: <20220819091344.2274-6-chunfeng.yun@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
+References: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add nxp,refclk_in
- property
-Content-Language: en-US
-To:     wei.fang@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220819074729.1496088-1-wei.fang@nxp.com>
- <20220819074729.1496088-2-wei.fang@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220819074729.1496088-2-wei.fang@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 10:47, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
-> 
-> TJA110x REF_CLK can be configured as interface reference clock
-> intput or output when the RMII mode enabled. This patch add the
-> property to make the REF_CLK can be configurable.
-> 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
-> ---
->  .../devicetree/bindings/net/nxp,tja11xx.yaml    | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> index d51da24f3505..c51ee52033e8 100644
-> --- a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> +++ b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> @@ -31,6 +31,22 @@ patternProperties:
->          description:
->            The ID number for the child PHY. Should be +1 of parent PHY.
->  
-> +      nxp,rmii_refclk_in:
+No need repeat to clear utmi 0 register in ->power_on() and
+->power_off(), just do it in ->init()
 
-No underscores in properties.
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+---
+ drivers/phy/mediatek/phy-mtk-tphy.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-> +        type: boolean
-> +        description: |
-> +          The REF_CLK is provided for both transmitted and receivced data
+diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+index 79920c066e59..e0f227a0d3cc 100644
+--- a/drivers/phy/mediatek/phy-mtk-tphy.c
++++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+@@ -522,8 +522,8 @@ static void u2_phy_instance_init(struct mtk_tphy *tphy,
+ 	/* switch to USB function, and enable usb pll */
+ 	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_FORCE_UART_EN | P2C_FORCE_SUSPENDM);
+ 
+-	mtk_phy_update_bits(com + U3P_U2PHYDTM0, P2C_RG_XCVRSEL | P2C_RG_DATAIN,
+-			    P2C_RG_XCVRSEL_VAL(1) | P2C_RG_DATAIN_VAL(0));
++	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
++			   P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
+ 
+ 	mtk_phy_clear_bits(com + U3P_U2PHYDTM1, P2C_RG_UART_EN);
+ 
+@@ -565,9 +565,6 @@ static void u2_phy_instance_power_on(struct mtk_tphy *tphy,
+ 	void __iomem *com = u2_banks->com;
+ 	u32 index = instance->index;
+ 
+-	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
+-			   P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
+-
+ 	/* OTG Enable */
+ 	mtk_phy_set_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
+ 
+@@ -590,8 +587,6 @@ static void u2_phy_instance_power_off(struct mtk_tphy *tphy,
+ 	void __iomem *com = u2_banks->com;
+ 	u32 index = instance->index;
+ 
+-	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_RG_XCVRSEL | P2C_RG_DATAIN);
+-
+ 	/* OTG Disable */
+ 	mtk_phy_clear_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
+ 
+-- 
+2.25.1
 
-typo: received
-
-> +          in RMII mode. This clock signal is provided by the PHY and is
-> +          typically derived from an external 25MHz crystal. Alternatively,
-> +          a 50MHz clock signal generated by an external oscillator can be
-> +          connected to pin REF_CLK. A third option is to connect a 25MHz
-> +          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
-> +          as input or output according to the actual circuit connection.
-> +          If present, indicates that the REF_CLK will be configured as
-> +          interface reference clock input when RMII mode enabled.
-> +          If not present, the REF_CLK will be configured as interface
-> +          reference clock output when RMII mode enabled.
-> +          Only supported on TJA1100 and TJA1101.
-
-Then disallow it on other variants.
-
-Shouldn't this be just "clocks" property?
-
-
-Best regards,
-Krzysztof
