@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BC9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 303BDC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350323AbiHSPva (ORCPT
+        id S1350334AbiHSPvd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
+        Fri, 19 Aug 2022 11:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350134AbiHSPuO (ORCPT
+        with ESMTP id S1350386AbiHSPuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A1110522F;
-        Fri, 19 Aug 2022 08:48:00 -0700 (PDT)
+        Fri, 19 Aug 2022 11:50:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E512A105F24;
+        Fri, 19 Aug 2022 08:48:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42115616F9;
-        Fri, 19 Aug 2022 15:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECA5C433D6;
-        Fri, 19 Aug 2022 15:47:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11C80B82812;
+        Fri, 19 Aug 2022 15:48:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FDB8C433D6;
+        Fri, 19 Aug 2022 15:48:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924079;
-        bh=ajfY1cKPPdwe5FTthnuG6ewUtH2PDjpg5AYoSXiLcqs=;
+        s=korg; t=1660924082;
+        bh=ayVXLJwYABMMzxAaR+8ajeDqnU0Og+g0L0dO+zjvqvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OK/KVC/goxsQo+WJzOa7rjzVsw/uQNT5E1DAnH72rvWwAfn5HzN8rHbjsb22ZBIQr
-         uruWOxxFJtsrb3zmwpPnmNZ3R48zLQ9XfA+34CVNozttUEORFPFt0fivdosRhDdOZ1
-         6DqhLJJY8hCduPOIes44wtuz3j5O2J7pzOCR083A=
+        b=xkRn6jKaEvGPfCmRX5vER1SlG8TaCdsPQ1V4RwjNvY0a/5AndU74VYYSJGyCpOfXG
+         uWRFayc0W+EE5HraMjr+HcoYQoIB2DORUQ60o8ahSHUeahrohcoko6xb0crwN431fD
+         tsk8wzRcBGMxD/F2jQpjf0FU15Hx9COe/FUJVsDo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.10 047/545] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
-Date:   Fri, 19 Aug 2022 17:36:57 +0200
-Message-Id: <20220819153831.317705356@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 5.10 019/545] KVM: x86: Mark TSS busy during LTR emulation _after_ all fault checks
+Date:   Fri, 19 Aug 2022 17:36:29 +0200
+Message-Id: <20220819153830.045042422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,46 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Li <sunpeng.li@amd.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
+commit ec6e4d863258d4bfb36d48d5e3ef68140234d688 upstream.
 
-When pinning a buffer, we should check to see if there are any
-additional restrictions imposed by bo->preferred_domains. This will
-prevent the BO from being moved to an invalid domain when pinning.
+Wait to mark the TSS as busy during LTR emulation until after all fault
+checks for the LTR have passed.  Specifically, don't mark the TSS busy if
+the new TSS base is non-canonical.
 
-For example, this can happen if the user requests to create a BO in GTT
-domain for display scanout. amdgpu_dm will allow pinning to either VRAM
-or GTT domains, since DCN can scanout from either or. However, in
-amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
-adequate carveout. This can lead to pinning to VRAM despite the user
-requesting GTT placement for the BO.
+Opportunistically drop the one-off !seg_desc.PRESENT check for TR as the
+only reason for the early check was to avoid marking a !PRESENT TSS as
+busy, i.e. the common !PRESENT is now done before setting the busy bit.
 
-v2: Allow the kernel to override the domain, which can happen when
-    exporting a BO to a V4L camera (for example).
-
-Signed-off-by: Leo Li <sunpeng.li@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
+Reported-by: syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com
 Cc: stable@vger.kernel.org
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-2-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kvm/emulate.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-@@ -905,6 +905,10 @@ int amdgpu_bo_pin_restricted(struct amdg
- 	if (WARN_ON_ONCE(min_offset > max_offset))
- 		return -EINVAL;
- 
-+	/* Check domain to be pinned to against preferred domains */
-+	if (bo->preferred_domains & domain)
-+		domain = bo->preferred_domains & domain;
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1772,16 +1772,6 @@ static int __load_segment_descriptor(str
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
+-		if (!seg_desc.p) {
+-			err_vec = NP_VECTOR;
+-			goto exception;
+-		}
+-		old_desc = seg_desc;
+-		seg_desc.type |= 2; /* busy */
+-		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+-						  sizeof(seg_desc), &ctxt->exception);
+-		if (ret != X86EMUL_CONTINUE)
+-			return ret;
+ 		break;
+ 	case VCPU_SREG_LDTR:
+ 		if (seg_desc.s || seg_desc.type != 2)
+@@ -1822,6 +1812,15 @@ static int __load_segment_descriptor(str
+ 				((u64)base3 << 32), ctxt))
+ 			return emulate_gp(ctxt, 0);
+ 	}
 +
- 	/* A shared bo cannot be migrated to VRAM */
- 	if (bo->prime_shared_count) {
- 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
++	if (seg == VCPU_SREG_TR) {
++		old_desc = seg_desc;
++		seg_desc.type |= 2; /* busy */
++		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
++						  sizeof(seg_desc), &ctxt->exception);
++		if (ret != X86EMUL_CONTINUE)
++			return ret;
++	}
+ load:
+ 	ctxt->ops->set_segment(ctxt, selector, &seg_desc, base3, seg);
+ 	if (desc)
 
 
