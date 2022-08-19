@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB7CC38145
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1A5C32793
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352499AbiHSQVH (ORCPT
+        id S1352436AbiHSQUz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
+        Fri, 19 Aug 2022 12:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352390AbiHSQQ3 (ORCPT
+        with ESMTP id S1352364AbiHSQQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC5B1156F7;
-        Fri, 19 Aug 2022 08:59:40 -0700 (PDT)
+        Fri, 19 Aug 2022 12:16:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57511156E1;
+        Fri, 19 Aug 2022 08:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FCEB612DF;
-        Fri, 19 Aug 2022 15:59:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A3FC433D7;
-        Fri, 19 Aug 2022 15:59:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1C72B8281E;
+        Fri, 19 Aug 2022 15:59:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D2DDC433C1;
+        Fri, 19 Aug 2022 15:59:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924778;
-        bh=GuioARgipAjckdAdajthvc005UG73r+y/SYqcn3+24w=;
+        s=korg; t=1660924772;
+        bh=w3ajHmJFOhAEub8nrPwePEcPTAGm2gxNw+rC+5X+vMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zU/39ZsBFMH1LedB8fAcQxbVhaVEJQkolp8pWkWPTuv3mGSIolCZV9nFewYvEhrlo
-         J/FfAKXov5Gf/pVKSyvH9n10jMdHgTYeBXuiCHfKVoxMKzlRaR/Be0adm8vEv8n5Ol
-         Xo+a82Ejc3VHx3xe4O8cemr7GEl6yrGql0+jL0r8=
+        b=jjqDoHQ3QZktaPc5I0i+IFqIC87zAYkOlwqTH6iGJiwXYSd/IIW+Lo5yUUcj0NE/d
+         VavGqV/lKHz3YYLvFiLNk2NWcBrkFckMxY8wTAXs1++iIZnwnGy+GHYxNEVrppv8H1
+         Wva9k1BoIBzHdWKxSu2d42PozwapQhX+UXF6H4Tc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 250/545] wifi: libertas: Fix possible refcount leak in if_usb_probe()
-Date:   Fri, 19 Aug 2022 17:40:20 +0200
-Message-Id: <20220819153840.548897674@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 276/545] mtd: partitions: Fix refcount leak in parse_redboot_of
+Date:   Fri, 19 Aug 2022 17:40:46 +0200
+Message-Id: <20220819153841.681274622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,35 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6fd57e1d120bf13d4dc6c200a7cf914e6347a316 ]
+[ Upstream commit 9f7e62815cf3cbbcb1b8cb21649fb4dfdb3aa016 ]
 
-usb_get_dev will be called before lbs_get_firmware_async which means that
-usb_put_dev need to be called when lbs_get_firmware_async fails.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: ce84bb69f50e ("libertas USB: convert to asynchronous firmware loading")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220620092350.39960-1-hbh25y@gmail.com
-Link: https://lore.kernel.org/r/20220622113402.16969-1-colin.i.king@gmail.com
+Fixes: 237960880960 ("mtd: partitions: redboot: seek fis-index-block in the right node")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220526110652.64849-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/libertas/if_usb.c | 1 +
+ drivers/mtd/parsers/redboot.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
-index 5d6dc1dd050d..32fdc4150b60 100644
---- a/drivers/net/wireless/marvell/libertas/if_usb.c
-+++ b/drivers/net/wireless/marvell/libertas/if_usb.c
-@@ -287,6 +287,7 @@ static int if_usb_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/drivers/mtd/parsers/redboot.c b/drivers/mtd/parsers/redboot.c
+index 3ccd6363ee8c..4f3bcc59a638 100644
+--- a/drivers/mtd/parsers/redboot.c
++++ b/drivers/mtd/parsers/redboot.c
+@@ -58,6 +58,7 @@ static void parse_redboot_of(struct mtd_info *master)
+ 		return;
  
- err_get_fw:
-+	usb_put_dev(udev);
- 	lbs_remove_card(priv);
- err_add_card:
- 	if_usb_reset_device(cardp);
+ 	ret = of_property_read_u32(npart, "fis-index-block", &dirblock);
++	of_node_put(npart);
+ 	if (ret)
+ 		return;
+ 
 -- 
 2.35.1
 
