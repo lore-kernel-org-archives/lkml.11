@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0828C32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2756C32796
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353431AbiHSQfs (ORCPT
+        id S1353485AbiHSQgD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:35:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44622 "EHLO
+        Fri, 19 Aug 2022 12:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353570AbiHSQcD (ORCPT
+        with ESMTP id S1352741AbiHSQ3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:32:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DD911E922;
-        Fri, 19 Aug 2022 09:06:11 -0700 (PDT)
+        Fri, 19 Aug 2022 12:29:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2CB11A2D8;
+        Fri, 19 Aug 2022 09:04:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC8761828;
-        Fri, 19 Aug 2022 16:06:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5A7CC433D6;
-        Fri, 19 Aug 2022 16:06:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBBFFB8281A;
+        Fri, 19 Aug 2022 16:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA15C433D7;
+        Fri, 19 Aug 2022 16:04:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925168;
-        bh=z/UO+2PwZzvfVwCT7IfKCqZuNzeSaV93JPtQ9ZEOdic=;
+        s=korg; t=1660925059;
+        bh=rMQujy9Rm3AKuwyWWpNKXcNcOHF3RqjwmCE5Oj/ybzs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oBe26MrLb3yvMhZbzbb9wWpHFybJkhAoT6xVr9cYOAFYGryEjR3l4p0xBKQYZtxEM
-         qHqW3MXzxBKFLtalAlBELlxc87FUNVbPmpN6BbpTVVWKc6mJYkOylnbq9oqGo0AgOy
-         k7+Av7xyodsx3QYlr6dxSEXawmszeTc32CrUwyjQ=
+        b=Ppl4Q3raaqYAZxW9F4Tv1/MS4gHMpZb3CHGayGpicf7e/skkpKDL0FDeIVQ0uyt91
+         RU4QAxHao+kBXveLgGLo123aOScFjgOjdvWnJ0nwyyG3r5KPOI/Lrc18uQ5wK2ky7b
+         SmpTS02xwaRGKwchms8cfTRNINY/+ZpG5enGs9mE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 404/545] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
-Date:   Fri, 19 Aug 2022 17:42:54 +0200
-Message-Id: <20220819153847.517939867@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 370/545] serial: 8250: Export ICR access helpers for internal use
+Date:   Fri, 19 Aug 2022 17:42:20 +0200
+Message-Id: <20220819153845.971433258@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,42 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit a91eb6803c1c715738682fece095145cbd68fe0b ]
+[ Upstream commit cb5a40e3143bc64437858b337273fd63cc42e9c2 ]
 
-In qcom_iommu_has_secure_context(), we should call of_node_put()
-for the reference 'child' when breaking out of for_each_child_of_node()
-which will automatically increase and decrease the refcount.
+Make ICR access helpers available outside 8250_port.c, however retain
+them as ordinary static functions so as not to regress code generation.
 
-Fixes: d051f28c8807 ("iommu/qcom: Initialize secure page table")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220719124955.1242171-1-windhl@126.com
-Signed-off-by: Will Deacon <will@kernel.org>
+This is because `serial_icr_write' is currently automatically inlined by
+GCC, however `serial_icr_read' is not.  Making them both static inline
+would grow code produced, e.g.:
+
+$ i386-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+      text       data        bss      total filename
+     15065       3378          0      18443 8250_port-old.o
+     15289       3378          0      18667 8250_port-new.o
+
+and:
+
+$ riscv64-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+      text       data        bss      total filename
+     16980       5306          0      22286 8250_port-old.o
+     17124       5306          0      22430 8250_port-new.o
+
+while making them external would needlessly add a new module interface
+and lose the benefit from `serial_icr_write' getting inlined outside
+8250_port.o.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181517500.9383@angie.orcam.me.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250.h      | 22 ++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 21 ---------------------
+ 2 files changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index b30d6c966e2c..a24390c548a9 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -766,9 +766,12 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- {
- 	struct device_node *child;
- 
--	for_each_child_of_node(qcom_iommu->dev->of_node, child)
--		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
-+	for_each_child_of_node(qcom_iommu->dev->of_node, child) {
-+		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec")) {
-+			of_node_put(child);
- 			return true;
-+		}
-+	}
- 
- 	return false;
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 34aa2714f3c9..b6dc9003b8c4 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -119,6 +119,28 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
+ 	up->port.serial_out(&up->port, offset, value);
  }
+ 
++/*
++ * For the 16C950
++ */
++static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
++{
++	serial_out(up, UART_SCR, offset);
++	serial_out(up, UART_ICR, value);
++}
++
++static unsigned int __maybe_unused serial_icr_read(struct uart_8250_port *up,
++						   int offset)
++{
++	unsigned int value;
++
++	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
++	serial_out(up, UART_SCR, offset);
++	value = serial_in(up, UART_ICR);
++	serial_icr_write(up, UART_ACR, up->acr);
++
++	return value;
++}
++
+ void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
+ 
+ static inline int serial_dl_read(struct uart_8250_port *up)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 43884e8b5161..9d60418e4adb 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -529,27 +529,6 @@ serial_port_out_sync(struct uart_port *p, int offset, int value)
+ 	}
+ }
+ 
+-/*
+- * For the 16C950
+- */
+-static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
+-{
+-	serial_out(up, UART_SCR, offset);
+-	serial_out(up, UART_ICR, value);
+-}
+-
+-static unsigned int serial_icr_read(struct uart_8250_port *up, int offset)
+-{
+-	unsigned int value;
+-
+-	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
+-	serial_out(up, UART_SCR, offset);
+-	value = serial_in(up, UART_ICR);
+-	serial_icr_write(up, UART_ACR, up->acr);
+-
+-	return value;
+-}
+-
+ /*
+  * FIFO support.
+  */
 -- 
 2.35.1
 
