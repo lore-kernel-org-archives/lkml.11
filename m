@@ -2,137 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D2FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99854C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354167AbiHSQsp (ORCPT
+        id S1354174AbiHSQss (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
+        Fri, 19 Aug 2022 12:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354188AbiHSQqH (ORCPT
+        with ESMTP id S1354211AbiHSQqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:46:07 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E8B12AC35
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:12:15 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-333a4a5d495so133371157b3.10
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:12:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=XijIKPSG6kvk8NxvmjtmY8phogA8Jwg+9VLOMKAfxBo=;
-        b=KoQdAvLdqtvHerjKo8zZBjTL/cHkXCa4FZvixhiHnVBVmGjebrzzmMPcNii2PopeJ3
-         jSRjeiydxGpUrOqqd7ApmQYIVlnt4yfIbWSCa6jbq2bOlXUppHIzLKc5X58O03S/GmBf
-         4Y5oQycOJCylvDSGcTTYOwIP3IrmdyTzegkl8VYWTdOpbRSdMfqytx4M336a9/8L9DR/
-         aXvpM9EL5VVLIuXP2Cwz9Wi0w7PPNMB09fppbAHD4GeqhOhQsJhaKGSTGt2bhIEPHK3T
-         C5zBz/NHIPWjZdrf+xzBg/cz4L+Q8pzRn//FLLD38Iny+JGgkAP/WYob23oW/00WNtp4
-         aCWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=XijIKPSG6kvk8NxvmjtmY8phogA8Jwg+9VLOMKAfxBo=;
-        b=ZFpTeQCg1JrVjhBy2B8MIUCIY5joQyLQg78XIPw4acBL6Yxf/dqZ6dI+7yZiXspY61
-         YStaU56brAF/tDQ9CWf0r/GjTK0BkRN5GelSiSLoOZnXPIFqRegPEhWD+CBfiQS6d8vG
-         y8wRSOtmtXcG8jzPP2F+XNBAbdV/YJtAslamfXZC7fHq7vJIoAL7EB0GN8zxRv7nO5e+
-         Na9Z2yKHsSw357H+hMxzHvtWGxNRkvi7LxSmxSRaWXXlS4xvV+Cv/ms0LxR3ikHhtPJ0
-         PPk45dqyPM2KTd4IefTSnBxkqovO2Bid3TJW9ceEn0qauuuG0k1u18J9lbP+pdex/WRi
-         KRUw==
-X-Gm-Message-State: ACgBeo1xqB2V1qqwvIf4U1tCu76uEEwrqY2U1yzwkitjpEKOAbyENQ8A
-        zk40eicgVK9hcMgk32tfVm9HtNxJslD92mhhgrAmdw==
-X-Google-Smtp-Source: AA6agR7JuD2dimnGRGHFVLmW+yzm9h4JA2K68J6n4uTdZ2bc1pJuMlF2Ky547pqa9ml0uDdDALfemeQvwqzG18V8dJM=
-X-Received: by 2002:a05:6902:70a:b0:695:6d71:ecd6 with SMTP id
- k10-20020a056902070a00b006956d71ecd6mr318886ybt.619.1660925518203; Fri, 19
- Aug 2022 09:11:58 -0700 (PDT)
+        Fri, 19 Aug 2022 12:46:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F270912AC1D;
+        Fri, 19 Aug 2022 09:12:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDFC8B8281C;
+        Fri, 19 Aug 2022 16:12:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D320C433C1;
+        Fri, 19 Aug 2022 16:12:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660925528;
+        bh=ay7DQBfH5r5kXsv83I43zOCVuoBj0fZ5xYfLTkuBEzM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Kwd0yapCj2mWDzKt0IAWqjqRJGkkng3wHdFMw8EP5t5VdS2RjCnwyPWmwhnja2Yq1
+         UQGQync4A3L+qfUSBw0kl5ZQU7Iks/3z/TfiOzRCEdgZ2sFwSjQA+DN7AGoLs5LzSh
+         A3Ato/wKqF6yKROG/7XJnnrJDkZlJoWBCs7APyDc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 520/545] ext4: fix use-after-free in ext4_xattr_set_entry
+Date:   Fri, 19 Aug 2022 17:44:50 +0200
+Message-Id: <20220819153852.808553801@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220814141237.493457-1-mail@conchuod.ie> <20220814141237.493457-2-mail@conchuod.ie>
-In-Reply-To: <20220814141237.493457-2-mail@conchuod.ie>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Fri, 19 Aug 2022 21:41:46 +0530
-Message-ID: <CAAhSdy1qEJR_d5ynbptsCVOA5fk+dPyZ0mzT7-y-RXtQjMni_Q@mail.gmail.com>
-Subject: Re: [PATCH 1/4] riscv: kvm: vcpu_timer: fix unused variable warnings
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Guo Ren <guoren@kernel.org>,
-        Vincent Chen <vincent.chen@sifive.com>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 7:42 PM Conor Dooley <mail@conchuod.ie> wrote:
->
-> From: Conor Dooley <conor.dooley@microchip.com>
->
-> In two places, csr is set but never used:
->
-> arch/riscv/kvm/vcpu_timer.c:302:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
->         struct kvm_vcpu_csr *csr;
->                              ^
-> arch/riscv/kvm/vcpu_timer.c:327:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
->         struct kvm_vcpu_csr *csr;
->                              ^
->
-> Remove the variable.
->
-> Fixes: 8f5cb44b1bae ("RISC-V: KVM: Support sstc extension")
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-I have queued this fix for 6.0-rc1
+commit 67d7d8ad99beccd9fe92d585b87f1760dc9018e3 upstream.
 
-Thanks,
-Anup
+Hulk Robot reported a issue:
+==================================================================
+BUG: KASAN: use-after-free in ext4_xattr_set_entry+0x18ab/0x3500
+Write of size 4105 at addr ffff8881675ef5f4 by task syz-executor.0/7092
 
-> ---
->  arch/riscv/kvm/vcpu_timer.c | 4 ----
->  1 file changed, 4 deletions(-)
->
-> diff --git a/arch/riscv/kvm/vcpu_timer.c b/arch/riscv/kvm/vcpu_timer.c
-> index 16f50c46ba39..185f2386a747 100644
-> --- a/arch/riscv/kvm/vcpu_timer.c
-> +++ b/arch/riscv/kvm/vcpu_timer.c
-> @@ -299,7 +299,6 @@ static void kvm_riscv_vcpu_update_timedelta(struct kvm_vcpu *vcpu)
->
->  void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
->  {
-> -       struct kvm_vcpu_csr *csr;
->         struct kvm_vcpu_timer *t = &vcpu->arch.timer;
->
->         kvm_riscv_vcpu_update_timedelta(vcpu);
-> @@ -307,7 +306,6 @@ void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
->         if (!t->sstc_enabled)
->                 return;
->
-> -       csr = &vcpu->arch.guest_csr;
->  #if defined(CONFIG_32BIT)
->         csr_write(CSR_VSTIMECMP, (u32)t->next_cycles);
->         csr_write(CSR_VSTIMECMPH, (u32)(t->next_cycles >> 32));
-> @@ -324,13 +322,11 @@ void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
->
->  void kvm_riscv_vcpu_timer_save(struct kvm_vcpu *vcpu)
->  {
-> -       struct kvm_vcpu_csr *csr;
->         struct kvm_vcpu_timer *t = &vcpu->arch.timer;
->
->         if (!t->sstc_enabled)
->                 return;
->
-> -       csr = &vcpu->arch.guest_csr;
->         t = &vcpu->arch.timer;
->  #if defined(CONFIG_32BIT)
->         t->next_cycles = csr_read(CSR_VSTIMECMP);
-> --
-> 2.37.1
->
+CPU: 1 PID: 7092 Comm: syz-executor.0 Not tainted 4.19.90-dirty #17
+Call Trace:
+[...]
+ memcpy+0x34/0x50 mm/kasan/kasan.c:303
+ ext4_xattr_set_entry+0x18ab/0x3500 fs/ext4/xattr.c:1747
+ ext4_xattr_ibody_inline_set+0x86/0x2a0 fs/ext4/xattr.c:2205
+ ext4_xattr_set_handle+0x940/0x1300 fs/ext4/xattr.c:2386
+ ext4_xattr_set+0x1da/0x300 fs/ext4/xattr.c:2498
+ __vfs_setxattr+0x112/0x170 fs/xattr.c:149
+ __vfs_setxattr_noperm+0x11b/0x2a0 fs/xattr.c:180
+ __vfs_setxattr_locked+0x17b/0x250 fs/xattr.c:238
+ vfs_setxattr+0xed/0x270 fs/xattr.c:255
+ setxattr+0x235/0x330 fs/xattr.c:520
+ path_setxattr+0x176/0x190 fs/xattr.c:539
+ __do_sys_lsetxattr fs/xattr.c:561 [inline]
+ __se_sys_lsetxattr fs/xattr.c:557 [inline]
+ __x64_sys_lsetxattr+0xc2/0x160 fs/xattr.c:557
+ do_syscall_64+0xdf/0x530 arch/x86/entry/common.c:298
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x459fe9
+RSP: 002b:00007fa5e54b4c08 EFLAGS: 00000246 ORIG_RAX: 00000000000000bd
+RAX: ffffffffffffffda RBX: 000000000051bf60 RCX: 0000000000459fe9
+RDX: 00000000200003c0 RSI: 0000000020000180 RDI: 0000000020000140
+RBP: 000000000051bf60 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000001009 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffc73c93fc0 R14: 000000000051bf60 R15: 00007fa5e54b4d80
+[...]
+==================================================================
+
+Above issue may happen as follows:
+-------------------------------------
+ext4_xattr_set
+  ext4_xattr_set_handle
+    ext4_xattr_ibody_find
+      >> s->end < s->base
+      >> no EXT4_STATE_XATTR
+      >> xattr_check_inode is not executed
+    ext4_xattr_ibody_set
+      ext4_xattr_set_entry
+       >> size_t min_offs = s->end - s->base
+       >> UAF in memcpy
+
+we can easily reproduce this problem with the following commands:
+    mkfs.ext4 -F /dev/sda
+    mount -o debug_want_extra_isize=128 /dev/sda /mnt
+    touch /mnt/file
+    setfattr -n user.cat -v `seq -s z 4096|tr -d '[:digit:]'` /mnt/file
+
+In ext4_xattr_ibody_find, we have the following assignment logic:
+  header = IHDR(inode, raw_inode)
+         = raw_inode + EXT4_GOOD_OLD_INODE_SIZE + i_extra_isize
+  is->s.base = IFIRST(header)
+             = header + sizeof(struct ext4_xattr_ibody_header)
+  is->s.end = raw_inode + s_inode_size
+
+In ext4_xattr_set_entry
+  min_offs = s->end - s->base
+           = s_inode_size - EXT4_GOOD_OLD_INODE_SIZE - i_extra_isize -
+	     sizeof(struct ext4_xattr_ibody_header)
+  last = s->first
+  free = min_offs - ((void *)last - s->base) - sizeof(__u32)
+       = s_inode_size - EXT4_GOOD_OLD_INODE_SIZE - i_extra_isize -
+         sizeof(struct ext4_xattr_ibody_header) - sizeof(__u32)
+
+In the calculation formula, all values except s_inode_size and
+i_extra_size are fixed values. When i_extra_size is the maximum value
+s_inode_size - EXT4_GOOD_OLD_INODE_SIZE, min_offs is -4 and free is -8.
+The value overflows. As a result, the preceding issue is triggered when
+memcpy is executed.
+
+Therefore, when finding xattr or setting xattr, check whether
+there is space for storing xattr in the inode to resolve this issue.
+
+Cc: stable@kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-3-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/xattr.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -2167,8 +2167,9 @@ int ext4_xattr_ibody_find(struct inode *
+ 	struct ext4_inode *raw_inode;
+ 	int error;
+ 
+-	if (EXT4_I(inode)->i_extra_isize == 0)
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
+ 		return 0;
++
+ 	raw_inode = ext4_raw_inode(&is->iloc);
+ 	header = IHDR(inode, raw_inode);
+ 	is->s.base = is->s.first = IFIRST(header);
+@@ -2196,8 +2197,9 @@ int ext4_xattr_ibody_inline_set(handle_t
+ 	struct ext4_xattr_search *s = &is->s;
+ 	int error;
+ 
+-	if (EXT4_I(inode)->i_extra_isize == 0)
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
+ 		return -ENOSPC;
++
+ 	error = ext4_xattr_set_entry(i, s, handle, inode, false /* is_block */);
+ 	if (error)
+ 		return error;
+
+
