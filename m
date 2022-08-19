@@ -2,88 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA2BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57C5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351885AbiHSQMy (ORCPT
+        id S1351892AbiHSQM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
+        Fri, 19 Aug 2022 12:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352124AbiHSQLb (ORCPT
+        with ESMTP id S1352126AbiHSQLc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:11:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A21D113DD2;
-        Fri, 19 Aug 2022 08:57:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0499B82811;
-        Fri, 19 Aug 2022 15:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B8CC433D7;
-        Fri, 19 Aug 2022 15:57:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924638;
-        bh=Y/mT40MIkjMDZBov7q883fCJoj6mU2vZaKblHvMtr0M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IePy8gIkff8LOcxwSMA5fkCHaCCIFbRQfWCWc9oskSKDX+dLhoGeOMmdgQASVmVFX
-         +FMW4Xwbcrr6YEG7FFwm/ElBB7qlEOjjd9aVVKEVBxO03HYhZIIdk+Dd2jMGfA/xLU
-         uTXJRI7TehgWT42aUif60Q4zly1K2542o+vLyCA0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 234/545] selftests/bpf: fix a test for snprintf() overflow
-Date:   Fri, 19 Aug 2022 17:40:04 +0200
-Message-Id: <20220819153839.822676551@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 19 Aug 2022 12:11:32 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E0D113DD0;
+        Fri, 19 Aug 2022 08:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GrUZ6R8n7vev89O6T0Ky0Xq1mndn1wTWujgzj1y80B4=; b=r6vufpG6vTiXmsN1xb2U0nStuA
+        Asurqg9pfrJdFlGSErBpZ5pV+SKIt06vaC5VqPy56rmX4PLdzKbAQqC2JkgsjL06FETqpD6PS3Dcs
+        WnUuyQAJS8+ii02bIC20xViWK9GTaeXEiFhdQfPp6fy2EtRuwTYvxyq5VReIv4g02aAo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oP4Mt-00Dvit-Pr; Fri, 19 Aug 2022 17:57:07 +0200
+Date:   Fri, 19 Aug 2022 17:57:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     wei.fang@nxp.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: fec: change the default rx copybreak length to
+ 1518
+Message-ID: <Yv+y0x6MzVmShWL9@lunn.ch>
+References: <20220819090041.1541422-1-wei.fang@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819090041.1541422-1-wei.fang@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Fri, Aug 19, 2022 at 05:00:41PM +0800, wei.fang@nxp.com wrote:
+> From: Wei Fang <wei.fang@nxp.com>
+> 
+> Set the default rx copybreak value to 1518 so that improve the
+> performance when SMMU is enabled. User can change the copybreak
+> length in dynamically by ethtool.
 
-[ Upstream commit c5d22f4cfe8dfb93f1db0a1e7e2e7ebc41395d98 ]
+Please provide some benchmark for this. And include a range of SoCs
+which include the FEC. Maybe this helps for the platform you are
+testing on, but is bad for imx25, Vybrid etc?
 
-The snprintf() function returns the number of bytes which *would*
-have been copied if there were space.  In other words, it can be
-> sizeof(pin_path).
+> + * The driver support .set_tunable() interface for ethtool, user
+> + * can dynamicly change the copybreak value.
+> + */
 
-Fixes: c0fa1b6c3efc ("bpf: btf: Add BTF tests")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/YtZ+aD/tZMkgOUw+@kili
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/bpf/prog_tests/btf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Which also means you could change it for your platform. So a patch
+like this needs justifying.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
-index 93162484c2ca..48b01150e703 100644
---- a/tools/testing/selftests/bpf/prog_tests/btf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/btf.c
-@@ -4758,7 +4758,7 @@ static void do_test_pprint(int test_num)
- 	ret = snprintf(pin_path, sizeof(pin_path), "%s/%s",
- 		       "/sys/fs/bpf", test->map_name);
- 
--	if (CHECK(ret == sizeof(pin_path), "pin_path %s/%s is too long",
-+	if (CHECK(ret >= sizeof(pin_path), "pin_path %s/%s is too long",
- 		  "/sys/fs/bpf", test->map_name)) {
- 		err = -1;
- 		goto done;
--- 
-2.35.1
-
-
-
+     Andrew
