@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38774C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7334DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352991AbiHSQeo (ORCPT
+        id S1353289AbiHSQet (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
+        Fri, 19 Aug 2022 12:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353370AbiHSQb1 (ORCPT
+        with ESMTP id S1353417AbiHSQbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321EC10BE28;
-        Fri, 19 Aug 2022 09:05:39 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E0F10C83E;
+        Fri, 19 Aug 2022 09:05:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 693CDB8281E;
-        Fri, 19 Aug 2022 16:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B82EC433D6;
-        Fri, 19 Aug 2022 16:05:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39CC3B82819;
+        Fri, 19 Aug 2022 16:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7438DC433C1;
+        Fri, 19 Aug 2022 16:05:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925125;
-        bh=Ix70jMqzSR6OVcGgb63FGwt5a3wE/kuBeTUbSi8dQCg=;
+        s=korg; t=1660925115;
+        bh=/ivNho2yQj5sfZqsb19e7z0EQqZ3kGjam/nOnHZWUhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ls98oX7Ii45H6JzvD3qre5Popp27zDw+ptAw6WVITPlKcEMesN6jHYdbAI67jzWFR
-         4bk+H7iUV1cV2d431RsNoGxOuxUrXbDr8UUn2ynAId2J9UKxloLZzgGDtuwlj0n3oX
-         CXt8JV73gLWcCYOQY/8iz9WJfBq8V2gyn3lZv/4g=
+        b=OpFi3QsAx2ZSErZ3vZsjoEKSLb3c2Og2cks5V8LmdSou9cLvYdeORxpEXZOT1Pe+D
+         dUp8e6iwkA3uexO5wBfo3MI1XYDIq1lNpJuDWuGLXNIqtq5FfdROprKty55QwpWUSy
+         gO2LeusPOxCoHeZPU8ZCwZ37CyGFCFQdki5boxmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
         Kevin Tian <kevin.tian@intel.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
         Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 392/545] vfio/mdev: Make to_mdev_device() into a static inline
-Date:   Fri, 19 Aug 2022 17:42:42 +0200
-Message-Id: <20220819153846.954453049@linuxfoundation.org>
+Subject: [PATCH 5.10 389/545] vfio: Remove extra put/gets around vfio_device->group
+Date:   Fri, 19 Aug 2022 17:42:39 +0200
+Message-Id: <20220819153846.822131744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -55,41 +57,109 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jason Gunthorpe <jgg@nvidia.com>
 
-[ Upstream commit 66873b5fa738ca02b5c075ca4a410b13d88e6e9a ]
+[ Upstream commit e572bfb2b6a83b05acd30c03010e661b1967960f ]
 
-The macro wrongly uses 'dev' as both the macro argument and the member
-name, which means it fails compilation if any caller uses a word other
-than 'dev' as the single argument. Fix this defect by making it into
-proper static inline, which is more clear and typesafe anyhow.
+The vfio_device->group value has a get obtained during
+vfio_add_group_dev() which gets moved from the stack to vfio_device->group
+in vfio_group_create_device().
 
-Fixes: 99e3123e3d72 ("vfio-mdev: Make mdev_device private and abstract interfaces")
+The reference remains until we reach the end of vfio_del_group_dev() when
+it is put back.
+
+Thus anything that already has a kref on the vfio_device is guaranteed a
+valid group pointer. Remove all the extra reference traffic.
+
+It is tricky to see, but the get at the start of vfio_del_group_dev() is
+actually pairing with the put hidden inside vfio_device_put() a few lines
+below.
+
+A later patch merges vfio_group_create_device() into vfio_add_group_dev()
+which makes the ownership and error flow on the create side easier to
+follow.
+
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Message-Id: <11-v3-225de1400dfc+4e074-vfio1_jgg@nvidia.com>
+Message-Id: <1-v3-225de1400dfc+4e074-vfio1_jgg@nvidia.com>
 Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/mdev/mdev_private.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/vfio/vfio.c | 21 ++-------------------
+ 1 file changed, 2 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
-index 7d922950caaf..74c2e5411469 100644
---- a/drivers/vfio/mdev/mdev_private.h
-+++ b/drivers/vfio/mdev/mdev_private.h
-@@ -35,7 +35,10 @@ struct mdev_device {
- 	bool active;
- };
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 2151bc7f87ab..e1b6e1b51d41 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -546,14 +546,12 @@ struct vfio_device *vfio_group_create_device(struct vfio_group *group,
  
--#define to_mdev_device(dev)	container_of(dev, struct mdev_device, dev)
-+static inline struct mdev_device *to_mdev_device(struct device *dev)
-+{
-+	return container_of(dev, struct mdev_device, dev);
-+}
- #define dev_is_mdev(d)		((d)->bus == &mdev_bus_type)
+ 	kref_init(&device->kref);
+ 	device->dev = dev;
++	/* Our reference on group is moved to the device */
+ 	device->group = group;
+ 	device->ops = ops;
+ 	device->device_data = device_data;
+ 	dev_set_drvdata(dev, device);
  
- struct mdev_type {
+-	/* No need to get group_lock, caller has group reference */
+-	vfio_group_get(group);
+-
+ 	mutex_lock(&group->device_lock);
+ 	list_add(&device->group_next, &group->device_list);
+ 	group->dev_counter++;
+@@ -585,13 +583,11 @@ void vfio_device_put(struct vfio_device *device)
+ {
+ 	struct vfio_group *group = device->group;
+ 	kref_put_mutex(&device->kref, vfio_device_release, &group->device_lock);
+-	vfio_group_put(group);
+ }
+ EXPORT_SYMBOL_GPL(vfio_device_put);
+ 
+ static void vfio_device_get(struct vfio_device *device)
+ {
+-	vfio_group_get(device->group);
+ 	kref_get(&device->kref);
+ }
+ 
+@@ -841,14 +837,6 @@ int vfio_add_group_dev(struct device *dev,
+ 		vfio_group_put(group);
+ 		return PTR_ERR(device);
+ 	}
+-
+-	/*
+-	 * Drop all but the vfio_device reference.  The vfio_device holds
+-	 * a reference to the vfio_group, which holds a reference to the
+-	 * iommu_group.
+-	 */
+-	vfio_group_put(group);
+-
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(vfio_add_group_dev);
+@@ -928,12 +916,6 @@ void *vfio_del_group_dev(struct device *dev)
+ 	unsigned int i = 0;
+ 	bool interrupted = false;
+ 
+-	/*
+-	 * The group exists so long as we have a device reference.  Get
+-	 * a group reference and use it to scan for the device going away.
+-	 */
+-	vfio_group_get(group);
+-
+ 	/*
+ 	 * When the device is removed from the group, the group suddenly
+ 	 * becomes non-viable; the device has a driver (until the unbind
+@@ -1008,6 +990,7 @@ void *vfio_del_group_dev(struct device *dev)
+ 	if (list_empty(&group->device_list))
+ 		wait_event(group->container_q, !group->container);
+ 
++	/* Matches the get in vfio_group_create_device() */
+ 	vfio_group_put(group);
+ 
+ 	return device_data;
 -- 
 2.35.1
 
