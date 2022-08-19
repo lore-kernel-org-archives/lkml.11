@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7ABEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE5DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350734AbiHSP5C (ORCPT
+        id S1350740AbiHSP5K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        Fri, 19 Aug 2022 11:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350683AbiHSPz0 (ORCPT
+        with ESMTP id S1350710AbiHSPza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:55:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0135E107DAE;
-        Fri, 19 Aug 2022 08:50:03 -0700 (PDT)
+        Fri, 19 Aug 2022 11:55:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE716AE54;
+        Fri, 19 Aug 2022 08:50:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CA6D61711;
-        Fri, 19 Aug 2022 15:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46E52C433D6;
-        Fri, 19 Aug 2022 15:49:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54C9F616FD;
+        Fri, 19 Aug 2022 15:50:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5425CC433D6;
+        Fri, 19 Aug 2022 15:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924198;
-        bh=ccYSL7Fgsl+foV3Fu+dy2LrD4JRxt6CpUNNAzMfxjXg=;
+        s=korg; t=1660924207;
+        bh=Shks8rDUt6fwvZCiVNN+z/KX40yACmnhgAaxaywLQ9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nymOwTNSs3sdWYOAs3J7W5rJtTrMYLS9TvbvzjNwKNz1yaemglT3RxbLq17KysKxf
-         F8qf9Tn9MBhc+RqzsHbdfDloSktU3QvJx3yFjvMVgbWIzLFcyzWdON+4legEHlxPSp
-         r7FC2voTXogZBuVxXpk6sl/7pLK6BBOBMxsHeoF8=
+        b=iyHfEBsBX1qwtpLkB6P5LsGP4RC/sP29Snde7w//lp4WW9aKFDIoiO8B9Hg0HDT1A
+         xUQsJ3Edg3HRyDLETyQUBtFUuUXy31uspMTjrpyvzq0xBgVkgBeGP+1qtgwcElfkdk
+         RwHZ/HoMm7hKH6U/RmvNNdR/hDYlSfx6K6Y0JoJk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Guo Mengqi <guomengqi3@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 090/545] ARM: dts: imx6ul: fix lcdif node compatible
-Date:   Fri, 19 Aug 2022 17:37:40 +0200
-Message-Id: <20220819153833.283322741@linuxfoundation.org>
+Subject: [PATCH 5.10 093/545] spi: synquacer: Add missing clk_disable_unprepare()
+Date:   Fri, 19 Aug 2022 17:37:43 +0200
+Message-Id: <20220819153833.425716831@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,40 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Guo Mengqi <guomengqi3@huawei.com>
 
-[ Upstream commit 1a884d17ca324531634cce82e9f64c0302bdf7de ]
+[ Upstream commit 917e43de2a56d9b82576f1cc94748261f1988458 ]
 
-In yaml binding "fsl,imx6ul-lcdif" is listed as compatible to imx6sx-lcdif,
-but not imx28-lcdif. Change the list accordingly. Fixes the
-dt_binding_check warning:
-lcdif@21c8000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-lcdif', 'fsl,imx28-lcdif'] is too long
-Additional items are not allowed ('fsl,imx28-lcdif' was unexpected)
-'fsl,imx6ul-lcdif' is not one of ['fsl,imx23-lcdif', 'fsl,imx28-lcdif',
-'fsl,imx6sx-lcdif']
-'fsl,imx6sx-lcdif' was expected
+Add missing clk_disable_unprepare() in synquacer_spi_resume().
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+Link: https://lore.kernel.org/r/20220624005614.49434-1-guomengqi3@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-synquacer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 8e6079a68022..51de36b4125a 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -1004,7 +1004,7 @@ csi: csi@21c4000 {
- 			};
+diff --git a/drivers/spi/spi-synquacer.c b/drivers/spi/spi-synquacer.c
+index ea706d9629cb..47cbe73137c2 100644
+--- a/drivers/spi/spi-synquacer.c
++++ b/drivers/spi/spi-synquacer.c
+@@ -783,6 +783,7 @@ static int __maybe_unused synquacer_spi_resume(struct device *dev)
  
- 			lcdif: lcdif@21c8000 {
--				compatible = "fsl,imx6ul-lcdif", "fsl,imx28-lcdif";
-+				compatible = "fsl,imx6ul-lcdif", "fsl,imx6sx-lcdif";
- 				reg = <0x021c8000 0x4000>;
- 				interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&clks IMX6UL_CLK_LCDIF_PIX>,
+ 		ret = synquacer_spi_enable(master);
+ 		if (ret) {
++			clk_disable_unprepare(sspi->clk);
+ 			dev_err(dev, "failed to enable spi (%d)\n", ret);
+ 			return ret;
+ 		}
 -- 
 2.35.1
 
