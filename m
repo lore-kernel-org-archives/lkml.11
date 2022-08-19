@@ -2,154 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87C3C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 840E7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347502AbiHSIKj (ORCPT
+        id S1347492AbiHSIKn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        Fri, 19 Aug 2022 04:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347495AbiHSIKb (ORCPT
+        with ESMTP id S1347466AbiHSIKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:10:31 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E27E58AE;
-        Fri, 19 Aug 2022 01:10:30 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id o184so4012255oif.13;
-        Fri, 19 Aug 2022 01:10:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=MAnXagYjiuWeDTJ+i5sfMrFcvpfp6NbedVvWmTP//ek=;
-        b=lCM/2BfDI9fMx9bZOIBXuGWgIhcks+/S/ZSRrLcGGPb1ftzGdgKdj5Cm1zXfEKLhZd
-         CzHgZtfb7cjhVo7Qf39sRwKtFcdtjLtRSmu4/k803LdQKRHGk0NqqqNqP8KKym7mmcEV
-         8XLz4J3uYeWoeeRxcYalYAq3NW4a8dr/WHJoL/Ks5ekqEbAygXJvbOihrsAVow1b9IyC
-         Vg64VWIRmCEGxzSLRSiPEK5yX1CLjBymaNU3tRg1dnnKrUDkTCYJUCSUnTguFSiODInU
-         7RpY2+Rvby5Jiayb+cYAEu8VX9GsXTIqB4SY8gl5ScOdnonm+LpZbd+nLITCullfOybx
-         Z2uw==
-X-Gm-Message-State: ACgBeo0pPqBkZGpiYH8WtbYPoDWwzy/RUl71pXKoiFVULnByIvU5aJ6y
-        tcBCfHM3e1uevvQ75Q7pbhMomWVrbEnutw==
-X-Google-Smtp-Source: AA6agR7A9WyMPeyvQMiwkFaveWR0vJd18jmBG3YEgXbPciriUywaUyjK7ZCf+tLFcrUAdAbIT1OJUA==
-X-Received: by 2002:a05:6808:220c:b0:343:7801:11b3 with SMTP id bd12-20020a056808220c00b00343780111b3mr4998967oib.64.1660896629845;
-        Fri, 19 Aug 2022 01:10:29 -0700 (PDT)
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
-        by smtp.gmail.com with ESMTPSA id o12-20020a056870910c00b0010bf07976c9sm1101687oae.41.2022.08.19.01.10.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 01:10:29 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id m21-20020a9d6ad5000000b00638df677850so2633244otq.5;
-        Fri, 19 Aug 2022 01:10:29 -0700 (PDT)
-X-Received: by 2002:a0d:eb45:0:b0:333:f813:6c79 with SMTP id
- u66-20020a0deb45000000b00333f8136c79mr6390139ywe.384.1660896295663; Fri, 19
- Aug 2022 01:04:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220815151451.23293-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220815151451.23293-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 19 Aug 2022 10:04:43 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisGxHMBPUEa8nTMFpzw@mail.gmail.com>
-Message-ID: <CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisGxHMBPUEa8nTMFpzw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/8] riscv: dts: renesas: Add initial devicetree for
- Renesas RZ/Five SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+        Fri, 19 Aug 2022 04:10:36 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F4CE58B2;
+        Fri, 19 Aug 2022 01:10:35 -0700 (PDT)
+X-UUID: 865d04cad794429a8e03abdc123386ee-20220819
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=PjEyeFwR0pYC0NFB2Fr7WLGBrAjewg/mIlk1vInLY7Q=;
+        b=sMZV3l+LJhFA1pQvqewOAnOjh/bkMbQo83lD/gpnzBTOX9WXBn/drX2xsUobA5yaro9CTL2WIIZRQeXi23gq8VdKJ2Lx5wtxJLEcCFdvtDDGaO9s6lEEsBA/1/YuKjsaqga+oQmoaYBrzNHGZbi9E7Rcc/HQPjPoKbF4YkvgaF8=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:b9c25485-e0fd-4302-a6dd-b545bde45a0d,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release
+        _Ham,ACTION:release,TS:95
+X-CID-INFO: VERSION:1.1.10,REQID:b9c25485-e0fd-4302-a6dd-b545bde45a0d,OB:0,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS98
+        1B3D,ACTION:quarantine,TS:95
+X-CID-META: VersionHash:84eae18,CLOUDID:bad348af-9535-44a6-aa9b-7f62b79b6ff6,C
+        OID:57848d79a4de,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 865d04cad794429a8e03abdc123386ee-20220819
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 205123183; Fri, 19 Aug 2022 16:10:30 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 19 Aug 2022 16:10:29 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Fri, 19 Aug 2022 16:10:28 +0800
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Conor Dooley <Conor.Dooley@microchip.com>,
-        Anup Patel <anup@brainfault.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-usb@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] dt-bindings: usb: mtu3: add compatible for mt8188
+Date:   Fri, 19 Aug 2022 16:10:27 +0800
+Message-ID: <20220819081027.32382-1-chunfeng.yun@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhalar,
+Add a new compatible for mt8188
 
-On Mon, Aug 15, 2022 at 5:17 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add initial device tree for Renesas RZ/Five RISC-V CPU Core (AX45MP
-> Single).
->
-> Below is the list of IP blocks added in the initial SoC DTSI which can be
-> used to boot via initramfs on RZ/Five SMARC EVK:
-> - AX45MP CPU
-> - CPG
-> - PINCTRL
-> - PLIC
-> - SCIF0
-> - SYSC
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+---
+ Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks for your patch!
+diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
+index e63b66545317..b019d490170d 100644
+--- a/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
++++ b/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
+@@ -24,6 +24,7 @@ properties:
+           - mediatek,mt2712-mtu3
+           - mediatek,mt8173-mtu3
+           - mediatek,mt8183-mtu3
++          - mediatek,mt8188-mtu3
+           - mediatek,mt8192-mtu3
+           - mediatek,mt8195-mtu3
+       - const: mediatek,mtu3
+-- 
+2.18.0
 
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/renesas/r9a07g043.dtsi
-> @@ -0,0 +1,121 @@
-> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +/*
-> + * Device Tree Source for the RZ/Five SoC
-
-My first thought was:
-
-    This should be arch/riscv/boot/dts/renesas/r9a07g043f01.dtsi,
-     including the common r9a07g043.dtsi, shared by
-     arch/arm64/boot/dts/renesas/r9a07g043u11.dtsi.
-
-Then I realized this is harder than it sounds, due:
-
-> +       soc: soc {
-> +               compatible = "simple-bus";
-> +               interrupt-parent = <&plic>;
-
-vs. "interrupt-parent = <&plic>;" for r9a07g043u11, but mostly
-due to
-
-> +               #address-cells = <2>;
-> +               #size-cells = <2>;
-> +               ranges;
-> +
-> +               scif0: serial@1004b800 {
-> +                       compatible = "renesas,scif-r9a07g043",
-> +                                    "renesas,scif-r9a07g044";
-> +                       reg = <0 0x1004b800 0 0x400>;
-> +                       interrupts = <412 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <414 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <415 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <413 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <416 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <416 IRQ_TYPE_LEVEL_HIGH>;
-
-vs. "interrupts = <GIC_SPI 380 IRQ_TYPE_LEVEL_HIGH> ..." on
-r9a07g043u11.
-Interestingly, the actual hardware interrupt numbers are the same,
-but the GIC DT bindings abstracts the offset of 32 by using a second
-cell and GIC_SPI.  Unfortunately this cannot be handled by some CPP
-magic, as dtc does not support arithmetic operations yet.
-
-I expect this or similar issues to pop up everywhere, when more
-RISCV-V SoCs will appear that share the non-CPU parts with ARM SoCs.
-
-Ignoring this issue, which we probably can solve only later:
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
