@@ -2,91 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3321BC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F104C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349250AbiHSMyN (ORCPT
+        id S1349226AbiHSMzO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39966 "EHLO
+        Fri, 19 Aug 2022 08:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349244AbiHSMxw (ORCPT
+        with ESMTP id S1349254AbiHSMyv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:53:52 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43ECD13D3F
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:53:21 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id q7so2328017lfu.5
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:53:20 -0700 (PDT)
+        Fri, 19 Aug 2022 08:54:51 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825C676454
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:41 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id o22so5542530edc.10
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=pr7bhrt5RID2dCUgycRa3zMYdNhJ3IqbeowKhh7I+KE=;
-        b=Muww7Fp6z3TLBmnI9wgwpz5L/tNKqHY0CRDPQD4+eVh3MI8VFLnvjHvttcUtx6KqBG
-         fqjFjRlicTbmv4GsPbrtBwsaOhVIYDKhwYinqaev9lkoltjVxJWUzB/gO6Az6Tnu5zB3
-         8ykUvzjlBHLWIJSkHcmmM5NVviZCT8FWquVXebmXPtpC7HlPqvv0njv+EDeSet4eEhmS
-         A2EVoZkbKvd36wUGpTI1uswLPcH3eTtdgalsxPkELrtxvIn4ApRWksbAT3pPdiVUVYIF
-         kDEsK73osykelqrEEQNJy4qRa85LPnulZ3WHdaYgb8E9XxJGIwM4+V6v+UPjSDssu4P8
-         lX9w==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=CIjrHGuGx65kEr5OnXk6j8Kk9ipZphKrCoiITYTkDYM=;
+        b=Q5SAh+2URpPpHI/LXe1o/nFD70HQH3JZ+f6a9SdnVWsZJpb5feJ1/fIa31wuqLs5sb
+         3l2FmUIpSUwLDc7N9bAObfySZkN5tTCuCbzyP73LHhp3wzaKss6LJSryNzMoebNTUV9J
+         vwlASK8ti8rHBtlPT6KJNSK6XfWCud7HOFAAu+c/LVh74MRBaJOwfIGVxnvm+Ay4BUtd
+         pdG0CTu9wP6z71YLntmteFV1bI944nlgpaGh73isN8qH6E/bHfU52elEzLg2KOd3Ej8c
+         2NV31BgmjcN0pdLbAstJTpEBdxzzJsJ7e6087UR3fT/rvGj7YG9clBshTqkIdg9Yy0QJ
+         JVHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=pr7bhrt5RID2dCUgycRa3zMYdNhJ3IqbeowKhh7I+KE=;
-        b=ueMOcaieuAo5+UF7GHrVn4IoIIBe+zKG0jgAsENcrKAwhXnubbpody1zEPsapJO6Nx
-         etyqX70wrnKcsqMzA3BQKwyoaWq6uxKk7TvlQUJTL9P9DGwZNFD3vaJKoVMonJDDkVJS
-         hlPM4Bs4OEw7C6x33KkMSSkz92oQz1ZIS7dDWGczTmT7YwbNfcepHsBID1bo2pFws2nA
-         kvkpHG49cJzy7mUTbYtcrNTrQH9fqkcEQOBHSZlmebL9A9ZnqgKCfrJ56MiRMfKtQLbE
-         qrlefZ2BDq2gnHdlU51HUaByG3UHO3swNOwRcvv1NykjY5CkxgWvPkCyofmp8/0EVe9J
-         azDQ==
-X-Gm-Message-State: ACgBeo2utL8FRhsFpCNtZubzZUeYA7yqSoEwvO6LDcwD/Nr1c9M7ZQFB
-        8XJjEh3mV7pgaQfYKbO2hhACWQ==
-X-Google-Smtp-Source: AA6agR4FIHTx2lqWROLFunTvAZJFkIWDWBQqO7e+yPqb3ua4X70I0FUz5U3OFnmedTqWSw6DG45kGA==
-X-Received: by 2002:a05:6512:3048:b0:48b:745:621c with SMTP id b8-20020a056512304800b0048b0745621cmr2241608lfb.620.1660913598597;
-        Fri, 19 Aug 2022 05:53:18 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id e8-20020a05651236c800b00492b0d23d24sm510523lfs.247.2022.08.19.05.53.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 05:53:18 -0700 (PDT)
-Message-ID: <e5572e77-4ba5-d8f3-4e9e-04ac5dc416fe@linaro.org>
-Date:   Fri, 19 Aug 2022 15:53:16 +0300
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=CIjrHGuGx65kEr5OnXk6j8Kk9ipZphKrCoiITYTkDYM=;
+        b=japd+CP7cNzTPEu8QJLeXvUonwieQErS6x5Q1RSdpjU4eot8T5XtwfbxW0pez6UnXb
+         aytAg0YC0NsKjOeZEZwYvQwndwppw561l2X5YH8n8C1c4zkvKykdCGCSYeNTxo5i+z7+
+         FprhuN7mVD2nfv6TAYZwmZyVvvh9pH7mnURycHbxdibGQJTjMVs2El9VAYBh/xN1JOw1
+         tLiNSTZ/p/wr45qcf7eLAwoeLfZYMBqPnkW/kVRHRrNjGDnTbmiIOxf4jLDDHgUnaKd0
+         6NtrZ6tc/sgZeT4t2960IRj6rYoDsx8AHzH6+rFlQwjLTs/XHuGOejUAx59r5eJ4ty/W
+         9Q/A==
+X-Gm-Message-State: ACgBeo1ykL9KdMHyUV3pReaC6+GG2UAXZYpcrhcubnn2ytVqljpzoAWW
+        tfHs7YbfOFKj0xJGCf1jWEs=
+X-Google-Smtp-Source: AA6agR43A4yZvPS/8b8NGGA+fUNxNmRqIF7zq1pW5+HaDCtEsVsIinA7sIqZm4zs12UIOqsbOSYKiA==
+X-Received: by 2002:a05:6402:e94:b0:443:e3fe:7c87 with SMTP id h20-20020a0564020e9400b00443e3fe7c87mr6184960eda.144.1660913679764;
+        Fri, 19 Aug 2022 05:54:39 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb77.dynamic.kabel-deutschland.de. [95.90.187.119])
+        by smtp.gmail.com with ESMTPSA id b12-20020a056402138c00b0043d6ece495asm3000955edv.55.2022.08.19.05.54.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 05:54:39 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 01/11] staging: r8188eu: make init_mlme_ext_timer() static
+Date:   Fri, 19 Aug 2022 14:54:18 +0200
+Message-Id: <20220819125428.8412-2-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220819125428.8412-1-straube.linux@gmail.com>
+References: <20220819125428.8412-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] dt-bindings: mfd: mediatek: Add scpsys compatible for
- mt8186
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Lee Jones <lee@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        MandyJH Liu <mandyjh.liu@mediatek.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        hsinyi@chromium.org
-References: <20220819124736.21768-1-allen-kh.cheng@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220819124736.21768-1-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 15:47, Allen-KH Cheng wrote:
-> Add a new scpsys compatible for mt8186 SoC.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
+The function init_mlme_ext_timer() is only used in rtw_mlme_ext.c.
+Make it static to get one step closer to removing os_dep/mlme_linux.c.
 
-No DTS using it?
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   | 22 +++++++++++++++++++
+ .../staging/r8188eu/include/rtw_mlme_ext.h    |  1 -
+ drivers/staging/r8188eu/os_dep/mlme_linux.c   | 21 ------------------
+ 3 files changed, 22 insertions(+), 22 deletions(-)
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 6d3d5ff9a00e..3103e8871dfd 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -334,6 +334,28 @@ static u8 init_channel_set(struct adapter *padapter, u8 ChannelPlan, struct rt_c
+ 	return chanset_size;
+ }
+ 
++static void _survey_timer_hdl(struct timer_list *t)
++{
++	struct adapter *padapter = from_timer(padapter, t, mlmeextpriv.survey_timer);
++
++	survey_timer_hdl(padapter);
++}
++
++static void _link_timer_hdl(struct timer_list *t)
++{
++	struct adapter *padapter = from_timer(padapter, t, mlmeextpriv.link_timer);
++
++	link_timer_hdl(padapter);
++}
++
++static void init_mlme_ext_timer(struct adapter *padapter)
++{
++	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
++
++	timer_setup(&pmlmeext->survey_timer, _survey_timer_hdl, 0);
++	timer_setup(&pmlmeext->link_timer, _link_timer_hdl, 0);
++}
++
+ void init_mlme_ext_priv(struct adapter *padapter)
+ {
+ 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
+diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+index 343ce1ce4b3d..a6b1b1b7da74 100644
+--- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
++++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+@@ -388,7 +388,6 @@ struct mlme_ext_priv {
+ void init_mlme_ext_priv(struct adapter *adapter);
+ int init_hw_mlme_ext(struct adapter *padapter);
+ void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
+-extern void init_mlme_ext_timer(struct adapter *padapter);
+ extern void init_addba_retry_timer(struct adapter *adapt, struct sta_info *sta);
+ extern struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
+ 
+diff --git a/drivers/staging/r8188eu/os_dep/mlme_linux.c b/drivers/staging/r8188eu/os_dep/mlme_linux.c
+index 899d8e9c3834..bc4f979280b6 100644
+--- a/drivers/staging/r8188eu/os_dep/mlme_linux.c
++++ b/drivers/staging/r8188eu/os_dep/mlme_linux.c
+@@ -130,19 +130,6 @@ void rtw_report_sec_ie(struct adapter *adapter, u8 authmode, u8 *sec_ie)
+ 	}
+ }
+ 
+-static void _survey_timer_hdl(struct timer_list *t)
+-{
+-	struct adapter *padapter = from_timer(padapter, t, mlmeextpriv.survey_timer);
+-
+-	survey_timer_hdl(padapter);
+-}
+-
+-static void _link_timer_hdl(struct timer_list *t)
+-{
+-	struct adapter *padapter = from_timer(padapter, t, mlmeextpriv.link_timer);
+-	link_timer_hdl(padapter);
+-}
+-
+ static void _addba_timer_hdl(struct timer_list *t)
+ {
+ 	struct sta_info *psta = from_timer(psta, t, addba_retry_timer);
+@@ -154,14 +141,6 @@ void init_addba_retry_timer(struct adapter *padapter, struct sta_info *psta)
+ 	timer_setup(&psta->addba_retry_timer, _addba_timer_hdl, 0);
+ }
+ 
+-void init_mlme_ext_timer(struct adapter *padapter)
+-{
+-	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+-
+-	timer_setup(&pmlmeext->survey_timer, _survey_timer_hdl, 0);
+-	timer_setup(&pmlmeext->link_timer, _link_timer_hdl, 0);
+-}
+-
+ void rtw_indicate_sta_assoc_event(struct adapter *padapter, struct sta_info *psta)
+ {
+ 	union iwreq_data wrqu;
+-- 
+2.37.1
 
-
-Best regards,
-Krzysztof
