@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 855DDC32792
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F625C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353083AbiHSQgl (ORCPT
+        id S1353209AbiHSQgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
+        Fri, 19 Aug 2022 12:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353683AbiHSQcY (ORCPT
+        with ESMTP id S1353706AbiHSQc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:32:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2563A50184;
-        Fri, 19 Aug 2022 09:06:24 -0700 (PDT)
+        Fri, 19 Aug 2022 12:32:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7300104752;
+        Fri, 19 Aug 2022 09:06:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35AF8617F2;
-        Fri, 19 Aug 2022 16:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B45C433D6;
-        Fri, 19 Aug 2022 16:06:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 921336177D;
+        Fri, 19 Aug 2022 16:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BECCC433D6;
+        Fri, 19 Aug 2022 16:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925174;
-        bh=tU4ac5BcUagigWhh2q0bVegPLksKdY/ntuJok500HCk=;
+        s=korg; t=1660925197;
+        bh=NZrKYplqe+G17tIETm+2hY+3VvZ50Kmxurqtsx++LB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0IgDAxwjWMOrm3LeL173ymak6qhc59TQN9++WbLJVrh5+cI039Ofrmsz97mVgXDIU
-         KugWU/X+zyeNjHeiZpCqPeyNzwkk2Gbape5LZq0VG3iL+2RPiPYkcgcg2O3PRxwpzw
-         FI1PxsdDu6wgtoeVgXjSa8v3KV4Y95p5D9B+1m8Y=
+        b=Rgu14KGru+GV/HNT2EO3nIKu6DZn4hJK/X0d5OstI2QTFHSv4AS9vFR5THEgdoRRF
+         9rpJbZLp0s3wBXsiZE0j6h3sGj5XOUjuR14GHklyoOSEzI9N7+bEH86bcxqYRqgZeB
+         r8E2h106p5WEUWOThLabMu8O2bXEuoXvuf0PgWS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 378/545] ASoC: samsung: h1940_uda1380: include proepr GPIO consumer header
-Date:   Fri, 19 Aug 2022 17:42:28 +0200
-Message-Id: <20220819153846.337701641@linuxfoundation.org>
+Subject: [PATCH 5.10 407/545] s390/zcore: fix race when reading from hardware system area
+Date:   Fri, 19 Aug 2022 17:42:57 +0200
+Message-Id: <20220819153847.638702238@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,35 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit bd10b0dafdcf0ec1677cad70101e1f97b9e28f2e ]
+[ Upstream commit 9ffed254d938c9e99eb7761c7f739294c84e0367 ]
 
-h1940_uda1380 uses gpiod*/GPIOD* so it should include GPIO consumer
-header.
+Memory buffer used for reading out data from hardware system
+area is not protected against concurrent access.
 
-Fixes: 9666e27f90b9 ("ASoC: samsung: h1940: turn into platform driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220627141900.470469-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Fixes: 411ed3225733 ("[S390] zfcpdump support.")
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Link: https://lore.kernel.org/r/e68137f0f9a0d2558f37becc20af18e2939934f6.1658206891.git.agordeev@linux.ibm.com
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/h1940_uda1380.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/s390/char/zcore.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/samsung/h1940_uda1380.c b/sound/soc/samsung/h1940_uda1380.c
-index 8aa78ff640f5..adb6b661c799 100644
---- a/sound/soc/samsung/h1940_uda1380.c
-+++ b/sound/soc/samsung/h1940_uda1380.c
-@@ -8,7 +8,7 @@
- // Based on version from Arnaud Patard <arnaud.patard@rtp-net.org>
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index 1515fdc3c1ab..3841c0e77df6 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
+@@ -48,6 +48,7 @@ static struct dentry *zcore_reipl_file;
+ static struct dentry *zcore_hsa_file;
+ static struct ipl_parameter_block *zcore_ipl_block;
  
- #include <linux/types.h>
--#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/module.h>
++static DEFINE_MUTEX(hsa_buf_mutex);
+ static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
  
- #include <sound/soc.h>
+ /*
+@@ -64,19 +65,24 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+ 		bytes = min(PAGE_SIZE - offset, count);
+-		if (copy_to_user(dest, hsa_buf + offset, bytes))
++		if (copy_to_user(dest, hsa_buf + offset, bytes)) {
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EFAULT;
++		}
+ 		src += bytes;
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
+@@ -94,9 +100,11 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+@@ -106,6 +114,7 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
