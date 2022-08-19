@@ -2,151 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2587C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F671C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345685AbiHSA5r (ORCPT
+        id S1345783AbiHSA6J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 20:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        Thu, 18 Aug 2022 20:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346066AbiHSA5i (ORCPT
+        with ESMTP id S1345238AbiHSA5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 20:57:38 -0400
+        Thu, 18 Aug 2022 20:57:43 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BBFDF650
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:57:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F048ADF4C2
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:57:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660870651;
+        s=mimecast20190719; t=1660870662;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NtiIgnIOWAAHwJQ2LveDQTHCn3qhSJFmqy9sxEsG1rc=;
-        b=MYZzpYaGYZuDC3c3NpxjkJ81fPmvyocs94YkRfy4kjp+1bXmQ5ysFPQkfu9pYJtUGquXXe
-        zoqP7tjZ4IUMQkKzoqiah6wDQI5sMzdiodL6x2MxZPbAZjq6c0aM1oFBggC8nEZrAJ7y6u
-        ru7D+a8X4FiGKV09fwErMdK2T3n8js0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-491-hcWi1V5tPBipyahNrluaWA-1; Thu, 18 Aug 2022 20:57:26 -0400
-X-MC-Unique: hcWi1V5tPBipyahNrluaWA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BCBDF801755;
-        Fri, 19 Aug 2022 00:57:24 +0000 (UTC)
-Received: from gshan.redhat.com (vpn2-54-16.bne.redhat.com [10.64.54.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C878FC15BB8;
-        Fri, 19 Aug 2022 00:57:16 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, peterx@redhat.com,
-        pbonzini@redhat.com, corbet@lwn.net, maz@kernel.org,
-        james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, oliver.upton@linux.dev,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
-        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
-        shan.gavin@gmail.com
-Subject: [PATCH v1 5/5] KVM: selftests: Automate choosing dirty ring size in dirty_log_test
-Date:   Fri, 19 Aug 2022 08:56:01 +0800
-Message-Id: <20220819005601.198436-6-gshan@redhat.com>
-In-Reply-To: <20220819005601.198436-1-gshan@redhat.com>
-References: <20220819005601.198436-1-gshan@redhat.com>
+        bh=uuQp/54kzUA0HT/STCK8ZUpvoW2Mnly/Q6xJfw5TSjY=;
+        b=i3PgQyoDCSyNAn3xOqUaR7GbelCR2d5rZNwPPJw56V9gvk5zT0OgWyqhzJDRO/CEawUhPc
+        lkIb2rrhgmiCE2X1GUQTcCnsntkqgoiPxpSn2cg4Vd9vUf2tLYG4akriTJos+vQ9FP14/+
+        NTGixQNb3wUEPjJvU4wko1apS2CJXRw=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-669-pMRZcUQaNeCeLns8aEmgmQ-1; Thu, 18 Aug 2022 20:57:40 -0400
+X-MC-Unique: pMRZcUQaNeCeLns8aEmgmQ-1
+Received: by mail-lf1-f69.google.com with SMTP id j5-20020ac253a5000000b0048ce9fc0e38so956844lfh.1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:57:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=uuQp/54kzUA0HT/STCK8ZUpvoW2Mnly/Q6xJfw5TSjY=;
+        b=zsvYfwUJesc4Wr7BKzpMuyGkmJNHC2iZ33sl0tzxRu3wLsrB6KDR4N5ic2muDDSTuL
+         x4nKP7PX3lfl40ON0zUjSUtj6lvmqPv0O0dTPWzDvuivmXiAhpDgWtZ1tmIZJdNMt3QS
+         jI1kmWTrY1D8/qm91/vfFgm/Jap9U17xvAKO1Ov/qttO5TjykP/crs77YFM4QrmJbkNb
+         n8z/IO34GPUnZbgtY0/Ng8BAmafFKcwWEBrRlTX6WqN+lHSjludr1EsD9XztTig0QS2f
+         Y7aghU46VqHJC94PllfvbvFmmmrzC33lGokQ4i2xst2mhlueDk39TvXb05kwYdYAyrX+
+         yTIg==
+X-Gm-Message-State: ACgBeo20pyQXch0a4jGhKjAzMaQoncJ1aVb02d95Xd6ckptwX2w43iOQ
+        CqZWXFyi2UMkriPQNxk8RHR0gui2CnkRzDaBM0i/XpmPuLmDWmVqAMpdjJT1rkGiJgTCgzFC3d0
+        whra8BKnWbBbQuesLqTRJvBucDZ115q+HvEIOb7qK
+X-Received: by 2002:a05:651c:2103:b0:25d:6478:2a57 with SMTP id a3-20020a05651c210300b0025d64782a57mr1520451ljq.496.1660870659360;
+        Thu, 18 Aug 2022 17:57:39 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5NBBg5Ds9XUeFrJ5XIbbNo4QBFxzNKUMH/CyMN4Jn/ghuXR8mPIUiifAo/bM5oS9vi+A6u9mAf/95LI1LMrdo=
+X-Received: by 2002:a05:651c:2103:b0:25d:6478:2a57 with SMTP id
+ a3-20020a05651c210300b0025d64782a57mr1520433ljq.496.1660870659177; Thu, 18
+ Aug 2022 17:57:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220811135353.2549658-1-eperezma@redhat.com> <20220811135353.2549658-4-eperezma@redhat.com>
+In-Reply-To: <20220811135353.2549658-4-eperezma@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 19 Aug 2022 08:57:28 +0800
+Message-ID: <CACGkMEvDTky2y_ngUJp69Wt=1hq3U=LeSdnzEj=oYJxh+jTrOQ@mail.gmail.com>
+Subject: Re: [PATCH v8 3/3] vhost: Remove invalid parameter of
+ VHOST_VDPA_SUSPEND ioctl
+To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, ecree.xilinx@gmail.com,
+        "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, Cindy Lu <lulu@redhat.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the dirty ring case, we rely on VM_EXIT due to full dirty ring
-state. On ARM64 system, there are 4096 host pages when the host
-page size is 64KB. In this case, the vcpu never exits due to the
-full dirty ring state. The vcpu corrupts same set of pages, but the
-dirty page information isn't collected in the main thread. This
-leads to infinite loop as the following log shows.
+On Thu, Aug 11, 2022 at 9:54 PM Eugenio P=C3=A9rez <eperezma@redhat.com> wr=
+ote:
+>
+> It was a leftover from previous versions.
+>
+> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
 
-  # ./dirty_log_test -M dirty-ring -c 65536 -m 5
-  Setting log mode to: 'dirty-ring'
-  Test iterations: 32, interval: 10 (ms)
-  Testing guest mode: PA-bits:40,  VA-bits:48,  4K pages
-  guest physical test memory offset: 0xffbffe0000
-  vcpu stops because vcpu is kicked out...
-  Notifying vcpu to continue
-  vcpu continues now.
-  Iteration 1 collected 576 pages
-  <No more output afterwards>
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Fix the issue by automatically choosing the best dirty ring size,
-to ensure VM_EXIT due to full dirty ring state. The option '-c'
-provides a hint to it, instead of the value of it.
-
-Signed-off-by: Gavin Shan <gshan@redhat.com>
----
- tools/testing/selftests/kvm/dirty_log_test.c | 24 ++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index 450e97d10de7..ad31b6e3fe6a 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -23,6 +23,9 @@
- #include "guest_modes.h"
- #include "processor.h"
- 
-+#define DIRTY_MEM_BITS 30 /* 1G */
-+#define PAGE_SHIFT_4K  12
-+
- /* The memory slot index to track dirty pages */
- #define TEST_MEM_SLOT_INDEX		1
- 
-@@ -298,6 +301,22 @@ static bool dirty_ring_supported(void)
- 
- static void dirty_ring_create_vm_done(struct kvm_vm *vm)
- {
-+	uint64_t pages;
-+	uint32_t limit;
-+
-+	/*
-+	 * We rely on VM_EXIT due to full dirty ring state. Adjust
-+	 * the ring buffer size to ensure we're able to reach the
-+	 * full dirty ring state.
-+	 */
-+	pages = (1ul << (DIRTY_MEM_BITS - vm->page_shift)) + 3;
-+	pages = vm_adjust_num_guest_pages(vm->mode, pages);
-+	pages = vm_num_host_pages(vm->mode, pages);
-+
-+	limit = 1 << (31 - __builtin_clz(pages));
-+	test_dirty_ring_count = 1 << (31 - __builtin_clz(test_dirty_ring_count));
-+	test_dirty_ring_count = min(limit, test_dirty_ring_count);
-+
- 	/*
- 	 * Switch to dirty ring mode after VM creation but before any
- 	 * of the vcpu creation.
-@@ -710,9 +729,6 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, struct kvm_vcpu **vcpu,
- 	return vm;
- }
- 
--#define DIRTY_MEM_BITS 30 /* 1G */
--#define PAGE_SHIFT_4K  12
--
- struct test_params {
- 	unsigned long iterations;
- 	unsigned long interval;
-@@ -856,7 +872,7 @@ static void help(char *name)
- 	printf("usage: %s [-h] [-i iterations] [-I interval] "
- 	       "[-p offset] [-m mode]\n", name);
- 	puts("");
--	printf(" -c: specify dirty ring size, in number of entries\n");
-+	printf(" -c: hint to dirty ring size, in number of entries\n");
- 	printf("     (only useful for dirty-ring test; default: %"PRIu32")\n",
- 	       TEST_DIRTY_RING_COUNT);
- 	printf(" -i: specify iteration counts (default: %"PRIu64")\n",
--- 
-2.23.0
+> ---
+> Note that I'm not sure this removal is valid. The ioctl is not in master
+> branch by the send date of this patch, but there are commits on vhost
+> branch that do have it.
+> ---
+>  include/uapi/linux/vhost.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index 89fcb2afe472..768ec46a88bf 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -178,6 +178,6 @@
+>   * the possible device specific states) that is required for restoring i=
+n the
+>   * future. The device must not change its configuration after that point=
+.
+>   */
+> -#define VHOST_VDPA_SUSPEND             _IOW(VHOST_VIRTIO, 0x7D, int)
+> +#define VHOST_VDPA_SUSPEND             _IO(VHOST_VIRTIO, 0x7D)
+>
+>  #endif
+> --
+> 2.31.1
+>
 
