@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F2EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA4EC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351422AbiHSQHT (ORCPT
+        id S1351428AbiHSQH3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
+        Fri, 19 Aug 2022 12:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351704AbiHSQCb (ORCPT
+        with ESMTP id S1350704AbiHSQCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:02:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F292CED035;
-        Fri, 19 Aug 2022 08:54:22 -0700 (PDT)
+        Fri, 19 Aug 2022 12:02:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BB810097C;
+        Fri, 19 Aug 2022 08:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63466615E9;
-        Fri, 19 Aug 2022 15:54:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7007DC433C1;
-        Fri, 19 Aug 2022 15:54:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BF1CB8280C;
+        Fri, 19 Aug 2022 15:54:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4896C433C1;
+        Fri, 19 Aug 2022 15:54:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924453;
-        bh=PU3gDOfrBxWYveT2aEubf0AB0X2JOTlTEsYa3cruYcY=;
+        s=korg; t=1660924463;
+        bh=la5E+kuBAMSt4oLG9TPx/PFw2+rOiN5mmjXwovuGkUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=afy+ff4xEWHNNFdHwRSholKzNmJvWuE/q/GQsVcWXgpmeajh/mo3B9GCFdL5+52J1
-         Sy0IOXmlYitukiWZ+Pse9Sx8Enk+E/ikqZ7juYujhUedwixQx96LZ7EEcGs+y40sDH
-         /VVhkta1fqzYAe9EA78cgYkR5paGmV8hkuBC+eQE=
+        b=VMTveVmVbHqsnMD9f3wW+ah5Kne/2lQq4bQGfbQ5/4qgqU48P5GTQsdquKk2HfsUx
+         rh+aULLmZYk8osOzrB4DV0eozxV+ICAbPzJmCjDC+5dijX7vx0mwC9SCQQ3b/q+7cP
+         y8V5WLDt1ns4zAmPiJNVJeom5EwhEXT5+ITQABr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 175/545] net: fix sk_wmem_schedule() and sk_rmem_schedule() errors
-Date:   Fri, 19 Aug 2022 17:39:05 +0200
-Message-Id: <20220819153837.178590948@linuxfoundation.org>
+Subject: [PATCH 5.10 177/545] crypto: sun8i-ss - fix infinite loop in sun8i_ss_setup_ivs()
+Date:   Fri, 19 Aug 2022 17:39:07 +0200
+Message-Id: <20220819153837.271819174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,56 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-[ Upstream commit 7c80b038d23e1f4c7fcc311f43f83b8c60e7fb80 ]
+[ Upstream commit d61a7b3decf7f0cf4121a7204303deefd2c7151b ]
 
-If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
-we want to allocate 1 byte more (rounded up to one page),
-instead of 150001 :/
+There is no i decrement in while (i >= 0) loop.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 359e893e8af4 ("crypto: sun8i-ss - rework handling of IV")
+Acked-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 83854cec4a47..c72b0fc4c752 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1468,19 +1468,23 @@ static inline bool sk_has_account(struct sock *sk)
- 
- static inline bool sk_wmem_schedule(struct sock *sk, int size)
- {
-+	int delta;
-+
- 	if (!sk_has_account(sk))
- 		return true;
--	return size <= sk->sk_forward_alloc ||
--		__sk_mem_schedule(sk, size, SK_MEM_SEND);
-+	delta = size - sk->sk_forward_alloc;
-+	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_SEND);
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
+index 7b3be3dc2210..d0954993e2e3 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
+@@ -151,6 +151,7 @@ static int sun8i_ss_setup_ivs(struct skcipher_request *areq)
+ 	while (i >= 0) {
+ 		dma_unmap_single(ss->dev, rctx->p_iv[i], ivsize, DMA_TO_DEVICE);
+ 		memzero_explicit(sf->iv[i], ivsize);
++		i--;
+ 	}
+ 	return err;
  }
- 
- static inline bool
- sk_rmem_schedule(struct sock *sk, struct sk_buff *skb, int size)
- {
-+	int delta;
-+
- 	if (!sk_has_account(sk))
- 		return true;
--	return size <= sk->sk_forward_alloc ||
--		__sk_mem_schedule(sk, size, SK_MEM_RECV) ||
-+	delta = size - sk->sk_forward_alloc;
-+	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_RECV) ||
- 		skb_pfmemalloc(skb);
- }
- 
 -- 
 2.35.1
 
