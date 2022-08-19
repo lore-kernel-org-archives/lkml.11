@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC50EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9DDC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351181AbiHSQDs (ORCPT
+        id S1351188AbiHSQDv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
+        Fri, 19 Aug 2022 12:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351244AbiHSQBE (ORCPT
+        with ESMTP id S1351291AbiHSQBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1412610A760;
-        Fri, 19 Aug 2022 08:53:01 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CEF10A767;
+        Fri, 19 Aug 2022 08:53:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32284615E7;
-        Fri, 19 Aug 2022 15:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFF0EC433D6;
-        Fri, 19 Aug 2022 15:52:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 50607CE26B6;
+        Fri, 19 Aug 2022 15:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413C3C433C1;
+        Fri, 19 Aug 2022 15:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924379;
-        bh=mMHWB+1et05fSZ7uZu7j8PjCDavhZJN072Bc+vANuQE=;
+        s=korg; t=1660924356;
+        bh=qVDrBSzVaPi+3Q9Qz4aFGHejuAGKOQ9q8ZjK5k3N9wk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QhWrXHAP641NBwiyPF6Ri7d7kuzAzCsPpejPf2gVIrxZgb5uwGKnJKWoUyGloEs0A
-         4gvIF5Ieyr+PGjSckS58o3kJ1vGdiFIqFDhOhY8/bhj4Ges7PqQ2k7t1C6jo+zicmk
-         MkCWvqVVIJRByNPKtg6MrrbAgCzV0X+j3lhk38fU=
+        b=ZARfBAiogdq/xuOKigGxSIN5VdO9je8I1Z2rDV9wuPp0ZaOhkU4Mu0G07M9zUCcW4
+         Zto6mhv78g1e4Ud9a7T/cLCJ0Jyi4VWla1V4XmCCyskqxkNt5mslt/+gsFJecNK09u
+         KZYy/lkHm0gH15foppIkrVNvdpkOu0iU00x0GHGM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Brian Cain <bcain@codeaurora.org>,
-        David Rientjes <rientjes@google.com>,
-        Oliver Glitta <glittao@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 121/545] hexagon: select ARCH_WANT_LD_ORPHAN_WARN
-Date:   Fri, 19 Aug 2022 17:38:11 +0200
-Message-Id: <20220819153834.707125710@linuxfoundation.org>
+Subject: [PATCH 5.10 143/545] regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
+Date:   Fri, 19 Aug 2022 17:38:33 +0200
+Message-Id: <20220819153835.726466630@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -56,40 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 113616ec5b64b23a1c9b663adafadabdfbec0f51 ]
+[ Upstream commit 66efb665cd5ad69b27dca8571bf89fc6b9c628a4 ]
 
-Now that we handle all of the sections in a Hexagon defconfig, select
-ARCH_WANT_LD_ORPHAN_WARN so that unhandled sections are warned about by
-default.
+We should call the of_node_put() for the reference returned by
+of_get_child_by_name() which has increased the refcount.
 
-Link: https://lkml.kernel.org/r/20210521011239.1332345-4-nathan@kernel.org
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Acked-by: Brian Cain <bcain@codeaurora.org>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Oliver Glitta <glittao@gmail.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 40e20d68bb3f ("regulator: of: Add support for parsing regulator_state for suspend state")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220715111027.391032-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/hexagon/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/regulator/of_regulator.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/hexagon/Kconfig b/arch/hexagon/Kconfig
-index f2afabbadd43..cc2c1ae48e62 100644
---- a/arch/hexagon/Kconfig
-+++ b/arch/hexagon/Kconfig
-@@ -32,6 +32,7 @@ config HEXAGON
- 	select MODULES_USE_ELF_RELA
- 	select GENERIC_CPU_DEVICES
- 	select SET_FS
-+	select ARCH_WANT_LD_ORPHAN_WARN
- 	help
- 	  Qualcomm Hexagon is a processor architecture designed for high
- 	  performance and low power across a wide variety of applications.
+diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
+index 06c0b15fe4c0..5d844697c7b6 100644
+--- a/drivers/regulator/of_regulator.c
++++ b/drivers/regulator/of_regulator.c
+@@ -206,8 +206,12 @@ static int of_get_regulation_constraints(struct device *dev,
+ 		}
+ 
+ 		suspend_np = of_get_child_by_name(np, regulator_states[i]);
+-		if (!suspend_np || !suspend_state)
++		if (!suspend_np)
+ 			continue;
++		if (!suspend_state) {
++			of_node_put(suspend_np);
++			continue;
++		}
+ 
+ 		if (!of_property_read_u32(suspend_np, "regulator-mode",
+ 					  &pval)) {
 -- 
 2.35.1
 
