@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A45C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F34F5C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350348AbiHSPvg (ORCPT
+        id S1350369AbiHSPvm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52098 "EHLO
+        Fri, 19 Aug 2022 11:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350422AbiHSPub (ORCPT
+        with ESMTP id S1350427AbiHSPuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A54105F38;
-        Fri, 19 Aug 2022 08:48:08 -0700 (PDT)
+        Fri, 19 Aug 2022 11:50:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921332CE26;
+        Fri, 19 Aug 2022 08:48:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13189B82813;
-        Fri, 19 Aug 2022 15:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 577ABC433D7;
-        Fri, 19 Aug 2022 15:48:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F34C615D5;
+        Fri, 19 Aug 2022 15:48:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B969C433C1;
+        Fri, 19 Aug 2022 15:48:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924085;
-        bh=LLjEaiaU+rXJ5Hm1Jja3z9R4ceG3bb+NgXlEBIT10xg=;
+        s=korg; t=1660924091;
+        bh=Yr7okvVqXnDFjMSzgjiWDpsS49DA0YngByrlZroVnJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rnY6lqY4MPDXKwY+Qggefk/+L8ufHM5zh/OOHSjBKjzShhccSBNrXCj7g0vMwMnHH
-         eNC/wqoOeWZpdEXHcAm+/mAL/lxWEHd0KxK3Wr/fZlyNpP0ZPSXkEUIn0A5YFh61HT
-         tu1T2ILKwJF41RicJKTLCtuMA1EWwb9K/SRfzXHs=
+        b=ijMILB8B8skguetVNVT2xFPMt0Al9sFNznmFgBOFl325ZSCwA3/PG5LPrlFs9crqu
+         oiVQkqUccyJu+DpHkyWR+9urVqzG16i/zzkkz1TW2kPx9Xdl9VWrKmAWbPEAY6TiFQ
+         CxT+a7uQAHuNv9oNh2XFtkH3G5a9YVy4PHZjk2lY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 5.10 020/545] KVM: x86: Set error code to segment selector on LLDT/LTR non-canonical #GP
-Date:   Fri, 19 Aug 2022 17:36:30 +0200
-Message-Id: <20220819153830.096003133@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
+        Anup Patel <anup@brainfault.org>,
+        Ron Economos <w6rz@comcast.net>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.10 022/545] riscv: set default pm_power_off to NULL
+Date:   Fri, 19 Aug 2022 17:36:32 +0200
+Message-Id: <20220819153830.184035307@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,41 +53,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
 
-commit 2626206963ace9e8bf92b6eea5ff78dd674c555c upstream.
+commit f2928e224d85e7cc139009ab17cefdfec2df5d11 upstream.
 
-When injecting a #GP on LLDT/LTR due to a non-canonical LDT/TSS base, set
-the error code to the selector.  Intel SDM's says nothing about the #GP,
-but AMD's APM explicitly states that both LLDT and LTR set the error code
-to the selector, not zero.
+Set pm_power_off to NULL like on all other architectures, check if it
+is set in machine_halt() and machine_power_off() and fallback to
+default_power_off if no other power driver got registered.
 
-Note, a non-canonical memory operand on LLDT/LTR does generate a #GP(0),
-but the KVM code in question is specific to the base from the descriptor.
+This brings riscv architecture inline with all other architectures,
+and allows to reuse exiting power drivers unmodified.
 
-Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Link: https://lore.kernel.org/r/20220711232750.1092012-3-seanjc@google.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Kernels without legacy SBI v0.1 extensions (CONFIG_RISCV_SBI_V01 is
+not set), do not set pm_power_off to sbi_shutdown(). There is no
+support for SBI v0.3 system reset extension either. This prevents
+using gpio_poweroff on SiFive HiFive Unmatched.
+
+Tested on SiFive HiFive unmatched, with a dtb specifying gpio-poweroff
+node and kernel complied without CONFIG_RISCV_SBI_V01.
+
+BugLink: https://bugs.launchpad.net/bugs/1942806
+Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Tested-by: Ron Economos <w6rz@comcast.net>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/emulate.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/riscv/kernel/reset.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1809,8 +1809,8 @@ static int __load_segment_descriptor(str
- 		if (ret != X86EMUL_CONTINUE)
- 			return ret;
- 		if (emul_is_noncanonical_address(get_desc_base(&seg_desc) |
--				((u64)base3 << 32), ctxt))
--			return emulate_gp(ctxt, 0);
-+						 ((u64)base3 << 32), ctxt))
-+			return emulate_gp(ctxt, err_code);
- 	}
+--- a/arch/riscv/kernel/reset.c
++++ b/arch/riscv/kernel/reset.c
+@@ -12,7 +12,7 @@ static void default_power_off(void)
+ 		wait_for_interrupt();
+ }
  
- 	if (seg == VCPU_SREG_TR) {
+-void (*pm_power_off)(void) = default_power_off;
++void (*pm_power_off)(void) = NULL;
+ EXPORT_SYMBOL(pm_power_off);
+ 
+ void machine_restart(char *cmd)
+@@ -23,10 +23,16 @@ void machine_restart(char *cmd)
+ 
+ void machine_halt(void)
+ {
+-	pm_power_off();
++	if (pm_power_off != NULL)
++		pm_power_off();
++	else
++		default_power_off();
+ }
+ 
+ void machine_power_off(void)
+ {
+-	pm_power_off();
++	if (pm_power_off != NULL)
++		pm_power_off();
++	else
++		default_power_off();
+ }
 
 
