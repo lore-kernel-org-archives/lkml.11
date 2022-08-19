@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1F6C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B07C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354080AbiHSQtA (ORCPT
+        id S1354197AbiHSQtD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        Fri, 19 Aug 2022 12:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353743AbiHSQq2 (ORCPT
+        with ESMTP id S1353895AbiHSQp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:46:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8458C12AD22;
-        Fri, 19 Aug 2022 09:12:28 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FC712A1D0;
+        Fri, 19 Aug 2022 09:11:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BB8BB825D3;
-        Fri, 19 Aug 2022 16:11:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECF00C433C1;
-        Fri, 19 Aug 2022 16:11:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C535617A5;
+        Fri, 19 Aug 2022 16:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3779FC433D7;
+        Fri, 19 Aug 2022 16:11:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925491;
-        bh=maXJZmtfGHTbigKGqgNHPqRQAaITODt4/YtQSu33wlo=;
+        s=korg; t=1660925475;
+        bh=eAffu8N50aZ802sur6aZXX3bo42whdSLVlky8njxA/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dejY5PZ81ioTDjn/ncS6QfNQBU1VIr8mJWABYGO2e6eqdAYjLeLlVQSHGlAMW3Hoq
-         /O+JOhPyp1H4tnjJuYrEml3K2d1g85KNSAPzkhglXwEJBGz1bK/uYu7J/dvFgYmNc7
-         O898/eWDpIITKfXMhdJa+8lM7ad7YwHnVsmMDlgk=
+        b=gCqbwwu6hsHsyVUItzDJDqwtF5NOuOFFGAwE/vRjGip0fs7Q4DwwjMhB5cVBkHCS+
+         CE0DUWMLxaBkCwAdh/E4kX/jyE4td2+MoIrGb/dGkSN8DTDOXsckij9z0VxY53AD3q
+         5qbnftVpfCiJUhKPDt7Aw1neI90ZPCViLVftd6Bc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean V Kelley <sean.v.kelley@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 477/545] PCI/ERR: Simplify by computing pci_pcie_type() once
-Date:   Fri, 19 Aug 2022 17:44:07 +0200
-Message-Id: <20220819153850.764825952@linuxfoundation.org>
+Subject: [PATCH 5.10 501/545] KVM: SVM: Drop VMXE check from svm_set_cr4()
+Date:   Fri, 19 Aug 2022 17:44:31 +0200
+Message-Id: <20220819153851.904128084@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,94 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean V Kelley <sean.v.kelley@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-[ Upstream commit 480ef7cb9fcebda7b28cbed4f6cdcf0a02f4a6ca ]
+[ Upstream commit 311a06593b9a3944a63ed176b95cb8d857f7c83b ]
 
-Instead of calling pci_pcie_type(dev) twice, call it once and save the
-result.  No functional change intended.
+Drop svm_set_cr4()'s explicit check CR4.VMXE now that common x86 handles
+the check by incorporating VMXE into the CR4 reserved bits, via
+kvm_cpu_caps.  SVM obviously does not set X86_FEATURE_VMX.
 
-Link: https://lore.kernel.org/r/20201121001036.8560-7-sean.v.kelley@intel.com
-Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
-Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+No functional change intended.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Message-Id: <20201007014417.29276-4-sean.j.christopherson@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/aer.c         | 5 +++--
- drivers/pci/pcie/err.c         | 5 +++--
- drivers/pci/pcie/portdrv_pci.c | 9 +++++----
- 3 files changed, 11 insertions(+), 8 deletions(-)
+ arch/x86/kvm/svm/svm.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index 61f78b20b0cf..72dbc193a25f 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -1039,6 +1039,7 @@ EXPORT_SYMBOL_GPL(aer_recover_queue);
-  */
- int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
- {
-+	int type = pci_pcie_type(dev);
- 	int aer = dev->aer_cap;
- 	int temp;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 184e68e7eedf..9bc166a5d453 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -1697,9 +1697,6 @@ int svm_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
+ 	unsigned long host_cr4_mce = cr4_read_shadow() & X86_CR4_MCE;
+ 	unsigned long old_cr4 = to_svm(vcpu)->vmcb->save.cr4;
  
-@@ -1057,8 +1058,8 @@ int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
- 			&info->mask);
- 		if (!(info->status & ~info->mask))
- 			return 0;
--	} else if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
--	           pci_pcie_type(dev) == PCI_EXP_TYPE_DOWNSTREAM ||
-+	} else if (type == PCI_EXP_TYPE_ROOT_PORT ||
-+		   type == PCI_EXP_TYPE_DOWNSTREAM ||
- 		   info->severity == AER_NONFATAL) {
+-	if (cr4 & X86_CR4_VMXE)
+-		return 1;
+-
+ 	if (npt_enabled && ((old_cr4 ^ cr4) & X86_CR4_PGE))
+ 		svm_flush_tlb(vcpu);
  
- 		/* Link is still healthy for IO reads */
-diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
-index 05f61da5ed9d..7a5af873d8bc 100644
---- a/drivers/pci/pcie/err.c
-+++ b/drivers/pci/pcie/err.c
-@@ -150,6 +150,7 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 		pci_channel_state_t state,
- 		pci_ers_result_t (*reset_subordinates)(struct pci_dev *pdev))
- {
-+	int type = pci_pcie_type(dev);
- 	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
- 	struct pci_bus *bus;
- 
-@@ -157,8 +158,8 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 	 * Error recovery runs on all subordinates of the first downstream port.
- 	 * If the downstream port detected the error, it is cleared at the end.
- 	 */
--	if (!(pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
--	      pci_pcie_type(dev) == PCI_EXP_TYPE_DOWNSTREAM))
-+	if (!(type == PCI_EXP_TYPE_ROOT_PORT ||
-+	      type == PCI_EXP_TYPE_DOWNSTREAM))
- 		dev = pci_upstream_bridge(dev);
- 	bus = dev->subordinate;
- 
-diff --git a/drivers/pci/pcie/portdrv_pci.c b/drivers/pci/pcie/portdrv_pci.c
-index 26259630fd10..aac1a6828b4f 100644
---- a/drivers/pci/pcie/portdrv_pci.c
-+++ b/drivers/pci/pcie/portdrv_pci.c
-@@ -101,13 +101,14 @@ static const struct dev_pm_ops pcie_portdrv_pm_ops = {
- static int pcie_portdrv_probe(struct pci_dev *dev,
- 					const struct pci_device_id *id)
- {
-+	int type = pci_pcie_type(dev);
- 	int status;
- 
- 	if (!pci_is_pcie(dev) ||
--	    ((pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT) &&
--	     (pci_pcie_type(dev) != PCI_EXP_TYPE_UPSTREAM) &&
--	     (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM) &&
--	     (pci_pcie_type(dev) != PCI_EXP_TYPE_RC_EC)))
-+	    ((type != PCI_EXP_TYPE_ROOT_PORT) &&
-+	     (type != PCI_EXP_TYPE_UPSTREAM) &&
-+	     (type != PCI_EXP_TYPE_DOWNSTREAM) &&
-+	     (type != PCI_EXP_TYPE_RC_EC)))
- 		return -ENODEV;
- 
- 	status = pcie_port_device_register(dev);
 -- 
 2.35.1
 
