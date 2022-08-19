@@ -2,104 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD36C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13379C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347683AbiHSIR6 (ORCPT
+        id S1347584AbiHSISC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
+        Fri, 19 Aug 2022 04:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347584AbiHSIRH (ORCPT
+        with ESMTP id S1346622AbiHSIRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:17:07 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3297BE192F;
-        Fri, 19 Aug 2022 01:17:05 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id y4so3551828plb.2;
-        Fri, 19 Aug 2022 01:17:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=sWp63BpVW8U7jAJS0MU5jHAUsPkleFN5R+CfvsKi3C8=;
-        b=C6E1jDISCgMWDW9pnZhE7J0+TOlfLs/SL0BvEnbhBl1cOaLOXPUkG0PsMKXga8lGMf
-         S2wHURTITV1Rq9JkhGaTwKlby/7FSHfRAIPScHpHSMT3YjsBMELwfC8ipcrB464GrD9h
-         ZnJjlI6vdcoh0J+8Cyay7v86g01ubH4NdCXSZqylVbyit+YHsruhkTAkIT62SuJ09kiX
-         hwh+ogQuE+SpWKDkY7qLQNHDWxp287xo5wQ7QCtE/P9sEfHcRkIJGifHtkQfRbJUcGHY
-         RNGtxDVImZlWR/qzbM2CWJPwn243C+fiGciyO9ooeAdtPheFINVJaw6zGFirPIHpyXvj
-         1oSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=sWp63BpVW8U7jAJS0MU5jHAUsPkleFN5R+CfvsKi3C8=;
-        b=5Ehr7Wpj4N+TbuPElcD5Gbfv7CB3mvwFoY0WTNksWswo6nQMm7wjN3QjXOIJwr150F
-         HvzDQROkoQ3hmgx0Vz4uNaJmiqgyC8Ym0Ax5OQvx9zfAJ4gECnmPfkcviDt06rrshq3d
-         jB4DQI3yH4chjcH5GZ8x5HvEsaX9bjd48HZNkRqZX19QuEmvFkjSmHH5Mcwh5YkVLUiO
-         w/RhqBDBXY1JiMgAGed5QshP0XIKAzXjQomBkZ6KNigUoRYShNaHdwkb7M3DqRhaZQMJ
-         1mWkF6e6wzAzNM6nMWt2QYrNdAo2Jx/GS0aEnHKq2bPueDHHvDjH5CXRKcvIG/a5P1jt
-         +WZA==
-X-Gm-Message-State: ACgBeo0rg+GzzY7oALQ87KwYpZkFvnaoD7RgzaEvmA92YTJGvQngjqdX
-        XsX6TW34kPyoCSoPtEwmR22NiZorRmo=
-X-Google-Smtp-Source: AA6agR7VK+ZQDhU10x5yVImCqMsR5CNFnTX5ANRWf4TRJlqrO+8+IxA88g3tYPj+KKOdAgJ2e6eScg==
-X-Received: by 2002:a17:90b:1bc7:b0:1f5:37a6:e473 with SMTP id oa7-20020a17090b1bc700b001f537a6e473mr6995083pjb.87.1660897024753;
-        Fri, 19 Aug 2022 01:17:04 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s10-20020a170902ea0a00b00172a6cf0a84sm2631032plg.124.2022.08.19.01.17.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 01:17:04 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     konishi.ryusuke@gmail.com
-Cc:     linux-nilfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] nilfs2: delete unnecessary checks before brelse()
-Date:   Fri, 19 Aug 2022 08:17:00 +0000
-Message-Id: <20220819081700.96279-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 04:17:08 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE69EB274B;
+        Fri, 19 Aug 2022 01:17:06 -0700 (PDT)
+Received: from localhost.localdomain (unknown [113.200.148.30])
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8Bx32v5Rv9isI4EAA--.18159S4;
+        Fri, 19 Aug 2022 16:16:58 +0800 (CST)
+From:   Qing Zhang <zhangqing@loongson.cn>
+To:     Huacai Chen <chenhuacai@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn,
+        zhangqing@loongson.cn
+Subject: [PATCH 8/9] LoongArch: ftrace: Add CALLER_ADDRx macros
+Date:   Fri, 19 Aug 2022 16:16:56 +0800
+Message-Id: <20220819081657.7254-3-zhangqing@loongson.cn>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220819081657.7254-1-zhangqing@loongson.cn>
+References: <20220819081657.7254-1-zhangqing@loongson.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf8Bx32v5Rv9isI4EAA--.18159S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxWFW8Cr4DZF18JrWftFy7KFg_yoWrJryxpF
+        97ArZ3GrW0kwn7trZrXr15ur15AFn7Gw12ga129a45Ar12qr17uw1kZ34qqFn5tayxG3yI
+        qFWrCrWayF4DJaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUmj14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+        A2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1l
+        e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
+        8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
+        jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0x
+        kIwI1lc2xSY4AK67AK6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4U
+        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
+        AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26ryj6F1UMIIF0xvE2Ix0
+        cI8IcVCY1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I
+        8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2Kfnx
+        nUUI43ZEXa7sRRD73JUUUUU==
+X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+CALLER_ADDRx returns caller's address at specified level in call stacks.
+They are used for several tracers like irqsoff and preemptoff.
 
-The brelse() function tests whether its argument is NULL
-and then returns immediately.
-Thus remove the tests which are not needed around the shown calls.
+do_vint
+  irqentry_exit
+    trace_hardirqs_on
+      tracer_hardirqs_on(CALLER_ADDR0, CALLER_ADDR1)
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Signed-off-by: Qing Zhang <zhangqing@loongson.cn>
 ---
- fs/nilfs2/btree.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/loongarch/include/asm/ftrace.h    |  2 ++
+ arch/loongarch/include/asm/processor.h |  2 --
+ arch/loongarch/kernel/Makefile         |  4 +--
+ arch/loongarch/kernel/return_address.c | 45 ++++++++++++++++++++++++++
+ 4 files changed, 49 insertions(+), 4 deletions(-)
+ create mode 100644 arch/loongarch/kernel/return_address.c
 
-diff --git a/fs/nilfs2/btree.c b/fs/nilfs2/btree.c
-index f544c22fff78..b3b5a46488c2 100644
---- a/fs/nilfs2/btree.c
-+++ b/fs/nilfs2/btree.c
-@@ -1668,8 +1668,7 @@ static int nilfs_btree_check_delete(struct nilfs_bmap *btree, __u64 key)
- 	maxkey = nilfs_btree_node_get_key(node, nchildren - 1);
- 	nextmaxkey = (nchildren > 1) ?
- 		nilfs_btree_node_get_key(node, nchildren - 2) : 0;
--	if (bh != NULL)
--		brelse(bh);
-+	brelse(bh);
+diff --git a/arch/loongarch/include/asm/ftrace.h b/arch/loongarch/include/asm/ftrace.h
+index f96adef0e4a5..6afc9fc712f4 100644
+--- a/arch/loongarch/include/asm/ftrace.h
++++ b/arch/loongarch/include/asm/ftrace.h
+@@ -16,6 +16,8 @@
+ #define MCOUNT_INSN_SIZE 4		/* sizeof mcount call */
  
- 	return (maxkey == key) && (nextmaxkey < NILFS_BMAP_LARGE_LOW);
- }
-@@ -1717,8 +1716,7 @@ static int nilfs_btree_gather_data(struct nilfs_bmap *btree,
- 		ptrs[i] = le64_to_cpu(dptrs[i]);
- 	}
+ #ifndef __ASSEMBLY__
++extern void *return_address(unsigned int);
++#define ftrace_return_address(n) return_address(n)
+ #ifndef CONFIG_DYNAMIC_FTRACE
+ extern void _mcount(void);
+ #define mcount _mcount
+diff --git a/arch/loongarch/include/asm/processor.h b/arch/loongarch/include/asm/processor.h
+index 1c4b4308378d..5eb45e55f3c7 100644
+--- a/arch/loongarch/include/asm/processor.h
++++ b/arch/loongarch/include/asm/processor.h
+@@ -201,8 +201,6 @@ unsigned long __get_wchan(struct task_struct *p);
+ #define KSTK_EUEN(tsk) (task_pt_regs(tsk)->csr_euen)
+ #define KSTK_ECFG(tsk) (task_pt_regs(tsk)->csr_ecfg)
  
--	if (bh != NULL)
--		brelse(bh);
-+	brelse(bh);
+-#define return_address() ({__asm__ __volatile__("":::"$1"); __builtin_return_address(0);})
+-
+ #ifdef CONFIG_CPU_HAS_PREFETCH
  
- 	return nitems;
- }
+ #define ARCH_HAS_PREFETCH
+diff --git a/arch/loongarch/kernel/Makefile b/arch/loongarch/kernel/Makefile
+index a73599619466..9a3df7c1f6e8 100644
+--- a/arch/loongarch/kernel/Makefile
++++ b/arch/loongarch/kernel/Makefile
+@@ -6,8 +6,8 @@
+ extra-y		:= head.o vmlinux.lds
+ 
+ obj-y		+= cpu-probe.o cacheinfo.o env.o setup.o entry.o genex.o \
+-		   traps.o irq.o idle.o process.o dma.o mem.o io.o reset.o switch.o \
+-		   elf.o syscall.o signal.o time.o topology.o inst.o ptrace.o vdso.o
++		   traps.o irq.o idle.o process.o dma.o mem.o io.o reset.o return_address.o \
++		   switch.o elf.o syscall.o signal.o time.o topology.o inst.o ptrace.o vdso.o
+ 
+ obj-$(CONFIG_ACPI)		+= acpi.o
+ obj-$(CONFIG_EFI) 		+= efi.o
+diff --git a/arch/loongarch/kernel/return_address.c b/arch/loongarch/kernel/return_address.c
+new file mode 100644
+index 000000000000..ed8121dd2b0f
+--- /dev/null
++++ b/arch/loongarch/kernel/return_address.c
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022 Loongson Technology Corporation Limited
++ */
++
++#include <linux/export.h>
++#include <linux/ftrace.h>
++#include <linux/kprobes.h>
++#include <linux/stacktrace.h>
++
++struct return_address_data {
++	unsigned int level;
++	void *addr;
++};
++
++static bool save_return_addr(void *d, unsigned long pc)
++{
++	struct return_address_data *data = d;
++
++	if (!data->level) {
++		data->addr = (void *)pc;
++		return false;
++	} else {
++		--data->level;
++		return true;
++	}
++}
++NOKPROBE_SYMBOL(save_return_addr);
++
++void *return_address(unsigned int level)
++{
++	struct return_address_data data;
++
++	data.level = level + 2;
++	data.addr = NULL;
++
++	arch_stack_walk(save_return_addr, &data, current, NULL);
++
++	if (!data.level)
++		return data.addr;
++	else
++		return NULL;
++}
++EXPORT_SYMBOL_GPL(return_address);
++NOKPROBE_SYMBOL(return_address);
 -- 
-2.25.1
+2.36.1
+
