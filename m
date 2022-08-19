@@ -2,136 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6288C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F0BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243470AbiHSBWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 21:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
+        id S240657AbiHSB3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 21:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiHSBWJ (ORCPT
+        with ESMTP id S229584AbiHSB3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 21:22:09 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88886D51ED
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:22:08 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id x64so2367029iof.1
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:22:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=++fASc0fsxHxUOS23IzKRmPzdmpS9qfA0Lyv2k53js8=;
-        b=c702vnQs1zjXA6roO7+CTFJfTOyEb022/1v0c4gnp6L7ldFKZmMCjIie7sigbTgmp8
-         bDQC7LFk1YVUA6Wf6ymxs7G0ork60nMr2/dzxAjOQXiPG3+n/Khzj18qcSIwEXrRS/hc
-         mqgjI8GQIeey3koM69rJ2LVvb9m04IlQUx+uM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=++fASc0fsxHxUOS23IzKRmPzdmpS9qfA0Lyv2k53js8=;
-        b=U50dfjXSZBkQ0p+tx2NpTy7RqR4oFz587oduD+4SAK0ulqaSOZd8g3tTESiXjx1f0l
-         fMaJwcvuTs3r9yHnN3uEiP1rFZBYZGbBhho3oXg+DnRuFxHnTvsyUioS4Avmkd6bRRDr
-         aDn7JsVxvMMduIEJI3Cz/IAf4yCdWmLHm86eZP9AotEumzLBEgXcqkxAxSH0HJlAXO9j
-         4wvreVe/wB1frGZnxEICqK1Cccy+6WMalem++Fv9wyWusezGYmuA4h2QN73TeK6cgV4S
-         EfU1KVdfy9SxF0EH1T3A7eUOfHzz22Xp7mMMa+r/nNcmCgIdfejMdu/tm4VnD/4eLGjE
-         C03g==
-X-Gm-Message-State: ACgBeo2gdSTBquP13J4zCwBJ2mSMimsoVrqah6VTnHSlypZC9DW5abws
-        /xHk/vv3CYsCcnh5fFJY4G7GNJUfnDukYuZM49g7y19Iy6C8eA==
-X-Google-Smtp-Source: AA6agR5vFOW/E8QynJcG0gtsehHMRrUpp4xChp+K4n7D1RBfO/XILooLXp0w7vWVi2QnZp5mb2wocfaKqdmX8Un4cM4=
-X-Received: by 2002:a5d:9914:0:b0:67c:2039:caff with SMTP id
- x20-20020a5d9914000000b0067c2039caffmr2416925iol.201.1660872127769; Thu, 18
- Aug 2022 18:22:07 -0700 (PDT)
+        Thu, 18 Aug 2022 21:29:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFFE792DD;
+        Thu, 18 Aug 2022 18:29:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3398E6131C;
+        Fri, 19 Aug 2022 01:29:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4597FC433C1;
+        Fri, 19 Aug 2022 01:29:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660872582;
+        bh=frI2Q/zbG/L83BBppB9AO7i9l6epJV3xu5ZGGw2w4G0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j94K3p2Kt//Y4i4AcLYWMMppHE2gmuLApUU/XDkdEpXGAB8evyllI/b2WHx1cSJUb
+         PoqxqcFeZngsaRM5dGyaRYJ4W8OvEkXTfm5WCAEOtQ/ZF7XOw0pQAiFA0iPrMptuM5
+         wIycyePu+yFJojb2wg+RXIgzuR3jHAve94SSHfv9nDzuI/6C7iNzgsF34qunpsjdta
+         a5mr/F8dHDPVq7nNlEWGFL3y7Slj4lOWCEjmvjEjS7HuP4i6ky6bPjIfONtz1K5X8B
+         5aoAySVsuYODUKYNb8SQd5c5Z+W5IwjGt29yfZDe2iMABZ0XH58qt91xpK8189gqAU
+         xfDUNygKUI6bA==
+Date:   Thu, 18 Aug 2022 18:29:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     syzbot <syzbot+7b9133d0ed61f27a4f7d@syzkaller.appspotmail.com>
+Cc:     borisp@nvidia.com, davem@davemloft.net, edumazet@google.com,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] general protection fault in
+ tls_strp_load_anchor_with_queue
+Message-ID: <20220818182941.5d78a7f8@kernel.org>
+In-Reply-To: <000000000000077caa05e67e7461@google.com>
+References: <000000000000077caa05e67e7461@google.com>
 MIME-Version: 1.0
-References: <20220809034517.3867176-1-joel@joelfernandes.org>
- <20220809034517.3867176-5-joel@joelfernandes.org> <CAEXW_YQuGga9Eivq4G6o1XjvPn-nMMDiM8FOY6HXJTMzwv1Emg@mail.gmail.com>
- <CAEXW_YQOXBRwCLZXjspXttGkNhbJK3HGVDuYj5TcYD=Xj1cK0A@mail.gmail.com>
-In-Reply-To: <CAEXW_YQOXBRwCLZXjspXttGkNhbJK3HGVDuYj5TcYD=Xj1cK0A@mail.gmail.com>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Thu, 18 Aug 2022 21:21:56 -0400
-Message-ID: <CAEXW_YT3VnK5KJTbyXdCzs8j4jw9XFTSCF4Dt9QwLPtkPSb1tA@mail.gmail.com>
-Subject: Re: [PATCH v3 resend 4/6] fs: Move call_rcu() to call_rcu_lazy() in
- some paths
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, rcu <rcu@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 7:05 PM Joel Fernandes <joel@joelfernandes.org> wrote:
->
-> On Thu, Aug 18, 2022 at 1:23 PM Joel Fernandes <joel@joelfernandes.org> wrote:
-> >
-> > [Sorry, adding back the CC list]
-> >
-> > On Mon, Aug 8, 2022 at 11:45 PM Joel Fernandes (Google)
-> > <joel@joelfernandes.org> wrote:
-> > >
-> > > This is required to prevent callbacks triggering RCU machinery too
-> > > quickly and too often, which adds more power to the system.
-> > >
-> > > When testing, we found that these paths were invoked often when the
-> > > system is not doing anything (screen is ON but otherwise idle).
-> >
-> > Unfortunately, I am seeing a slow down in ChromeOS boot performance
-> > after applying this particular patch. It is the first time I could
-> > test ChromeOS boot times with the series since it was hard to find a
-> > ChromeOS device that runs the upstream kernel.
-> >
-> > Anyway, Vlad, Neeraj, do you guys also see slower boot times with this
-> > patch? I wonder if the issue is with wake up interaction with the nocb
-> > GP threads.
-> >
-> > We ought to disable lazy RCU during boot since it would have little
-> > benefit anyway. But I am also concerned about some deeper problem I
-> > did not catch before.
-> >
-> > I'll look into tracing the fs paths to see if I can narrow down what's
-> > causing it. Will also try a newer kernel, I am currently testing on
-> > 5.19-rc4.
->
-> I got somewhere with this. It looks like queuing CBs as lazy CBs
-> instead of normal CBs, are triggering expedited stalls during the boot
-> process:
->
->   39.949198] rcu: INFO: rcu_preempt detected expedited stalls on
-> CPUs/tasks: { } 28 jiffies s: 69 root: 0x0/.
->
-> No idea how/why lazy RCU CBs would be related to expedited GP issues,
-> but maybe something hangs and causes that side-effect.
->
-> initcall_debug did not help, as it seems initcalls all work fine, and
-> then 8 seconds after the boot, it starts slowing down a lot, followed
-> by the RCU stall messages. As a next step I'll enable ftrace during
-> the boot to see if I can get more insight. But I believe, its not the
-> FS layer, the FS layer just triggers lazy CBs, but there is something
-> wrong with the core lazy-RCU work itself.
->
-> This kernel is 5.19-rc4. I'll also try to rebase ChromeOS on more
-> recent kernels and debug.
+On Wed, 17 Aug 2022 23:54:30 -0700 syzbot wrote:
+> syzbot found the following issue on:
+> 
+> HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1750b16b080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7b9133d0ed61f27a4f7d
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+7b9133d0ed61f27a4f7d@syzkaller.appspotmail.com
 
-More digging, thanks to trace_event= boot option , I find that the
-boot process does have some synchronous waits, and though these are
-"non-lazy", for some reason the lazy CBs that were previously queued
-are making them wait for the *full* lazy duration. Which points to a
-likely bug in the lazy RCU logic. These synchronous CBs should never
-be waiting like the lazy ones:
+Must have gone thru init and failed to allocate the skb, so:
 
-[   17.715904]  => trace_dump_stack
-[   17.715904]  => __wait_rcu_gp
-[   17.715904]  => synchronize_rcu
-[   17.715904]  => selinux_netcache_avc_callback
-[   17.715904]  => avc_ss_reset
-[   17.715904]  => sel_write_enforce
-[   17.715904]  => vfs_write
-[   17.715904]  => ksys_write
-[   17.715904]  => do_syscall_64
-[   17.715904]  => entry_SYSCALL_64_after_hwframe
-
-I'm tired so I'll resume the debug later.
+#syz dup: WARNING in tls_strp_done
