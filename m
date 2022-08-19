@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 126F1C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F53C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348769AbiHSL2r (ORCPT
+        id S1348034AbiHSLdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33956 "EHLO
+        Fri, 19 Aug 2022 07:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348241AbiHSL2p (ORCPT
+        with ESMTP id S1347538AbiHSLdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:28:45 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFB5B514B;
-        Fri, 19 Aug 2022 04:28:44 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4M8KJW631TzDrR3;
-        Fri, 19 Aug 2022 11:28:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1660908524; bh=HtTFlUxYhMXKADnhF9mXs30RyZIzn/W5VJYsvu6FAWY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oNE1KfuQvtHc6iPUUoq7FSpjOkKEPrc/+RR6cYSgcJxHZ9z8/8ccbHuB+sKb98nqQ
-         aoYWA88GUFWtbXCLjG4psT0qZVNooAuaAOMK4D4UxqvFwhz1DbNC0wRWgEhZKObksV
-         TxaV7riL7BmM91aLXMkes37L28oiNzpYdwxIrnpw=
-X-Riseup-User-ID: 0F8265F3B5B153B0BB085616B6910490B77EA1389FDF561D07126609569FEFE3
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4M8KJR1sMPz5vQt;
-        Fri, 19 Aug 2022 11:28:38 +0000 (UTC)
-Message-ID: <ff728926-22e4-e65b-ee94-2ed958c92993@riseup.net>
-Date:   Fri, 19 Aug 2022 08:28:36 -0300
+        Fri, 19 Aug 2022 07:33:50 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370632D1FE;
+        Fri, 19 Aug 2022 04:33:47 -0700 (PDT)
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: martin-eric.racine)
+        by meesny.iki.fi (Postfix) with ESMTPSA id BA0F72065F;
+        Fri, 19 Aug 2022 14:33:44 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1660908824; h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fkx3l2Jsr5sn7pf41ZGYs34bVyvOXQOv8D/DfIbdLs4=;
+        b=jvNOhQxCaIxg8axFbz7wCTaU1KV/nOQCmIzGuUqNw5LS+lfmzjNQTC6KolbhoBgBIUiYH9
+        nsbYjG6RtqL/XyVJzVfxtvraI7edzi0GzAEhwZbTCIt3LH4qm5JfdLnoshikVZ3PpeOvHH
+        pVxGB8eEH2JA8Y2Tl5bZRJQ6gg4Uf60=
+Received: by mail-vs1-f43.google.com with SMTP id z185so4184817vsb.4;
+        Fri, 19 Aug 2022 04:33:44 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3JqDmziwEC9RUhjdrHJUYiZrktluNJaPlcAoiWTgc04TQ325ar
+        Rx3qpCLC29kxpodHpNv54aamuExjbwHl3VD1SrE=
+X-Google-Smtp-Source: AA6agR6W0iWWXzz2sZkerBMRwwozpy0qrrVZxzp7D6cWhuSVrTiOEAnBUCz0CDdjQq7II9fbkjswjtsDDlClM4nra4o=
+X-Received: by 2002:a67:c819:0:b0:38f:784f:c377 with SMTP id
+ u25-20020a67c819000000b0038f784fc377mr2234906vsk.15.1660908823365; Fri, 19
+ Aug 2022 04:33:43 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH 5/8] Documentation: KUnit: add intro to the
- getting-started page
-Content-Language: en-US
-To:     Tales Aparecida <tales.aparecida@gmail.com>,
-        Sadiya Kazi <sadiyakazi@google.com>
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        davidgow@google.com, corbet@lwn.net, brendan.higgins@linux.dev,
-        Trevor Woerner <twoerner@gmail.com>, siqueirajordao@riseup.net,
-        mwen@igalia.com, andrealmeid@riseup.net,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com
-References: <20220819053234.241501-1-tales.aparecida@gmail.com>
- <20220819053234.241501-6-tales.aparecida@gmail.com>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
-In-Reply-To: <20220819053234.241501-6-tales.aparecida@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <Yv7aRJ/SvVhSdnSB@decadent.org.uk> <Yv9OGVc+WpoDAB0X@worktop.programming.kicks-ass.net>
+ <Yv9tj9vbQ9nNlXoY@worktop.programming.kicks-ass.net>
+In-Reply-To: <Yv9tj9vbQ9nNlXoY@worktop.programming.kicks-ass.net>
+Reply-To: martin-eric.racine@iki.fi
+From:   =?UTF-8?Q?Martin=2D=C3=89ric_Racine?= <martin-eric.racine@iki.fi>
+Date:   Fri, 19 Aug 2022 14:33:32 +0300
+X-Gmail-Original-Message-ID: <CAPZXPQe+MPTGD3MH1HORvCZa08HhdbWy=zh7rLSCwA6edM2Ccg@mail.gmail.com>
+Message-ID: <CAPZXPQe+MPTGD3MH1HORvCZa08HhdbWy=zh7rLSCwA6edM2Ccg@mail.gmail.com>
+Subject: Re: [PATCH] x86/speculation: Avoid LFENCE in FILL_RETURN_BUFFER on
+ CPUs that lack it
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ben Hutchings <ben@decadent.org.uk>, x86@kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        1017425@bugs.debian.org, stable@vger.kernel.org,
+        regressions@lists.linux.dev,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1660908824;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fkx3l2Jsr5sn7pf41ZGYs34bVyvOXQOv8D/DfIbdLs4=;
+        b=rjfIm3WhysBqcVoqDra2pO/z7G2hhRhEndLGJtAIVdUSISYt9ezBwLMrd/mghTxOPSbX1Q
+        TfAEV4istT8bkFx1rwAD+NUgvUF6KhkOsbnQ+6EB/9MF0HfH/dwFE1RaI5K6z5Y72sUijq
+        QyuJows/mW9QDBwVy6QL7/b4Y9t7HKQ=
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=martin-eric.racine smtp.mailfrom=martin-eric.racine@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1660908824; a=rsa-sha256; cv=none;
+        b=d7uWLKMeMUDzepnKQKoJICuYpRzHhvIM+shCzJV6F4wy0eR0q+1ZDlILwdml8FkOI+D2Xj
+        eN6nrrc/DGgioCH9CyZn5o8pn2iZb4VnNgrWUIGBn1Whom9Tmp/OqDdZW96iew07MlXveg
+        8yzEb9i+kT/zKgPtZ82QfjXgUPBuGIY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tales
+On Fri, Aug 19, 2022 at 2:01 PM Peter Zijlstra <peterz@infradead.org> wrote=
+:
+> I'm not entirly sure what to do here. On the one hand, it's 32bit, so
+> who gives a crap, otoh we shouldn't break these ancient chips either I
+> suppose.
 
-On 8/19/22 02:32, Tales Aparecida wrote:
-> Describe the objective of the Getting Started page, which should be a
-> brief and beginner-friendly walkthrough for running and writing tests,
-> showing the reader where to find detailed instructions in other pages.
-> 
-> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
-> ---
->  Documentation/dev-tools/kunit/start.rst | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/dev-tools/kunit/start.rst b/Documentation/dev-tools/kunit/start.rst
-> index f0ec64207bd3..3855402a5b3e 100644
-> --- a/Documentation/dev-tools/kunit/start.rst
-> +++ b/Documentation/dev-tools/kunit/start.rst
-> @@ -4,6 +4,11 @@
->  Getting Started
->  ===============
->  
-> +This page contains an overview about the kunit_tool and Kunit framework,
-> +teaching how to run existent tests and then how to write a simple test-case,
-> +and covering common problems users face when using Kunit for the first time.
-> +It is recommended that the reader had compiled the Kernel at least once before.
+This is something that I've repeatedly had to bring up, whenever
+something breaks because someone meant well by enabling more security
+bells and whistles:
 
-Some grammar nits:
-- s/an overview about/an overview of
-- s/Kunit/KUnit for consistency
-- s/existent/existing
-- s/covering/covers
+x86-32 is by definition legacy hardware. Enabling more bells and
+whistles essentially kills support for all but the very latest
+variants of the x86-32 family. This is the wrong approach. The right
+approach is to accept that building for x86-32 inherently means
+building for older and thus less secure architectures.
 
-Other than this small nits,
-
-Reviewed-by: Maíra Canal <mairacanal@riseup.net>
-
-Best Regards,
-- Maíra Canal
-
-> +
->  Installing Dependencies
->  =======================
->  KUnit has the same dependencies as the Linux kernel. As long as you can
+Martin-=C3=89ric
