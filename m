@@ -2,137 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C483BC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEA8C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349239AbiHSMzU (ORCPT
+        id S1349171AbiHSMzZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        Fri, 19 Aug 2022 08:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349248AbiHSMyy (ORCPT
+        with ESMTP id S1349246AbiHSMyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:54:54 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F1E1D0EC
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:42 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id a22so5545947edj.5
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:42 -0700 (PDT)
+        Fri, 19 Aug 2022 08:54:53 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E48675FEB
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:40 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a7so8673684ejp.2
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=yyOz/wz9iFnuktDnmIg37pL//Hn26j/SMMCZDt4cX44=;
-        b=mUD5vF9s6EowiuWQlcNrvyob52ML+8/CwuHe2GyqVRaVy978B3Prgv9D7XLQajVdoj
-         bh1lC+5Cq+EPB1hBGxDOCnJTN4bGQLgNXGiP/7gDyMgdCWBmeTY7XA+RtohpGSMuP2iL
-         5EK8ACZ9taMNpLeqD2BkqkeTLBtkJzpWg/t10gAUiFEnZleEf0ZLtcwVkQl9i/reFPOL
-         PstlgsrCPYs389Az03Tn5/HRmprMxk4Huo01BgqTtu+orWIH7kMTzNfABFHjZtuJN2p1
-         btlg22zfGsdvnAlNFLe3DVDBXBbFyLkJ83OgIoZCELAAP7Ikr+pMsnc9NODTgXTA9xzD
-         SmJA==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=KfYI7x2n+dPKcoeo3/p/jfkeVeouaOocnFlGHnujIGM=;
+        b=nT+J9Cm3+lhdZyTLLhnF7i0ChpfUMDU0Vj00UzYd/cu7MAysd6CbxuwWV/jvxXWFI7
+         HDnwi08l5SeKOx+XfAHNnm4R3IcsXIKOSgEYQ2xMNxve2ss6RoxwjrqQhRmthEmhS5VN
+         i6tV2sVxzWiXbDTOcJjoF2vqWHvwEFW+pkt3RLk3courf6FHbx6oEI9y3deb7sNRZ+c4
+         heN8ck+artU7oEGC/2Eduxf0pen/2nz+qno6vUBYM0CL8u+o2sC/JZSTL74KQ26WVeMP
+         W16baG7roQJZ6lkOQ1AciQwtMKR1vgPkcXFiwPwZ77tiPt81p8P+KqQKw3tpl5gpcSOa
+         afzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=yyOz/wz9iFnuktDnmIg37pL//Hn26j/SMMCZDt4cX44=;
-        b=TpE4zyv0qUueEXErBCqwZfFUntWp4/Le3h5DIhuPZhxgds1swSdllKQf/Xh9lil4qj
-         e4kxK+IQyeD8CvfE3iE2gt272wt4/EOzM3GpDiAtbicVTaMUngzXqFoNABrjUZHJ7wJa
-         NCXNBfszkz4mvDZkqWa32R9vVSUFgPcjzddpB1eQxLfBLDxbgps7ZEoagn+Pl3TjuNXz
-         jXPurO1qq+3GBzYItp0OqUCZESqv+JhYT4fy2YZVU8YzBpd1msbf1ofMOW0W4kPYrbDB
-         JMOZbcqSFzGhWurw8B2b9+i6AgcPgXNOcEOIkzyIDThCGxUHFqWq0UdHLmG/K9+IMXHn
-         EseA==
-X-Gm-Message-State: ACgBeo3+DGsdexgG3hr2JycpqEBf7TfGKvH74C60EA04KNjByAo4luja
-        I5D6gzEVSfX+wV4TSsq2FU1bEfsdaRA=
-X-Google-Smtp-Source: AA6agR5mLeaXTWb3gHpI5s3OBuGr2Z+OBYDfL89LkUYEZEoyg8fxykAnWDpyOUmmhYtK5Lsb5YsUuA==
-X-Received: by 2002:a05:6402:43c8:b0:445:d773:c1ac with SMTP id p8-20020a05640243c800b00445d773c1acmr6191269edc.309.1660913680312;
-        Fri, 19 Aug 2022 05:54:40 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=KfYI7x2n+dPKcoeo3/p/jfkeVeouaOocnFlGHnujIGM=;
+        b=Zf1liLZZoOcKEVAHOSmxgPJ8f7woIKsaoIx1O4RbESOZsU3ZDhJrwkwhDb467e361h
+         KOG7ZsWtCYGUWH6mRiMTYOXABSExSOcWYVFTLpfX9M4CFztZdYY29TPSiF11SEanYvOc
+         GY6ib9gCl0HTGANrFV5t6ZHpms6+olfN5A8OjimMITVNFW+5HaeJZ+W1Y7cy9ZiCS7DN
+         bFH6+kFKEqzEMg8sSw6roz1YX41pkquROy0jNOX23/fZpYNBVXqX6wlunLDGNgExNkwa
+         ENKOMEu4arE72AXpZDAT/t0FOncDTULNM80eAx/S/rv1bwne2t7dF8YqR6NxK3mgBITl
+         rYiw==
+X-Gm-Message-State: ACgBeo1z9cYe5CNbiT/a+NbxWzOeIFK8QfETEssF6CzFS6PuISMlhQN2
+        UoQ3KW8Me0sv9g9AYzu8v3I=
+X-Google-Smtp-Source: AA6agR5C2Q0KBcn5O4IPpfiZF6PU4jcqfp3pKwnZJV2CMTwJf9pk+4iflwiOsNPZCXrgNpSlUV8qWg==
+X-Received: by 2002:a17:907:6092:b0:731:59f0:49ac with SMTP id ht18-20020a170907609200b0073159f049acmr4763632ejc.383.1660913679217;
+        Fri, 19 Aug 2022 05:54:39 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb77.dynamic.kabel-deutschland.de. [95.90.187.119])
-        by smtp.gmail.com with ESMTPSA id b12-20020a056402138c00b0043d6ece495asm3000955edv.55.2022.08.19.05.54.39
+        by smtp.gmail.com with ESMTPSA id b12-20020a056402138c00b0043d6ece495asm3000955edv.55.2022.08.19.05.54.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 05:54:40 -0700 (PDT)
+        Fri, 19 Aug 2022 05:54:38 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 02/11] staging: r8188eu: make init_addba_retry_timer() static
-Date:   Fri, 19 Aug 2022 14:54:19 +0200
-Message-Id: <20220819125428.8412-3-straube.linux@gmail.com>
+Subject: [PATCH 00/11] staging: r8188eu: start migrating mlme_linux.c
+Date:   Fri, 19 Aug 2022 14:54:17 +0200
+Message-Id: <20220819125428.8412-1-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220819125428.8412-1-straube.linux@gmail.com>
-References: <20220819125428.8412-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function init_addba_retry_timer() is only used in rtw_sta_mgt.c.
-Make it static to get one step closer to removing os_dep/mlme_linux.c.
+This series starts to migrate the functions, or their functionalitiy,
+from os_dep/mlme_linux.c to the core/* part of the driver. The goal is
+to remove os_dep/mlme_linux.c at some point.
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_sta_mgt.c     | 12 ++++++++++++
- drivers/staging/r8188eu/include/rtw_mlme_ext.h |  1 -
- drivers/staging/r8188eu/os_dep/mlme_linux.c    | 11 -----------
- 3 files changed, 12 insertions(+), 12 deletions(-)
+Tested on x86_64 with Inter-Tech DMG-02.
 
-diff --git a/drivers/staging/r8188eu/core/rtw_sta_mgt.c b/drivers/staging/r8188eu/core/rtw_sta_mgt.c
-index bbc1ef146826..2b58e11896b4 100644
---- a/drivers/staging/r8188eu/core/rtw_sta_mgt.c
-+++ b/drivers/staging/r8188eu/core/rtw_sta_mgt.c
-@@ -154,6 +154,18 @@ static void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
- 	timer_setup(&preorder_ctrl->reordering_ctrl_timer, _rtw_reordering_ctrl_timeout_handler, 0);
- }
- 
-+static void _addba_timer_hdl(struct timer_list *t)
-+{
-+	struct sta_info *psta = from_timer(psta, t, addba_retry_timer);
-+
-+	addba_timer_hdl(psta);
-+}
-+
-+static void init_addba_retry_timer(struct adapter *padapter, struct sta_info *psta)
-+{
-+	timer_setup(&psta->addba_retry_timer, _addba_timer_hdl, 0);
-+}
-+
- struct	sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
- {
- 	s32	index;
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-index a6b1b1b7da74..e092e646c0d2 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-@@ -388,7 +388,6 @@ struct mlme_ext_priv {
- void init_mlme_ext_priv(struct adapter *adapter);
- int init_hw_mlme_ext(struct adapter *padapter);
- void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
--extern void init_addba_retry_timer(struct adapter *adapt, struct sta_info *sta);
- extern struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
- 
- unsigned char networktype_to_raid(unsigned char network_type);
-diff --git a/drivers/staging/r8188eu/os_dep/mlme_linux.c b/drivers/staging/r8188eu/os_dep/mlme_linux.c
-index bc4f979280b6..b8d328d74443 100644
---- a/drivers/staging/r8188eu/os_dep/mlme_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/mlme_linux.c
-@@ -130,17 +130,6 @@ void rtw_report_sec_ie(struct adapter *adapter, u8 authmode, u8 *sec_ie)
- 	}
- }
- 
--static void _addba_timer_hdl(struct timer_list *t)
--{
--	struct sta_info *psta = from_timer(psta, t, addba_retry_timer);
--	addba_timer_hdl(psta);
--}
--
--void init_addba_retry_timer(struct adapter *padapter, struct sta_info *psta)
--{
--	timer_setup(&psta->addba_retry_timer, _addba_timer_hdl, 0);
--}
--
- void rtw_indicate_sta_assoc_event(struct adapter *padapter, struct sta_info *psta)
- {
- 	union iwreq_data wrqu;
+Michael Straube (11):
+  staging: r8188eu: make init_mlme_ext_timer() static
+  staging: r8188eu: make init_addba_retry_timer() static
+  staging: r8188eu: make rtw_indicate_sta_disassoc_event() static
+  staging: r8188eu: move rtw_indicate_sta_assoc_event() to rtw_ap.c
+  staging: r8188eu: make rtw_report_sec_ie() static
+  staging: r8188eu: remove unneeded initializations
+  staging: r8188eu: make rtw_reset_securitypriv() static
+  staging: r8188eu: merge rtw_{os,}_indicate_disconnect()
+  staging: r8188eu: merge rtw_{os,}_indicate_connect()
+  staging: r8188eu: merge rtw_{os,}_indicate_scan_done()
+  staging: r8188eu: remove unused function parameter
+
+ drivers/staging/r8188eu/core/rtw_ap.c         |  42 +++++
+ drivers/staging/r8188eu/core/rtw_mlme.c       |  86 ++++++++-
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   |  22 +++
+ drivers/staging/r8188eu/core/rtw_sta_mgt.c    |  12 ++
+ drivers/staging/r8188eu/include/mlme_osdep.h  |   5 -
+ drivers/staging/r8188eu/include/rtw_ap.h      |   2 -
+ drivers/staging/r8188eu/include/rtw_mlme.h    |   2 +-
+ .../staging/r8188eu/include/rtw_mlme_ext.h    |   2 -
+ drivers/staging/r8188eu/os_dep/mlme_linux.c   | 166 ------------------
+ drivers/staging/r8188eu/os_dep/usb_intf.c     |   2 +-
+ 10 files changed, 159 insertions(+), 182 deletions(-)
+
 -- 
 2.37.1
 
