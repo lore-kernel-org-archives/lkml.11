@@ -2,71 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EECC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:19:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6288C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243794AbiHSBTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 21:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
+        id S243470AbiHSBWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 21:22:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242429AbiHSBTl (ORCPT
+        with ESMTP id S229584AbiHSBWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 21:19:41 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D92C7FA8
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:19:40 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M83k80QwHzlW7K;
-        Fri, 19 Aug 2022 09:16:32 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 09:19:38 +0800
-Received: from huawei.com (10.175.101.6) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
- 2022 09:19:37 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <miquel.raynal@bootlin.com>, <vigneshr@ti.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>
-Subject: [PATCH] mtd: rawnand: remove misguided comment of nand_get_device()
-Date:   Fri, 19 Aug 2022 10:18:46 +0800
-Message-ID: <20220819021846.2924539-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 18 Aug 2022 21:22:09 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88886D51ED
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:22:08 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id x64so2367029iof.1
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:22:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=++fASc0fsxHxUOS23IzKRmPzdmpS9qfA0Lyv2k53js8=;
+        b=c702vnQs1zjXA6roO7+CTFJfTOyEb022/1v0c4gnp6L7ldFKZmMCjIie7sigbTgmp8
+         bDQC7LFk1YVUA6Wf6ymxs7G0ork60nMr2/dzxAjOQXiPG3+n/Khzj18qcSIwEXrRS/hc
+         mqgjI8GQIeey3koM69rJ2LVvb9m04IlQUx+uM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=++fASc0fsxHxUOS23IzKRmPzdmpS9qfA0Lyv2k53js8=;
+        b=U50dfjXSZBkQ0p+tx2NpTy7RqR4oFz587oduD+4SAK0ulqaSOZd8g3tTESiXjx1f0l
+         fMaJwcvuTs3r9yHnN3uEiP1rFZBYZGbBhho3oXg+DnRuFxHnTvsyUioS4Avmkd6bRRDr
+         aDn7JsVxvMMduIEJI3Cz/IAf4yCdWmLHm86eZP9AotEumzLBEgXcqkxAxSH0HJlAXO9j
+         4wvreVe/wB1frGZnxEICqK1Cccy+6WMalem++Fv9wyWusezGYmuA4h2QN73TeK6cgV4S
+         EfU1KVdfy9SxF0EH1T3A7eUOfHzz22Xp7mMMa+r/nNcmCgIdfejMdu/tm4VnD/4eLGjE
+         C03g==
+X-Gm-Message-State: ACgBeo2gdSTBquP13J4zCwBJ2mSMimsoVrqah6VTnHSlypZC9DW5abws
+        /xHk/vv3CYsCcnh5fFJY4G7GNJUfnDukYuZM49g7y19Iy6C8eA==
+X-Google-Smtp-Source: AA6agR5vFOW/E8QynJcG0gtsehHMRrUpp4xChp+K4n7D1RBfO/XILooLXp0w7vWVi2QnZp5mb2wocfaKqdmX8Un4cM4=
+X-Received: by 2002:a5d:9914:0:b0:67c:2039:caff with SMTP id
+ x20-20020a5d9914000000b0067c2039caffmr2416925iol.201.1660872127769; Thu, 18
+ Aug 2022 18:22:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+References: <20220809034517.3867176-1-joel@joelfernandes.org>
+ <20220809034517.3867176-5-joel@joelfernandes.org> <CAEXW_YQuGga9Eivq4G6o1XjvPn-nMMDiM8FOY6HXJTMzwv1Emg@mail.gmail.com>
+ <CAEXW_YQOXBRwCLZXjspXttGkNhbJK3HGVDuYj5TcYD=Xj1cK0A@mail.gmail.com>
+In-Reply-To: <CAEXW_YQOXBRwCLZXjspXttGkNhbJK3HGVDuYj5TcYD=Xj1cK0A@mail.gmail.com>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Thu, 18 Aug 2022 21:21:56 -0400
+Message-ID: <CAEXW_YT3VnK5KJTbyXdCzs8j4jw9XFTSCF4Dt9QwLPtkPSb1tA@mail.gmail.com>
+Subject: Re: [PATCH v3 resend 4/6] fs: Move call_rcu() to call_rcu_lazy() in
+ some paths
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>, rcu <rcu@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit 8cba323437a4 ("mtd: rawnand: protect access to rawnand devices
-while in suspend"), it will wait while in suspend rather than returning
-errors. So remove the misguided comment about return value.
+On Thu, Aug 18, 2022 at 7:05 PM Joel Fernandes <joel@joelfernandes.org> wrote:
+>
+> On Thu, Aug 18, 2022 at 1:23 PM Joel Fernandes <joel@joelfernandes.org> wrote:
+> >
+> > [Sorry, adding back the CC list]
+> >
+> > On Mon, Aug 8, 2022 at 11:45 PM Joel Fernandes (Google)
+> > <joel@joelfernandes.org> wrote:
+> > >
+> > > This is required to prevent callbacks triggering RCU machinery too
+> > > quickly and too often, which adds more power to the system.
+> > >
+> > > When testing, we found that these paths were invoked often when the
+> > > system is not doing anything (screen is ON but otherwise idle).
+> >
+> > Unfortunately, I am seeing a slow down in ChromeOS boot performance
+> > after applying this particular patch. It is the first time I could
+> > test ChromeOS boot times with the series since it was hard to find a
+> > ChromeOS device that runs the upstream kernel.
+> >
+> > Anyway, Vlad, Neeraj, do you guys also see slower boot times with this
+> > patch? I wonder if the issue is with wake up interaction with the nocb
+> > GP threads.
+> >
+> > We ought to disable lazy RCU during boot since it would have little
+> > benefit anyway. But I am also concerned about some deeper problem I
+> > did not catch before.
+> >
+> > I'll look into tracing the fs paths to see if I can narrow down what's
+> > causing it. Will also try a newer kernel, I am currently testing on
+> > 5.19-rc4.
+>
+> I got somewhere with this. It looks like queuing CBs as lazy CBs
+> instead of normal CBs, are triggering expedited stalls during the boot
+> process:
+>
+>   39.949198] rcu: INFO: rcu_preempt detected expedited stalls on
+> CPUs/tasks: { } 28 jiffies s: 69 root: 0x0/.
+>
+> No idea how/why lazy RCU CBs would be related to expedited GP issues,
+> but maybe something hangs and causes that side-effect.
+>
+> initcall_debug did not help, as it seems initcalls all work fine, and
+> then 8 seconds after the boot, it starts slowing down a lot, followed
+> by the RCU stall messages. As a next step I'll enable ftrace during
+> the boot to see if I can get more insight. But I believe, its not the
+> FS layer, the FS layer just triggers lazy CBs, but there is something
+> wrong with the core lazy-RCU work itself.
+>
+> This kernel is 5.19-rc4. I'll also try to rebase ChromeOS on more
+> recent kernels and debug.
 
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- drivers/mtd/nand/raw/nand_base.c | 2 --
- 1 file changed, 2 deletions(-)
+More digging, thanks to trace_event= boot option , I find that the
+boot process does have some synchronous waits, and though these are
+"non-lazy", for some reason the lazy CBs that were previously queued
+are making them wait for the *full* lazy duration. Which points to a
+likely bug in the lazy RCU logic. These synchronous CBs should never
+be waiting like the lazy ones:
 
-diff --git a/drivers/mtd/nand/raw/nand_base.c b/drivers/mtd/nand/raw/nand_base.c
-index 6b67b7dfe7ce..5e99e4c96da4 100644
---- a/drivers/mtd/nand/raw/nand_base.c
-+++ b/drivers/mtd/nand/raw/nand_base.c
-@@ -335,8 +335,6 @@ static int nand_isbad_bbm(struct nand_chip *chip, loff_t ofs)
-  * @chip: NAND chip structure
-  *
-  * Lock the device and its controller for exclusive access
-- *
-- * Return: -EBUSY if the chip has been suspended, 0 otherwise
-  */
- static void nand_get_device(struct nand_chip *chip)
- {
--- 
-2.31.1
+[   17.715904]  => trace_dump_stack
+[   17.715904]  => __wait_rcu_gp
+[   17.715904]  => synchronize_rcu
+[   17.715904]  => selinux_netcache_avc_callback
+[   17.715904]  => avc_ss_reset
+[   17.715904]  => sel_write_enforce
+[   17.715904]  => vfs_write
+[   17.715904]  => ksys_write
+[   17.715904]  => do_syscall_64
+[   17.715904]  => entry_SYSCALL_64_after_hwframe
 
+I'm tired so I'll resume the debug later.
