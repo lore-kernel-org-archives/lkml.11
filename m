@@ -2,66 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 058E7C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 21:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3B7C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 21:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352319AbiHSVOw (ORCPT
+        id S1352324AbiHSVOz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 17:14:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57414 "EHLO
+        Fri, 19 Aug 2022 17:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351700AbiHSVOn (ORCPT
+        with ESMTP id S1352290AbiHSVOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 17:14:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933B4D3E53
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:14:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBD7D3E61;
+        Fri, 19 Aug 2022 14:14:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30C8161737
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 21:14:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 98444C433C1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D67B61743;
+        Fri, 19 Aug 2022 21:14:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D3A2EC4347C;
         Fri, 19 Aug 2022 21:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660943681;
-        bh=GCa0IDVBdMQYrcNjZJ2AAdGVMd7ovgaNFED0tmvuzXc=;
+        bh=qu6aAAPzSJD0m9IB2GWnn+KR2DDD5QFXginlbe3F9Ng=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=fK+Nw4MnjAjQzlbhmNEvvwWbi0hfkY3DUcc0+14B9mjOn/7lEyeDSl90Gl6Yhc08a
-         QU/7KVVSaXm0TKmfyK/cxcoDi3JP5bJTGrMLzGMRaWKxGhw7CwG0MO+G8BOTrgnlnt
-         uxT56JaiK6rfq/sfvg9h0Iy2bK5dWxJ1vS6F7hcXUv4HDVva98SCmEaiH841eg42cf
-         kKPl+Et0F8mKUOa+KysUK5RGyDTcZGguNJ5qgUdMgecxmGCm8zI8t5rHGkjp8h8nsD
-         9kHxAxN+NRb6BfrTwYlMycEHy2pVDzTqTSUDIPNS8207a/QA6u/XMGZxglmJhJoTys
-         4oAa4cgXlHLYg==
+        b=Rpxp3ZNL5DLzOoC3wU8AS0eaxXDKx9wc5x/eOXjomd1ukfwJ7hZeJsSziSzCrSTI5
+         3t1TqBfBPIhCN/MFeicWDJMFk9hnlmmuN4gfLvkI0vlXPK7q+UppkvBrWFqklf8f7O
+         HPdxFlSWwJhiRqAIEIJ2/qbJvdy3KwVxjXIZOYi2oY9y30PCk7Yuk7C8OudQ14X/oj
+         zkLCbFCB1Y7EzMKpP9+f4rNysRlIQG8Xd1Eb22zUc6brqmtc6aUrP0nfBZPvI80BO6
+         mezUfR24/tX0TKb4hiG18Of6l2/kT0VV7rmsseFDnToE1xvKWMBv+VzwAeAFGMuqF5
+         4pRi/YdgHf+Ag==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 85C7EE2A050;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C1972C43142;
         Fri, 19 Aug 2022 21:14:41 +0000 (UTC)
-Subject: Re: [GIT PULL] RISC-V Fixes for 6.0-rc2
+Subject: Re: [GIT PULL] hardening fixes for v6.0-rc2
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <mhng-74337228-62c4-40ed-b7af-0d988ff94993@palmer-mbp2014>
-References: <mhng-74337228-62c4-40ed-b7af-0d988ff94993@palmer-mbp2014>
+In-Reply-To: <202208191200.C8B461644@keescook>
+References: <202208191200.C8B461644@keescook>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <mhng-74337228-62c4-40ed-b7af-0d988ff94993@palmer-mbp2014>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-6.0-rc2
-X-PR-Tracked-Commit-Id: 96264230a6817bcd4a7ae0fc30c60bfb46499f68
+X-PR-Tracked-Message-Id: <202208191200.C8B461644@keescook>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v6.0-rc2
+X-PR-Tracked-Commit-Id: 012e8d2034f1bda8863435cd589636e618d6a659
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8fd00059cc13c7f170451e9318a9a5e772b88e17
-Message-Id: <166094368154.15089.7972422322159327730.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: e45c890140c8c2c9f3dd475c14bdf084c4cd2296
+Message-Id: <166094368178.15089.14236020797669823610.pr-tracker-bot@kernel.org>
 Date:   Fri, 19 Aug 2022 21:14:41 +0000
-To:     Palmer Dabbelt <palmer@rivosinc.com>
+To:     Kees Cook <keescook@chromium.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org, Andrew Donnellan <ajd@linux.ibm.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Erhard Furtner <erhard_f@mailbox.org>,
+        James Morris <jmorris@namei.org>,
+        Kees Cook <keescook@chromium.org>,
+        kernel test robot <lkp@intel.com>,
+        linux-security-module@vger.kernel.org,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Yury Norov <yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 19 Aug 2022 09:28:44 -0700 (PDT):
+The pull request you sent on Fri, 19 Aug 2022 12:01:15 -0700:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-6.0-rc2
+> https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v6.0-rc2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8fd00059cc13c7f170451e9318a9a5e772b88e17
+https://git.kernel.org/torvalds/c/e45c890140c8c2c9f3dd475c14bdf084c4cd2296
 
 Thank you!
 
