@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8831DC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBA0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350878AbiHSP6j (ORCPT
+        id S1350884AbiHSP6o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        Fri, 19 Aug 2022 11:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350949AbiHSP4F (ORCPT
+        with ESMTP id S1350948AbiHSP4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 11:56:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED37810447B;
-        Fri, 19 Aug 2022 08:50:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7B810521C;
+        Fri, 19 Aug 2022 08:50:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB86F616FD;
-        Fri, 19 Aug 2022 15:50:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0293DC433D6;
-        Fri, 19 Aug 2022 15:50:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF0DDB82813;
+        Fri, 19 Aug 2022 15:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB76C433D7;
+        Fri, 19 Aug 2022 15:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924254;
-        bh=lC1PDtOD4kVcf3eDjo4yBR1rOPmdYM1OQZgn1WPyCNM=;
+        s=korg; t=1660924231;
+        bh=YWfPQ3t+jkwgV2snpf/9bjEHZjXzjouQLMHW9tuflZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQTSmdZMjeLzLNqmEJQ4RHvDvI9/SpPj8PGUesEpHBHB0QIdelVnR4S6W2anmeZrJ
-         DpGYJpDHhJTwAYjvYJhKYUYzxVd2k7qQdnY/yhiQQnTnGeGodaFfuhjgtpEFvqZ+5e
-         HSjohDrLIDRhsBO7XBjdyxqYj/odRbKfFbor1/7Y=
+        b=Yx22Ea2TckR53pfmSXtf+cnpeknZnO8zG7rviqlI6TkCbg8WT6PsVMDpRf8PO6SgK
+         wUew2FQfDMnULaaY99HiUrPJTTxiLdGHY/QNxyCq0h5tdiBZXfMN4p5pOftDqwTns0
+         TBmNCQALp6Bv/r6BSnyVJjDCTs6uNG/tYvjVX18M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 108/545] ARM: findbit: fix overflowing offset
-Date:   Fri, 19 Aug 2022 17:37:58 +0200
-Message-Id: <20220819153834.132913415@linuxfoundation.org>
+Subject: [PATCH 5.10 100/545] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
+Date:   Fri, 19 Aug 2022 17:37:50 +0200
+Message-Id: <20220819153833.760276079@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,74 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit ec85bd369fd2bfaed6f45dd678706429d4f75b48 ]
+[ Upstream commit b8eb2df19fbf97aa1e950cf491232c2e3bef8357 ]
 
-When offset is larger than the size of the bit array, we should not
-attempt to access the array as we can perform an access beyond the
-end of the array. Fix this by changing the pre-condition.
+"status" does not match any pattern in the gpio-leds binding. Rename the
+node to the preferred pattern. This fixes a `make dtbs_check` error.
 
-Using "cmp r2, r1; bhs ..." covers us for the size == 0 case, since
-this will always take the branch when r1 is zero, irrespective of
-the value of r2. This means we can fix this bug without adding any
-additional code!
-
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220702132816.46456-1-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/lib/findbit.S | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/lib/findbit.S b/arch/arm/lib/findbit.S
-index b5e8b9ae4c7d..7fd3600db8ef 100644
---- a/arch/arm/lib/findbit.S
-+++ b/arch/arm/lib/findbit.S
-@@ -40,8 +40,8 @@ ENDPROC(_find_first_zero_bit_le)
-  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
-  */
- ENTRY(_find_next_zero_bit_le)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
-  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
-@@ -81,8 +81,8 @@ ENDPROC(_find_first_bit_le)
-  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
-  */
- ENTRY(_find_next_bit_le)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
-  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
-@@ -115,8 +115,8 @@ ENTRY(_find_first_zero_bit_be)
- ENDPROC(_find_first_zero_bit_be)
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
+index 70e31743f0ba..3c08497568ea 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
+@@ -40,7 +40,7 @@ hdmi_con_in: endpoint {
+ 	leds {
+ 		compatible = "gpio-leds";
  
- ENTRY(_find_next_zero_bit_be)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
- 		eor	r3, r2, #0x18		@ big endian byte ordering
-@@ -149,8 +149,8 @@ ENTRY(_find_first_bit_be)
- ENDPROC(_find_first_bit_be)
- 
- ENTRY(_find_next_bit_be)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
- 		eor	r3, r2, #0x18		@ big endian byte ordering
+-		status {
++		led-0 {
+ 			label = "orangepi:green:status";
+ 			gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11 */
+ 		};
 -- 
 2.35.1
 
