@@ -2,227 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78169C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7A2C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:59:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346853AbiHSG6x (ORCPT
+        id S1346888AbiHSG7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 02:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
+        Fri, 19 Aug 2022 02:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346757AbiHSG6e (ORCPT
+        with ESMTP id S1346855AbiHSG7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 02:58:34 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D02764F;
-        Thu, 18 Aug 2022 23:58:31 -0700 (PDT)
-Received: from grover.sesame ([133.106.49.178]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 27J6uUCO012757;
-        Fri, 19 Aug 2022 15:56:34 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 27J6uUCO012757
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1660892195;
-        bh=FLXSTnFwujGa3rCeIE2bMjhYjFgNU8XCFwv3G9iMhZM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8Bd90crOnL14/xeeuc1U1N2lGENAclPMqXwT2iEYn7EVgcdQCPnLberVdMw3uYtz
-         wHeBNo5JuYXDwGHar0S/TIAUXtyi88Zofef0rn0wgpfahb55KVADojoTNCCzxpg2e3
-         x0tPJ/Z282CjRLpxl1xCGIA4T4e8WXbGHSDqlXfu9DfNnK4Jbz+J4xtb8BzudBuro3
-         Wyz2ywK/+bug/Io/SLCrkiBZVbKxDF45Gcd7NY3sCtowfDv1NPk7DbaLjdW35dwBKr
-         Stv7K3JOx9hA8g1Ho8BsaQrfKWXFIYfRZfLtBmtTzdnC11aGT6tolMrRMbNHHe+7i7
-         oyDEVjrPjywKw==
-X-Nifty-SrcIP: [133.106.49.178]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Richard Purdie <richard.purdie@linuxfoundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 2/3] kconfig: allow to choose the shell for $(shell ) functions
-Date:   Fri, 19 Aug 2022 15:56:02 +0900
-Message-Id: <20220819065604.295572-3-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220819065604.295572-1-masahiroy@kernel.org>
-References: <20220819065604.295572-1-masahiroy@kernel.org>
+        Fri, 19 Aug 2022 02:59:02 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AF11F2EB
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 23:58:57 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M8CDK6D5pzXdtL;
+        Fri, 19 Aug 2022 14:54:41 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 14:58:54 +0800
+Received: from [10.174.179.24] (10.174.179.24) by
+ dggpemm100009.china.huawei.com (7.185.36.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 14:58:53 +0800
+Subject: Re: [PATCH -next] bootmem: remove the vmemmap pages from kmemleak in
+ free_bootmem_page
+To:     Muchun Song <muchun.song@linux.dev>
+References: <20220818132104.2144770-1-liushixin2@huawei.com>
+ <8EC06FE1-3963-4F22-83DF-48B3EFAA62CA@linux.dev>
+CC:     Muchun Song <songmuchun@bytedance.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>
+From:   Liu Shixin <liushixin2@huawei.com>
+Message-ID: <688c930c-57aa-800b-57a5-fe7c8aacdbda@huawei.com>
+Date:   Fri, 19 Aug 2022 14:58:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <8EC06FE1-3963-4F22-83DF-48B3EFAA62CA@linux.dev>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GNU Make uses /bin/sh by default for running recipe lines and $(shell )
-functions. You can change the shell by setting the 'SHELL' variable.
-Unlike most variables, 'SHELL' is never set from the environment. [1]
+On 2022/8/19 11:31, Muchun Song wrote:
+>
+>> On Aug 18, 2022, at 21:21, Liu Shixin <liushixin2@huawei.com> wrote:
+>>
+>> The vmemmap pages is marked by kmemleak when allocated from memblock.
+>> Remove it from kmemleak when free the page. Otherwise, when we reuse the
+>> page, kmemleak may report such an error and then stop working.
+>>
+>> kmemleak: Cannot insert 0xffff98fb6eab3d40 into the object search tree (overlaps existing)
+>> kmemleak: Kernel memory leak detector disabled
+>> kmemleak: Object 0xffff98fb6be00000 (size 335544320):
+>> kmemleak:   comm "swapper", pid 0, jiffies 4294892296
+>> kmemleak:   min_count = 0
+>> kmemleak:   count = 0
+>> kmemleak:   flags = 0x1
+>> kmemleak:   checksum = 0
+>> kmemleak:   backtrace:
+>>
+>> Fixes: f41f2ed43ca5 ("mm: hugetlb: free the vmemmap pages associated with each HugeTLB page")
+>> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+>> ---
+>> include/linux/bootmem_info.h | 6 ++++--
+>> 1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/bootmem_info.h b/include/linux/bootmem_info.h
+>> index cc35d010fa94..899bc56948f7 100644
+>> --- a/include/linux/bootmem_info.h
+>> +++ b/include/linux/bootmem_info.h
+>> @@ -3,6 +3,7 @@
+>> #define __LINUX_BOOTMEM_INFO_H
+>>
+>> #include <linux/mm.h>
+>> +#include <linux/kmemleak.h>
+>>
+>> /*
+>>  * Types for free bootmem stored in page->lru.next. These have to be in
+>> @@ -38,9 +39,10 @@ static inline void free_bootmem_page(struct page *page)
+>> 	 */
+>> 	VM_BUG_ON_PAGE(page_ref_count(page) != 2, page);
+> I am wondering if we should fix put_page_bootmem() instead of
+> free_bootmem_page() since there are some users of put_page_bootmem()
+> to free a page allocated from memblock which also can be reused
+> afterwards.
+>
+> Thanks.
+Thanks for your advise, it looks like that this problem may be occurs in memory hotremove too.
+So it's more appropriate to fix put_page_bootmem()
 
-Currently, Kconfig does not provide any way to change the default shell.
-/bin/sh is always used for running $(shell,...) because do_shell() is
-implemented by using popen(3).
+Thanks,
 
-This commit allows users to change the shell for Kconfig in a similar
-way to GNU Make; you can set the 'SHELL' variable in a Kconfig file to
-override the default shell. It is not taken from the environment. The
-change is effective only for $(shell,...) invocations called after the
-'SHELL' assignment.
-
-[1]: https://www.gnu.org/software/make/manual/html_node/Choosing-the-Shell.html
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- .../kbuild/kconfig-macro-language.rst         |  4 ++
- scripts/kconfig/internal.h                    |  1 +
- scripts/kconfig/parser.y                      |  1 +
- scripts/kconfig/preprocess.c                  | 65 +++++++++++++++----
- 4 files changed, 57 insertions(+), 14 deletions(-)
-
-diff --git a/Documentation/kbuild/kconfig-macro-language.rst b/Documentation/kbuild/kconfig-macro-language.rst
-index 6163467f6ae4..fe8c6982179e 100644
---- a/Documentation/kbuild/kconfig-macro-language.rst
-+++ b/Documentation/kbuild/kconfig-macro-language.rst
-@@ -112,6 +112,10 @@ Kconfig currently supports the following built-in functions.
-   replaced with a space. Any trailing newlines are deleted. The standard error
-   is not returned, nor is any program exit status.
- 
-+  The program used as the shell is taken from the variable SHELL. If it is not
-+  set anywhere in your Kconfig file, /bin/sh is used as the shell.
-+  Unlike most variables, the variable SHELL is never set from the environment.
-+
-  - $(info,text)
- 
-   The "info" function takes a single argument and prints it to stdout.
-diff --git a/scripts/kconfig/internal.h b/scripts/kconfig/internal.h
-index 8e0e6d315b6c..c18017650e54 100644
---- a/scripts/kconfig/internal.h
-+++ b/scripts/kconfig/internal.h
-@@ -19,6 +19,7 @@ enum variable_flavor {
- void env_write_dep(FILE *f, const char *auto_conf_name);
- void variable_add(const char *name, const char *value,
- 		  enum variable_flavor flavor);
-+void variable_init(void);
- void variable_all_del(void);
- char *expand_dollar(const char **str);
- char *expand_one_token(const char **str);
-diff --git a/scripts/kconfig/parser.y b/scripts/kconfig/parser.y
-index 2af7ce4e1531..436afaef9228 100644
---- a/scripts/kconfig/parser.y
-+++ b/scripts/kconfig/parser.y
-@@ -483,6 +483,7 @@ void conf_parse(const char *name)
- 	zconf_initscan(name);
- 
- 	_menu_init();
-+	variable_init();
- 
- 	if (getenv("ZCONF_DEBUG"))
- 		yydebug = 1;
-diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
-index aeb3fe362c04..608a84e7f5d6 100644
---- a/scripts/kconfig/preprocess.c
-+++ b/scripts/kconfig/preprocess.c
-@@ -8,6 +8,7 @@
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
-+#include <unistd.h>
- 
- #include "list.h"
- #include "lkc.h"
-@@ -141,24 +142,59 @@ static char *do_lineno(int argc, char *argv[])
- 
- static char *do_shell(int argc, char *argv[])
- {
--	FILE *p;
-+	int pipefd[2];
-+	pid_t pid;
- 	char buf[4096];
--	char *cmd;
--	size_t nread;
-+	ssize_t nread;
- 	int i;
- 
--	cmd = argv[0];
--
--	p = popen(cmd, "r");
--	if (!p) {
--		perror(cmd);
-+	if (pipe(pipefd) < 0) {
-+		perror("pipe");
-+		exit(1);
-+	}
-+	pid = fork();
-+	if (pid < -1) {
-+		perror("fork");
- 		exit(1);
- 	}
- 
--	nread = fread(buf, 1, sizeof(buf), p);
-+	if (pid == 0) { /* child */
-+		char *shell;
-+
-+		/* duplicate the write end to stdout */
-+		if (dup2(pipefd[1], STDOUT_FILENO) < 0) {
-+			perror("dup2");
-+			_exit(1);
-+		}
-+
-+		/*
-+		 * Do not leak file descriptors to the child process
-+		 * (including the read end of the pipe).
-+		 * Closing up to 15 is enough for us?
-+		 */
-+		for (i = STDERR_FILENO + 1; i < 16; i++)
-+			close(i);
-+
-+		shell = expand_string("$(SHELL)");
-+
-+		execl(shell, shell, "-c", argv[0], NULL);
-+		perror("execl");
-+
-+		free(shell);
-+
-+		_exit(1);
-+	}
-+
-+	/* parent */
-+
-+	close(pipefd[1]);	/* the write end is unneeded */
-+
-+	nread = read(pipefd[0], buf, sizeof(buf));
- 	if (nread == sizeof(buf))
- 		nread--;
- 
-+	close(pipefd[0]);	/* now close the read end */
-+
- 	/* remove trailing new lines */
- 	while (nread > 0 && buf[nread - 1] == '\n')
- 		nread--;
-@@ -171,11 +207,6 @@ static char *do_shell(int argc, char *argv[])
- 			buf[i] = ' ';
- 	}
- 
--	if (pclose(p) == -1) {
--		perror(cmd);
--		exit(1);
--	}
--
- 	return xstrdup(buf);
- }
- 
-@@ -330,6 +361,12 @@ static void variable_del(struct variable *v)
- 	free(v);
- }
- 
-+void variable_init(void)
-+{
-+	/* Set the default shell */
-+	variable_add("SHELL", "/bin/sh", VAR_RECURSIVE);
-+}
-+
- void variable_all_del(void)
- {
- 	struct variable *v, *tmp;
--- 
-2.34.1
+>
+>> -	if (magic == SECTION_INFO || magic == MIX_SECTION_INFO)
+>> +	if (magic == SECTION_INFO || magic == MIX_SECTION_INFO) {
+>> +		kmemleak_free_part(page_to_virt(page), PAGE_SIZE);
+>> 		put_page_bootmem(page);
+>> -	else
+>> +	} else
+>> 		VM_BUG_ON_PAGE(1, page);
+>> }
+>> #else
+>> -- 
+>> 2.25.1
+>>
+>>
+> .
+>
 
