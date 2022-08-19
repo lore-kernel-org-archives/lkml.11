@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0BDC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAC7C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351602AbiHSQIt (ORCPT
+        id S1351208AbiHSQIx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
+        Fri, 19 Aug 2022 12:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351645AbiHSQGM (ORCPT
+        with ESMTP id S1351656AbiHSQGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024FA107D8F;
-        Fri, 19 Aug 2022 08:55:36 -0700 (PDT)
+        Fri, 19 Aug 2022 12:06:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA39310D59D;
+        Fri, 19 Aug 2022 08:55:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3AEE615E7;
-        Fri, 19 Aug 2022 15:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4ECDC433C1;
-        Fri, 19 Aug 2022 15:55:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29F69B82819;
+        Fri, 19 Aug 2022 15:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E273C433D6;
+        Fri, 19 Aug 2022 15:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924503;
-        bh=FG0AToaJi0SRD0xqh9uzlQHgPR9bQtc0vDYZ0TK4hCw=;
+        s=korg; t=1660924541;
+        bh=UkBWJBsPX5cel+6FFhNtQye+XSIHvRfMM+W2Ur21r/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XU+NaLhqkwO0UmC8CeMU7oJVDN+gZuUq1pdcESUN3ZlqGa3G1Va23ZJJ4masc6tp5
-         mn397eHkQPpxWutE8kh0eJ13oOiwYsEkDmp4ZNLWwaGSx1Duo+BKOSc+PJQNjRxwaI
-         4QeKfeAHAgez727TM4fBp8bRIcw/dmpJYgpcLUNs=
+        b=alDaY5iezDOBdYyu5F46FfVKnRafUofoq5U7uoOBH5gSVwyR9QIinXju3mflWCCRE
+         80S4yXVi+mOsfbcaC1kHMqF1jEewFO9bERUqLyhswyZvtMYkAIkpHItbvju6mHQ+HU
+         tzVy51sMPSkGWs32AnhUqNK6/rnM9+X8HPWi1xaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 192/545] drm/vc4: dsi: Correct pixel order for DSI0
-Date:   Fri, 19 Aug 2022 17:39:22 +0200
-Message-Id: <20220819153837.952820943@linuxfoundation.org>
+Subject: [PATCH 5.10 204/545] drm/vc4: hdmi: Correct HDMI timing registers for interlaced modes
+Date:   Fri, 19 Aug 2022 17:39:34 +0200
+Message-Id: <20220819153838.504850553@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,38 +53,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit edfe84ae0df16be1251b5a8e840d95f1f3827500 ]
+[ Upstream commit fb10dc451c0f15e3c19798a2f41d357f3f7576f5 ]
 
-For slightly unknown reasons, dsi0 takes a different pixel format
-to dsi1, and that has to be set in the pixel valve.
+For interlaced modes the timings were not being correctly
+programmed into the HDMI block, so correct them.
 
-Amend the setup accordingly.
-
-Fixes: a86773d120d7 ("drm/vc4: Add support for feeding DSI encoders from the pixel valve.")
+Fixes: 8323989140f3 ("drm/vc4: hdmi: Support the BCM2711 HDMI controllers")
 Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-14-maxime@cerno.tech
+Link: https://lore.kernel.org/r/20220613144800.326124-33-maxime@cerno.tech
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index f4ccca922e44..f4e64db07d4e 100644
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -319,7 +319,8 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc)
- 	u32 pixel_rep = (mode->flags & DRM_MODE_FLAG_DBLCLK) ? 2 : 1;
- 	bool is_dsi = (vc4_encoder->type == VC4_ENCODER_TYPE_DSI0 ||
- 		       vc4_encoder->type == VC4_ENCODER_TYPE_DSI1);
--	u32 format = is_dsi ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_24;
-+	bool is_dsi1 = vc4_encoder->type == VC4_ENCODER_TYPE_DSI1;
-+	u32 format = is_dsi1 ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_24;
- 	u8 ppc = pv_data->pixels_per_clock;
- 	bool debug_dump_regs = false;
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -565,13 +565,13 @@ static void vc5_hdmi_set_timings(struct
+ 		     VC4_SET_FIELD(mode->crtc_vsync_start - mode->crtc_vdisplay,
+ 				   VC5_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
+-	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
+-				   interlaced,
++	u32 vertb = (VC4_SET_FIELD(mode->htotal >> (2 - pixel_rep),
++				   VC5_HDMI_VERTB_VSPO) |
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end,
++					mode->crtc_vsync_end - interlaced,
+ 					VC4_HDMI_VERTB_VBP));
  
--- 
-2.35.1
-
+ 	HDMI_WRITE(HDMI_VEC_INTERFACE_XBAR, 0x354021);
 
 
