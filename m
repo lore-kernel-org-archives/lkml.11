@@ -2,110 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B294C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A827BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354246AbiHSQtn (ORCPT
+        id S1354250AbiHSQtu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
+        Fri, 19 Aug 2022 12:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354110AbiHSQr5 (ORCPT
+        with ESMTP id S1354003AbiHSQsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:47:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AD212C36B;
-        Fri, 19 Aug 2022 09:12:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1572618BC;
-        Fri, 19 Aug 2022 16:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D54FAC433D6;
-        Fri, 19 Aug 2022 16:12:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925550;
-        bh=5lA1HArRxp2DQ+Sz9uGv4aPDu9GIfbZKVBSUtLiEdig=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o0NfroIKF2UxfFCxbXgM8rWY74y0xK08spzy61jWh6W3utPPM25FbMem2AnMfaB67
-         RUYKu/FxSLGkX5gyunjMAMxnHQuDsyS4DPnXwNaoOxTDA0DXbTvW2esJJFwu5I3lQ7
-         rj7Mdg8VU55ygUK/FUt29fcb8ApvBGI7hvrEhqHo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.10 526/545] dm raid: fix address sanitizer warning in raid_status
-Date:   Fri, 19 Aug 2022 17:44:56 +0200
-Message-Id: <20220819153853.100177933@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 19 Aug 2022 12:48:07 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FFC12C7CE
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:12:54 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-335624d1e26so133918707b3.4
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=C0GWzj365wE2sR7xJX1mOB/d9C1PQzA2HDwoU7ywZuE=;
+        b=C8rxUGor26d4pLtnEfWBFLrobr0zohYJN0RmYiPmeejX1B5WIjYxlIW6O6vpwvR1kl
+         3uyk2b69rpX1Z3KkgD3NkX1UoIyiYooWrnZ6e7S7ptV0p9zUkVWpISqr0vV4dh6XhLMo
+         E/w7i0Od1rZfz4/HXc07NbXbPwaU3YJg3txrbrh6/mjobSJcCr/bsWdBDVEacMmKXqAR
+         ks00PMAhxsmPvbjHWRuvDJvT0i4MbZWIBfJl6VOxH8utFU8fi+hxR2qvbZ+V3nh5ZB2Z
+         QBUwOkvnNc6PVLu7I6vwOjRs/zkpKfYc3BrO7YAqAjfgYZFMAZ7OdpFJnQAUhunI4M92
+         Tv1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=C0GWzj365wE2sR7xJX1mOB/d9C1PQzA2HDwoU7ywZuE=;
+        b=EMLRluLV8FU5k7xy9mqp60FPLhrCnq6Dx22dWGW9vXMy3XBuFpjjwIR2edo+crnt8X
+         y6K1ECfEyNvrCW1wSSiCZAJe34MuSvVW+vYeXAGkrcJU4/bfhFuEuRSVVE81R/23KMik
+         RVBhmw2paxic/4wyyrfiZTLdYesIkayReziq8EljCDpyMrmsyy+B67UtBtz+s3OUjIEg
+         82iqAzQ4JyHmQy0f7hcm1kyhNXWqVcuCJOLv2Auo9vNBbs4a7l8V8tcgATMgg1Zi8ofl
+         TyGjncr5B8CfqumKZz+kfbiKSUDA1ybO6xx/hjS1MQO+pzVwMboVCo5MZOqfU3utvUnp
+         MpaA==
+X-Gm-Message-State: ACgBeo12aBR9+OeHdVzSaPVApGnZaXIbUnbFPady84thTqxERD5lriXF
+        jDNG2QR4ATeuHtU4ioGCfacorlKQYU8G02rh3ROtsA==
+X-Google-Smtp-Source: AA6agR4cI9mNUD+gm+cIqyleTiDxTP2r6qU3PI1eMiuXZNFUEQ8DnMtoNGS2ptGOR81qvDTW+PP72cquB+zEajJtuZA=
+X-Received: by 2002:a5b:850:0:b0:68c:5798:a927 with SMTP id
+ v16-20020a5b0850000000b0068c5798a927mr8403287ybq.8.1660925547310; Fri, 19 Aug
+ 2022 09:12:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220814141237.493457-1-mail@conchuod.ie> <20220814141237.493457-3-mail@conchuod.ie>
+In-Reply-To: <20220814141237.493457-3-mail@conchuod.ie>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Fri, 19 Aug 2022 21:42:15 +0530
+Message-ID: <CAAhSdy2bc4StpxUu6CgqygLG4FgzkN+VhsEavkge4rvJjPqNng@mail.gmail.com>
+Subject: Re: [PATCH 2/4] riscv: kvm: move extern sbi_ext declarations to a header
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     Atish Patra <atishp@atishpatra.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Guo Ren <guoren@kernel.org>,
+        Vincent Chen <vincent.chen@sifive.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+On Sun, Aug 14, 2022 at 7:42 PM Conor Dooley <mail@conchuod.ie> wrote:
+>
+> From: Conor Dooley <conor.dooley@microchip.com>
+>
+> Sparse complains about missing statics in the declarations of several
+> variables:
+> arch/riscv/kvm/vcpu_sbi_replace.c:38:37: warning: symbol 'vcpu_sbi_ext_time' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_replace.c:73:37: warning: symbol 'vcpu_sbi_ext_ipi' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_replace.c:126:37: warning: symbol 'vcpu_sbi_ext_rfence' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_replace.c:170:37: warning: symbol 'vcpu_sbi_ext_srst' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_base.c:69:37: warning: symbol 'vcpu_sbi_ext_base' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_base.c:90:37: warning: symbol 'vcpu_sbi_ext_experimental' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_base.c:96:37: warning: symbol 'vcpu_sbi_ext_vendor' was not declared. Should it be static?
+> arch/riscv/kvm/vcpu_sbi_hsm.c:115:37: warning: symbol 'vcpu_sbi_ext_hsm' was not declared. Should it be static?
+>
+> These variables are however used in vcpu_sbi.c where they are declared
+> as extern. Move them to kvm_vcpu_sbi.h which is handily already
+> included by the three other files.
+>
+> Fixes: a046c2d8578c ("RISC-V: KVM: Reorganize SBI code by moving SBI v0.1 to its own file")
+> Fixes: 5f862df5585c ("RISC-V: KVM: Add v0.1 replacement SBI extensions defined in v0.2")
+> Fixes: 3e1d86569c21 ("RISC-V: KVM: Add SBI HSM extension in KVM")
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 
-commit 1fbeea217d8f297fe0e0956a1516d14ba97d0396 upstream.
+I have queued this fix for 6.0-rc1
 
-There is this warning when using a kernel with the address sanitizer
-and running this testsuite:
-https://gitlab.com/cki-project/kernel-tests/-/tree/main/storage/swraid/scsi_raid
+Thanks,
+Anup
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in raid_status+0x1747/0x2820 [dm_raid]
-Read of size 4 at addr ffff888079d2c7e8 by task lvcreate/13319
-CPU: 0 PID: 13319 Comm: lvcreate Not tainted 5.18.0-0.rc3.<snip> #1
-Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-Call Trace:
- <TASK>
- dump_stack_lvl+0x6a/0x9c
- print_address_description.constprop.0+0x1f/0x1e0
- print_report.cold+0x55/0x244
- kasan_report+0xc9/0x100
- raid_status+0x1747/0x2820 [dm_raid]
- dm_ima_measure_on_table_load+0x4b8/0xca0 [dm_mod]
- table_load+0x35c/0x630 [dm_mod]
- ctl_ioctl+0x411/0x630 [dm_mod]
- dm_ctl_ioctl+0xa/0x10 [dm_mod]
- __x64_sys_ioctl+0x12a/0x1a0
- do_syscall_64+0x5b/0x80
-
-The warning is caused by reading conf->max_nr_stripes in raid_status. The
-code in raid_status reads mddev->private, casts it to struct r5conf and
-reads the entry max_nr_stripes.
-
-However, if we have different raid type than 4/5/6, mddev->private
-doesn't point to struct r5conf; it may point to struct r0conf, struct
-r1conf, struct r10conf or struct mpconf. If we cast a pointer to one
-of these structs to struct r5conf, we will be reading invalid memory
-and KASAN warns about it.
-
-Fix this bug by reading struct r5conf only if raid type is 4, 5 or 6.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/md/dm-raid.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -3514,7 +3514,7 @@ static void raid_status(struct dm_target
- {
- 	struct raid_set *rs = ti->private;
- 	struct mddev *mddev = &rs->md;
--	struct r5conf *conf = mddev->private;
-+	struct r5conf *conf = rs_is_raid456(rs) ? mddev->private : NULL;
- 	int i, max_nr_stripes = conf ? conf->max_nr_stripes : 0;
- 	unsigned long recovery;
- 	unsigned int raid_param_cnt = 1; /* at least 1 for chunksize */
-
-
+> ---
+>  arch/riscv/include/asm/kvm_vcpu_sbi.h | 12 ++++++++++++
+>  arch/riscv/kvm/vcpu_sbi.c             | 12 +-----------
+>  2 files changed, 13 insertions(+), 11 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> index 83d6d4d2b1df..26a446a34057 100644
+> --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> @@ -33,4 +33,16 @@ void kvm_riscv_vcpu_sbi_system_reset(struct kvm_vcpu *vcpu,
+>                                      u32 type, u64 flags);
+>  const struct kvm_vcpu_sbi_extension *kvm_vcpu_sbi_find_ext(unsigned long extid);
+>
+> +#ifdef CONFIG_RISCV_SBI_V01
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_v01;
+> +#endif
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_base;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_time;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_ipi;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
+> +
+>  #endif /* __RISCV_KVM_VCPU_SBI_H__ */
+> diff --git a/arch/riscv/kvm/vcpu_sbi.c b/arch/riscv/kvm/vcpu_sbi.c
+> index d45e7da3f0d3..f96991d230bf 100644
+> --- a/arch/riscv/kvm/vcpu_sbi.c
+> +++ b/arch/riscv/kvm/vcpu_sbi.c
+> @@ -32,23 +32,13 @@ static int kvm_linux_err_map_sbi(int err)
+>         };
+>  }
+>
+> -#ifdef CONFIG_RISCV_SBI_V01
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_v01;
+> -#else
+> +#ifndef CONFIG_RISCV_SBI_V01
+>  static const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_v01 = {
+>         .extid_start = -1UL,
+>         .extid_end = -1UL,
+>         .handler = NULL,
+>  };
+>  #endif
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_base;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_time;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_ipi;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+> -extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
+>
+>  static const struct kvm_vcpu_sbi_extension *sbi_ext[] = {
+>         &vcpu_sbi_ext_v01,
+> --
+> 2.37.1
+>
