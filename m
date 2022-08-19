@@ -2,139 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A0EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D22C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347041AbiHSIlZ (ORCPT
+        id S1347406AbiHSIl6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47858 "EHLO
+        Fri, 19 Aug 2022 04:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347247AbiHSIlW (ORCPT
+        with ESMTP id S1347442AbiHSIlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:41:22 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C63065A9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:20 -0700 (PDT)
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 27J8f3fl029474
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:41:04 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 27J8f3fl029474
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1660898464;
-        bh=elvJSR7vlV3+9hGJEzaFU22AXaxpLvwDSpIIG1By0OI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=M3MYw5zjV5tmsDfz0WFsSH/UHyRObGnMjQHRQIbuz8usKEC+WqfUf1m1b8UTo83vp
-         BUyM4ek71n2Hn0pU8Z4VLRohkkimdwF7M5woCDpH5h2h6t+WJ8t7iay06GrbQ9J8/5
-         LT5QRAujT4wyMKYFC8RJmrByE738Ys6XXk+a1OHdpA+YkKV3Zxlj4x3PbXAvmOT1KV
-         +CCZaIfj9TsdQeo9gqOad5YScBylGl+ot/+vtWUkB1/IgdW9CAhZyoX6l0jLRKRWJP
-         vX2s+987lDGTl5Wjc36KvNSwjRhh9yi1HwHmgwwgzFdFxYPJQrgSkq20v/64POjZPU
-         iocaDjcSkhfpg==
-X-Nifty-SrcIP: [209.85.221.50]
-Received: by mail-wr1-f50.google.com with SMTP id e20so3879146wri.13
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:04 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2gkIQpsMmNXfDJz348i2XH6SHRJd+JHoylz2b6tX/eMWuMoiDQ
-        KnnbzY7+29C6epOGBG1fvDOACr3gNIsZ7YPdKmY=
-X-Google-Smtp-Source: AA6agR5HEcaN88E9g+nMSw3Osr2KzWiyDKgo9L6/Vq73IbJZblciYjk3mFszyHCGnZGpJJCir8rmACLMq4lo18gHGGA=
-X-Received: by 2002:a05:6000:1acb:b0:223:5de3:f8bf with SMTP id
- i11-20020a0560001acb00b002235de3f8bfmr3503379wry.691.1660898462663; Fri, 19
- Aug 2022 01:41:02 -0700 (PDT)
+        Fri, 19 Aug 2022 04:41:47 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7588169F6F
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:44 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id q7so1575676lfu.5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=CRnuTsAE9g4131Gs1Ch+MF8rdf+eDVa6Xez0TyG+a0A=;
+        b=V7WH7QjsIZrOhFjZEoS5Hp1lBUUj/KrXDaY23Htx+8JpSFUB8BlrdppWhAU7pEdgsv
+         oT/t3nWpySkKzLc3u/0c1i2e5+dsenLdH5FXMO4jy+R2qoM+gmu+DC7H/BnjOUEI2br/
+         iviv0sz8OnaHsEKw89AwM6eOvGlyurUv9SE4RbQnlA/KuCzoaTgDmH4Vi5robLyGi4se
+         I4f45nZrl8lDIx3d7Y/t5a8S37ptwSD1RTPgihhPpikOBmG0fvg90h++2VrJRFtYJA2r
+         FYU2xaKVv5zBjt5mfAOcaeY8FHJPyPJsIZpDB8W9j/RQ3d8UKxJEymaVfjM2mnIUeZAB
+         BeOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=CRnuTsAE9g4131Gs1Ch+MF8rdf+eDVa6Xez0TyG+a0A=;
+        b=jLzYy6nRa21V4CYjDtREG/Do9P4VEv+G7fZawPRooOw5s3nYLzAKLR1QlJZugPUUaX
+         mis53lOwVjxW3WgoKtBTiXHE5ItheRetS7zrmS4RYSjYQfjMs2nqeJwJk1TXVcqjNer3
+         vfXeupjIaeoSdsdL7mUzMhZS9KahJiGQqNaahDokJPiIgwRsA0N8Vpm1+6BJWgMXTKWv
+         ErOW9XfwaGRLCqf2n7mECmd2dxPrJcixbxoJvZAEDnM7oGzRtcSo4X8m9/ljjJNihLOE
+         vLar0AqiY/5jVuckpjLEgl4QvyzE/xDWYw8eFdMorJrfxG41ZDnAwxPE+d+8PRoz1S0k
+         4XNA==
+X-Gm-Message-State: ACgBeo3K4dje1AyRViuw3WB2ebv33Zb/XP6uSDnY1vLjY44MztYXeyD6
+        I+9mNtuVLO5zpjaAUr2YhHhSAQ==
+X-Google-Smtp-Source: AA6agR4wD3EqU9y0mOORxLi5pTs4j3x4Q1X/qtUS/M7PdaGN8KlxcT2G4pkJ/ZXRfgKQ4SF0TxW/tA==
+X-Received: by 2002:a05:6512:2291:b0:48b:492e:ef35 with SMTP id f17-20020a056512229100b0048b492eef35mr2081867lfu.494.1660898502773;
+        Fri, 19 Aug 2022 01:41:42 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id d11-20020ac25ecb000000b00492b494c4dbsm557072lfq.89.2022.08.19.01.41.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 01:41:42 -0700 (PDT)
+Message-ID: <aa659b2e-44cb-b2e2-eced-1ef7f5de5647@linaro.org>
+Date:   Fri, 19 Aug 2022 11:41:40 +0300
 MIME-Version: 1.0
-References: <20220804190320.262510-1-alexandre.belloni@bootlin.com>
- <CAKwvOd=3N8_Rx1P8J7pVnjM6sEzJA233BnwmD1VyMRqgujq2_Q@mail.gmail.com>
- <7eacd1d9-42ba-fd61-7f37-0635cebcb33d@infradead.org> <e902a360e3759c7f87d98d71d79a0d5cbe935e3e.camel@linuxfoundation.org>
- <CAK7LNART2XQYy2hN1afODbuCMj+_VX9Ojh5nVCoY-hwXRAwSWA@mail.gmail.com> <0725ccc9abce84695573539c5f3d9d061384469d.camel@linuxfoundation.org>
-In-Reply-To: <0725ccc9abce84695573539c5f3d9d061384469d.camel@linuxfoundation.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 19 Aug 2022 17:40:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQTHO3Za9UpeCCkdNo-mQS8ORgbfwXCJKKr4FCZ3VqT2Q@mail.gmail.com>
-Message-ID: <CAK7LNAQTHO3Za9UpeCCkdNo-mQS8ORgbfwXCJKKr4FCZ3VqT2Q@mail.gmail.com>
-Subject: Re: [PATCH] init/Kconfig: fix CC_HAS_ASM_GOTO_TIED_OUTPUT test with dash
-To:     Richard Purdie <richard.purdie@linuxfoundation.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
+ json-schema
+Content-Language: en-US
+To:     Sergiu.Moga@microchip.com, lee@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        admin@hifiphile.com, Kavyasree.Kotagiri@microchip.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220817075517.49575-1-sergiu.moga@microchip.com>
+ <20220817075517.49575-3-sergiu.moga@microchip.com>
+ <c1a98a3e-609e-7783-b1b7-3bb39caa8c65@linaro.org>
+ <5fd68d8e-7132-2f58-0ef9-cd4a0fe45127@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <5fd68d8e-7132-2f58-0ef9-cd4a0fe45127@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 6:46 AM Richard Purdie
-<richard.purdie@linuxfoundation.org> wrote:
->
-> On Fri, 2022-08-19 at 04:31 +0900, Masahiro Yamada wrote:
-> > On Thu, Aug 18, 2022 at 6:14 PM Richard Purdie
-> > <richard.purdie@linuxfoundation.org> wrote:
-> > >
-> > > This problem is a little more subtle.
-> > >
-> > > As far as I could work out, exec() is used on entries like this in
-> > > kConfig. exec() falls back to /bin/sh so it is hard to see where this
-> > > would be changed to be /bin/bash.
-> >
-> >
-> >
-> > Kconfig uses popen() to execute a shell command.
-> >
-> > See do_shell() in scripts/kconfig/preprocess.c
-> >
-> > popen(3) says that
-> > "the command is passed to /bin/sh using the -c flag.
-> > interpretation, if any, is performed by the shell."
-> >
-> > GNU Make is the same.
-> > Make uses /bin/sh to execute commands in
-> > recipe lines and $(shell ...) functions.
-> > You can change the default shell via 'SHELL' variable.
->
-> That makes sense. I don't think we can easily change the shell popen()
-> uses.
->
-> >
-> > BTW, Richard is here, so let me ask about BitBake.
-> >
-> > The manual [3] clearly says:
-> >
-> > "When you create these types of functions in your recipe or class files,
-> > you need to follow the shell programming rules. The scripts are
-> > executed by /bin/sh,
-> > which may not be a bash shell but might be something such as dash.
-> > You should not use Bash-specific script (bashisms)"
-> >
-> > I just thought BitBake ran shell code in bash before,
-> > but I might have misunderstood.
-> > Do OE/Yocto allow only POSIX shell code?
->
-> Bitbake runs shell code with /bin/sh so we don't allow bashisms and
-> that has always been the case.
->
-> Like this case in the kernel, we do get people submitting changes which
-> were only tested with bash which can be frustrating but the manual and
-> our policy is quite clear. We just fix any that do creep through and
-> have test systems that have dash to try and catch them too.
->
-> Cheers,
->
-> Richard
+On 19/08/2022 11:37, Sergiu.Moga@microchip.com wrote:
+
+>>> +      - items:
+>>> +          - const: atmel,at91rm9200-dbgu
+>>> +          - const: atmel,at91rm9200-usart
+>>> +      - items:
+>>> +          - const: atmel,at91sam9260-dbgu
+>>> +          - const: atmel,at91sam9260-usart
+>>> +      - items:
+>>> +          - const: microchip,sam9x60-dbgu
+>>> +          - const: microchip,sam9x60-usart
+>>> +      - items:
+>>> +          - const: microchip,sam9x60-usart
+>>> +          - const: atmel,at91sam9260-usart
+>> This is not correct - contradicts earlier one.
+>>
+> 
+> Yes, this was for a DT node we have internally, my bad. You are right, 
+> it does not really make sense and it should not be the other way around: 
+> having the DT validate the binding. I will remove this combination in 
+> the next version.
+
+You need to fix any out of tree DTS or upstream it.
+> 
+> 
+>>> +      - items:
+>>> +          - const: microchip,sam9x60-dbgu
+>>> +          - const: microchip,sam9x60-usart
+>>> +          - const: atmel,at91sam9260-dbgu
+>>> +          - const: atmel,at91sam9260-usart
+>> What? You wrote above that microchip,sam9x60-dbgu is compatible only
+>> with microchip,sam9x60-usart. Now you write it is also compatible with
+>> other ones?
+> 
+> 
+> Yes, this one is intended because the 9x60 IP has new functionalities on 
+> top of 9260, and some nodes do keep all four as fallback.
+
+Then all nodes should keep fallbacks.
+
+> 
+> 
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +  interrupts:
+>>> +    maxItems: 1
+>>> +
+>>> +  clock-names:
+>>> +    contains:
+>>> +      const: usart
+>> No, this has to be specific/fixed list.
+> 
+> 
+> I wanted to highlight the fact that it must contain either:
+> clock-names = "usart";
+> or
+> clock-names = "usart", "gclk";
+> 
+> What would be the recommended way of doing this then?
+
+We have an example for this.
+
+https://elixir.bootlin.com/linux/v5.19/source/Documentation/devicetree/bindings/example-schema.yaml#L91
 
 
-Thanks.
-So, Bitbake is the same approach as the kernel.
-
-
-
-
-This is a patch set to use bash forcibly. FWIW.
-
-https://lore.kernel.org/lkml/20220819065604.295572-1-masahiroy@kernel.org/
-
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
