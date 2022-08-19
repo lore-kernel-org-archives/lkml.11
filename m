@@ -2,91 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7ACC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFE5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354387AbiHSQ45 (ORCPT
+        id S1354484AbiHSQ5B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
+        Fri, 19 Aug 2022 12:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354493AbiHSQz1 (ORCPT
+        with ESMTP id S1354856AbiHSQ4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:55:27 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71644D91D0;
-        Fri, 19 Aug 2022 09:16:13 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660925708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=k0xkptv3Zqc9QB1iW0tg7GYz6w0QjKzvT8qQb1OUOvo=;
-        b=HpdH+BTYOAHCdvv2kpRE5FYFGRD1GQes+Zjko16lbijJL3vTVXF105i/Vx5mGXmZ/FBrRk
-        aIlt61jYoi38RhDvxwQffosCtoQDzbVPtv8eUtSMW/PUkgCxtM9EqMTD0+kt+bUDf8i2f2
-        3NYNJqjwKBr5L45AWadau0UwHvlGNc0=
-From:   Oliver Upton <oliver.upton@linux.dev>
-To:     Marc Zyngier <maz@kernel.org>, James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Oliver Upton <oliver.upton@linux.dev>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Reiji Watanabe <reijiw@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: selftests: Update top-of-file comment in psci_test
-Date:   Fri, 19 Aug 2022 16:14:11 +0000
-Message-Id: <20220819161411.212530-1-oliver.upton@linux.dev>
+        Fri, 19 Aug 2022 12:56:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A1E115590;
+        Fri, 19 Aug 2022 09:17:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00F626182A;
+        Fri, 19 Aug 2022 16:12:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1261CC433C1;
+        Fri, 19 Aug 2022 16:12:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660925525;
+        bh=qO4j3AsmeVoKiJYQ3Ug9g5nOvWot0X0HDMxaeW3t0vA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SM6Mpg5bmjFL7y0UuGE73S8ak5zAR0teQ00wnQ5UnWrCFWBQYr0ytsee8MsCkRUw2
+         fiBWPD0VUOT4jtCUMVwhb+Y0p7ht2e3foUaWXEZijXLLTOyVrdv1J1uNjAok89QbCr
+         p7zVqmfssgh9HD38CG+qQoOEPK6ALh1C8waVXAjw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 519/545] ext4: make sure ext4_append() always allocates new block
+Date:   Fri, 19 Aug 2022 17:44:49 +0200
+Message-Id: <20220819153852.758812329@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the comment to accurately describe the test and recently added
-SYSTEM_SUSPEND test case.
+From: Lukas Czerner <lczerner@redhat.com>
 
-What was once psci_cpu_on_test was renamed and extended to squeeze in a
-test case for PSCI SYSTEM_SUSPEND. Nonetheless, the author of those
-changes (whoever they may be...) failed to update the file comment to
-reflect what had changed.
+commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b upstream.
 
-Reported-by: Reiji Watanabe <reijiw@google.com>
-Signed-off-by: Oliver Upton <oliver.upton@linux.dev>
+ext4_append() must always allocate a new block, otherwise we run the
+risk of overwriting existing directory block corrupting the directory
+tree in the process resulting in all manner of problems later on.
+
+Add a sanity check to see if the logical block is already allocated and
+error out if it is.
+
+Cc: stable@kernel.org
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/kvm/aarch64/psci_test.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/ext4/namei.c |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
-index f7621f6e938e..8a77bd06427c 100644
---- a/tools/testing/selftests/kvm/aarch64/psci_test.c
-+++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
-@@ -1,12 +1,14 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * psci_cpu_on_test - Test that the observable state of a vCPU targeted by the
-- * CPU_ON PSCI call matches what the caller requested.
-+ * psci_test - Tests relating to KVM's PSCI implementation.
-  *
-  * Copyright (c) 2021 Google LLC.
-  *
-- * This is a regression test for a race between KVM servicing the PSCI call and
-- * userspace reading the vCPUs registers.
-+ * This test includes:
-+ *  - A regression test for a race between KVM servicing the PSCI CPU_ON call
-+ *    and userspace reading the targeted vCPU's registers.
-+ *  - A test for KVM's handling of PSCI SYSTEM_SUSPEND and the associated
-+ *    KVM_EXIT_SYSTEM_SUSPEND UAPI.
-  */
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -54,6 +54,7 @@ static struct buffer_head *ext4_append(h
+ 					struct inode *inode,
+ 					ext4_lblk_t *block)
+ {
++	struct ext4_map_blocks map;
+ 	struct buffer_head *bh;
+ 	int err;
  
- #define _GNU_SOURCE
+@@ -63,6 +64,21 @@ static struct buffer_head *ext4_append(h
+ 		return ERR_PTR(-ENOSPC);
+ 
+ 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
++	map.m_lblk = *block;
++	map.m_len = 1;
++
++	/*
++	 * We're appending new directory block. Make sure the block is not
++	 * allocated yet, otherwise we will end up corrupting the
++	 * directory.
++	 */
++	err = ext4_map_blocks(NULL, inode, &map, 0);
++	if (err < 0)
++		return ERR_PTR(err);
++	if (err) {
++		EXT4_ERROR_INODE(inode, "Logical block already allocated");
++		return ERR_PTR(-EFSCORRUPTED);
++	}
+ 
+ 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
+ 	if (IS_ERR(bh))
 
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.37.1.595.g718a3a8f04-goog
 
