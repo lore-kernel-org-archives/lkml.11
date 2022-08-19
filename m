@@ -2,141 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE80C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9849EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346933AbiHSH3R (ORCPT
+        id S1346901AbiHSH3h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 03:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        Fri, 19 Aug 2022 03:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346343AbiHSH3O (ORCPT
+        with ESMTP id S1345460AbiHSH3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 03:29:14 -0400
-Received: from mail-m11877.qiye.163.com (mail-m11877.qiye.163.com [115.236.118.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17D683F22
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:29:10 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPV6:240e:36a:14ad:4200:c235:eeb6:bee9:4da8])
-        by mail-m11877.qiye.163.com (Hmail) with ESMTPA id 32B45400733;
-        Fri, 19 Aug 2022 15:22:52 +0800 (CST)
-From:   Yupeng Li <liyupeng@zbhlos.com>
-To:     chenhuacai@kernel.org, kernel@xen0n.name, tglx@linutronix.de,
-        maz@kernel.org
-Cc:     loongarch@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Yupeng Li <liyupeng@zbhlos.com>, Caicai <caizp2008@163.com>
-Subject: [PATCH 1/2] irqchip: Fixed LoongArch CPU interrupt types defined.
-Date:   Fri, 19 Aug 2022 15:22:39 +0800
-Message-Id: <20220819072239.60378-1-liyupeng@zbhlos.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 19 Aug 2022 03:29:35 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BF294EE2
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:29:34 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id DB9A85C0125;
+        Fri, 19 Aug 2022 03:29:33 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Fri, 19 Aug 2022 03:29:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660894173; x=1660980573; bh=My8sr3xWTA
+        Czup96ELiV9JRekYdFH7cwGM6u31VjkYE=; b=itP8Rp+QxGIXqHXbdd/1bezVLM
+        y/wf41htSKaS9BwzoEhWgl8+yy99yWE8nb38qaR4rEqdbK7kgnrbQEnfNeTA8SQr
+        rK7LzGF36DHW7ExajUTNGulEi+/R/u/JT5kQZOS2F+JJ3bxeAbdshougk5Oe71zc
+        ux+/KGPT1OOMKYo37qrwYAUAUfomN7D7EMQaNz7Xtjl2jwfIRnkVF9dqdNXVJwqe
+        ux7gN9oPy58VQhEkEqKIQr5sCjK/gcCmq/iB0TypHq2Fi81KnsHYxxQQA2X17jNp
+        cgfxhDF8rN/sD7P1zx6co5w5hNhHq0KLsX6CvBkofypamR7XH0X4czlRHjrQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660894173; x=1660980573; bh=My8sr3xWTACzup96ELiV9JRekYdF
+        H7cwGM6u31VjkYE=; b=O7Z2N+HxRDIdBr5bFSzqVCi5p6PRFpoJkcXh7K0elAXP
+        vaouQGos/CWBLQRTyuYmWyDDEqlzKhBTvTp8wSFl5/eklY/XqwZrU9T5+CTBmyzC
+        VxspXpQ8qmyrDNSW73KwnVmuowREpc5dxogtue2BBZhclVfVSda0ceGvPDrUxbZc
+        0JfH8GjTJJBL4YQXnwNrF0kGRCP79ehx7ADWt0rkJ6hn65o06a1bn5VegpoQpItk
+        7nZC4jWa9qUjSqvjkxWPKGsNPqTd7Uk4vhQX6ooD18JpzGNxYIxTa+R/YoTsT2KB
+        pcmHgDpDcxky/fFpnVTz1RtrRMr8e9bOpc3B7/cE/Q==
+X-ME-Sender: <xms:3Tv_YpOwBmj49VAJiAc8N-a93v3HHFV56byFAhlk9fag3EjFbB4vog>
+    <xme:3Tv_Yr9c99aGOP_4RM-d_OGme8p75NJtbXc5DXtzon-0LflAfgoo5-mJorzGfkRGy
+    MGIzYtOr5qCRyWUfI8>
+X-ME-Received: <xmr:3Tv_YoRvGt5rX4VSo5wjD6VP7hj2vE2ws1hCYt8frQgNwEtJEcZLZ6hQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeitddguddvvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgig
+    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+    grthhtvghrnhepteefffefgfektdefgfeludfgtdejfeejvddttdekteeiffejvdfgheeh
+    fffhvedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:3Tv_Ylt_Bdw9ALsTh-Jdn6f6IFD9ac7ScwHQGfZ-wL8fYyry9hO71A>
+    <xmx:3Tv_YhfA6iyb7RgicVl_3JQgYiCXcJNDjnDYtX1t8c78lueYKjOjKg>
+    <xmx:3Tv_Yh0Qo5DS7PWjkTsn6Smw-J3cA5IfUE9xaw51hjF9zBLif9VOgA>
+    <xmx:3Tv_Yo4HjRqSjdRxMgK5pBwnbURnNCuQKP3sBbWT8LdmwPdC_xURZQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 19 Aug 2022 03:29:33 -0400 (EDT)
+Date:   Fri, 19 Aug 2022 09:29:30 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Danilo Krummrich <dakr@redhat.com>
+Cc:     daniel@ffwll.ch, airlied@linux.ie, tzimmermann@suse.de,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH drm-misc-next 3/3] drm/vc4: crtc: protect device
+ resources after removal
+Message-ID: <20220819072930.fg56dkzbdu6f7s25@houat>
+References: <20220819002905.82095-1-dakr@redhat.com>
+ <20220819002905.82095-4-dakr@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaHhpDVktPGUoZThlLGEsaTVUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUlPSx5BSE0aQUpPGh9BT0lLS0EYSUhOQR4eGU1BGR4eQkFPHxpDWVdZFhoPEhUdFF
-        lBWU9LSFVKSktISkxVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MRg6Pzo*CT05ERYoVkMTHREw
-        VjgKCh1VSlVKTU1LQ0JITExIS0tCVTMWGhIXVRcSAg4LHhUcOwEZExcUCFUYFBZFWVdZEgtZQVlJ
-        T0seQUhNGkFKTxofQU9JS0tBGElITkEeHhlNQRkeHkJBTx8aQ1lXWQgBWUFIQk5DNwY+
-X-HM-Tid: 0a82b4fbbafa2eb3kusn32b45400733
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v6qavohxtl7q5awx"
+Content-Disposition: inline
+In-Reply-To: <20220819002905.82095-4-dakr@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_LOONGSON_LIOINTC,CONFIG_LOONGSON_EIOINTC,
-CONFIG_LOONGSON_PCH_LPC,CONFIG_LOONGSON_PCH_PIC was disabled,
-build kernel with errors like:
 
-MODPOST vmlinux.symvers
-MODINFO modules.builtin.modinfo
-GEN     modules.builtin
-LD      .tmp_vmlinux.kallsyms1
-loongarch64-linux-gnu-ld: drivers/irqchip/irq-loongarch-cpu.o: in function `lpic_get_gsi_domain_id':
-irq-loongarch-cpu.c:(.text+0x8): undefined reference to `pch_lpc_handle'
-loongarch64-linux-gnu-ld: irq-loongarch-cpu.c:(.text+0xc): undefined reference to `pch_lpc_handle'
-loongarch64-linux-gnu-ld: irq-loongarch-cpu.c:(.text+0xc): undefined reference to `pch_lpc_handle'
-make: *** [Makefile:1171：vmlinux] 错误 1
+--v6qavohxtl7q5awx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Caicai <caizp2008@163.com>
-Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
----
- drivers/irqchip/irq-loongarch-cpu.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+Hi,
 
-diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-loongarch-cpu.c
-index 327f3ab62c03..d296f704cbb6 100644
---- a/drivers/irqchip/irq-loongarch-cpu.c
-+++ b/drivers/irqchip/irq-loongarch-cpu.c
-@@ -27,24 +27,30 @@ static u32 lpic_gsi_to_irq(u32 gsi)
- 
- static struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
- {
-+#ifdef CONFIG_LOONGSON_PCH_PIC
- 	int id;
-+#endif
- 	struct fwnode_handle *domain_handle = NULL;
- 
- 	switch (gsi) {
- 	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
-+#ifdef CONFIG_LOONGSON_LIOINTC
- 		if (liointc_handle)
- 			domain_handle = liointc_handle;
-+#endif
- 		break;
--
- 	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
-+#ifdef CONFIG_LOONGSON_PCH_LPC
- 		if (pch_lpc_handle)
- 			domain_handle = pch_lpc_handle;
-+#endif
- 		break;
--
- 	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
-+#ifdef CONFIG_LOONGSON_PCH_PIC
- 		id = find_pch_pic(gsi);
- 		if (id >= 0 && pch_pic_handle[id])
- 			domain_handle = pch_pic_handle[id];
-+#endif
- 		break;
- 	}
- 
-@@ -92,6 +98,7 @@ static const struct irq_domain_ops loongarch_cpu_intc_irq_domain_ops = {
- 	.xlate = irq_domain_xlate_onecell,
- };
- 
-+#ifdef CONFIG_LOONGSON_LIOINTC
- static int __init
- liointc_parse_madt(union acpi_subtable_headers *header,
- 		       const unsigned long end)
-@@ -100,7 +107,8 @@ liointc_parse_madt(union acpi_subtable_headers *header,
- 
- 	return liointc_acpi_init(irq_domain, liointc_entry);
- }
--
-+#endif
-+#ifdef CONFIG_LOONGSON_EIOINTC
- static int __init
- eiointc_parse_madt(union acpi_subtable_headers *header,
- 		       const unsigned long end)
-@@ -109,13 +117,17 @@ eiointc_parse_madt(union acpi_subtable_headers *header,
- 
- 	return eiointc_acpi_init(irq_domain, eiointc_entry);
- }
--
-+#endif
- static int __init acpi_cascade_irqdomain_init(void)
- {
-+#ifdef CONFIG_LOONGSON_LIOINTC
- 	acpi_table_parse_madt(ACPI_MADT_TYPE_LIO_PIC,
- 			      liointc_parse_madt, 0);
-+#endif
-+#ifdef CONFIG_LOONGSON_EIOINTC
- 	acpi_table_parse_madt(ACPI_MADT_TYPE_EIO_PIC,
- 			      eiointc_parse_madt, 0);
-+#endif
- 	return 0;
- }
- 
--- 
-2.34.1
+On Fri, Aug 19, 2022 at 02:29:05AM +0200, Danilo Krummrich wrote:
+> (Hardware) resources which are bound to the driver and device lifecycle
+> must not be accessed after the device and driver are unbound.
+>=20
+> However, the DRM device isn't freed as long as the last user closed it,
+> hence userspace can still call into the driver.
+>=20
+> Therefore protect the critical sections which are accessing those
+> resources with drm_dev_enter() and drm_dev_exit().
+>=20
+> Fixes: 7cc4214c27cf ("drm/vc4: crtc: Switch to drmm_kzalloc")
+> Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+> ---
+>  drivers/gpu/drm/vc4/vc4_crtc.c | 41 +++++++++++++++++++++++++++++++++-
+>  1 file changed, 40 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crt=
+c.c
+> index 2def6e2ad6f0..51daf190196e 100644
+> --- a/drivers/gpu/drm/vc4/vc4_crtc.c
+> +++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+> @@ -39,6 +39,7 @@
+>  #include <drm/drm_atomic_uapi.h>
+>  #include <drm/drm_fb_dma_helper.h>
+>  #include <drm/drm_framebuffer.h>
+> +#include <drm/drm_drv.h>
+>  #include <drm/drm_print.h>
+>  #include <drm/drm_probe_helper.h>
+>  #include <drm/drm_vblank.h>
+> @@ -295,10 +296,17 @@ struct drm_encoder *vc4_get_crtc_encoder(struct drm=
+_crtc *crtc,
+>  static void vc4_crtc_pixelvalve_reset(struct drm_crtc *crtc)
+>  {
+>  	struct vc4_crtc *vc4_crtc =3D to_vc4_crtc(crtc);
+> +	struct drm_device *dev =3D crtc->dev;
+> +	int idx;
+> +
+> +	if (!drm_dev_enter(dev, &idx))
+> +		return;
+> =20
+>  	/* The PV needs to be disabled before it can be flushed */
+>  	CRTC_WRITE(PV_CONTROL, CRTC_READ(PV_CONTROL) & ~PV_CONTROL_EN);
+>  	CRTC_WRITE(PV_CONTROL, CRTC_READ(PV_CONTROL) | PV_CONTROL_FIFO_CLR);
+> +
+> +	drm_dev_exit(idx);
+>  }
+> =20
+>  static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder=
+ *encoder,
+> @@ -321,6 +329,10 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc=
+, struct drm_encoder *encode
+>  	u32 format =3D is_dsi1 ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_=
+24;
+>  	u8 ppc =3D pv_data->pixels_per_clock;
+>  	bool debug_dump_regs =3D false;
+> +	int idx;
+> +
+> +	if (!drm_dev_enter(dev, &idx))
+> +		return;
+> =20
+>  	if (debug_dump_regs) {
+>  		struct drm_printer p =3D drm_info_printer(&vc4_crtc->pdev->dev);
+> @@ -410,6 +422,8 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc,=
+ struct drm_encoder *encode
+>  			 drm_crtc_index(crtc));
+>  		drm_print_regset32(&p, &vc4_crtc->regset);
+>  	}
+> +
+> +	drm_dev_exit(idx);
+>  }
+> =20
+>  static void require_hvs_enabled(struct drm_device *dev)
+> @@ -430,13 +444,18 @@ static int vc4_crtc_disable(struct drm_crtc *crtc,
+>  	struct vc4_crtc *vc4_crtc =3D to_vc4_crtc(crtc);
+>  	struct drm_device *dev =3D crtc->dev;
+>  	struct vc4_dev *vc4 =3D to_vc4_dev(dev);
+> -	int ret;
+> +	int idx, ret;
+> +
+> +	if (!drm_dev_enter(dev, &idx))
+> +		return -ENODEV;
+> =20
+>  	CRTC_WRITE(PV_V_CONTROL,
+>  		   CRTC_READ(PV_V_CONTROL) & ~PV_VCONTROL_VIDEN);
+>  	ret =3D wait_for(!(CRTC_READ(PV_V_CONTROL) & PV_VCONTROL_VIDEN), 1);
+>  	WARN_ONCE(ret, "Timeout waiting for !PV_VCONTROL_VIDEN\n");
+> =20
+> +	drm_dev_exit(idx);
+> +
 
+I think this would be easier to follow if we were protecting the entire
+function with our lock.
+
+Having locks taken in the middle of the function is harder to identify
+whether or not one particular function is safe or not.
+
+The same applies to the plane patch
+
+Maxime
+
+--v6qavohxtl7q5awx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYv872gAKCRDj7w1vZxhR
+xS9MAQCa/qo5n5/nskuFs/e0cpI3NV0AjoLytdAPrVVvecr6PwEAuCU6l3kgsan/
+a/tIIqMlOAakafUEU6K3H8wEyR1/yAU=
+=/eO7
+-----END PGP SIGNATURE-----
+
+--v6qavohxtl7q5awx--
