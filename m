@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2F7C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC34C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351724AbiHSQKI (ORCPT
+        id S1351730AbiHSQKO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
+        Fri, 19 Aug 2022 12:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351844AbiHSQGl (ORCPT
+        with ESMTP id S1349831AbiHSQGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:41 -0400
+        Fri, 19 Aug 2022 12:06:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CDD104758;
-        Fri, 19 Aug 2022 08:55:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEC8104B0A;
+        Fri, 19 Aug 2022 08:56:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74107614FE;
-        Fri, 19 Aug 2022 15:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80E99C433B5;
-        Fri, 19 Aug 2022 15:55:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 906C1615E7;
+        Fri, 19 Aug 2022 15:56:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830F0C433C1;
+        Fri, 19 Aug 2022 15:55:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924538;
-        bh=Uou/vE3UmCNcEvFQuUMTDOkCNj2QMbdtUT/5O2mbpZA=;
+        s=korg; t=1660924560;
+        bh=VgUsXg6j2xmflmD+gNyUG1zzFZ+GaO+YqXg3TuUkSz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FY22a+9EwtfY5iT0PEMb7XiYuM9nUMcTNjsqFtp2av7HiVNA1iQe5Bs1U5DIdN0lV
-         YoA/X+VaXqOj+meApDkDxjGQe/RxW/IfamOCOMUglzBDK0zoz9Cf5jXs4cE5E/u8IO
-         xv4cZ4T+j+JtkPo8eV97SITLdqATjUGqB5lsWvP0=
+        b=1oRNgpEH5Kh6V/cSCj+ksbjg1IMnHVGnjbyj5grBsaJznk96cuLXXdI4pOjzwe6zq
+         FRPIgesneLvXlX3aXccUOoT+fSJi50TtiK94yTvLeZyrPDvGV8JEANhW0wfC673lEg
+         3eHsqLU7Ak6M6xmQ9cn7WsVzbBkZUOTl8nkfshuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 203/545] drm/vc4: hdmi: Fix timings for interlaced modes
-Date:   Fri, 19 Aug 2022 17:39:33 +0200
-Message-Id: <20220819153838.464782682@linuxfoundation.org>
+Subject: [PATCH 5.10 183/545] crypto: ccp - During shutdown, check SEV data pointer before using
+Date:   Fri, 19 Aug 2022 17:39:13 +0200
+Message-Id: <20220819153837.550802866@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,91 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
 
-[ Upstream commit 0ee5a40152b15f200ed3a0d51e8aa782ea979c6a ]
+[ Upstream commit 1b05ece0c931536c0a38a9385e243a7962e933f6 ]
 
-Increase the number of post-sync blanking lines on odd fields instead of
-decreasing it on even fields. This makes the total number of lines
-properly match the modelines.
+On shutdown, each CCP device instance performs shutdown processing.
+However, __sev_platform_shutdown_locked() uses the controlling psp
+structure to obtain the pointer to the sev_device structure. However,
+during driver initialization, it is possible that an error can be received
+from the firmware that results in the sev_data pointer being cleared from
+the controlling psp structure. The __sev_platform_shutdown_locked()
+function does not check for this situation and will segfault.
 
-Additionally fix the value of PV_VCONTROL_ODD_DELAY, which did not take
-pixels_per_clock into account, causing some displays to invert the
-fields when driven by bcm2711.
+While not common, this scenario should be accounted for. Add a check for a
+NULL sev_device structure before attempting to use it.
 
-Fixes: 682e62c45406 ("drm/vc4: Fix support for interlaced modes on HDMI.")
-Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-31-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: 5441a07a127f ("crypto: ccp - shutdown SEV firmware on kexec")
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c |    7 ++++---
- drivers/gpu/drm/vc4/vc4_hdmi.c |   12 ++++++------
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/crypto/ccp/sev-dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -346,7 +346,8 @@ static void vc4_crtc_config_pv(struct dr
- 				 PV_HORZB_HACTIVE));
+diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+index 57b57d4db500..ed39a22e1b2b 100644
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -278,7 +278,7 @@ static int __sev_platform_shutdown_locked(int *error)
+ 	struct sev_device *sev = psp_master->sev_data;
+ 	int ret;
  
- 	CRTC_WRITE(PV_VERTA,
--		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
-+		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
-+				 interlace,
- 				 PV_VERTA_VBP) |
- 		   VC4_SET_FIELD(mode->crtc_vsync_end - mode->crtc_vsync_start,
- 				 PV_VERTA_VSYNC));
-@@ -358,7 +359,7 @@ static void vc4_crtc_config_pv(struct dr
- 	if (interlace) {
- 		CRTC_WRITE(PV_VERTA_EVEN,
- 			   VC4_SET_FIELD(mode->crtc_vtotal -
--					 mode->crtc_vsync_end - 1,
-+					 mode->crtc_vsync_end,
- 					 PV_VERTA_VBP) |
- 			   VC4_SET_FIELD(mode->crtc_vsync_end -
- 					 mode->crtc_vsync_start,
-@@ -378,7 +379,7 @@ static void vc4_crtc_config_pv(struct dr
- 			   PV_VCONTROL_CONTINUOUS |
- 			   (is_dsi ? PV_VCONTROL_DSI : 0) |
- 			   PV_VCONTROL_INTERLACE |
--			   VC4_SET_FIELD(mode->htotal * pixel_rep / 2,
-+			   VC4_SET_FIELD(mode->htotal * pixel_rep / (2 * ppc),
- 					 PV_VCONTROL_ODD_DELAY));
- 		CRTC_WRITE(PV_VSYNCD_EVEN, 0);
- 	} else {
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -522,12 +522,12 @@ static void vc4_hdmi_set_timings(struct
- 				   VC4_HDMI_VERTA_VFP) |
- 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC4_HDMI_VERTA_VAL));
- 	u32 vertb = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
--		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
-+		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
-+				   interlaced,
- 				   VC4_HDMI_VERTB_VBP));
- 	u32 vertb_even = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
- 			  VC4_SET_FIELD(mode->crtc_vtotal -
--					mode->crtc_vsync_end -
--					interlaced,
-+					mode->crtc_vsync_end,
- 					VC4_HDMI_VERTB_VBP));
+-	if (sev->state == SEV_STATE_UNINIT)
++	if (!sev || sev->state == SEV_STATE_UNINIT)
+ 		return 0;
  
- 	HDMI_WRITE(HDMI_HORZA,
-@@ -566,12 +566,12 @@ static void vc5_hdmi_set_timings(struct
- 				   VC5_HDMI_VERTA_VFP) |
- 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
- 	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
--		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
-+		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
-+				   interlaced,
- 				   VC4_HDMI_VERTB_VBP));
- 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
- 			  VC4_SET_FIELD(mode->crtc_vtotal -
--					mode->crtc_vsync_end -
--					interlaced,
-+					mode->crtc_vsync_end,
- 					VC4_HDMI_VERTB_VBP));
- 
- 	HDMI_WRITE(HDMI_VEC_INTERFACE_XBAR, 0x354021);
+ 	ret = __sev_do_cmd_locked(SEV_CMD_SHUTDOWN, NULL, error);
+-- 
+2.35.1
+
 
 
