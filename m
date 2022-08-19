@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EBCC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1F6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354182AbiHSQsy (ORCPT
+        id S1354080AbiHSQtA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
+        Fri, 19 Aug 2022 12:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354223AbiHSQqO (ORCPT
+        with ESMTP id S1353743AbiHSQq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:46:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C633C112331;
-        Fri, 19 Aug 2022 09:12:12 -0700 (PDT)
+        Fri, 19 Aug 2022 12:46:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8458C12AD22;
+        Fri, 19 Aug 2022 09:12:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87A8FB8282C;
-        Fri, 19 Aug 2022 16:11:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB447C433D6;
-        Fri, 19 Aug 2022 16:11:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BB8BB825D3;
+        Fri, 19 Aug 2022 16:11:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECF00C433C1;
+        Fri, 19 Aug 2022 16:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925513;
-        bh=k9j+xv4fa/pmU1ppnNQPZW6k/mhy38JCcl7Sd7q9P1g=;
+        s=korg; t=1660925491;
+        bh=maXJZmtfGHTbigKGqgNHPqRQAaITODt4/YtQSu33wlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PDLpAHJOoDVcxQkvHETDiO4Z2+9qiF1+TxXE+qre79+7NG5VIPOi12/Or/kIwTS8Y
-         Rtl6De9EjdGfEk/QsFgb+2OE5UoH0jjrijkYBDAbI6zu833b1ih7CXBNR487eUl7sr
-         RP/JRjRAMP06x4T09byr/eUOgahP2I52bwrwXipQ=
+        b=dejY5PZ81ioTDjn/ncS6QfNQBU1VIr8mJWABYGO2e6eqdAYjLeLlVQSHGlAMW3Hoq
+         /O+JOhPyp1H4tnjJuYrEml3K2d1g85KNSAPzkhglXwEJBGz1bK/uYu7J/dvFgYmNc7
+         O898/eWDpIITKfXMhdJa+8lM7ad7YwHnVsmMDlgk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 515/545] tracing: Use a struct alignof to determine trace event field alignment
-Date:   Fri, 19 Aug 2022 17:44:45 +0200
-Message-Id: <20220819153852.561259318@linuxfoundation.org>
+        stable@vger.kernel.org, Sean V Kelley <sean.v.kelley@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 477/545] PCI/ERR: Simplify by computing pci_pcie_type() once
+Date:   Fri, 19 Aug 2022 17:44:07 +0200
+Message-Id: <20220819153850.764825952@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,74 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Sean V Kelley <sean.v.kelley@intel.com>
 
-commit 4c3d2f9388d36eb28640a220a6f908328442d873 upstream.
+[ Upstream commit 480ef7cb9fcebda7b28cbed4f6cdcf0a02f4a6ca ]
 
-alignof() gives an alignment of types as they would be as standalone
-variables. But alignment in structures might be different, and when
-building the fields of events, the alignment must be the actual
-alignment otherwise the field offsets may not match what they actually
-are.
+Instead of calling pci_pcie_type(dev) twice, call it once and save the
+result.  No functional change intended.
 
-This caused trace-cmd to crash, as libtraceevent did not check if the
-field offset was bigger than the event. The write_msr and read_msr
-events on 32 bit had their fields incorrect, because it had a u64 field
-between two ints. alignof(u64) would give 8, but the u64 field was at a
-4 byte alignment.
-
-Define a macro as:
-
-   ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
-
-which gives the actual alignment of types in a structure.
-
-Link: https://lkml.kernel.org/r/20220731015928.7ab3a154@rorschach.local.home
-
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: stable@vger.kernel.org
-Fixes: 04ae87a52074e ("ftrace: Rework event_create_dir()")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20201121001036.8560-7-sean.v.kelley@intel.com
+Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
+Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/trace_events.h |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/pci/pcie/aer.c         | 5 +++--
+ drivers/pci/pcie/err.c         | 5 +++--
+ drivers/pci/pcie/portdrv_pci.c | 9 +++++----
+ 3 files changed, 11 insertions(+), 8 deletions(-)
 
---- a/include/trace/trace_events.h
-+++ b/include/trace/trace_events.h
-@@ -400,16 +400,18 @@ static struct trace_event_functions trac
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index 61f78b20b0cf..72dbc193a25f 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -1039,6 +1039,7 @@ EXPORT_SYMBOL_GPL(aer_recover_queue);
+  */
+ int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
+ {
++	int type = pci_pcie_type(dev);
+ 	int aer = dev->aer_cap;
+ 	int temp;
  
- #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+@@ -1057,8 +1058,8 @@ int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
+ 			&info->mask);
+ 		if (!(info->status & ~info->mask))
+ 			return 0;
+-	} else if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
+-	           pci_pcie_type(dev) == PCI_EXP_TYPE_DOWNSTREAM ||
++	} else if (type == PCI_EXP_TYPE_ROOT_PORT ||
++		   type == PCI_EXP_TYPE_DOWNSTREAM ||
+ 		   info->severity == AER_NONFATAL) {
  
-+#define ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
-+
- #undef __field_ext
- #define __field_ext(_type, _item, _filter_type) {			\
- 	.type = #_type, .name = #_item,					\
--	.size = sizeof(_type), .align = __alignof__(_type),		\
-+	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
- 	.is_signed = is_signed_type(_type), .filter_type = _filter_type },
+ 		/* Link is still healthy for IO reads */
+diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
+index 05f61da5ed9d..7a5af873d8bc 100644
+--- a/drivers/pci/pcie/err.c
++++ b/drivers/pci/pcie/err.c
+@@ -150,6 +150,7 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
+ 		pci_channel_state_t state,
+ 		pci_ers_result_t (*reset_subordinates)(struct pci_dev *pdev))
+ {
++	int type = pci_pcie_type(dev);
+ 	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
+ 	struct pci_bus *bus;
  
- #undef __field_struct_ext
- #define __field_struct_ext(_type, _item, _filter_type) {		\
- 	.type = #_type, .name = #_item,					\
--	.size = sizeof(_type), .align = __alignof__(_type),		\
-+	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
- 	0, .filter_type = _filter_type },
+@@ -157,8 +158,8 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
+ 	 * Error recovery runs on all subordinates of the first downstream port.
+ 	 * If the downstream port detected the error, it is cleared at the end.
+ 	 */
+-	if (!(pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
+-	      pci_pcie_type(dev) == PCI_EXP_TYPE_DOWNSTREAM))
++	if (!(type == PCI_EXP_TYPE_ROOT_PORT ||
++	      type == PCI_EXP_TYPE_DOWNSTREAM))
+ 		dev = pci_upstream_bridge(dev);
+ 	bus = dev->subordinate;
  
- #undef __field
-@@ -421,7 +423,7 @@ static struct trace_event_functions trac
- #undef __array
- #define __array(_type, _item, _len) {					\
- 	.type = #_type"["__stringify(_len)"]", .name = #_item,		\
--	.size = sizeof(_type[_len]), .align = __alignof__(_type),	\
-+	.size = sizeof(_type[_len]), .align = ALIGN_STRUCTFIELD(_type),	\
- 	.is_signed = is_signed_type(_type), .filter_type = FILTER_OTHER },
+diff --git a/drivers/pci/pcie/portdrv_pci.c b/drivers/pci/pcie/portdrv_pci.c
+index 26259630fd10..aac1a6828b4f 100644
+--- a/drivers/pci/pcie/portdrv_pci.c
++++ b/drivers/pci/pcie/portdrv_pci.c
+@@ -101,13 +101,14 @@ static const struct dev_pm_ops pcie_portdrv_pm_ops = {
+ static int pcie_portdrv_probe(struct pci_dev *dev,
+ 					const struct pci_device_id *id)
+ {
++	int type = pci_pcie_type(dev);
+ 	int status;
  
- #undef __dynamic_array
+ 	if (!pci_is_pcie(dev) ||
+-	    ((pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT) &&
+-	     (pci_pcie_type(dev) != PCI_EXP_TYPE_UPSTREAM) &&
+-	     (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM) &&
+-	     (pci_pcie_type(dev) != PCI_EXP_TYPE_RC_EC)))
++	    ((type != PCI_EXP_TYPE_ROOT_PORT) &&
++	     (type != PCI_EXP_TYPE_UPSTREAM) &&
++	     (type != PCI_EXP_TYPE_DOWNSTREAM) &&
++	     (type != PCI_EXP_TYPE_RC_EC)))
+ 		return -ENODEV;
+ 
+ 	status = pcie_port_device_register(dev);
+-- 
+2.35.1
+
 
 
