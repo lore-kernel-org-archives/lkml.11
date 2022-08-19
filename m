@@ -2,150 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 030E2C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E01C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347571AbiHSIOm (ORCPT
+        id S1347578AbiHSIOr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        Fri, 19 Aug 2022 04:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347530AbiHSIOX (ORCPT
+        with ESMTP id S1347548AbiHSIO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:14:23 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B27B348C9A;
-        Fri, 19 Aug 2022 01:14:16 -0700 (PDT)
-Received: from localhost.localdomain (unknown [113.200.148.30])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8CxT+BLRv9i9I0EAA--.22658S4;
-        Fri, 19 Aug 2022 16:14:08 +0800 (CST)
-From:   Qing Zhang <zhangqing@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn,
-        zhangqing@loongson.cn
-Subject: [PATCH 2/9] LoongArch/ftrace: Add recordmcount support
-Date:   Fri, 19 Aug 2022 16:13:56 +0800
-Message-Id: <20220819081403.7143-3-zhangqing@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220819081403.7143-1-zhangqing@loongson.cn>
-References: <20220819081403.7143-1-zhangqing@loongson.cn>
+        Fri, 19 Aug 2022 04:14:27 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837109924E
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:14:25 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id jl18so3549517plb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:14:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=YK37fFdxLSTLBwKIRdkAwKxJnG2ZI8b2iX/XtEeoxb8=;
+        b=mTJDa6KMUFTeqd2hiqbB5ggy9Y2CmV2kSoT+vJDmSsWSteqRm0JgdBw3UekV5vJ1jn
+         lyVb2FcbtdLY1BNBQVLwZw6AOpxPZLAfzrx5HvgCAd8t9LgOg0hZYeDVL3/8lAPfj6/4
+         +N5+6qa9Ld8M4oh1E3pmTXpSkOxEMlN+2rCiVB1V7JRRS7ArQGqxm7qQypj9ezDIB3W8
+         7+etly5cxopqbuKeUynwFbrAi2GlvXNgw4eWox9rhcWyMo76yjo2sFVI/ICvLZEhfYEo
+         fivnebYulH1dWVveHLuCYrxthe16WE8pQjy1HCD5iW1A631WLYEmC5bHJC1DN+IlMaFa
+         4uVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=YK37fFdxLSTLBwKIRdkAwKxJnG2ZI8b2iX/XtEeoxb8=;
+        b=K+rDAdTGB59uiZF+DzBDHEuZcvlDthM5UL+eWXYei+P/DoUdG6riz4LPVyIH3Bks+9
+         Q2RAcA8pU1pkJI1tpPLKnT/xWWbHAvkNueu1SWyZ1yBDmP8Thoe3Hzr9/9Io8/Clw8UX
+         reiJCTe1IEUqtQbA3DnpGosvb+NWj7YiDPZSKOCnsCu/YouRLH2h9N2uja6dHDDJqw86
+         desl/F2VlZ7FYZqPAjMp6VKB2BDwS9aWnD1tL/HCUaNz1QiAhPTgT44EHQn+3eE7Do5D
+         pAIo6Dmb7LsmYSl7s7XG8fY5Nb/fp6cv6ho6268Ti+QKod5xju12YS7ZqkC3/jPBXWtU
+         3hrg==
+X-Gm-Message-State: ACgBeo1KLV3J380rp2VjNVPdyW91gbCHERZVW1gOOhCsWgrYy7TtPQ7v
+        8c+jhvQIOJng6Xb9gEN/ldE=
+X-Google-Smtp-Source: AA6agR6t540+Ntz21IPw/ZU6P7bhAJM7aQPuAfkvlHTFsGjsWRX55apDy4hRfxQgVLHgAxoxLyFb5g==
+X-Received: by 2002:a17:90b:1d89:b0:1f5:a59:46b1 with SMTP id pf9-20020a17090b1d8900b001f50a5946b1mr7029025pjb.173.1660896865062;
+        Fri, 19 Aug 2022 01:14:25 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id i11-20020a17090332cb00b0016892555955sm2632351plr.179.2022.08.19.01.14.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 01:14:24 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     roman.gushchin@linux.dev
+Cc:     songmuchun@bytedance.com, tytso@mit.edu, jack@suse.cz,
+        willy@infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] isofs: delete unnecessary checks before brelse()
+Date:   Fri, 19 Aug 2022 08:14:20 +0000
+Message-Id: <20220819081420.96209-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf8CxT+BLRv9i9I0EAA--.22658S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxGr4UXFWrZr4xAFy8ury8Zrb_yoW5Cr4kpr
-        ZF9FWrJFs2qryfG3ZIy348ur15Zas2kr4fZryfta1FyFyDXrZ5GrsrJrnrWFyUCrykJ34x
-        WF4F9ry8ua1UJw7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPC14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1l
-        e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
-        8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
-        jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0x
-        kIwI1lc2xSY4AK67AK6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4U
-        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
-        AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r4j6ryUMIIF0xvE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z2
-        80aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI
-        43ZEXa7sRRD73JUUUUU==
-X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recordmcount utility under scripts is run, after compiling each object,
-to find out all the locations of calling _mcount() and put them into
-specific seciton named __mcount_loc.
-Then linker collects all such information into a table in the kernel image
-(between __start_mcount_loc and __stop_mcount_loc) for later use by ftrace.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-This patch adds loongarch specific definitions to identify such locations.
-On loongarch, only C version is used to build the kernel now that
-CONFIG_HAVE_C_RECORDMCOUNT is on.
+The brelse() function tests whether its argument is NULL
+and then returns immediately.
+Thus remove the tests which are not needed around the shown calls.
 
-Signed-off-by: Qing Zhang <zhangqing@loongson.cn>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- arch/loongarch/Kconfig |  2 ++
- scripts/recordmcount.c | 23 +++++++++++++++++++++++
- 2 files changed, 25 insertions(+)
+ fs/isofs/inode.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index 703a2c3a8e0d..4d13bac368ed 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -80,10 +80,12 @@ config LOONGARCH
- 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
- 	select HAVE_ASM_MODVERSIONS
- 	select HAVE_CONTEXT_TRACKING_USER
-+	select HAVE_C_RECORDMCOUNT
- 	select HAVE_DEBUG_STACKOVERFLOW
- 	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_EXIT_THREAD
- 	select HAVE_FAST_GUP
-+	select HAVE_FTRACE_MCOUNT_RECORD
-         select HAVE_FUNCTION_GRAPH_TRACER
-         select HAVE_FUNCTION_TRACER
- 	select HAVE_GENERIC_VDSO
-diff --git a/scripts/recordmcount.c b/scripts/recordmcount.c
-index cce12e1971d8..ae42f9c5dc42 100644
---- a/scripts/recordmcount.c
-+++ b/scripts/recordmcount.c
-@@ -38,6 +38,13 @@
- #define R_AARCH64_ABS64	257
- #endif
+diff --git a/fs/isofs/inode.c b/fs/isofs/inode.c
+index 88bf20303466..df9d70588b60 100644
+--- a/fs/isofs/inode.c
++++ b/fs/isofs/inode.c
+@@ -1277,13 +1277,11 @@ static int isofs_read_level3_size(struct inode *inode)
+ 	} while (more_entries);
+ out:
+ 	kfree(tmpde);
+-	if (bh)
+-		brelse(bh);
++	brelse(bh);
+ 	return 0;
  
-+#ifndef EM_LOONGARCH
-+#define EM_LOONGARCH		258
-+#define R_LARCH_64		2
-+#define R_LARCH_MARK_LA			20
-+#define R_LARCH_SOP_PUSH_PLT_PCREL	29
-+#endif
-+
- #define R_ARM_PC24		1
- #define R_ARM_THM_CALL		10
- #define R_ARM_CALL		28
-@@ -441,6 +448,17 @@ static int arm64_is_fake_mcount(Elf64_Rel const *rp)
- 	return ELF64_R_TYPE(w8(rp->r_info)) != R_AARCH64_CALL26;
- }
+ out_nomem:
+-	if (bh)
+-		brelse(bh);
++	brelse(bh);
+ 	return -ENOMEM;
  
-+static int LARCH64_is_fake_mcount(Elf64_Rel const *rp)
-+{
-+	switch (ELF64_R_TYPE(w(rp->r_info))) {
-+	case R_LARCH_MARK_LA:
-+	case R_LARCH_SOP_PUSH_PLT_PCREL:
-+		return 0;
-+	}
-+
-+	return 1;
-+}
-+
- /* 64-bit EM_MIPS has weird ELF64_Rela.r_info.
-  * http://techpubs.sgi.com/library/manuals/4000/007-4658-001/pdf/007-4658-001.pdf
-  * We interpret Table 29 Relocation Operation (Elf64_Rel, Elf64_Rela) [p.40]
-@@ -558,6 +576,7 @@ static int do_file(char const *const fname)
- 		break;
- 	case EM_IA_64:	reltype = R_IA64_IMM64; break;
- 	case EM_MIPS:	/* reltype: e_class    */ break;
-+	case EM_LOONGARCH:	/* reltype: e_class    */ break;
- 	case EM_PPC:	reltype = R_PPC_ADDR32; break;
- 	case EM_PPC64:	reltype = R_PPC64_ADDR64; break;
- 	case EM_S390:	/* reltype: e_class    */ break;
-@@ -610,6 +629,10 @@ static int do_file(char const *const fname)
- 			Elf64_r_info = MIPS64_r_info;
- 			is_fake_mcount64 = MIPS64_is_fake_mcount;
- 		}
-+		if (w2(ghdr->e_machine) == EM_LOONGARCH) {
-+			reltype = R_LARCH_64;
-+			is_fake_mcount64 = LARCH64_is_fake_mcount;
-+		}
- 		if (do64(ghdr, fname, reltype) < 0)
- 			goto out;
- 		break;
+ out_noread:
+@@ -1486,8 +1484,7 @@ static int isofs_read_inode(struct inode *inode, int relocated)
+ 	ret = 0;
+ out:
+ 	kfree(tmpde);
+-	if (bh)
+-		brelse(bh);
++	brelse(bh);
+ 	return ret;
+ 
+ out_badread:
 -- 
-2.36.1
-
+2.25.1
