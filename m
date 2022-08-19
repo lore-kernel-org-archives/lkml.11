@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9B4C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2EDC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350443AbiHSPwK (ORCPT
+        id S1350453AbiHSPwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
+        Fri, 19 Aug 2022 11:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350516AbiHSPun (ORCPT
+        with ESMTP id S1350535AbiHSPuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4003866A75;
-        Fri, 19 Aug 2022 08:48:24 -0700 (PDT)
+        Fri, 19 Aug 2022 11:50:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4497C742B;
+        Fri, 19 Aug 2022 08:48:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77AB4616B5;
-        Fri, 19 Aug 2022 15:48:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C57C433D6;
-        Fri, 19 Aug 2022 15:48:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58B5A61702;
+        Fri, 19 Aug 2022 15:48:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67567C433D6;
+        Fri, 19 Aug 2022 15:48:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924102;
-        bh=Ogkj3HbqZ7xuA3Rhml/SyvozyJ2wnDnjE1hW7yVbzwI=;
+        s=korg; t=1660924105;
+        bh=TV0z72+3mSdWZU9PHTH7EIN3XB5gMzathmY268PHYYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0tOznqz0CdLaBOVhlIyTmuAXk8pFBeL6tr5QQxPQIC5elCLQW59U50fj9auEamDuI
-         rR9yrxhn8xhZq2QA66+iXTgT7FmJ7XzPO46y1Qq0Vxi4L5Ekw6x/AusnrtkdVkC//q
-         Omg/wHx7mAkgQ1RdVjgcuNwh73O2qGEOSfbC2EGY=
+        b=Xawt8wZYU3YjytYRZlDOdHllwbsd4eX5Yr2WPVpH4L9i3CA9spiIWMstnL1dFS+5z
+         dlQHaGQkNNsnquJ4k03jFvrbOWKqkYmDvv6+TH3k3eWW83bbCffHWrN/1nH5t/AEYz
+         Ux7gmyav14c3i/WDEe6Ruj4YgAJIxkVwTbi7phrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 049/545] iio: light: isl29028: Fix the warning in isl29028_remove()
-Date:   Fri, 19 Aug 2022 17:36:59 +0200
-Message-Id: <20220819153831.414839633@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 5.10 058/545] ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
+Date:   Fri, 19 Aug 2022 17:37:08 +0200
+Message-Id: <20220819153831.827211433@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,49 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit 06674fc7c003b9d0aa1d37fef7ab2c24802cc6ad upstream.
+commit e5a16a5c4602c119262f350274021f90465f479d upstream.
 
-The driver use the non-managed form of the register function in
-isl29028_remove(). To keep the release order as mirroring the ordering
-in probe, the driver should use non-managed form in probe, too.
+test_bit(), as any other bitmap op, takes `unsigned long *` as a
+second argument (pointer to the actual bitmap), as any bitmap
+itself is an array of unsigned longs. However, the ia64_get_irr()
+code passes a ref to `u64` as a second argument.
+This works with the ia64 bitops implementation due to that they
+have `void *` as the second argument and then cast it later on.
+This works with the bitmap API itself due to that `unsigned long`
+has the same size on ia64 as `u64` (`unsigned long long`), but
+from the compiler PoV those two are different.
+Define @irr as `unsigned long` to fix that. That implies no
+functional changes. Has been hidden for 16 years!
 
-The following log reveals it:
-
-[   32.374955] isl29028 0-0010: remove
-[   32.376861] general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN PTI
-[   32.377676] KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
-[   32.379432] RIP: 0010:kernfs_find_and_get_ns+0x28/0xe0
-[   32.385461] Call Trace:
-[   32.385807]  sysfs_unmerge_group+0x59/0x110
-[   32.386110]  dpm_sysfs_remove+0x58/0xc0
-[   32.386391]  device_del+0x296/0xe50
-[   32.386959]  cdev_device_del+0x1d/0xd0
-[   32.387231]  devm_iio_device_unreg+0x27/0xb0
-[   32.387542]  devres_release_group+0x319/0x3d0
-[   32.388162]  i2c_device_remove+0x93/0x1f0
-
-Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220717004241.2281028-1-zheyuma97@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: a58786917ce2 ("[IA64] avoid broken SAL_CACHE_FLUSH implementations")
+Cc: stable@vger.kernel.org # 2.6.16+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/light/isl29028.c |    2 +-
+ arch/ia64/include/asm/processor.h |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/light/isl29028.c
-+++ b/drivers/iio/light/isl29028.c
-@@ -627,7 +627,7 @@ static int isl29028_probe(struct i2c_cli
- 					 ISL29028_POWER_OFF_DELAY_MS);
- 	pm_runtime_use_autosuspend(&client->dev);
+--- a/arch/ia64/include/asm/processor.h
++++ b/arch/ia64/include/asm/processor.h
+@@ -542,7 +542,7 @@ ia64_get_irr(unsigned int vector)
+ {
+ 	unsigned int reg = vector / 64;
+ 	unsigned int bit = vector % 64;
+-	u64 irr;
++	unsigned long irr;
  
--	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
- 		dev_err(&client->dev,
- 			"%s(): iio registration failed with error %d\n",
+ 	switch (reg) {
+ 	case 0: irr = ia64_getreg(_IA64_REG_CR_IRR0); break;
 
 
