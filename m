@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E5DC28D13
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 506A9C32792
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243742AbiHSXO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 19:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
+        id S243721AbiHSXO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 19:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240693AbiHSXOc (ORCPT
+        with ESMTP id S242454AbiHSXOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 19:14:32 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E43DDB6B
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:14:30 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id n7so6723942wrv.4
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:14:30 -0700 (PDT)
+        Fri, 19 Aug 2022 19:14:34 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DB4CE4B9
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:14:33 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id h5so5909455wru.7
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:14:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=1LGGHQ6p+mDphp3bmxn1t5fZUfaS0Whf3Mk8geT3R/0=;
-        b=M0ofL3nLJRPapOip5zzM+C+RY4pKZpArvpShfp51JaedAQJPbcSiJLMbgN8hXZHax+
-         pvu2X1mOJxCoPIBexYf3rhO4XapBs0sK8fFZ2aS9oZ4ZXapZpOxe7L9ecSBthoFsNGbj
-         gjJHap1v2Obq9ZdbyLpA6Uxi9bLlzNMUttYqZJB4ua72mEqqGRCRupu+/v+DLrz0PVt9
-         q8lT7zrMptgf34JAjxQntdAp0Qnr0mUZgFJJnJtVzmkxr2TGBlPQoE+jEb9JoEMkYjm9
-         1xsXsrNMYjZsqX8mcrc262UZ4IrTyn58p1eFFZkQBu3HMcZAJnwVK2vMH9zl0nJ59PTB
-         N47Q==
+        bh=1zyqHrnqjTNMymEC/TbLOlsscOLg5SkRYxlyH7Tu2Ms=;
+        b=Y8AD7r5Epuf9MXQ2+jv+dlo+KisSknvBlpvGlf/D+IiD9iTBxDKQ5D0kGW2ZkDBfJK
+         TyKvVRquHMBJjPepEwyh7xDrU0VoGL94RietZ1RYfzka1+goKyIru/tmRTNC9ubgswY2
+         7C+4K1MwwgAzWNLHphJlqXVL5a4rZqVQVlMOGYmmLzuhs1ZKtPsWUEDGofFP1sHIH/wY
+         m95dlsgCLOt9UOfnchFoIXKKzh3nKQwdQkSWmwPvf2cOmUR3QNQAGQ3UwyDoWUSAvv7i
+         9UY485pjhWoHEbFbH6nxyy8pgKz2+3vm2gTryx5AF6pby/lIBfQgg5AGPutVWiRKVOm1
+         PhKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=1LGGHQ6p+mDphp3bmxn1t5fZUfaS0Whf3Mk8geT3R/0=;
-        b=S3dzlgejtCisXSd6gT3Ys6Ww3pufCxtQUSRkZKDGvsSiHu7UYsrk1KH79q5Egqyven
-         9cgG5SHaeLaP6W6qR3Zet4Pt619BnK3NSTzRvDPzFMu5DZOcgDITk0K36RYDgxxlzYMb
-         U9aQrN38JOwCp3r6ZvQViSbGT1tEGaxMXKgcZR/HA0tldXLpSanq6RI7sBABbWsEe+QI
-         fHCpWgf6Ya5EsVlYC6AcgzA0OX0gIQFYJNcerl3toXYfzZ9mUCrHwayk/qFVw0/nek6Y
-         WgsiNqUwe71rFPMyZx3lnwzfEinLq7dyL/QlHJqxZgz1l+hvUguTkSQ8zxC5hBLFMeq/
-         X8eQ==
-X-Gm-Message-State: ACgBeo0eoMQ2BSjQnLRJE85bISGdj0jVpAvFkaJ7MW8YzZgZOWnSTV5z
-        9nWTzN3cCuA8iqaS/SDMRh2ROw==
-X-Google-Smtp-Source: AA6agR5HUiYYHhjMNaA5RLf8rXmmkgRypSuuZuVTDp4Hep5U2Q4CO8SNj0TYTdzVU15m+IkUBb8akg==
-X-Received: by 2002:a05:6000:2ab:b0:223:6167:a213 with SMTP id l11-20020a05600002ab00b002236167a213mr5328028wry.310.1660950869802;
-        Fri, 19 Aug 2022 16:14:29 -0700 (PDT)
+        bh=1zyqHrnqjTNMymEC/TbLOlsscOLg5SkRYxlyH7Tu2Ms=;
+        b=1XsSbQOvgiHhpic6pQQTkif1phi9oT2gjfDzwgLsE/Fn2Jrbqa4T8i3Hxgfyy2WqNf
+         KP3UazB3r7hMZwuvLadeluqzOTklv460jUPNsuva1k8DL+mdsWB5oPsCAqOQCpaQCGOy
+         yoTZRNJTGt2tkbEoVAJ1y3EvhyaR4BI2HyDWKaxEjJnqxsmcweZKLOAjsNF0kjAc3RCO
+         qLSQgRrKgwyFwoohSEKNiyeu+fhZPGgNhHdFw0sYx5I7JGd3gHepiIUnvpKSF2GSnocc
+         LMX+lq1P9fddKLSbrfBGcul2jUxldikVGBtmQFhiKbXkP+pEWJJwu3uB135AMlKbMxIG
+         mRJA==
+X-Gm-Message-State: ACgBeo3iiH1EqFRl+WoTxmoEDPnG1Dkd0uYwlm71LRTxIJnXg+u4amlv
+        w0mgADVDPKesC1XhGO/4VHvszw==
+X-Google-Smtp-Source: AA6agR4jJTOrQBvLUsU3COfZPaxQ1oU8l4Hl4SO0D5oMAjRdbWZOcdKruN9mdEbg+eLcUTkfChoGKQ==
+X-Received: by 2002:a5d:404c:0:b0:225:1a39:d69f with SMTP id w12-20020a5d404c000000b002251a39d69fmr5405015wrp.576.1660950872099;
+        Fri, 19 Aug 2022 16:14:32 -0700 (PDT)
 Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id g17-20020a5d46d1000000b0020fff0ea0a3sm5198522wrs.116.2022.08.19.16.14.28
+        by smtp.gmail.com with ESMTPSA id g17-20020a5d46d1000000b0020fff0ea0a3sm5198522wrs.116.2022.08.19.16.14.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 16:14:29 -0700 (PDT)
+        Fri, 19 Aug 2022 16:14:31 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     Daire McNamara <daire.mcnamara@microchip.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -61,9 +61,9 @@ To:     Daire McNamara <daire.mcnamara@microchip.com>,
         Conor Dooley <conor.dooley@microchip.com>
 Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: [PATCH v3 5/7] riscv: dts: microchip: mpfs: remove ti,fifo-depth property
-Date:   Sat, 20 Aug 2022 00:14:14 +0100
-Message-Id: <20220819231415.3860210-6-mail@conchuod.ie>
+Subject: [PATCH v3 7/7] riscv: dts: microchip: mpfs: remove pci axi address translation property
+Date:   Sat, 20 Aug 2022 00:14:16 +0100
+Message-Id: <20220819231415.3860210-8-mail@conchuod.ie>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220819231415.3860210-1-mail@conchuod.ie>
 References: <20220819231415.3860210-1-mail@conchuod.ie>
@@ -75,60 +75,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Recent versions of dt-schema warn about a previously undetected
-undocument property on the icicle & polarberry devicetrees:
+An AXI master address translation table property was inadvertently
+added to the device tree & this was not caught by dtbs_check at the
+time. Remove the property - it should not be in mpfs.dtsi anyway as
+it would be more suitable in -fabric.dtsi nor does it actually apply
+to the version of the reference design we are using for upstream.
 
-arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dtb: ethernet@20112000: ethernet-phy@8: Unevaluated properties are not allowed ('ti,fifo-depth' was unexpected)
-        From schema: Documentation/devicetree/bindings/net/cdns,macb.yaml
-
-I know what you're thinking, the binding doesn't look to be the problem
-and I agree. I am not sure why a TI vendor property was ever actually
-added since it has no meaning... just get rid of it.
-
-Fixes: bc47b2217f24 ("riscv: dts: microchip: add the sundance polarberry")
-Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
+Link: https://www.microsemi.com/document-portal/doc_download/1245812-polarfire-fpga-and-polarfire-soc-fpga-pci-express-user-guide # Section 1.3.3
+Fixes: 528a5b1f2556 ("riscv: dts: microchip: add new peripherals to icicle kit device tree")
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
-v2022.08 or later of dt-schema is required.
----
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts | 2 --
- arch/riscv/boot/dts/microchip/mpfs-polarberry.dts | 2 --
- 2 files changed, 4 deletions(-)
+ arch/riscv/boot/dts/microchip/mpfs.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-index 044982a11df5..ee548ab61a2a 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-@@ -84,12 +84,10 @@ &mac1 {
- 
- 	phy1: ethernet-phy@9 {
- 		reg = <9>;
--		ti,fifo-depth = <0x1>;
- 	};
- 
- 	phy0: ethernet-phy@8 {
- 		reg = <8>;
--		ti,fifo-depth = <0x1>;
- 	};
- };
- 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-index 82c93c8f5c17..dc11bb8fc833 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-@@ -54,12 +54,10 @@ &mac1 {
- 
- 	phy1: ethernet-phy@5 {
- 		reg = <5>;
--		ti,fifo-depth = <0x01>;
- 	};
- 
- 	phy0: ethernet-phy@4 {
- 		reg = <4>;
--		ti,fifo-depth = <0x01>;
- 	};
- };
- 
+diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+index e69322f56516..a1176260086a 100644
+--- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+@@ -485,7 +485,6 @@ pcie: pcie@2000000000 {
+ 			ranges = <0x3000000 0x0 0x8000000 0x20 0x8000000 0x0 0x80000000>;
+ 			msi-parent = <&pcie>;
+ 			msi-controller;
+-			microchip,axi-m-atr0 = <0x10 0x0>;
+ 			status = "disabled";
+ 			pcie_intc: interrupt-controller {
+ 				#address-cells = <0>;
 -- 
 2.37.1
 
