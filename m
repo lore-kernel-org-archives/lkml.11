@@ -2,92 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E81C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C5BC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348845AbiHSLZk (ORCPT
+        id S1348191AbiHSLZy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        Fri, 19 Aug 2022 07:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348857AbiHSLZZ (ORCPT
+        with ESMTP id S1348610AbiHSLZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:25:25 -0400
-Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80895FC302;
-        Fri, 19 Aug 2022 04:25:21 -0700 (PDT)
-Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAwC4h025908;
-        Fri, 19 Aug 2022 11:22:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=PPS06212021;
- bh=KO/dDSQO9FNu5k6cAb6uRHEGTA0po9DDpv8jG/vg1CI=;
- b=YDyseJCviMRvK0bj14RV2vg619KcblVpNGXh2JrS9mD6CSpdbmiHM5ryY3pQo0IoE7To
- uyqPnemtgD90GXSos5mM72kyfMtXAanBrIlpibJAc582MeZ7/mB0kRa6UaFcu6F7f07l
- 5u/z9xvZpRnPLAgKmWpBUdaJ4RBQafVQAoDmdVdT+N0OwKYKUMfDXk2EPYTClHhOGSgL
- BRD/eeQz7Tr/RxMFVidc0tSTy91tExbfbCU8PsYXh3kNv4nu1Js+MP1ul/Sdy78lDUwE
- 6uYqu3YEhnBNHlLsJjRao98cSXf9aMYYfm+ILmLtzs3b2QfVOVn3RoPkA5OMrt47eSVN nw== 
-Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hx2x8n9cb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 19 Aug 2022 11:22:39 +0000
-Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Fri, 19 Aug 2022 04:22:35 -0700
-From:   Dragos-Marian Panait <dragos.panait@windriver.com>
-To:     <stable@vger.kernel.org>
-CC:     Pavel Skripkin <paskripkin@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 4.14 0/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Fri, 19 Aug 2022 14:22:25 +0300
-Message-ID: <20220819112226.922595-1-dragos.panait@windriver.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 07:25:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65F9FEEB0;
+        Fri, 19 Aug 2022 04:25:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F2BDB8274A;
+        Fri, 19 Aug 2022 11:25:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F579C433D6;
+        Fri, 19 Aug 2022 11:25:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660908340;
+        bh=jEfI2tZuqE93nCv99untFA824HIB3TeXZACUpILlGqg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b+8oNnCyF8uwypm+XLZREZu5qAuMbge/xHWWs6983BqVmoXlpWibHGFcsCZIF0ZIG
+         Ds+GSRovsOoSOPNf/qMTUD7bOg7Jz/4IJZOnt3yLGJxfVlqDBAtgbK3O4wh5UYzGOz
+         kU92F0jSvWfSTfaM0BG4qoZ+xsj2bptGI4+07oIE=
+Date:   Fri, 19 Aug 2022 13:25:37 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org,
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+Subject: Re: [PATCH 5.10 1/1] sched/fair: Fix fault in reweight_entity
+Message-ID: <Yv9zMfh0/Ng94k1Z@kroah.com>
+References: <20220819071140.35728-1-pchelkin@ispras.ru>
+ <20220819071140.35728-2-pchelkin@ispras.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [128.224.125.191]
-X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
- ala-exchng01.corp.ad.wrs.com (147.11.82.252)
-X-Proofpoint-ORIG-GUID: y9KDF-828HdFJ_0TijFeaR2K9ze4mpNm
-X-Proofpoint-GUID: y9KDF-828HdFJ_0TijFeaR2K9ze4mpNm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 malwarescore=0 bulkscore=0 clxscore=1015 mlxscore=0
- lowpriorityscore=0 spamscore=0 mlxlogscore=307 adultscore=0
- impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208190044
+In-Reply-To: <20220819071140.35728-2-pchelkin@ispras.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit is needed to fix CVE-2022-1679:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ac4827f78c7ffe8eef074bc010e7e34bc22f533
+On Fri, Aug 19, 2022 at 10:11:40AM +0300, Fedor Pchelkin wrote:
+> From: Tadeusz Struk <tadeusz.struk@linaro.org>
+> 
+> commit 13765de8148f71fa795e0a6607de37c49ea5915a upstream.
+> 
+> Syzbot found a GPF in reweight_entity. This has been bisected to
+> commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
+> sched_task_group")
+> 
+> There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
+> within a thread group that causes a null-ptr-deref in
+> reweight_entity() in CFS. The scenario is that the main process spawns
+> number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
+> wait, and exit.  For each of the new threads the copy_process() gets
+> invoked, which adds the new task_struct and calls sched_post_fork()
+> for it.
+> 
+> In the above scenario there is a possibility that
+> setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
+> in the group that is just being created by copy_process(), and for
+> which the sched_post_fork() has not been executed yet. This will
+> trigger a null pointer dereference in reweight_entity(), as it will
+> try to access the run queue pointer, which hasn't been set.
+> 
+> Before the mentioned change the cfs_rq pointer for the task  has been
+> set in sched_fork(), which is called much earlier in copy_process(),
+> before the new task is added to the thread_group.  Now it is done in
+> the sched_post_fork(), which is called after that.  To fix the issue
+> the remove the update_load param from the update_load param() function
+> and call reweight_task() only if the task flag doesn't have the
+> TASK_NEW flag set.
+> 
+> Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+> Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> Cc: stable@vger.kernel.org
+> Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro.org
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> ---
+> 5.10 adaptation: Replaced a task_struct field '__state' with 'state' 
 
-Pavel Skripkin (1):
-  ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Now queued up, thanks.
 
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
-
-
-base-commit: b641242202ed8c52030f7b6d8cf15886d3c4fc82
--- 
-2.37.1
-
+greg k-h
