@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D98F3C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C322DC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350556AbiHSPxc (ORCPT
+        id S1350562AbiHSPxf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40876 "EHLO
+        Fri, 19 Aug 2022 11:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350133AbiHSPwq (ORCPT
+        with ESMTP id S1350110AbiHSPwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 11:52:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4A3106B15;
-        Fri, 19 Aug 2022 08:49:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F350A4F184;
+        Fri, 19 Aug 2022 08:48:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5AE6B82816;
-        Fri, 19 Aug 2022 15:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A42C433D6;
-        Fri, 19 Aug 2022 15:48:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D400B8280F;
+        Fri, 19 Aug 2022 15:48:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3727C433C1;
+        Fri, 19 Aug 2022 15:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924137;
-        bh=rkWXU3TEa6CIXUl/UnvFRmLkzh9CC0lIVI2ALWVyQsY=;
+        s=korg; t=1660924114;
+        bh=3C0nmz2bwUw/YhMXl/4vqecM80SkN232zvqvmAcwXbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xqyE5fB5E/FjZUrJk9LosQHJDQr3+D9xISlmMqsAVNjrS8pohtJT2aCQUss5FHgVR
-         TVfhmwwqHItMgebiqSXKeYbQCAP9Kq5yocYxlIIDl6FRexjT8VuqiWEu9FhT8thFav
-         fOAAR9oRiyMY9ysmxmwH4bXVRPFnZLEDU0IXZZaY=
+        b=hCSzly/tiefSp6BX7P6jg8Yt7M1tRFJ5BeGaUGABD0jrWsgZy4wzBHDNDDaKLA86B
+         ui7gal/arbFcyTgllD1enJnBMU/OVS6POX0OP1yfdd+ddGqeSQfrTy1CdVk4a3zkGN
+         Z7lHve8RMpr/38RMGlVdg1eFuyHzyYm4/cz8rIVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 068/545] arm64: dts: uniphier: Fix USB interrupts for PXs3 SoC
-Date:   Fri, 19 Aug 2022 17:37:18 +0200
-Message-Id: <20220819153832.287146918@linuxfoundation.org>
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 061/545] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
+Date:   Fri, 19 Aug 2022 17:37:11 +0200
+Message-Id: <20220819153831.964262412@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,46 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit fe17b91a7777df140d0f1433991da67ba658796c upstream.
+commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
 
-An interrupt for USB device are shared with USB host. Set interrupt-names
-property to common "dwc_usb3" instead of "host" and "peripheral".
+On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
+for supervisor. As soon as one of the two bits is set, the page has
+to be display as RW. But the way it is implemented today requires both
+bits to be set in order to display it as RW.
 
+Instead of display RW when _PAGE_RW bits are set and R otherwise,
+reverse the logic and display R when _PAGE_RW bits are all 0 and
+RW otherwise.
+
+This change has no impact on other platforms as _PAGE_RW is a single
+bit on all of them.
+
+Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
 Cc: stable@vger.kernel.org
-Fixes: d7b9beb830d7 ("arm64: dts: uniphier: Add USB3 controller nodes")
-Reported-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/powerpc/mm/ptdump/shared.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-@@ -599,8 +599,8 @@
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65a00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 134 4>, <0 135 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 134 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
- 			clock-names = "ref", "bus_early", "suspend";
-@@ -701,8 +701,8 @@
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65c00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 137 4>, <0 138 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 137 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb1>, <&pinctrl_usb3>;
- 			clock-names = "ref", "bus_early", "suspend";
+--- a/arch/powerpc/mm/ptdump/shared.c
++++ b/arch/powerpc/mm/ptdump/shared.c
+@@ -17,9 +17,9 @@ static const struct flag_info flag_array
+ 		.clear	= "    ",
+ 	}, {
+ 		.mask	= _PAGE_RW,
+-		.val	= _PAGE_RW,
+-		.set	= "rw",
+-		.clear	= "r ",
++		.val	= 0,
++		.set	= "r ",
++		.clear	= "rw",
+ 	}, {
+ 		.mask	= _PAGE_EXEC,
+ 		.val	= _PAGE_EXEC,
 
 
