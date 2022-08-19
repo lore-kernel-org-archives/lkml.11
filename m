@@ -2,202 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45A5C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB33FC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347521AbiHSKdx (ORCPT
+        id S1348284AbiHSKeH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 06:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        Fri, 19 Aug 2022 06:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347681AbiHSKdt (ORCPT
+        with ESMTP id S1348289AbiHSKeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:33:49 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9687E2C108;
-        Fri, 19 Aug 2022 03:33:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dotXOKDiE1Y3p77G/61a0SdN8QdKHMNUsMOBOW8ypLA=; b=blckdN/WSOPTEjHVqp8yk9NPT0
-        QIdwpSuyVgGGsN7RFjen+tZmn7irX96jkAlgWREvYD3NBXcNsZabMpHJRyxxcft0HguTNOtzuRVMY
-        wUhxjGNmqIRMXtR4hI7b47Uz06VpsOE7u6lpU0tsXVrItxQrPz3O9pnM2Qsw79QeMKPOmDco+ct5T
-        psua+uKaS26T+MITqkD2Vse88mEwa06rym4C7jN6SDs2tsR0XodwEKp9OZAMR55h6KBWib5vY9qjA
-        3jjLJSL14hWNyCj/0/dlZTIsJwaXPIwgy05dVRLM3LBVJ7wMQe2d87iEOrbySSWXICOtNM1DlPfFG
-        39gq9tkQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oOzJn-00B1c4-Ui; Fri, 19 Aug 2022 10:33:36 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E61AF980163; Fri, 19 Aug 2022 12:33:34 +0200 (CEST)
-Date:   Fri, 19 Aug 2022 12:33:34 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Daniel Sneddon <daniel.sneddon@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH] x86/nospec: Unwreck the RSB stuffing
-Message-ID: <Yv9m/huNJLuyviIn@worktop.programming.kicks-ass.net>
-References: <20220809175513.345597655@linuxfoundation.org>
- <20220809175513.979067723@linuxfoundation.org>
- <YvuNdDWoUZSBjYcm@worktop.programming.kicks-ass.net>
- <839e2877-bb16-dbb5-d4da-bc611733c7e1@linux.intel.com>
- <84f4b1ea-d837-9a53-a21c-4ac602ff8e75@linux.intel.com>
- <YvyQzHzLJpalcvbZ@worktop.programming.kicks-ass.net>
+        Fri, 19 Aug 2022 06:34:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158773C8CC
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 03:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660905239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=P/N3jznfyLCTntOiEbxHqyAxgiiPB/4urlbFDpUDuCk=;
+        b=cjJ/fB1tOLYzb20d6TitVuUhJOogxgBtsnaXxOBfngCF3oDsTPPxwhgzhX31Yzcw05tDQl
+        ucSJ2UzxUhmCTXoL1MmqBtIZFeOpLDKZTgEk7DSLHEMDZmd+i/fttn9DhScu6AGQ5crKFI
+        nSBhf2OE6o4v2rb+FueQSn3xniQipYs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-48-_PU-VMFbOe-W8ww7JuJ7JQ-1; Fri, 19 Aug 2022 06:33:57 -0400
+X-MC-Unique: _PU-VMFbOe-W8ww7JuJ7JQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8CF888032E3;
+        Fri, 19 Aug 2022 10:33:57 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7037C492C3B;
+        Fri, 19 Aug 2022 10:33:57 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [GIT PULL] KVM changes for Linux 6.0-rc2
+Date:   Fri, 19 Aug 2022 06:33:57 -0400
+Message-Id: <20220819103357.2346708-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvyQzHzLJpalcvbZ@worktop.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 08:55:08AM +0200, Peter Zijlstra wrote:
-> On Tue, Aug 16, 2022 at 11:04:36AM -0700, Daniel Sneddon wrote:
-> > diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-> > index 1a31ae6d758b..c5b55c9f2849 100644
-> > --- a/arch/x86/include/asm/cpufeatures.h
-> > +++ b/arch/x86/include/asm/cpufeatures.h
-> > @@ -420,7 +420,7 @@
-> >  #define X86_FEATURE_V_TSC_AUX          (19*32+ 9) /* "" Virtual TSC_AUX */
-> >  #define X86_FEATURE_SME_COHERENT       (19*32+10) /* "" AMD hardware-enforced
-> > cache coherency */
-> > 
-> > -#define X86_FEATURE_NEVER              (-1) /* "" Logical complement of ALWAYS */
-> > +#define X86_FEATURE_NEVER              (0x7FFF) /* "" Logical complement of
-> > ALWAYS */
-> 
-> 
-> Bah, I initially spelled that: ALT_NOT(X86_FEATURE_ALWAYS), but Boris
-> made me do the -1 thing there. Oh well, Boris can fix that :-)
+Linus,
 
-Boris, how's this then? Will you cram it into x86/urgent ?
+The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
 
----
+  Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
 
-Subject: x86/nospec: Unwreck the RSB stuffing
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Tue, 16 Aug 2022 14:28:36 +0200
+are available in the Git repository at:
 
-Commit 2b1299322016 ("x86/speculation: Add RSB VM Exit protections")
-made a right mess of the RSB stuffing, rewrite the whole thing to not
-suck.
+  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
 
-Thanks to Andrew for the enlightening comment about Post-Barrier RSB
-things so we can make this code less magical.
+for you to fetch changes up to 959d6c4ae238b28a163b1b3741fae05391227ad9:
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/include/asm/nospec-branch.h |   80 +++++++++++++++++------------------
- 1 file changed, 39 insertions(+), 41 deletions(-)
+  Merge tag 'kvmarm-fixes-6.0-1' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD (2022-08-19 05:43:53 -0400)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -35,33 +35,44 @@
- #define RSB_CLEAR_LOOPS		32	/* To forcibly overwrite all entries */
- 
- /*
-+ * Common helper for __FILL_RETURN_BUFFER and __FILL_ONE_RETURN.
-+ */
-+#define __FILL_RETURN_SLOT			\
-+	ANNOTATE_INTRA_FUNCTION_CALL;		\
-+	call	772f;				\
-+	int3;					\
-+772:
-+
-+/*
-+ * Stuff the entire RSB.
-+ *
-  * Google experimented with loop-unrolling and this turned out to be
-  * the optimal version - two calls, each with their own speculation
-  * trap should their return address end up getting used, in a loop.
-  */
--#define __FILL_RETURN_BUFFER(reg, nr, sp)	\
--	mov	$(nr/2), reg;			\
--771:						\
--	ANNOTATE_INTRA_FUNCTION_CALL;		\
--	call	772f;				\
--773:	/* speculation trap */			\
--	UNWIND_HINT_EMPTY;			\
--	pause;					\
--	lfence;					\
--	jmp	773b;				\
--772:						\
--	ANNOTATE_INTRA_FUNCTION_CALL;		\
--	call	774f;				\
--775:	/* speculation trap */			\
--	UNWIND_HINT_EMPTY;			\
--	pause;					\
--	lfence;					\
--	jmp	775b;				\
--774:						\
--	add	$(BITS_PER_LONG/8) * 2, sp;	\
--	dec	reg;				\
--	jnz	771b;				\
--	/* barrier for jnz misprediction */	\
-+#define __FILL_RETURN_BUFFER(reg, nr)			\
-+	mov	$(nr/2), reg;				\
-+771:							\
-+	__FILL_RETURN_SLOT				\
-+	__FILL_RETURN_SLOT				\
-+	add	$(BITS_PER_LONG/8) * 2, %_ASM_SP;	\
-+	dec	reg;					\
-+	jnz	771b;					\
-+	/* barrier for jnz misprediction */		\
-+	lfence;
-+
-+/*
-+ * Stuff a single RSB slot.
-+ *
-+ * To mitigate Post-Barrier RSB speculation, one CALL instruction must be
-+ * forced to retire before letting a RET instruction execute.
-+ *
-+ * On PBRSB-vulnerable CPUs, it is not safe for a RET to be executed
-+ * before this point.
-+ */
-+#define __FILL_ONE_RETURN				\
-+	__FILL_RETURN_SLOT				\
-+	add	$(BITS_PER_LONG/8), %_ASM_SP;		\
- 	lfence;
- 
- #ifdef __ASSEMBLY__
-@@ -132,28 +143,15 @@
- #endif
- .endm
- 
--.macro ISSUE_UNBALANCED_RET_GUARD
--	ANNOTATE_INTRA_FUNCTION_CALL
--	call .Lunbalanced_ret_guard_\@
--	int3
--.Lunbalanced_ret_guard_\@:
--	add $(BITS_PER_LONG/8), %_ASM_SP
--	lfence
--.endm
--
-  /*
-   * A simpler FILL_RETURN_BUFFER macro. Don't make people use the CPP
-   * monstrosity above, manually.
-   */
--.macro FILL_RETURN_BUFFER reg:req nr:req ftr:req ftr2
--.ifb \ftr2
--	ALTERNATIVE "jmp .Lskip_rsb_\@", "", \ftr
--.else
--	ALTERNATIVE_2 "jmp .Lskip_rsb_\@", "", \ftr, "jmp .Lunbalanced_\@", \ftr2
--.endif
--	__FILL_RETURN_BUFFER(\reg,\nr,%_ASM_SP)
--.Lunbalanced_\@:
--	ISSUE_UNBALANCED_RET_GUARD
-+.macro FILL_RETURN_BUFFER reg:req nr:req ftr:req ftr2=ALT_NOT(X86_FEATURE_ALWAYS)
-+	ALTERNATIVE_2 "jmp .Lskip_rsb_\@", \
-+		__stringify(__FILL_RETURN_BUFFER(\reg,\nr)), \ftr, \
-+		__stringify(__FILL_ONE_RETURN), \ftr2
-+
- .Lskip_rsb_\@:
- .endm
- 
+----------------------------------------------------------------
+ARM:
+
+* Fix unexpected sign extension of KVM_ARM_DEVICE_ID_MASK
+
+* Tidy-up handling of AArch32 on asymmetric systems
+
+x86:
+
+* Fix "missing ENDBR" BUG for fastop functions
+
+Generic:
+
+* Some cleanup and static analyzer patches
+
+* More fixes to KVM_CREATE_VM unwind paths
+
+----------------------------------------------------------------
+Chao Peng (2):
+      KVM: Rename KVM_PRIVATE_MEM_SLOTS to KVM_INTERNAL_MEM_SLOTS
+      KVM: Rename mmu_notifier_* to mmu_invalidate_*
+
+Josh Poimboeuf (3):
+      x86/ibt, objtool: Add IBT_NOSEAL()
+      x86/kvm: Simplify FOP_SETCC()
+      x86/kvm: Fix "missing ENDBR" BUG for fastop functions
+
+Li kunyu (2):
+      KVM: Drop unnecessary initialization of "npages" in hva_to_pfn_slow()
+      KVM: Drop unnecessary initialization of "ops" in kvm_ioctl_create_device()
+
+Oliver Upton (2):
+      KVM: arm64: Treat PMCR_EL1.LC as RES1 on asymmetric systems
+      KVM: arm64: Reject 32bit user PSTATE on asymmetric systems
+
+Paolo Bonzini (2):
+      KVM: MIPS: remove unnecessary definition of KVM_PRIVATE_MEM_SLOTS
+      Merge tag 'kvmarm-fixes-6.0-1' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD
+
+Sean Christopherson (3):
+      KVM: Properly unwind VM creation if creating debugfs fails
+      KVM: Unconditionally get a ref to /dev/kvm module when creating a VM
+      KVM: Move coalesced MMIO initialization (back) into kvm_create_vm()
+
+Yang Yingliang (1):
+      KVM: arm64: Fix compile error due to sign extension
+
+ arch/arm64/include/asm/kvm_host.h        |  4 ++
+ arch/arm64/include/uapi/asm/kvm.h        |  6 +-
+ arch/arm64/kvm/arm.c                     |  3 +-
+ arch/arm64/kvm/guest.c                   |  2 +-
+ arch/arm64/kvm/mmu.c                     |  8 +--
+ arch/arm64/kvm/sys_regs.c                |  4 +-
+ arch/mips/include/asm/kvm_host.h         |  2 -
+ arch/mips/kvm/mmu.c                      | 12 ++--
+ arch/powerpc/include/asm/kvm_book3s_64.h |  2 +-
+ arch/powerpc/kvm/book3s_64_mmu_host.c    |  4 +-
+ arch/powerpc/kvm/book3s_64_mmu_hv.c      |  4 +-
+ arch/powerpc/kvm/book3s_64_mmu_radix.c   |  6 +-
+ arch/powerpc/kvm/book3s_hv_nested.c      |  2 +-
+ arch/powerpc/kvm/book3s_hv_rm_mmu.c      |  8 +--
+ arch/powerpc/kvm/e500_mmu_host.c         |  4 +-
+ arch/riscv/kvm/mmu.c                     |  4 +-
+ arch/x86/include/asm/ibt.h               | 11 ++++
+ arch/x86/include/asm/kvm_host.h          |  2 +-
+ arch/x86/kvm/emulate.c                   | 26 ++-------
+ arch/x86/kvm/mmu/mmu.c                   | 14 ++---
+ arch/x86/kvm/mmu/paging_tmpl.h           |  4 +-
+ include/linux/kvm_host.h                 | 66 +++++++++++-----------
+ tools/objtool/check.c                    |  3 +-
+ virt/kvm/kvm_main.c                      | 95 ++++++++++++++++----------------
+ virt/kvm/pfncache.c                      | 17 +++---
+ 25 files changed, 157 insertions(+), 156 deletions(-)
+
