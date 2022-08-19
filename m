@@ -2,119 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 465AEC32789
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 13:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE08C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 13:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349284AbiHSNF5 (ORCPT
+        id S1348975AbiHSNID (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 09:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
+        Fri, 19 Aug 2022 09:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348922AbiHSNF4 (ORCPT
+        with ESMTP id S1348363AbiHSNIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 09:05:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA0F5D0D4;
-        Fri, 19 Aug 2022 06:05:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1A9761866;
-        Fri, 19 Aug 2022 13:05:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29269C433C1;
-        Fri, 19 Aug 2022 13:05:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660914354;
-        bh=miZ6oqPG1q3ZNV0ucgXlV6pfatEjWryNvNqVONznrCA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=CCXDNBjVcl95t6o0lHxLOUfzo1yO6QdoJydJrp09z2yCzvBjISWJcQIpE2hdtiufJ
-         ZwMn5mcHZZgsKc4bfkDBhK3PjjqLMV/zbXb9ndNaLrhCjZ3yhHnuHbkgYYSI8Je9Ws
-         dq8Zl+IEeYb79+Q6OvEa6g/jLh1R7Ml4t+pYPWdePMuwbj21jd1bNTXW3ST90AUysc
-         rE4ZBeDOZoRMV5v7kR1N1+Sivr8qbOs0ut33tdsODWsEdGQgf8fRRkwPl1ORSVNJ/t
-         deGb/TJvNd1M3fCYbWY1bi29aaivz2bLudfse00eGpETuWYJhQVT7+LxO2ylWHB8Ol
-         g2FI/f21zSgwg==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 118D955FC1B; Fri, 19 Aug 2022 15:05:51 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 3/4] bpf: Add support for writing to
- nf_conn:mark
-In-Reply-To: <20220818221032.7b4lcpa7i4gchdvl@kashmir.localdomain>
-References: <cover.1660761470.git.dxu@dxuuu.xyz>
- <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
- <87pmgxuy6v.fsf@toke.dk>
- <20220818221032.7b4lcpa7i4gchdvl@kashmir.localdomain>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 19 Aug 2022 15:05:51 +0200
-Message-ID: <87wnb4tmc0.fsf@toke.dk>
+        Fri, 19 Aug 2022 09:08:00 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C345FD0
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 06:07:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660914478; x=1692450478;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ul9AY54+W+2c0uLgxHZax+CLhL8edhfxOlsyHd1h5oE=;
+  b=gSpWs6gVCwCt7rac8Ja0OZQuqDwVtgFZAOHMFQXDdE5eBUyJDRDGCQTC
+   +jZXgV3BS1inDO/fIgRE+lmRPUnlC/TVdcUTzTLKcSN/jYmt/0/GX9m1j
+   1UL4ExOOPk4i/4aBBw+fdMZ7uXGHZRNMvSLyqJPSSlarZ1ucRweISPSIG
+   p3uOaHJCZdFv5hEIHwYdCchtWjzY+nCqL3btLXM4gpdJAbmRc8/w/vFmg
+   S07K2wGL6BcCzh7d9RQbfaHqhfgYpPXVvDNZ9wrbx5dndiQSJMy/NZagK
+   8OWi4EtMrHGz2HDoSqJe3q3TsNNyTNg8ajetr3qfsPrKSD8KePDfPbRa8
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="291764421"
+X-IronPort-AV: E=Sophos;i="5.93,248,1654585200"; 
+   d="scan'208";a="291764421"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 06:07:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,248,1654585200"; 
+   d="scan'208";a="936213401"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Aug 2022 06:07:56 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oP1j9-0001SR-2t;
+        Fri, 19 Aug 2022 13:07:55 +0000
+Date:   Fri, 19 Aug 2022 21:07:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nam Cao <namcaov@gmail.com>, gregkh@linuxfoundation.org
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, namcaov@gmail.com,
+        hdegoede@redhat.com, Larry.Finger@lwfinger.net
+Subject: Re: [PATCH 1/7] staging: rtl8723bs: remove function
+ rtw_odm_dbg_comp_msg
+Message-ID: <202208192018.BfgiZyOY-lkp@intel.com>
+References: <7ff2d658863db4fd5eecc1a53f682510c2765c3f.1660898432.git.namcaov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7ff2d658863db4fd5eecc1a53f682510c2765c3f.1660898432.git.namcaov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Daniel Xu <dxu@dxuuu.xyz> writes:
+Hi Nam,
 
-> Hi Toke,
->
-> On Thu, Aug 18, 2022 at 09:52:08PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Daniel Xu <dxu@dxuuu.xyz> writes:
->>=20
->> > Support direct writes to nf_conn:mark from TC and XDP prog types. This
->> > is useful when applications want to store per-connection metadata. This
->> > is also particularly useful for applications that run both bpf and
->> > iptables/nftables because the latter can trivially access this
->> > metadata.
->>=20
->> Looking closer at the nf_conn definition, the mark field (and possibly
->> secmark) seems to be the only field that is likely to be feasible to
->> support direct writes to, as everything else either requires special
->> handling (like status and timeout), or they are composite field that
->> will require helpers anyway to use correctly.
->>=20
->> Which means we're in the process of creating an API where users have to
->> call helpers to fill in all fields *except* this one field that happens
->> to be directly writable. That seems like a really confusing and
->> inconsistent API, so IMO it strengthens the case for just making a
->> helper for this field as well, even though it adds a bit of overhead
->> (and then solving the overhead issue in a more generic way such as by
->> supporting clever inlining).
->>=20
->> -Toke
->
-> I don't particularly have a strong opinion here. But to play devil's
-> advocate:
->
-> * It may be confusing now, but over time I expect to see more direct
->   write support via BTF, especially b/c there is support for unstable
->   helpers now. So perhaps in the future it will seem more sensible.
+Thank you for the patch! Perhaps something to improve:
 
-Right, sure, for other structs. My point was that it doesn't look like
-this particular one (nf_conn) is likely to grow any other members we can
-access directly, so it'll be a weird one-off for that single field...
+[auto build test WARNING on staging/staging-testing]
 
-> * The unstable helpers do not have external documentation. Nor should
->   they in my opinion as their unstableness + stale docs may lead to
->   undesirable outcomes. So users of the unstable API already have to
->   splunk through kernel code and/or selftests to figure out how to wield
->   the APIs. All this to say there may not be an argument for
->   discoverability.
+url:    https://github.com/intel-lab-lkp/linux/commits/Nam-Cao/staging-rtl8723bs-remove-dead-functions/20220819-165905
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 8379cf83fe6d57a12952de6dcaf7a7fbd7b364fc
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220819/202208192018.BfgiZyOY-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/3b86aa03519d904d916cb62a1113c0c5549496cb
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Nam-Cao/staging-rtl8723bs-remove-dead-functions/20220819-165905
+        git checkout 3b86aa03519d904d916cb62a1113c0c5549496cb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/staging/rtl8723bs/
 
-This I don't buy at all. Just because it's (supposedly) "unstable" is no
-excuse to design a bad API, or make it actively user-hostile by hiding
-things so users have to go browse kernel code to know how to use it. So
-in any case, we should definitely document everything.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> * Direct writes are slightly more ergnomic than using a helper.
+All warnings (new ones prefixed by >>):
 
-This is true, and that's the main argument for doing it this way. The
-point of my previous email was that since it's only a single field,
-consistency weighs heavier than ergonomics :)
+>> drivers/staging/rtl8723bs/core/rtw_odm.c:13:27: warning: 'odm_comp_str' defined but not used [-Wunused-const-variable=]
+      13 | static const char * const odm_comp_str[] = {
+         |                           ^~~~~~~~~~~~
 
--Toke
+
+vim +/odm_comp_str +13 drivers/staging/rtl8723bs/core/rtw_odm.c
+
+554c0a3abf216c Hans de Goede 2017-03-29  12  
+05031914cb8f5b Tom Gardi     2017-08-12 @13  static const char * const odm_comp_str[] = {
+554c0a3abf216c Hans de Goede 2017-03-29  14  	/* BIT0 */"ODM_COMP_DIG",
+554c0a3abf216c Hans de Goede 2017-03-29  15  	/* BIT1 */"ODM_COMP_RA_MASK",
+554c0a3abf216c Hans de Goede 2017-03-29  16  	/* BIT2 */"ODM_COMP_DYNAMIC_TXPWR",
+554c0a3abf216c Hans de Goede 2017-03-29  17  	/* BIT3 */"ODM_COMP_FA_CNT",
+554c0a3abf216c Hans de Goede 2017-03-29  18  	/* BIT4 */"ODM_COMP_RSSI_MONITOR",
+554c0a3abf216c Hans de Goede 2017-03-29  19  	/* BIT5 */"ODM_COMP_CCK_PD",
+554c0a3abf216c Hans de Goede 2017-03-29  20  	/* BIT6 */"ODM_COMP_ANT_DIV",
+554c0a3abf216c Hans de Goede 2017-03-29  21  	/* BIT7 */"ODM_COMP_PWR_SAVE",
+554c0a3abf216c Hans de Goede 2017-03-29  22  	/* BIT8 */"ODM_COMP_PWR_TRAIN",
+554c0a3abf216c Hans de Goede 2017-03-29  23  	/* BIT9 */"ODM_COMP_RATE_ADAPTIVE",
+554c0a3abf216c Hans de Goede 2017-03-29  24  	/* BIT10 */"ODM_COMP_PATH_DIV",
+554c0a3abf216c Hans de Goede 2017-03-29  25  	/* BIT11 */"ODM_COMP_PSD",
+554c0a3abf216c Hans de Goede 2017-03-29  26  	/* BIT12 */"ODM_COMP_DYNAMIC_PRICCA",
+554c0a3abf216c Hans de Goede 2017-03-29  27  	/* BIT13 */"ODM_COMP_RXHP",
+554c0a3abf216c Hans de Goede 2017-03-29  28  	/* BIT14 */"ODM_COMP_MP",
+554c0a3abf216c Hans de Goede 2017-03-29  29  	/* BIT15 */"ODM_COMP_DYNAMIC_ATC",
+554c0a3abf216c Hans de Goede 2017-03-29  30  	/* BIT16 */"ODM_COMP_EDCA_TURBO",
+554c0a3abf216c Hans de Goede 2017-03-29  31  	/* BIT17 */"ODM_COMP_EARLY_MODE",
+554c0a3abf216c Hans de Goede 2017-03-29  32  	/* BIT18 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  33  	/* BIT19 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  34  	/* BIT20 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  35  	/* BIT21 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  36  	/* BIT22 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  37  	/* BIT23 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  38  	/* BIT24 */"ODM_COMP_TX_PWR_TRACK",
+554c0a3abf216c Hans de Goede 2017-03-29  39  	/* BIT25 */"ODM_COMP_RX_GAIN_TRACK",
+554c0a3abf216c Hans de Goede 2017-03-29  40  	/* BIT26 */"ODM_COMP_CALIBRATION",
+554c0a3abf216c Hans de Goede 2017-03-29  41  	/* BIT27 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  42  	/* BIT28 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  43  	/* BIT29 */NULL,
+554c0a3abf216c Hans de Goede 2017-03-29  44  	/* BIT30 */"ODM_COMP_COMMON",
+554c0a3abf216c Hans de Goede 2017-03-29  45  	/* BIT31 */"ODM_COMP_INIT",
+554c0a3abf216c Hans de Goede 2017-03-29  46  };
+554c0a3abf216c Hans de Goede 2017-03-29  47  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
