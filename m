@@ -2,173 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28386C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2072EC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348386AbiHSKil (ORCPT
+        id S1348398AbiHSKjC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 06:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58862 "EHLO
+        Fri, 19 Aug 2022 06:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348138AbiHSKih (ORCPT
+        with ESMTP id S1348275AbiHSKjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:38:37 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A334454A;
-        Fri, 19 Aug 2022 03:38:36 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27JAcHLH107763;
-        Fri, 19 Aug 2022 05:38:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1660905497;
-        bh=sCPsEmLmfCmKeH0IMvDi/S5U7HxScDsSXsTCZygnMKw=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=FNG0K7Rjr1b99V0YnTgWtmuu2OyNtsbV6pYOzT+Eh8ogY2AW8rGqiI0g6YO0Gvr58
-         Ydu0HtIMQDlUS7OEgND9jeFRrgWeEfcY1o7YQEMsyLdSQ1uXbgXzTTeQdc94iQfgoE
-         SOfbjG5u70KlyPRIMwoZX/eJ8Y5G46FyjwhtbK0w=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27JAcHuQ117551
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 19 Aug 2022 05:38:17 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 19
- Aug 2022 05:38:17 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Fri, 19 Aug 2022 05:38:17 -0500
-Received: from [172.24.147.145] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27JAcDeK115702;
-        Fri, 19 Aug 2022 05:38:14 -0500
-Message-ID: <632f447c-fe1a-e6aa-2fda-73669964fc92@ti.com>
-Date:   Fri, 19 Aug 2022 16:08:13 +0530
+        Fri, 19 Aug 2022 06:39:00 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C07F124;
+        Fri, 19 Aug 2022 03:38:57 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAN17X004661;
+        Fri, 19 Aug 2022 10:38:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to : sender :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=HRTeMWW3i3o/opZMcyPGHs+ShmWqQhyfthD2N/T6Img=;
+ b=Ed1Pj4jDIxxZ4lXVHeZT+yyL66LF3ce0+bNUTTYE1Gw6sFg0t73rWpxnuuDi8E0PSXoj
+ 0pRkHl2h16GqEJlYKpgCXO1Ce7h279pXlRumfbfxedbqhG0hUqpQ8vr/o12yjLEw6UsA
+ vTmST1smBItxlGSLJhFemkOA2aS5B0+rLwKofJielgSZmQLXL99mv/RND6Bj2hdLFp/N
+ 5Tz+DvIhS5mF3tIttVUgP2GxHi67LdtYvK74ZFv068djCrWeAQBnz7M08xz5Bo8HsfKB
+ 7tjQWQrautqM2o1vhXhL7boY+/Z9pZUfB5wqSy338wS+1LFGc3mGlblzBrlJ1a0TJN9q jA== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j28qg89pj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 10:38:53 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27JAa99w026546;
+        Fri, 19 Aug 2022 10:38:51 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma02fra.de.ibm.com with ESMTP id 3j0dc3as1f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 10:38:51 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27JAclNj22610196
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Aug 2022 10:38:47 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9256D52051;
+        Fri, 19 Aug 2022 10:38:47 +0000 (GMT)
+Received: from t480-pf1aa2c2 (unknown [9.145.93.213])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 743235204E;
+        Fri, 19 Aug 2022 10:38:47 +0000 (GMT)
+Received: from bblock by t480-pf1aa2c2 with local (Exim 4.95)
+        (envelope-from <bblock@linux.ibm.com>)
+        id 1oOzOo-004DLx-Lt;
+        Fri, 19 Aug 2022 12:38:46 +0200
+Date:   Fri, 19 Aug 2022 10:38:46 +0000
+From:   Benjamin Block <bblock@linux.ibm.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Steffen Maier <maier@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <Yv9oNvet5dMcCDbv@t480-pf1aa2c2.fritz.box>
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+Sender: Benjamin Block <bblock@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZTlR8yj2u-R4cx63QBTd_WcdyhsQOX1J
+X-Proofpoint-ORIG-GUID: ZTlR8yj2u-R4cx63QBTd_WcdyhsQOX1J
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] misc: pci_endpoint_test: Fix
- pci_endpoint_test_{copy,write,read}() panic
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Shunsuke Mie <mie@igel.co.jp>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>, <linux-pci@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-References: <20220816100617.90720-1-mie@igel.co.jp>
- <YvtxAN7E4nmZmL/X@kroah.com> <Yvuvpd9n59mp96p0@lpieralisi>
- <695ab9b3-8385-e8bd-0095-14b07de66b15@ti.com> <YvzNg5ROnxEApDgS@kroah.com>
-From:   Kishon Vijay Abraham I <kishon@ti.com>
-In-Reply-To: <YvzNg5ROnxEApDgS@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 suspectscore=0 phishscore=0
+ impostorscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1011 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208190041
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Mani
-
-On 17/08/22 16:44, Greg Kroah-Hartman wrote:
-> On Wed, Aug 17, 2022 at 02:18:58PM +0530, Kishon Vijay Abraham I wrote:
->> Hi Lorenzo,
->>
->> On 16/08/22 20:24, Lorenzo Pieralisi wrote:
->>> On Tue, Aug 16, 2022 at 12:27:12PM +0200, Greg Kroah-Hartman wrote:
->>>> On Tue, Aug 16, 2022 at 07:06:17PM +0900, Shunsuke Mie wrote:
->>>>> Although dma_map_single() doesn't permit zero length mapping, the each
->>>>> test functions called the function without zero checking.
->>>>>
->>>>> A panic was reported on arm64:
->>>>>
->>>>> [   60.137988] ------------[ cut here ]------------
->>>>> [   60.142630] kernel BUG at kernel/dma/swiotlb.c:624!
->>>>> [   60.147508] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
->>>>> [   60.152992] Modules linked in: dw_hdmi_cec crct10dif_ce simple_bridge rcar_fdp1 vsp1 rcar_vin videobuf2_vmalloc rcar_csi2 v4l
->>>>> 2_mem2mem videobuf2_dma_contig videobuf2_memops pci_endpoint_test videobuf2_v4l2 videobuf2_common rcar_fcp v4l2_fwnode v4l2_asyn
->>>>> c videodev mc gpio_bd9571mwv max9611 pwm_rcar ccree at24 authenc libdes phy_rcar_gen3_usb3 usb_dmac display_connector pwm_bl
->>>>> [   60.186252] CPU: 0 PID: 508 Comm: pcitest Not tainted 6.0.0-rc1rpci-dev+ #237
->>>>> [   60.193387] Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
->>>>> [   60.201302] pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>>>> [   60.208263] pc : swiotlb_tbl_map_single+0x2c0/0x590
->>>>> [   60.213149] lr : swiotlb_map+0x88/0x1f0
->>>>> [   60.216982] sp : ffff80000a883bc0
->>>>> [   60.220292] x29: ffff80000a883bc0 x28: 0000000000000000 x27: 0000000000000000
->>>>> [   60.227430] x26: 0000000000000000 x25: ffff0004c0da20d0 x24: ffff80000a1f77c0
->>>>> [   60.234567] x23: 0000000000000002 x22: 0001000040000010 x21: 000000007a000000
->>>>> [   60.241703] x20: 0000000000200000 x19: 0000000000000000 x18: 0000000000000000
->>>>> [   60.248840] x17: 0000000000000000 x16: 0000000000000000 x15: ffff0006ff7b9180
->>>>> [   60.255977] x14: ffff0006ff7b9180 x13: 0000000000000000 x12: 0000000000000000
->>>>> [   60.263113] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
->>>>> [   60.270249] x8 : 0001000000000010 x7 : ffff0004c6754b20 x6 : 0000000000000000
->>>>> [   60.277385] x5 : ffff0004c0da2090 x4 : 0000000000000000 x3 : 0000000000000001
->>>>> [   60.284521] x2 : 0000000040000000 x1 : 0000000000000000 x0 : 0000000040000010
->>>>> [   60.291658] Call trace:
->>>>> [   60.294100]  swiotlb_tbl_map_single+0x2c0/0x590
->>>>> [   60.298629]  swiotlb_map+0x88/0x1f0
->>>>> [   60.302115]  dma_map_page_attrs+0x188/0x230
->>>>> [   60.306299]  pci_endpoint_test_ioctl+0x5e4/0xd90 [pci_endpoint_test]
->>>>> [   60.312660]  __arm64_sys_ioctl+0xa8/0xf0
->>>>> [   60.316583]  invoke_syscall+0x44/0x108
->>>>> [   60.320334]  el0_svc_common.constprop.0+0xcc/0xf0
->>>>> [   60.325038]  do_el0_svc+0x2c/0xb8
->>>>> [   60.328351]  el0_svc+0x2c/0x88
->>>>> [   60.331406]  el0t_64_sync_handler+0xb8/0xc0
->>>>> [   60.335587]  el0t_64_sync+0x18c/0x190
->>>>> [   60.339251] Code: 52800013 d2e00414 35fff45c d503201f (d4210000)
->>>>> [   60.345344] ---[ end trace 0000000000000000 ]---
->>>>>
->>>>> To fix it, this patch adds checkings the payload length if it is zero.
->>>>>
->>>>> Fixes: 343dc693f7b7 ("misc: pci_endpoint_test: Prevent some integer overflows")
->>>>> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
->>>>> ---
->>>>>  drivers/misc/pci_endpoint_test.c | 6 +++---
->>>>>  1 file changed, 3 insertions(+), 3 deletions(-)
->>>>>
->>>>> diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
->>>>> index 8f786a225dcf..d45426a73396 100644
->>>>> --- a/drivers/misc/pci_endpoint_test.c
->>>>> +++ b/drivers/misc/pci_endpoint_test.c
->>>>> @@ -364,7 +364,7 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
->>>>>  	}
->>>>>  
->>>>>  	size = param.size;
->>>>> -	if (size > SIZE_MAX - alignment)
->>>>> +	if (size > SIZE_MAX - alignment || !size)
->>>>>  		goto err;
->>>>
->>>> Can we test size first?  And do it in the ioctl handler in one place so
->>>> you don't have to add it everywhere?
->>>>
->>>> Or have a "validate all parameters" function that you do it in one
->>>> place?
->>>>
->>>> Also, all of these ioctl handlers are wrong, they are returning "0" to
->>>> userspace if they fail, which is not correct at all.
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/pci/pcitest.c
->>> This is bad, thanks Greg for spotting it.
->>>
->>> @Kishon, we have to fix it asap, please let me know if you
->>> can post a patch promptly.
->>
->> The userspace tool (pcitest [1]) that calls these IOCTLS prints "NOT
->> OKAY" on 0 and "OKAY" for 1.
->>
->> I'll change to negative value for error and still keep '0' for data
->> mismatch error?
+On Thu, Aug 18, 2022 at 11:01:01PM +0200, Wolfram Sang wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
 > 
-> No, 0 as a return value from a system call means "success".  You can not
-> redefine it to mean something else for a tiny single kernel driver,
-> otherwise so much for consistency.
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  drivers/s390/block/dasd_devmap.c | 2 +-
+>  drivers/s390/block/dasd_eer.c    | 4 ++--
+>  drivers/s390/block/dcssblk.c     | 2 +-
+>  drivers/s390/char/hmcdrv_cache.c | 2 +-
+>  drivers/s390/char/tape_class.c   | 4 ++--
+>  drivers/s390/cio/qdio_debug.c    | 2 +-
+>  drivers/s390/net/ctcm_main.c     | 2 +-
+>  drivers/s390/net/fsm.c           | 2 +-
+>  drivers/s390/net/qeth_ethtool.c  | 4 ++--
+>  drivers/s390/scsi/zfcp_aux.c     | 2 +-
+>  drivers/s390/scsi/zfcp_fc.c      | 2 +-
+>  11 files changed, 14 insertions(+), 14 deletions(-)
 > 
-> 0 is success, -ERROR_NUMBER is an error, please read the ioctl man page.
+> diff --git a/drivers/s390/cio/qdio_debug.c b/drivers/s390/cio/qdio_debug.c
+> index 4bb7965daa0f..1a9714af51e4 100644
+> --- a/drivers/s390/cio/qdio_debug.c
+> +++ b/drivers/s390/cio/qdio_debug.c
+> @@ -87,7 +87,7 @@ int qdio_allocate_dbf(struct qdio_irq *irq_ptr)
+>  			debug_unregister(irq_ptr->debug_area);
+>  			return -ENOMEM;
+>  		}
+> -		strlcpy(new_entry->dbf_name, text, QDIO_DBF_NAME_LEN);
+> +		strscpy(new_entry->dbf_name, text, QDIO_DBF_NAME_LEN);
+>  		new_entry->dbf_info = irq_ptr->debug_area;
+>  		mutex_lock(&qdio_dbf_list_mutex);
+>  		list_add(&new_entry->dbf_list, &qdio_dbf_list);
+> diff --git a/drivers/s390/scsi/zfcp_aux.c b/drivers/s390/scsi/zfcp_aux.c
+> index fd2f1c31bd21..df782646e856 100644
+> --- a/drivers/s390/scsi/zfcp_aux.c
+> +++ b/drivers/s390/scsi/zfcp_aux.c
+> @@ -103,7 +103,7 @@ static void __init zfcp_init_device_setup(char *devstr)
+>  	token = strsep(&str, ",");
+>  	if (!token || strlen(token) >= ZFCP_BUS_ID_SIZE)
+>  		goto err_out;
+> -	strlcpy(busid, token, ZFCP_BUS_ID_SIZE);
+> +	strscpy(busid, token, ZFCP_BUS_ID_SIZE);
+>  
+>  	token = strsep(&str, ",");
+>  	if (!token || kstrtoull(token, 0, (unsigned long long *) &wwpn))
+> diff --git a/drivers/s390/scsi/zfcp_fc.c b/drivers/s390/scsi/zfcp_fc.c
+> index b61acbb09be3..77917b339870 100644
+> --- a/drivers/s390/scsi/zfcp_fc.c
+> +++ b/drivers/s390/scsi/zfcp_fc.c
+> @@ -885,7 +885,7 @@ static int zfcp_fc_gspn(struct zfcp_adapter *adapter,
+>  			 dev_name(&adapter->ccw_device->dev),
+>  			 init_utsname()->nodename);
+>  	else
+> -		strlcpy(fc_host_symbolic_name(adapter->scsi_host),
+> +		strscpy(fc_host_symbolic_name(adapter->scsi_host),
+>  			gspn_rsp->gspn.fp_name, FC_SYMBOLIC_NAME_SIZE);
+>  
+>  	return 0;
+> -- 
+> 2.35.1
+> 
 
-Thanks Greg!
+Those look good to me.
 
-Mani, Would you be able to post a patch fixing it? If not I'll post it
-mid next week.
+As far as zFCP and QDIO go:
 
-Regards,
-Kishon
+Acked-by: Benjamin Block <bblock@linux.ibm.com>
+
+-- 
+Best Regards, Benjamin Block  / Linux on IBM Z Kernel Development / IBM Systems
+IBM Deutschland Research & Development GmbH    /    https://www.ibm.com/privacy
+Vorsitz. AufsR.: Gregor Pillen         /         Geschäftsführung: David Faller
+Sitz der Gesellschaft: Böblingen / Registergericht: AmtsG Stuttgart, HRB 243294
