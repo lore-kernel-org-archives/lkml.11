@@ -2,131 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA7AC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAA0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347185AbiHSHpr (ORCPT
+        id S1347190AbiHSHq0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 03:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        Fri, 19 Aug 2022 03:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347179AbiHSHpn (ORCPT
+        with ESMTP id S1346383AbiHSHqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 03:45:43 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CE1D7410
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:45:41 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id d23so738233lfl.13
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:45:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=k40pphVIrC/hl+UDDLkChunxQ9ZlZaN2DrnGqw37Mvk=;
-        b=N9Knrx+42jWeUME9NcD+zlrLps7kMirxyTjjQEPCAcMxsf6xXhWMXMhKCyNxjn3tzV
-         sCbJI1JsFJNCicWLBBPI0FmmURF82PtrsgaRDp0il/4Vrn+4czCgRCKSRorL6b0TbifY
-         RgL45iDzsXHqexI4kBf9V7IMkITginkVPUgzisN3f9iIvdzCSrGxN+CiRnpbcDNVTmUc
-         ooiMp6j+lBkcWpF9Mljcej6hS1DQXle3mvDnH6HqaZcHmz5GDiJV4/co96B0ZisyYPln
-         f1kg3L5cGfjYbFJl3Uqoi8nRc1aGxqLGp/JEx3VWm5jexM41akqYVJDxHiSHSMCNLm7m
-         TJvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=k40pphVIrC/hl+UDDLkChunxQ9ZlZaN2DrnGqw37Mvk=;
-        b=wzJNjt68/GYQkEfssDpsjr5J7NdxDVhcihU2oQoaotmzro+bvaM+uXWERh3DQVJTCz
-         +ssNiUa1R1n1P4EGh/27q/wAg3zVkvkQjpEV4fFy5GSlZOSdPvDYeL6sfr/AQQAmKjqd
-         eQcHu8FpwgfgqdjM+QogS8xfRjseqMTaFoJRfj74Dep60pcRC69fzUx5dJhnUFRnptJd
-         wxOl+rjqx0HtGjEoyqUlPgAQ6vFZAWz2VlcQLGGDzEG3/n7lhU4uZPOYCZEeBhi92dMq
-         O4ocyHSjajRyKWAXTttH5oVNOfnwTj7mmsUzYCsYmowf5HKX8YWnDy3SHVIiAhRp1Jsu
-         hArQ==
-X-Gm-Message-State: ACgBeo2DhGGnEwRtwMNez2bOcOFO6Zr1EcLcIYF4NC7i1sRLVV8jxAaG
-        HsKsn8lbnSqo+WkG9I/MPBBXWg==
-X-Google-Smtp-Source: AA6agR41HCrlCqiow9W/ymyV0hONqo9ynnSbihel/Naj2ZMyCS9ei/QVtV+1MhVqLBVMhHsFvbZJfQ==
-X-Received: by 2002:a19:a415:0:b0:48d:13c2:1f4c with SMTP id q21-20020a19a415000000b0048d13c21f4cmr2206968lfc.166.1660895140289;
-        Fri, 19 Aug 2022 00:45:40 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id h12-20020a19700c000000b0048aef1abb08sm530046lfc.297.2022.08.19.00.45.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 00:45:39 -0700 (PDT)
-Message-ID: <f2440a64-f40d-7923-1c7b-1430ab557e59@linaro.org>
-Date:   Fri, 19 Aug 2022 10:45:38 +0300
+        Fri, 19 Aug 2022 03:46:24 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B778CD7422
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:46:23 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8DJ21Zr4zkWYv;
+        Fri, 19 Aug 2022 15:42:58 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 15:46:21 +0800
+Received: from huawei.com (10.67.174.169) by dggpemm500001.china.huawei.com
+ (7.185.36.107) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
+ 2022 15:46:21 +0800
+From:   Chen Lifu <chenlifu@huawei.com>
+To:     <benh@kernel.crashing.org>, <mpe@ellerman.id.au>,
+        <npiggin@gmail.com>, <christophe.leroy@csgroup.eu>,
+        <nick.child@ibm.com>, <zhengzucheng@huawei.com>,
+        <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <paulus@samba.org>, <rppt@kernel.org>, <akpm@linux-foundation.org>,
+        <oohall@gmail.com>
+CC:     <chenlifu@huawei.com>
+Subject: [PATCH -next] powerpc/powermac: Fix symbol not declared warnings
+Date:   Fri, 19 Aug 2022 15:43:11 +0800
+Message-ID: <20220819074311.862263-1-chenlifu@huawei.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/5] ARM: remove obsolete Makefile.boot infrastructure
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Ard Biesheuvel <ardb@kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-References: <20220818145616.3156379-1-arnd@kernel.org>
- <20220818145616.3156379-2-arnd@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220818145616.3156379-2-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.169]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/2022 17:56, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> There are a number of old Makefile.boot files that remain from the
-> multiplatform conversion, and three that are still in use.
-> 
-> These provide the "ZRELADDR", "PARAMS_PHYS" and "INITRD_PHYS" values
-> that are platform specific. It turns out that we can generally just
-> derive this from information that is available elsewhere:
-> 
-> - ZRELADDR is normally detected at runtime with the
->   CONFIG_AUTO_ZRELADDR flag, but also needed to be passed to
->   for 'make uImage'. In a multiplatform kernel, one always has
->   to pass this as the $(LOADADDR) variable, but in the StrongARM
->   kernels we can derive it from the sum of $(CONFIG_PHYS_OFFSET)
->   and $(TEXT_OFFSET) that are already known.
-> 
-> - PARAMS_PHYS and INITRD_PHYS are only used for bootpImage, which
->   in turn is only used for the pre-ATAGS 'param_struct' based boot
->   interface on StrongARM based machines with old boot loaders.
->   They can both be derived from CONFIG_PHYS_OFFSET and a machine
->   specific offset for the initrd, so all of the logic for these
->   can be part of arch/arm/boot/bootp/Makefile.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/arm/Kconfig                       |  2 +-
->  arch/arm/Makefile                      |  4 +--
->  arch/arm/boot/Makefile                 | 27 ++++++--------------
->  arch/arm/boot/bootp/Makefile           | 35 ++++++++++++++++++++++++--
->  arch/arm/mach-at91/Makefile.boot       |  4 ---
->  arch/arm/mach-davinci/Makefile.boot    |  8 ------
->  arch/arm/mach-dove/Makefile.boot       |  4 ---
->  arch/arm/mach-ep93xx/Makefile.boot     |  2 --
->  arch/arm/mach-footbridge/Makefile.boot |  5 ----
->  arch/arm/mach-imx/Makefile.boot        |  0
->  arch/arm/mach-iop32x/Makefile.boot     |  4 ---
->  arch/arm/mach-lpc18xx/Makefile.boot    |  4 ---
->  arch/arm/mach-lpc32xx/Makefile.boot    |  4 ---
->  arch/arm/mach-omap1/Makefile.boot      |  4 ---
->  arch/arm/mach-rpc/Makefile.boot        |  5 ----
->  arch/arm/mach-s3c/Makefile.boot        |  9 -------
+1. ppc_override_l2cr and ppc_override_l2cr_value are only used in
+   l2cr_init() function, so move them inside the function.
+2. has_l2cache is not used outside of the file, so mark it static, and
+   do not initialise statics to 0.
 
+Fixes the following warning:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> # s3c
+arch/powerpc/platforms/powermac/setup.c:74:5: warning: symbol 'ppc_override_l2cr' was not declared. Should it be static?
+arch/powerpc/platforms/powermac/setup.c:75:5: warning: symbol 'ppc_override_l2cr_value' was not declared. Should it be static?
+arch/powerpc/platforms/powermac/setup.c:76:5: warning: symbol 'has_l2cache' was not declared. Should it be static?
 
-Best regards,
-Krzysztof
+Signed-off-by: Chen Lifu <chenlifu@huawei.com>
+---
+ arch/powerpc/platforms/powermac/setup.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/arch/powerpc/platforms/powermac/setup.c b/arch/powerpc/platforms/powermac/setup.c
+index 04daa7f0a03c..f8b847a2f5b5 100644
+--- a/arch/powerpc/platforms/powermac/setup.c
++++ b/arch/powerpc/platforms/powermac/setup.c
+@@ -68,13 +68,11 @@
+ 
+ #include "pmac.h"
+ 
+ #undef SHOW_GATWICK_IRQS
+ 
+-int ppc_override_l2cr = 0;
+-int ppc_override_l2cr_value;
+-int has_l2cache = 0;
++static int has_l2cache;
+ 
+ int pmac_newworld;
+ 
+ static int current_root_goodness = -1;
+ 
+@@ -226,10 +224,13 @@ static void __init ohare_init(void)
+ 	}
+ }
+ 
+ static void __init l2cr_init(void)
+ {
++	int ppc_override_l2cr = 0;
++	int ppc_override_l2cr_value;
++
+ 	/* Checks "l2cr-value" property in the registry */
+ 	if (cpu_has_feature(CPU_FTR_L2CR)) {
+ 		struct device_node *np;
+ 
+ 		for_each_of_cpu_node(np) {
+-- 
+2.37.1
+
