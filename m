@@ -2,94 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742CDC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E7FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346551AbiHSGxh (ORCPT
+        id S1346368AbiHSG41 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 02:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        Fri, 19 Aug 2022 02:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346113AbiHSGxd (ORCPT
+        with ESMTP id S243277AbiHSG4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 02:53:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D8F2D1DA
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 23:53:31 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oOvsm-0008U9-Ds; Fri, 19 Aug 2022 08:53:28 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 999A7CE2C6;
-        Fri, 19 Aug 2022 06:53:27 +0000 (UTC)
-Date:   Fri, 19 Aug 2022 08:53:24 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-kernel@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: [PATCH] net: move from strlcpy with unused retval to strscpy
-Message-ID: <20220819065324.qfrbrs6hmr5szfuc@pengutronix.de>
-References: <20220818210050.7108-1-wsa+renesas@sang-engineering.com>
+        Fri, 19 Aug 2022 02:56:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F59DEB74;
+        Thu, 18 Aug 2022 23:56:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 198B761645;
+        Fri, 19 Aug 2022 06:56:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F2E5C433C1;
+        Fri, 19 Aug 2022 06:56:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660892183;
+        bh=pohykInq31JBkldU8Jz/BkVsWub0VBSAahB2HuQ7iI0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qLZ14YAr4yU6xRZqEyCcFZOqQzweZUfvzKbS7G7DJ9Lq+GpIVdr2tsjaiLyKLoBty
+         Ksj8Zd0ki338ZV7gXjnLpzfZiaTPjKlBS56hdP3yluz2o1UTT6FsSizULk8gCLJ55f
+         U1VtyxVWxS+wji2nhKJ0M6l+pFKdOBXoVN3HaXf8Cs1mmoCoGmiAGSs/8PzF5LIjAY
+         IlexXL3hSFW6t7n71DTWEMFGQYPSk+HMygo4s0riV+JeWwmxwaQP9+s8oIHbmKEY6h
+         GuKGk9yGCs3fkXAq6aALSw+aOjaxc5hna5S60nKaHeXpeyL00O41rCeZEQd7ZkblJI
+         IUOgGLVxBPHqQ==
+Received: by pali.im (Postfix)
+        id 49EEB761; Fri, 19 Aug 2022 08:56:20 +0200 (CEST)
+Date:   Fri, 19 Aug 2022 08:56:20 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: leds: register-bit-led: Add active-low
+ property
+Message-ID: <20220819065620.wvmy3kigvvbwo4bo@pali>
+References: <20220818172528.23062-1-pali@kernel.org>
+ <f635d5a7-6817-cd62-e395-63e346775716@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lcgs47n7y5fqaeta"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220818210050.7108-1-wsa+renesas@sang-engineering.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <f635d5a7-6817-cd62-e395-63e346775716@linaro.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Friday 19 August 2022 09:46:56 Krzysztof Kozlowski wrote:
+> Although the question is - where is the user of it?
 
---lcgs47n7y5fqaeta
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 18.08.2022 23:00:34, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
->=20
-> Link: https://lore.kernel.org/r/CAHk-=3DwgfRnXz0W3D37d01q3JFkr_i_uTL=3DV6=
-A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  drivers/net/can/sja1000/peak_pcmcia.c            |  2 +-
->  drivers/net/can/usb/peak_usb/pcan_usb_core.c     |  2 +-
-
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for CAN
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---lcgs47n7y5fqaeta
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmL/M2EACgkQrX5LkNig
-011LSQf/RMiol3VoFyzYvGXuMbEJrMnE8B4jhFphzfQ4g1FNThH0wE8TEoubHvgX
-uIWrIXW7H7AA/hYXUFwkQBbaboyM1cn4at59LZsTmK3hTsJvJ6YUVwUXMYNAelW6
-wehs2rHK/edwk9Dn4sr+SpIDeszdB5rC0MITEPzGqgQ82Oms1dK3eKWcaArPbX8W
-Z1UACWPBStiEGyBRFRxFY3iNHlIS5LIrhJMHIGYwTrtGq74xoRrauG0DZydbtIaP
-Mr0FPsBosKt6ojDbUdo+/n0lAbuA1u7JTpSDRExycTqL803iJr/CDngCNmv/mPdI
-Qb9yBIMerd4ji/CdUTdA7EgaoGYtnQ==
-=Wdh3
------END PGP SIGNATURE-----
-
---lcgs47n7y5fqaeta--
+I was planning to send updated powerpc DTS files with these
+register-bit-led definitions after accepting dt bindings.
