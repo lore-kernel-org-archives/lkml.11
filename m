@@ -2,254 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADC8C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB57C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349060AbiHSMqV (ORCPT
+        id S1348536AbiHSMqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        Fri, 19 Aug 2022 08:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348552AbiHSMqT (ORCPT
+        with ESMTP id S1349061AbiHSMqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:46:19 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A77FD2B26
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:46:17 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 27JCju1l019353;
-        Fri, 19 Aug 2022 21:45:57 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 27JCju1l019353
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1660913158;
-        bh=JMY2MPKM9JyScY3XQCjlJdcr/O0QREUcVVhTTkTMqqc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gR/n065C7EQC7Ze1gfIVtYHPwbzK8gbbTMqfwnr44fGYxwxU1mEcUls1JdOf9UEaj
-         wfClfXGvbL79g5hEFRyGeegXBH6vHq9x3dVA2zDSrgGQtSX1Npnl3hYDhJ7L4gvZ8N
-         +CzwCh7h5O7vg24DLZWq4nVyY9IQ7Ld+36srWGXFquqpwhWeJeISiSxrYHqOLNbCQW
-         oRLWNeAVKwOdKmy/3WLI0qpVQd7Xmpk0YeiKAEOW/F0SIji5vzdV+GxUHU5OTCyzDD
-         sL8e4rm7PmI74nQlmpef0EryEn8NWq2UkRjOKou/A93wvpvXKfflcH8JiBrZm/Ymyp
-         MStYPRVTe3drw==
-X-Nifty-SrcIP: [209.85.128.41]
-Received: by mail-wm1-f41.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so977661wmk.3;
-        Fri, 19 Aug 2022 05:45:57 -0700 (PDT)
-X-Gm-Message-State: ACgBeo26z0ukAASba5Z+3w8MwJBnYDwQcAwQQNlfwIPY5B5ovugW3WLR
-        nM+GS1kGcegTsVhW2Z9aaf0pcZVS5CAb2ecjQzI=
-X-Google-Smtp-Source: AA6agR77yKJLCnBSr+TKRNvoeR6wcLRSdlktRLs2iwmRq0Cep1GBY04NCj3oZjJReIjk4matMmh6cQ7gSSASyYJ/Ebg=
-X-Received: by 2002:a05:600c:1c23:b0:3a5:d936:e5bb with SMTP id
- j35-20020a05600c1c2300b003a5d936e5bbmr4455812wms.59.1660913155712; Fri, 19
- Aug 2022 05:45:55 -0700 (PDT)
+        Fri, 19 Aug 2022 08:46:25 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2397898A62
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:46:24 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id m3so323810lfg.10
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=K29+GrLurEVMz+IcmJCvsL3+V3VFmxk9IgPRnZQasec=;
+        b=TCew6KzbEtV2gO9hXzpONAq4N4e+nQyw/iU+jfOE5az9Be/FXPJIBc6GNySAnomO20
+         FgIqmRs+DEWlBchnjqHuoz3YZE/geyl87pjMz/Ohgiyr98XF9LbdAXYkAh1tN961/zPe
+         nvE0Puw8RuLjR+ICfL2cnUsxHafBSNqAxo7/f0FDLkrQBKd/PfhZ/XQ1uall65czZmHI
+         mS1Qz+aPkdTW1EnsyUJFILOw8mHFqrISCcZlrg2QEGnc1BV+YJUaqY+92Vi2aAOj6RFp
+         90pqM0ZgqacFn5pYXGPSz1TOerkmaYMdg85naGczDEuR53WgtlRXDWo4pwIQTxpTFJWM
+         jdvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=K29+GrLurEVMz+IcmJCvsL3+V3VFmxk9IgPRnZQasec=;
+        b=f7k8e4S78IrNeHpch0LZfZraFmg656z7Ic0gcCAOLp778qCXp3RKlj6D/bMuB6AqeD
+         latpFXPMbAak6EMbEHfvXjp4j7K5uAPM8ktlohf/0Znguw/RWifE9dvCdWWsYK5jTnDw
+         86T5vypHV+GK22pcc7fjQhrIxtT/XVD6QsIbLWEhooII0NEeKSBH4KeRLES21T1YkXEd
+         ct2j6Sr956ghnUZJTE2MqZpf02FqV9sjwQKTirJqGgctdZPKMPHMiiGGg53QbdjcP4eS
+         qdQ29xVye7qB1Bp/38MlSiRzqBEvM9Svr6noYQIXh7OeJeXozRfP1DPy5LH6/TOZeh9K
+         PhQA==
+X-Gm-Message-State: ACgBeo1pZ/Bbyz0xpByxQMpjXRo9THbP3cHjT/XbG3qss5QDE29dZWgt
+        UpzDvAdTC/Z0PxS07ZE3qHWweQ==
+X-Google-Smtp-Source: AA6agR5/vAR5q5Kr0vJwYrqhtgqJma98MRzgessllT6tIdcRYL/NOV9mrbay71eWVKq/BdtNDBUSLw==
+X-Received: by 2002:a05:6512:10cb:b0:48c:e0a6:221b with SMTP id k11-20020a05651210cb00b0048ce0a6221bmr2775454lfg.218.1660913182522;
+        Fri, 19 Aug 2022 05:46:22 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id c3-20020a056512074300b0048aee825e2esm88260lfs.282.2022.08.19.05.46.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 05:46:21 -0700 (PDT)
+Message-ID: <3b1a99df-58ed-9bed-aa11-14a1cd8b62b5@linaro.org>
+Date:   Fri, 19 Aug 2022 15:46:20 +0300
 MIME-Version: 1.0
-References: <892b6ab7-862c-1c0a-2996-0f8408e5043d@linux.ee>
- <89515325-fc21-31da-d238-6f7a9abbf9a0@gmx.de> <CAK7LNATuzry1MUj-VruOVUwU_nH2xJd_2SxD_s_Z1QBb3PVnQw@mail.gmail.com>
- <5dfd81eb-c8ca-b7f5-e80e-8632767c022d@gmx.de> <CAK7LNATO_30uHzAe-Vsy+hgu=wwEN_aPGET4Ys78rc3=nSuJsg@mail.gmail.com>
- <YNOafsB81ZcP2r7z@ls3530> <f599c358-815f-088e-f2aa-b064ccb64e44@infradead.org>
-In-Reply-To: <f599c358-815f-088e-f2aa-b064ccb64e44@infradead.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 19 Aug 2022 21:45:09 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAREcSW2Hn3Ty_zTVzTCLgYnFfo=ZcibE2zif1mBWp==4A@mail.gmail.com>
-Message-ID: <CAK7LNAREcSW2Hn3Ty_zTVzTCLgYnFfo=ZcibE2zif1mBWp==4A@mail.gmail.com>
-Subject: Re: linux-parisc compile failure in current git
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Helge Deller <deller@gmx.de>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Meelis Roos <mroos@linux.ee>,
-        Linux Kernel Development <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 5/6] dt-bindings: riscv: microchip: document icicle
+ reference design
+Content-Language: en-US
+To:     Conor Dooley <conor.dooley@microchip.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+References: <20220819122259.183600-1-conor.dooley@microchip.com>
+ <20220819122259.183600-6-conor.dooley@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220819122259.183600-6-conor.dooley@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 5:59 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Hi--
->
-> On 6/23/21 13:33, Helge Deller wrote:
-> > * Masahiro Yamada <masahiroy@kernel.org>:
-> >> On Thu, Jun 10, 2021 at 4:04 PM Helge Deller <deller@gmx.de> wrote:
-> >>>
-> >>> Hi Masahiro,
-> >>>
-> >>> On 6/10/21 4:03 AM, Masahiro Yamada wrote:
-> >>>> On Thu, Jun 10, 2021 at 7:50 AM Helge Deller <deller@gmx.de> wrote:
->
-> [snip]
->
-> >>>> But, please keep in mind that there is an issue remaining.
-> >>>>
-> >>>> Please see this code:
-> >>>>
-> >>>> ifdef CONFIG_64BIT
-> >>>> UTS_MACHINE := parisc64
-> >>>> CHECKFLAGS += -D__LP64__=1
-> >>>> CC_ARCHES = hppa64
-> >>>> LD_BFD := elf64-hppa-linux
-> >>>> else # 32-bit
-> >>>> CC_ARCHES = hppa hppa2.0 hppa1.1
-> >>>> LD_BFD := elf32-hppa-linux
-> >>>> endif
-> >>>>
-> >>>>
-> >>>> UTS_MACHINE is determined by CONFIG_64BIT.
-> >>>>
-> >>>> CONFIG_64BIT is defined only after Kconfig is finished.
-> >>>> When you are trying to configure the .config,
-> >>>> CONFIG_64BIT is not defined yet.
-> >>>> So UTS_MACHINE is always 'parisc'.
-> >>>
-> >>> Yes.
-> >>> See above, but it worked when I had SUBARCH=x86 (when running my laptop).
-> >>>
-> >>>
-> >>>> As you know, Kconfig files now have a bunch of 'cc-option' syntax
-> >>>> to check the compiler capability in Kconfig time.
-> >>>> Hence, you need to provide a proper compiler in Kconfig time too.
-> >>>>
-> >>>> When you build a 64-bit parisc kernel on a 32-bit parisc machine,
-> >>>
-> >>> Please note, that we don't have a 64-bit parisc userspace yet (just kernel).
-> >>> This means, that all builds on parisc machines are 32bit and do a
-> >>> cross-compilation to a parisc64 kernel if requested in the .config.
-> >>>
-> >>>> Kconfig is passed with CC=gcc since SUBARCH==UTS_MACHINE==parisc.
-> >>>> After Kconfig, CROSS_COMPILE=hppa64-* is set,
-> >>>> and the kernel is built by CC=hppa64-*-gcc.
-> >>>
-> >>> Right. That is the old behaviour. Based on the CONFIG_64BIT option
-> >>> the hppa64 compiler is choosen for CROSS_COMPILE.
-> >>>
-> >>>> So, Kconfig evaluated a compiletely different compiler. This is pointless.
-> >>>
-> >>> Yes, probably.
-> >>>
-> >>>
-> >>>> There are some options
-> >>>>
-> >>>> [option 1]
-> >>>>    revert the parisc bit of 23243c1ace9fb4eae2f75e0fe0ece8e3219fb4f3
-> >>>>    This will restore the functionality you may want, but
-> >>>>    as I said above, Kconfig is doing pointless things.
-> >>>
-> >>> as mentioned above: Doesn't solve the issue.
-> >>>
-> >>>> [option 2]
-> >>>>     Stop using cc-cross-prefix, and pass CROSS_COMPILE explicitly.
-> >>>>     This is what many architectures including arm, arm64 do.
-> >>>>     You need to explicitly pass CROSS_COMPILE=aarch64-linux-gnu- etc.
-> >>>>     if you are cross-compiling arm64.
-> >>>
-> >>> Might be an option, but it's not as handy as simply choosing CONFIG_64BIT
-> >>> and then things are done automatically.
-> >>>
-> >>>> [option 3]
-> >>>>     Introduce ARCH=parisc64.
-> >>>>
-> >>>>     When you are building 64-bit kernel, you can pass ARCH=parisc64
-> >>>>      A patch attached.  (but not tested much)
-> >>>
-> >>> Tried it, but doesn't work.
-> >>> asm-offsets.c is still preprocessed with 32bit compiler (gcc, not hppa20-gcc).
-> >>>
-> >>> Thanks for your help so far!
-> >>> If you like I'm happy to give you an account on a hppa64 machine to reproduce yourself.
-> >>> I'll now try to bisect where it goes wrong. There must be something else before commit 23243c1ace9fb4eae2f75e0fe0ece8e3219fb4f3.
-> >>>
-> >>> Helge
-> >>
-> >>
-> >> Sorry for my late reply.
-> >
-> > Me too.... :-(
->
-> Sorry to jump in even later, but:
->
-> I see that
-> $ make ARCH=parisc64 defconfig
-> does set CONFIG_64BIT.
+On 19/08/2022 15:22, Conor Dooley wrote:
+> Add a new compatible for the icicle kit reference design's 22.09
+> release, which made some changes to the memory map - including adding
+> the ability to read the CCCs via the system controller bus. Technically
+> that was always possible, but the specific CC chosen could vary per
+> run of the synthesis tool. Hopefully this is the last reference design
+> version impacting the memory map.
+> 
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
 
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
-Strange. It does for me.
-
-
-
-masahiro@grover:~/ref/linux-next$ make ARCH=parisc64 defconfig
-*** Default configuration is based on 'generic-64bit_defconfig'
-#
-# configuration written to .config
-#
-masahiro@grover:~/ref/linux-next$ grep CONFIG_64BIT .config
-CONFIG_64BIT=y
-
-
-
-
-
-
-
-
-
-
-> Is there a way to do
-> $ make ARCH=parisc64 allmodconfig
-> ?
-> That does not set CONFIG_64BIT in my testing.
-> (testing on linux-next-20220817)
-
-
-Right.
-allmodconfig does not set CONFIG_64BIT.
-
-I think it is the same as before.
-Is this thread related?
-
-
-
-The reason is 64BIT depends on PA8X00.
-
-allmodconfig chooses PA7000 instead of PA8X00
-in the "Processor type" choice since
-PA7000 is the default.
-
-
-If you apply this patch,
-
-
-
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index 7f059cd1196a..458b8e22e240 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -146,7 +146,7 @@ menu "Processor type and features"
-
- choice
-        prompt "Processor type"
--       default PA7000
-+       default PA8X00
-
- config PA7000
-        bool "PA7000/PA7100"
-
-
-
-
-
-allmodconfig will start enabling CONFIG_64BIT,
-but it is up to Helge.
-
-
-
-
-> I would like to have a command-line method to do that,
-> without editing the .config file.
->
-> Thanks.
-> --
-> ~Randy
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
