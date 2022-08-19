@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A43C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B565DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353395AbiHSQox (ORCPT
+        id S1353855AbiHSQo5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
+        Fri, 19 Aug 2022 12:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354113AbiHSQlu (ORCPT
+        with ESMTP id S1354121AbiHSQlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBEE1296C3;
-        Fri, 19 Aug 2022 09:10:35 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5ECA1296DD;
+        Fri, 19 Aug 2022 09:10:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9B4161811;
-        Fri, 19 Aug 2022 16:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05A6C433C1;
-        Fri, 19 Aug 2022 16:10:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63A59B82819;
+        Fri, 19 Aug 2022 16:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F0DC433C1;
+        Fri, 19 Aug 2022 16:09:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925434;
-        bh=OuBP3EZABoATWLplK79AVl6BvvWf0TZZLXbKO6eBR7A=;
+        s=korg; t=1660925356;
+        bh=vBcnp/8+3iltka4BgipB5G0+Hb2FRfuz7ajUL1671+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SWKdCw/I6f8ggFnefNCfXIuLR1MUSgf082/Fnw9CSEmq9Ks2K60e8VSnfoyP87JK6
-         DnHrHEaBexNI8P0F/sTQY2X1I5zg0EoWdHT3oySiq0ctFnFafYJV7ewcYyprboT3Rm
-         z6sRyp3rqnadf2/HkN9VgZ6v8/Rzu7LGFuvrHVOU=
+        b=1d56JLka8DnbxaQzgfSX0RUvQIUCB6CdyIocJTM/ubhjlLUe7BJ8iCmYfxNfScU1X
+         HJAMFrXgWz60Sh2tWWZg5HeLitvi10XqVXuPSZXDWmaJSuaphJP+3gP6cn99bs9qeu
+         IWiICy4FeLyIGQSSXY97OWLpaubIPR6gfQCnFd8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 472/545] iommu/vt-d: avoid invalid memory access via node_online(NUMA_NO_NODE)
-Date:   Fri, 19 Aug 2022 17:44:02 +0200
-Message-Id: <20220819153850.522230547@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.10 465/545] usbnet: smsc95xx: Avoid link settings race on interrupt reception
+Date:   Fri, 19 Aug 2022 17:43:55 +0200
+Message-Id: <20220819153850.209594560@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,64 +53,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit b0b0b77ea611e3088e9523e60860f4f41b62b235 ]
+[ Upstream commit 8960f878e39fadc03d74292a6731f1e914cf2019 ]
 
-KASAN reports:
+When a PHY interrupt is signaled, the SMSC LAN95xx driver updates the
+MAC full duplex mode and PHY flow control registers based on cached data
+in struct phy_device:
 
-[ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
-[    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
-[    4.683454][    T0]
-[    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
-[    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
-[    4.703196][    T0] Call Trace:
-[    4.706334][    T0]  <TASK>
-[ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+  smsc95xx_status()                 # raises EVENT_LINK_RESET
+    usbnet_deferred_kevent()
+      smsc95xx_link_reset()         # uses cached data in phydev
 
-after converting the type of the first argument (@nr, bit number)
-of arch_test_bit() from `long` to `unsigned long`[0].
+Simultaneously, phylib polls link status once per second and updates
+that cached data:
 
-Under certain conditions (for example, when ACPI NUMA is disabled
-via command line), pxm_to_node() can return %NUMA_NO_NODE (-1).
-It is valid 'magic' number of NUMA node, but not valid bit number
-to use in bitops.
-node_online() eventually descends to test_bit() without checking
-for the input, assuming it's on caller side (which might be good
-for perf-critical tasks). There, -1 becomes %ULONG_MAX which leads
-to an insane array index when calculating bit position in memory.
+  phy_state_machine()
+    phy_check_link_status()
+      phy_read_status()
+        lan87xx_read_status()
+          genphy_read_status()      # updates cached data in phydev
 
-For now, add an explicit check for @node being not %NUMA_NO_NODE
-before calling test_bit(). The actual logics didn't change here
-at all.
+If smsc95xx_link_reset() wins the race against genphy_read_status(),
+the registers may be updated based on stale data.
 
-[0] https://github.com/norov/linux/commit/0e862838f290147ea9c16db852d8d494b552d38d
+E.g. if the link was previously down, phydev->duplex is set to
+DUPLEX_UNKNOWN and that's what smsc95xx_link_reset() will use, even
+though genphy_read_status() may update it to DUPLEX_FULL afterwards.
 
-Fixes: ee34b32d8c29 ("dmar: support for parsing Remapping Hardware Static Affinity structure")
-Cc: stable@vger.kernel.org # 2.6.33+
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+PHY interrupts are currently only enabled on suspend to trigger wakeup,
+so the impact of the race is limited, but we're about to enable them
+perpetually.
+
+Avoid the race by delaying execution of smsc95xx_link_reset() until
+phy_state_machine() has done its job and calls back via
+smsc95xx_handle_link_change().
+
+Signaling EVENT_LINK_RESET on wakeup is not necessary because phylib
+picks up link status changes through polling.  So drop the declaration
+of a ->link_reset() callback.
+
+Note that the semicolon on a line by itself added in smsc95xx_status()
+is a placeholder for a function call which will be added in a subsequent
+commit.  That function call will actually handle the INT_ENP_PHY_INT_
+interrupt.
+
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel/dmar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/smsc95xx.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 70d569b80ecf..0bc497f4cb9f 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -497,7 +497,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
- 		if (drhd->reg_base_addr == rhsa->base_address) {
- 			int node = pxm_to_node(rhsa->proximity_domain);
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index b1d7331c3c5c..65d42f5d42a3 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -564,7 +564,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev)
+ 	return smsc95xx_write_reg(dev, AFC_CFG, afc_cfg);
+ }
  
--			if (!node_online(node))
-+			if (node != NUMA_NO_NODE && !node_online(node))
- 				node = NUMA_NO_NODE;
- 			drhd->iommu->node = node;
- 			return 0;
+-static int smsc95xx_link_reset(struct usbnet *dev)
++static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
+ {
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	unsigned long flags;
+@@ -581,14 +581,16 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
+ 
+ 	ret = smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
+-	if (ret < 0)
+-		return ret;
++	if (ret < 0) {
++		if (ret != -ENODEV)
++			netdev_warn(dev->net,
++				    "Error updating MAC full duplex mode\n");
++		return;
++	}
+ 
+ 	ret = smsc95xx_phy_update_flowcontrol(dev);
+ 	if (ret < 0)
+ 		netdev_warn(dev->net, "Error updating PHY flow control\n");
+-
+-	return ret;
+ }
+ 
+ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+@@ -605,7 +607,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+ 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+ 
+ 	if (intdata & INT_ENP_PHY_INT_)
+-		usbnet_defer_kevent(dev, EVENT_LINK_RESET);
++		;
+ 	else
+ 		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+ 			    intdata);
+@@ -1062,6 +1064,7 @@ static void smsc95xx_handle_link_change(struct net_device *net)
+ 	struct usbnet *dev = netdev_priv(net);
+ 
+ 	phy_print_status(net->phydev);
++	smsc95xx_mac_update_fullduplex(dev);
+ 	usbnet_defer_kevent(dev, EVENT_LINK_CHANGE);
+ }
+ 
+@@ -1968,7 +1971,6 @@ static const struct driver_info smsc95xx_info = {
+ 	.description	= "smsc95xx USB 2.0 Ethernet",
+ 	.bind		= smsc95xx_bind,
+ 	.unbind		= smsc95xx_unbind,
+-	.link_reset	= smsc95xx_link_reset,
+ 	.reset		= smsc95xx_reset,
+ 	.check_connect	= smsc95xx_start_phy,
+ 	.stop		= smsc95xx_stop,
 -- 
 2.35.1
 
