@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E06C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72209C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350860AbiHSP6a (ORCPT
+        id S1350715AbiHSP6f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        Fri, 19 Aug 2022 11:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350958AbiHSP4G (ORCPT
+        with ESMTP id S1350951AbiHSP4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 11:56:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853F230F6E;
-        Fri, 19 Aug 2022 08:50:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BC3319;
+        Fri, 19 Aug 2022 08:50:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C17D7615E7;
-        Fri, 19 Aug 2022 15:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78D2C433C1;
-        Fri, 19 Aug 2022 15:50:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBCA0B827F8;
+        Fri, 19 Aug 2022 15:50:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A4C0C433C1;
+        Fri, 19 Aug 2022 15:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924257;
-        bh=YhgF2yt0u3VyqWuFgGE9+OCvXB5d0Chiy9PsctpcyxA=;
+        s=korg; t=1660924251;
+        bh=d/iGv3GxcSHuxsO3Syz/ugha7MoQ9UUrS+dhzXkqnuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PgzGZuugVsQ/KxB6f6/bPvQ57Ga8OnXRIwnn6sZ412tXOloY9pGTzQ8A+aRwpiztG
-         zkjXJWQgaqlgobFZ0m3yXqGafYOFpoutvoJ8UO2QOq9mAEGNAmxCs/rKfirTDV5t6o
-         p/h59RWGWQ6e+A7xqY7Buah0YWFhGvCSmIaq5PVM=
+        b=GMrwtXQ48JWhOZZdDzLzDOOHgw8hTrMUGkfi2VhC6XoUZ9Fpfb7ZUQCH7UWamzR+l
+         tCJFkeDe0FnxF6khK7FIsYX+TdlzBXAkVZOv27gFGvsrUY7AZ+7q1NjZLtsDdXUt9R
+         UI2MQVtj4RM4zMQcU1FKexQ/KFTfLulC9ZHtnDTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 109/545] meson-mx-socinfo: Fix refcount leak in meson_mx_socinfo_init
-Date:   Fri, 19 Aug 2022 17:37:59 +0200
-Message-Id: <20220819153834.168000884@linuxfoundation.org>
+Subject: [PATCH 5.10 107/545] spi: spi-rspi: Fix PIO fallback on RZ platforms
+Date:   Fri, 19 Aug 2022 17:37:57 +0200
+Message-Id: <20220819153834.087327904@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,36 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit a2106f38077e78afcb4bf98fdda3e162118cfb3d ]
+[ Upstream commit b620aa3a7be346f04ae7789b165937615c6ee8d3 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+RSPI IP on RZ/{A, G2L} SoC's has the same signal for both interrupt
+and DMA transfer request. Setting DMARS register for DMA transfer
+makes the signal to work as a DMA transfer request signal and
+subsequent interrupt requests to the interrupt controller
+are masked.
 
-Fixes: 5e68c0fc8df8 ("soc: amlogic: Add Meson6/Meson8/Meson8b/Meson8m2 SoC Information driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220524065729.33689-1-linmq006@gmail.com
+PIO fallback does not work as interrupt signal is disabled.
+
+This patch fixes this issue by re-enabling the interrupts by
+calling dmaengine_synchronize().
+
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220721143449.879257-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/amlogic/meson-mx-socinfo.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-rspi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/soc/amlogic/meson-mx-socinfo.c b/drivers/soc/amlogic/meson-mx-socinfo.c
-index 78f0f1aeca57..92125dd65f33 100644
---- a/drivers/soc/amlogic/meson-mx-socinfo.c
-+++ b/drivers/soc/amlogic/meson-mx-socinfo.c
-@@ -126,6 +126,7 @@ static int __init meson_mx_socinfo_init(void)
- 	np = of_find_matching_node(NULL, meson_mx_socinfo_analog_top_ids);
- 	if (np) {
- 		analog_top_regmap = syscon_node_to_regmap(np);
-+		of_node_put(np);
- 		if (IS_ERR(analog_top_regmap))
- 			return PTR_ERR(analog_top_regmap);
- 
+diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
+index ea03cc589e61..4600e3c9e49e 100644
+--- a/drivers/spi/spi-rspi.c
++++ b/drivers/spi/spi-rspi.c
+@@ -612,6 +612,10 @@ static int rspi_dma_transfer(struct rspi_data *rspi, struct sg_table *tx,
+ 					       rspi->dma_callbacked, HZ);
+ 	if (ret > 0 && rspi->dma_callbacked) {
+ 		ret = 0;
++		if (tx)
++			dmaengine_synchronize(rspi->ctlr->dma_tx);
++		if (rx)
++			dmaengine_synchronize(rspi->ctlr->dma_rx);
+ 	} else {
+ 		if (!ret) {
+ 			dev_err(&rspi->ctlr->dev, "DMA timeout\n");
 -- 
 2.35.1
 
