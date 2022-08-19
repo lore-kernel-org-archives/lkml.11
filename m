@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5116C32774
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E3BC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350221AbiHSPvQ (ORCPT
+        id S1350371AbiHSPuX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        Fri, 19 Aug 2022 11:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350234AbiHSPuG (ORCPT
+        with ESMTP id S1350317AbiHSPti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:06 -0400
+        Fri, 19 Aug 2022 11:49:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643FF105219;
-        Fri, 19 Aug 2022 08:47:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD939104B2C;
+        Fri, 19 Aug 2022 08:47:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F255616B5;
-        Fri, 19 Aug 2022 15:47:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C06BC433D6;
-        Fri, 19 Aug 2022 15:47:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A452B616B3;
+        Fri, 19 Aug 2022 15:47:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F3BC433D6;
+        Fri, 19 Aug 2022 15:47:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924077;
-        bh=eH8DaH1rOHUDuA9B08awRUYCR1/DUe2jXgaguD0AhxA=;
+        s=korg; t=1660924068;
+        bh=38z5+1E7HVbT6HeQjqkDPqJFtUVE6OakjVGr/qrHk+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0lPmnkSBQPz+kfQ4fbMvsUetRVe38Uqnoz0ChAf17KGOlpS6Qxw0QizA6YbWwvfW
-         IV9LqvFraEQdk0qDAAIwEn3R4hY6Sez3bdVEEwjkmnXAdre0SRnZeuy8TQWemJJyJY
-         5zte+PoTrGtPvSTPmfORA09VtEOuyHxux4x14LYI=
+        b=tsQGqy9Xm5jKxEt35hVXgQq1EA1qbIUlQuOCnG0ed5PxNPhSL9SYqWHCVjiPw4WIK
+         pReB1JPbheRDnag+U0LdxMCcB+JJXfZD9uiYjjzqK5bMSmAUE7Y7gdkaKsUEvacSL3
+         i/T/I9Eh4iLIy2H/kjHKbtjUsN5njUGQKztUHDFg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH 5.10 046/545] drm/nouveau/acpi: Dont print error when we get -EINPROGRESS from pm_runtime
-Date:   Fri, 19 Aug 2022 17:36:56 +0200
-Message-Id: <20220819153831.277673694@linuxfoundation.org>
+        stable@vger.kernel.org, Timur Tabi <ttabi@nvidia.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.10 044/545] drm/nouveau: fix another off-by-one in nvbios_addr
+Date:   Fri, 19 Aug 2022 17:36:54 +0200
+Message-Id: <20220819153831.183858332@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,32 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Timur Tabi <ttabi@nvidia.com>
 
-commit 53c26181950ddc3c8ace3c0939c89e9c4d8deeb9 upstream.
+commit c441d28945fb113220d48d6c86ebc0b090a2b677 upstream.
 
-Since this isn't actually a failure.
+This check determines whether a given address is part of
+image 0 or image 1.  Image 1 starts at offset image0_size,
+so that address should be included.
 
+Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
+Cc: <stable@vger.kernel.org> # v4.8+
+Signed-off-by: Timur Tabi <ttabi@nvidia.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
 Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: 79e765ad665d ("drm/nouveau/drm/nouveau: Prevent handling ACPI HPD events too early")
-Cc: <stable@vger.kernel.org> # v4.19+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-2-lyude@redhat.com
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511163716.3520591-1-ttabi@nvidia.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
+ drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_display.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_display.c
-@@ -543,7 +543,7 @@ nouveau_display_acpi_ntfy(struct notifie
- 				 * it's own hotplug events.
- 				 */
- 				pm_runtime_put_autosuspend(drm->dev->dev);
--			} else if (ret == 0) {
-+			} else if (ret == 0 || ret == -EINPROGRESS) {
- 				/* We've started resuming the GPU already, so
- 				 * it will handle scheduling a full reprobe
- 				 * itself
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
+@@ -33,7 +33,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
+ {
+ 	u32 p = *addr;
+ 
+-	if (*addr > bios->image0_size && bios->imaged_addr) {
++	if (*addr >= bios->image0_size && bios->imaged_addr) {
+ 		*addr -= bios->image0_size;
+ 		*addr += bios->imaged_addr;
+ 	}
 
 
