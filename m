@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B00C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695A0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354317AbiHSQwi (ORCPT
+        id S1354330AbiHSQwl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58230 "EHLO
+        Fri, 19 Aug 2022 12:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354468AbiHSQvA (ORCPT
+        with ESMTP id S1354488AbiHSQvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:51:00 -0400
+        Fri, 19 Aug 2022 12:51:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B90D4192;
-        Fri, 19 Aug 2022 09:14:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763242BEC;
+        Fri, 19 Aug 2022 09:14:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F5FEB8281C;
-        Fri, 19 Aug 2022 16:12:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67757C433C1;
-        Fri, 19 Aug 2022 16:12:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91FC4B82819;
+        Fri, 19 Aug 2022 16:12:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB4DC433D7;
+        Fri, 19 Aug 2022 16:12:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925565;
-        bh=9+haSAmpSNCpSQ93WhxmWz6akqKUaW0JkC/VW2kYV0c=;
+        s=korg; t=1660925572;
+        bh=zuv1MP5ABNGIITBFu1rW9h/yCGoWH0d7mHpSVdLV2t8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hy94WwflTXNBv/pFOBqAH06BThv+5/2td91uIH2ZpQPSHnDvdx9JZRFBvq1IC7nlc
-         5IWVY37BlsqWdcEm7ZLGa+12aaVsMBbkD3TG5JSquPB8x4ZKX6e9CCQPHH8BJm2IY4
-         7MfZs1m8cjEDcUDVagMjhw/C/ZXE7WmQHNsbs/PM=
+        b=sJuZcZawUks42Q5WqEPB/Mz/hBwmImg+y0foHZZe1Vhe2xFpmtNFzURjtMUijr524
+         1vX8oXeFo7whwDhUyaJgJfLfDUwEpy+L1ejMcmxMbokYYzF61GFuKe1bJdnnjPMeOo
+         y/7DoTArnbucsEwHCagBJr1MTXg7tLiaDxwzi9P8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ahmed Zaki <anzaki@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Viacheslav Sablin <sablin@ispras.ru>
-Subject: [PATCH 5.10 531/545] mac80211: fix a memory leak where sta_info is not freed
-Date:   Fri, 19 Aug 2022 17:45:01 +0200
-Message-Id: <20220819153853.344912739@linuxfoundation.org>
+        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 506/545] KVM: x86/pmu: Use different raw event masks for AMD and Intel
+Date:   Fri, 19 Aug 2022 17:44:36 +0200
+Message-Id: <20220819153852.128099515@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,79 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ahmed Zaki <anzaki@gmail.com>
+From: Jim Mattson <jmattson@google.com>
 
-commit 8f9dcc29566626f683843ccac6113a12208315ca upstream.
+[ Upstream commit 95b065bf5c431c06c68056a03a5853b660640ecc ]
 
-The following is from a system that went OOM due to a memory leak:
+The third nybble of AMD's event select overlaps with Intel's IN_TX and
+IN_TXCP bits. Therefore, we can't use AMD64_RAW_EVENT_MASK on Intel
+platforms that support TSX.
 
-wlan0: Allocated STA 74:83:c2:64:0b:87
-wlan0: Allocated STA 74:83:c2:64:0b:87
-wlan0: IBSS finish 74:83:c2:64:0b:87 (---from ieee80211_ibss_add_sta)
-wlan0: Adding new IBSS station 74:83:c2:64:0b:87
-wlan0: moving STA 74:83:c2:64:0b:87 to state 2
-wlan0: moving STA 74:83:c2:64:0b:87 to state 3
-wlan0: Inserted STA 74:83:c2:64:0b:87
-wlan0: IBSS finish 74:83:c2:64:0b:87 (---from ieee80211_ibss_work)
-wlan0: Adding new IBSS station 74:83:c2:64:0b:87
-wlan0: moving STA 74:83:c2:64:0b:87 to state 2
-wlan0: moving STA 74:83:c2:64:0b:87 to state 3
-.
-.
-wlan0: expiring inactive not authorized STA 74:83:c2:64:0b:87
-wlan0: moving STA 74:83:c2:64:0b:87 to state 2
-wlan0: moving STA 74:83:c2:64:0b:87 to state 1
-wlan0: Removed STA 74:83:c2:64:0b:87
-wlan0: Destroyed STA 74:83:c2:64:0b:87
+Declare a raw_event_mask in the kvm_pmu structure, initialize it in
+the vendor-specific pmu_refresh() functions, and use that mask for
+PERF_TYPE_RAW configurations in reprogram_gp_counter().
 
-The ieee80211_ibss_finish_sta() is called twice on the same STA from 2
-different locations. On the second attempt, the allocated STA is not
-destroyed creating a kernel memory leak.
-
-This is happening because sta_info_insert_finish() does not call
-sta_info_free() the second time when the STA already exists (returns
--EEXIST). Note that the caller sta_info_insert_rcu() assumes STA is
-destroyed upon errors.
-
-Same fix is applied to -ENOMEM.
-
-Signed-off-by: Ahmed Zaki <anzaki@gmail.com>
-Link: https://lore.kernel.org/r/20211002145329.3125293-1-anzaki@gmail.com
-[change the error path label to use the existing code]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Viacheslav Sablin <sablin@ispras.ru>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 710c47651431 ("KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW")
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220308012452.3468611-1-jmattson@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/sta_info.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/pmu.c              | 3 ++-
+ arch/x86/kvm/svm/pmu.c          | 1 +
+ arch/x86/kvm/vmx/pmu_intel.c    | 1 +
+ 4 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -645,13 +645,13 @@ static int sta_info_insert_finish(struct
- 	/* check if STA exists already */
- 	if (sta_info_get_bss(sdata, sta->sta.addr)) {
- 		err = -EEXIST;
--		goto out_err;
-+		goto out_cleanup;
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 87c13ef4ee8e..613334d626b2 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -439,6 +439,7 @@ struct kvm_pmu {
+ 	u64 global_ctrl_mask;
+ 	u64 global_ovf_ctrl_mask;
+ 	u64 reserved_bits;
++	u64 raw_event_mask;
+ 	u8 version;
+ 	struct kvm_pmc gp_counters[INTEL_PMC_MAX_GENERIC];
+ 	struct kvm_pmc fixed_counters[INTEL_PMC_MAX_FIXED];
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 350e7cdaad02..8b622ae9f2b4 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -181,6 +181,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	u32 type = PERF_TYPE_RAW;
+ 	struct kvm *kvm = pmc->vcpu->kvm;
+ 	struct kvm_pmu_event_filter *filter;
++	struct kvm_pmu *pmu = vcpu_to_pmu(pmc->vcpu);
+ 	bool allow_event = true;
+ 
+ 	if (eventsel & ARCH_PERFMON_EVENTSEL_PIN_CONTROL)
+@@ -217,7 +218,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
  	}
  
- 	sinfo = kzalloc(sizeof(struct station_info), GFP_KERNEL);
- 	if (!sinfo) {
- 		err = -ENOMEM;
--		goto out_err;
-+		goto out_cleanup;
- 	}
+ 	if (type == PERF_TYPE_RAW)
+-		config = eventsel & AMD64_RAW_EVENT_MASK;
++		config = eventsel & pmu->raw_event_mask;
  
- 	local->num_sta++;
-@@ -707,8 +707,8 @@ static int sta_info_insert_finish(struct
-  out_drop_sta:
- 	local->num_sta--;
- 	synchronize_net();
-+ out_cleanup:
- 	cleanup_single_sta(sta);
-- out_err:
- 	mutex_unlock(&local->sta_mtx);
- 	kfree(sinfo);
- 	rcu_read_lock();
+ 	if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
+ 		return;
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index 49e5be735f14..35da84f63b20 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -295,6 +295,7 @@ static void amd_pmu_refresh(struct kvm_vcpu *vcpu)
+ 
+ 	pmu->counter_bitmask[KVM_PMC_GP] = ((u64)1 << 48) - 1;
+ 	pmu->reserved_bits = 0xfffffff000280000ull;
++	pmu->raw_event_mask = AMD64_RAW_EVENT_MASK;
+ 	pmu->version = 1;
+ 	/* not applicable to AMD; but clean them to prevent any fall out */
+ 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index b3ca19682975..663b6eb5de66 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -333,6 +333,7 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
+ 	pmu->version = 0;
+ 	pmu->reserved_bits = 0xffffffff00200000ull;
++	pmu->raw_event_mask = X86_RAW_EVENT_MASK;
+ 
+ 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
+ 	if (!entry)
+-- 
+2.35.1
+
 
 
