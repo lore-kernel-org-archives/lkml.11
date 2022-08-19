@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA899C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD353C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354054AbiHSQrg (ORCPT
+        id S1353961AbiHSQrl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
+        Fri, 19 Aug 2022 12:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353948AbiHSQpc (ORCPT
+        with ESMTP id S1353966AbiHSQpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653CF12A1C5;
-        Fri, 19 Aug 2022 09:11:38 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6043512A1D3;
+        Fri, 19 Aug 2022 09:11:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9CB1B82819;
-        Fri, 19 Aug 2022 16:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5450EC433D6;
-        Fri, 19 Aug 2022 16:10:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6964B82822;
+        Fri, 19 Aug 2022 16:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ABE5C433D7;
+        Fri, 19 Aug 2022 16:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925455;
-        bh=Z0zUXD23FRG/a7la+haL1pBW6pnjs8RRXnrpGf3MS9I=;
+        s=korg; t=1660925472;
+        bh=m12qmVYfHBX0x5j74m/PMuBKWQQgC3NVEWHrfsdh0Kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KGmsvcnJFEdf5PI7syuu5u1V4wZmojmbPEJMmY4hBZA2tqGt2KJusvBsohWGOPbJf
-         UGMxFUrHNUcJPdmULOTmR5yykQNxHO2JFIuoiKmq1A70jROLvhwxwcRWogcQY+SsYk
-         hXyZo1/R6X+Qpq+2gXbsmSHLMVsQ2IMsYsEgrI9s=
+        b=10NN1a2uGUES14nB2Rk2kKvB1pQTkZXRX/zq9bt1KEW1fxz5F4NoGw/dS6/Vlk1by
+         JdIL4qCDUS92fW0NIPIyBXwN1Pdss0HOQSrYzoSjk+TYb8zGXB/hnLLbGA3Ggeskp+
+         XBox7zJs/veQLjnr++FmMoqGHmMqEhpXT1SWrd8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 496/545] ACPI: CPPC: Do not prevent CPPC from working in the future
-Date:   Fri, 19 Aug 2022 17:44:26 +0200
-Message-Id: <20220819153851.674946511@linuxfoundation.org>
+Subject: [PATCH 5.10 500/545] KVM: VMX: Drop explicit nested check from vmx_set_cr4()
+Date:   Fri, 19 Aug 2022 17:44:30 +0200
+Message-Id: <20220819153851.866986742@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,129 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-[ Upstream commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 ]
+[ Upstream commit a447e38a7fadb2e554c3942dda183e55cccd5df0 ]
 
-There is a problem with the current revision checks in
-is_cppc_supported() that they essentially prevent the CPPC support
-from working if a new _CPC package format revision being a proper
-superset of the v3 and only causing _CPC to return a package with more
-entries (while retaining the types and meaning of the entries defined by
-the v3) is introduced in the future and used by the platform firmware.
+Drop vmx_set_cr4()'s explicit check on the 'nested' module param now
+that common x86 handles the check by incorporating VMXE into the CR4
+reserved bits, via kvm_cpu_caps.  X86_FEATURE_VMX is set in kvm_cpu_caps
+(by vmx_set_cpu_caps()), if and only if 'nested' is true.
 
-In that case, as long as the number of entries in the _CPC return
-package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
-use the v3 support code and disregard the additional package entries
-added by the new package format revision.
+No functional change intended.
 
-For this reason, drop is_cppc_supported() altogether, put the revision
-checks directly into acpi_cppc_processor_probe() so they are easier to
-follow and rework them to take the case mentioned above into account.
-
-Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
-Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Message-Id: <20201007014417.29276-3-sean.j.christopherson@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 54 ++++++++++++++++++----------------------
- include/acpi/cppc_acpi.h |  2 +-
- 2 files changed, 25 insertions(+), 31 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 2ac0773326e9..b62348a7e4d9 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -607,33 +607,6 @@ static int pcc_data_alloc(int pcc_ss_id)
- 	return 0;
- }
- 
--/* Check if CPPC revision + num_ent combination is supported */
--static bool is_cppc_supported(int revision, int num_ent)
--{
--	int expected_num_ent;
--
--	switch (revision) {
--	case CPPC_V2_REV:
--		expected_num_ent = CPPC_V2_NUM_ENT;
--		break;
--	case CPPC_V3_REV:
--		expected_num_ent = CPPC_V3_NUM_ENT;
--		break;
--	default:
--		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
--			revision);
--		return false;
--	}
--
--	if (expected_num_ent != num_ent) {
--		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
--			num_ent, expected_num_ent, revision);
--		return false;
--	}
--
--	return true;
--}
--
- /*
-  * An example CPC table looks like the following.
-  *
-@@ -729,7 +702,6 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 				cpc_obj->type);
- 		goto out_free;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 1b75847d8a49..154ec5d8cdf5 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -3211,18 +3211,13 @@ int vmx_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
+ 		}
  	}
--	cpc_ptr->num_entries = num_ent;
  
- 	/* Second entry should be revision. */
- 	cpc_obj = &out_obj->package.elements[1];
-@@ -740,10 +712,32 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 				cpc_obj->type);
- 		goto out_free;
- 	}
--	cpc_ptr->version = cpc_rev;
- 
--	if (!is_cppc_supported(cpc_rev, num_ent))
-+	if (cpc_rev < CPPC_V2_REV) {
-+		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
-+			 pr->id);
- 		goto out_free;
-+	}
-+
+-	if (cr4 & X86_CR4_VMXE) {
+-		/*
+-		 * To use VMXON (and later other VMX instructions), a guest
+-		 * must first be able to turn on cr4.VMXE (see handle_vmon()).
+-		 * So basically the check on whether to allow nested VMX
+-		 * is here.  We operate under the default treatment of SMM,
+-		 * so VMX cannot be enabled under SMM.  Note, guest CPUID is
+-		 * intentionally ignored, it's handled by cr4_guest_rsvd_bits.
+-		 */
+-		if (!nested || is_smm(vcpu))
+-			return 1;
+-	}
 +	/*
-+	 * Disregard _CPC if the number of entries in the return pachage is not
-+	 * as expected, but support future revisions being proper supersets of
-+	 * the v3 and only causing more entries to be returned by _CPC.
++	 * We operate under the default treatment of SMM, so VMX cannot be
++	 * enabled under SMM.  Note, whether or not VMXE is allowed at all is
++	 * handled by kvm_valid_cr4().
 +	 */
-+	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
-+	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
-+	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
-+		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
-+			 num_ent, pr->id);
-+		goto out_free;
-+	}
-+	if (cpc_rev > CPPC_V3_REV) {
-+		num_ent = CPPC_V3_NUM_ENT;
-+		cpc_rev = CPPC_V3_REV;
-+	}
-+
-+	cpc_ptr->num_entries = num_ent;
-+	cpc_ptr->version = cpc_rev;
++	if ((cr4 & X86_CR4_VMXE) && is_smm(vcpu))
++		return 1;
  
- 	/* Iterate through remaining entries in _CPC */
- 	for (i = 2; i < num_ent; i++) {
-diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
-index a6a9373ab863..d9417abf4cd0 100644
---- a/include/acpi/cppc_acpi.h
-+++ b/include/acpi/cppc_acpi.h
-@@ -16,7 +16,7 @@
- #include <acpi/pcc.h>
- #include <acpi/processor.h>
- 
--/* Support CPPCv2 and CPPCv3  */
-+/* CPPCv2 and CPPCv3 support */
- #define CPPC_V2_REV	2
- #define CPPC_V3_REV	3
- #define CPPC_V2_NUM_ENT	21
+ 	if (vmx->nested.vmxon && !nested_cr4_valid(vcpu, cr4))
+ 		return 1;
 -- 
 2.35.1
 
