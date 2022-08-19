@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 547B4C38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DAEC38159
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352961AbiHSQZ4 (ORCPT
+        id S1353015AbiHSQ0B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36476 "EHLO
+        Fri, 19 Aug 2022 12:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352479AbiHSQVG (ORCPT
+        with ESMTP id S1352486AbiHSQVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:21:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC25AA18C;
-        Fri, 19 Aug 2022 09:02:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF265120A7;
+        Fri, 19 Aug 2022 09:02:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B66E614DA;
-        Fri, 19 Aug 2022 16:02:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B1DC433D6;
-        Fri, 19 Aug 2022 16:02:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C51861644;
+        Fri, 19 Aug 2022 16:02:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6793EC433C1;
+        Fri, 19 Aug 2022 16:02:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924944;
-        bh=3rE75/9xyZ7cw2tec2PKWCjR7BHjg9/lJTJxgkppOC0=;
+        s=korg; t=1660924953;
+        bh=sxmVWRTOBaw3goFJkJzZKUfT5tAmhHkbSfuWdgC1Fx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b21UDkGDVjAw+wxCuLINvpXF3I9H4fDbkz0jfOCEAhNrILhJDiblwx/mgU+3ejmD2
-         oBQCN3cQlwIi5TvM0/jQ5oQW3JPn1dn1Bm2qcVoI6ZQLdA/K7n8v1eI0150+Y/sU8q
-         w3FMn6HPdu3CvnQ3vDvzJ7zqdAWs6ELXEhYvwhok=
+        b=hyRJvhZ9yYSA/q6DYg3hYomB6t7J7MqC04KJE/B/dikD/Y3GCdesOU5Kh3j2mgdD5
+         vn/dkdeAJYQZdYYqBzZ+TqgcGJP0RlnkZ7MTwl/dSNeCJK2sAEnD7REePYsaSUNasT
+         j2v5ILlQRuM9yKwIBrGoNd+T3F9QKnAb5EN84keQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gioh Kim <gi-oh.kim@ionos.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
+        stable@vger.kernel.org, Shai Malin <smalin@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 332/545] RDMA/rtrs: Define MIN_CHUNK_SIZE
-Date:   Fri, 19 Aug 2022 17:41:42 +0200
-Message-Id: <20220819153844.240357527@linuxfoundation.org>
+Subject: [PATCH 5.10 335/545] RDMA/qedr: Improve error logs for rdma_alloc_tid error return
+Date:   Fri, 19 Aug 2022 17:41:45 +0200
+Message-Id: <20220819153844.379838929@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,49 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gioh Kim <gi-oh.kim@cloud.ionos.com>
+From: Prabhakar Kushwaha <pkushwaha@marvell.com>
 
-[ Upstream commit 3f3d0eabc14b6ea1fcbe85a60ee9d44e2b930b8a ]
+[ Upstream commit 0050a57638ca4d681ff92bee55246bf64a6afe54 ]
 
-Define MIN_CHUNK_SIZE to replace the hard-coding number.
-We need 4k for metadata, so MIN_CHUNK_SIZE should be at least 8k.
+Use -EINVAL return type to identify whether error is returned because of
+"Out of MR resources" or any other error types.
 
-Link: https://lore.kernel.org/r/20210528113018.52290-7-jinpu.wang@ionos.com
-Signed-off-by: Gioh Kim <gi-oh.kim@ionos.com>
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
+Link: https://lore.kernel.org/r/20210729151732.30995-2-pkushwaha@marvell.com
+Signed-off-by: Shai Malin <smalin@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-pri.h | 1 +
- drivers/infiniband/ulp/rtrs/rtrs-srv.c | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/qedr/verbs.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-pri.h b/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-index 51c60f542876..333de9d52172 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-@@ -56,6 +56,7 @@ enum {
- 	 * somewhere between 1 and 65536 and it depends on the system.
- 	 */
- 	MAX_SESS_QUEUE_DEPTH = 65536,
-+	MIN_CHUNK_SIZE = 8192,
+diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
+index f7b97b8e81a4..bffacb47ea0e 100644
+--- a/drivers/infiniband/hw/qedr/verbs.c
++++ b/drivers/infiniband/hw/qedr/verbs.c
+@@ -2989,7 +2989,11 @@ struct ib_mr *qedr_reg_user_mr(struct ib_pd *ibpd, u64 start, u64 len,
  
- 	RTRS_HB_INTERVAL_MS = 5000,
- 	RTRS_HB_MISSED_MAX = 5,
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-srv.c b/drivers/infiniband/ulp/rtrs/rtrs-srv.c
-index b033bfa9f383..b152a742cd3c 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-srv.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-srv.c
-@@ -2193,9 +2193,9 @@ static int check_module_params(void)
- 		       sess_queue_depth, 1, MAX_SESS_QUEUE_DEPTH);
- 		return -EINVAL;
+ 	rc = dev->ops->rdma_alloc_tid(dev->rdma_ctx, &mr->hw_mr.itid);
+ 	if (rc) {
+-		DP_ERR(dev, "roce alloc tid returned an error %d\n", rc);
++		if (rc == -EINVAL)
++			DP_ERR(dev, "Out of MR resources\n");
++		else
++			DP_ERR(dev, "roce alloc tid returned error %d\n", rc);
++
+ 		goto err1;
  	}
--	if (max_chunk_size < 4096 || !is_power_of_2(max_chunk_size)) {
-+	if (max_chunk_size < MIN_CHUNK_SIZE || !is_power_of_2(max_chunk_size)) {
- 		pr_err("Invalid max_chunk_size value %d, has to be >= %d and should be power of two.\n",
--		       max_chunk_size, 4096);
-+		       max_chunk_size, MIN_CHUNK_SIZE);
- 		return -EINVAL;
+ 
+@@ -3084,7 +3088,11 @@ static struct qedr_mr *__qedr_alloc_mr(struct ib_pd *ibpd,
+ 
+ 	rc = dev->ops->rdma_alloc_tid(dev->rdma_ctx, &mr->hw_mr.itid);
+ 	if (rc) {
+-		DP_ERR(dev, "roce alloc tid returned an error %d\n", rc);
++		if (rc == -EINVAL)
++			DP_ERR(dev, "Out of MR resources\n");
++		else
++			DP_ERR(dev, "roce alloc tid returned error %d\n", rc);
++
+ 		goto err0;
+ 	}
+ 
+@@ -3214,7 +3222,11 @@ struct ib_mr *qedr_get_dma_mr(struct ib_pd *ibpd, int acc)
+ 
+ 	rc = dev->ops->rdma_alloc_tid(dev->rdma_ctx, &mr->hw_mr.itid);
+ 	if (rc) {
+-		DP_ERR(dev, "roce alloc tid returned an error %d\n", rc);
++		if (rc == -EINVAL)
++			DP_ERR(dev, "Out of MR resources\n");
++		else
++			DP_ERR(dev, "roce alloc tid returned error %d\n", rc);
++
+ 		goto err1;
  	}
  
 -- 
