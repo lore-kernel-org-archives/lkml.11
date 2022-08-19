@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9DFC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E23C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350818AbiHSTHm (ORCPT
+        id S1351059AbiHSTIR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 15:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        Fri, 19 Aug 2022 15:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350768AbiHSTHj (ORCPT
+        with ESMTP id S1351060AbiHSTID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 15:07:39 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9460D109A31
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:07:37 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id e19so4274204pju.1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=DHHhnraoY65tyRhzZg5vQ0+h6PvziDksTsOW2++v8Zs=;
-        b=RPjmo2FxtGyLR8PYNrQ0WpMsIJGmf9vuJNzD3hcTlkiWIceSPrxTlQdWlGLXoPWmeZ
-         QE8kzIm93mhy6fbK94/1CVsj3VUeiVVL9xd6IjE6nh8u+p3xHnEhzuSU0z+FeitWBm+u
-         IT9bWa+bVqb8v01iZG+o6UeShRs5ZnjrIhqUg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=DHHhnraoY65tyRhzZg5vQ0+h6PvziDksTsOW2++v8Zs=;
-        b=d9I21fcmBdiG5AkYAhD4PYX/AB/CNtzpD7GQ+i37QzxGmjQ81lHEuHRaNznaeu58fN
-         Mx5YJrDOpeWq6IyY5rM49tY3Rtjf4YEFuCalB4MTVR2sd3EcM3UXbPxitkXb3+QcQmL7
-         75/+AGbWUW1WXzQ8uaGScg3wlMLj4cWASfEp6l8i+idmHr5GWWcQqf1H74D4RS9n5pEQ
-         ZQxBzsAs6s9o4cHOxpFYCEXQ/+KV1wJTIwGY1F0kJQ7TZoWmuFL1pQ6/CmI4LZRB6wTN
-         QCFftTi94mcUKn7myqbioc0zWlZezCo4OjR+eDpA/zu5OBX7HPKRIpZwbh8UY+GszzPi
-         tTEQ==
-X-Gm-Message-State: ACgBeo226xdzJlj/ZQVmiIizy8TldfpL0Kg9bDsqcnYJtaWiCxIsHfk2
-        D3bqZ9u+FEIgRaUW8n3KOjJ+mg==
-X-Google-Smtp-Source: AA6agR6K8ZeFu5uVrPpEanR+fcoa22K2szNXPWdkjPu9h6Z5dqzuI/cjW0mM8eCRai82tKvovNirIQ==
-X-Received: by 2002:a17:902:c40a:b0:16e:cc02:b9ab with SMTP id k10-20020a170902c40a00b0016ecc02b9abmr8595584plk.81.1660936057093;
-        Fri, 19 Aug 2022 12:07:37 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y16-20020a17090a6c9000b001f216407204sm3522272pjj.36.2022.08.19.12.07.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 12:07:36 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 12:07:35 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Andrei Vagin <avagin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH] selftests: fix a couple missing .gitignore entries
-Message-ID: <202208191207.56B7DDE@keescook>
-References: <20220819190558.477166-1-axelrasmussen@google.com>
+        Fri, 19 Aug 2022 15:08:03 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA1310AE14;
+        Fri, 19 Aug 2022 12:07:59 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27JJ7fOr115796;
+        Fri, 19 Aug 2022 14:07:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660936061;
+        bh=i1NuIgqPXRGTGN8FoZMoWICP0m5oma4h3hunqbYx3z0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=lqq/2/ppFbxq1P9iRjdBeoXjBO/EzsMaXgszq8/ReVDhf5x4UhqBdxO+uzfKzmCxy
+         gzVCbghNljHDLJ0DAsaZbBauL9Uq0Yq8ByKiYE0F3g8en+ZqyEZw4xuxzjg7OkdaRS
+         rtFTWMXS7sfg/p368nKzuqK0R1HdF1OqSue0bl2I=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27JJ7f96130045
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 19 Aug 2022 14:07:41 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 19
+ Aug 2022 14:07:40 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Fri, 19 Aug 2022 14:07:40 -0500
+Received: from LT5CD112GSQZ.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27JJ7T2t051038;
+        Fri, 19 Aug 2022 14:07:36 -0500
+From:   Apurva Nandan <a-nandan@ti.com>
+To:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>
+CC:     Apurva Nandan <a-nandan@ti.com>, Hari Nagalla <hnagalla@ti.com>
+Subject: [PATCH 1/3] dt-bindings: irqchip: ti,sci-inta: Fix warning '#interrupt-cells' was unexpected
+Date:   Sat, 20 Aug 2022 00:37:27 +0530
+Message-ID: <20220819190729.32358-2-a-nandan@ti.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220819190729.32358-1-a-nandan@ti.com>
+References: <20220819190729.32358-1-a-nandan@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819190558.477166-1-axelrasmussen@google.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 12:05:58PM -0700, Axel Rasmussen wrote:
-> Some recent commits added new test binaries, but forgot to add those to
-> .gitignore. Now, after one does "make -C tools/testing/selftests", one
-> ends up with some untracked files in the kernel tree.
-> 
-> Add the test binaries to .gitignore, to avoid this minor annoyance.
-> 
-> Fixes: d8b6171bd58a ("selftests/io_uring: test zerocopy send")
-> Fixes: 6342140db660 ("selftests/timens: add a test for vfork+exit")
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+#interrupt-cells = <0> property is required in device tree for
+ti,sci-inta nodes, or else we will have following warning when building
+device tree files with W=2 warning level.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+arch/arm64/boot/dts/ti/k3-j721e-main.dtsi:147.51-156.5: Warning (interrupt_provider): /bus@100000/main-navss/interrupt-controller@33d00000: Missing #interrupt-cells in interrupt provider
 
+And further, #interrupt-cells is required to be in yaml bindings as well
+to prevent following schema warnings:
+
+k3-j721e-common-proc-board.dtb: interrupt-controller@33d00000: Unevaluated properties are not allowed ('#interrupt-cells' was unexpected)
+From schema: linux/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml
+
+Add #interrupt-cells property in ti,sci-inta.yaml
+
+Signed-off-by: Apurva Nandan <a-nandan@ti.com>
+---
+ .../devicetree/bindings/interrupt-controller/ti,sci-inta.yaml  | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml b/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml
+index 88c46e61732e..1151518859bd 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml
+@@ -59,6 +59,9 @@ properties:
+ 
+   interrupt-controller: true
+ 
++  '#interrupt-cells':
++    const: 0
++
+   msi-controller: true
+ 
+   ti,interrupt-ranges:
 -- 
-Kees Cook
+2.17.1
+
