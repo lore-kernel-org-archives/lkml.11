@@ -2,134 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9BEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236AFC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349870AbiHSR7o (ORCPT
+        id S1350038AbiHSR75 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
+        Fri, 19 Aug 2022 13:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350586AbiHSR7T (ORCPT
+        with ESMTP id S1349902AbiHSR7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:59:19 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134721659A
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:45:22 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id z187so4900849pfb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=cYKLxzS8mdsne4T9+LkqQmo+81QPljtfwRLC/rxss24=;
-        b=jIlWkwwxTb16NyF6jTA0qo6xr86HgbMzsUf1fsVarVZPWenkP1s+4XpVsoh/JzoPTD
-         3JRuR+9wVdGp70rMhiXDPyskvl9c1PG4hUClNAkDaU92XvbB9gEXyprseXHwLyHrM+Wu
-         xdPBwjni1qjJ1jPij5DFbzEWKNlpsY/KI10O7SsGhcd40NrS//EtU5rBhrwMIZIFxqa+
-         /KItM8RZsNM1G0T/o8l7cbEaI6fSzMJLdMh1qAIMTJaLD/PhQSVDqH6MEh8jRqjCVaBw
-         D9Jsl0yupjOU8XcUYUrN1vvb6rjabMCEYHH0X9aD2wek2wwCcwrrKxZVYm8FtQnC1YQz
-         Cb6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=cYKLxzS8mdsne4T9+LkqQmo+81QPljtfwRLC/rxss24=;
-        b=hox3Z8v4PRKJDKWW3DRvFmzZ2EWfZE1tbrYUNmQxI7Kn31Xbcc7pHvZ9HifG4CocqP
-         ESHyVepF3SqIKQaA96iW67ZJhqUHuV3Ytw63/VEARiSPQrlOVNFB0YMeMZ3CpRUOBH4G
-         qmpsMBl+CH92cX6gukbkS/bT4UDIlAHMZNabVsvZUsW8kZUOm6SgGUMEC8Pu/H2z+h9R
-         VIyjA51K8wRo9qVYWrBYCD/1uKp9pCkIvH91WpSxLQMUfgvtq0eaQUABuMugZ7rrnITK
-         IfXJd+CYuGs/ZZVERasAihKqPkwNjUD/xflshC5XopnsBec08qWfF/QpYfXxpborx0bp
-         uwEg==
-X-Gm-Message-State: ACgBeo1Cnr4UBu1kgnFh4hM2oQHsgZuo9qL78WIwon+1qOrknHf3Ix24
-        WvzqEs0nS1ipDtOuPmTXZXEOzg==
-X-Google-Smtp-Source: AA6agR4hTHDffXLin9WcvMM4cSaZZ6d075dMHXt+c3wV/gHSpK/yGIt+nNUqSc9rkTVP2d6S9QB6PQ==
-X-Received: by 2002:a63:1342:0:b0:422:5e7a:2a8f with SMTP id 2-20020a631342000000b004225e7a2a8fmr7006374pgt.425.1660931122343;
-        Fri, 19 Aug 2022 10:45:22 -0700 (PDT)
-Received: from google.com ([2620:15c:2d:3:4a9e:3b14:a2f3:77cf])
-        by smtp.gmail.com with ESMTPSA id d5-20020a623605000000b0052b94e757ecsm3685154pfa.213.2022.08.19.10.45.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 10:45:21 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 10:45:15 -0700
-From:   Isaac Manjarres <isaacmanjarres@google.com>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Bart Van Assche <bvanassche@acm.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
-Message-ID: <Yv/MKymRC9O04Nqu@google.com>
-References: <20220815211919.2028890-1-isaacmanjarres@google.com>
- <20220816042507.GB1108868@roeck-us.net>
- <YvsoYzIhOtX9DOi2@google.com>
- <20220816111311.GC1108868@roeck-us.net>
- <YvvQOBk9T3J1uX8k@google.com>
- <20220817010559.GA1880847@roeck-us.net>
- <YvxAfiSOrzy7/c1J@google.com>
- <20220818225932.GA3433999@roeck-us.net>
- <Yv7bd6Yl8+thp2CY@google.com>
- <20220819112832.GA3106213@roeck-us.net>
+        Fri, 19 Aug 2022 13:59:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D95DF41;
+        Fri, 19 Aug 2022 10:46:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 037786184B;
+        Fri, 19 Aug 2022 17:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 610C7C433D6;
+        Fri, 19 Aug 2022 17:46:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660931165;
+        bh=pnoRxmb4SZjZlfuYaUMFVyBKjjD93ZdYQ8Neue15m8E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uRVTyd4l5ZLWcOrKi+EKkuKe+a5XArPm3PoE01X9sXVuLCYe1oQFAUMWAoE1X88cr
+         o67t7IVRrKQ60RPKyqnvIV9BgGelTRHRg2ocpPf0EjsyB34sPgmKkB5VI+aPNgTmPV
+         fFubmnWsWeT/8H6d4OxwPFi4JVdPfQgFQQwJPeSRaWl9aWoduB/hpkasGM1mXpfF6j
+         M7bDFA5h7YC+4Bb2DvLBbhvkgS6nh3uQu4cmdzZp0JV+uaJek3GRWDB5lZIQ07KXbC
+         skZhy3x46TBjBn61jBuyBXwR4XnbuxTDL12WG42YZyi760jN7JCpSd4D0y2VTYjshW
+         gsZ1POA4ar8rw==
+Date:   Fri, 19 Aug 2022 18:56:40 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: iio: Drop Tomislav Denis
+Message-ID: <20220819185640.434b32b5@jic23-huawei>
+In-Reply-To: <20220818145350.GE1829017-robh@kernel.org>
+References: <20220816125401.70317-1-krzysztof.kozlowski@linaro.org>
+        <20220818145350.GE1829017-robh@kernel.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819112832.GA3106213@roeck-us.net>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 04:28:32AM -0700, Guenter Roeck wrote:
-> On Thu, Aug 18, 2022 at 05:38:15PM -0700, Isaac Manjarres wrote:
-> > On Thu, Aug 18, 2022 at 03:59:32PM -0700, Guenter Roeck wrote:
-> > > Requesting system reboot
-> > > sd 0:0:0:0: [sda] Synchronizing SCSI cache
-> > > ci_hdrc ci_hdrc.1: remove, state 4
-> > > usb usb2: USB disconnect, device number 1
-> > > ci_hdrc ci_hdrc.1: USB bus 2 deregistered
-> > > ci_hdrc ci_hdrc.0: remove, state 1
-> > > usb usb1: USB disconnect, device number 1
-> > > usb 1-1: USB disconnect, device number 2
-> > > sd 0:0:0:0: [sda] Synchronizing SCSI cache
-> > > sd 0:0:0:0: [sda] Synchronize Cache(10) failed: Result: hostbyte=0x01 driverbyte=DRIVER_OK
-> > > 
-> > > [ stuck here until qemu is killed ]
-> > > 
-> > Hi Guenter,
+On Thu, 18 Aug 2022 08:53:50 -0600
+Rob Herring <robh@kernel.org> wrote:
+
+> On Tue, Aug 16, 2022 at 03:53:59PM +0300, Krzysztof Kozlowski wrote:
+> > Emails to Tomislav Denis bounce ("550 5.1.1 User Unknown").
 > > 
-> > I'm actually observing the behavior described above even without my patch.
-> > The tip of my tree is currently at 573ae4f13f63 ("tee: add overflow check in
-> > register_shm_helper()"). I used git bisect to find what commit was
-> > causing the problem, and narrowed it down to this series[1].
-> > 
-> > I reverted all 4 patches in that series, and I no longer see this hang
-> > with my tree.
-> > 
-> > [1]: https://lore.kernel.org/all/20220712221936.1199196-1-bvanassche@acm.org/
-> > 
-> > Are these patches part of the tree you're using for testing and
-> > observing this hang in?
-> > 
+> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > ---
+> >  Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml     | 2 +-
+> >  Documentation/devicetree/bindings/iio/pressure/asc,dlhl60d.yaml | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)  
 > 
-> Yes, you are correct. I also see the problem in the mainline kernel,
-> at SHA 3b06a2755758, and with a large number of boots from usb drive
-> in various arm emulations. Sorry for the confusion. Too many crashes :-(.
-> 
-> Guenter
+> Acked-by: Rob Herring <robh@kernel.org>
 
-No worries, thanks for confirming.
-
-Hi Bart,
-
-It seems that the patches mentioned in [1] are causing a hang during
-reboot for various ARM emulations when booting from USB. Can you please
-take a look? There's more information about what defconfig, rootfs, and
-qemu commandline to use at [2].
-
-[1]: https://lore.kernel.org/all/20220712221936.1199196-1-bvanassche@acm.org/
-[2]: https://lore.kernel.org/all/20220818225932.GA3433999@roeck-us.net/
+Series applied to the togreg branch of iio.git.
+There is other stuff in there that needs a 0-day run, so for now pushed
+out as testing.
 
 Thanks,
-Isaac
+
+Jonathan
