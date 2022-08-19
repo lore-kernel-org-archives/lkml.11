@@ -2,114 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BBDC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D95C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347738AbiHSIqu (ORCPT
+        id S1347759AbiHSIrD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58366 "EHLO
+        Fri, 19 Aug 2022 04:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347732AbiHSIqr (ORCPT
+        with ESMTP id S1347755AbiHSIq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:46:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048F4CAC4D
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:46:46 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M8Fck1czWzXdgb;
-        Fri, 19 Aug 2022 16:42:30 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 16:46:42 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 16:46:42 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <jpoimboe@kernel.org>, <peterz@infradead.org>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <rostedt@goodmis.org>, <chenzhongjin@huawei.com>
-Subject: [PATCH v2] x86/unwind/orc: unwind ftrace trampolines with correct orc
-Date:   Fri, 19 Aug 2022 16:43:34 +0800
-Message-ID: <20220819084334.244016-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 19 Aug 2022 04:46:58 -0400
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369C2CAC4D;
+        Fri, 19 Aug 2022 01:46:58 -0700 (PDT)
+Received: by mail-qt1-f180.google.com with SMTP id h22so2872192qtu.2;
+        Fri, 19 Aug 2022 01:46:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=+CK74Trg82hJrsPmCVARJr/hdgf8gZ1Ixa5AUbpaM6I=;
+        b=XzjqBAzBRBj096FUBrk7C8/92wcq5CWS5OekMmTDlOAqT1qkPG4EZ8bdjh/bTQl2RU
+         iEYRngVWSgS6ztVe0HRniYK+c4VlfTPzgPmyOEStRhiD+6dUs/HuDTyFTSX5HY3BScWJ
+         6QtH2akf8+poZbZlkpU2QqJfHdwEJfLadrSuq/A3XSfXTyiBv+qC2KBrDn/fv3K+AjmD
+         fRFSbYPfxtP3Ou1h5Qg96e7NSIJAw8NZNq51WpiD4m5mL7hHuNlEKe7I4BXobjyzrfna
+         wxSG/G2vIjve9v4bL/VXgCQVvGZs+8eF4FCOcBqhKK4mxRZS+NmFQ8inY/XXwK7lI7h5
+         AR4w==
+X-Gm-Message-State: ACgBeo2Hk8sIbjGoxQyGbfLcNl0WBXrd564Y3aXeqBuLK22kg6uXNhur
+        IZ7AmsK1LsAWmKv3AArZ6G7fbAGwvVpAhw==
+X-Google-Smtp-Source: AA6agR7JX3VqGOUpaLoLlGXacU1pVqICG5fmBaswxvqtBzMh7Dc4AMNabVthyzwvFLVn0PneCWxCNA==
+X-Received: by 2002:a05:622a:40e:b0:343:7769:5895 with SMTP id n14-20020a05622a040e00b0034377695895mr5750192qtx.467.1660898816813;
+        Fri, 19 Aug 2022 01:46:56 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id l8-20020a05620a28c800b006bbc3724affsm2507654qkp.45.2022.08.19.01.46.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 01:46:56 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-32a09b909f6so105248127b3.0;
+        Fri, 19 Aug 2022 01:46:55 -0700 (PDT)
+X-Received: by 2002:a0d:eb45:0:b0:333:f813:6c79 with SMTP id
+ u66-20020a0deb45000000b00333f8136c79mr6505642ywe.384.1660898815488; Fri, 19
+ Aug 2022 01:46:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220815151451.23293-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220815151451.23293-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 19 Aug 2022 10:46:43 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVn50f3HuphyqeGmgzXA_TqHdqDJO7C3YZd=qMA9ZRigQ@mail.gmail.com>
+Message-ID: <CAMuHMdVn50f3HuphyqeGmgzXA_TqHdqDJO7C3YZd=qMA9ZRigQ@mail.gmail.com>
+Subject: Re: [PATCH v2 8/8] RISC-V: configs: defconfig: Enable Renesas RZ/Five SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When meeting ftrace trampolines in orc unwinding, unwinder uses address
-of ftrace_{regs_}call address to find the orc, which gets next frame at
-sp+176.
+On Mon, Aug 15, 2022 at 5:16 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Enable Renesas RZ/Five SoC config in defconfig. It allows the default
+> upstream kernel to boot on RZ/Five SMARC EVK board.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-If there is an irq hitting at sub $0xa8,%rsp, the next frame should be
-sp+8 instead of 176. It makes unwinder skip correct frame and throw
-warnings such as "wrong direction" or "can't access registers", etc,
-depending on the content of the wrong frame address.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+But this may need a respin if "[PATCH v2 4/8] RISC-V: Kconfig.socs:
+Add Renesas RZ/Five SoC kconfig option" is changed.
 
-By adding the base address ftrace_{regs_}caller with the offset
-*ip - ops->trampoline*,
-we can get the correct address to find orc.
+Gr{oetje,eeting}s,
 
-Also change "caller" to "tramp_addr" to make variable name conform to
-its content.
+                        Geert
 
-Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
-v1 -> v2:
-	Add some comments.
----
- arch/x86/kernel/unwind_orc.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-index 38185aedf7d1..0ea57da92940 100644
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -93,22 +93,27 @@ static struct orc_entry *orc_find(unsigned long ip);
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
- {
- 	struct ftrace_ops *ops;
--	unsigned long caller;
-+	unsigned long tramp_addr, offset;
- 
- 	ops = ftrace_ops_trampoline(ip);
- 	if (!ops)
- 		return NULL;
- 
-+	/* Set tramp_addr to the start of the code copied by the trampoline */
- 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
--		caller = (unsigned long)ftrace_regs_call;
-+		tramp_addr = (unsigned long)ftrace_regs_caller;
- 	else
--		caller = (unsigned long)ftrace_call;
-+		tramp_addr = (unsigned long)ftrace_caller;
-+
-+	/* Now place tramp_addr to the location within the trampoline ip is at */
-+	offset = ip - ops->trampoline;
-+	tramp_addr += offset;
- 
- 	/* Prevent unlikely recursion */
--	if (ip == caller)
-+	if (ip == tramp_addr)
- 		return NULL;
- 
--	return orc_find(caller);
-+	return orc_find(tramp_addr);
- }
- #else
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
--- 
-2.17.1
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
