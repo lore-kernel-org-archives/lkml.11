@@ -2,141 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE81AC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4B5C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243552AbiHSBqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 21:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34960 "EHLO
+        id S243848AbiHSBr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 21:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242080AbiHSBqY (ORCPT
+        with ESMTP id S238919AbiHSBr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 21:46:24 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E796D5EB6
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:46:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660873584; x=1692409584;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wf/ZznegE7AhnzRxw+yrJEvsq4RrbbZD5gyFoFJ8xL4=;
-  b=BAkSSeZmC0uIfhfDeK9ACvYCxiMAbl99RPZsR3jZigzz9DRnYQbw4vsq
-   nqc5jpPW+tBGzFh0cNdesE8DesIXartKg3kGvrEUJGMPDXgtRPSgcnzEe
-   /MZu1+AFjriSdUPOmHs/VdCG0Q8FJkUYreAM8LjLV34ogCPt7lKKaTlGK
-   qHePMRKd4IK85NHuEDh72KtZGyyiDLrLNS4pMwA970tFpTEob6End2kKl
-   /N73cYQJxtjTs6L2TIV3y5H6e889o5XTMwY3eyxFiR+F/kMUcp98zYnC0
-   89duMi8SIRHAJJaZofXBrrNjr26cfd4Mb5QfNEHvs2IKY3o5TN1FyUvLP
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="291667779"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="291667779"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 18:46:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="637074140"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 18 Aug 2022 18:46:22 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOr5Z-0000sr-1S;
-        Fri, 19 Aug 2022 01:46:21 +0000
-Date:   Fri, 19 Aug 2022 09:45:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Steev Klimaszewski <steev@kali.org>
-Subject: [steev:sc8280xp-next-20220818 132/159]
- drivers/soc/qcom/pmic_glink_altmode.c:234:16: error: implicit declaration of
- function 'FIELD_GET'; did you mean 'FOLL_GET'?
-Message-ID: <202208190946.98QZtV0a-lkp@intel.com>
+        Thu, 18 Aug 2022 21:47:26 -0400
+X-Greylist: delayed 354 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 18 Aug 2022 18:47:23 PDT
+Received: from mail-m11873.qiye.163.com (mail-m11873.qiye.163.com [115.236.118.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C186D5EB6;
+        Thu, 18 Aug 2022 18:47:23 -0700 (PDT)
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by mail-m11873.qiye.163.com (Hmail) with ESMTPA id E22AD900383;
+        Fri, 19 Aug 2022 09:41:27 +0800 (CST)
+From:   Jianqun Xu <jay.xu@rock-chips.com>
+To:     heiko@sntech.de
+Cc:     linus.walleij@linaro.org, jeffy.chen@rock-chips.com,
+        linux-gpio@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Jianqun Xu <jay.xu@rock-chips.com>
+Subject: [PATCH] gpio/rockchip: handle irq before toggle trigger for edge type irq
+Date:   Fri, 19 Aug 2022 09:41:26 +0800
+Message-Id: <20220819014126.1235390-1-jay.xu@rock-chips.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZSxhLVk4aQ0geGUpCHklCQ1UTARMWGhIXJB
+        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Ojo6Thw*Fj0yGRdMMTkoM1YY
+        OitPCShVSlVKTU1LQ0xISUNDT01PVTMWGhIXVREaAlUDDjsJFBgQVhgTEgsIVRgUFkVZV1kSC1lB
+        WU5DVUlJVUxVSkpPWVdZCAFZQUlMSkw3Bg++
+X-HM-Tid: 0a82b3c329b82eafkusne22ad900383
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/steev/linux sc8280xp-next-20220818
-head:   34fef0fd022b76178b8c48819465ec265c5aac2e
-commit: 7e91d160800c85329a861246e2225a80e0c842ea [132/159] soc: qcom: pmic_glink: Introduce altmode support
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220819/202208190946.98QZtV0a-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/steev/linux/commit/7e91d160800c85329a861246e2225a80e0c842ea
-        git remote add steev https://github.com/steev/linux
-        git fetch --no-tags steev sc8280xp-next-20220818
-        git checkout 7e91d160800c85329a861246e2225a80e0c842ea
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/soc/qcom/
+The irq demux for rockchip gpio interrupts do real irq handle after loop
+over the bits from int status register. Some oldder SoCs such as RK3308
+has no both edge trigger type support, replaced by a soft both type
+which switch trigger type once a level type triggered.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+For example, a irq is set to a IRQ_TYPE_EDGE_BOTH trigger type, but the
+SoC not support really both edge trigger type, use a
+IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING instead.
 
-All error/warnings (new ones prefixed by >>):
+        --------
+    ____|      |______
 
-   drivers/soc/qcom/pmic_glink_altmode.c: In function 'pmic_glink_altmode_sc8180xp_notify':
->> drivers/soc/qcom/pmic_glink_altmode.c:234:16: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
-     234 |         port = FIELD_GET(SC8180X_PORT_MASK, notification);
-         |                ^~~~~~~~~
-         |                FOLL_GET
->> drivers/soc/qcom/pmic_glink_altmode.c:222:13: warning: variable 'svid' set but not used [-Wunused-but-set-variable]
-     222 |         u16 svid;
-         |             ^~~~
-   cc1: some warnings being treated as errors
+        ^      ^
+	|      |
+	|      [0] the falling edge come before irq ack set by driver !
+	|
+        rockchip_irq_demux set to EDGE_FALLING type
+	rockchip_irq_demux call generic_handle_irq
+	                          -> handle_edge_irq
+				    -> irq_gc_ack_set_bit
 
+The [0] irq will lost by software on board test.
 
-vim +234 drivers/soc/qcom/pmic_glink_altmode.c
+With this patch, the generic_handle_irq has been move ahead before
+trigger toggle to fix the [0] lost issue.
 
-   212	
-   213	static void pmic_glink_altmode_sc8180xp_notify(struct pmic_glink_altmode *altmode,
-   214						       const void *data, size_t len)
-   215	{
-   216		struct pmic_glink_altmode_port *alt_port;
-   217		const struct usbc_sc8180x_notify *msg;
-   218		u32 notification;
-   219		u8 orientation;
-   220		u8 hpd_state;
-   221		u8 hpd_irq;
- > 222		u16 svid;
-   223		u8 port;
-   224		u8 mode;
-   225		u8 mux;
-   226	
-   227		if (len != sizeof(*msg)) {
-   228			dev_warn(altmode->dev, "invalid length of USBC_NOTIFY indication: %zd\n", len);
-   229			return;
-   230		}
-   231	
-   232		msg = data;
-   233		notification = le32_to_cpu(msg->notification);
- > 234		port = FIELD_GET(SC8180X_PORT_MASK, notification);
-   235		orientation = FIELD_GET(SC8180X_ORIENTATION_MASK, notification);
-   236		mux = FIELD_GET(SC8180X_MUX_MASK, notification);
-   237		mode = FIELD_GET(SC8180X_MODE_MASK, notification);
-   238		hpd_state = FIELD_GET(SC8180X_HPD_STATE_MASK, notification);
-   239		hpd_irq = FIELD_GET(SC8180X_HPD_IRQ_MASK, notification);
-   240	
-   241		svid = mux == 2 ? USB_TYPEC_DP_SID : 0;
-   242	
-   243		if (!altmode->ports[port].altmode) {
-   244			dev_dbg(altmode->dev, "notification on undefined port %d\n", port);
-   245			return;
-   246		}
-   247	
-   248		alt_port = &altmode->ports[port];
-   249		alt_port->orientation = pmic_glink_altmode_orientation(orientation);
-   250		alt_port->svid = mux == 2 ? USB_TYPEC_DP_SID : 0;
-   251		alt_port->mode = mode;
-   252		alt_port->hpd_state = hpd_state;
-   253		alt_port->hpd_irq = hpd_irq;
-   254		schedule_work(&alt_port->work);
-   255	}
-   256	
+Signed-off-by: Jianqun Xu <jay.xu@rock-chips.com>
+---
+ drivers/gpio/gpio-rockchip.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
+index f91e876fd969..952d628a6f7e 100644
+--- a/drivers/gpio/gpio-rockchip.c
++++ b/drivers/gpio/gpio-rockchip.c
+@@ -346,6 +346,7 @@ static void rockchip_irq_demux(struct irq_desc *desc)
+ 		}
+ 
+ 		dev_dbg(bank->dev, "handling irq %d\n", irq);
++		generic_handle_irq(virq);
+ 
+ 		/*
+ 		 * Triggering IRQ on both rising and falling edge
+@@ -377,8 +378,6 @@ static void rockchip_irq_demux(struct irq_desc *desc)
+ 						     bank->gpio_regs->ext_port);
+ 			} while ((data & BIT(irq)) != (data_old & BIT(irq)));
+ 		}
+-
+-		generic_handle_irq(virq);
+ 	}
+ 
+ 	chained_irq_exit(chip, desc);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
