@@ -2,110 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EBBC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 734E0C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348027AbiHSJOZ (ORCPT
+        id S1348049AbiHSJOa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
+        Fri, 19 Aug 2022 05:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348005AbiHSJOI (ORCPT
+        with ESMTP id S1348015AbiHSJOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:14:08 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A463CBEC;
-        Fri, 19 Aug 2022 02:14:05 -0700 (PDT)
-X-UUID: 08f4bf579be848099ce0c98a3d95d658-20220819
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=lzuHN2o0PHCxOlCMC5PyS2eGduyQugC541Kw8Hzkdso=;
-        b=K73hn0vIol3GnwNvFZnyAp8pNlOXg0dTG25T919vti/sA0dqT4J8vKdX9i5P40SbmBZuJpoE4Tne02FAzXPmXUwAiR/6Z7Gi4dtcGpGwZdinMKLrF5Qa1GgdEBwFQtFkWnFYkHRkiYDBLDr/KPoI5rjp07TRyQkTFl1t/BNgTH8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:481fa5bb-835b-44e4-a3f6-00b49bd1ec88,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-        Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:f82733c9-6b09-4f60-bf82-12f039f5d530,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
-        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 08f4bf579be848099ce0c98a3d95d658-20220819
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1860542636; Fri, 19 Aug 2022 17:13:57 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 19 Aug 2022 17:13:49 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 19 Aug 2022 17:13:49 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH 6/7] phy: phy-mtk-tphy: set utmi 0 register in init() ops
-Date:   Fri, 19 Aug 2022 17:13:43 +0800
-Message-ID: <20220819091344.2274-6-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
-References: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
+        Fri, 19 Aug 2022 05:14:17 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476A43DBE6;
+        Fri, 19 Aug 2022 02:14:10 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id y18so2898617qtv.5;
+        Fri, 19 Aug 2022 02:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=VKM8TcTJgGWEjr2El3gvJFe6zfmgEmlCrlb69frx1uI=;
+        b=isbPdSYqfliPlROpQuyUVQJ5e+6RWIqhR+PiC4x/6zDfdZNNVhX10kQ5f8fEhG/UUo
+         vB7d6vO002zZ7efDLx1mef8eT7/vQMvQI2boxdN9lqCQ5fQ585JPzJ2UFelZpJAmXJAs
+         fF35HtNq6uB+nay819J2UJWSmatnjH+boUkR8pl2tH6n9v+D4D9PetdP8RPBVrYKDEuY
+         xOEsek496Ri+Ahy3vEpxQg4MT2kDphNXink1qPNesBibDRpL1x5cXXexUozp/PoKgOtZ
+         uxgkhlF0m58y+9b44AvTExF3axrvCZmRHj94U4aT/gIHbB+V5nEN80pDFNJLofx9JevG
+         kiFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=VKM8TcTJgGWEjr2El3gvJFe6zfmgEmlCrlb69frx1uI=;
+        b=y+GY3iFDNTwMSbjwtSBQ1kIs8xk+IB8SnARar3JcFyGQCs9tKMyNM9bwVsbWcGX47c
+         DpLgG2mJ7mHvpJpqOXrnk2f2uh1/U1Zkm0tx9cSpwZRz9juujfaMCm7Yei2gngNZapH0
+         qD1ASGWTfG26BLyv+qec5Gw0XdH0RM1hfSrKaA1BbW3aKi3nQuko9ZSETFKBuRiUkUwI
+         3CwqlQ5roSIS4CfbBCG/90oogMVsoh6EyKu0Kmej799F9lJOihiOtiaQB9fsB3SIwBgW
+         0+ZaXzR4nBXi1rtS3UZniG6eUjWi9eq1lRPypILkLkxM8KlK6xxVPyWlsFYNSiLR0OLy
+         jZsw==
+X-Gm-Message-State: ACgBeo2QmrdRN/w5zMPSjXUcy3TUNy5C6bAUyKpzOBceh3rrMkdKts2b
+        UZMyLXh/eZ4N1s5snCMCbSU6fyymt1K0mva2brI=
+X-Google-Smtp-Source: AA6agR5Ihu8MycYundNRVHx2wexqtqdkevIKQSdCM+iIfxrz6lmiGwSQWVsh7JjQjEOT5OX3KL1k2FPHLVxdE7b6bz4=
+X-Received: by 2002:a05:622a:491:b0:344:95bf:8f05 with SMTP id
+ p17-20020a05622a049100b0034495bf8f05mr4237877qtx.61.1660900449375; Fri, 19
+ Aug 2022 02:14:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK:  N
+References: <20220813071803.4692-1-jagathjog1996@gmail.com>
+ <20220813071803.4692-2-jagathjog1996@gmail.com> <20220814180451.44a27126@jic23-huawei>
+ <CAM+2EuJu3g98NOt2tOxPzWnGO3kvFNkruuAeZBd-=VxYvw7x9Q@mail.gmail.com>
+In-Reply-To: <CAM+2EuJu3g98NOt2tOxPzWnGO3kvFNkruuAeZBd-=VxYvw7x9Q@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 19 Aug 2022 12:13:33 +0300
+Message-ID: <CAHp75VcUb71tGKN8Pg0wy0+7739LzJKvUiN+rMCkQhMKJDpEMQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] iio: Add new event type gesture and use direction
+ for single and double tap
+To:     Jagath Jog J <jagathjog1996@gmail.com>,
+        Joe Perches <joe@perches.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Bastien Nocera <hadess@hadess.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No need repeat to clear utmi 0 register in ->power_on() and
-->power_off(), just do it in ->init()
+On Mon, Aug 15, 2022 at 9:33 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> On Sun, Aug 14, 2022 at 10:24 PM Jonathan Cameron <jic23@kernel.org> wrote:
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
- drivers/phy/mediatek/phy-mtk-tphy.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+> Sure, I will leave KernelVersion blank in the next series.
 
-diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
-index 79920c066e59..e0f227a0d3cc 100644
---- a/drivers/phy/mediatek/phy-mtk-tphy.c
-+++ b/drivers/phy/mediatek/phy-mtk-tphy.c
-@@ -522,8 +522,8 @@ static void u2_phy_instance_init(struct mtk_tphy *tphy,
- 	/* switch to USB function, and enable usb pll */
- 	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_FORCE_UART_EN | P2C_FORCE_SUSPENDM);
- 
--	mtk_phy_update_bits(com + U3P_U2PHYDTM0, P2C_RG_XCVRSEL | P2C_RG_DATAIN,
--			    P2C_RG_XCVRSEL_VAL(1) | P2C_RG_DATAIN_VAL(0));
-+	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
-+			   P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
- 
- 	mtk_phy_clear_bits(com + U3P_U2PHYDTM1, P2C_RG_UART_EN);
- 
-@@ -565,9 +565,6 @@ static void u2_phy_instance_power_on(struct mtk_tphy *tphy,
- 	void __iomem *com = u2_banks->com;
- 	u32 index = instance->index;
- 
--	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
--			   P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
--
- 	/* OTG Enable */
- 	mtk_phy_set_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
- 
-@@ -590,8 +587,6 @@ static void u2_phy_instance_power_off(struct mtk_tphy *tphy,
- 	void __iomem *com = u2_banks->com;
- 	u32 index = instance->index;
- 
--	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_RG_XCVRSEL | P2C_RG_DATAIN);
--
- 	/* OTG Disable */
- 	mtk_phy_clear_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
- 
+You may use 6.1, that way we don't forget about it.
+
+I'm wondering if checkpatch or other tools can validate the ABI descriptions.
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
