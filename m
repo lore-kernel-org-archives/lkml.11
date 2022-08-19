@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE53AC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F04C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352198AbiHSQVZ (ORCPT
+        id S1352219AbiHSQVa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
+        Fri, 19 Aug 2022 12:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352430AbiHSQQg (ORCPT
+        with ESMTP id S1352463AbiHSQQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB48B108F1C;
-        Fri, 19 Aug 2022 08:59:52 -0700 (PDT)
+        Fri, 19 Aug 2022 12:16:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4641160A5;
+        Fri, 19 Aug 2022 08:59:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B150A6178A;
-        Fri, 19 Aug 2022 15:59:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAEA9C433C1;
-        Fri, 19 Aug 2022 15:59:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CAADB8280F;
+        Fri, 19 Aug 2022 15:59:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9665AC433B5;
+        Fri, 19 Aug 2022 15:59:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924791;
-        bh=qVykEADmkqDd7dMui6E8TD0P8QHRoDILfpFsL3tT9i4=;
+        s=korg; t=1660924794;
+        bh=C61K24rBrj/U4o+Uq8gi+BmJc7Il3MbtnCWIPgG7VdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qzV+zuP5sM6tL2OtGmb5RxjNV0ozar9ozYVl5miImlTPGuA1pcFW8uUvTeBksEg/r
-         AOmAYFduCgOsrLpJi3pELN6Df0obxenSpLhPdP2j+8YJdRv/bjU+fA/DIPOfGg7A9N
-         uUXxG5ADMRYBgnF+BsdHkBCYoZD+pT6BpVPNVf5A=
+        b=DhLMD8Dl6N1tMbydI8S89HqgR5gCcMXotDLQD5H1QYekpxNandAly1W8UfVsYvIxM
+         YuGBaiGXMeF64mReoe7OrBXenwVO8JiCQc5ejxb/d+XhsOpNkJgSYTbZvH1dQAlY2u
+         RPP1USX7+Ou/JiGX3lrUHvIqvfGy+u765IrIuwow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 254/545] crypto: hisilicon/hpre - dont use GFP_KERNEL to alloc mem during softirq
-Date:   Fri, 19 Aug 2022 17:40:24 +0200
-Message-Id: <20220819153840.721711207@linuxfoundation.org>
+Subject: [PATCH 5.10 245/545] Bluetooth: hci_intel: Add check for platform_driver_register
+Date:   Fri, 19 Aug 2022 17:40:15 +0200
+Message-Id: <20220819153840.320651183@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,34 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 98dfa9343f37bdd4112966292751e3a93aaf2e56 ]
+[ Upstream commit ab2d2a982ff721f4b029282d9a40602ea46a745e ]
 
-The hpre encryption driver may be used to encrypt and decrypt packets
-during the rx softirq, it is not allowed to use GFP_KERNEL.
+As platform_driver_register() could fail, it should be better
+to deal with the return value in order to maintain the code
+consisitency.
 
-Fixes: c8b4b477079d ("crypto: hisilicon - add HiSilicon HPRE accelerator")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/hpre/hpre_crypto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bluetooth/hci_intel.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_crypto.c b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-index a87f9904087a..90c13ebe7e83 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-@@ -210,7 +210,7 @@ static int hpre_prepare_dma_buf(struct hpre_asym_request *hpre_req,
- 	if (unlikely(shift < 0))
- 		return -EINVAL;
+diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
+index b20a40fab83e..d5d2feef6c52 100644
+--- a/drivers/bluetooth/hci_intel.c
++++ b/drivers/bluetooth/hci_intel.c
+@@ -1214,7 +1214,11 @@ static struct platform_driver intel_driver = {
  
--	ptr = dma_alloc_coherent(dev, ctx->key_sz, tmp, GFP_KERNEL);
-+	ptr = dma_alloc_coherent(dev, ctx->key_sz, tmp, GFP_ATOMIC);
- 	if (unlikely(!ptr))
- 		return -ENOMEM;
+ int __init intel_init(void)
+ {
+-	platform_driver_register(&intel_driver);
++	int err;
++
++	err = platform_driver_register(&intel_driver);
++	if (err)
++		return err;
  
+ 	return hci_uart_register_proto(&intel_proto);
+ }
 -- 
 2.35.1
 
