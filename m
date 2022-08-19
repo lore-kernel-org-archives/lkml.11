@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1889DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0CBC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354228AbiHSQt3 (ORCPT
+        id S1354234AbiHSQtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56614 "EHLO
+        Fri, 19 Aug 2022 12:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354047AbiHSQrC (ORCPT
+        with ESMTP id S1353965AbiHSQrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C290E12C374;
-        Fri, 19 Aug 2022 09:12:51 -0700 (PDT)
+        Fri, 19 Aug 2022 12:47:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30D612BFE8;
+        Fri, 19 Aug 2022 09:12:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8FDE61811;
-        Fri, 19 Aug 2022 16:12:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84B5C433C1;
-        Fri, 19 Aug 2022 16:12:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CD7F3CE26AC;
+        Fri, 19 Aug 2022 16:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3B8C433D6;
+        Fri, 19 Aug 2022 16:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925544;
-        bh=gUSJxQ8QEVwUaFALIAVJU9UAMMts31rTtHwyE9iXfRg=;
+        s=korg; t=1660925541;
+        bh=F2zdgkDF/XedTRQAuWZeDhYcXnbH11Mv0smvHCoCLAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v2pxTufqX6232Y6xYluB3lK4RHPeJzSiCQSDS0dnRkR0yTcoonLHO26QHpapqxsO0
-         EWKqOtTSTl2/3VnF8zv/5MgyMvwm+po+AJjafhNoRgI3qCRiWin/7lCFAUs/FAVFVQ
-         CDnPgzj50mdbPfkVITZOcrlHKj/gA0vhUaXCEWeQ=
+        b=scmjxiOfGetcNpT/L0fia+/vU7d+Qqs5V0jFUOwYa6WqEsFrYant0L/sR7Sgmb46h
+         vq+9J69WMOKFE2/g5nHRBR37mHiZOQ6Ck+m6omZk9LByoRvV+W1R3Fkg1D0DNCjyoh
+         wai6aaFM53qmQ8Ge4+inRRty1Gy7YxLsr/YwWuxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Baokun Li <libaokun1@huawei.com>,
         "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
         Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.10 524/545] ext4: correct the misjudgment in ext4_iget_extra_inode
-Date:   Fri, 19 Aug 2022 17:44:54 +0200
-Message-Id: <20220819153853.004464225@linuxfoundation.org>
+Subject: [PATCH 5.10 523/545] ext4: correct max_inline_xattr_value_size computing
+Date:   Fri, 19 Aug 2022 17:44:53 +0200
+Message-Id: <20220819153852.952155817@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,33 +53,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Baokun Li <libaokun1@huawei.com>
 
-commit fd7e672ea98b95b9d4c9dae316639f03c16a749d upstream.
+commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
 
-Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
-determine whether the inode have xattr space.
+If the ext4 inode does not have xattr space, 0 is returned in the
+get_max_inline_xattr_value_size function. Otherwise, the function returns
+a negative value when the inode does not contain EXT4_STATE_XATTR.
 
 Cc: stable@kernel.org
 Signed-off-by: Baokun Li <libaokun1@huawei.com>
 Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
 Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-5-libaokun1@huawei.com
+Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/ext4/inline.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4613,8 +4613,7 @@ static inline int ext4_iget_extra_inode(
- 	__le32 *magic = (void *)raw_inode +
- 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -34,6 +34,9 @@ static int get_max_inline_xattr_value_si
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
  
--	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
--	    EXT4_INODE_SIZE(inode->i_sb) &&
-+	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
- 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
- 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
- 		return ext4_find_inline_data_nolock(inode);
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
++		return 0;
++
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
 
 
