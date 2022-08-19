@@ -2,106 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CE4C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB06BC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236845AbiHSBq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 21:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        id S242927AbiHSBq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 21:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiHSBqX (ORCPT
+        with ESMTP id S240102AbiHSBqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 21:46:23 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24EBD5EB6;
-        Thu, 18 Aug 2022 18:46:18 -0700 (PDT)
-X-UUID: 35bb1b4ac6dd43be9a613c19b8f30de9-20220819
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=IOWVM8voEZOj8QsIgEwHtQL5oZR9puzNe4gdcUCy3PI=;
-        b=Gu1gDOBfZARtTpls85okNmzvsIr5wRLxLvDJ3NwWFr4qo3wDHR2qVshLBmsA4tf5dAVTshf4m49yY3tCSTQbhOjOewQTigHC7HLXjQ9Lg4RnNbD0ox/w7+cWzBLJy4IWqPssOTJ0t9hpXVMCXUU6xS+GtiIIs58zsGtYZBuR+6E=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:a9501030-8d1a-4f99-a563-8cbdbd44d833,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-        Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:c345bcfd-9e71-4a0f-ba6b-417998daea35,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
-        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 35bb1b4ac6dd43be9a613c19b8f30de9-20220819
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1547984976; Fri, 19 Aug 2022 09:46:13 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 19 Aug 2022 09:46:11 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 19 Aug 2022 09:46:11 +0800
-Message-ID: <0fb7809abab73c82f7ab98a80e5e04444381cf8e.camel@mediatek.com>
-Subject: Re: [PATCH RESEND] dt-bindings: timer: Add compatible for MediaTek
- MT8188
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <daniel.lezcano@linaro.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Fri, 19 Aug 2022 09:46:11 +0800
-In-Reply-To: <9947dc76-ab12-f840-3439-ca383c02c598@linaro.org>
-References: <20220818124602.20394-1-johnson.wang@mediatek.com>
-         <3d91fe87-feed-d083-9eeb-51293aead67a@linaro.org>
-         <9947dc76-ab12-f840-3439-ca383c02c598@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3D5D6303
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:46:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660873583; x=1692409583;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HOu9W0Z7Hb0AbvSxeFl3Bfr4eXNOKWNuHXBWb8n0dg4=;
+  b=bocTYFxcnAqEUIv1zVDMGcMDVmUuKRDUD5JIosTqCkrm/gemSLbVdjgr
+   YYxSdm/DV9lLwXEseKuNZu54HEVVo6EboaCbHcVrwaUe4PbblBIU+PYDW
+   jsK2oGZW02Lur+ykgeYN75/EIoq85m3S0oGjoE0QhNrVqa5aNql6ZpvSv
+   b1zW+0lQITcGV1cOKUgBP71x7NJCyYKcnljVZ3mUJxSwQkhlm8+6UA7G4
+   /8oXc1eStpkkeDtinI2qgLUd2A0wzPsbYs6IV8scN2auy6F9rRcGtkNhA
+   CaVWqKLQdSm6TM7o+HVyWpXXmGciLePmEiA08FuUNeY9hzt0JtorpC8x5
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="273303581"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="273303581"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 18:46:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="936038762"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 18 Aug 2022 18:46:22 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOr5Z-0000sp-1P;
+        Fri, 19 Aug 2022 01:46:21 +0000
+Date:   Fri, 19 Aug 2022 09:45:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [alobakin:kallsyms 3/3] Failed to open
+ ../lib/gcc/or1k-linux/12.1.0/libgcc.syms: No such file or directory at
+ scripts/gen_sympaths.pl line 182.
+Message-ID: <202208190907.vrsbCoX3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-08-18 at 16:40 +0300, Krzysztof Kozlowski wrote:
-> On 18/08/2022 15:51, Krzysztof Kozlowski wrote:
-> > On 18/08/2022 15:46, Johnson Wang wrote:
-> > > Add dt-binding documentation of timer for MediaTek MT8188 SoC
-> > > platform.
-> > > 
-> > > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
-> > > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > > ---
-> > >  Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt |
-> > > 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git
-> > > a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> > > b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> > > index f1c848af91d3..8bbb6e94508b 100644
-> > > --- a/Documentation/devicetree/bindings/timer/mediatek,mtk-
-> > > timer.txt
-> > > +++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-
-> > > timer.txt
-> > > @@ -25,6 +25,7 @@ Required properties:
-> > >  	For those SoCs that use SYST
-> > >  	* "mediatek,mt8183-timer" for MT8183 compatible timers (SYST)
-> > >  	* "mediatek,mt8186-timer" for MT8186 compatible timers (SYST)
-> > > +	* "mediatek,mt8188-timer" for MT8188 compatible timers (SYST)
-> > 
-> > Where is the driver change implementing this?
-> 
-> Or is there a generic fallback and you just added a specific one (not
-> visible on the diff)?
-> 
-> Best regards,
-> Krzysztof
+tree:   https://github.com/alobakin/linux kallsyms
+head:   0707de5041e9ba702fb490bf92d8742b797c9c3e
+commit: 0707de5041e9ba702fb490bf92d8742b797c9c3e [3/3] kallsyms: add option to include relative filepaths into kallsyms
+config: openrisc-allmodconfig (https://download.01.org/0day-ci/archive/20220819/202208190907.vrsbCoX3-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/alobakin/linux/commit/0707de5041e9ba702fb490bf92d8742b797c9c3e
+        git remote add alobakin https://github.com/alobakin/linux
+        git fetch --no-tags alobakin kallsyms
+        git checkout 0707de5041e9ba702fb490bf92d8742b797c9c3e
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 ARCH=openrisc 
 
-Hi Krzysztof,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yes, MT8188 uses "mediatek,mt6765-timer" as fallback compatible.
+All errors (new ones prefixed by >>):
 
-BRs,
-Johnson Wang
+>> Failed to open ../lib/gcc/or1k-linux/12.1.0/libgcc.syms: No such file or directory at scripts/gen_sympaths.pl line 182.
+   No valid symbol.
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
