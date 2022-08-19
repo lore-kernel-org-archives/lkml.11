@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8E5C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9251C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352209AbiHSQUH (ORCPT
+        id S1352231AbiHSQUK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
+        Fri, 19 Aug 2022 12:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352194AbiHSQPx (ORCPT
+        with ESMTP id S1352193AbiHSQPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:15:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E899EEC65;
-        Fri, 19 Aug 2022 08:59:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED9910446F;
+        Fri, 19 Aug 2022 08:59:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9516BB8281A;
-        Fri, 19 Aug 2022 15:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8DDAC433C1;
-        Fri, 19 Aug 2022 15:58:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 098BF61644;
+        Fri, 19 Aug 2022 15:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01C64C433C1;
+        Fri, 19 Aug 2022 15:59:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924738;
-        bh=x1nvLc9CrqSmqg+NraW75NyoG9pTX8hIo5Za1XCSb04=;
+        s=korg; t=1660924744;
+        bh=u0HsNN8rMYruFAvZHEvP0r2fe53rUhzO3lCv1NuR+A8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cH+Dx/2zYotJ3K1NzHwtlgdwaT/gWSPWJ8AwYEneo0n8HiS8COoumx06Sb+qQ7oWU
-         sgL9HwwVZhMJPUXpUnh2Fe3BPqGDJcv9ip+GwTuj0xfi31HzPL2bT33JqY7B/QNxaE
-         z2jUuHDZvfT/vx1YjPDtBUjIDMMSMnB8huJO0m2c=
+        b=WGtQfe/FHZCT3gNwIS08lh92af1Nta7SuYB2DpwedsgvlKSo8t5TwATegNIteeSvH
+         UltlNxusgzc4p5J0vIunJ+IFp9ZmFDaZVB/sNMws03jNazbWdA12cYUZXn8AZ/46eF
+         gsOiP6XhIo5kdXrs6hTa4wbwnPcG4PrdQDDNvmFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 266/545] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
-Date:   Fri, 19 Aug 2022 17:40:36 +0200
-Message-Id: <20220819153841.224184356@linuxfoundation.org>
+Subject: [PATCH 5.10 268/545] wireguard: allowedips: dont corrupt stack when detecting overflow
+Date:   Fri, 19 Aug 2022 17:40:38 +0200
+Message-Id: <20220819153841.324199211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,68 +52,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit a41b17ff9dacd22f5f118ee53d82da0f3e52d5e3 ]
+[ Upstream commit c31b14d86dfe7174361e8c6e5df6c2c3a4d5918c ]
 
-In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
-will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
-released before sock_alloc_send_skb and then relocked after
-sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
-to add skb to an already full sk_write_queue:
+In case push_rcu() and related functions are buggy, there's a
+WARN_ON(len >= 128), which the selftest tries to hit by being tricky. In
+case it is hit, we shouldn't corrupt the kernel's stack, though;
+otherwise it may be hard to even receive the report that it's buggy. So
+conditionalize the stack write based on that WARN_ON()'s return value.
 
-thread1--->lock
-thread1--->dccp_qpolicy_full: queue is full. drop a skb
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
-thread2--->unlock
-thread1--->lock
-thread1--->dccp_qpolicy_push: add a skb. queue is full.
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_push: add a skb!
-thread2--->unlock
+Note that this never *actually* happens anyway. The WARN_ON() in the
+first place is bounded by IS_ENABLED(DEBUG), and isn't expected to ever
+actually hit. This is just a debugging sanity check.
 
-Fix this by moving dccp_qpolicy_full.
+Additionally, hoist the constant 128 into a named enum,
+MAX_ALLOWEDIPS_BITS, so that it's clear why this value is chosen.
 
-Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220729110027.40569-1-hbh25y@gmail.com
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/all/CAHk-=wjJZGA6w_DxA+k7Ejbqsq+uGK==koPai3sqdsfJqemvag@mail.gmail.com/
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dccp/proto.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/wireguard/allowedips.c          | 9 ++++++---
+ drivers/net/wireguard/selftest/allowedips.c | 6 +++---
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 548cf0135647..65e81e0199b0 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -747,11 +747,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
+index 9a4c8ff32d9d..5bf7822c53f1 100644
+--- a/drivers/net/wireguard/allowedips.c
++++ b/drivers/net/wireguard/allowedips.c
+@@ -6,6 +6,8 @@
+ #include "allowedips.h"
+ #include "peer.h"
  
- 	lock_sock(sk);
- 
--	if (dccp_qpolicy_full(sk)) {
--		rc = -EAGAIN;
--		goto out_release;
--	}
--
- 	timeo = sock_sndtimeo(sk, noblock);
- 
- 	/*
-@@ -770,6 +765,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	if (skb == NULL)
- 		goto out_release;
- 
-+	if (dccp_qpolicy_full(sk)) {
-+		rc = -EAGAIN;
-+		goto out_discard;
-+	}
++enum { MAX_ALLOWEDIPS_BITS = 128 };
 +
- 	if (sk->sk_state == DCCP_CLOSED) {
- 		rc = -ENOTCONN;
- 		goto out_discard;
+ static struct kmem_cache *node_cache;
+ 
+ static void swap_endian(u8 *dst, const u8 *src, u8 bits)
+@@ -40,7 +42,8 @@ static void push_rcu(struct allowedips_node **stack,
+ 		     struct allowedips_node __rcu *p, unsigned int *len)
+ {
+ 	if (rcu_access_pointer(p)) {
+-		WARN_ON(IS_ENABLED(DEBUG) && *len >= 128);
++		if (WARN_ON(IS_ENABLED(DEBUG) && *len >= MAX_ALLOWEDIPS_BITS))
++			return;
+ 		stack[(*len)++] = rcu_dereference_raw(p);
+ 	}
+ }
+@@ -52,7 +55,7 @@ static void node_free_rcu(struct rcu_head *rcu)
+ 
+ static void root_free_rcu(struct rcu_head *rcu)
+ {
+-	struct allowedips_node *node, *stack[128] = {
++	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = {
+ 		container_of(rcu, struct allowedips_node, rcu) };
+ 	unsigned int len = 1;
+ 
+@@ -65,7 +68,7 @@ static void root_free_rcu(struct rcu_head *rcu)
+ 
+ static void root_remove_peer_lists(struct allowedips_node *root)
+ {
+-	struct allowedips_node *node, *stack[128] = { root };
++	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = { root };
+ 	unsigned int len = 1;
+ 
+ 	while (len > 0 && (node = stack[--len])) {
+diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
+index e173204ae7d7..41db10f9be49 100644
+--- a/drivers/net/wireguard/selftest/allowedips.c
++++ b/drivers/net/wireguard/selftest/allowedips.c
+@@ -593,10 +593,10 @@ bool __init wg_allowedips_selftest(void)
+ 	wg_allowedips_remove_by_peer(&t, a, &mutex);
+ 	test_negative(4, a, 192, 168, 0, 1);
+ 
+-	/* These will hit the WARN_ON(len >= 128) in free_node if something
+-	 * goes wrong.
++	/* These will hit the WARN_ON(len >= MAX_ALLOWEDIPS_BITS) in free_node
++	 * if something goes wrong.
+ 	 */
+-	for (i = 0; i < 128; ++i) {
++	for (i = 0; i < MAX_ALLOWEDIPS_BITS; ++i) {
+ 		part = cpu_to_be64(~(1LLU << (i % 64)));
+ 		memset(&ip, 0xff, 16);
+ 		memcpy((u8 *)&ip + (i < 64) * 8, &part, 8);
 -- 
 2.35.1
 
