@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4124AC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F014C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353748AbiHSQnq (ORCPT
+        id S1353620AbiHSQnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33528 "EHLO
+        Fri, 19 Aug 2022 12:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353857AbiHSQlJ (ORCPT
+        with ESMTP id S1353882AbiHSQlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:09 -0400
+        Fri, 19 Aug 2022 12:41:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D2B12578F;
-        Fri, 19 Aug 2022 09:09:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE81D1256DB;
+        Fri, 19 Aug 2022 09:09:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC6CD61639;
-        Fri, 19 Aug 2022 16:08:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D570C43141;
-        Fri, 19 Aug 2022 16:08:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D9E661838;
+        Fri, 19 Aug 2022 16:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F45CC433D7;
+        Fri, 19 Aug 2022 16:08:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925332;
-        bh=qBJun0bWQYxXyX9cv6OKocqYB+O1BIvrD1jsikgfFIY=;
+        s=korg; t=1660925293;
+        bh=zrrn6LAh6NYx6fLBmOiaBaMtl8pQ4I2f5vpr76aVJU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Far5wnp31bNbkUbATA0TOtUdbhp6VurU6CnHw227cul447uu3RRtgPG2ouiw8AB/l
-         T5GO9iVI+70UTiaOOyS8Rv0aluLFTeKtQL/mw10vnwShcLug2G42wLdPHlVUslcC6g
-         wctB0TQD2QRV2Id99rc9ZtZd1IlReVILHXApUakw=
+        b=xJdMp2tLEumL1h05TGJd+6/hpBa2LPj0qaqDl1uZ3IWwjnP9tDASMauD4fuyeZUZO
+         9Hh3vlROK0rRyU+xcCJurEd8X7D/uzFP1cvB+n9YY/CADh9vT5HKoypLlaSRyVw6Hk
+         zORc1/7YMcLcUI76Wl7ALKs4+ggSXviTipy7W88s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 440/545] scsi: qla2xxx: Fix discovery issues in FC-AL topology
-Date:   Fri, 19 Aug 2022 17:43:30 +0200
-Message-Id: <20220819153849.113964391@linuxfoundation.org>
+        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 406/545] s390/dump: fix old lowcore virtual vs physical address confusion
+Date:   Fri, 19 Aug 2022 17:42:56 +0200
+Message-Id: <20220819153847.598763008@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,107 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
+[ Upstream commit dc306186a130c6d9feb0aabc1c71b8ed1674a3bf ]
 
-A direct attach tape device, when gets swapped with another, was not
-discovered. Fix this by looking at loop map and reinitialize link if there
-are devices present.
+Virtual addresses of vmcore_info and os_info members are
+wrongly passed to copy_oldmem_kernel(), while the function
+expects physical address of the source. Instead, __pa()
+macro should have been applied.
 
-Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
-Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reported-by: Tony Battersby <tonyb@cybernetics.com>
-Tested-by: Tony Battersby <tonyb@cybernetics.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Yet, use of __pa() macro could be somehow confusing, since
+copy_oldmem_kernel() may treat the source as an offset, not
+as a direct physical address (that depens from the oldmem
+availability and location).
+
+Fix the virtual vs physical address confusion and make the
+way the old lowcore is read consistent across all sources.
+
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
- drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
- drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
- 3 files changed, 35 insertions(+), 2 deletions(-)
+ arch/s390/kernel/asm-offsets.c | 2 ++
+ arch/s390/kernel/crash_dump.c  | 2 +-
+ arch/s390/kernel/os_info.c     | 3 ++-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_gbl.h
-+++ b/drivers/scsi/qla2xxx/qla_gbl.h
-@@ -405,7 +405,8 @@ extern int
- qla2x00_get_resource_cnts(scsi_qla_host_t *);
+diff --git a/arch/s390/kernel/asm-offsets.c b/arch/s390/kernel/asm-offsets.c
+index 483051e10db3..e070073930a9 100644
+--- a/arch/s390/kernel/asm-offsets.c
++++ b/arch/s390/kernel/asm-offsets.c
+@@ -150,6 +150,8 @@ int main(void)
+ 	OFFSET(__LC_BR_R1, lowcore, br_r1_trampoline);
+ 	/* software defined ABI-relevant lowcore locations 0xe00 - 0xe20 */
+ 	OFFSET(__LC_DUMP_REIPL, lowcore, ipib);
++	OFFSET(__LC_VMCORE_INFO, lowcore, vmcore_info);
++	OFFSET(__LC_OS_INFO, lowcore, os_info);
+ 	/* hardware defined lowcore locations 0x1000 - 0x18ff */
+ 	OFFSET(__LC_MCESAD, lowcore, mcesad);
+ 	OFFSET(__LC_EXT_PARAMS2, lowcore, ext_params2);
+diff --git a/arch/s390/kernel/crash_dump.c b/arch/s390/kernel/crash_dump.c
+index 205b2e2648aa..76762dc67ca9 100644
+--- a/arch/s390/kernel/crash_dump.c
++++ b/arch/s390/kernel/crash_dump.c
+@@ -432,7 +432,7 @@ static void *get_vmcoreinfo_old(unsigned long *size)
+ 	Elf64_Nhdr note;
+ 	void *addr;
  
- extern int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
-+		u8 *num_entries);
+-	if (copy_oldmem_kernel(&addr, &S390_lowcore.vmcore_info, sizeof(addr)))
++	if (copy_oldmem_kernel(&addr, (void *)__LC_VMCORE_INFO, sizeof(addr)))
+ 		return NULL;
+ 	memset(nt_name, 0, sizeof(nt_name));
+ 	if (copy_oldmem_kernel(&note, addr, sizeof(note)))
+diff --git a/arch/s390/kernel/os_info.c b/arch/s390/kernel/os_info.c
+index 0a5e4bafb6ad..1b8e2aff20e3 100644
+--- a/arch/s390/kernel/os_info.c
++++ b/arch/s390/kernel/os_info.c
+@@ -15,6 +15,7 @@
+ #include <asm/checksum.h>
+ #include <asm/lowcore.h>
+ #include <asm/os_info.h>
++#include <asm/asm-offsets.h>
  
- extern int
- qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -5270,6 +5270,22 @@ static int qla2x00_configure_n2n_loop(sc
- 	return QLA_FUNCTION_FAILED;
- }
- 
-+static void
-+qla_reinitialize_link(scsi_qla_host_t *vha)
-+{
-+	int rval;
-+
-+	atomic_set(&vha->loop_state, LOOP_DOWN);
-+	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-+	rval = qla2x00_full_login_lip(vha);
-+	if (rval == QLA_SUCCESS) {
-+		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
-+	} else {
-+		ql_dbg(ql_dbg_disc, vha, 0xd051,
-+			"Link reinitialization failed (%d)\n", rval);
-+	}
-+}
-+
  /*
-  * qla2x00_configure_local_loop
-  *	Updates Fibre Channel Device Database with local loop devices.
-@@ -5321,6 +5337,19 @@ qla2x00_configure_local_loop(scsi_qla_ho
- 		spin_unlock_irqrestore(&vha->work_lock, flags);
- 
- 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
-+			u8 loop_map_entries = 0;
-+			int rc;
-+
-+			rc = qla2x00_get_fcal_position_map(vha, NULL,
-+						&loop_map_entries);
-+			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
-+				/*
-+				 * There are devices that are still not logged
-+				 * in. Reinitialize to give them a chance.
-+				 */
-+				qla_reinitialize_link(vha);
-+				return QLA_FUNCTION_FAILED;
-+			}
- 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
- 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
- 		}
---- a/drivers/scsi/qla2xxx/qla_mbx.c
-+++ b/drivers/scsi/qla2xxx/qla_mbx.c
-@@ -3017,7 +3017,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
-  *	Kernel context.
-  */
- int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
-+		u8 *num_entries)
- {
- 	int rval;
- 	mbx_cmd_t mc;
-@@ -3057,6 +3058,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
- 
- 		if (pos_map)
- 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
-+		if (num_entries)
-+			*num_entries = pmap[0];
- 	}
- 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
- 
+  * OS info structure has to be page aligned
+@@ -123,7 +124,7 @@ static void os_info_old_init(void)
+ 		return;
+ 	if (!OLDMEM_BASE)
+ 		goto fail;
+-	if (copy_oldmem_kernel(&addr, &S390_lowcore.os_info, sizeof(addr)))
++	if (copy_oldmem_kernel(&addr, (void *)__LC_OS_INFO, sizeof(addr)))
+ 		goto fail;
+ 	if (addr == 0 || addr % PAGE_SIZE)
+ 		goto fail;
+-- 
+2.35.1
+
 
 
