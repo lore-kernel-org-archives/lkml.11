@@ -2,201 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6CFC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD32C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349453AbiHSPPv (ORCPT
+        id S1349572AbiHSPRT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
+        Fri, 19 Aug 2022 11:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349689AbiHSPPo (ORCPT
+        with ESMTP id S1348832AbiHSPRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:15:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1592DFAC42
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:15:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660922142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PhaID+X1Mqgrgk1tAzS4wrDrYfG7IsiSyF0efNhSA9o=;
-        b=iiN91Zcd9DrJGm6mchimOWs6i+BCbUnc1ZTPWpLEPyGpmvaBj7iEIsvIGHAYil6cmFsun3
-        QxyQP9tRNBiJTAcWDHCEhXWA62brOMUA1MjoYtCpzQmfue3WdlnHNofw9ZBshRj4u4y3f0
-        NHI8fF8wYzmHE+Lv4nWYuoi+2BswFBw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-55-ZwCElc1OPm-XVkkuDNlEWQ-1; Fri, 19 Aug 2022 11:15:31 -0400
-X-MC-Unique: ZwCElc1OPm-XVkkuDNlEWQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5819A101AA4E;
-        Fri, 19 Aug 2022 15:15:30 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.34.189])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B4A62404C6E3;
-        Fri, 19 Aug 2022 15:15:29 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org, jay.vosburgh@canonical.com
-Cc:     liuhangbin@gmail.com, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v5 2/3] bonding: 802.3ad: fix no transmission of LACPDUs
-Date:   Fri, 19 Aug 2022 11:15:13 -0400
-Message-Id: <5fe2a41fa0c2d726a9ba92244b272b21d4bae3a4.1660919940.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1660919940.git.jtoppins@redhat.com>
-References: <cover.1660919940.git.jtoppins@redhat.com>
+        Fri, 19 Aug 2022 11:17:17 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBD0FAC5A;
+        Fri, 19 Aug 2022 08:17:16 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id y127so1630144pfy.5;
+        Fri, 19 Aug 2022 08:17:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YFMuK07MAl90VNNqj+UWyRTdyy2yEe0aAWnn80xZ4hU=;
+        b=JDgj3pb/g+V5bIF7JGajRHFNgtDvCci3zYOBCFl6+1bAAUorPTTOh5Vni++0pnHsRj
+         nuKvseA1W73dEp5EAs8lERkOTnSBd9lug1/lzKbFPr3CDJgxJAeEszNNkMVhAO/WdZcY
+         avTg4XnnJUZWxAIOg+Lg+V6LRDJOeBG/gAFp5NY4hr0JBcyIYOOfi4roW4bxNFBMuadu
+         jMzLzjvxWku44ALsNamO1gEjzonca8nmEQ6FG98pbepvPnY6yzkXonDgKYLbubrYLAC2
+         3AhAtGyXy3sS4QV+3foAXj4p/Qd1ZW44QnIn1q6ceAfjoPDMyxGSyJIAXSDVv0aljXen
+         4DbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YFMuK07MAl90VNNqj+UWyRTdyy2yEe0aAWnn80xZ4hU=;
+        b=PoZWbvjwm65Q5xoTO9ncGsvYrroy1SOiF0twCI02LAcnDBoYCy9zHJJWw2TNfAgjMd
+         GBLEegXoRU50mwNSIKnbLI0ekQSaSFyzxpEjwuIUAiqau56/5PYJiolKn7yETHkn6aO/
+         6kPmjkENv/gjwaY9yTuCfh+rMFAIlYzAqR73M8m6LsdiiZIf1VDChAGTnlKv6o50Mt1b
+         kdXQJw/WmarHDRfHGmW9qOXR6BC2A6+L3Ja9OQBDk081KKjPMep9O+jU5ZyjhX5mKOzl
+         TidmZvn6/BZyaZEvTk1KqPoR70BTCh3UDvNcy3goxeLUvKeiETnXl9gPFvL4BWTdkw5c
+         1itg==
+X-Gm-Message-State: ACgBeo1FDFRqXXntbkVeaf31DTTqOmb+O70VNGQDjPb2I2N3L+OzRkde
+        bgOv2vh2jz1tk8LW9sdWn2r3wz8Tzu8FE3i+v6I=
+X-Google-Smtp-Source: AA6agR4QSQZbufZFY6889DXKIezlLDRxvx5cv0TiWrF+yGykKS++cMBKb9rvD2W6HSATtKMwo534T9aYLo31DMRLLbA=
+X-Received: by 2002:a63:2148:0:b0:427:17f6:7c05 with SMTP id
+ s8-20020a632148000000b0042717f67c05mr6668275pgm.200.1660922235800; Fri, 19
+ Aug 2022 08:17:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+References: <20220816032846.2579217-1-imagedong@tencent.com> <20220818100946.6ad96b06@kernel.org>
+In-Reply-To: <20220818100946.6ad96b06@kernel.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Fri, 19 Aug 2022 23:17:04 +0800
+Message-ID: <CADxym3YCp3KyjOLWg_zj9scLjzN0SsyR99cTnp9b4i_pfxBxSQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: skb: prevent the split of
+ kfree_skb_reason() by gcc
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
+        ndesaulniers@google.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, asml.silence@gmail.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is caused by the global variable ad_ticks_per_sec being zero as
-demonstrated by the reproducer script discussed below. This causes
-all timer values in __ad_timer_to_ticks to be zero, resulting
-in the periodic timer to never fire.
+On Fri, Aug 19, 2022 at 1:09 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 16 Aug 2022 11:28:46 +0800 menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+[...]
+>
+> Sorry for a late and possibly off-topic chime in, is the compiler
+> splitting it because it thinks that skb_unref() is going to return
+> true? I don't think that's the likely case, so maybe we're better
+> off wrapping that skb_unref() in unlikely()?
 
-To reproduce:
-Run the script in
-`tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
-puts bonding into a state where it never transmits LACPDUs.
+I think your thought is totally right, considering the instruction
+that I disassembled:
 
-line 44: ip link add fbond type bond mode 4 miimon 200 \
-            xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
+ffffffff819fea20 <kfree_skb_reason>:
+ffffffff819fea20:       e8 cb 2c 40 00          call
+ffffffff81e016f0 <__fentry__>
+ffffffff819fea25:       48 85 ff                test   %rdi,%rdi
+ffffffff819fea28:       74 25                   je
+ffffffff819fea4f <kfree_skb_reason+0x2f>
+ffffffff819fea2a:       8b 87 d4 00 00 00       mov    0xd4(%rdi),%eax
+/* this is just the instruction that compiled from skb_unref()  */
+ffffffff819fea30:       83 f8 01                cmp    $0x1,%eax
+ffffffff819fea33:       75 0b                   jne
+ffffffff819fea40 <kfree_skb_reason+0x20>
+ffffffff819fea35:       55                      push   %rbp
+ffffffff819fea36:       48 89 e5                mov    %rsp,%rbp
+ffffffff819fea39:       e8 42 ff ff ff          call
+ffffffff819fe980 <kfree_skb_reason.part.0>
+ffffffff819fea3e:       5d                      pop    %rbp
+ffffffff819fea3f:       c3                      ret
+ffffffff819fea40:       f0 ff 8f d4 00 00 00    lock decl 0xd4(%rdi)
+ffffffff819fea47:       0f 88 e5 44 27 00       js
+ffffffff81c72f32 <__noinstr_text_end+0x255d>
+ffffffff819fea4d:       74 e6                   je
+ffffffff819fea35 <kfree_skb_reason+0x15>
+ffffffff819fea4f:       c3                      ret
 
-line 48: ip link set fbond address 52:54:00:3B:7C:A6
-setting bond MAC addr
-call stack:
-    bond->dev->dev_addr = new_mac
+The compiler just splits the code after skb_unref() to another.
+After I warp the skb_unref() in unlinkly(), this function is not
+splitted any more.
 
-line 52: ip link set fbond type bond ad_actor_sys_prio 65535
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
+Yeah, I think we can make skb_unref() wrapped by unlikely()
+by the way.
 
-line 60: ip link set veth1-bond down master fbond
-given:
-    params.ad_actor_system = 0
-    params.mode = BOND_MODE_8023AD
-    ad.system.sys_mac_addr == bond->dev->dev_addr
-call stack:
-    bond_enslave
-    -> bond_3ad_initialize(); because first slave
-       -> if ad.system.sys_mac_addr != bond->dev->dev_addr
-          return
-results:
-     Nothing is run in bond_3ad_initialize() because dev_addr equals
-     sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
-     never initialized anywhere else.
-
-The if check around the contents of bond_3ad_initialize() is no longer
-needed due to commit 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings
-changes immediately") which sets ad.system.sys_mac_addr if any one of
-the bonding parameters whos set function calls
-bond_3ad_update_ad_actor_settings(). This is because if
-ad.system.sys_mac_addr is zero it will be set to the current bond mac
-address, this causes the if check to never be true.
-
-Fixes: 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
-
-Notes:
-    v2:
-     * split this fix from the reproducer
-    v3:
-     * rebased to latest net/master
-    v4:
-     * instead of setting ad_ticks_per_sec remove the if statement around the
-       body of the function of bond_3ad_initialize().
-    v5:
-     * no changes
-
- drivers/net/bonding/bond_3ad.c | 38 ++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index d7fb33c078e8..1f0120cbe9e8 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2007,30 +2007,24 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
-  */
- void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
- {
--	/* check that the bond is not initialized yet */
--	if (!MAC_ADDRESS_EQUAL(&(BOND_AD_INFO(bond).system.sys_mac_addr),
--				bond->dev->dev_addr)) {
--
--		BOND_AD_INFO(bond).aggregator_identifier = 0;
--
--		BOND_AD_INFO(bond).system.sys_priority =
--			bond->params.ad_actor_sys_prio;
--		if (is_zero_ether_addr(bond->params.ad_actor_system))
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->dev->dev_addr);
--		else
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->params.ad_actor_system);
-+	BOND_AD_INFO(bond).aggregator_identifier = 0;
-+	BOND_AD_INFO(bond).system.sys_priority =
-+		bond->params.ad_actor_sys_prio;
-+	if (is_zero_ether_addr(bond->params.ad_actor_system))
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->dev->dev_addr);
-+	else
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->params.ad_actor_system);
- 
--		/* initialize how many times this module is called in one
--		 * second (should be about every 100ms)
--		 */
--		ad_ticks_per_sec = tick_resolution;
-+	/* initialize how many times this module is called in one
-+	 * second (should be about every 100ms)
-+	 */
-+	ad_ticks_per_sec = tick_resolution;
- 
--		bond_3ad_initiate_agg_selection(bond,
--						AD_AGGREGATOR_SELECTION_TIMER *
--						ad_ticks_per_sec);
--	}
-+	bond_3ad_initiate_agg_selection(bond,
-+					AD_AGGREGATOR_SELECTION_TIMER *
-+					ad_ticks_per_sec);
- }
- 
- /**
--- 
-2.31.1
-
+Thanks!
+Menglong Dong
