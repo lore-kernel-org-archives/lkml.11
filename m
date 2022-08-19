@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1218DC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408CFC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351961AbiHSQOC (ORCPT
+        id S1351964AbiHSQOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        Fri, 19 Aug 2022 12:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351895AbiHSQNC (ORCPT
+        with ESMTP id S1351908AbiHSQNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:13:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DBC114A48;
-        Fri, 19 Aug 2022 08:57:40 -0700 (PDT)
+        Fri, 19 Aug 2022 12:13:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3F8113DEB;
+        Fri, 19 Aug 2022 08:57:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51F81B82819;
-        Fri, 19 Aug 2022 15:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B34C433C1;
-        Fri, 19 Aug 2022 15:57:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 767B36175A;
+        Fri, 19 Aug 2022 15:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B5B8C433D7;
+        Fri, 19 Aug 2022 15:57:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924657;
-        bh=yO/+0w+QZpL9FyWrE4hrpJ2hjLScgiQtI3GR94o+23I=;
+        s=korg; t=1660924647;
+        bh=C20kY/76P5H8HT4Qrw53JiiCX9u/VVZ87JzsX7xoyNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sd7jC4iJ41j4zgPxZLV9pIGETA3X9qwqpgC33lnQ70fPjc3cqrs7LXqnKW5oKxTC8
-         k5miXqyZwnVWmqaz6jmBRpjar7KAhNJsV6/WSPxOXtvKTMI7bVut8fp+C0lkbVI2Z5
-         xASpxh0bn2/LwLWTArB2tjqsVzl+/ocnDSD6iQVs=
+        b=LgFWovI8+jBVLHKSutQwl3Rcbt8CkMMufMeg/meGyOUjMBgxOM/J+2T0LqbmeQSyH
+         453e8+yqGV80WOOzvzKMoQeEfOwzDBv+Y2S0MT6PZe/ZhgJX8+MOH0HmudbRXotRjk
+         57is+2T8UQyuUuYLh33C9KHVPvpseADPX70ETDxU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>,
+        stable@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 240/545] can: kvaser_usb_hydra: do not report txerr and rxerr during bus-off
-Date:   Fri, 19 Aug 2022 17:40:10 +0200
-Message-Id: <20220819153840.106254159@linuxfoundation.org>
+Subject: [PATCH 5.10 237/545] can: sja1000: do not report txerr and rxerr during bus-off
+Date:   Fri, 19 Aug 2022 17:40:07 +0200
+Message-Id: <20220819153839.960157137@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,51 +53,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 936e90595376e64b6247c72d3ea8b8b164b7ac96 ]
+[ Upstream commit 164d7cb2d5a30f1b3a5ab4fab1a27731fb1494a8 ]
 
 During bus off, the error count is greater than 255 and can not fit in
 a u8.
 
-Fixes: aec5fb2268b7 ("can: kvaser_usb: Add support for Kvaser USB hydra family")
-Link: https://lore.kernel.org/all/20220719143550.3681-8-mailhol.vincent@wanadoo.fr
-CC: Jimmy Assarsson <extja@kvaser.com>
+Fixes: 215db1856e83 ("can: sja1000: Consolidate and unify state change handling")
+Link: https://lore.kernel.org/all/20220719143550.3681-4-mailhol.vincent@wanadoo.fr
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/can/sja1000/sja1000.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-index a7c408acb0c0..01d4a731b579 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -890,8 +890,10 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
- 	    new_state < CAN_STATE_BUS_OFF)
- 		priv->can.can_stats.restarts++;
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index 25a4d7d0b349..ee34baeb2afe 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -405,9 +405,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+ 	txerr = priv->read_reg(priv, SJA1000_TXERR);
+ 	rxerr = priv->read_reg(priv, SJA1000_RXERR);
  
--	cf->data[6] = bec->txerr;
--	cf->data[7] = bec->rxerr;
-+	if (new_state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = bec->txerr;
-+		cf->data[7] = bec->rxerr;
+-	cf->data[6] = txerr;
+-	cf->data[7] = rxerr;
+-
+ 	if (isrc & IRQ_DOI) {
+ 		/* data overrun interrupt */
+ 		netdev_dbg(dev, "data overrun interrupt\n");
+@@ -429,6 +426,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+ 		else
+ 			state = CAN_STATE_ERROR_ACTIVE;
+ 	}
++	if (state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
 +	}
- 
- 	stats = &netdev->stats;
- 	stats->rx_packets++;
-@@ -1045,8 +1047,10 @@ kvaser_usb_hydra_error_frame(struct kvaser_usb_net_priv *priv,
- 	shhwtstamps->hwtstamp = hwtstamp;
- 
- 	cf->can_id |= CAN_ERR_BUSERROR;
--	cf->data[6] = bec.txerr;
--	cf->data[7] = bec.rxerr;
-+	if (new_state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = bec.txerr;
-+		cf->data[7] = bec.rxerr;
-+	}
- 
- 	stats->rx_packets++;
- 	stats->rx_bytes += cf->can_dlc;
+ 	if (isrc & IRQ_BEI) {
+ 		/* bus error interrupt */
+ 		priv->can.can_stats.bus_error++;
 -- 
 2.35.1
 
