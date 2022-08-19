@@ -2,116 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98734C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945B0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347603AbiHSITZ (ORCPT
+        id S1347713AbiHSIT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
+        Fri, 19 Aug 2022 04:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347599AbiHSIS4 (ORCPT
+        with ESMTP id S1347602AbiHSIS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:18:56 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBD13F1E2;
-        Fri, 19 Aug 2022 01:18:18 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id p5so1332776qvz.6;
-        Fri, 19 Aug 2022 01:18:18 -0700 (PDT)
+        Fri, 19 Aug 2022 04:18:57 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F582CE38
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:18:25 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id 2so3576637pll.0
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=5w+/g5YGTVdUHyIqk02zSqLS8P5U5fB9MVF9V2agJs0=;
-        b=gdAXzwgCjGLoD1sElbapv4QEHxkB7G5webqH9OcGwe0JTZ+S3aa40oCN2BsF7UhTFi
-         dzC7tuI4ZcdBbTu+37Z5nQXVEzEYODot/JQoQutZHP4ZnBuvYgqUjNSd3Enm3uOfGDji
-         Z6jN086ldl3QK05dZ7sykm/vBoXyb3zqQThCN9UYV0aoY7Q253/gpc469j8wOMcAXhsk
-         +hcLDE88iyEwK7deBSl0itpcChEfyi/b2qjAgKVGExoFuVtfGgd8cE/3n8aQ/FngpoNb
-         kmAuCmFc5UybXNyQn+vbezSBfe3fj1p7BU70y/MbLRtvJkt3nPrjrwye7w5NJFWGQsrT
-         slcQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=rLwSa6/VTW7j0kyqXcfy39gB1REZsTOlo6USC+44fKA=;
+        b=DGsBTFwoasmSy8pqSB5oaI5VXpDB5tusl0fn0fcTh174La3Lmx1CKlTZw1TyAjvqNX
+         iJEsIutCOHFdiZLDYKAms2+N4rFmyCcHqwpr1H06ArSaUSW5xx88NUANb8ZuSAfB4IUI
+         nutUk1++EN2gKYMmhSM+s1IFBPnvzfXupx9Xt2SJJMzJXAT0cZv6hSEyDrqKCkKPgrbw
+         5Z+blKOmXquLceOzlczOWj+vHCxYCVuFoPzxDUcPBFvNLmaqqsEAERF0j0qjvu51jHmX
+         xYOBzkH6R3QhQnwOJqP3R/sm0yGNYEVk1EAZAhtws9dUyVMKGwqtEpaQ1QoZI0QBD1BW
+         vg1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=5w+/g5YGTVdUHyIqk02zSqLS8P5U5fB9MVF9V2agJs0=;
-        b=NR+OXYcnEmeC+noF5/ufQcsc11miCRICo0JQBPUeC2vmfCP12JNkS4DW4MZGEnJ+7/
-         ilkpqV+H2BfAnUTnxEW1GSCu7r2aZyDFBOFm5oJw32fLk9n4ZZGp5Qa47GhLPnpxTVX8
-         WAuknSrsF2H5+fmJtAqtmR7RsgJTGkThIp4n17lENEq2gXEXOcVHpf0TpktY35aWaIFR
-         0ssAZC4xY6vguMbGBaWYJYsDX+l9mFnigj0DYk4Rmnk4+rjgOcYMdY2J8RsA3Q4PMPUQ
-         i2K1PYT8M3oBHKuh6UKBeRXyGa1izy53kqK2Ij92ENOFBOY50rib6tlxYRSjZBDjk/sa
-         /iEg==
-X-Gm-Message-State: ACgBeo3hYw1Ouk1NEzERDNRa6lldaaRbMEwh3vXQP7aykcHoCfTsYYfy
-        4h5CZNLMejVTrn0Qs99h9UkwO17T6BClU6mDrTA=
-X-Google-Smtp-Source: AA6agR7LmW3N9z3MXZX9n9igF+gWSbyWFvq+FB6r3EgvE+6nZGrWjDoyV5HF2BTjg2dmSLl5DuAi/kX6oqCv1o7HUFw=
-X-Received: by 2002:a05:6214:e69:b0:476:b991:586f with SMTP id
- jz9-20020a0562140e6900b00476b991586fmr5323691qvb.48.1660897097715; Fri, 19
- Aug 2022 01:18:17 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=rLwSa6/VTW7j0kyqXcfy39gB1REZsTOlo6USC+44fKA=;
+        b=VeRmNtnSUpLEMEfXQj53rtgLsIUbcyz5W4zvl5Hua26rNmvSo6HnWyPgvy5AaNaTO0
+         WmlfD5B3eW8pBHJ9YW1/wo+b3c9DCdiTpRGWlUk4/Gl0UNqw0M6aat7LMkLADlPNXsJR
+         USwnOHJuYhZxyeg6wAUAKtEfwgflLtavVDLGwEOIyels8V74CiiyeXlz+nY80ramSjjo
+         z/I42aItkZEO8rqY8X7gAoh8HPGgLYYTmExnFIU+vJbgC5PWZ+dkXEZiX/OakVGa68N7
+         LPAFaPWdFusy3AeU+GwxhWKZIR8WQNWPVX8IvkQoouImWMzU1++Z3d7rDaPjpEiHjec4
+         la6g==
+X-Gm-Message-State: ACgBeo0ObJa4ihAMjWZFqPuAQnHNgvoh+vzkvYwSGeDwJUMPtRReKWe4
+        c49XgLUHPBOm7RsSFiX3wZ4KspT6/Sc=
+X-Google-Smtp-Source: AA6agR4xH4C8LF3bwYBaWoMm4O4lCPvhgeUaISiC+AfOmq1Cs04/9nsTsboLSjukk+AOFUN+0gWi1w==
+X-Received: by 2002:a17:90b:3008:b0:1fa:be55:d1bc with SMTP id hg8-20020a17090b300800b001fabe55d1bcmr10500791pjb.114.1660897104537;
+        Fri, 19 Aug 2022 01:18:24 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id bk2-20020a056a02028200b0041c0c9c0072sm2363529pgb.64.2022.08.19.01.18.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 01:18:24 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     tytso@mit.edu
+Cc:     willy@infradead.org, songmuchun@bytedance.com,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] fs/qnx6: delete unnecessary checks before brelse()
+Date:   Fri, 19 Aug 2022 08:18:19 +0000
+Message-Id: <20220819081819.96347-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220817105643.95710-1-contact@artur-rojek.eu> <20220817105643.95710-4-contact@artur-rojek.eu>
-In-Reply-To: <20220817105643.95710-4-contact@artur-rojek.eu>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 19 Aug 2022 11:17:41 +0300
-Message-ID: <CAHp75VeierGKV7BqF+y-vxramA4nk24LOSPRxgmjots_amkg-w@mail.gmail.com>
-Subject: Re: [PATCH 3/4] iio: add helper function for reading channel offset
- in buffer
-To:     Artur Rojek <contact@artur-rojek.eu>
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-input <linux-input@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 1:58 PM Artur Rojek <contact@artur-rojek.eu> wrote:
->
-> This is useful for consumers that wish to parse raw buffer data.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-...
+The brelse() function tests whether its argument is NULL
+and then returns immediately.
+Thus remove the tests which are not needed around the shown calls.
 
-> +int iio_find_channel_offset_in_buffer(struct iio_dev *indio_dev,
-> +                                     const struct iio_chan_spec *chan,
-> +                                     struct iio_buffer *buffer)
-> +{
-> +       int length, offset = 0;
-> +       unsigned int si;
-> +
-> +       if (chan->scan_index < 0 ||
-> +           !test_bit(chan->scan_index, buffer->scan_mask)) {
-> +               return -EINVAL;
-> +       }
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ fs/qnx6/inode.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Have you run checkpatch? The {} are redundant. But personally I would
-split this into two separate conditionals.
-
-> +       for (si = 0; si < chan->scan_index; ++si) {
-
-Just a side crying: where did you, people, get this pre-increment pattern from?!
-
-> +               if (!test_bit(si, buffer->scan_mask))
-> +                       continue;
-
-NIH for_each_set_bit()
-
-> +               length = iio_storage_bytes_for_si(indio_dev, si);
-> +
-> +               /* Account for channel alignment. */
-> +               if (offset % length)
-> +                       offset += length - (offset % length);
-> +               offset += length;
-> +       }
-> +
-> +       return offset;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_find_channel_offset_in_buffer);
-
-Same Q as per previous patch: IIO namespace?
-
+diff --git a/fs/qnx6/inode.c b/fs/qnx6/inode.c
+index b9895afca9d1..85b2fa3b211c 100644
+--- a/fs/qnx6/inode.c
++++ b/fs/qnx6/inode.c
+@@ -470,10 +470,8 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
+ out1:
+ 	iput(sbi->inodes);
+ out:
+-	if (bh1)
+-		brelse(bh1);
+-	if (bh2)
+-		brelse(bh2);
++	brelse(bh1);
++	brelse(bh2);
+ outnobh:
+ 	kfree(qs);
+ 	s->s_fs_info = NULL;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
