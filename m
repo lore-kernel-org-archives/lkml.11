@@ -2,72 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9774AC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 052E9C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348498AbiHSLCj (ORCPT
+        id S1347760AbiHSLDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43780 "EHLO
+        Fri, 19 Aug 2022 07:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348495AbiHSLCa (ORCPT
+        with ESMTP id S1348495AbiHSLCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:02:30 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5501FF61A8;
-        Fri, 19 Aug 2022 04:02:29 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oOzlh-00CpeD-VR; Fri, 19 Aug 2022 21:02:27 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 19 Aug 2022 19:02:25 +0800
-Date:   Fri, 19 Aug 2022 19:02:25 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Jean Delvare <jdelvare@suse.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-crypto@vger.kernel.org,
-        Declan Murphy <declan.murphy@intel.com>,
-        Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Prabhjot Khurana <prabhjot.khurana@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] crypto: keembay-ocs - Drop obsolete dependency on
- COMPILE_TEST
-Message-ID: <Yv9twQnbmqrLCDcV@gondor.apana.org.au>
-References: <20220803224755.177de90e@endymion.delvare>
+        Fri, 19 Aug 2022 07:02:43 -0400
+Received: from maynard.decadent.org.uk (maynard.decadent.org.uk [95.217.213.242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1ACFF61A8;
+        Fri, 19 Aug 2022 04:02:42 -0700 (PDT)
+Received: from 213.219.160.184.adsl.dyn.edpnet.net ([213.219.160.184] helo=deadeye)
+        by maynard with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1oOzlk-0002zN-5f; Fri, 19 Aug 2022 13:02:28 +0200
+Received: from ben by deadeye with local (Exim 4.96)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1oOzli-000aat-1m;
+        Fri, 19 Aug 2022 13:02:26 +0200
+Message-ID: <2d899b4a9a08f79396a071eb8c06d524ae6033b0.camel@decadent.org.uk>
+Subject: Re: [PATCH] x86/speculation: Avoid LFENCE in FILL_RETURN_BUFFER on
+ CPUs that lack it
+From:   Ben Hutchings <ben@decadent.org.uk>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        1017425@bugs.debian.org,
+        =?ISO-8859-1?Q?Martin-=C9ric?= Racine <martin-eric.racine@iki.fi>,
+        stable@vger.kernel.org, regressions@lists.linux.dev,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Date:   Fri, 19 Aug 2022 13:02:17 +0200
+In-Reply-To: <Yv9OGVc+WpoDAB0X@worktop.programming.kicks-ass.net>
+References: <Yv7aRJ/SvVhSdnSB@decadent.org.uk>
+         <Yv9OGVc+WpoDAB0X@worktop.programming.kicks-ass.net>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-YjhQggnj2zhMxQngHr7f"
+User-Agent: Evolution 3.44.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220803224755.177de90e@endymion.delvare>
+X-SA-Exim-Connect-IP: 213.219.160.184
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on maynard); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 10:47:55PM +0200, Jean Delvare wrote:
-> Since commit 0166dc11be91 ("of: make CONFIG_OF user selectable"), it
-> is possible to test-build any driver which depends on OF on any
-> architecture by explicitly selecting OF. Therefore depending on
-> COMPILE_TEST as an alternative is no longer needed.
-> 
-> It is actually better to always build such drivers with OF enabled,
-> so that the test builds are closer to how each driver will actually be
-> built on its intended target. Building them without OF may not test
-> much as the compiler will optimize out potentially large parts of the
-> code. In the worst case, this could even pop false positive warnings.
-> Dropping COMPILE_TEST here improves the quality of our testing and
-> avoids wasting time on non-existent issues.
-> 
-> Signed-off-by: Jean Delvare <jdelvare@suse.de>
-> Cc: Declan Murphy <declan.murphy@intel.com>
-> Cc: Daniele Alessandrelli <daniele.alessandrelli@intel.com>
-> Cc: Mark Gross <mgross@linux.intel.com>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: Prabhjot Khurana <prabhjot.khurana@intel.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> ---
->  drivers/crypto/keembay/Kconfig |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Patch applied.  Thanks.
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+--=-YjhQggnj2zhMxQngHr7f
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, 2022-08-19 at 10:47 +0200, Peter Zijlstra wrote:
+> On Fri, Aug 19, 2022 at 02:33:08AM +0200, Ben Hutchings wrote:
+> > From: Ben Hutchings <benh@debian.org>
+> >=20
+> > The mitigation for PBRSB includes adding LFENCE instructions to the
+> > RSB filling sequence.  However, RSB filling is done on some older CPUs
+> > that don't support the LFENCE instruction.
+> >=20
+>=20
+> Wait; what? There are chips that enable the RSB mitigations and DONT
+> have LFENCE ?!?
+
+Yes, X86_FEATURE_RSB_CTXSW is enabled if any other Spectre v2
+mitigation is enabled.  And all Intel family 6 (except some early
+Atoms) and AMD family 5+ get Spectre v2 mitigation by default.
+
+Ben.
+
+--=20
+Ben Hutchings
+Beware of bugs in the above code;
+I have only proved it correct, not tried it. - Donald Knuth
+
+--=-YjhQggnj2zhMxQngHr7f
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAmL/bbkACgkQ57/I7JWG
+EQmxQg//ZS3fq6QOEM160thdxrPitpXbg0ygRoO4bBjmDY8G/+2sne8MEPRq2r2U
+gKHbq5O6TTLbGDQjZBwGwMEg1omi8dLHt9m9I8YKBxBwqOHdqO4UrZa9cuvVQnF4
+TDTGeBO7sGMRPcuaff7HPKMgjQL2E6+Db2DbZhxvtPkKyRRuoCRONajy7z/W+K0F
+9nHY/offfF5EXLySFwqSE1ypm/MTBVro4EGPFKMe/znSx5y4jFh6Dci39BAVb+rf
+YyzI1y5bmbBnRhy/GGbb/zVhPiQxnwjKCq4o9SUGCh+cWDLfrU8nmkttzxwb2J29
+KEK488/fxi7sI4WB7IxPMTI8REqyrxBq8ybWW0i1HBWt+VieHYroqMrsi9kjrgOU
+6ae6V5PPi773/WzLK/sYnKlKB74V7svRRsFXgk5p5GKVoIGngaWhNQNAknDpdhPK
+Sl8sQTsgS8mUnPIKitwtEgNX+XzvKUuSz8ep0tO/a96ZMahoBSbKO2dt2n+jv7e5
+FU17Q8IKFnqpb9SybcUhD/BGiTLJ7sWcb+sR20Nlxk2ji0j67gzkKcmtVU+qsgLB
+3IzG38XZsd5X+RwTUyO+ZRvTdjKTcj7phIywd+PgYBaWbck1y2OGygJt4U2FDe7a
+MPMJwbDp3jIE3lt/k+XDWY9x2HvXF5C1ZuOdhSapp+eRW4yVkzs=
+=QDsX
+-----END PGP SIGNATURE-----
+
+--=-YjhQggnj2zhMxQngHr7f--
