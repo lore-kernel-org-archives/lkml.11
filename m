@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A8AC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E83C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352442AbiHSQ0e (ORCPT
+        id S1352540AbiHSQ0j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36590 "EHLO
+        Fri, 19 Aug 2022 12:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352485AbiHSQVG (ORCPT
+        with ESMTP id S1352498AbiHSQVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:21:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D906BB1FF;
-        Fri, 19 Aug 2022 09:02:31 -0700 (PDT)
+        Fri, 19 Aug 2022 12:21:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E6010FDA;
+        Fri, 19 Aug 2022 09:02:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73F4B614DA;
-        Fri, 19 Aug 2022 16:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D11FC433D6;
-        Fri, 19 Aug 2022 16:02:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 404B5617A5;
+        Fri, 19 Aug 2022 16:02:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54AF1C433D6;
+        Fri, 19 Aug 2022 16:02:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924950;
-        bh=LmDpmWOQcXXrIrLrEhtTfbOhhz7j4W6Q0gjC0cl/cDc=;
+        s=korg; t=1660924956;
+        bh=L88j/vM4soCdE7vM4SQBpzrBszT1ntIHSWMlGAgHENk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/wLmrcD/srtS0gMJURdAZr7NKVo6Hra8aW2L6QZkLej8w7KYFKOUv0jsb6dWW4S1
-         yiKg0U227HFXQhsGn9f/QJ4GLW4Lw8O7ulRV9YztWLT8wsTmfPxKGbfIhRgPSRTKvL
-         UFiaTdaAnLcJWiVAkjvvfDlVjBujEo9a98iEXaCA=
+        b=oo8v68L9ozZrEu1BD0B7/sx8a4gZqEFkj7x55C4YCcHdvoiJP607j7FnbXaZ5CVyI
+         PE2yx0Dm2A33DNptW6B0IXF+me4dtL3mTh+5D5eZiyLDWZ5I/saJkmo454+0sKx4Ew
+         WF/M5Fvp3Y9efkQ6YWlPabCGsW4VfWr6qXiXa/cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, jinpu.wang@ionos.com,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Aleksei Marov <aleksei.marov@ionos.com>,
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
         Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 334/545] RDMA/rtrs-srv: Fix modinfo output for stringify
-Date:   Fri, 19 Aug 2022 17:41:44 +0200
-Message-Id: <20220819153844.328916898@linuxfoundation.org>
+Subject: [PATCH 5.10 336/545] RDMA/qedr: Fix potential memory leak in __qedr_alloc_mr()
+Date:   Fri, 19 Aug 2022 17:41:46 +0200
+Message-Id: <20220819153844.429343080@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,63 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jack Wang <jinpu.wang@ionos.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit ed6e53820ee4f68ed927de17e5675ff2a07a47e2 ]
+[ Upstream commit b3236a64ddd125a455ef5b5316c1b9051b732974 ]
 
-stringify works with define, not enum.
+__qedr_alloc_mr() allocates a memory chunk for "mr->info.pbl_table" with
+init_mr_info(). When rdma_alloc_tid() and rdma_register_tid() fail, "mr"
+is released while "mr->info.pbl_table" is not released, which will lead
+to a memory leak.
 
-Fixes: 91fddedd439c ("RDMA/rtrs: private headers with rtrs protocol structs and helpers")
-Cc: jinpu.wang@ionos.com
-Link: https://lore.kernel.org/r/20220712103113.617754-2-haris.iqbal@ionos.com
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Reviewed-by: Aleksei Marov <aleksei.marov@ionos.com>
+We should release the "mr->info.pbl_table" with qedr_free_pbl() when error
+occurs to fix the memory leak.
+
+Fixes: e0290cce6ac0 ("qedr: Add support for memory registeration verbs")
+Link: https://lore.kernel.org/r/20220714061505.2342759-1-niejianglei2021@163.com
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
 Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-pri.h | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/infiniband/hw/qedr/verbs.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-pri.h b/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-index 77e98ff9008a..c5ca123d52a8 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-@@ -23,6 +23,17 @@
- #define RTRS_PROTO_VER_STRING __stringify(RTRS_PROTO_VER_MAJOR) "." \
- 			       __stringify(RTRS_PROTO_VER_MINOR)
+diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
+index bffacb47ea0e..3543b9af10b7 100644
+--- a/drivers/infiniband/hw/qedr/verbs.c
++++ b/drivers/infiniband/hw/qedr/verbs.c
+@@ -3093,7 +3093,7 @@ static struct qedr_mr *__qedr_alloc_mr(struct ib_pd *ibpd,
+ 		else
+ 			DP_ERR(dev, "roce alloc tid returned error %d\n", rc);
  
-+/*
-+ * Max IB immediate data size is 2^28 (MAX_IMM_PAYL_BITS)
-+ * and the minimum chunk size is 4096 (2^12).
-+ * So the maximum sess_queue_depth is 65536 (2^16) in theory.
-+ * But mempool_create, create_qp and ib_post_send fail with
-+ * "cannot allocate memory" error if sess_queue_depth is too big.
-+ * Therefore the pratical max value of sess_queue_depth is
-+ * somewhere between 1 and 65534 and it depends on the system.
-+ */
-+#define MAX_SESS_QUEUE_DEPTH 65535
-+
- enum rtrs_imm_const {
- 	MAX_IMM_TYPE_BITS = 4,
- 	MAX_IMM_TYPE_MASK = ((1 << MAX_IMM_TYPE_BITS) - 1),
-@@ -46,16 +57,6 @@ enum {
+-		goto err0;
++		goto err1;
+ 	}
  
- 	MAX_PATHS_NUM = 128,
+ 	/* Index only, 18 bit long, lkey = itid << 8 | key */
+@@ -3117,7 +3117,7 @@ static struct qedr_mr *__qedr_alloc_mr(struct ib_pd *ibpd,
+ 	rc = dev->ops->rdma_register_tid(dev->rdma_ctx, &mr->hw_mr);
+ 	if (rc) {
+ 		DP_ERR(dev, "roce register tid returned an error %d\n", rc);
+-		goto err1;
++		goto err2;
+ 	}
  
--	/*
--	 * Max IB immediate data size is 2^28 (MAX_IMM_PAYL_BITS)
--	 * and the minimum chunk size is 4096 (2^12).
--	 * So the maximum sess_queue_depth is 65536 (2^16) in theory.
--	 * But mempool_create, create_qp and ib_post_send fail with
--	 * "cannot allocate memory" error if sess_queue_depth is too big.
--	 * Therefore the pratical max value of sess_queue_depth is
--	 * somewhere between 1 and 65534 and it depends on the system.
--	 */
--	MAX_SESS_QUEUE_DEPTH = 65535,
- 	MIN_CHUNK_SIZE = 8192,
+ 	mr->ibmr.lkey = mr->hw_mr.itid << 8 | mr->hw_mr.key;
+@@ -3126,8 +3126,10 @@ static struct qedr_mr *__qedr_alloc_mr(struct ib_pd *ibpd,
+ 	DP_DEBUG(dev, QEDR_MSG_MR, "alloc frmr: %x\n", mr->ibmr.lkey);
+ 	return mr;
  
- 	RTRS_HB_INTERVAL_MS = 5000,
+-err1:
++err2:
+ 	dev->ops->rdma_free_tid(dev->rdma_ctx, mr->hw_mr.itid);
++err1:
++	qedr_free_pbl(dev, &mr->info.pbl_info, mr->info.pbl_table);
+ err0:
+ 	kfree(mr);
+ 	return ERR_PTR(rc);
 -- 
 2.35.1
 
