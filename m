@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAC7C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C8FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351208AbiHSQIx (ORCPT
+        id S1351624AbiHSQI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
+        Fri, 19 Aug 2022 12:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351656AbiHSQGS (ORCPT
+        with ESMTP id S1351654AbiHSQGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:18 -0400
+        Fri, 19 Aug 2022 12:06:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA39310D59D;
-        Fri, 19 Aug 2022 08:55:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16067107745;
+        Fri, 19 Aug 2022 08:55:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29F69B82819;
-        Fri, 19 Aug 2022 15:55:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E273C433D6;
-        Fri, 19 Aug 2022 15:55:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28782B82818;
+        Fri, 19 Aug 2022 15:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73AD6C433D6;
+        Fri, 19 Aug 2022 15:55:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924541;
-        bh=UkBWJBsPX5cel+6FFhNtQye+XSIHvRfMM+W2Ur21r/U=;
+        s=korg; t=1660924535;
+        bh=O4Pyhf6igLpXD9eZbGXbgoOBWUQsc/ilXYUP0Ea1LMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=alDaY5iezDOBdYyu5F46FfVKnRafUofoq5U7uoOBH5gSVwyR9QIinXju3mflWCCRE
-         80S4yXVi+mOsfbcaC1kHMqF1jEewFO9bERUqLyhswyZvtMYkAIkpHItbvju6mHQ+HU
-         tzVy51sMPSkGWs32AnhUqNK6/rnM9+X8HPWi1xaU=
+        b=p7oXtDpDDZecVGisOvZNkT658uScLC6CplN4QEJldvgpjhqd6na9T+1yzaFknk5A9
+         ZGFlqcM3bUNKltZ6kq4RO41Cq0ly+V/iysKiosmDbXPi0sepQ+LCIu2FJEzPazDIvx
+         2TVbsCXaAxedPvdt+6tJwVdYxzeE2wY7/0GWCmu4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 204/545] drm/vc4: hdmi: Correct HDMI timing registers for interlaced modes
-Date:   Fri, 19 Aug 2022 17:39:34 +0200
-Message-Id: <20220819153838.504850553@linuxfoundation.org>
+Subject: [PATCH 5.10 202/545] drm/vc4: hdmi: Limit the BCM2711 to the max without scrambling
+Date:   Fri, 19 Aug 2022 17:39:32 +0200
+Message-Id: <20220819153838.425713142@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,41 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit fb10dc451c0f15e3c19798a2f41d357f3f7576f5 ]
+[ Upstream commit 24169a2b0533a6c4030c91a7a074039e7c98fde6 ]
 
-For interlaced modes the timings were not being correctly
-programmed into the HDMI block, so correct them.
+Unlike the previous generations, the HSM clock limitation is way above
+what we can reach without scrambling, so let's move the maximum
+frequency we support to the maximum clock frequency without scrambling.
 
-Fixes: 8323989140f3 ("drm/vc4: hdmi: Support the BCM2711 HDMI controllers")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-33-maxime@cerno.tech
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20201215154243.540115-9-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
 +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -565,13 +565,13 @@ static void vc5_hdmi_set_timings(struct
- 		     VC4_SET_FIELD(mode->crtc_vsync_start - mode->crtc_vdisplay,
- 				   VC5_HDMI_VERTA_VFP) |
- 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
--	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
--		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
--				   interlaced,
-+	u32 vertb = (VC4_SET_FIELD(mode->htotal >> (2 - pixel_rep),
-+				   VC5_HDMI_VERTB_VSPO) |
-+		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
- 				   VC4_HDMI_VERTB_VBP));
- 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
- 			  VC4_SET_FIELD(mode->crtc_vtotal -
--					mode->crtc_vsync_end,
-+					mode->crtc_vsync_end - interlaced,
- 					VC4_HDMI_VERTB_VBP));
+@@ -83,6 +83,8 @@
+ #define CEC_CLOCK_FREQ 40000
+ #define VC4_HSM_MID_CLOCK 149985000
  
- 	HDMI_WRITE(HDMI_VEC_INTERFACE_XBAR, 0x354021);
++#define HDMI_14_MAX_TMDS_CLK   (340 * 1000 * 1000)
++
+ static int vc4_hdmi_debugfs_regs(struct seq_file *m, void *unused)
+ {
+ 	struct drm_info_node *node = (struct drm_info_node *)m->private;
+@@ -1939,7 +1941,7 @@ static const struct vc4_hdmi_variant bcm
+ 	.encoder_type		= VC4_ENCODER_TYPE_HDMI0,
+ 	.debugfs_name		= "hdmi0_regs",
+ 	.card_name		= "vc4-hdmi-0",
+-	.max_pixel_clock	= 297000000,
++	.max_pixel_clock	= HDMI_14_MAX_TMDS_CLK,
+ 	.registers		= vc5_hdmi_hdmi0_fields,
+ 	.num_registers		= ARRAY_SIZE(vc5_hdmi_hdmi0_fields),
+ 	.phy_lane_mapping	= {
+@@ -1965,7 +1967,7 @@ static const struct vc4_hdmi_variant bcm
+ 	.encoder_type		= VC4_ENCODER_TYPE_HDMI1,
+ 	.debugfs_name		= "hdmi1_regs",
+ 	.card_name		= "vc4-hdmi-1",
+-	.max_pixel_clock	= 297000000,
++	.max_pixel_clock	= HDMI_14_MAX_TMDS_CLK,
+ 	.registers		= vc5_hdmi_hdmi1_fields,
+ 	.num_registers		= ARRAY_SIZE(vc5_hdmi_hdmi1_fields),
+ 	.phy_lane_mapping	= {
 
 
