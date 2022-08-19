@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B773AC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18C0C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352151AbiHSQTq (ORCPT
+        id S1352169AbiHSQTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
+        Fri, 19 Aug 2022 12:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352138AbiHSQPr (ORCPT
+        with ESMTP id S1352148AbiHSQPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:15:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A38EE4AB;
+        Fri, 19 Aug 2022 12:15:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AF2EE4B3;
         Fri, 19 Aug 2022 08:58:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C1B0B8281A;
-        Fri, 19 Aug 2022 15:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC698C433C1;
-        Fri, 19 Aug 2022 15:58:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C09486178A;
+        Fri, 19 Aug 2022 15:58:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1BDC433D6;
+        Fri, 19 Aug 2022 15:58:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924732;
-        bh=GOWshVnBwy6EwloCgplMH55chcLT2EZdBYc4L1saBCk=;
+        s=korg; t=1660924735;
+        bh=GLBT8ya3L9FDZOFtYpWPpXOtyiLAZTGN1ZGFBS23Als=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X0aeNuKnmhc02eh2wFM1UvxxH/F+xjwpfsJEXYhPvGbHATv+6vV1MUJkGDRgKC8Ky
-         W5iaTFyYeLiafTrh11vdn0OWN+ulWmUd8A15e118D+iVxF52Kiyx2UDMTUT+gDDvJw
-         lLDOOs0DBXifzX9yeIpXSnBxu2i/YoLvcbBQIfeQ=
+        b=g+B6djzYFQN5r1T0x/QDMTX8+3XC4oJEwz6OC+AB3qG80n7aXdz9geKmP7YyqVJV4
+         pfUU4B/uA4/TZ7PNcAKJWzsvj3lR6lZYdUuRz53C9B9u8yVCF7ydKmtppr+UV+f9s1
+         w0sMr8ZzKsm1nniZ8Nsr0+OXq8+/FM25HlbhaQiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 247/545] i2c: mux-gpmux: Add of_node_put() when breaking out of loop
-Date:   Fri, 19 Aug 2022 17:40:17 +0200
-Message-Id: <20220819153840.403541746@linuxfoundation.org>
+Subject: [PATCH 5.10 265/545] net: ionic: fix error check for vlan flags in ionic_set_nic_features()
+Date:   Fri, 19 Aug 2022 17:40:35 +0200
+Message-Id: <20220819153841.182057589@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,35 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 6435319c34704994e19b0767f6a4e6f37439867b ]
+[ Upstream commit a86e86db5e6d72c82724a63ca1c5293409a21518 ]
 
-In i2c_mux_probe(), we should call of_node_put() when breaking out
-of for_each_child_of_node() which will automatically increase and
-decrease the refcount.
+The prototype of input features of ionic_set_nic_features() is
+netdev_features_t, but the vlan_flags is using the private
+definition of ionic drivers. It should use the variable
+ctx.cmd.lif_setattr.features, rather than features to check
+the vlan flags. So fixes it.
 
-Fixes: ac8498f0ce53 ("i2c: i2c-mux-gpmux: new driver")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Peter Rosin <peda@axentia.se>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Acked-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/muxes/i2c-mux-gpmux.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-gpmux.c b/drivers/i2c/muxes/i2c-mux-gpmux.c
-index d3acd8d66c32..33024acaac02 100644
---- a/drivers/i2c/muxes/i2c-mux-gpmux.c
-+++ b/drivers/i2c/muxes/i2c-mux-gpmux.c
-@@ -134,6 +134,7 @@ static int i2c_mux_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index e95c09dc2c30..e42520f909fe 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1286,7 +1286,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+ 	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
+ 		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
  
- err_children:
-+	of_node_put(child);
- 	i2c_mux_del_adapters(muxc);
- err_parent:
- 	i2c_put_adapter(parent);
+-	if ((vlan_flags & features) &&
++	if ((vlan_flags & le64_to_cpu(ctx.cmd.lif_setattr.features)) &&
+ 	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
+ 		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
+ 
 -- 
 2.35.1
 
