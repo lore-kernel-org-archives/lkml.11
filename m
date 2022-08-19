@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D159C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C66C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352494AbiHSQW6 (ORCPT
+        id S1352503AbiHSQXC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
+        Fri, 19 Aug 2022 12:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352777AbiHSQRr (ORCPT
+        with ESMTP id S1352249AbiHSQQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:17:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449FD1184D5;
-        Fri, 19 Aug 2022 09:00:59 -0700 (PDT)
+        Fri, 19 Aug 2022 12:16:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF91108B04;
+        Fri, 19 Aug 2022 08:59:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44279617A5;
-        Fri, 19 Aug 2022 16:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5174BC433C1;
-        Fri, 19 Aug 2022 16:00:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C783617B6;
+        Fri, 19 Aug 2022 15:59:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F53C433C1;
+        Fri, 19 Aug 2022 15:59:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924840;
-        bh=SBzQteFzmwAx5cbaMvhguyziPkBKT50j+fZw3n8Q/0I=;
+        s=korg; t=1660924750;
+        bh=dUu8ueBkoD9WU0J+cgsPNoGbfDPcl41stYx5RPPV8tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYCiW5GpE9KDQv3Alxek8l4WKO25s0HXBETb5E+4lD7DtiIZDk/Dye0YuaKBf946J
-         cffy4XwekQocuhxtsAOqiZ7LF66YhZAkgp4XEBdfLZ7Q/tzcouTfsTd54G/tEkVxfw
-         V+rEZ/rtUjghajgiO4hZ7Wgjj3EAdUfxvF1JUpHU=
+        b=PMClyR2CXMIh5ggA7/szONT3KGPSPQfim4/tzqoC+JwYcU6FI6Q+rmCFvNEpaCaC5
+         /6PFOrPr66y4Hi35QYisuC4oc5C0dNaCmj8I6CDGPHDF0F0mZ40bufRKn144gaA4CO
+         r8LaJCyFLmO/BMk5weUn2xc9k+nkFno6t74ISE7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 299/545] clk: qcom: ipq8074: set BRANCH_HALT_DELAY flag for UBI clocks
-Date:   Fri, 19 Aug 2022 17:41:09 +0200
-Message-Id: <20220819153842.715785819@linuxfoundation.org>
+Subject: [PATCH 5.10 270/545] mtd: maps: Fix refcount leak in of_flash_probe_versatile
+Date:   Fri, 19 Aug 2022 17:40:40 +0200
+Message-Id: <20220819153841.412789570@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,111 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2bd357e698207e2e65db03007e4be65bf9d6a7b3 ]
+[ Upstream commit 33ec82a6d2b119938f26e5c8040ed5d92378eb54 ]
 
-Currently, attempting to enable the UBI clocks will cause the stuck at
-off warning to be printed and clk_enable will fail.
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-[   14.936694] gcc_ubi1_ahb_clk status stuck at 'off'
-
-Downstream 5.4 QCA kernel has fixed this by seting the BRANCH_HALT_DELAY
-flag on UBI clocks, so lets do the same.
-
-Fixes: 5736294aef83 ("clk: qcom: ipq8074: add NSS clocks")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-6-robimarko@gmail.com
+Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220523140205.48625-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/mtd/maps/physmap-versatile.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index f1017f2e61bd..2c2ecfc5e61f 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -3354,6 +3354,7 @@ static struct clk_branch gcc_nssnoc_ubi1_ahb_clk = {
+diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
+index ad7cd9cfaee0..297a50957356 100644
+--- a/drivers/mtd/maps/physmap-versatile.c
++++ b/drivers/mtd/maps/physmap-versatile.c
+@@ -207,6 +207,7 @@ int of_flash_probe_versatile(struct platform_device *pdev,
  
- static struct clk_branch gcc_ubi0_ahb_clk = {
- 	.halt_reg = 0x6820c,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x6820c,
- 		.enable_mask = BIT(0),
-@@ -3371,6 +3372,7 @@ static struct clk_branch gcc_ubi0_ahb_clk = {
+ 		versatile_flashprot = (enum versatile_flashprot)devid->data;
+ 		rmap = syscon_node_to_regmap(sysnp);
++		of_node_put(sysnp);
+ 		if (IS_ERR(rmap))
+ 			return PTR_ERR(rmap);
  
- static struct clk_branch gcc_ubi0_axi_clk = {
- 	.halt_reg = 0x68200,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68200,
- 		.enable_mask = BIT(0),
-@@ -3388,6 +3390,7 @@ static struct clk_branch gcc_ubi0_axi_clk = {
- 
- static struct clk_branch gcc_ubi0_nc_axi_clk = {
- 	.halt_reg = 0x68204,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68204,
- 		.enable_mask = BIT(0),
-@@ -3405,6 +3408,7 @@ static struct clk_branch gcc_ubi0_nc_axi_clk = {
- 
- static struct clk_branch gcc_ubi0_core_clk = {
- 	.halt_reg = 0x68210,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68210,
- 		.enable_mask = BIT(0),
-@@ -3422,6 +3426,7 @@ static struct clk_branch gcc_ubi0_core_clk = {
- 
- static struct clk_branch gcc_ubi0_mpt_clk = {
- 	.halt_reg = 0x68208,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68208,
- 		.enable_mask = BIT(0),
-@@ -3439,6 +3444,7 @@ static struct clk_branch gcc_ubi0_mpt_clk = {
- 
- static struct clk_branch gcc_ubi1_ahb_clk = {
- 	.halt_reg = 0x6822c,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x6822c,
- 		.enable_mask = BIT(0),
-@@ -3456,6 +3462,7 @@ static struct clk_branch gcc_ubi1_ahb_clk = {
- 
- static struct clk_branch gcc_ubi1_axi_clk = {
- 	.halt_reg = 0x68220,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68220,
- 		.enable_mask = BIT(0),
-@@ -3473,6 +3480,7 @@ static struct clk_branch gcc_ubi1_axi_clk = {
- 
- static struct clk_branch gcc_ubi1_nc_axi_clk = {
- 	.halt_reg = 0x68224,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68224,
- 		.enable_mask = BIT(0),
-@@ -3490,6 +3498,7 @@ static struct clk_branch gcc_ubi1_nc_axi_clk = {
- 
- static struct clk_branch gcc_ubi1_core_clk = {
- 	.halt_reg = 0x68230,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68230,
- 		.enable_mask = BIT(0),
-@@ -3507,6 +3516,7 @@ static struct clk_branch gcc_ubi1_core_clk = {
- 
- static struct clk_branch gcc_ubi1_mpt_clk = {
- 	.halt_reg = 0x68228,
-+	.halt_check = BRANCH_HALT_DELAY,
- 	.clkr = {
- 		.enable_reg = 0x68228,
- 		.enable_mask = BIT(0),
 -- 
 2.35.1
 
