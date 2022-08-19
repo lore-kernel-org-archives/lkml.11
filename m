@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77406C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 501B5C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350021AbiHSPlI (ORCPT
+        id S1350036AbiHSPlT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
+        Fri, 19 Aug 2022 11:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349862AbiHSPko (ORCPT
+        with ESMTP id S1349914AbiHSPkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:40:44 -0400
+        Fri, 19 Aug 2022 11:40:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C91EA30E;
-        Fri, 19 Aug 2022 08:40:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9956101D2E;
+        Fri, 19 Aug 2022 08:40:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1844BB82811;
-        Fri, 19 Aug 2022 15:40:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BABAC433D6;
-        Fri, 19 Aug 2022 15:40:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA8E7B82812;
+        Fri, 19 Aug 2022 15:40:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E7E1C433D6;
+        Fri, 19 Aug 2022 15:40:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660923632;
-        bh=Z34O351dFWuGEtCVFqQGuG/4r/zzB/tnW+9e9JAVwRo=;
+        s=korg; t=1660923635;
+        bh=ADw06pRCuPZeTUd/Uq+mdKxMJyGKpyXRKWJnc9JYbVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ajh0i9geAOwkYfoMWYrqISb8AI2Hr8i8ysnILcOz+wegP/D8mmkOrfzWKTexCHgJI
-         /0btxQ3IL5385u933115mH+58nsXcyCZwwLjKBnAwAn+YIzVgRLgP/MzLNlhN7st8F
-         UwLX+XqIvZ9c6ZYCl6kKKeb0g+4z8s9LsAHo0XZ8=
+        b=nu20RNv9VJoxpLokxAeyAerqCgc+iqB8+HJuQ4aGjnVT4hUOxbDy1k5szatvLNQed
+         UeEMpSbwwsobB1ArymgHQXE8ZKfRXP+bxgpWenbLGIPII4BaleH74hKeTxyDrA1D7s
+         Dto1yCoUrqWilifHwRx1XMxs2XKzDaMWgR6JDd3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
-        Qu Wenruo <wqu@suse.com>
-Subject: [PATCH 5.18 3/6] btrfs: only write the sectors in the vertical stripe which has data stripes
-Date:   Fri, 19 Aug 2022 17:40:15 +0200
-Message-Id: <20220819153710.565362791@linuxfoundation.org>
+        stable@vger.kernel.org, kexec@lists.infradead.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        Coiby Xu <coxu@redhat.com>, Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.18 5/6] kexec, KEYS: make the code in bzImage64_verify_sig generic
+Date:   Fri, 19 Aug 2022 17:40:17 +0200
+Message-Id: <20220819153710.636766408@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153710.430046927@linuxfoundation.org>
 References: <20220819153710.430046927@linuxfoundation.org>
@@ -49,163 +51,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Coiby Xu <coxu@redhat.com>
 
-commit bd8f7e627703ca5707833d623efcd43f104c7b3f upstream.
+commit c903dae8941deb55043ee46ded29e84e97cd84bb upstream.
 
-If we have only 8K partial write at the beginning of a full RAID56
-stripe, we will write the following contents:
+commit 278311e417be ("kexec, KEYS: Make use of platform keyring for
+signature verify") adds platform keyring support on x86 kexec but not
+arm64.
 
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XXXXXXXXXXXXXXX|XXXXXXXXXXXXXXX|
+The code in bzImage64_verify_sig uses the keys on the
+.builtin_trusted_keys, .machine, if configured and enabled,
+.secondary_trusted_keys, also if configured, and .platform keyrings
+to verify the signed kernel image as PE file.
 
-|X| means the sector will be written back to disk.
-
-Note that, although we won't write any sectors from disk 2, but we will
-write the full 64KiB of parity to disk.
-
-This behavior is fine for now, but not for the future (especially for
-RAID56J, as we waste quite some space to journal the unused parity
-stripes).
-
-So here we will also utilize the btrfs_raid_bio::dbitmap, anytime we
-queue a higher level bio into an rbio, we will update rbio::dbitmap to
-indicate which vertical stripes we need to writeback.
-
-And at finish_rmw(), we also check dbitmap to see if we need to write
-any sector in the vertical stripe.
-
-So after the patch, above example will only lead to the following
-writeback pattern:
-
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XX|            |               |
-
-Acked-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: kexec@lists.infradead.org
+Cc: keyrings@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+Reviewed-by: Michal Suchanek <msuchanek@suse.de>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/raid56.c |   55 ++++++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 51 insertions(+), 4 deletions(-)
+ arch/x86/kernel/kexec-bzimage64.c |   20 +-------------------
+ include/linux/kexec.h             |    7 +++++++
+ kernel/kexec_file.c               |   17 +++++++++++++++++
+ 3 files changed, 25 insertions(+), 19 deletions(-)
 
---- a/fs/btrfs/raid56.c
-+++ b/fs/btrfs/raid56.c
-@@ -323,6 +323,9 @@ static void merge_rbio(struct btrfs_raid
- {
- 	bio_list_merge(&dest->bio_list, &victim->bio_list);
- 	dest->bio_list_bytes += victim->bio_list_bytes;
-+	/* Also inherit the bitmaps from @victim. */
-+	bitmap_or(dest->dbitmap, victim->dbitmap, dest->dbitmap,
-+		  dest->stripe_npages);
- 	dest->generic_bio_cnt += victim->generic_bio_cnt;
- 	bio_list_init(&victim->bio_list);
- }
-@@ -864,6 +867,12 @@ static void rbio_orig_end_io(struct btrf
+--- a/arch/x86/kernel/kexec-bzimage64.c
++++ b/arch/x86/kernel/kexec-bzimage64.c
+@@ -17,7 +17,6 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/efi.h>
+-#include <linux/verification.h>
  
- 	if (rbio->generic_bio_cnt)
- 		btrfs_bio_counter_sub(rbio->bioc->fs_info, rbio->generic_bio_cnt);
-+	/*
-+	 * Clear the data bitmap, as the rbio may be cached for later usage.
-+	 * do this before before unlock_stripe() so there will be no new bio
-+	 * for this bio.
-+	 */
-+	bitmap_clear(rbio->dbitmap, 0, rbio->stripe_npages);
- 
- 	/*
- 	 * At this moment, rbio->bio_list is empty, however since rbio does not
-@@ -1195,6 +1204,9 @@ static noinline void finish_rmw(struct b
- 	else
- 		BUG();
- 
-+	/* We should have at least one data sector. */
-+	ASSERT(bitmap_weight(rbio->dbitmap, rbio->stripe_npages));
-+
- 	/* at this point we either have a full stripe,
- 	 * or we've read the full stripe from the drive.
- 	 * recalculate the parity and write the new results.
-@@ -1266,6 +1278,11 @@ static noinline void finish_rmw(struct b
- 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1290,6 +1307,11 @@ static noinline void finish_rmw(struct b
- 
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1713,6 +1735,33 @@ static void btrfs_raid_unplug(struct blk
- 	run_plug(plug);
+ #include <asm/bootparam.h>
+ #include <asm/setup.h>
+@@ -528,28 +527,11 @@ static int bzImage64_cleanup(void *loade
+ 	return 0;
  }
  
-+/* Add the original bio into rbio->bio_list, and update rbio::dbitmap. */
-+static void rbio_add_bio(struct btrfs_raid_bio *rbio, struct bio *orig_bio)
-+{
-+	const struct btrfs_fs_info *fs_info = rbio->bioc->fs_info;
-+	const u64 orig_logical = orig_bio->bi_iter.bi_sector << SECTOR_SHIFT;
-+	const u64 full_stripe_start = rbio->bioc->raid_map[0];
-+	const u32 orig_len = orig_bio->bi_iter.bi_size;
-+	const u32 sectorsize = fs_info->sectorsize;
-+	u64 cur_logical;
-+
-+	ASSERT(orig_logical >= full_stripe_start &&
-+	       orig_logical + orig_len <= full_stripe_start +
-+	       rbio->nr_data * rbio->stripe_len);
-+
-+	bio_list_add(&rbio->bio_list, orig_bio);
-+	rbio->bio_list_bytes += orig_bio->bi_iter.bi_size;
-+
-+	/* Update the dbitmap. */
-+	for (cur_logical = orig_logical; cur_logical < orig_logical + orig_len;
-+	     cur_logical += sectorsize) {
-+		int bit = ((u32)(cur_logical - full_stripe_start) >>
-+			   fs_info->sectorsize_bits) % rbio->stripe_npages;
-+
-+		set_bit(bit, rbio->dbitmap);
-+	}
-+}
-+
- /*
-  * our main entry point for writes from the rest of the FS.
+-#ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
+-static int bzImage64_verify_sig(const char *kernel, unsigned long kernel_len)
+-{
+-	int ret;
+-
+-	ret = verify_pefile_signature(kernel, kernel_len,
+-				      VERIFY_USE_SECONDARY_KEYRING,
+-				      VERIFYING_KEXEC_PE_SIGNATURE);
+-	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
+-		ret = verify_pefile_signature(kernel, kernel_len,
+-					      VERIFY_USE_PLATFORM_KEYRING,
+-					      VERIFYING_KEXEC_PE_SIGNATURE);
+-	}
+-	return ret;
+-}
+-#endif
+-
+ const struct kexec_file_ops kexec_bzImage64_ops = {
+ 	.probe = bzImage64_probe,
+ 	.load = bzImage64_load,
+ 	.cleanup = bzImage64_cleanup,
+ #ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
+-	.verify_sig = bzImage64_verify_sig,
++	.verify_sig = kexec_kernel_verify_pe_sig,
+ #endif
+ };
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -19,6 +19,7 @@
+ #include <asm/io.h>
+ 
+ #include <uapi/linux/kexec.h>
++#include <linux/verification.h>
+ 
+ /* Location of a reserved region to hold the crash kernel.
   */
-@@ -1730,9 +1779,8 @@ int raid56_parity_write(struct bio *bio,
- 		btrfs_put_bioc(bioc);
- 		return PTR_ERR(rbio);
- 	}
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
- 	rbio->operation = BTRFS_RBIO_WRITE;
-+	rbio_add_bio(rbio, bio);
+@@ -212,6 +213,12 @@ static inline void *arch_kexec_kernel_im
+ }
+ #endif
  
- 	btrfs_bio_counter_inc_noblocked(fs_info);
- 	rbio->generic_bio_cnt = 1;
-@@ -2134,8 +2182,7 @@ int raid56_parity_recover(struct bio *bi
- 	}
++#ifdef CONFIG_KEXEC_SIG
++#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
++int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len);
++#endif
++#endif
++
+ extern int kexec_add_buffer(struct kexec_buf *kbuf);
+ int kexec_locate_mem_hole(struct kexec_buf *kbuf);
  
- 	rbio->operation = BTRFS_RBIO_READ_REBUILD;
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
-+	rbio_add_bio(rbio, bio);
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -123,6 +123,23 @@ void kimage_file_post_load_cleanup(struc
+ }
  
- 	rbio->faila = find_logical_bio_stripe(rbio, bio);
- 	if (rbio->faila == -1) {
+ #ifdef CONFIG_KEXEC_SIG
++#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
++int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
++{
++	int ret;
++
++	ret = verify_pefile_signature(kernel, kernel_len,
++				      VERIFY_USE_SECONDARY_KEYRING,
++				      VERIFYING_KEXEC_PE_SIGNATURE);
++	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
++		ret = verify_pefile_signature(kernel, kernel_len,
++					      VERIFY_USE_PLATFORM_KEYRING,
++					      VERIFYING_KEXEC_PE_SIGNATURE);
++	}
++	return ret;
++}
++#endif
++
+ static int kexec_image_verify_sig(struct kimage *image, void *buf,
+ 				  unsigned long buf_len)
+ {
 
 
