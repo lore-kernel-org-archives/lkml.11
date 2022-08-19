@@ -2,144 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D8AC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567E2C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349950AbiHSSBX (ORCPT
+        id S1350285AbiHSSBc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 14:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
+        Fri, 19 Aug 2022 14:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351334AbiHSSAh (ORCPT
+        with ESMTP id S1350188AbiHSSAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 14:00:37 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B820D107ACD
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:47:44 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-334d894afd8so87640987b3.19
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:47:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=AuVkheI7zf2HhufotQWCVsTEadgVfoRpum2lNpLuQgY=;
-        b=oNfW/4Vm265qJrd7LBgFAyipxhEsSAOYU5rMBq91J3s0LGLmwRyUvf2zobD+iocvGC
-         rLmPshSjGeT0g6SHJPTjY6bzeGEZukNgPVySpZWZJpfpTLjOOoofeCbjE4wVpCbw1U+j
-         EkJBaRsfFlCUdZpPerVytTQfdhnWQStfFmO7kpeu5jLDpn+JPjv76skvPhlgvQTXfqqd
-         qmtSwwVYkomcvTIcevsLzUBDxHN2ZwIXaSb2HUrgFgcnRKsdubuMqFRTXkGKJ5xBFxue
-         InSW5McVJClaekJz+JJaVASvtdAFTT6dsAldrB/2HLKN31lg84RCExNfAgiGJESuAmTK
-         9iaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=AuVkheI7zf2HhufotQWCVsTEadgVfoRpum2lNpLuQgY=;
-        b=gDfEoHl3sh93xKgCizZJBvSAkpSUVFg16DlRbfk4kp9BV1DijAmiE/qbAIIM8QU/PR
-         +YtcMQBBuYLHMsah6rt5hM7RpVDp1YRKLpFPvgv3ZXiKXgs1Y641zork2ckdHmVtm5/o
-         MT4LIXCdqwFhNiQf1xCnzzI0ZAGwEEsXuPisvDmWzEt8/VhScjybk232txsO6EjcqA9x
-         AnKYuFhAhKoruDXdSxarKIX2GCc4hvAv4cMXRzb4DGTr5IsoMeyyWyW9xMiLM0546s3p
-         v5MGB4RaapUP9GV8teTB6JbUp+4CCdsTeUlyMEzJNMbv3A/8u2MZVzR5S3zA+A1m3Lwy
-         ZiyQ==
-X-Gm-Message-State: ACgBeo3DU7v7MoUe+xi2IeJm9WYAVVbnJrn/uoHGuW3zD6dH0ASiKmO4
-        6N0sm1d52OeCGSueTH0Kmltk/KMLNnrmFLVr
-X-Google-Smtp-Source: AA6agR4gbDQtGeQ1LZYbf3EfqgoCjGcFHk/HfWY3dMdFk8KnVzrhbHImvTXkhqgRq8jomz/vDv6134KXUwVifgsT
-X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
- (user=vannapurve job=sendgmr) by 2002:a0d:ee01:0:b0:324:d943:19dc with SMTP
- id x1-20020a0dee01000000b00324d94319dcmr8282915ywe.325.1660931263972; Fri, 19
- Aug 2022 10:47:43 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 17:46:56 +0000
-In-Reply-To: <20220819174659.2427983-1-vannapurve@google.com>
-Message-Id: <20220819174659.2427983-4-vannapurve@google.com>
-Mime-Version: 1.0
-References: <20220819174659.2427983-1-vannapurve@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [RFC V3 PATCH 3/6] selftests: kvm: ucall: Allow querying ucall pool gpa
-From:   Vishal Annapurve <vannapurve@google.com>
-To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, shuah@kernel.org, yang.zhong@intel.com,
-        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
-        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
-        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
-        bfields@fieldses.org, akpm@linux-foundation.org,
-        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
-        jun.nakajima@intel.com, dave.hansen@intel.com,
-        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
-        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
-        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
-        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
-        diviness@google.com, maz@kernel.org, dmatlack@google.com,
-        axelrasmussen@google.com, maciej.szmigiero@oracle.com,
-        mizhang@google.com, bgardon@google.com,
-        Vishal Annapurve <vannapurve@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 19 Aug 2022 14:00:16 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B517C105F00
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:46:59 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1127)
+        id 352B92304141; Fri, 19 Aug 2022 10:46:59 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 352B92304141
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1660931219;
+        bh=CXjLZTzWLgHm11JMQkD6Kgs5OR1kO/Wx2RQqlqJYj5M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qs/3Hsue/QdOEIhR6OrSSHNFMYBVXoIzO0wNwCTvRjqT6l4taop7Gx+ypITa11sU9
+         xqXuelwYgK5SWo1XfZHW+aVE1o2pRpQWhudFmP+DdEJ2VjoUFyCQLiRn7DB4k9sb7J
+         Wov2N7HpYzVfF+Q1JYVAwl8gykCsdYhlZf/ctUgM=
+Date:   Fri, 19 Aug 2022 10:46:59 -0700
+From:   Saurabh Singh Sengar <ssengar@linux.microsoft.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     ssengar@microsoft.com, mikelley@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, peterz@infradead.org, tim.c.chen@linux.intel.com,
+        will@kernel.org, song.bao.hua@hisilicon.com,
+        suravee.suthikulpanit@amd.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86/cacheinfo: Don't use cpu_llc_shared_map for
+ !CONFIG_SMP
+Message-ID: <20220819174659.GA16818@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <1660148115-302-1-git-send-email-ssengar@linux.microsoft.com>
+ <Yv1ELaWHbRfvdt/p@zn.tnic>
+ <20220818045225.GA9054@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <Yv4pOz01nAkafiwd@zn.tnic>
+ <20220818122925.GA8507@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <Yv/FXcOkB0BpUkVn@zn.tnic>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yv/FXcOkB0BpUkVn@zn.tnic>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to query guest physical address for ucall pool
-so that guest can mark the page as accessed shared or private.
+On Fri, Aug 19, 2022 at 07:16:13PM +0200, Borislav Petkov wrote:
+> On Thu, Aug 18, 2022 at 05:29:25AM -0700, Saurabh Singh Sengar wrote:
+> > Boot latest linux kernel on AMD CPU, having CONGIG_SMP=n. Once booted
+> > execute lscpu (just lscpu without any argument ), this will cause
+> > segfault. Please make a note issue is observed with 2.34 version
+> > (default lscpu version with Ubuntu 20.04.4) of lscpu.
+> 
+> Does that fix it?
 
-Signed-off-by: Vishal Annapurve <vannapurve@google.com>
----
- tools/testing/selftests/kvm/include/ucall_common.h |  2 ++
- tools/testing/selftests/kvm/lib/ucall_common.c     | 12 ++++++++++++
- 2 files changed, 14 insertions(+)
+Yes, this patch fixes this segfault.
 
-diff --git a/tools/testing/selftests/kvm/include/ucall_common.h b/tools/testing/selftests/kvm/include/ucall_common.h
-index 279bbab011c7..2c6e5c4df012 100644
---- a/tools/testing/selftests/kvm/include/ucall_common.h
-+++ b/tools/testing/selftests/kvm/include/ucall_common.h
-@@ -31,6 +31,8 @@ void ucall_arch_uninit(struct kvm_vm *vm);
- void ucall_arch_do_ucall(vm_vaddr_t uc);
- void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu);
- 
-+vm_paddr_t get_ucall_pool_paddr(void);
-+
- void ucall(uint64_t cmd, int nargs, ...);
- uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
- 
-diff --git a/tools/testing/selftests/kvm/lib/ucall_common.c b/tools/testing/selftests/kvm/lib/ucall_common.c
-index 5a15fa39cd51..4d2abef8ee77 100644
---- a/tools/testing/selftests/kvm/lib/ucall_common.c
-+++ b/tools/testing/selftests/kvm/lib/ucall_common.c
-@@ -11,6 +11,7 @@ struct ucall_header {
- 
- static bool use_ucall_pool;
- static struct ucall_header *ucall_pool;
-+static vm_paddr_t ucall_page_paddr;
- 
- void ucall_init(struct kvm_vm *vm, void *arg)
- {
-@@ -35,7 +36,10 @@ void ucall_init(struct kvm_vm *vm, void *arg)
- 	}
- 
- 	ucall_pool = (struct ucall_header *)vaddr;
-+	ucall_page_paddr = addr_gva2gpa(vm, vaddr);
- 	sync_global_to_guest(vm, ucall_pool);
-+	sync_global_to_guest(vm, ucall_page_paddr);
-+	printf("ucall_page_paddr 0x%lx\n", ucall_page_paddr);
- 
- out:
- 	ucall_arch_init(vm, arg);
-@@ -54,6 +58,14 @@ void ucall_uninit(struct kvm_vm *vm)
- 	ucall_arch_uninit(vm);
- }
- 
-+vm_paddr_t get_ucall_pool_paddr(void)
-+{
-+	if (!use_ucall_pool)
-+		return 0;
-+
-+	return ucall_page_paddr;
-+}
-+
- static struct ucall *ucall_alloc(void)
- {
- 	struct ucall *uc = NULL;
--- 
-2.37.1.595.g718a3a8f04-goog
+- Saurabh
 
+> 
+> ---
+> diff --git a/arch/x86/include/asm/smp.h b/arch/x86/include/asm/smp.h
+> index 81a0211a372d..a73bced40e24 100644
+> --- a/arch/x86/include/asm/smp.h
+> +++ b/arch/x86/include/asm/smp.h
+> @@ -21,16 +21,6 @@ DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_llc_id);
+>  DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_l2c_id);
+>  DECLARE_PER_CPU_READ_MOSTLY(int, cpu_number);
+>  
+> -static inline struct cpumask *cpu_llc_shared_mask(int cpu)
+> -{
+> -	return per_cpu(cpu_llc_shared_map, cpu);
+> -}
+> -
+> -static inline struct cpumask *cpu_l2c_shared_mask(int cpu)
+> -{
+> -	return per_cpu(cpu_l2c_shared_map, cpu);
+> -}
+> -
+>  DECLARE_EARLY_PER_CPU_READ_MOSTLY(u16, x86_cpu_to_apicid);
+>  DECLARE_EARLY_PER_CPU_READ_MOSTLY(u32, x86_cpu_to_acpiid);
+>  DECLARE_EARLY_PER_CPU_READ_MOSTLY(u16, x86_bios_cpu_apicid);
+> @@ -172,6 +162,16 @@ extern int safe_smp_processor_id(void);
+>  # define safe_smp_processor_id()	smp_processor_id()
+>  #endif
+>  
+> +static inline struct cpumask *cpu_llc_shared_mask(int cpu)
+> +{
+> +	return per_cpu(cpu_llc_shared_map, cpu);
+> +}
+> +
+> +static inline struct cpumask *cpu_l2c_shared_mask(int cpu)
+> +{
+> +	return per_cpu(cpu_l2c_shared_map, cpu);
+> +}
+> +
+>  #else /* !CONFIG_SMP */
+>  #define wbinvd_on_cpu(cpu)     wbinvd()
+>  static inline int wbinvd_on_all_cpus(void)
+> @@ -179,6 +179,11 @@ static inline int wbinvd_on_all_cpus(void)
+>  	wbinvd();
+>  	return 0;
+>  }
+> +
+> +static inline struct cpumask *cpu_llc_shared_mask(int cpu)
+> +{
+> +	return (struct cpumask *)cpumask_of(0);
+> +}
+>  #endif /* CONFIG_SMP */
+>  
+>  extern unsigned disabled_cpus;
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> https://people.kernel.org/tglx/notes-about-netiquette
