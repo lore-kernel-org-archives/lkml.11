@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B506C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E304C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351085AbiHSQDE (ORCPT
+        id S1351111AbiHSQDI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
+        Fri, 19 Aug 2022 12:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350598AbiHSQAY (ORCPT
+        with ESMTP id S1351068AbiHSQAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:00:24 -0400
+        Fri, 19 Aug 2022 12:00:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB3710974A;
-        Fri, 19 Aug 2022 08:52:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FC713D16;
+        Fri, 19 Aug 2022 08:52:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DB4FB82811;
-        Fri, 19 Aug 2022 15:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D47DC433C1;
-        Fri, 19 Aug 2022 15:52:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7760B8280C;
+        Fri, 19 Aug 2022 15:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BA6BC433D6;
+        Fri, 19 Aug 2022 15:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924341;
-        bh=Ovj+PbJiaMvOoIvT4elf4ggjMn2RnMeVq16lCvwN+I0=;
+        s=korg; t=1660924347;
+        bh=2lKlvV7mdGk6XW3t9NaS89p7SXa7QHfF3L/ripmSsOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kcPL4InyLpX3FAqXXolDgu/RSswvyf0Fyd/eqP1hbbKZ8aQttDTJqYwJ+ENyjVkAR
-         QPl5uSnPUk5giahuq0Q3+Yadt8dVkwULLtvsV03Do97jUDREMgjBOaX1Tx/BwVlKyB
-         dIGEA4IQBgcW50Y0n+JhH+oXhaPsz6eiyje3r7ok=
+        b=f/zWuOuuU8GINlJ6F/+MeIabUgHY4JlRYs6BwuwhmlXlQR73F3vCQTn51PtVd5A7p
+         c8VzBt5a7amJR9Zkik/WVTPIxG0ZEQGI2vv6Mkao0xoMeuSdDb/oNRGl3enT72gA4B
+         349/fKWS8AD+Zib+kDjLHtyu28ptIYxlzVIdfAxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jinbao <liujinbao1@xiaomi.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 138/545] erofs: avoid consecutive detection for Highmem memory
-Date:   Fri, 19 Aug 2022 17:38:28 +0200
-Message-Id: <20220819153835.509897972@linuxfoundation.org>
+Subject: [PATCH 5.10 140/545] hwmon: (drivetemp) Add module alias
+Date:   Fri, 19 Aug 2022 17:38:30 +0200
+Message-Id: <20220819153835.607720674@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,57 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gao Xiang <hsiangkao@linux.alibaba.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 448b5a1548d87c246c3d0c3df8480d3c6eb6c11a ]
+[ Upstream commit 5918036cfa8ded7aa8094db70295011ce2275447 ]
 
-Currently, vmap()s are avoided if physical addresses are
-consecutive for decompressed buffers.
+Adding a MODULE_ALIAS() to drivetemp will make the driver easier
+for modprobe to autoprobe.
 
-I observed that is very common for 4KiB pclusters since the
-numbers of decompressed pages are almost 2 or 3.
-
-However, such detection doesn't work for Highmem pages on
-32-bit machines, let's fix it now.
-
-Reported-by: Liu Jinbao <liujinbao1@xiaomi.com>
-Fixes: 7fc45dbc938a ("staging: erofs: introduce generic decompression backend")
-Link: https://lore.kernel.org/r/20220708101001.21242-1-hsiangkao@linux.alibaba.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220712214624.1845158-1-linus.walleij@linaro.org
+Fixes: 5b46903d8bf3 ("hwmon: Driver for disk and solid state drives with temperature sensors")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/decompressor.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/hwmon/drivetemp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
-index 8a6260aac26c..f921580b56cb 100644
---- a/fs/erofs/decompressor.c
-+++ b/fs/erofs/decompressor.c
-@@ -56,14 +56,18 @@ static int z_erofs_lz4_prepare_destpages(struct z_erofs_decompress_req *rq,
- 
- 		if (page) {
- 			__clear_bit(j, bounced);
--			if (kaddr) {
--				if (kaddr + PAGE_SIZE == page_address(page))
-+			if (!PageHighMem(page)) {
-+				if (!i) {
-+					kaddr = page_address(page);
-+					continue;
-+				}
-+				if (kaddr &&
-+				    kaddr + PAGE_SIZE == page_address(page)) {
- 					kaddr += PAGE_SIZE;
--				else
--					kaddr = NULL;
--			} else if (!i) {
--				kaddr = page_address(page);
-+					continue;
-+				}
- 			}
-+			kaddr = NULL;
- 			continue;
- 		}
- 		kaddr = NULL;
+diff --git a/drivers/hwmon/drivetemp.c b/drivers/hwmon/drivetemp.c
+index 72c760373957..00303af82a77 100644
+--- a/drivers/hwmon/drivetemp.c
++++ b/drivers/hwmon/drivetemp.c
+@@ -621,3 +621,4 @@ module_exit(drivetemp_exit);
+ MODULE_AUTHOR("Guenter Roeck <linus@roeck-us.net>");
+ MODULE_DESCRIPTION("Hard drive temperature monitor");
+ MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:drivetemp");
 -- 
 2.35.1
 
