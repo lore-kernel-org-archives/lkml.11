@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C41DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4803C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352794AbiHSQ1v (ORCPT
+        id S1352727AbiHSQ2N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        Fri, 19 Aug 2022 12:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352372AbiHSQZD (ORCPT
+        with ESMTP id S1352717AbiHSQZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:25:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610DA2A42F;
-        Fri, 19 Aug 2022 09:03:17 -0700 (PDT)
+        Fri, 19 Aug 2022 12:25:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C669FDD;
+        Fri, 19 Aug 2022 09:03:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 256E1617CE;
-        Fri, 19 Aug 2022 16:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D024EC433D6;
-        Fri, 19 Aug 2022 16:03:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D782EB82802;
+        Fri, 19 Aug 2022 16:03:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 280F6C433D6;
+        Fri, 19 Aug 2022 16:03:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924992;
-        bh=iQ7iWrZaZi/BsjIXc1ksis2Vv46be5HwFbPHTwHYWQc=;
+        s=korg; t=1660924995;
+        bh=Vi5nOn57Hq/yjy93n2CxGZ9yBwsNUVNFG9Sh/CociKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zAa1DXcBplwToIfIQVYnEpylGYKdfuhRlbXZVh9HD3TirnauQkDYl9E/XrQeRs16A
-         C/ub/+bPIeAFX3cRrumWDSzxj45fkpYQfYBMif65mslCZkWMsGwrBPvJlL5hxdwksv
-         8qCzm05jKkCREhmxoDxetB475BW24iI5fN+FwkOg=
+        b=iqaHVLIKX/Zch4xP356lPUFfsM8OKREO4nwHFsHQGLPIhqhwll8LujUgIteTzFzP3
+         upH4rV6NDwCXwx3RrDMJ/fKmHvwvujWO/6taXrBD/+dGOMa90wgormX0qz8uj8Cgao
+         QIarSUi93EXRWb4E+hvQZ9TUl1BXh7sBXjZMRGFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 319/545] PCI/portdrv: Dont disable AER reporting in get_port_device_capability()
-Date:   Fri, 19 Aug 2022 17:41:29 +0200
-Message-Id: <20220819153843.626684387@linuxfoundation.org>
+Subject: [PATCH 5.10 310/545] intel_th: msu-sink: Potential dereference of null pointer
+Date:   Fri, 19 Aug 2022 17:41:20 +0200
+Message-Id: <20220819153843.230782415@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -56,100 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Roese <sr@denx.de>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
+[ Upstream commit 82f76a4a720791d889de775b5f7541d601efc8bd ]
 
-AER reporting is currently disabled in the DevCtl registers of all non Root
-Port PCIe devices on systems using pcie_ports_native || host->native_aer,
-disabling AER completely in such systems. This is because 2bd50dd800b5
-("PCI: PCIe: Disable PCIe port services during port initialization"), added
-a call to pci_disable_pcie_error_reporting() *after* the AER setup was
-completed for the PCIe device tree.
+The return value of dma_alloc_coherent() needs to be checked.
+To avoid use of null pointer in sg_set_buf() in case of the failure of
+alloc.
 
-Here a longer analysis about the current status of AER enabling /
-disabling upon bootup provided by Bjorn:
-
-  pcie_portdrv_probe
-    pcie_port_device_register
-      get_port_device_capability
-        pci_disable_pcie_error_reporting
-          clear CERE NFERE FERE URRE               # <-- disable for RP USP DSP
-      pcie_device_init
-        device_register                            # new AER service device
-          aer_probe
-            aer_enable_rootport                    # RP only
-              set_downstream_devices_error_reporting
-                set_device_error_reporting         # self (RP)
-                  if (RP || USP || DSP)
-                    pci_enable_pcie_error_reporting
-                      set CERE NFERE FERE URRE     # <-- enable for RP
-                pci_walk_bus
-                  set_device_error_reporting
-                    if (RP || USP || DSP)
-                      pci_enable_pcie_error_reporting
-                        set CERE NFERE FERE URRE   # <-- enable for USP DSP
-
-In a typical Root Port -> Endpoint hierarchy, the above:
-  - Disables Error Reporting for the Root Port,
-  - Enables Error Reporting for the Root Port,
-  - Does NOT enable Error Reporting for the Endpoint because it is not a
-    Root Port or Switch Port.
-
-In a deeper Root Port -> Upstream Switch Port -> Downstream Switch
-Port -> Endpoint hierarchy:
-  - Disables Error Reporting for the Root Port,
-  - Enables Error Reporting for the Root Port,
-  - Enables Error Reporting for both Switch Ports,
-  - Does NOT enable Error Reporting for the Endpoint because it is not a
-    Root Port or Switch Port,
-  - Disables Error Reporting for the Switch Ports when pcie_portdrv_probe()
-    claims them.  AER does not re-enable it because these are not Root
-    Ports.
-
-Remove this call to pci_disable_pcie_error_reporting() from
-get_port_device_capability(), leaving the already enabled AER configuration
-intact. With this change, AER is enabled in the Root Port and the PCIe
-switch upstream and downstream ports. Only the PCIe Endpoints don't have
-AER enabled yet. A follow-up patch will take care of this Endpoint
-enabling.
-
-Fixes: 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port services during port initialization")
-Link: https://lore.kernel.org/r/20220125071820.2247260-3-sr@denx.de
-Signed-off-by: Stefan Roese <sr@denx.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Cc: Michal Simek <michal.simek@xilinx.com>
-Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
-Cc: Naveen Naidu <naveennaidu479@gmail.com>
+Fixes: f220df66f676 ("intel_th: msu-sink: An example msu buffer "sink"")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-3-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/portdrv_core.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/hwtracing/intel_th/msu-sink.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-index 3779b264dbec..5ae81f2df45f 100644
---- a/drivers/pci/pcie/portdrv_core.c
-+++ b/drivers/pci/pcie/portdrv_core.c
-@@ -222,15 +222,8 @@ static int get_port_device_capability(struct pci_dev *dev)
+diff --git a/drivers/hwtracing/intel_th/msu-sink.c b/drivers/hwtracing/intel_th/msu-sink.c
+index 2c7f5116be12..891b28ea25fe 100644
+--- a/drivers/hwtracing/intel_th/msu-sink.c
++++ b/drivers/hwtracing/intel_th/msu-sink.c
+@@ -71,6 +71,9 @@ static int msu_sink_alloc_window(void *data, struct sg_table **sgt, size_t size)
+ 		block = dma_alloc_coherent(priv->dev->parent->parent,
+ 					   PAGE_SIZE, &sg_dma_address(sg_ptr),
+ 					   GFP_KERNEL);
++		if (!block)
++			return -ENOMEM;
++
+ 		sg_set_buf(sg_ptr, block, PAGE_SIZE);
+ 	}
  
- #ifdef CONFIG_PCIEAER
- 	if (dev->aer_cap && pci_aer_available() &&
--	    (pcie_ports_native || host->native_aer)) {
-+	    (pcie_ports_native || host->native_aer))
- 		services |= PCIE_PORT_SERVICE_AER;
--
--		/*
--		 * Disable AER on this port in case it's been enabled by the
--		 * BIOS (the AER service driver will enable it when necessary).
--		 */
--		pci_disable_pcie_error_reporting(dev);
--	}
- #endif
- 
- 	/*
 -- 
 2.35.1
 
