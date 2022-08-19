@@ -2,96 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8386C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16180C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347814AbiHSKpo (ORCPT
+        id S1347790AbiHSKv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 06:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        Fri, 19 Aug 2022 06:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347538AbiHSKpj (ORCPT
+        with ESMTP id S1346527AbiHSKv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:45:39 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F4FC2778;
-        Fri, 19 Aug 2022 03:45:37 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 87D9C1C0003; Fri, 19 Aug 2022 12:45:35 +0200 (CEST)
-Date:   Fri, 19 Aug 2022 12:45:34 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Subject: Re: [PATCH 5.15 089/779] md-raid10: fix KASAN warning
-Message-ID: <20220819104534.GA11901@duo.ucw.cz>
-References: <20220815180337.130757997@linuxfoundation.org>
- <20220815180341.087873206@linuxfoundation.org>
+        Fri, 19 Aug 2022 06:51:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33956E2C7C;
+        Fri, 19 Aug 2022 03:51:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E480AB8274C;
+        Fri, 19 Aug 2022 10:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AF97C433C1;
+        Fri, 19 Aug 2022 10:51:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660906278;
+        bh=nX+wpzz52PCLNX9F8IQQbzAoFFoiLltf9HzoZBUYRKY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SrJbrcLEcwKa9UR8OXzPh5NUxJ3JHEOlXPaY30ZTqwgKTOkhJvJQZ3/wIrP3/2Otw
+         Ibn4wAf+ODS51XgCfrZtcvltxNQBrzB7+584wMm/dt1lnmSUrEgeALIGfuKsC+CeEZ
+         Rth9ntgKmW1QDKOY++8xCRkaDue+ZRF+FEwpXYyNNwSiMn7qJTivpwdBSWtuKdXpA8
+         gaobfr/+mpOLp+FVKkM6kvLT0oL7mVGqhqbf1uLVhHq9x2x13yi+oFSzC1nt8cp/fH
+         Z23N1kvmBQ20Yq2xzSjUgjPU66ddzyTHmFArhHg4XLnUMpTjXVXAgy4cXlio1KIBfJ
+         wthpsFbfG3Dmw==
+Date:   Fri, 19 Aug 2022 11:51:12 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] ASoC: qcom: sm8250: move some code to common
+Message-ID: <Yv9rIGE+GNEzzizz@sirena.org.uk>
+References: <20220818135817.10142-1-srinivas.kandagatla@linaro.org>
+ <20220818135817.10142-3-srinivas.kandagatla@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="OXfL5xGRrasGEqWY"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jrntzq7HWj3xMCPD"
 Content-Disposition: inline
-In-Reply-To: <20220815180341.087873206@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220818135817.10142-3-srinivas.kandagatla@linaro.org>
+X-Cookie: Price does not include taxes.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---OXfL5xGRrasGEqWY
+--jrntzq7HWj3xMCPD
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi!
+On Thu, Aug 18, 2022 at 02:58:16PM +0100, Srinivas Kandagatla wrote:
 
-> From: Mikulas Patocka <mpatocka@redhat.com>
->=20
-> commit d17f744e883b2f8d13cca252d71cfe8ace346f7d upstream.
->=20
-> There's a KASAN warning in raid10_remove_disk when running the lvm
-> test lvconvert-raid-reshape.sh. We fix this warning by verifying that the
-> value "number" is valid.
->=20
-> BUG: KASAN: slab-out-of-bounds in raid10_remove_disk+0x61/0x2a0 [raid10]
-> Read of size 8 at addr ffff889108f3d300 by task mdX_raid10/124682
+> +	}
+> +	*stream_prepared  = true;
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(qcom_snd_sdw_prepare);
 
-Is this place for array_index_nospec?
+The ASoC framework is all EXPORT_SYMBOL_GPL(), things that depend
+directly on it should be too.
 
-Best regards,
-								Pavel
-
-> --- a/drivers/md/raid10.c
-> +++ b/drivers/md/raid10.c
-> @@ -2139,9 +2139,12 @@ static int raid10_remove_disk(struct mdd
->  	int err =3D 0;
->  	int number =3D rdev->raid_disk;
->  	struct md_rdev **rdevp;
-> -	struct raid10_info *p =3D conf->mirrors + number;
-> +	struct raid10_info *p;
-> =20
->  	print_conf(conf);
-> +	if (unlikely(number >=3D mddev->raid_disks))
-> +		return 0;
-> +	p =3D conf->mirrors + number;
->  	if (rdev =3D=3D p->rdev)
->  		rdevp =3D &p->rdev;
->  	else if (rdev =3D=3D p->replacement)
->=20
-
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---OXfL5xGRrasGEqWY
+--jrntzq7HWj3xMCPD
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYv9pzgAKCRAw5/Bqldv6
-8v/gAJ4sTX5X3zY3ubBbRZSn/XTq14xIywCeNyHFEYnBxjdVRIz+YCGiu7U2uls=
-=mCrN
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL/ax8ACgkQJNaLcl1U
+h9Ax5gf8C1poXrMNlinxwQ+Bq6QSKD91O3BR4rTm8vj2gncSQp2y7+H4HY+T+tbP
+WGLHZHiGtb+fVqRFr2zzATokVvbJ9ceQ8N0T4be7Ggjd3tLcJcuuXM26BUwr3u4N
+0H6ocIUsZP7z949gOSW3V0d7CH6Z7gfBmVq9ytsXvyapjoMOlxPPc8OyL64NL/1o
+HkfoKIq43c2gvF6AWK06VBmGv8vaw0Sxy5DPIVoHlBeK44xmYNV91s8LMw2VqYiB
+nM2iNfQd4OC476R0bc+BG8NgJltT6j9c8KaaBh6tioASQmMm4uaMRoxAg1RhJcd/
+UvE/Novy91JE54HT1FvQxA6vhFKPpg==
+=HP4+
 -----END PGP SIGNATURE-----
 
---OXfL5xGRrasGEqWY--
+--jrntzq7HWj3xMCPD--
