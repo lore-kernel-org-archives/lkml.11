@@ -2,112 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08772C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B67C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352313AbiHSQWA (ORCPT
+        id S1352332AbiHSQWD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
+        Fri, 19 Aug 2022 12:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352508AbiHSQQ4 (ORCPT
+        with ESMTP id S1352518AbiHSQQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE861175D1;
-        Fri, 19 Aug 2022 09:00:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95EC2B8281C;
-        Fri, 19 Aug 2022 16:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AEAC433C1;
-        Fri, 19 Aug 2022 16:00:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924803;
-        bh=xRccUg+RYk2HYXcKqv40Tc20yTxns1wD23CNpPqj9F8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ikH5z9ren+u89aZB6p/LHNepsWlAWV0OpPHPE+8W252VujA0i+QRRWMtJ1sSRQcyB
-         m2Jfwn8Pd6HmR9SEHf8fVG/9hUxR8uyOHJszM441orAIJX+1Gx6dgalLfJkIyxTI70
-         kgWeSG7JCIZonGN8JG3Ocg44x+SGKbEQvhwsQLH4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 288/545] KVM: Dont set Accessed/Dirty bits for ZERO_PAGE
-Date:   Fri, 19 Aug 2022 17:40:58 +0200
-Message-Id: <20220819153842.220152009@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 19 Aug 2022 12:16:58 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5572B117772
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:00:14 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id h25-20020a056e021d9900b002e069b96119so3484285ila.14
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:00:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=PEvbQwuqkPIOqGz2U2biiCtJ1u8u1Jgg6b0aF9rPmO8=;
+        b=V5lJiosYLgU6XR/Dh2ZKTYH2m6jiWZRWCXRWYI0j6WV2CT+0VJfmRh02ma65IoRDv2
+         Sl2PvOq0l+etXTHbU1v+i3CtvaiELCZ3R4IW93rAThRvl5CYWvG35Cuz9w+OvtKC3VUy
+         GPr7UMujfDWY5rrCR+S6rJg74C/Ec1ivgXLyN3zyZG0IvLsCaL9K2B0ZBoGIe6yaSAJv
+         UZGZ6F36ozpdBJOaG0eHQCijZXc75vutd/GwuTdXb8OWiIp7VKh8n+YYAOAbOGQh8eUr
+         vK78jxMl80SGQITC+zZJmx+iIznImSuLzyQz8Z0eNAodNRDl4rw5hfHkzvPTYKmI1C9B
+         qzBw==
+X-Gm-Message-State: ACgBeo0160Kp0GovORdmspHKDvhkxbllDLAyuUoZv250jogAHIFiTuzS
+        DSePzwto/ZL0lgfAcdBs8epczcQ5me0VbdH/8cB+1ix+aT+Y
+X-Google-Smtp-Source: AA6agR7UZjzoy5Us1DMpgDEjmQJbjXiO9fZmVN9HvfHnjj+EfE7r4AD/0k+hGqUw2dul+xlkdYKVCL0+BwWDSHv5eSSefeVvtzJw
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:3348:0:b0:349:b71c:af7d with SMTP id
+ k8-20020a023348000000b00349b71caf7dmr521605jak.181.1660924812727; Fri, 19 Aug
+ 2022 09:00:12 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 09:00:12 -0700
+In-Reply-To: <20220819122008.1561-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000761b3f05e69a3131@google.com>
+Subject: Re: [syzbot] possible deadlock in jbd2_journal_lock_updates
+From:   syzbot <syzbot+79e6bbabf3ce17357969@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+Hello,
 
-[ Upstream commit a1040b0d42acf69bb4f6dbdc54c2dcd78eea1de5 ]
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Don't set Accessed/Dirty bits for a struct page with PG_reserved set,
-i.e. don't set A/D bits for the ZERO_PAGE.  The ZERO_PAGE (or pages
-depending on the architecture) should obviously never be written, and
-similarly there's no point in marking it accessed as the page will never
-be swapped out or reclaimed.  The comment in page-flags.h is quite clear
-that PG_reserved pages should be managed only by their owner, and
-strictly following that mandate also simplifies KVM's logic.
+Reported-and-tested-by: syzbot+79e6bbabf3ce17357969@syzkaller.appspotmail.com
 
-Fixes: 7df003c85218 ("KVM: fix overflow of zero page refcount with ksm running")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220429010416.2788472-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- virt/kvm/kvm_main.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+Tested on:
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index c5dbac10c372..421b0ff72b46 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -2339,16 +2339,28 @@ void kvm_release_pfn_dirty(kvm_pfn_t pfn)
- }
- EXPORT_SYMBOL_GPL(kvm_release_pfn_dirty);
- 
-+static bool kvm_is_ad_tracked_pfn(kvm_pfn_t pfn)
-+{
-+	if (!pfn_valid(pfn))
-+		return false;
-+
-+	/*
-+	 * Per page-flags.h, pages tagged PG_reserved "should in general not be
-+	 * touched (e.g. set dirty) except by its owner".
-+	 */
-+	return !PageReserved(pfn_to_page(pfn));
-+}
-+
- void kvm_set_pfn_dirty(kvm_pfn_t pfn)
- {
--	if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
-+	if (kvm_is_ad_tracked_pfn(pfn))
- 		SetPageDirty(pfn_to_page(pfn));
- }
- EXPORT_SYMBOL_GPL(kvm_set_pfn_dirty);
- 
- void kvm_set_pfn_accessed(kvm_pfn_t pfn)
- {
--	if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
-+	if (kvm_is_ad_tracked_pfn(pfn))
- 		mark_page_accessed(pfn_to_page(pfn));
- }
- EXPORT_SYMBOL_GPL(kvm_set_pfn_accessed);
--- 
-2.35.1
+commit:         ca688bff Add linux-next specific files for 20220808
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=151d45e3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=79e6bbabf3ce17357969
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1267b2f3080000
 
-
-
+Note: testing is done by a robot and is best-effort only.
