@@ -2,150 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 299FDC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 201AAC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240987AbiHSWTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 18:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
+        id S240587AbiHSWT2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 18:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240485AbiHSWTI (ORCPT
+        with ESMTP id S240543AbiHSWTP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 18:19:08 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2E3D8B37;
-        Fri, 19 Aug 2022 15:19:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=efMK60nr83yuRCx5Ljwx52Fk9k5SHvdIGer1v3Qxdhs=; b=SjQSOrdIC0PRcYZolS77irogck
-        Mcx5v/0ZNaHxyEbxFL3onPgr5fMu09Pd2ybtyiuoazQiRcE4q1BCAdwvuZlYFgooxjD3BxoZoH4PK
-        E/IlV6B+dBp+jSqRHfRRW0pIXAMZz1tIYerq39GhYuucnq6cSpZZ0C96yp+R/lJeJCEuPn+qomTxx
-        BGxXGbnwkISEpDio7Vmfl6/6+0bvNYjEYtE6gc8UcjowEqH3UBtnvIUbDmL7qJyOrM5MVw4W2US5T
-        3K1YJX1V/eWgE3S5pK2h+HxIYqHNfmis/7gh2PMnSysILIOzmrBUaMLqgXhAwCFkg2rzBmE/TgWP6
-        uuEMeQ0Q==;
-Received: from [179.232.144.59] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oPAKN-00Casf-VT; Sat, 20 Aug 2022 00:18:59 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, xuqiang36@huawei.com,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Marc Zyngier <maz@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH V3 01/11] ARM: Disable FIQs (but not IRQs) on CPUs shutdown paths
-Date:   Fri, 19 Aug 2022 19:17:21 -0300
-Message-Id: <20220819221731.480795-2-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819221731.480795-1-gpiccoli@igalia.com>
-References: <20220819221731.480795-1-gpiccoli@igalia.com>
+        Fri, 19 Aug 2022 18:19:15 -0400
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12BAD9D71
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:19:08 -0700 (PDT)
+Received: by mail-oo1-xc2e.google.com with SMTP id c17-20020a4a8ed1000000b004452faec26dso1033422ool.5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=ElEwhFKGd2FC/9X2FVtgbgG3kjrjD6bdwf8mmYydFDQ=;
+        b=ei67oZ0P6p8YavAJDaTjRKO5rKLHeUQRVFLbCmNEvBQeWqtwEn+tWq+Nx0jpTknXaC
+         AvJFSxHNKV7ad/HzmVXiqB0kpkAEicrfpo4oZ+WQJP8/06vsqWPaVx2bnY/+64p6Q/s2
+         4at/0nIxIVqxdyY5Sdp0qhkabU5uJU/OUW/FYAfcojWG+VKOWC/QF4PCn1p2jsnfFVYT
+         dvgW7scRxdk+Nu5aj0SMR3o1CDl+BHuWm9m9E0jQ5iC2dSWeAf/uy7vfwDnw0NL1T/Eh
+         Y3ozMaePyh8/dBtDXJjK3RiwOlftBgLNXQTnQzLE0+utnxiSOUfckRZK8lxBB5fdG0Td
+         Zn5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=ElEwhFKGd2FC/9X2FVtgbgG3kjrjD6bdwf8mmYydFDQ=;
+        b=ELGJaXsBNryedlfc77/NvVR/6SPC/tCEaL/pAk6I+sxzCJjpsucbZeAfW+ezt9lEjl
+         Kwb9Cgq6bM5bytXKddIs7iOKPgwc4GPx43cZVJGz6ZZwlwZHJs5TLd2n49gBnF1Br6fQ
+         ufsANEO/D3gu97y6+bz+NIMY/nKI0mh+rzvraAVwHC2Nph/TfbTF+2ERNKRiownxvQkK
+         blfpn+6ZlXxMAjp795WA5kKOdlbk7p+zhKWhUBdUXuO0RyHD2JBPn3zx91i/LvhdYjML
+         CDhjH7Uqtss63UY5K9JfjyLMxODDSXHUVED4HqSguolinmwvVZPVsMj5eM1IrSLbxoIh
+         KfDA==
+X-Gm-Message-State: ACgBeo1i8xVfCsTVG5HANaBuh4xB20YSo+q0dB36VGZSbZBdKDl/PSlZ
+        FX8LNow5EpOwhywLwyQXEFGD1mgW2gT/BHRmXV4=
+X-Google-Smtp-Source: AA6agR42zS3VCTYuNVOWVg7wg9gxGvN0NIfERQyV6z575IK8vwHqfaqShMPhyK6yRmjYqCOaf8OpdILmvmOAyXIUaYk=
+X-Received: by 2002:a4a:4541:0:b0:435:cf9f:1a45 with SMTP id
+ y62-20020a4a4541000000b00435cf9f1a45mr3226037ooa.17.1660947547579; Fri, 19
+ Aug 2022 15:19:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220819210112.7924-1-rdunlap@infradead.org>
+In-Reply-To: <20220819210112.7924-1-rdunlap@infradead.org>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri, 19 Aug 2022 18:18:56 -0400
+Message-ID: <CADnq5_MesHnxboGboMy+DUYtBb-EAeApHVsqwaHOVdL7rxYwWg@mail.gmail.com>
+Subject: Re: [PATCH] powerpc: export cpu_smallcore_map for modules
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "Gautham R . Shenoy" <ego@linux.vnet.ibm.com>,
+        amd-gfx@lists.freedesktop.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the regular CPU shutdown path for ARM disables IRQs/FIQs
-in the secondary CPUs - smp_send_stop() calls ipi_cpu_stop(), which
-is responsible for that. IRQs are architecturally masked when we
-take an interrupt, but FIQs are high priority than IRQs, hence they
-aren't masked. With that said, it makes sense to disable FIQs here,
-but there's no need for (re-)disabling IRQs.
+On Fri, Aug 19, 2022 at 6:18 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> Fix build error when CONFIG_DRM_AMDGPU=3Dm:
+>
+> ERROR: modpost: "cpu_smallcore_map" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko=
+] undefined!
+>
+> by exporting 'cpu_smallcore_map' just as other per_cpu
+> symbols are exported.
+>
+> drivers/gpu/drm/amd/amdkfd/kfd_device.c calls cpu_smt_mask().
+> This is an inline function on powerpc which references
+> cpu_smallcore_map.
+>
+> Fixes: 425752c63b6f ("powerpc: Detect the presence of big-cores via "ibm,=
+ thread-groups"")
+> Fixes: 7bc913085765 ("drm/amdkfd: Try to schedule bottom half on same cor=
+e")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Gautham R. Shenoy <ego@linux.vnet.ibm.com>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Nicholas Piggin <npiggin@gmail.com>
+> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: amd-gfx@lists.freedesktop.org
+> Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+> Cc: Alex Deucher <alexander.deucher@amd.com>
+> Cc: Christian K=C3=B6nig <christian.koenig@amd.com>
+> Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
 
-More than that: there is an alternative path for disabling CPUs,
-in the form of function crash_smp_send_stop(), which is used for
-kexec/panic path. This function relies on a SMP call that also
-triggers a busy-wait loop [at machine_crash_nonpanic_core()], but
-without disabling FIQs. This might lead to odd scenarios, like
-early interrupts in the boot of kexec'd kernel or even interrupts
-in secondary "disabled" CPUs while the main one still works in the
-panic path and assumes all secondary CPUs are (really!) off.
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
 
-So, let's disable FIQs in both paths and *not* disable IRQs a second
-time, since they are already masked in both paths by the architecture.
-This way, we keep both CPU quiesce paths consistent and safe.
-
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Michael Kelley <mikelley@microsoft.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-
----
-
-V3:
-- No changes.
-
-V2:
-- Small wording improvement (thanks Michael Kelley);
-- Only disable FIQs, since IRQs are masked by architecture
-definition when we take an interrupt. Thanks a lot Russell
-and Marc for the discussion [0].
-
-Should we add a Fixes tag here? If so, maybe the proper target is:
-b23065313297 ("ARM: 6522/1: kexec: Add call to non-crashing cores through IPI")
-
-[0] https://lore.kernel.org/lkml/Ymxcaqy6DwhoQrZT@shell.armlinux.org.uk/
-
-
- arch/arm/kernel/machine_kexec.c | 2 ++
- arch/arm/kernel/smp.c           | 5 ++---
- 2 files changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm/kernel/machine_kexec.c b/arch/arm/kernel/machine_kexec.c
-index f567032a09c0..0b482bcb97f7 100644
---- a/arch/arm/kernel/machine_kexec.c
-+++ b/arch/arm/kernel/machine_kexec.c
-@@ -77,6 +77,8 @@ void machine_crash_nonpanic_core(void *unused)
- {
- 	struct pt_regs regs;
- 
-+	local_fiq_disable();
-+
- 	crash_setup_regs(&regs, get_irq_regs());
- 	printk(KERN_DEBUG "CPU %u will stop doing anything useful since another CPU has crashed\n",
- 	       smp_processor_id());
-diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
-index 978db2d96b44..36e6efad89f3 100644
---- a/arch/arm/kernel/smp.c
-+++ b/arch/arm/kernel/smp.c
-@@ -600,6 +600,8 @@ static DEFINE_RAW_SPINLOCK(stop_lock);
-  */
- static void ipi_cpu_stop(unsigned int cpu)
- {
-+	local_fiq_disable();
-+
- 	if (system_state <= SYSTEM_RUNNING) {
- 		raw_spin_lock(&stop_lock);
- 		pr_crit("CPU%u: stopping\n", cpu);
-@@ -609,9 +611,6 @@ static void ipi_cpu_stop(unsigned int cpu)
- 
- 	set_cpu_online(cpu, false);
- 
--	local_fiq_disable();
--	local_irq_disable();
--
- 	while (1) {
- 		cpu_relax();
- 		wfe();
--- 
-2.37.2
-
+> ---
+>  arch/powerpc/kernel/smp.c |    1 +
+>  1 file changed, 1 insertion(+)
+>
+> --- a/arch/powerpc/kernel/smp.c
+> +++ b/arch/powerpc/kernel/smp.c
+> @@ -86,6 +86,7 @@ DEFINE_PER_CPU(cpumask_var_t, cpu_core_m
+>  static DEFINE_PER_CPU(cpumask_var_t, cpu_coregroup_map);
+>
+>  EXPORT_PER_CPU_SYMBOL(cpu_sibling_map);
+> +EXPORT_PER_CPU_SYMBOL(cpu_smallcore_map);
+>  EXPORT_PER_CPU_SYMBOL(cpu_l2_cache_map);
+>  EXPORT_PER_CPU_SYMBOL(cpu_core_map);
+>  EXPORT_SYMBOL_GPL(has_big_cores);
