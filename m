@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB856C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EF9C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351742AbiHSRXG (ORCPT
+        id S1354557AbiHSRXL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48432 "EHLO
+        Fri, 19 Aug 2022 13:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350484AbiHSRWf (ORCPT
+        with ESMTP id S1351070AbiHSRWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:22:35 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E91B126969;
-        Fri, 19 Aug 2022 09:41:33 -0700 (PDT)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBGqTw016054;
-        Fri, 19 Aug 2022 16:41:15 GMT
+        Fri, 19 Aug 2022 13:22:36 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D41128459;
+        Fri, 19 Aug 2022 09:41:50 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JDu6xa001366;
+        Fri, 19 Aug 2022 16:41:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=zPaVPn/DfZ0Qisr8fOPa/fFRoVzEhunMw2izReFUGN8=;
- b=T5tOngbnq21kJ37mIn3A8vv7Go1adj6EUm1GCV0NL9Whhkw4NLKdwd3XBz8RicUmM4ux
- R7A7rrRY6cMB0JymzlOJ+6n5pOAZUxidlDnEhZjROr6ZKb4x91HRN+NvKa32bxLb93v7
- hTzUx7KUS4/T8Lg4oy4LPmxBBQmkShk3kc0oFWkon2kMXvtLl0SxdBbPd1KYF3qwkOYP
- VsNX4vWQIaLbf9vvkrN0qyibyx7Y+3+MTRWEZtNieAxEtWlSlGN/RMeRnFXSVU7mc/7Y
- PTbxGec48qSWyzI9Jx0bNUwArlnUMW4fYMbHkHb7j9pUSdtrxTUh4aEQoBUr+vBrZ04o nA== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1pwukyw3-1
+ bh=hjSQzhi4GqzeASvTjUG5Z2rNtdg36HJX0JFu1HXUIcs=;
+ b=SltAzaHPbwlfj/zOYpx8dmP3TUpvylB1UQzJ2wKVWZfeajss+ym7F2P7NOPib42z+KE2
+ gE818Hacwd+aJoWbgXmkGDaie+WmjOPedptBnZBqj/K7dhB7iP7stLAo7YC6D3DtOeQF
+ zQ0wzoicH62fKABI6tLN5h9cMiVgiZwNncogoBdRZskm9fhqztTjMbZA/ALBdpeEwR7E
+ mxrx0nOTR4rjwf2lPu1AFG7MvCa+FAFuwyJ7LfDxA0yXOLBTQWYGJL9FTBfRidARzACe
+ X279sF55kJ8cUh/3mRFzSdNZVJfgZ8Kh+toC6N+rTl0Kz4eTyu44/I57grR/xwdW76no 3g== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j2bu7ghb6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 16:41:14 +0000
+        Fri, 19 Aug 2022 16:41:37 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27JGfD3s008876
+        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27JGfbbT030584
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 16:41:13 GMT
+        Fri, 19 Aug 2022 16:41:37 GMT
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 19 Aug 2022 09:41:08 -0700
+ 15.2.986.22; Fri, 19 Aug 2022 09:41:31 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
@@ -50,14 +50,16 @@ To:     freedreno <freedreno@lists.freedesktop.org>,
 CC:     Douglas Anderson <dianders@chromium.org>,
         <krzysztof.kozlowski@linaro.org>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Sean Paul" <sean@poorly.run>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 2/6] clk: qcom: Allow custom reset ops
-Date:   Fri, 19 Aug 2022 22:10:41 +0530
-Message-ID: <20220819221017.v4.2.I75baff799a363bbb960376539e3a0f737377c3f1@changeid>
+Subject: [PATCH v4 5/6] dt-bindings: drm/msm/gpu: Add optional resets
+Date:   Fri, 19 Aug 2022 22:10:44 +0530
+Message-ID: <20220819221017.v4.5.Ieffadd08a071a233213ced4406bf84bb5922ab9a@changeid>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1660927246-11327-1-git-send-email-quic_akhilpo@quicinc.com>
 References: <1660927246-11327-1-git-send-email-quic_akhilpo@quicinc.com>
@@ -68,113 +70,50 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: BgbeVoGrcb0wWGhTOyNvy6yMA0lf7IUt
-X-Proofpoint-ORIG-GUID: BgbeVoGrcb0wWGhTOyNvy6yMA0lf7IUt
+X-Proofpoint-ORIG-GUID: v7MVUo7TrPB6b1vbb9jQb6xe1XOnwash
+X-Proofpoint-GUID: v7MVUo7TrPB6b1vbb9jQb6xe1XOnwash
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-19_08,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- mlxscore=0 clxscore=1015 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 adultscore=0 spamscore=0 phishscore=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ clxscore=1015 spamscore=0 adultscore=0 priorityscore=1501 malwarescore=0
+ impostorscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0
  mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208190060
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow soc specific clk drivers to specify a custom reset operation. We
-will use this in an upcoming patch to allow gpucc driver to specify a
-differet reset operation for cx_gdsc.
+Add an optional reference to GPUCC reset which can be used to ensure cx
+gdsc collapse during gpu recovery.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
-(no changes since v3)
+Changes in v4:
+- New patch in v4
 
-Changes in v3:
-- Use pointer to const for "struct qcom_reset_ops" in qcom_reset_map (Krzysztof)
+ Documentation/devicetree/bindings/display/msm/gpu.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Changes in v2:
-- Return error when a particular custom reset op is not implemented. (Dmitry)
-
- drivers/clk/qcom/reset.c | 27 +++++++++++++++++++++++++++
- drivers/clk/qcom/reset.h |  8 ++++++++
- 2 files changed, 35 insertions(+)
-
-diff --git a/drivers/clk/qcom/reset.c b/drivers/clk/qcom/reset.c
-index 819d194..b7ae4a3 100644
---- a/drivers/clk/qcom/reset.c
-+++ b/drivers/clk/qcom/reset.c
-@@ -13,6 +13,21 @@
+diff --git a/Documentation/devicetree/bindings/display/msm/gpu.yaml b/Documentation/devicetree/bindings/display/msm/gpu.yaml
+index 3397bc3..4576b31 100644
+--- a/Documentation/devicetree/bindings/display/msm/gpu.yaml
++++ b/Documentation/devicetree/bindings/display/msm/gpu.yaml
+@@ -109,6 +109,13 @@ properties:
+       For GMU attached devices a phandle to the GMU device that will
+       control the power for the GPU.
  
- static int qcom_reset(struct reset_controller_dev *rcdev, unsigned long id)
- {
-+	struct qcom_reset_controller *rst;
-+	const struct qcom_reset_map *map;
++  resets:
++    maxItems: 1
 +
-+	rst = to_qcom_reset_controller(rcdev);
-+	map = &rst->reset_map[id];
++  reset-names:
++    items:
++      - const: cx_collapse
 +
-+	if (map->ops && map->ops->reset)
-+		return map->ops->reset(map->priv);
-+	/*
-+	 * If custom ops is implemented but just not this callback, return
-+	 * error
-+	 */
-+	else if (map->ops)
-+		return -EOPNOTSUPP;
-+
- 	rcdev->ops->assert(rcdev, id);
- 	udelay(1);
- 	rcdev->ops->deassert(rcdev, id);
-@@ -28,6 +43,12 @@ qcom_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
  
- 	rst = to_qcom_reset_controller(rcdev);
- 	map = &rst->reset_map[id];
-+
-+	if (map->ops && map->ops->assert)
-+		return map->ops->assert(map->priv);
-+	else if (map->ops)
-+		return -EOPNOTSUPP;
-+
- 	mask = BIT(map->bit);
- 
- 	return regmap_update_bits(rst->regmap, map->reg, mask, mask);
-@@ -42,6 +63,12 @@ qcom_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
- 
- 	rst = to_qcom_reset_controller(rcdev);
- 	map = &rst->reset_map[id];
-+
-+	if (map->ops && map->ops->deassert)
-+		return map->ops->deassert(map->priv);
-+	else if (map->ops)
-+		return -EOPNOTSUPP;
-+
- 	mask = BIT(map->bit);
- 
- 	return regmap_update_bits(rst->regmap, map->reg, mask, 0);
-diff --git a/drivers/clk/qcom/reset.h b/drivers/clk/qcom/reset.h
-index 2a08b5e..f3147eb 100644
---- a/drivers/clk/qcom/reset.h
-+++ b/drivers/clk/qcom/reset.h
-@@ -8,9 +8,17 @@
- 
- #include <linux/reset-controller.h>
- 
-+struct qcom_reset_ops {
-+	int (*reset)(void *priv);
-+	int (*assert)(void *priv);
-+	int (*deassert)(void *priv);
-+};
-+
- struct qcom_reset_map {
- 	unsigned int reg;
- 	u8 bit;
-+	const struct qcom_reset_ops *ops;
-+	void *priv;
- };
- 
- struct regmap;
+ required:
+   - compatible
 -- 
 2.7.4
 
