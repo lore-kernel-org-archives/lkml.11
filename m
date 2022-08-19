@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B359EC32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95173C32771
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351509AbiHSQF5 (ORCPT
+        id S1351427AbiHSQFq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
+        Fri, 19 Aug 2022 12:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351549AbiHSQCC (ORCPT
+        with ESMTP id S1351522AbiHSQBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:02:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88F610AE2D;
-        Fri, 19 Aug 2022 08:53:49 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551CB10AE39;
+        Fri, 19 Aug 2022 08:53:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E309B827F8;
-        Fri, 19 Aug 2022 15:53:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD648C433C1;
-        Fri, 19 Aug 2022 15:53:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E7066174A;
+        Fri, 19 Aug 2022 15:53:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1075EC433C1;
+        Fri, 19 Aug 2022 15:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924426;
-        bh=aHuE6wBRStzp1g2yIHmE4JGTl1gGGkpMvqr3Z2LHwU0=;
+        s=korg; t=1660924429;
+        bh=Fe2xvqF00PLRopeHXplDF/j9rwU7NVQeQA+xBB6pBvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zj+L+HHB2cWDWXzLem83/v51tsLquT+53aRreBih++k/9CWftYeBVQq6c98V68qXA
-         f4JfUGOBNvUdfwYh/kY5Pt/qHh3WAKGlwfLGsqAhT5wpjcliXx369Uw3saX4CFjfam
-         d3T54Oa1fknb/pYfMMYZHd38CWUvPznVfhwB05k0=
+        b=wPvuxIZdgHVdz3JdayGkHprDZoH9EklwY2m8Jr0BA6rE/XEEDMeY4ZHp30o7iTQDR
+         eI4ZT87yypT0xJUS8MR09/yR174LlvpGUqLkMfNIpp+DaOqZ7If6XMF/FixrPzZBIA
+         f5j0bdNJNyvDuqhZfHVCi4+M7i+N+ZWKXT3Eg6O4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YiFei Zhu <zhuyifei@google.com>,
-        Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 149/545] selftests/seccomp: Fix compile warning when CC=clang
-Date:   Fri, 19 Aug 2022 17:38:39 +0200
-Message-Id: <20220819153836.004975936@linuxfoundation.org>
+Subject: [PATCH 5.10 167/545] drm/mediatek: Separate poweron/poweroff from enable/disable and define new funcs
+Date:   Fri, 19 Aug 2022 17:38:57 +0200
+Message-Id: <20220819153836.832711193@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,45 +54,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YiFei Zhu <zhuyifei@google.com>
+From: Jitao Shi <jitao.shi@mediatek.com>
 
-[ Upstream commit 3ce4b78f73e8e00fb86bad67ee7f6fe12019707e ]
+[ Upstream commit cde7e2e35c2866d22a3a012e72a41052dfcc255d ]
 
-clang has -Wconstant-conversion by default, and the constant 0xAAAAAAAAA
-(9 As) being converted to an int, which is generally 32 bits, results
-in the compile warning:
+In order to match the changes of "Use the drm_panel_bridge API",
+the poweron/poweroff of dsi is extracted from enable/disable and
+defined as new funcs (atomic_pre_enable/atomic_post_disable).
 
-  clang -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/  -lpthread  seccomp_bpf.c -lcap -o seccomp_bpf
-  seccomp_bpf.c:812:67: warning: implicit conversion from 'long' to 'int' changes value from 45812984490 to -1431655766 [-Wconstant-conversion]
-          int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAAA;
-              ~~~~                                                         ^~~~~~~~~~~
-  1 warning generated.
+Since dsi_poweron is moved from dsi_enable to pre_enable function, in
+order to avoid poweron failure, the operation of dsi register fails to
+cause bus hang. Therefore, the protection mechanism is added to the
+dsi_enable function.
 
--1431655766 is the expected truncation, 0xAAAAAAAA (8 As), so use
-this directly in the code to avoid the warning.
+Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
 
-Fixes: 3932fcecd962 ("selftests/seccomp: Add test for unknown SECCOMP_RET kill behavior")
-Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220526223407.1686936-1-zhuyifei@google.com
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-3-git-send-email-xinlei.lee@mediatek.com/
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 53 +++++++++++++++++++-----------
+ 1 file changed, 34 insertions(+), 19 deletions(-)
 
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index e36745995f22..413a7b9f3c4d 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -798,7 +798,7 @@ void kill_thread_or_group(struct __test_metadata *_metadata,
- 		.len = (unsigned short)ARRAY_SIZE(filter_thread),
- 		.filter = filter_thread,
- 	};
--	int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAAA;
-+	int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAA;
- 	struct sock_filter filter_process[] = {
- 		BPF_STMT(BPF_LD|BPF_W|BPF_ABS,
- 			offsetof(struct seccomp_data, nr)),
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 2c09b43705ef..1b13e429e9d9 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -674,16 +674,6 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	if (--dsi->refcount != 0)
+ 		return;
+ 
+-	/*
+-	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
+-	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
+-	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
+-	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
+-	 * after dsi is fully set.
+-	 */
+-	mtk_dsi_stop(dsi);
+-
+-	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_lane0_ulp_mode_enter(dsi);
+ 	mtk_dsi_clk_ulp_mode_enter(dsi);
+@@ -698,17 +688,9 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 
+ static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
+ {
+-	int ret;
+-
+ 	if (dsi->enabled)
+ 		return;
+ 
+-	ret = mtk_dsi_poweron(dsi);
+-	if (ret < 0) {
+-		DRM_ERROR("failed to power on dsi\n");
+-		return;
+-	}
+-
+ 	mtk_dsi_set_mode(dsi);
+ 	mtk_dsi_clk_hs_mode(dsi, 1);
+ 
+@@ -722,7 +704,16 @@ static void mtk_output_dsi_disable(struct mtk_dsi *dsi)
+ 	if (!dsi->enabled)
+ 		return;
+ 
+-	mtk_dsi_poweroff(dsi);
++	/*
++	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
++	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
++	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
++	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
++	 * after dsi is fully set.
++	 */
++	mtk_dsi_stop(dsi);
++
++	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
+ 
+ 	dsi->enabled = false;
+ }
+@@ -759,13 +750,37 @@ static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
+ {
+ 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+ 
++	if (dsi->refcount == 0)
++		return;
++
+ 	mtk_output_dsi_enable(dsi);
+ }
+ 
++static void mtk_dsi_bridge_atomic_pre_enable(struct drm_bridge *bridge,
++					     struct drm_bridge_state *old_bridge_state)
++{
++	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
++	int ret;
++
++	ret = mtk_dsi_poweron(dsi);
++	if (ret < 0)
++		DRM_ERROR("failed to power on dsi\n");
++}
++
++static void mtk_dsi_bridge_atomic_post_disable(struct drm_bridge *bridge,
++					       struct drm_bridge_state *old_bridge_state)
++{
++	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
++
++	mtk_dsi_poweroff(dsi);
++}
++
+ static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
+ 	.attach = mtk_dsi_bridge_attach,
+ 	.atomic_disable = mtk_dsi_bridge_atomic_disable,
+ 	.atomic_enable = mtk_dsi_bridge_atomic_enable,
++	.atomic_pre_enable = mtk_dsi_bridge_atomic_pre_enable,
++	.atomic_post_disable = mtk_dsi_bridge_atomic_post_disable,
+ 	.mode_set = mtk_dsi_bridge_mode_set,
+ };
+ 
 -- 
 2.35.1
 
