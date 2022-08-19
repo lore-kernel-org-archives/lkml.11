@@ -2,106 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9850C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:44:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3299C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351264AbiHSRo2 (ORCPT
+        id S1351303AbiHSRp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
+        Fri, 19 Aug 2022 13:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354713AbiHSRn6 (ORCPT
+        with ESMTP id S1354819AbiHSRpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:43:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4ABCE0;
-        Fri, 19 Aug 2022 10:05:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEFD2617D0;
-        Fri, 19 Aug 2022 17:05:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0424C433D6;
-        Fri, 19 Aug 2022 17:05:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660928724;
-        bh=QqRwdsza8GJAfdhc+fC/YMNne+B8UrtzLFfv6moaMWI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F/Q8Qz2l7l623HUNNDi1K2lGey3wYZFZ/y8mlbz9Zdrju9l9NrtH9Zxgl/I/FHtuz
-         0WnZLeTQH11HWANEtMrEKO1+99XwEfcyeEg8YDifsXV1RRLyAp+PCdggDvyLvGpu4X
-         /vrP13c9oqt1ysvQvDn6h2ciSSvGBFZ/eKqZPVYZYp9JtriTeWZRrOccIicLUFBhvZ
-         ydQ8zfjl3jNyA9xWRggkaYGFf7jte9dRgs+gjqR5ELYKTWo+2/xjyJIP5HKA05YlWV
-         IfcdbNxaxgjyVSg189cd1e/0N4Fr8GRSU0hQ85OqivHPbzRB+nV9Ndxt37+OJTZ7qY
-         eBpqwHYKSftjw==
-Date:   Fri, 19 Aug 2022 18:16:00 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Joe Simmons-Talbott <joetalbott@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: Avoid multiple line dereference for mask
-Message-ID: <20220819181600.638b82e9@jic23-huawei>
-In-Reply-To: <72bbd0126162b7f78291d3431d2a8c6730cc4ce7.camel@perches.com>
-References: <20220818125844.60762-1-joetalbott@gmail.com>
-        <72bbd0126162b7f78291d3431d2a8c6730cc4ce7.camel@perches.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 19 Aug 2022 13:45:34 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA479C8F4
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:09:23 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id z16so5864464wrh.12
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=9jGXV6irFv8tEA+MQJNoWRqDdQzGDrEVYtPdlAW1TQs=;
+        b=L/XT30nIFiM56LHKBOZXY3zQ+ZPUuM9yPuPXlMYNgcfcjn11RoQE+etbYMg7NFke+b
+         sttmOBp4Lp37YiQz0zuBVE5O5B8FhhYtHCQBTjxwgs4mk+hHOCEk2OyrMgtyHC46AZyM
+         bb2r3ysqR61QdbeEmmJKvMt1tf4+9ThQ4xW3AhuqIo1uF3K6/q4yKsN6nOZJ5C6ZoBp9
+         FGfRuZeJ2YgXD8xSvlBkY0E86T3wQ8KHye7vOkpoxR0mJqAZfkXadf0eUyTjAZ53C7JD
+         hVG1rQdkdWANBqXSxphUrZi/mhtHrzOhQXUQTDJVm6zgzm6etfw+Siew+3RS2pxxjx4k
+         I+mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=9jGXV6irFv8tEA+MQJNoWRqDdQzGDrEVYtPdlAW1TQs=;
+        b=xTwex5mIbYfIZIwoTv0WkVIcypss7X/mqc5C6Z8mkRCJeBe2quoI33zM+MmUP3I5+N
+         KxUS7zte/xx7WpoH7VpMKtevIfb0Zhb2DsWOuX83gJAr4/lmr6IFxPqe7TUX7zZQh3Du
+         gXtpTElp17Q0/8AspsU5GZRW996y4RQrMASIOOWLjDP5LMV3KpLHn/yytkgquMWporU/
+         s6isRsISrVFYcU/IO57L5TZshpbfPOeYqWq8XtriKkbiHIj5RRMJ89HPb3reHCxUIkxR
+         F4GNuSOi22ddzFAc4LmN7H85zzBWzvscPZ/BSfiy7DkSWEAb0YwvgBDtLjtwqDklshsp
+         5Vxw==
+X-Gm-Message-State: ACgBeo2wXLDt8v9XhKv0RwG8kCFTK9ONIKq/U2xuPUhddUtiNAzw+Vru
+        trrIFxt/rSA0sn837lotNVCWFN66yoOGHfYz19myQQ==
+X-Google-Smtp-Source: AA6agR5vPFSxtmNEOb+pTiBVPFNpYpVro0zHK9u/uW6xptEGpEyLj+JknCqkTcOg0b76QOpxdvQf7ugm7u+jcYB1adI=
+X-Received: by 2002:adf:e28d:0:b0:21e:4c3b:b446 with SMTP id
+ v13-20020adfe28d000000b0021e4c3bb446mr4633062wri.300.1660928961862; Fri, 19
+ Aug 2022 10:09:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220614143353.1559597-1-irogers@google.com> <20220614143353.1559597-5-irogers@google.com>
+ <Yv60COAP90TEiWkx@kernel.org> <Yv+zK8UxUAP83zkp@kernel.org>
+In-Reply-To: <Yv+zK8UxUAP83zkp@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 19 Aug 2022 10:09:09 -0700
+Message-ID: <CAP-5=fWi5KaV40jcC1ZGfTAJ+bc52ueMvd0yREUHxSYk7y1MNw@mail.gmail.com>
+Subject: Re: [PATCH v2 4/6] perf cpumap: Fix alignment for masks in event encoding
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        German Gomez <german.gomez@arm.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 20:08:27 -0400
-Joe Perches <joe@perches.com> wrote:
+On Fri, Aug 19, 2022 at 8:58 AM Arnaldo Carvalho de Melo
+<acme@kernel.org> wrote:
+>
+> Em Thu, Aug 18, 2022 at 06:50:00PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > Em Tue, Jun 14, 2022 at 07:33:51AM -0700, Ian Rogers escreveu:
+> > > A mask encoding of a cpu map is laid out as:
+> > >   u16 nr
+> > >   u16 long_size
+> > >   unsigned long mask[];
+> > > However, the mask may be 8-byte aligned meaning there is a 4-byte pad
+> > > after long_size. This means 32-bit and 64-bit builds see the mask as
+> > > being at different offsets. On top of this the structure is in the byte
+> > > data[] encoded as:
+> > >   u16 type
+> > >   char data[]
+> > > This means the mask's struct isn't the required 4 or 8 byte aligned, but
+> > > is offset by 2. Consequently the long reads and writes are causing
+> > > undefined behavior as the alignment is broken.
+> > >
+> > > Fix the mask struct by creating explicit 32 and 64-bit variants, use a
+> > > union to avoid data[] and casts; the struct must be packed so the
+> > > layout matches the existing perf.data layout. Taking an address of a
+> > > member of a packed struct breaks alignment so pass the packed
+> > > perf_record_cpu_map_data to functions, so they can access variables with
+> > > the right alignment.
+> > >
+> > > As the 64-bit version has 4 bytes of padding, optimizing writing to only
+> > > write the 32-bit version.
+> > >
+> > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > > ---
+> > >  tools/lib/perf/include/perf/event.h | 36 +++++++++++--
+> > >  tools/perf/tests/cpumap.c           | 19 ++++---
+> > >  tools/perf/util/cpumap.c            | 80 +++++++++++++++++++++++------
+> > >  tools/perf/util/cpumap.h            |  4 +-
+> > >  tools/perf/util/session.c           | 30 +++++------
+> > >  tools/perf/util/synthetic-events.c  | 34 +++++++-----
+> > >  6 files changed, 143 insertions(+), 60 deletions(-)
+> > >
+> > > diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
+> > > index e7758707cadd..d2d32589758a 100644
+> > > --- a/tools/lib/perf/include/perf/event.h
+> > > +++ b/tools/lib/perf/include/perf/event.h
+> > > @@ -6,6 +6,7 @@
+> > >  #include <linux/types.h>
+> > >  #include <linux/limits.h>
+> > >  #include <linux/bpf.h>
+> > > +#include <linux/compiler.h>
+> > >  #include <sys/types.h> /* pid_t */
+> > >
+> > >  #define event_contains(obj, mem) ((obj).header.size > offsetof(typeof(obj), mem))
+> > > @@ -153,20 +154,47 @@ enum {
+> > >     PERF_CPU_MAP__MASK = 1,
+> > >  };
+> > >
+> > > +/*
+> > > + * Array encoding of a perf_cpu_map where nr is the number of entries in cpu[]
+> > > + * and each entry is a value for a CPU in the map.
+> > > + */
+> > >  struct cpu_map_entries {
+> > >     __u16                    nr;
+> > >     __u16                    cpu[];
+> > >  };
+> > >
+> > > -struct perf_record_record_cpu_map {
+> > > +/* Bitmap encoding of a perf_cpu_map where bitmap entries are 32-bit. */
+> > > +struct perf_record_mask_cpu_map32 {
+> > > +   /* Number of mask values. */
+> > >     __u16                    nr;
+> > > +   /* Constant 4. */
+> > >     __u16                    long_size;
+> > > -   unsigned long            mask[];
+> > > +   /* Bitmap data. */
+> > > +   __u32                    mask[];
+> > >  };
+> > >
+> > > -struct perf_record_cpu_map_data {
+> > > +/* Bitmap encoding of a perf_cpu_map where bitmap entries are 64-bit. */
+> > > +struct perf_record_mask_cpu_map64 {
+> > > +   /* Number of mask values. */
+> > > +   __u16                    nr;
+> > > +   /* Constant 8. */
+> > > +   __u16                    long_size;
+> > > +   /* Legacy padding. */
+> > > +   char                     __pad[4];
+> > > +   /* Bitmap data. */
+> > > +   __u64                    mask[];
+> > > +};
+> > > +
+> > > +struct __packed perf_record_cpu_map_data {
+> >
+> > In various places I'm getting this:
+> >
+> > [perfbuilder@five x-riscv]$ export BUILD_TARBALL=http://192.168.86.14/perf/perf-6.0.0-rc1.tar.xz
+> > [perfbuilder@five x-riscv]$ time dm .
+> >    1     5.47 ubuntu:22.04-x-riscv64        : FAIL gcc version 11.2.0 (Ubuntu 11.2.0-16ubuntu1)
+> >     In file included from mmap.c:10:
+> >     /git/perf-6.0.0-rc1/tools/lib/perf/include/perf/event.h:190:34: error: packed attribute causes inefficient alignment for 'type' [-Werror=attributes]
+> >       190 |         __u16                    type;
+> >           |                                  ^~~~
+> >     cc1: all warnings being treated as errors
+> >     In file included from util/event.h:12,
+> >                      from builtin-diff.c:12:
+> >     /git/perf-6.0.0-rc1/tools/lib/perf/include/perf/event.h:190:34: error: packed attribute causes inefficient alignment for 'type' [-Werror=attributes]
+> >       190 |         __u16                    type;
+> >           |                                  ^~~~
+> >     In file included from util/events_stats.h:6,
+> >                      from util/evlist.h:12,
+> >                      from builtin-evlist.c:11:
+> >     /git/perf-6.0.0-rc1/tools/lib/perf/include/perf/event.h:190:34: error: packed attribute causes inefficient alignment for 'type' [-Werror=attributes]
+> >       190 |         __u16                    type;
+> >           |                                  ^~~~
+> >
+> > So probably we need to disable this -Werror=attributes in some
+> > architectures?
+>
+> Slapped this there:
+>
+> #pragma GCC diagnostic push
+> #pragma GCC diagnostic ignored "-Wpacked"
+> #pragma GCC diagnostic ignored "-Wattributes"
+>
+> struct __packed perf_record_cpu_map_data {
+>         __u16                    type;
+>         union {
+>                 /* Used when type == PERF_CPU_MAP__CPUS. */
+>                 struct cpu_map_entries cpus_data;
+>                 /* Used when type == PERF_CPU_MAP__MASK and long_size == 4. */
+>                 struct perf_record_mask_cpu_map32 mask32_data;
+>                 /* Used when type == PERF_CPU_MAP__MASK and long_size == 8. */
+>                 struct perf_record_mask_cpu_map64 mask64_data;
+>         };
+> };
+>
+> #pragma GCC diagnostic pop
 
-> On Thu, 2022-08-18 at 08:58 -0400, Joe Simmons-Talbott wrote:
-> > Add a mask variable to hold dereferences that span multiple lines.
-> > Found with checkpatch.pl.  
-> []
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c  
-> []
-> > @@ -1301,10 +1302,9 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
-> >  		return ret;
-> >  	attrcount += ret;
-> >  
-> > +	mask = &chan->info_mask_separate_available;
-> >  	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-> > -						  IIO_SEPARATE,
-> > -						  &chan->
-> > -						  info_mask_separate_available);
-> > +						  IIO_SEPARATE, mask);  
-> 
-> The issue is the conflict between using 30+ character identifiers and 80 column lines.
-> Perhaps it's better just to use a longer line instead of a temporary.
-> 
-> 	ret = iio_device_add_info_mask_type_avail(indio_dev, chan, IIO_SEPARATE,
-> 						  &chan->info_mask_separate_available);
+Perhaps we should also carry a comment like:
+perf_record_cpu_map_data is packed as unfortunately an earlier version
+had unaligned data and we wish to retain file format compatibility.
 
-Agreed. Looks nicer to me this way and still under the wider 100 char limit
-which is appropriate when readability is improved.
-
-Some unfortunately long identifiers, that I think got there via evolution.
-We should consider shortening them that's a job for a separate patch.
-
-
-> []
-> 
-> > @@ -1316,10 +1316,9 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
-> >  		return ret;
-> >  	attrcount += ret;
-> >  
-> > +	mask = &chan->info_mask_shared_by_type_available;
-> >  	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-> > -						  IIO_SHARED_BY_TYPE,
-> > -						  &chan->
-> > -						  info_mask_shared_by_type_available);
-> > +						  IIO_SHARED_BY_TYPE, mask);  
-> 
-> 	ret = iio_device_add_info_mask_type_avail(indio_dev, chan, IIO_SHARED_BY_TYPE,
-> 						  &chan->info_mask_shared_by_type_available);
-> 
-> etc...
-> 
-> 
-
+Thanks,
+Ian
