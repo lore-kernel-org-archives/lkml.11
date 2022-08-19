@@ -2,151 +2,496 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D22C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED777C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347406AbiHSIl6 (ORCPT
+        id S1347280AbiHSImG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        Fri, 19 Aug 2022 04:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347442AbiHSIlr (ORCPT
+        with ESMTP id S1347270AbiHSIlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:41:47 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7588169F6F
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:44 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id q7so1575676lfu.5
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:44 -0700 (PDT)
+        Fri, 19 Aug 2022 04:41:53 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCED67452
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:49 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id j17so2846119qtp.12
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:41:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=CRnuTsAE9g4131Gs1Ch+MF8rdf+eDVa6Xez0TyG+a0A=;
-        b=V7WH7QjsIZrOhFjZEoS5Hp1lBUUj/KrXDaY23Htx+8JpSFUB8BlrdppWhAU7pEdgsv
-         oT/t3nWpySkKzLc3u/0c1i2e5+dsenLdH5FXMO4jy+R2qoM+gmu+DC7H/BnjOUEI2br/
-         iviv0sz8OnaHsEKw89AwM6eOvGlyurUv9SE4RbQnlA/KuCzoaTgDmH4Vi5robLyGi4se
-         I4f45nZrl8lDIx3d7Y/t5a8S37ptwSD1RTPgihhPpikOBmG0fvg90h++2VrJRFtYJA2r
-         FYU2xaKVv5zBjt5mfAOcaeY8FHJPyPJsIZpDB8W9j/RQ3d8UKxJEymaVfjM2mnIUeZAB
-         BeOw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=PFs/qXz1irqoPW1RQONVSX/UZnoITe4BseRhR7exQIk=;
+        b=nrxsZSFJATbxAFW+4G1nowH9Rxxfz5mTEm7/OLNuUQgdzB0FZqg/pgYxtzjg+3aQ1e
+         f4LHPv0Jwbz1oaLLpIoIRUylpZodleb3ezEYJAndn55y/+U7gq1f0ibflvHX65c+d9Km
+         r5vFgb4qvVAOC0IwKKnT5+XCgV30r8w3XeVc8SnlK+tZ+DsvOfcde/v+n9EH/e4TBHYy
+         GciDGrcuINhxQSuRAh6IMGbQv5NW9NOVcivkEVAq+dK7OuLMwWFSOM6f8MykZtxG3krv
+         T+Ich+K5cJkRLvsouVAbAsNlaCbKvgbcFkWC+z/c7tcC5pHjDDdBIcHc+LXAGa1jLWrt
+         W4CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=CRnuTsAE9g4131Gs1Ch+MF8rdf+eDVa6Xez0TyG+a0A=;
-        b=jLzYy6nRa21V4CYjDtREG/Do9P4VEv+G7fZawPRooOw5s3nYLzAKLR1QlJZugPUUaX
-         mis53lOwVjxW3WgoKtBTiXHE5ItheRetS7zrmS4RYSjYQfjMs2nqeJwJk1TXVcqjNer3
-         vfXeupjIaeoSdsdL7mUzMhZS9KahJiGQqNaahDokJPiIgwRsA0N8Vpm1+6BJWgMXTKWv
-         ErOW9XfwaGRLCqf2n7mECmd2dxPrJcixbxoJvZAEDnM7oGzRtcSo4X8m9/ljjJNihLOE
-         vLar0AqiY/5jVuckpjLEgl4QvyzE/xDWYw8eFdMorJrfxG41ZDnAwxPE+d+8PRoz1S0k
-         4XNA==
-X-Gm-Message-State: ACgBeo3K4dje1AyRViuw3WB2ebv33Zb/XP6uSDnY1vLjY44MztYXeyD6
-        I+9mNtuVLO5zpjaAUr2YhHhSAQ==
-X-Google-Smtp-Source: AA6agR4wD3EqU9y0mOORxLi5pTs4j3x4Q1X/qtUS/M7PdaGN8KlxcT2G4pkJ/ZXRfgKQ4SF0TxW/tA==
-X-Received: by 2002:a05:6512:2291:b0:48b:492e:ef35 with SMTP id f17-20020a056512229100b0048b492eef35mr2081867lfu.494.1660898502773;
-        Fri, 19 Aug 2022 01:41:42 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id d11-20020ac25ecb000000b00492b494c4dbsm557072lfq.89.2022.08.19.01.41.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 01:41:42 -0700 (PDT)
-Message-ID: <aa659b2e-44cb-b2e2-eced-1ef7f5de5647@linaro.org>
-Date:   Fri, 19 Aug 2022 11:41:40 +0300
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=PFs/qXz1irqoPW1RQONVSX/UZnoITe4BseRhR7exQIk=;
+        b=ZP/apT1f/0j5hNZktdH1YejBih0+fdFHF9fvdtF9IQOgCRRbzZUZlj6LWg3XoVg91E
+         A64pehGOEJmV8t54Auidr+vRDOKM1/RhMh0hCsdxfkbXRczRwqVuVLKJhmKH78UbRV6w
+         OFe3pABhWhlcwY5Yi+rf9UvPz/rsYMJUK67E/y6gLe7AbyNl6EbOmvmzXDTB/2O1yCKk
+         iHRvwXgqHAxdVZ0FWWyeTUUWKD2Ix0eGWXYnCDdFxxxKdsbhaKmnnwAaCsAMpFVHGcFj
+         yAkRS1k9iYIGkN/TnjgzXa1nFYU35XgULZ2n49p/5qNmVK83eLeWyZx/I7XAt9VW93l0
+         SB7A==
+X-Gm-Message-State: ACgBeo0Ap+SNk2VlgIh9PoHZkRajzrXo7hPEAuYkmF6A+JNL7Qo2CixS
+        gE+de/1GlRNHbr6HqTuhOYo=
+X-Google-Smtp-Source: AA6agR5PPFo3Cz0k33UftdyYjQici7vLNI5MGZG1EJL7K9NXyiKQZPDMgfVlHXyOzi+jIF8ZvcabBg==
+X-Received: by 2002:ac8:5f94:0:b0:344:55da:cee1 with SMTP id j20-20020ac85f94000000b0034455dacee1mr5590857qta.40.1660898508526;
+        Fri, 19 Aug 2022 01:41:48 -0700 (PDT)
+Received: from sophie ([89.46.62.64])
+        by smtp.gmail.com with ESMTPSA id v9-20020a05622a014900b00342f8d4d0basm2868087qtw.43.2022.08.19.01.41.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 01:41:48 -0700 (PDT)
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Rebecca Mckeever <remckee0@gmail.com>,
+        Shaoqin Huang <shaoqin.huang@intel.com>
+Subject: [PATCH v2 2/8] memblock tests: update zeroed memory check for memblock_alloc_* tests
+Date:   Fri, 19 Aug 2022 01:34:50 -0700
+Message-Id: <d9386b49f0b8fe589829c518a6c43d845af2e27a.1660897732.git.remckee0@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1660897732.git.remckee0@gmail.com>
+References: <cover.1660897732.git.remckee0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
- json-schema
-Content-Language: en-US
-To:     Sergiu.Moga@microchip.com, lee@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
-        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
-        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        admin@hifiphile.com, Kavyasree.Kotagiri@microchip.com
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20220817075517.49575-1-sergiu.moga@microchip.com>
- <20220817075517.49575-3-sergiu.moga@microchip.com>
- <c1a98a3e-609e-7783-b1b7-3bb39caa8c65@linaro.org>
- <5fd68d8e-7132-2f58-0ef9-cd4a0fe45127@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <5fd68d8e-7132-2f58-0ef9-cd4a0fe45127@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 11:37, Sergiu.Moga@microchip.com wrote:
+Update the assert in memblock_alloc_try_nid() and memblock_alloc_from()
+tests that checks whether the memory is cleared so that it checks the
+entire chunk of allocated memory instead of just the first byte.
 
->>> +      - items:
->>> +          - const: atmel,at91rm9200-dbgu
->>> +          - const: atmel,at91rm9200-usart
->>> +      - items:
->>> +          - const: atmel,at91sam9260-dbgu
->>> +          - const: atmel,at91sam9260-usart
->>> +      - items:
->>> +          - const: microchip,sam9x60-dbgu
->>> +          - const: microchip,sam9x60-usart
->>> +      - items:
->>> +          - const: microchip,sam9x60-usart
->>> +          - const: atmel,at91sam9260-usart
->> This is not correct - contradicts earlier one.
->>
-> 
-> Yes, this was for a DT node we have internally, my bad. You are right, 
-> it does not really make sense and it should not be the other way around: 
-> having the DT validate the binding. I will remove this combination in 
-> the next version.
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Shaoqin Huang <shaoqin.huang@intel.com>
+Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+---
+ .../memblock/tests/alloc_helpers_api.c        |  8 +--
+ tools/testing/memblock/tests/alloc_nid_api.c  | 72 +++++--------------
+ 2 files changed, 20 insertions(+), 60 deletions(-)
 
-You need to fix any out of tree DTS or upstream it.
-> 
-> 
->>> +      - items:
->>> +          - const: microchip,sam9x60-dbgu
->>> +          - const: microchip,sam9x60-usart
->>> +          - const: atmel,at91sam9260-dbgu
->>> +          - const: atmel,at91sam9260-usart
->> What? You wrote above that microchip,sam9x60-dbgu is compatible only
->> with microchip,sam9x60-usart. Now you write it is also compatible with
->> other ones?
-> 
-> 
-> Yes, this one is intended because the 9x60 IP has new functionalities on 
-> top of 9260, and some nodes do keep all four as fallback.
+diff --git a/tools/testing/memblock/tests/alloc_helpers_api.c b/tools/testing/memblock/tests/alloc_helpers_api.c
+index 1069b4bdd5fd..796527cf3bd2 100644
+--- a/tools/testing/memblock/tests/alloc_helpers_api.c
++++ b/tools/testing/memblock/tests/alloc_helpers_api.c
+@@ -19,7 +19,6 @@ static int alloc_from_simple_generic_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -31,10 +30,9 @@ static int alloc_from_simple_generic_check(void)
+ 	min_addr = memblock_end_of_DRAM() - SMP_CACHE_BYTES;
+ 
+ 	allocated_ptr = memblock_alloc_from(size, SMP_CACHE_BYTES, min_addr);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, min_addr);
+@@ -66,7 +64,6 @@ static int alloc_from_misaligned_generic_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -79,10 +76,9 @@ static int alloc_from_misaligned_generic_check(void)
+ 	min_addr = memblock_end_of_DRAM() - (SMP_CACHE_BYTES * 2 - 1);
+ 
+ 	allocated_ptr = memblock_alloc_from(size, SMP_CACHE_BYTES, min_addr);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - SMP_CACHE_BYTES);
+diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
+index 255fd514e9f5..71b7beb35526 100644
+--- a/tools/testing/memblock/tests/alloc_nid_api.c
++++ b/tools/testing/memblock/tests/alloc_nid_api.c
+@@ -19,7 +19,6 @@ static int alloc_try_nid_top_down_simple_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -35,11 +34,10 @@ static int alloc_try_nid_top_down_simple_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 	rgn_end = rgn->base + rgn->size;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, max_addr - size);
+@@ -74,7 +72,6 @@ static int alloc_try_nid_top_down_end_misaligned_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -91,11 +88,10 @@ static int alloc_try_nid_top_down_end_misaligned_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 	rgn_end = rgn->base + rgn->size;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, max_addr - size - misalign);
+@@ -128,7 +124,6 @@ static int alloc_try_nid_exact_address_generic_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -144,11 +139,10 @@ static int alloc_try_nid_exact_address_generic_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 	rgn_end = rgn->base + rgn->size;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, min_addr);
+@@ -183,7 +177,6 @@ static int alloc_try_nid_top_down_narrow_range_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -198,10 +191,9 @@ static int alloc_try_nid_top_down_narrow_range_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, max_addr - size);
+@@ -277,7 +269,6 @@ static int alloc_try_nid_min_reserved_generic_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -298,10 +289,9 @@ static int alloc_try_nid_min_reserved_generic_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(r2_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+ 
+ 	ASSERT_EQ(rgn->size, total_size);
+ 	ASSERT_EQ(rgn->base, reserved_base);
+@@ -332,7 +322,6 @@ static int alloc_try_nid_max_reserved_generic_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -351,10 +340,9 @@ static int alloc_try_nid_max_reserved_generic_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(r2_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+ 
+ 	ASSERT_EQ(rgn->size, total_size);
+ 	ASSERT_EQ(rgn->base, min_addr);
+@@ -389,7 +377,6 @@ static int alloc_try_nid_top_down_reserved_with_space_check(void)
+ 	struct memblock_region *rgn1 = &memblock.reserved.regions[1];
+ 	struct memblock_region *rgn2 = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 	struct region r1, r2;
+ 
+ 	PREFIX_PUSH();
+@@ -417,10 +404,9 @@ static int alloc_try_nid_top_down_reserved_with_space_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(r3_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+ 
+ 	ASSERT_EQ(rgn1->size, r1.size + r3_size);
+ 	ASSERT_EQ(rgn1->base, max_addr - r3_size);
+@@ -456,7 +442,6 @@ static int alloc_try_nid_reserved_full_merge_generic_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 	struct region r1, r2;
+ 
+ 	PREFIX_PUSH();
+@@ -483,10 +468,9 @@ static int alloc_try_nid_reserved_full_merge_generic_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(r3_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+ 
+ 	ASSERT_EQ(rgn->size, total_size);
+ 	ASSERT_EQ(rgn->base, r2.base);
+@@ -522,7 +506,6 @@ static int alloc_try_nid_top_down_reserved_no_space_check(void)
+ 	struct memblock_region *rgn1 = &memblock.reserved.regions[1];
+ 	struct memblock_region *rgn2 = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 	struct region r1, r2;
+ 
+ 	PREFIX_PUSH();
+@@ -550,10 +533,9 @@ static int alloc_try_nid_top_down_reserved_no_space_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(r3_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+ 
+ 	ASSERT_EQ(rgn1->size, r1.size);
+ 	ASSERT_EQ(rgn1->base, r1.base);
+@@ -634,7 +616,6 @@ static int alloc_try_nid_top_down_cap_max_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -649,10 +630,9 @@ static int alloc_try_nid_top_down_cap_max_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - size);
+@@ -674,7 +654,6 @@ static int alloc_try_nid_top_down_cap_min_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -689,10 +668,9 @@ static int alloc_try_nid_top_down_cap_min_check(void)
+ 
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr, NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - size);
+@@ -723,7 +701,6 @@ static int alloc_try_nid_bottom_up_simple_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -740,11 +717,10 @@ static int alloc_try_nid_bottom_up_simple_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 	rgn_end = rgn->base + rgn->size;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, min_addr);
+@@ -779,7 +755,6 @@ static int alloc_try_nid_bottom_up_start_misaligned_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -797,11 +772,10 @@ static int alloc_try_nid_bottom_up_start_misaligned_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 	rgn_end = rgn->base + rgn->size;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, min_addr + (SMP_CACHE_BYTES - misalign));
+@@ -836,7 +810,6 @@ static int alloc_try_nid_bottom_up_narrow_range_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -852,10 +825,9 @@ static int alloc_try_nid_bottom_up_narrow_range_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
+@@ -890,7 +862,6 @@ static int alloc_try_nid_bottom_up_reserved_with_space_check(void)
+ 	struct memblock_region *rgn1 = &memblock.reserved.regions[1];
+ 	struct memblock_region *rgn2 = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 	struct region r1, r2;
+ 
+ 	PREFIX_PUSH();
+@@ -919,10 +890,9 @@ static int alloc_try_nid_bottom_up_reserved_with_space_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(r3_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+ 
+ 	ASSERT_EQ(rgn1->size, r1.size);
+ 	ASSERT_EQ(rgn1->base, max_addr);
+@@ -964,7 +934,6 @@ static int alloc_try_nid_bottom_up_reserved_no_space_check(void)
+ 	struct memblock_region *rgn2 = &memblock.reserved.regions[1];
+ 	struct memblock_region *rgn3 = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 	struct region r1, r2;
+ 
+ 	PREFIX_PUSH();
+@@ -993,10 +962,9 @@ static int alloc_try_nid_bottom_up_reserved_no_space_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(r3_size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+ 
+ 	ASSERT_EQ(rgn3->size, r3_size);
+ 	ASSERT_EQ(rgn3->base, memblock_start_of_DRAM());
+@@ -1024,7 +992,6 @@ static int alloc_try_nid_bottom_up_cap_max_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -1040,10 +1007,9 @@ static int alloc_try_nid_bottom_up_cap_max_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, min_addr);
+@@ -1065,7 +1031,6 @@ static int alloc_try_nid_bottom_up_cap_min_check(void)
+ {
+ 	struct memblock_region *rgn = &memblock.reserved.regions[0];
+ 	void *allocated_ptr = NULL;
+-	char *b;
+ 
+ 	PREFIX_PUSH();
+ 
+@@ -1081,10 +1046,9 @@ static int alloc_try_nid_bottom_up_cap_min_check(void)
+ 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
+ 					       min_addr, max_addr,
+ 					       NUMA_NO_NODE);
+-	b = (char *)allocated_ptr;
+ 
+ 	ASSERT_NE(allocated_ptr, NULL);
+-	ASSERT_EQ(*b, 0);
++	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+ 
+ 	ASSERT_EQ(rgn->size, size);
+ 	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
+-- 
+2.25.1
 
-Then all nodes should keep fallbacks.
-
-> 
-> 
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +  clock-names:
->>> +    contains:
->>> +      const: usart
->> No, this has to be specific/fixed list.
-> 
-> 
-> I wanted to highlight the fact that it must contain either:
-> clock-names = "usart";
-> or
-> clock-names = "usart", "gclk";
-> 
-> What would be the recommended way of doing this then?
-
-We have an example for this.
-
-https://elixir.bootlin.com/linux/v5.19/source/Documentation/devicetree/bindings/example-schema.yaml#L91
-
-
-Best regards,
-Krzysztof
