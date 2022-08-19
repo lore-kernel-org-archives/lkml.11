@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC6CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84991C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352996AbiHSQ3y (ORCPT
+        id S1352897AbiHSQcg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
+        Fri, 19 Aug 2022 12:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352809AbiHSQ1v (ORCPT
+        with ESMTP id S1352906AbiHSQ3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:27:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720B4119469;
-        Fri, 19 Aug 2022 09:04:19 -0700 (PDT)
+        Fri, 19 Aug 2022 12:29:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C0F119A6F;
+        Fri, 19 Aug 2022 09:04:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4CB2B82813;
-        Fri, 19 Aug 2022 16:04:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4754AC433D6;
-        Fri, 19 Aug 2022 16:04:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73474616B3;
+        Fri, 19 Aug 2022 16:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 792FCC433D7;
+        Fri, 19 Aug 2022 16:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925050;
-        bh=DF7PTMewUFfS/ZB+3tf2747d7ms+FLwktLmvT2BQnNg=;
+        s=korg; t=1660925056;
+        bh=Fq2/Qa+l2s9n7XYaDXSNDg2FJSRH8B8oFrH9I8yNc8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KIcme3NwGKE94fbB74ESl+4BMvSPc8y20c+cy5FsrFfQdTHQuxzT23fXIZ1o0CEVr
-         o4FIvVylsddeP7i6KrgOHg7Bn+SgI3Q4qSCBPmUOtd3GPG+CtfFZN3G5DD9kDataD+
-         hbE1sibJNXp5zSGSSFlgLijXfIZe+7/2rY+9w1Rw=
+        b=QGgnb6WSjnyrq0PuKlsFfQAYi10ExUO8euX+rRw4G+mOvY4dtnDoES37ksGapsaBF
+         Ou+wkzJQ0cdpTOY27QN2TrxYWSWV8awCQbD6RDHooCHuQxMAhQsi7NWGDyVOiDy/nW
+         kdWq/VF+V+kl7W40gFuf7u7jrgbjD6z7wSvqSiOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 367/545] ASoC: mt6797-mt6351: Fix refcount leak in mt6797_mt6351_dev_probe
-Date:   Fri, 19 Aug 2022 17:42:17 +0200
-Message-Id: <20220819153845.826977864@linuxfoundation.org>
+Subject: [PATCH 5.10 369/545] ASoC: mediatek: mt8173-rt5650: Fix refcount leak in mt8173_rt5650_dev_probe
+Date:   Fri, 19 Aug 2022 17:42:19 +0200
+Message-Id: <20220819153845.923057269@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,45 +52,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7472eb8d7dd12b6b9b1a4f4527719cc9c7f5965f ]
+[ Upstream commit efe2178d1a32492f99e7f1f2568eea5c88a85729 ]
 
 of_parse_phandle() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Fix refcount leak in some error paths.
 
-Fixes: f0ab0bf250da ("ASoC: add mt6797-mt6351 driver and config option")
+Fixes: 0f83f9296d5c ("ASoC: mediatek: Add machine driver for ALC5650 codec")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603083417.9011-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220603124243.31358-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt6797/mt6797-mt6351.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt6797/mt6797-mt6351.c b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-index 496f32bcfb5e..d2f6213a6bfc 100644
---- a/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-+++ b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-@@ -217,7 +217,8 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
- 	if (!codec_node) {
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index e168d31f4445..1de9dab218c6 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -280,7 +280,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
  		dev_err(&pdev->dev,
  			"Property 'audio-codec' missing or invalid\n");
 -		return -EINVAL;
 +		ret = -EINVAL;
 +		goto put_platform_node;
  	}
- 	for_each_card_prelinks(card, i, dai_link) {
- 		if (dai_link->codecs->name)
-@@ -230,6 +231,9 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
+ 	mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
+ 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node;
+@@ -293,7 +294,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 			dev_err(&pdev->dev,
+ 				"%s codec_capture_dai name fail %d\n",
+ 				__func__, ret);
+-			return ret;
++			goto put_platform_node;
+ 		}
+ 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].dai_name =
+ 			codec_capture_dai;
+@@ -315,7 +316,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
+ 	}
+ 	card->dev = &pdev->dev;
+ 
+@@ -324,6 +326,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
  		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
  			__func__, ret);
  
-+	of_node_put(codec_node);
 +put_platform_node:
-+	of_node_put(platform_node);
+ 	of_node_put(platform_node);
  	return ret;
  }
- 
 -- 
 2.35.1
 
