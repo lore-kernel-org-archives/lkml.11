@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF968C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1E9C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347860AbiHSJbB (ORCPT
+        id S1348161AbiHSJbF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
+        Fri, 19 Aug 2022 05:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346238AbiHSJa7 (ORCPT
+        with ESMTP id S1347106AbiHSJa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 05:30:59 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011ACF23DD;
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC251E992F;
         Fri, 19 Aug 2022 02:30:56 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8Gf11ttsznTcm;
-        Fri, 19 Aug 2022 17:28:41 +0800 (CST)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M8Gbh4hHfzXdhf;
+        Fri, 19 Aug 2022 17:26:40 +0800 (CST)
 Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 17:30:55 +0800
+ 15.1.2375.24; Fri, 19 Aug 2022 17:30:54 +0800
 Received: from localhost.localdomain (10.175.112.125) by
  dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 17:30:54 +0800
+ 15.1.2375.24; Fri, 19 Aug 2022 17:30:53 +0800
 From:   Wupeng Ma <mawupeng1@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <corbet@lwn.net>, <mcgrof@kernel.org>, <keescook@chromium.org>,
@@ -36,12 +36,10 @@ CC:     <corbet@lwn.net>, <mcgrof@kernel.org>, <keescook@chromium.org>,
         <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-mm@kvack.org>, <linux-fsdevel@vger.kernel.org>,
         <wangkefeng.wang@huawei.com>
-Subject: [PATCH v2 1/2] mm: Cap zone movable's min wmark to small value
-Date:   Fri, 19 Aug 2022 17:30:24 +0800
-Message-ID: <20220819093025.105403-2-mawupeng1@huawei.com>
+Subject: [PATCH v2 0/2] watermark related improvement on zone movable
+Date:   Fri, 19 Aug 2022 17:30:23 +0800
+Message-ID: <20220819093025.105403-1-mawupeng1@huawei.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220819093025.105403-1-mawupeng1@huawei.com>
-References: <20220819093025.105403-1-mawupeng1@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -55,44 +53,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ma Wupeng <mawupeng1@huawei.com>
 
-Since min_free_kbytes is based on gfp_zone(GFP_USER) which does not include
-zone movable. However zone movable will get its min share in
-__setup_per_zone_wmarks() which does not make any sense.
+The first patch cap zone movable's min watermark to small value since no
+one can use it.
 
-And like highmem pages, __GFP_HIGH and PF_MEMALLOC allocations usually
-don't need movable pages, so there is no need to assign min pages for zone
-movable.
+The second patch introduce a per zone watermark to replace the vanilla
+watermark_scale_factor to bring flexibility to tune each zone's
+watermark separately and lead to more efficient kswapd.
 
-Let's cap pages_min for zone movable to a small value here just link
-highmem pages.
+Each patch's detail information can be seen is its own changelog.
 
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
----
- mm/page_alloc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+changelog since v1:
+- fix compile error if CONFIG_SYSCTL is not enabled
+- remove useless function comment
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e5486d47406e..ff644205370f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -8638,7 +8638,7 @@ static void __setup_per_zone_wmarks(void)
- 
- 	/* Calculate total number of !ZONE_HIGHMEM pages */
- 	for_each_zone(zone) {
--		if (!is_highmem(zone))
-+		if (!is_highmem(zone) && zone_idx(zone) != ZONE_MOVABLE)
- 			lowmem_pages += zone_managed_pages(zone);
- 	}
- 
-@@ -8648,7 +8648,7 @@ static void __setup_per_zone_wmarks(void)
- 		spin_lock_irqsave(&zone->lock, flags);
- 		tmp = (u64)pages_min * zone_managed_pages(zone);
- 		do_div(tmp, lowmem_pages);
--		if (is_highmem(zone)) {
-+		if (is_highmem(zone) || zone_idx(zone) == ZONE_MOVABLE) {
- 			/*
- 			 * __GFP_HIGH and PF_MEMALLOC allocations usually don't
- 			 * need highmem pages, so cap pages_min to a small
+Ma Wupeng (2):
+  mm: Cap zone movable's min wmark to small value
+  mm: sysctl: Introduce per zone watermark_scale_factor
+
+ Documentation/admin-guide/sysctl/vm.rst |  6 ++++
+ include/linux/mm.h                      |  2 +-
+ kernel/sysctl.c                         |  2 --
+ mm/page_alloc.c                         | 41 +++++++++++++++++++------
+ 4 files changed, 39 insertions(+), 12 deletions(-)
+
 -- 
 2.25.1
 
