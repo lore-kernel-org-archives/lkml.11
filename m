@@ -2,110 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1906EC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4E9C32774
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348474AbiHSPjn (ORCPT
+        id S1349852AbiHSPjt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
+        Fri, 19 Aug 2022 11:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349732AbiHSPjh (ORCPT
+        with ESMTP id S1349629AbiHSPjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:39:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D64D1DA51;
-        Fri, 19 Aug 2022 08:39:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 19 Aug 2022 11:39:39 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106971ADBA;
+        Fri, 19 Aug 2022 08:39:39 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (zone.collabora.co.uk [167.235.23.81])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0923561614;
-        Fri, 19 Aug 2022 15:39:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9EFDC433D6;
-        Fri, 19 Aug 2022 15:39:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660923575;
-        bh=vzuhjQjb1bAt235wZBaUmvNgDR2rT4h0LO0AEMpSeF4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HEvaV9InL/wxt4GWE7pPDDh11BlApeHWyLWuYkjbFEn92Wf7Mi8M5Dy4+hTB9Rwxi
-         gUUPqVAi0EP0ayIolb5jrgdEDKBkmO6oddBDY1vtTbQMvJMuwsNh17XwdDulkRP5rp
-         wo60CRESQfSYBBwh/ULIhdCj6nC8rzeujnEZwD48=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nimish Mishra <neelam.nimish@gmail.com>,
-        Anirban Chakraborty <ch.anirban00727@gmail.com>,
-        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
-        Jerome Forissier <jerome.forissier@linaro.org>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.19 2/7] tee: add overflow check in register_shm_helper()
-Date:   Fri, 19 Aug 2022 17:39:18 +0200
-Message-Id: <20220819153711.661594059@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153711.552247994@linuxfoundation.org>
-References: <20220819153711.552247994@linuxfoundation.org>
-User-Agent: quilt/0.67
+        (Authenticated sender: nicolas)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8309A6601DC1;
+        Fri, 19 Aug 2022 16:39:35 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660923577;
+        bh=Sf7z9oeTO/SV+Jx+YtJSmjHObIi/DpjdAj42YvmAPrM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=LqXt2BZwCkQQURlf7+9KbYDQ21otTAD7DhkbvXvTi0DXAbR5J7moONn+JfJBM+M67
+         2l6pDutujwBQVR1lPvHrbb3xf7qoFV6nnL13b+arC09ZwbopdaUW4NWxVwZt4RN9sM
+         oM5TJpu+9IR91xawmul8A0Dzurl5RG3+0np1OG+Xv1QaPnfq3mp+kRZz70iEaWksYD
+         lLJwT1zRzGMHj67HqVObU+H0D5ejshNrhEU2VXAr1FH9UcfM/jXmnkVby9tsbzZdvF
+         YSh847gyNmBRpmSm4fkMHFQYA7wNj5wTtvcTCUOeoAffxftQiSryS1FYPeNZsvCFR8
+         +yMDLfljF/kXw==
+Message-ID: <52bb86cf12450ce78d2f196a1b86b4137ec61a07.camel@collabora.com>
+Subject: Re: [PATCH v1 3/3] media: cedrus: Fix endless loop in
+ cedrus_h265_skip_bits()
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Jernej =?UTF-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        linux-media@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>
+Cc:     kernel@collabora.com,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        stable@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 19 Aug 2022 11:39:25 -0400
+In-Reply-To: <5849126.lOV4Wx5bFT@jernej-laptop>
+References: <20220818203308.439043-1-nicolas.dufresne@collabora.com>
+         <20220818203308.439043-4-nicolas.dufresne@collabora.com>
+         <5849126.lOV4Wx5bFT@jernej-laptop>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Wiklander <jens.wiklander@linaro.org>
+Le vendredi 19 ao=C3=BBt 2022 =C3=A0 06:16 +0200, Jernej =C5=A0krabec a =C3=
+=A9crit=C2=A0:
+> Dne =C4=8Detrtek, 18. avgust 2022 ob 22:33:08 CEST je Nicolas Dufresne na=
+pisal(a):
+> > From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> >=20
+> > The busy status bit may never de-assert if number of programmed skip
+> > bits is incorrect, resulting in a kernel hang because the bit is polled
+> > endlessly in the code. Fix it by adding timeout for the bit-polling.
+> > This problem is reproducible by setting the data_bit_offset field of
+> > the HEVC slice params to a wrong value by userspace.
+> >=20
+> > Cc: stable@vger.kernel.org
+> > Reported-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> > Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+>=20
+> Fixes tag would be nice.
+>=20
+> > ---
+> >  drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c index
+> > f703c585d91c5..f0bc118021b0a 100644
+> > --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > @@ -227,6 +227,7 @@ static void cedrus_h265_pred_weight_write(struct
+> > cedrus_dev *dev, static void cedrus_h265_skip_bits(struct cedrus_dev *d=
+ev,
+> > int num) {
+> >  	int count =3D 0;
+> > +	u32 reg;
+> >=20
+> >  	while (count < num) {
+> >  		int tmp =3D min(num - count, 32);
+> > @@ -234,8 +235,9 @@ static void cedrus_h265_skip_bits(struct cedrus_dev
+> > *dev, int num) cedrus_write(dev, VE_DEC_H265_TRIGGER,
+> >  			     VE_DEC_H265_TRIGGER_FLUSH_BITS |
+> >  			     VE_DEC_H265_TRIGGER_TYPE_N_BITS(tmp));
+> > -		while (cedrus_read(dev, VE_DEC_H265_STATUS) &
+> > VE_DEC_H265_STATUS_VLD_BUSY) -			udelay(1);
+> > +
+> > +		if (cedrus_wait_for(dev, VE_DEC_H265_STATUS,
+> > VE_DEC_H265_STATUS_VLD_BUSY)) +		=09
+> dev_err_ratelimited(dev->dev, "timed out
+> > waiting to skip bits\n");
+>=20
+> Reporting issue is nice, but better would be to propagate error, since th=
+ere=20
+> is no way to properly decode this slice if above code block fails.
 
-commit 573ae4f13f630d6660008f1974c0a8a29c30e18a upstream.
+This mimic what was already there, mind if we do that later ? The propagati=
+on is
+doing to be a lot more intrusive.
 
-With special lengths supplied by user space, register_shm_helper() has
-an integer overflow when calculating the number of pages covered by a
-supplied user space memory region.
-
-This causes internal_get_user_pages_fast() a helper function of
-pin_user_pages_fast() to do a NULL pointer dereference:
-
-  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
-  Modules linked in:
-  CPU: 1 PID: 173 Comm: optee_example_a Not tainted 5.19.0 #11
-  Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
-  pc : internal_get_user_pages_fast+0x474/0xa80
-  Call trace:
-   internal_get_user_pages_fast+0x474/0xa80
-   pin_user_pages_fast+0x24/0x4c
-   register_shm_helper+0x194/0x330
-   tee_shm_register_user_buf+0x78/0x120
-   tee_ioctl+0xd0/0x11a0
-   __arm64_sys_ioctl+0xa8/0xec
-   invoke_syscall+0x48/0x114
-
-Fix this by adding an an explicit call to access_ok() in
-tee_shm_register_user_buf() to catch an invalid user space address
-early.
-
-Fixes: 033ddf12bcf5 ("tee: add register user memory")
-Cc: stable@vger.kernel.org
-Reported-by: Nimish Mishra <neelam.nimish@gmail.com>
-Reported-by: Anirban Chakraborty <ch.anirban00727@gmail.com>
-Reported-by: Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>
-Suggested-by: Jerome Forissier <jerome.forissier@linaro.org>
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tee/tee_shm.c |    3 +++
- 1 file changed, 3 insertions(+)
-
---- a/drivers/tee/tee_shm.c
-+++ b/drivers/tee/tee_shm.c
-@@ -326,6 +326,9 @@ struct tee_shm *tee_shm_register_user_bu
- 	void *ret;
- 	int id;
- 
-+	if (!access_ok((void __user *)addr, length))
-+		return ERR_PTR(-EFAULT);
-+
- 	mutex_lock(&teedev->mutex);
- 	id = idr_alloc(&teedev->idr, NULL, 1, 0, GFP_KERNEL);
- 	mutex_unlock(&teedev->mutex);
-
+>=20
+> Best regards,
+> Jernej
+>=20
+> >=20
+> >  		count +=3D tmp;
+> >  	}
+>=20
+>=20
+>=20
+>=20
 
