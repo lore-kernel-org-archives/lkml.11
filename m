@@ -2,124 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3BCC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B53C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347631AbiHSJyy (ORCPT
+        id S1348021AbiHSJzD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
+        Fri, 19 Aug 2022 05:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346996AbiHSJyp (ORCPT
+        with ESMTP id S1347994AbiHSJyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:54:45 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991E5BD09E;
-        Fri, 19 Aug 2022 02:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660902884; x=1692438884;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=LHd+4+ztyLleLhRkBC+IDhKqnrDiduTJ+MVOjUQ9LfU=;
-  b=bUDOOZDoz2GMeJyqdXuf+oU98eFB2dEbkJoEePg1zb1k8SPZDp/0mtAW
-   iQGnBkt0XKT/yd5ZNgh9zLDgGNzNN++Ifq9i04Mu3ANFSjgsbWfzkEoWo
-   qoeMZ/yb8iCR/OzNPMYogQ41mhvqZkGBYRJOg+WehjIrXV+2zT4DvdnMv
-   tzBG0tBTGnk4Z3d256mdq7LgaNgv/IzsCJ5srRoUxjxCp6yxCBXgl2NHq
-   G174xOBHkLKZBPKvUYVhxW4hhO9039K3wA1bflACZ6Woes3x8381iSokr
-   qeEgFRGX1fhieZOwiI/If9fw8ZwJofaGzDr9cGhXAQh3erwFeyq+7iZH2
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="187175524"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Aug 2022 02:54:33 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 19 Aug 2022 02:54:32 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Fri, 19 Aug 2022 02:54:30 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: [PATCH v3 00/13] PolarFire SoC reset controller & clock cleanups
-Date:   Fri, 19 Aug 2022 10:53:08 +0100
-Message-ID: <20220819095320.40006-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 19 Aug 2022 05:54:49 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2697BD29A;
+        Fri, 19 Aug 2022 02:54:47 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id AD9FF2039E;
+        Fri, 19 Aug 2022 09:54:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1660902886; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7Q54JXCNotWERiCcxvQsCHSyjXD6Kf9u7nD//FnXk4s=;
+        b=LBv+AI73mXvdEglEKHu8kyv0tWtXZZowhEE1yoft4OYFKyE0zaLbn7mT/TaonJcl6zrX1H
+        /cVYpadRlLHBW+xRTFGrCtbB+FVi87v28Ewmsa0NCzjqnzsMojacD19jepx0gZYkp1Cw8w
+        YONEL5Lx1omxsMhvptwhd0FBL+pvFYs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1660902886;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7Q54JXCNotWERiCcxvQsCHSyjXD6Kf9u7nD//FnXk4s=;
+        b=S+yw4eBoiC4pbuzoQIcZbYNonD7bNa4h3OqnIuu+ullNfhAPEikc6mKMVUs6LKs6qh2snK
+        h9Czbe483ZDBpaCQ==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 2649A2C141;
+        Fri, 19 Aug 2022 09:54:46 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id B2665A0635; Fri, 19 Aug 2022 11:54:45 +0200 (CEST)
+Date:   Fri, 19 Aug 2022 11:54:45 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Ye Bin <yebin10@huawei.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jack@suse.cz
+Subject: Re: [PATCH RFC] jbd2: detect old record when do journal scan
+Message-ID: <20220819095445.yq4d2qhrhb73p3zk@quack3>
+References: <20220810013442.3474533-1-yebin10@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810013442.3474533-1-yebin10@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey all,
+On Wed 10-08-22 09:34:42, Ye Bin wrote:
+> As https://github.com/tytso/e2fsprogs/issues/120 describe tune2fs do not update
+> j_tail_sequence when do journal recovery. This maybe recover old journal record,
+> then will lead to file system corruption.
+> To avoid file system corruption in this case, if detect current transaction's
+> commit time earlier than previous transaction's commit time when do journal
+> scan, just return error.
+> 
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
 
-Kinda two things happening in this series, but I sent it together to
-ensure the second part would apply correctly.
+Thanks for the patch! Let me see if I understand your concern right. You
+are concerned about the following scenario:
 
-The first is the reset controller that I promised after discovering the
-issue triggered by CONFIG_PM & the phy not coming up correctly. I have
-now removed all the messing with resets from clock enable/disable
-functions & now use the aux bus to set up a reset controller driver.
-Since I needed something to test it, I hooked up the reset for the
-Cadence MACB on PolarFire SoC. This was been split into a second series
-for v2 (and is now in v6.0-rcN):
-https://lore.kernel.org/all/20220704114511.1892332-1-conor.dooley@microchip.com/
+1) Kernel uses the filesystem, there's a crash.
+2) E2fsprogs replays the journal but fails to update sb->s_sequence in the
+journal superblock.
+3) Kernel mounts the fs again - however note that even if kernel skips
+recovery, it does scan the journal jbd2_journal_skip_recovery() and
+journal->j_transaction_sequence is set based on the last transaction found
+in the journal.
 
-The second part adds rate control for the MSS PLL clock, followed by
-some simplifications to the driver & conversions of some custom structs
-to the corresponding structs in the framework.
+So I don't think there is really possibility we will quickly reuse some
+transaction IDs and thus possibility of corruption on replay? Am I missing
+something?
 
-I'll take the dts patch myself when the rest of this is accepted.
-Thanks,
-Conor.
-
-Changes since v2:
-- reorder reset Makefile/Kconfig entries
-- fix a pre-existing bug exposed by clang with this series applied
-- add Padmarao who co-authored the original driver to the authors
-
-Conor Dooley (13):
-  clk: microchip: mpfs: fix clk_cfg array bounds violation
-  dt-bindings: clk: microchip: mpfs: add reset controller support
-  clk: microchip: mpfs: add reset controller
-  reset: add polarfire soc reset support
-  MAINTAINERS: add polarfire soc reset controller
-  riscv: dts: microchip: add mpfs specific macb reset support
-  clk: microchip: mpfs: add MSS pll's set & round rate
-  clk: microchip: mpfs: move id & offset out of clock structs
-  clk: microchip: mpfs: simplify control reg access
-  clk: microchip: mpfs: delete 2 line mpfs_clk_register_foo()
-  clk: microchip: mpfs: convert cfg_clk to clk_divider
-  clk: microchip: mpfs: convert periph_clk to clk_gate
-  clk: microchip: mpfs: update module authorship & licencing
-
- .../bindings/clock/microchip,mpfs.yaml        |  17 +-
- MAINTAINERS                                   |   1 +
- arch/riscv/boot/dts/microchip/mpfs.dtsi       |   7 +-
- drivers/clk/microchip/Kconfig                 |   1 +
- drivers/clk/microchip/clk-mpfs.c              | 386 +++++++++---------
- drivers/reset/Kconfig                         |   7 +
- drivers/reset/Makefile                        |   2 +-
- drivers/reset/reset-mpfs.c                    | 157 +++++++
- include/soc/microchip/mpfs.h                  |   8 +
- 9 files changed, 391 insertions(+), 195 deletions(-)
- create mode 100644 drivers/reset/reset-mpfs.c
+								Honza
 
 
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+> ---
+>  fs/jbd2/recovery.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/jbd2/recovery.c b/fs/jbd2/recovery.c
+> index f548479615c6..f3def21a96a5 100644
+> --- a/fs/jbd2/recovery.c
+> +++ b/fs/jbd2/recovery.c
+> @@ -812,8 +812,17 @@ static int do_one_pass(journal_t *journal,
+>  					break;
+>  				}
+>  			}
+> -			if (pass == PASS_SCAN)
+> +			if (pass == PASS_SCAN) {
+> +				if (commit_time < last_trans_commit_time) {
+> +					pr_err("JBD2: old journal record found "
+> +					       "in transaction %u\n",
+> +					       next_commit_ID);
+> +					err = -EFSBADCRC;
+> +					brelse(bh);
+> +					goto failed;
+> +				}
+>  				last_trans_commit_time = commit_time;
+> +			}
+>  			brelse(bh);
+>  			next_commit_ID++;
+>  			continue;
+> -- 
+> 2.31.1
+> 
 -- 
-2.36.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
