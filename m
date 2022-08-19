@@ -2,122 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A255CC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B93C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349824AbiHSPhk (ORCPT
+        id S1349829AbiHSPjb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33554 "EHLO
+        Fri, 19 Aug 2022 11:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349817AbiHSPhg (ORCPT
+        with ESMTP id S1349732AbiHSPj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:37:36 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15ACE831F;
-        Fri, 19 Aug 2022 08:37:35 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (zone.collabora.co.uk [167.235.23.81])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Fri, 19 Aug 2022 11:39:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54999D5981;
+        Fri, 19 Aug 2022 08:39:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: nicolas)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id CEFC36601DC1;
-        Fri, 19 Aug 2022 16:37:30 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1660923453;
-        bh=yPtWZ9dIeoSnNCWNTE1Z+qUHDWr0Ag6n3/7+J9VVv8s=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=YPyLcdiuSpMv6Qmg1v2M1IdOBzsVHjTCwxcqM/eVA5UQqG0DxkbKaMW4tTqCfl4Xt
-         GpmOwmCRrvzvkpqsZ9iFJo9+h/QofDgaI3+Qzd/7lT/EEVf/wBKaiuLstvdh2kPyeT
-         tmrybLzL/faEvfdmudArNQhS2hKEFxnKDVZs/BNIiSe+7TG1riqXhff15tUd1wfYxq
-         VT7nllVpMuW3ENKXdWS393D/qsgSoyQtHbzQcgSRWE2McS0CuurppiLmDHmC91455Z
-         WLl9a2zBjsqubtRWacvH2nAxEQvsFPetiivf5nTO/3Ikm7rNb9P37HKaPaTtQhhi+M
-         FQJbeXK/gDvgA==
-Message-ID: <47ce07adc73887b5afaf9815a78b793d0e9a6b54.camel@collabora.com>
-Subject: Re: [PATCH v1 2/3] media: cedrus: Set the platform driver data
- earlier
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Jernej =?UTF-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        linux-media@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     kernel@collabora.com,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        stable@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 19 Aug 2022 11:37:20 -0400
-In-Reply-To: <4418189.LvFx2qVVIh@jernej-laptop>
-References: <20220818203308.439043-1-nicolas.dufresne@collabora.com>
-         <20220818203308.439043-3-nicolas.dufresne@collabora.com>
-         <4418189.LvFx2qVVIh@jernej-laptop>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8378615E9;
+        Fri, 19 Aug 2022 15:39:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1786C433C1;
+        Fri, 19 Aug 2022 15:39:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660923567;
+        bh=08d/XJQRZjUU/QpAUPmqkFgDX+UBU86QCC66R/1vyNU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Fyl2Z2fdKCyKS4yvdYvGumRWeodBwlusZJgN9rd/K7YYrKd8TlMGJuxZBXPtmxXKa
+         nPxntxTEynTJl0s3HR0olMGiauKNQD4D5BC3aDxFuEEgv0nf1BYGckJHCAE5Mk6PDp
+         ykNAkpKwyXjTtG44TsVWapTuPM5xzF/Wvkw2a8Ss=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Max Schulze <max.schulze@online.de>,
+        Marco Elver <elver@google.com>
+Subject: [PATCH 5.19 1/7] Revert "mm: kfence: apply kmemleak_ignore_phys on early allocated pool"
+Date:   Fri, 19 Aug 2022 17:39:17 +0200
+Message-Id: <20220819153711.621086880@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153711.552247994@linuxfoundation.org>
+References: <20220819153711.552247994@linuxfoundation.org>
+User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le vendredi 19 ao=C3=BBt 2022 =C3=A0 06:17 +0200, Jernej =C5=A0krabec a =C3=
-=A9crit=C2=A0:
-> Dne =C4=8Detrtek, 18. avgust 2022 ob 22:33:07 CEST je Nicolas Dufresne na=
-pisal(a):
-> > From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> >=20
-> > The cedrus_hw_resume() crashes with NULL deference on driver probe if
-> > runtime PM is disabled because it uses platform data that hasn't been
-> > set up yet. Fix this by setting the platform data earlier during probe.
->=20
-> Does it even work without PM? Maybe it would be better if Cedrus would se=
-lect=20
-> PM in Kconfig.
+From: Marco Elver <elver@google.com>
 
-I cannot comment myself on this, but it does not seem to invalidate this
-Dmitry's fix.
+This reverts commit 07313a2b29ed1079eaa7722624544b97b3ead84b.
 
->=20
-> Best regards,
-> Jernej
->=20
-> >=20
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> > ---
-> >  drivers/staging/media/sunxi/cedrus/cedrus.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c
-> > b/drivers/staging/media/sunxi/cedrus/cedrus.c index
-> > 960a0130cd620..55c54dfdc585c 100644
-> > --- a/drivers/staging/media/sunxi/cedrus/cedrus.c
-> > +++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
-> > @@ -448,6 +448,8 @@ static int cedrus_probe(struct platform_device *pde=
-v)
-> >  	if (!dev)
-> >  		return -ENOMEM;
-> >=20
-> > +	platform_set_drvdata(pdev, dev);
-> > +
-> >  	dev->vfd =3D cedrus_video_device;
-> >  	dev->dev =3D &pdev->dev;
-> >  	dev->pdev =3D pdev;
-> > @@ -521,8 +523,6 @@ static int cedrus_probe(struct platform_device *pde=
-v)
-> >  		goto err_m2m_mc;
-> >  	}
-> >=20
-> > -	platform_set_drvdata(pdev, dev);
-> > -
-> >  	return 0;
-> >=20
-> >  err_m2m_mc:
->=20
->=20
->=20
->=20
+Commit 0c24e061196c21d5 ("mm: kmemleak: add rbtree and store physical
+address for objects allocated with PA") is not yet in 5.19 (but appears
+in 6.0). Without 0c24e061196c21d5, kmemleak still stores phys objects
+and non-phys objects in the same tree, and ignoring (instead of freeing)
+will cause insertions into the kmemleak object tree by the slab
+post-alloc hook to conflict with the pool object (see comment).
+
+Reports such as the following would appear on boot, and effectively
+disable kmemleak:
+
+ | kmemleak: Cannot insert 0xffffff806e24f000 into the object search tree (overlaps existing)
+ | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-v8-0815+ #5
+ | Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+ | Call trace:
+ |  dump_backtrace.part.0+0x1dc/0x1ec
+ |  show_stack+0x24/0x80
+ |  dump_stack_lvl+0x8c/0xb8
+ |  dump_stack+0x1c/0x38
+ |  create_object.isra.0+0x490/0x4b0
+ |  kmemleak_alloc+0x3c/0x50
+ |  kmem_cache_alloc+0x2f8/0x450
+ |  __proc_create+0x18c/0x400
+ |  proc_create_reg+0x54/0xd0
+ |  proc_create_seq_private+0x94/0x120
+ |  init_mm_internals+0x1d8/0x248
+ |  kernel_init_freeable+0x188/0x388
+ |  kernel_init+0x30/0x150
+ |  ret_from_fork+0x10/0x20
+ | kmemleak: Kernel memory leak detector disabled
+ | kmemleak: Object 0xffffff806e24d000 (size 2097152):
+ | kmemleak:   comm "swapper", pid 0, jiffies 4294892296
+ | kmemleak:   min_count = -1
+ | kmemleak:   count = 0
+ | kmemleak:   flags = 0x5
+ | kmemleak:   checksum = 0
+ | kmemleak:   backtrace:
+ |      kmemleak_alloc_phys+0x94/0xb0
+ |      memblock_alloc_range_nid+0x1c0/0x20c
+ |      memblock_alloc_internal+0x88/0x100
+ |      memblock_alloc_try_nid+0x148/0x1ac
+ |      kfence_alloc_pool+0x44/0x6c
+ |      mm_init+0x28/0x98
+ |      start_kernel+0x178/0x3e8
+ |      __primary_switched+0xc4/0xcc
+
+Reported-by: Max Schulze <max.schulze@online.de>
+Signed-off-by: Marco Elver <elver@google.com>
+Link: https://lore.kernel.org/all/b33b33bc-2d06-1bcd-2df7-43678962b728@online.de/
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/kfence/core.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -603,6 +603,14 @@ static unsigned long kfence_init_pool(vo
+ 		addr += 2 * PAGE_SIZE;
+ 	}
+ 
++	/*
++	 * The pool is live and will never be deallocated from this point on.
++	 * Remove the pool object from the kmemleak object tree, as it would
++	 * otherwise overlap with allocations returned by kfence_alloc(), which
++	 * are registered with kmemleak through the slab post-alloc hook.
++	 */
++	kmemleak_free(__kfence_pool);
++
+ 	return 0;
+ }
+ 
+@@ -615,16 +623,8 @@ static bool __init kfence_init_pool_earl
+ 
+ 	addr = kfence_init_pool();
+ 
+-	if (!addr) {
+-		/*
+-		 * The pool is live and will never be deallocated from this point on.
+-		 * Ignore the pool object from the kmemleak phys object tree, as it would
+-		 * otherwise overlap with allocations returned by kfence_alloc(), which
+-		 * are registered with kmemleak through the slab post-alloc hook.
+-		 */
+-		kmemleak_ignore_phys(__pa(__kfence_pool));
++	if (!addr)
+ 		return true;
+-	}
+ 
+ 	/*
+ 	 * Only release unprotected pages, and do not try to go back and change
+
 
