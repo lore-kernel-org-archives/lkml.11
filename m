@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EE6C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC95C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354119AbiHSQsF (ORCPT
+        id S1354128AbiHSQsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        Fri, 19 Aug 2022 12:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354001AbiHSQpj (ORCPT
+        with ESMTP id S1354010AbiHSQpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A2E12A1DF;
-        Fri, 19 Aug 2022 09:11:42 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9B412A1F6;
+        Fri, 19 Aug 2022 09:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2A29B8280D;
-        Fri, 19 Aug 2022 16:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02546C433C1;
-        Fri, 19 Aug 2022 16:11:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52A0B6181D;
+        Fri, 19 Aug 2022 16:11:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FF2C433D7;
+        Fri, 19 Aug 2022 16:11:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925488;
-        bh=Tb0e6xMNt//1x5UfU5ZNfc2D7Ql4KchN4AOJtashIJM=;
+        s=korg; t=1660925503;
+        bh=Ezh7s0Ir8HE1oXQFVy9uky/oHq/rIozNW7hj7M2ENd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=noGYNRGIeMold4fZBCEj9gqWhIe74YZGUppzRMc+q4KeDeOtFQQ3TIkdA5D6yhbGg
-         3HKS+t79dtI67Xr2UabAx+iv5u4KPhOnw44f7Nad+bl22HZ2GFdwH23wRtXH/MDUaX
-         ons/LOygaL0XsLn9Tcaqc2PpZbEKzGNgpV36p35c=
+        b=sqoCLVuEsJFl6v0kvBaMcx6N8bXBvITMAW00zLTr6lx+0TP9jqfgOvnfB2JqGN5HZ
+         jdiEkHJ67GmdbpC14kxq0g2S4FaoySuiXJ3io9Pz0lnEOpjTz//q8+wWxTGaJz6i69
+         zdv8Kmt5wrqkvbaqoNHcFmcAqvJcfRtbIapTxR9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean V Kelley <sean.v.kelley@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 476/545] PCI/ERR: Simplify by using pci_upstream_bridge()
-Date:   Fri, 19 Aug 2022 17:44:06 +0200
-Message-Id: <20220819153850.717142295@linuxfoundation.org>
+Subject: [PATCH 5.10 504/545] KVM: x86/pmu: preserve IA32_PERF_CAPABILITIES across CPUID refresh
+Date:   Fri, 19 Aug 2022 17:44:34 +0200
+Message-Id: <20220819153852.035256590@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,37 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean V Kelley <sean.v.kelley@intel.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit 5d69dcc9f839bd2d5cac7a098712f52149e1673f ]
+[ Upstream commit a755753903a40d982f6dd23d65eb96b248a2577a ]
 
-Use pci_upstream_bridge() in place of dev->bus->self.  No functional change
-intended.
+Once MSR_IA32_PERF_CAPABILITIES is changed via vmx_set_msr(), the
+value should not be changed by cpuid(). To ensure that the new value
+is kept, the default initialization path is moved to intel_pmu_init().
+The effective value of the MSR will be 0 if PDCM is clear, however.
 
-Link: https://lore.kernel.org/r/20201121001036.8560-6-sean.v.kelley@intel.com
-Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
-Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/err.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/pmu_intel.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
-index db149c6ce4fb..05f61da5ed9d 100644
---- a/drivers/pci/pcie/err.c
-+++ b/drivers/pci/pcie/err.c
-@@ -159,7 +159,7 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 	 */
- 	if (!(pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
- 	      pci_pcie_type(dev) == PCI_EXP_TYPE_DOWNSTREAM))
--		dev = dev->bus->self;
-+		dev = pci_upstream_bridge(dev);
- 	bus = dev->subordinate;
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index bd70c1d7f345..b3ca19682975 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -153,12 +153,17 @@ static struct kvm_pmc *intel_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
+ 	return &counters[array_index_nospec(idx, num_counters)];
+ }
  
- 	pci_dbg(dev, "broadcast error_detected message\n");
+-static inline bool fw_writes_is_enabled(struct kvm_vcpu *vcpu)
++static inline u64 vcpu_get_perf_capabilities(struct kvm_vcpu *vcpu)
+ {
+ 	if (!guest_cpuid_has(vcpu, X86_FEATURE_PDCM))
+-		return false;
++		return 0;
+ 
+-	return vcpu->arch.perf_capabilities & PMU_CAP_FW_WRITES;
++	return vcpu->arch.perf_capabilities;
++}
++
++static inline bool fw_writes_is_enabled(struct kvm_vcpu *vcpu)
++{
++	return (vcpu_get_perf_capabilities(vcpu) & PMU_CAP_FW_WRITES) != 0;
+ }
+ 
+ static inline struct kvm_pmc *get_fw_gp_pmc(struct kvm_pmu *pmu, u32 msr)
+@@ -328,7 +333,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
+ 	pmu->version = 0;
+ 	pmu->reserved_bits = 0xffffffff00200000ull;
+-	vcpu->arch.perf_capabilities = 0;
+ 
+ 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
+ 	if (!entry)
+@@ -341,8 +345,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 		return;
+ 
+ 	perf_get_x86_pmu_capability(&x86_pmu);
+-	if (guest_cpuid_has(vcpu, X86_FEATURE_PDCM))
+-		vcpu->arch.perf_capabilities = vmx_get_perf_capabilities();
+ 
+ 	pmu->nr_arch_gp_counters = min_t(int, eax.split.num_counters,
+ 					 x86_pmu.num_counters_gp);
+@@ -406,6 +408,8 @@ static void intel_pmu_init(struct kvm_vcpu *vcpu)
+ 		pmu->fixed_counters[i].idx = i + INTEL_PMC_IDX_FIXED;
+ 		pmu->fixed_counters[i].current_config = 0;
+ 	}
++
++	vcpu->arch.perf_capabilities = vmx_get_perf_capabilities();
+ }
+ 
+ static void intel_pmu_reset(struct kvm_vcpu *vcpu)
 -- 
 2.35.1
 
