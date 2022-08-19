@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4552BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDDEC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351537AbiHSQIT (ORCPT
+        id S1351546AbiHSQIW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
+        Fri, 19 Aug 2022 12:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351432AbiHSQFq (ORCPT
+        with ESMTP id S1351443AbiHSQFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:05:46 -0400
+        Fri, 19 Aug 2022 12:05:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAF710BE00;
-        Fri, 19 Aug 2022 08:55:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825DF107759;
+        Fri, 19 Aug 2022 08:55:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E722616FD;
-        Fri, 19 Aug 2022 15:55:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17360C433B5;
-        Fri, 19 Aug 2022 15:55:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC16661746;
+        Fri, 19 Aug 2022 15:55:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1403C433B5;
+        Fri, 19 Aug 2022 15:55:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924506;
-        bh=GS1BWbFJARh6QNENN/HRDmTcg2DRzvBQ6icflFq/bEg=;
+        s=korg; t=1660924512;
+        bh=3N5IinqdtomHzi8xE0PdUGVJ86Iqwoa99/7IblT3vVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qDACznHNwWioKxmmtONRE/QH9Y69jE2mYS32GUY45zo2aM6y/j+d/9wV+Jst1JHW2
-         gnlmpY46VKRS4tcLdpyLvJsFJzMtkcCSom2ywN/Zbk3qKQ4AQf/ECFyFl67G52V8nX
-         a1CtNLotMpRdmRY6f5Dss3+wT6+Tu1WjKyzK8+o4=
+        b=SjbF/HwmdnBTTNR5z+MoO7cgeVo6xJoVP9gBccqUDPJJqixN0/BpK0EX+AVQ9Tgnt
+         s0uzO+FjKdgQ93StyDjfkFRZvk7T/knAC3xyacQAoTPM5n97BqEPdi6BxrkSxedxDq
+         AnwXwyX9NHjCgPE44ICogK1VEee980wzw+5tev88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 193/545] drm/vc4: drv: Remove the DSI pointer in vc4_drv
-Date:   Fri, 19 Aug 2022 17:39:23 +0200
-Message-Id: <20220819153837.998234535@linuxfoundation.org>
+Subject: [PATCH 5.10 195/545] drm/vc4: dsi: Introduce a variant structure
+Date:   Fri, 19 Aug 2022 17:39:25 +0200
+Message-Id: <20220819153838.095675179@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,72 +53,195 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 51f4fcd9c4ea867c3b4fe58111f342ad0e80642a ]
+[ Upstream commit d1d195ce26a14ec0a87816c09ae514e1c40e97f7 ]
 
-That pointer isn't used anywhere, so there's no point in keeping it.
+Most of the differences between DSI0 and DSI1 are handled through the
+ID. However, the BCM2711 DSI is going to introduce one more variable to
+the mix and will break some expectations of the earlier, simpler, test.
+
+Let's add a variant structure that will address most of the differences
+between those three controllers.
 
 Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20201203132543.861591-2-maxime@cerno.tech
+Link: https://patchwork.freedesktop.org/patch/msgid/20201203132543.861591-5-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_drv.h | 1 -
- drivers/gpu/drm/vc4/vc4_dsi.c | 9 ---------
- 2 files changed, 10 deletions(-)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 63 ++++++++++++++++++++---------------
+ 1 file changed, 37 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
-index 9809c3a856c6..921463625d82 100644
---- a/drivers/gpu/drm/vc4/vc4_drv.h
-+++ b/drivers/gpu/drm/vc4/vc4_drv.h
-@@ -77,7 +77,6 @@ struct vc4_dev {
- 	struct vc4_hvs *hvs;
- 	struct vc4_v3d *v3d;
- 	struct vc4_dpi *dpi;
--	struct vc4_dsi *dsi1;
- 	struct vc4_vec *vec;
- 	struct vc4_txp *txp;
- 
 diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 153ad9048db5..6222e4058c85 100644
+index 80cd2599c57b..2cedf1cf6758 100644
 --- a/drivers/gpu/drm/vc4/vc4_dsi.c
 +++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1449,7 +1449,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct drm_device *drm = dev_get_drvdata(master);
--	struct vc4_dev *vc4 = to_vc4_dev(drm);
- 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
- 	struct vc4_dsi_encoder *vc4_dsi_encoder;
- 	struct drm_panel *panel;
-@@ -1602,9 +1601,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 	if (ret)
- 		return ret;
+@@ -493,6 +493,18 @@
+  */
+ #define DSI1_ID			0x8c
  
--	if (dsi->port == 1)
--		vc4->dsi1 = dsi;
--
- 	drm_simple_encoder_init(drm, dsi->encoder, DRM_MODE_ENCODER_DSI);
- 	drm_encoder_helper_add(dsi->encoder, &vc4_dsi_encoder_helper_funcs);
++struct vc4_dsi_variant {
++	/* Whether we're on bcm2835's DSI0 or DSI1. */
++	unsigned int port;
++
++	bool broken_axi_workaround;
++
++	const char *debugfs_name;
++	const struct debugfs_reg32 *regs;
++	size_t nregs;
++
++};
++
+ /* General DSI hardware state. */
+ struct vc4_dsi {
+ 	struct platform_device *pdev;
+@@ -509,8 +521,7 @@ struct vc4_dsi {
+ 	u32 *reg_dma_mem;
+ 	dma_addr_t reg_paddr;
  
-@@ -1633,8 +1629,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- static void vc4_dsi_unbind(struct device *dev, struct device *master,
- 			   void *data)
- {
--	struct drm_device *drm = dev_get_drvdata(master);
--	struct vc4_dev *vc4 = to_vc4_dev(drm);
- 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
+-	/* Whether we're on bcm2835's DSI0 or DSI1. */
+-	int port;
++	const struct vc4_dsi_variant *variant;
  
- 	if (dsi->bridge)
-@@ -1646,9 +1640,6 @@ static void vc4_dsi_unbind(struct device *dev, struct device *master,
- 	 */
- 	list_splice_init(&dsi->bridge_chain, &dsi->encoder->bridge_chain);
- 	drm_encoder_cleanup(dsi->encoder);
--
--	if (dsi->port == 1)
--		vc4->dsi1 = NULL;
+ 	/* DSI channel for the panel we're connected to. */
+ 	u32 channel;
+@@ -586,10 +597,10 @@ dsi_dma_workaround_write(struct vc4_dsi *dsi, u32 offset, u32 val)
+ #define DSI_READ(offset) readl(dsi->regs + (offset))
+ #define DSI_WRITE(offset, val) dsi_dma_workaround_write(dsi, offset, val)
+ #define DSI_PORT_READ(offset) \
+-	DSI_READ(dsi->port ? DSI1_##offset : DSI0_##offset)
++	DSI_READ(dsi->variant->port ? DSI1_##offset : DSI0_##offset)
+ #define DSI_PORT_WRITE(offset, val) \
+-	DSI_WRITE(dsi->port ? DSI1_##offset : DSI0_##offset, val)
+-#define DSI_PORT_BIT(bit) (dsi->port ? DSI1_##bit : DSI0_##bit)
++	DSI_WRITE(dsi->variant->port ? DSI1_##offset : DSI0_##offset, val)
++#define DSI_PORT_BIT(bit) (dsi->variant->port ? DSI1_##bit : DSI0_##bit)
+ 
+ /* VC4 DSI encoder KMS struct */
+ struct vc4_dsi_encoder {
+@@ -835,7 +846,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 
+ 	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret) {
+-		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->port);
++		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->variant->port);
+ 		return;
+ 	}
+ 
+@@ -869,7 +880,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 	DSI_PORT_WRITE(STAT, DSI_PORT_READ(STAT));
+ 
+ 	/* Set AFE CTR00/CTR1 to release powerdown of analog. */
+-	if (dsi->port == 0) {
++	if (dsi->variant->port == 0) {
+ 		u32 afec0 = (VC4_SET_FIELD(7, DSI_PHY_AFEC0_PTATADJ) |
+ 			     VC4_SET_FIELD(7, DSI_PHY_AFEC0_CTATADJ));
+ 
+@@ -1015,7 +1026,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 		       DSI_PORT_BIT(PHYC_CLANE_ENABLE) |
+ 		       ((dsi->mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS) ?
+ 			0 : DSI_PORT_BIT(PHYC_HS_CLK_CONTINUOUS)) |
+-		       (dsi->port == 0 ?
++		       (dsi->variant->port == 0 ?
+ 			VC4_SET_FIELD(lpx - 1, DSI0_PHYC_ESC_CLK_LPDT) :
+ 			VC4_SET_FIELD(lpx - 1, DSI1_PHYC_ESC_CLK_LPDT)));
+ 
+@@ -1041,13 +1052,13 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 		       DSI_DISP1_ENABLE);
+ 
+ 	/* Ungate the block. */
+-	if (dsi->port == 0)
++	if (dsi->variant->port == 0)
+ 		DSI_PORT_WRITE(CTRL, DSI_PORT_READ(CTRL) | DSI0_CTRL_CTRL0);
+ 	else
+ 		DSI_PORT_WRITE(CTRL, DSI_PORT_READ(CTRL) | DSI1_CTRL_EN);
+ 
+ 	/* Bring AFE out of reset. */
+-	if (dsi->port == 0) {
++	if (dsi->variant->port == 0) {
+ 	} else {
+ 		DSI_PORT_WRITE(PHY_AFEC0,
+ 			       DSI_PORT_READ(PHY_AFEC0) &
+@@ -1303,8 +1314,16 @@ static const struct drm_encoder_helper_funcs vc4_dsi_encoder_helper_funcs = {
+ 	.mode_fixup = vc4_dsi_encoder_mode_fixup,
+ };
+ 
++static const struct vc4_dsi_variant bcm2835_dsi1_variant = {
++	.port			= 1,
++	.broken_axi_workaround	= true,
++	.debugfs_name		= "dsi1_regs",
++	.regs			= dsi1_regs,
++	.nregs			= ARRAY_SIZE(dsi1_regs),
++};
++
+ static const struct of_device_id vc4_dsi_dt_match[] = {
+-	{ .compatible = "brcm,bcm2835-dsi1", (void *)(uintptr_t)1 },
++	{ .compatible = "brcm,bcm2835-dsi1", &bcm2835_dsi1_variant },
+ 	{}
+ };
+ 
+@@ -1315,7 +1334,7 @@ static void dsi_handle_error(struct vc4_dsi *dsi,
+ 	if (!(stat & bit))
+ 		return;
+ 
+-	DRM_ERROR("DSI%d: %s error\n", dsi->port, type);
++	DRM_ERROR("DSI%d: %s error\n", dsi->variant->port, type);
+ 	*ret = IRQ_HANDLED;
  }
  
- static const struct component_ops vc4_dsi_ops = {
+@@ -1413,7 +1432,7 @@ vc4_dsi_init_phy_clocks(struct vc4_dsi *dsi)
+ 		int ret;
+ 
+ 		snprintf(clk_name, sizeof(clk_name),
+-			 "dsi%u_%s", dsi->port, phy_clocks[i].name);
++			 "dsi%u_%s", dsi->variant->port, phy_clocks[i].name);
+ 
+ 		/* We just use core fixed factor clock ops for the PHY
+ 		 * clocks.  The clocks are actually gated by the
+@@ -1461,7 +1480,7 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 	if (!match)
+ 		return -ENODEV;
+ 
+-	dsi->port = (uintptr_t)match->data;
++	dsi->variant = match->data;
+ 
+ 	vc4_dsi_encoder = devm_kzalloc(dev, sizeof(*vc4_dsi_encoder),
+ 				       GFP_KERNEL);
+@@ -1478,13 +1497,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 		return PTR_ERR(dsi->regs);
+ 
+ 	dsi->regset.base = dsi->regs;
+-	if (dsi->port == 0) {
+-		dsi->regset.regs = dsi0_regs;
+-		dsi->regset.nregs = ARRAY_SIZE(dsi0_regs);
+-	} else {
+-		dsi->regset.regs = dsi1_regs;
+-		dsi->regset.nregs = ARRAY_SIZE(dsi1_regs);
+-	}
++	dsi->regset.regs = dsi->variant->regs;
++	dsi->regset.nregs = dsi->variant->nregs;
+ 
+ 	if (DSI_PORT_READ(ID) != DSI_ID_VALUE) {
+ 		dev_err(dev, "Port returned 0x%08x for ID instead of 0x%08x\n",
+@@ -1496,7 +1510,7 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 	 * from the ARM.  It does handle writes from the DMA engine,
+ 	 * so set up a channel for talking to it.
+ 	 */
+-	if (dsi->port == 1) {
++	if (dsi->variant->broken_axi_workaround) {
+ 		dsi->reg_dma_mem = dma_alloc_coherent(dev, 4,
+ 						      &dsi->reg_dma_paddr,
+ 						      GFP_KERNEL);
+@@ -1617,10 +1631,7 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 	 */
+ 	list_splice_init(&dsi->encoder->bridge_chain, &dsi->bridge_chain);
+ 
+-	if (dsi->port == 0)
+-		vc4_debugfs_add_regset32(drm, "dsi0_regs", &dsi->regset);
+-	else
+-		vc4_debugfs_add_regset32(drm, "dsi1_regs", &dsi->regset);
++	vc4_debugfs_add_regset32(drm, dsi->variant->debugfs_name, &dsi->regset);
+ 
+ 	pm_runtime_enable(dev);
+ 
 -- 
 2.35.1
 
