@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84991C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90ADC32793
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352897AbiHSQcg (ORCPT
+        id S1352767AbiHSQcj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        Fri, 19 Aug 2022 12:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352906AbiHSQ3G (ORCPT
+        with ESMTP id S1352789AbiHSQ3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:29:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C0F119A6F;
-        Fri, 19 Aug 2022 09:04:23 -0700 (PDT)
+        Fri, 19 Aug 2022 12:29:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245C1119A6C;
+        Fri, 19 Aug 2022 09:04:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73474616B3;
-        Fri, 19 Aug 2022 16:04:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 792FCC433D7;
-        Fri, 19 Aug 2022 16:04:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFD5FB8281D;
+        Fri, 19 Aug 2022 16:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47FC0C433C1;
+        Fri, 19 Aug 2022 16:04:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925056;
-        bh=Fq2/Qa+l2s9n7XYaDXSNDg2FJSRH8B8oFrH9I8yNc8k=;
+        s=korg; t=1660925065;
+        bh=jxCpoJivwvu0FF76n53BjfJeP8PO5SuBKMbYAiIEf4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QGgnb6WSjnyrq0PuKlsFfQAYi10ExUO8euX+rRw4G+mOvY4dtnDoES37ksGapsaBF
-         Ou+wkzJQ0cdpTOY27QN2TrxYWSWV8awCQbD6RDHooCHuQxMAhQsi7NWGDyVOiDy/nW
-         kdWq/VF+V+kl7W40gFuf7u7jrgbjD6z7wSvqSiOY=
+        b=n10v8X31SWvKLIUwPdPRQ12Rxi57l2Vg7CYb7QZM2NaztYNTAeTUrW/GmybP+jfRx
+         x34RUIrMgNOayHblOPfpsymLh1276N0C+LBfTD5mLurH6j5WEBawWNI5OzfGLGYUql
+         3Pq4Jsbfd44WdJVjMoXOo30Dx1/QLxs9sdFbnOFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 369/545] ASoC: mediatek: mt8173-rt5650: Fix refcount leak in mt8173_rt5650_dev_probe
-Date:   Fri, 19 Aug 2022 17:42:19 +0200
-Message-Id: <20220819153845.923057269@linuxfoundation.org>
+Subject: [PATCH 5.10 345/545] PCI: tegra194: Fix Root Port interrupt handling
+Date:   Fri, 19 Aug 2022 17:41:55 +0200
+Message-Id: <20220819153844.833657110@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,64 +50,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Vidya Sagar <vidyas@nvidia.com>
 
-[ Upstream commit efe2178d1a32492f99e7f1f2568eea5c88a85729 ]
+[ Upstream commit 6646e99bcec627e866bc84365af37942c72b4b76 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Fix refcount leak in some error paths.
+As part of Root Port interrupt handling, level-0 register is read first and
+based on the bits set in that, corresponding level-1 registers are read for
+further interrupt processing. Since both these values are currently read
+into the same 'val' variable, checking level-0 bits the second time around
+is happening on the 'val' variable value of level-1 register contents
+instead of freshly reading the level-0 value again.
 
-Fixes: 0f83f9296d5c ("ASoC: mediatek: Add machine driver for ALC5650 codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603124243.31358-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix by using different variables to store level-0 and level-1 registers
+contents.
+
+Link: https://lore.kernel.org/r/20220721142052.25971-11-vidyas@nvidia.com
+Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8173/mt8173-rt5650.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 46 +++++++++++-----------
+ 1 file changed, 22 insertions(+), 24 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-index e168d31f4445..1de9dab218c6 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-@@ -280,7 +280,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
- 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node;
-@@ -293,7 +294,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 			dev_err(&pdev->dev,
- 				"%s codec_capture_dai name fail %d\n",
- 				__func__, ret);
--			return ret;
-+			goto put_platform_node;
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 845f1e1de3ab..bcbd600116d7 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -370,15 +370,14 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
+ 	struct tegra_pcie_dw *pcie = arg;
+ 	struct dw_pcie *pci = &pcie->pci;
+ 	struct pcie_port *pp = &pci->pp;
+-	u32 val, tmp;
++	u32 val, status_l0, status_l1;
+ 	u16 val_w;
+ 
+-	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
+-	if (val & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
+-		val = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
+-		if (val & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
+-			appl_writel(pcie, val, APPL_INTR_STATUS_L1_0_0);
+-
++	status_l0 = appl_readl(pcie, APPL_INTR_STATUS_L0);
++	if (status_l0 & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
++		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
++		appl_writel(pcie, status_l1, APPL_INTR_STATUS_L1_0_0);
++		if (status_l1 & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
+ 			/* SBR & Surprise Link Down WAR */
+ 			val = appl_readl(pcie, APPL_CAR_RESET_OVRD);
+ 			val &= ~APPL_CAR_RESET_OVRD_CYA_OVERRIDE_CORE_RST_N;
+@@ -394,15 +393,15 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
  		}
- 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].dai_name =
- 			codec_capture_dai;
-@@ -315,7 +316,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
  	}
- 	card->dev = &pdev->dev;
  
-@@ -324,6 +326,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
+-	if (val & APPL_INTR_STATUS_L0_INT_INT) {
+-		val = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
+-		if (val & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
++	if (status_l0 & APPL_INTR_STATUS_L0_INT_INT) {
++		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
++		if (status_l1 & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
+ 			appl_writel(pcie,
+ 				    APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS,
+ 				    APPL_INTR_STATUS_L1_8_0);
+ 			apply_bad_link_workaround(pp);
+ 		}
+-		if (val & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
++		if (status_l1 & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
+ 			appl_writel(pcie,
+ 				    APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS,
+ 				    APPL_INTR_STATUS_L1_8_0);
+@@ -414,25 +413,24 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
+ 		}
+ 	}
  
-+put_platform_node:
- 	of_node_put(platform_node);
- 	return ret;
- }
+-	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
+-	if (val & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
+-		val = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
+-		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
+-		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
++	if (status_l0 & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
++		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
++		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
++		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
+ 			dev_info(pci->dev, "CDM check complete\n");
+-			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
++			val |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
+ 		}
+-		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
++		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
+ 			dev_err(pci->dev, "CDM comparison mismatch\n");
+-			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
++			val |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
+ 		}
+-		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
++		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
+ 			dev_err(pci->dev, "CDM Logic error\n");
+-			tmp |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
++			val |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
+ 		}
+-		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, tmp);
+-		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
+-		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", tmp);
++		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
++		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
++		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", val);
+ 	}
+ 
+ 	return IRQ_HANDLED;
 -- 
 2.35.1
 
