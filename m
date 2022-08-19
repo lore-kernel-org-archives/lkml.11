@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A23C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1C8C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350627AbiHSPyv (ORCPT
+        id S1350632AbiHSPyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        Fri, 19 Aug 2022 11:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350442AbiHSPyB (ORCPT
+        with ESMTP id S1350594AbiHSPyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:54:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7902A103C66;
-        Fri, 19 Aug 2022 08:49:32 -0700 (PDT)
+        Fri, 19 Aug 2022 11:54:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DE7543CD;
+        Fri, 19 Aug 2022 08:49:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC876B82813;
-        Fri, 19 Aug 2022 15:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24CE2C433D6;
-        Fri, 19 Aug 2022 15:49:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B25A66170C;
+        Fri, 19 Aug 2022 15:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADCC5C433C1;
+        Fri, 19 Aug 2022 15:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924167;
-        bh=wXCHWPpTDUvlnRJMSnn2hpN/p/CupuSzUfQcIO7JB4U=;
+        s=korg; t=1660924173;
+        bh=xa9awBFNuvjnDUiojN4ngg94h5XL+TXVfCZlEsYL2hI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QBU+Mwwu/kLXtw3viiTUGKJe0NDoS+MflT5WRrzsNi7kGgN9oo6R2CNrcbrw7BQhl
-         QMRBhsED9oe+GxvvRTU/VPmscxnFYQ4XcWtv3f7f+6dYRR24y69TYts3ruxCYtm6gu
-         HOZEWLNjwQSPQu5ea2FuaZbGjZshdsxrdG1Hg84Y=
+        b=bXW5Y+FcQiReVGA1M3TgEqEGLJlQmZr/q5elg0u0x6qbvN00f4t1GTt4XVGbHJGJH
+         3kHUO0pxO24ale3nLj7qGz6VGl0C0JPc7889VBAwMD81JLWSJWSNGj+PX9lpEqhfpk
+         urkD8YWphf0kiXvkfdR7773T01jQEBbPy8883Z4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Bikash Hazarika <bhazarika@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 051/545] scsi: qla2xxx: Fix incorrect display of max frame size
-Date:   Fri, 19 Aug 2022 17:37:01 +0200
-Message-Id: <20220819153831.515243835@linuxfoundation.org>
+        stable@vger.kernel.org, hewenliang <hewenliang4@huawei.com>,
+        Haibin Zhang <haibinzhang@tencent.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 079/545] arm64: fix oops in concurrently setting insn_emulation sysctls
+Date:   Fri, 19 Aug 2022 17:37:29 +0200
+Message-Id: <20220819153832.800115559@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,99 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bikash Hazarika <bhazarika@marvell.com>
+From: haibinzhang (张海斌) <haibinzhang@tencent.com>
 
-commit cf3b4fb655796674e605268bd4bfb47a47c8bce6 upstream.
+[ Upstream commit af483947d472eccb79e42059276c4deed76f99a6 ]
 
-Replace display field with the correct field.
+emulation_proc_handler() changes table->data for proc_dointvec_minmax
+and can generate the following Oops if called concurrently with itself:
 
-Link: https://lore.kernel.org/r/20220713052045.10683-3-njavali@marvell.com
-Fixes: 8777e4314d39 ("scsi: qla2xxx: Migrate NVME N2N handling into state machine")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Bikash Hazarika <bhazarika@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+ | Internal error: Oops: 96000006 [#1] SMP
+ | Call trace:
+ | update_insn_emulation_mode+0xc0/0x148
+ | emulation_proc_handler+0x64/0xb8
+ | proc_sys_call_handler+0x9c/0xf8
+ | proc_sys_write+0x18/0x20
+ | __vfs_write+0x20/0x48
+ | vfs_write+0xe4/0x1d0
+ | ksys_write+0x70/0xf8
+ | __arm64_sys_write+0x20/0x28
+ | el0_svc_common.constprop.0+0x7c/0x1c0
+ | el0_svc_handler+0x2c/0xa0
+ | el0_svc+0x8/0x200
+
+To fix this issue, keep the table->data as &insn->current_mode and
+use container_of() to retrieve the insn pointer. Another mutex is
+used to protect against the current_mode update but not for retrieving
+insn_emulation as table->data is no longer changing.
+
+Co-developed-by: hewenliang <hewenliang4@huawei.com>
+Signed-off-by: hewenliang <hewenliang4@huawei.com>
+Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
+Link: https://lore.kernel.org/r/9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h  |    1 +
- drivers/scsi/qla2xxx/qla_gs.c   |    9 +++------
- drivers/scsi/qla2xxx/qla_init.c |    2 ++
- drivers/scsi/qla2xxx/qla_isr.c  |    4 +---
- 4 files changed, 7 insertions(+), 9 deletions(-)
+ arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -3857,6 +3857,7 @@ struct qla_hw_data {
- 	/* SRB cache. */
- #define SRB_MIN_REQ     128
- 	mempool_t       *srb_mempool;
-+	u8 port_name[WWN_SIZE];
+diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
+index 7364de008bab..91b8a8378ba3 100644
+--- a/arch/arm64/kernel/armv8_deprecated.c
++++ b/arch/arm64/kernel/armv8_deprecated.c
+@@ -59,6 +59,7 @@ struct insn_emulation {
+ static LIST_HEAD(insn_emulation);
+ static int nr_insn_emulated __initdata;
+ static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
++static DEFINE_MUTEX(insn_emulation_mutex);
  
- 	volatile struct {
- 		uint32_t	mbox_int		:1;
---- a/drivers/scsi/qla2xxx/qla_gs.c
-+++ b/drivers/scsi/qla2xxx/qla_gs.c
-@@ -1594,7 +1594,6 @@ qla2x00_hba_attributes(scsi_qla_host_t *
- 	unsigned int callopt)
+ static void register_emulation_hooks(struct insn_emulation_ops *ops)
  {
- 	struct qla_hw_data *ha = vha->hw;
--	struct init_cb_24xx *icb24 = (void *)ha->init_cb;
- 	struct new_utsname *p_sysid = utsname();
- 	struct ct_fdmi_hba_attr *eiter;
- 	uint16_t alen;
-@@ -1756,8 +1755,8 @@ qla2x00_hba_attributes(scsi_qla_host_t *
- 	/* MAX CT Payload Length */
- 	eiter = entries + size;
- 	eiter->type = cpu_to_be16(FDMI_HBA_MAXIMUM_CT_PAYLOAD_LENGTH);
--	eiter->a.max_ct_len = cpu_to_be32(le16_to_cpu(IS_FWI2_CAPABLE(ha) ?
--		icb24->frame_payload_size : ha->init_cb->frame_payload_size));
-+	eiter->a.max_ct_len = cpu_to_be32(ha->frame_payload_size >> 2);
-+
- 	alen = sizeof(eiter->a.max_ct_len);
- 	alen += FDMI_ATTR_TYPELEN(eiter);
- 	eiter->len = cpu_to_be16(alen);
-@@ -1849,7 +1848,6 @@ qla2x00_port_attributes(scsi_qla_host_t
- 	unsigned int callopt)
+@@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+ 				  loff_t *ppos)
  {
- 	struct qla_hw_data *ha = vha->hw;
--	struct init_cb_24xx *icb24 = (void *)ha->init_cb;
- 	struct new_utsname *p_sysid = utsname();
- 	char *hostname = p_sysid ?
- 		p_sysid->nodename : fc_host_system_hostname(vha->host);
-@@ -1901,8 +1899,7 @@ qla2x00_port_attributes(scsi_qla_host_t
- 	/* Max frame size. */
- 	eiter = entries + size;
- 	eiter->type = cpu_to_be16(FDMI_PORT_MAX_FRAME_SIZE);
--	eiter->a.max_frame_size = cpu_to_be32(le16_to_cpu(IS_FWI2_CAPABLE(ha) ?
--		icb24->frame_payload_size : ha->init_cb->frame_payload_size));
-+	eiter->a.max_frame_size = cpu_to_be32(ha->frame_payload_size);
- 	alen = sizeof(eiter->a.max_frame_size);
- 	alen += FDMI_ATTR_TYPELEN(eiter);
- 	eiter->len = cpu_to_be16(alen);
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -4328,6 +4328,8 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
- 			 BIT_6) != 0;
- 		ql_dbg(ql_dbg_init, vha, 0x00bc, "FA-WWPN Support: %s.\n",
- 		    (ha->flags.fawwpn_enabled) ? "enabled" : "disabled");
-+		/* Init_cb will be reused for other command(s).  Save a backup copy of port_name */
-+		memcpy(ha->port_name, ha->init_cb->port_name, WWN_SIZE);
+ 	int ret = 0;
+-	struct insn_emulation *insn = (struct insn_emulation *) table->data;
++	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
+ 	enum insn_emulation_mode prev_mode = insn->current_mode;
+ 
+-	table->data = &insn->current_mode;
++	mutex_lock(&insn_emulation_mutex);
+ 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+ 
+ 	if (ret || !write || prev_mode == insn->current_mode)
+@@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+ 		update_insn_emulation_mode(insn, INSN_UNDEF);
  	}
+ ret:
+-	table->data = insn;
++	mutex_unlock(&insn_emulation_mutex);
+ 	return ret;
+ }
  
- 	rval = qla2x00_init_firmware(vha, ha->init_cb_size);
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -1202,9 +1202,7 @@ skip_rio:
- 			if (!vha->vp_idx) {
- 				if (ha->flags.fawwpn_enabled &&
- 				    (ha->current_topology == ISP_CFG_F)) {
--					void *wwpn = ha->init_cb->port_name;
--
--					memcpy(vha->port_name, wwpn, WWN_SIZE);
-+					memcpy(vha->port_name, ha->port_name, WWN_SIZE);
- 					fc_host_port_name(vha->host) =
- 					    wwn_to_u64(vha->port_name);
- 					ql_dbg(ql_dbg_init + ql_dbg_verbose,
+@@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
+ 		sysctl->maxlen = sizeof(int);
+ 
+ 		sysctl->procname = insn->ops->name;
+-		sysctl->data = insn;
++		sysctl->data = &insn->current_mode;
+ 		sysctl->extra1 = &insn->min;
+ 		sysctl->extra2 = &insn->max;
+ 		sysctl->proc_handler = emulation_proc_handler;
+-- 
+2.35.1
+
 
 
