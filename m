@@ -2,90 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5859EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 04:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B484DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 04:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345163AbiHSEQG (ORCPT
+        id S1346033AbiHSEQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 00:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        Fri, 19 Aug 2022 00:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiHSEQA (ORCPT
+        with ESMTP id S232389AbiHSEQC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 00:16:00 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A9C9DA3C4;
-        Thu, 18 Aug 2022 21:15:59 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 54BE51E80D08;
-        Fri, 19 Aug 2022 12:12:47 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id y6zDthdFrvj6; Fri, 19 Aug 2022 12:12:44 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 30EE81E80CFF;
-        Fri, 19 Aug 2022 12:12:44 +0800 (CST)
-From:   Li Qiong <liqiong@nfschina.com>
-To:     "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>
-Cc:     linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yuzhe <yuzhe@nfschina.com>, Li Qiong <liqiong@nfschina.com>
-Subject: [PATCH] parisc: handle failure of kmalloc in ccio_init_resources
-Date:   Fri, 19 Aug 2022 12:15:10 +0800
-Message-Id: <20220819041510.75473-1-liqiong@nfschina.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 00:16:02 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C415BDA3D2;
+        Thu, 18 Aug 2022 21:16:00 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M87dc1ND8zlVyK;
+        Fri, 19 Aug 2022 12:12:52 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
+ 2022 12:15:58 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2] net: sched: remove duplicate check of user rights in qdisc
+Date:   Fri, 19 Aug 2022 12:18:54 +0800
+Message-ID: <20220819041854.83372-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the kmalloc(), it should be better
-to fix this error path, check and return '-ENOMEM' error code.
+In rtnetlink_rcv_msg function, the permission for all user operations
+is checked except the GET operation, which is the same as the checking
+in qdisc. Therefore, remove the user rights check in qdisc.
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- drivers/parisc/ccio-dma.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+v1: incorrectly delete checking right in action
+---
+ net/sched/cls_api.c | 10 ----------
+ net/sched/sch_api.c | 11 -----------
+ 2 files changed, 21 deletions(-)
 
-diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
-index 9be007c9420f..f69ab90b5e22 100644
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -1380,15 +1380,17 @@ ccio_init_resource(struct resource *res, char *name, void __iomem *ioaddr)
- 	}
- }
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 790d6809be81..1ebab4b11262 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1977,9 +1977,6 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	bool rtnl_held = false;
+ 	u32 flags;
  
--static void __init ccio_init_resources(struct ioc *ioc)
-+static int __init ccio_init_resources(struct ioc *ioc)
- {
- 	struct resource *res = ioc->mmio_region;
- 	char *name = kmalloc(14, GFP_KERNEL);
+-	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
 -
-+	if (unlikely(!name))
-+		return -ENOMEM;
- 	snprintf(name, 14, "GSC Bus [%d/]", ioc->hw_path);
+ replay:
+ 	tp_created = 0;
  
- 	ccio_init_resource(res, name, &ioc->ioc_regs->io_io_low);
- 	ccio_init_resource(res + 1, name, &ioc->ioc_regs->io_io_low_hv);
-+	return 0;
- }
+@@ -2208,9 +2205,6 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	int err;
+ 	bool rtnl_held = false;
  
- static int new_ioc_area(struct resource *res, unsigned long size,
-@@ -1543,7 +1545,10 @@ static int __init ccio_probe(struct parisc_device *dev)
- 		return -ENOMEM;
- 	}
- 	ccio_ioc_init(ioc);
--	ccio_init_resources(ioc);
-+	if (ccio_init_resources(ioc)) {
-+		kfree(ioc);
-+		return -ENOMEM;
-+	}
- 	hppa_dma_ops = &ccio_ops;
+-	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	err = nlmsg_parse_deprecated(n, sizeof(*t), tca, TCA_MAX,
+ 				     rtm_tca_policy, extack);
+ 	if (err < 0)
+@@ -2826,10 +2820,6 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
+ 	unsigned long cl;
+ 	int err;
  
- 	hba = kzalloc(sizeof(*hba), GFP_KERNEL);
+-	if (n->nlmsg_type != RTM_GETCHAIN &&
+-	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ replay:
+ 	q = NULL;
+ 	err = nlmsg_parse_deprecated(n, sizeof(*t), tca, TCA_MAX,
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index bf87b50837a8..6c687e77d68b 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1424,10 +1424,6 @@ static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
+ 	struct Qdisc *p = NULL;
+ 	int err;
+ 
+-	if ((n->nlmsg_type != RTM_GETQDISC) &&
+-	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
+ 				     rtm_tca_policy, extack);
+ 	if (err < 0)
+@@ -1508,9 +1504,6 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
+ 	struct Qdisc *q, *p;
+ 	int err;
+ 
+-	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ replay:
+ 	/* Reinit, just in case something touches this. */
+ 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
+@@ -1992,10 +1985,6 @@ static int tc_ctl_tclass(struct sk_buff *skb, struct nlmsghdr *n,
+ 	u32 qid;
+ 	int err;
+ 
+-	if ((n->nlmsg_type != RTM_GETTCLASS) &&
+-	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
+ 				     rtm_tca_policy, extack);
+ 	if (err < 0)
 -- 
-2.25.1
+2.17.1
 
