@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0F0C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7903C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354497AbiHSQyy (ORCPT
+        id S1354282AbiHSQy5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39080 "EHLO
+        Fri, 19 Aug 2022 12:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354403AbiHSQxa (ORCPT
+        with ESMTP id S1354421AbiHSQxh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:53:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617BC12E3D2;
-        Fri, 19 Aug 2022 09:15:13 -0700 (PDT)
+        Fri, 19 Aug 2022 12:53:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3E931DED;
+        Fri, 19 Aug 2022 09:15:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BD55B8282A;
-        Fri, 19 Aug 2022 16:13:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8800EC433D7;
-        Fri, 19 Aug 2022 16:13:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3DEC4CE26AC;
+        Fri, 19 Aug 2022 16:13:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D11EC433C1;
+        Fri, 19 Aug 2022 16:13:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925625;
-        bh=QXKbbD2rBMM2SVJ7jtAh4BSriiVTIwVcRFRHymGJ04g=;
+        s=korg; t=1660925609;
+        bh=3CxRal1Wz7dBYYhtwSv0Lq8UgsO8mOKXA/8E1KJSgzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uj9mV/lyYM3/UHZ8IBKacVxZEWz0TKuR2jWLCDjH/OIFvvBufkSXkGwV9nddidhHN
-         vKyhZ8M01PDXpPATiy6LKebtLfM4jhp4ZazhhCjV4wjdqx0aqf6P/DQQn/D6k0IUYy
-         wC7SgPQo+kGwIgCfwQQYCvtyVa59Z/vWSQvKTyPs=
+        b=VNYe5B+99BccbWn/3SSx+uUspZpdoQ9ARa7pYGjyX8RO/SXphcRXWpkP1CwnwM1Gu
+         fD6OAPwDtc2KgVvkAYs69y/PVGEKFD1PyMMBMy2yJAj0CyoBP9HbrP29OkjeWj4dBI
+         JfLARyOKsL/DF+65f+JruKK1RckjpEZOHkkjr02Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 542/545] net_sched: cls_route: disallow handle of 0
-Date:   Fri, 19 Aug 2022 17:45:12 +0200
-Message-Id: <20220819153853.863593552@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.10 537/545] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+Date:   Fri, 19 Aug 2022 17:45:07 +0200
+Message-Id: <20220819153853.617121540@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,87 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamal Hadi Salim <jhs@mojatatu.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 02799571714dc5dd6948824b9d080b44a295f695 upstream.
+commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
 
-Follows up on:
-https://lore.kernel.org/all/20220809170518.164662-1-cascardo@canonical.com/
+The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
+by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
+static checker warning:
 
-handle of 0 implies from/to of universe realm which is not very
-sensible.
+        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
+        error: we previously assumed 'c' could be null (see line 1996)
 
-Lets see what this patch will do:
-$sudo tc qdisc add dev $DEV root handle 1:0 prio
-
-//lets manufacture a way to insert handle of 0
-$sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 \
-route to 0 from 0 classid 1:10 action ok
-
-//gets rejected...
-Error: handle of 0 is not valid.
-We have an error talking to the kernel, -1
-
-//lets create a legit entry..
-sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 route from 10 \
-classid 1:10 action ok
-
-//what did the kernel insert?
-$sudo tc filter ls dev $DEV parent 1:0
-filter protocol ip pref 100 route chain 0
-filter protocol ip pref 100 route chain 0 fh 0x000a8000 flowid 1:10 from 10
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
-
-//Lets try to replace that legit entry with a handle of 0
-$ sudo tc filter replace dev $DEV parent 1:0 protocol ip prio 100 \
-handle 0x000a8000 route to 0 from 0 classid 1:10 action drop
-
-Error: Replacing with handle of 0 is invalid.
-We have an error talking to the kernel, -1
-
-And last, lets run Cascardo's POC:
-$ ./poc
-0
-0
--22
--22
--22
-
-Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/cls_route.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/bluetooth/l2cap_core.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -424,6 +424,11 @@ static int route4_set_parms(struct net *
- 			return -EINVAL;
- 	}
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1966,11 +1966,11 @@ static struct l2cap_chan *l2cap_global_c
+ 						   bdaddr_t *dst,
+ 						   u8 link_type)
+ {
+-	struct l2cap_chan *c, *c1 = NULL;
++	struct l2cap_chan *c, *tmp, *c1 = NULL;
  
-+	if (!nhandle) {
-+		NL_SET_ERR_MSG(extack, "Replacing with handle of 0 is invalid");
-+		return -EINVAL;
-+	}
-+
- 	h1 = to_hash(nhandle);
- 	b = rtnl_dereference(head->table[h1]);
- 	if (!b) {
-@@ -477,6 +482,11 @@ static int route4_change(struct net *net
- 	int err;
- 	bool new = true;
+ 	read_lock(&chan_list_lock);
  
-+	if (!handle) {
-+		NL_SET_ERR_MSG(extack, "Creating with handle of 0 is invalid");
-+		return -EINVAL;
-+	}
-+
- 	if (opt == NULL)
- 		return handle ? -EINVAL : 0;
+-	list_for_each_entry(c, &chan_list, global_l) {
++	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+ 		if (state && c->state != state)
+ 			continue;
  
+@@ -1989,11 +1989,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+ 				c = l2cap_chan_hold_unless_zero(c);
+-				if (!c)
+-					continue;
+-
+-				read_unlock(&chan_list_lock);
+-				return c;
++				if (c) {
++					read_unlock(&chan_list_lock);
++					return c;
++				}
+ 			}
+ 
+ 			/* Closest match */
 
 
