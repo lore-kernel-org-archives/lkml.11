@@ -2,68 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B67C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E00C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352332AbiHSQWD (ORCPT
+        id S1352354AbiHSQWH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
+        Fri, 19 Aug 2022 12:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352518AbiHSQQ6 (ORCPT
+        with ESMTP id S1352542AbiHSQRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:58 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5572B117772
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:00:14 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id h25-20020a056e021d9900b002e069b96119so3484285ila.14
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:00:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=PEvbQwuqkPIOqGz2U2biiCtJ1u8u1Jgg6b0aF9rPmO8=;
-        b=V5lJiosYLgU6XR/Dh2ZKTYH2m6jiWZRWCXRWYI0j6WV2CT+0VJfmRh02ma65IoRDv2
-         Sl2PvOq0l+etXTHbU1v+i3CtvaiELCZ3R4IW93rAThRvl5CYWvG35Cuz9w+OvtKC3VUy
-         GPr7UMujfDWY5rrCR+S6rJg74C/Ec1ivgXLyN3zyZG0IvLsCaL9K2B0ZBoGIe6yaSAJv
-         UZGZ6F36ozpdBJOaG0eHQCijZXc75vutd/GwuTdXb8OWiIp7VKh8n+YYAOAbOGQh8eUr
-         vK78jxMl80SGQITC+zZJmx+iIznImSuLzyQz8Z0eNAodNRDl4rw5hfHkzvPTYKmI1C9B
-         qzBw==
-X-Gm-Message-State: ACgBeo0160Kp0GovORdmspHKDvhkxbllDLAyuUoZv250jogAHIFiTuzS
-        DSePzwto/ZL0lgfAcdBs8epczcQ5me0VbdH/8cB+1ix+aT+Y
-X-Google-Smtp-Source: AA6agR7UZjzoy5Us1DMpgDEjmQJbjXiO9fZmVN9HvfHnjj+EfE7r4AD/0k+hGqUw2dul+xlkdYKVCL0+BwWDSHv5eSSefeVvtzJw
+        Fri, 19 Aug 2022 12:17:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB6E117774;
+        Fri, 19 Aug 2022 09:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 952EE616B3;
+        Fri, 19 Aug 2022 16:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C388C433C1;
+        Fri, 19 Aug 2022 16:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660924813;
+        bh=yNbO08elAEoY/dw+6rSOTyJSJXQ7EEE8nArmGuo7i6M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Krte+lqBUNIF1NM5k72X+bTRpgq/QMYdv8r4lDmJWZ95oJ+xypHOHeBApKTj4XHRx
+         CQT9uLyKeghTTTgBGhnYwJ5sxG9BaaRdVyuOMFzWcaD1kORxI+zs6/QUGD6UPWDm4N
+         I/eOIBzoZ85lqU+DMd8zHtsQPn357PAvo3/TyAgw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 291/545] dmaengine: dw-edma: Fix eDMA Rd/Wr-channels and DMA-direction semantics
+Date:   Fri, 19 Aug 2022 17:41:01 +0200
+Message-Id: <20220819153842.353179189@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-X-Received: by 2002:a02:3348:0:b0:349:b71c:af7d with SMTP id
- k8-20020a023348000000b00349b71caf7dmr521605jak.181.1660924812727; Fri, 19 Aug
- 2022 09:00:12 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 09:00:12 -0700
-In-Reply-To: <20220819122008.1561-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000761b3f05e69a3131@google.com>
-Subject: Re: [syzbot] possible deadlock in jbd2_journal_lock_updates
-From:   syzbot <syzbot+79e6bbabf3ce17357969@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+[ Upstream commit c1e33979171da63cf47e56243ccb8ba82363c7d3 ]
 
-Reported-and-tested-by: syzbot+79e6bbabf3ce17357969@syzkaller.appspotmail.com
+In accordance with [1, 2] the DW eDMA controller has been created to be
+part of the DW PCIe Root Port and DW PCIe End-point controllers and to
+offload the transferring of large blocks of data between application and
+remote PCIe domains leaving the system CPU free for other tasks. In the
+first case (eDMA being part of DW PCIe Root Port) the eDMA controller is
+always accessible via the CPU DBI interface and never over the PCIe wire.
 
-Tested on:
+The latter case is more complex. Depending on the DW PCIe End-Point IP-core
+synthesize parameters it's possible to have the eDMA registers accessible
+not only from the application CPU side, but also via mapping the eDMA CSRs
+over a dedicated endpoint BAR. So based on the specifics denoted above the
+eDMA driver is supposed to support two types of the DMA controller setups:
 
-commit:         ca688bff Add linux-next specific files for 20220808
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=151d45e3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
-dashboard link: https://syzkaller.appspot.com/bug?extid=79e6bbabf3ce17357969
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1267b2f3080000
+  1) eDMA embedded into the DW PCIe Root Port/End-point and accessible over
+     the local CPU from the application side.
 
-Note: testing is done by a robot and is best-effort only.
+  2) eDMA embedded into the DW PCIe End-point and accessible via the PCIe
+     wire with MWr/MRd TLPs generated by the CPU PCIe host controller.
+
+Since the CPU memory resides different sides in these cases the semantics
+of the MEM_TO_DEV and DEV_TO_MEM operations is flipped with respect to the
+Tx and Rx DMA channels. So MEM_TO_DEV/DEV_TO_MEM corresponds to the Tx/Rx
+channels in setup 1) and to the Rx/Tx channels in case of setup 2).
+
+The DW eDMA driver has supported the case 2) since e63d79d1ffcd
+("dmaengine: Add Synopsys eDMA IP core driver") in the framework of the
+drivers/dma/dw-edma/dw-edma-pcie.c driver.
+
+The case 1) support was added later by bd96f1b2f43a ("dmaengine: dw-edma:
+support local dma device transfer semantics").  Afterwards the driver was
+supposed to cover the both possible eDMA setups, but the latter commit
+turned out to be not fully correct.
+
+The problem was that the commit together with the new functionality support
+also changed the channel direction semantics so the eDMA Read-channel
+(corresponding to the DMA_DEV_TO_MEM direction for case 1) now uses the
+sgl/cyclic base addresses as the Source addresses of the DMA transfers and
+dma_slave_config.dst_addr as the Destination address of the DMA transfers.
+
+Similarly the eDMA Write-channel (corresponding to the DMA_MEM_TO_DEV
+direction for case 1) now uses dma_slave_config.src_addr as a source
+address of the DMA transfers and sgl/cyclic base address as the Destination
+address of the DMA transfers. This contradicts the logic of the
+DMA-interface, which implies that DEV side is supposed to belong to the
+PCIe device memory and MEM - to the CPU/Application memory. Indeed it seems
+irrational to have the SG-list defined in the PCIe bus space, while
+expecting a contiguous buffer allocated in the CPU memory. Moreover the
+passed SG-list and cyclic DMA buffers are supposed to be mapped in a way so
+to be seen by the DW eDMA Application (CPU) interface.
+
+So in order to have the correct DW eDMA interface we need to invert the
+eDMA Rd/Wr-channels and DMA-slave directions semantics by selecting the
+src/dst addresses based on the DMA transfer direction instead of using the
+channel direction capability.
+
+[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
+    v.5.40a, March 2019, p.1092
+[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Endpoint,
+    v.5.40a, March 2019, p.1189
+
+Co-developed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Fixes: bd96f1b2f43a ("dmaengine: dw-edma: support local dma device transfer semantics")
+Link: https://lore.kernel.org/r/20220524152159.2370739-7-Frank.Li@nxp.com
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-By: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/dma/dw-edma/dw-edma-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+index 58c8cc8fe0e1..d7ed50f8b929 100644
+--- a/drivers/dma/dw-edma/dw-edma-core.c
++++ b/drivers/dma/dw-edma/dw-edma-core.c
+@@ -400,7 +400,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 		chunk->ll_region.sz += burst->sz;
+ 		desc->alloc_sz += burst->sz;
+ 
+-		if (chan->dir == EDMA_DIR_WRITE) {
++		if (dir == DMA_DEV_TO_MEM) {
+ 			burst->sar = src_addr;
+ 			if (xfer->cyclic) {
+ 				burst->dar = xfer->xfer.cyclic.paddr;
+-- 
+2.35.1
+
+
+
