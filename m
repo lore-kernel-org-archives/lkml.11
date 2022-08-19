@@ -2,88 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A60EFC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62513C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349658AbiHSPWR (ORCPT
+        id S1349671AbiHSPWU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        Fri, 19 Aug 2022 11:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349637AbiHSPWN (ORCPT
+        with ESMTP id S1349657AbiHSPWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:22:13 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7BFFF8CE;
-        Fri, 19 Aug 2022 08:22:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=tb0EOcj/cP/ZuwLYxWcP43h5C3E6flLzxmX2a1wEjWs=; b=Q5keVqP0r9w7d9aLb3DgGx7Ytw
-        5UBgPFlT3NnvngRx82tAQhpQmKXgysZ3PFvV1gDsRBGB2a+s9IBjZsvS8fMKv2tanvmNoj619SOil
-        CouctGihln6nnZfiOtGIhl0rEVKsFC5VmZPyoGAOSEvzjTsJQmCrVxAQCu7viSwktTwFbZJjB13K/
-        BcUKVoyTWq1DpTsP6/Z6pCwJ3fsu1RcTSossiXXHE1a4KGo+omusLuRZBROtlerIoeYSREp9fkQa/
-        SgjARaqLNZhtzbBl3rBx6AyCS3M9juEwPlF3jm+xR7WmYgPPvV7xoMw39jsnlEKo1TuyEjw8xJXyl
-        PZQYEHzg==;
-Received: from [2600:1702:3c30:6ca0:77cd:43b1:3d69:dd7b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oP3ow-00BHmH-Fb; Fri, 19 Aug 2022 15:22:02 +0000
-Message-ID: <66f8a3a6-22d5-8a1b-e011-c50de8e19e6c@infradead.org>
-Date:   Fri, 19 Aug 2022 08:21:56 -0700
+        Fri, 19 Aug 2022 11:22:16 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8408FF235
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:22:14 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id a4-20020a056e0208a400b002e4621942dfso3416483ilt.0
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:22:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=uRVtT8QpSN/EYjTquNnKl0o/Oh6F4fnkqC7Jmic6a3M=;
+        b=5EpI4bC0W1Jy6BMaHEtnSfTZlIfOmyL8DSFtOhe73P3+Asj7xOW/kOE8XhG6UPYE5k
+         ssJyhA4BkuUqiTRLDrJlp9fcBh09jIK67Z3758KX4Y7JvNebA4FQwAv7iI+MF/hZqp55
+         /X7L2q+enIhqwp4+BSXg803AZoWhAoEgd/E4nHY6mYT8pM3tatDy9z03TO5JF3EBCI8k
+         g63jAXN1HaL2tzSisatXVSUXZ12X1GuTsYLloAoFp2l1B/xS/G/gUnusL4dzFX7mS3Fw
+         qokdG/Bwc+7GsUOzC5FSNxtSFMNy/u01HIpsxL6wGA/aWdeHw8A2W3gUrjjudBWWjYub
+         3fgg==
+X-Gm-Message-State: ACgBeo22DvqcRfLhFJBf5RZn3fiO0oj1NpkikcYVYKFiP/6LLJJcdrzT
+        EcNFYv5y5QI/drIb7X41tMEjayRL66KYB0TBUY/YJRlYgqDJ
+X-Google-Smtp-Source: AA6agR60UOhUkqbcEHqXSuYVXBWYdvhrMtJdvvHvgEgDepURFjddGRHQoov6tgNCBYpUbprHspeiXRf6FVvktRo1K5BSlc8hQwVT
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] block: move from strlcpy with unused retval to strscpy
-Content-Language: en-US
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        =?UTF-8?Q?Christoph_B=c3=b6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jim Paris <jim@jtan.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        linux-block@vger.kernel.org, drbd-dev@lists.linbit.com,
-        linuxppc-dev@lists.ozlabs.org
-References: <20220818205958.6552-1-wsa+renesas@sang-engineering.com>
-From:   Geoff Levand <geoff@infradead.org>
-In-Reply-To: <20220818205958.6552-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6638:1402:b0:346:8903:f54 with SMTP id
+ k2-20020a056638140200b0034689030f54mr3593467jad.243.1660922534003; Fri, 19
+ Aug 2022 08:22:14 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 08:22:13 -0700
+In-Reply-To: <20220819105110.1412-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a38cca05e699a9e3@google.com>
+Subject: Re: [syzbot] general protection fault in release_udmabuf
+From:   syzbot <syzbot+c80e9ef5d8bb45894db0@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/18/22 13:59, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
-> 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
-...
-> diff --git a/drivers/block/ps3vram.c b/drivers/block/ps3vram.c
-> index e1d080f680ed..c76e0148eada 100644
-> --- a/drivers/block/ps3vram.c
-> +++ b/drivers/block/ps3vram.c
-> @@ -745,7 +745,7 @@ static int ps3vram_probe(struct ps3_system_bus_device *dev)
->  	gendisk->flags |= GENHD_FL_NO_PART;
->  	gendisk->fops = &ps3vram_fops;
->  	gendisk->private_data = dev;
-> -	strlcpy(gendisk->disk_name, DEVICE_NAME, sizeof(gendisk->disk_name));
-> +	strscpy(gendisk->disk_name, DEVICE_NAME, sizeof(gendisk->disk_name));
->  	set_capacity(gendisk, priv->size >> 9);
->  	blk_queue_max_segments(gendisk->queue, BLK_MAX_SEGMENTS);
->  	blk_queue_max_segment_size(gendisk->queue, BLK_MAX_SEGMENT_SIZE);
+Hello,
 
-Seems OK for ps3vram.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Acked-by: Geoff Levand <geoff@infradead.org>
+Reported-and-tested-by: syzbot+c80e9ef5d8bb45894db0@syzkaller.appspotmail.com
 
+Tested on:
+
+commit:         7ebfc85e Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=15378a47080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
+dashboard link: https://syzkaller.appspot.com/bug?extid=c80e9ef5d8bb45894db0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=14e079e3080000
+
+Note: testing is done by a robot and is best-effort only.
