@@ -2,92 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDB9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 443F1C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348128AbiHSKl5 (ORCPT
+        id S1347721AbiHSKmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 06:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
+        Fri, 19 Aug 2022 06:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347814AbiHSKls (ORCPT
+        with ESMTP id S1348047AbiHSKme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:41:48 -0400
-Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D773F4382;
-        Fri, 19 Aug 2022 03:41:47 -0700 (PDT)
-Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAWGUj024458;
-        Fri, 19 Aug 2022 03:39:05 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=PPS06212021;
- bh=V5UHwYCKN3dH57rjW4b86xzSQCOzujFIliAIIiMc64A=;
- b=mbYE3qaSLCSSJ8mkJGCzQPFPge4gotNjkj3PlLIHjFV9hLxycyPfuSEu6nt2NtypNaTm
- lAaRBNpIHBLMIvmYQ/4N5hlVnmkOY6EgNe9RkHKY5GfNcM8agZ8LdOoFm0/6jJhNTjWd
- Lw5qRfa2ZLLaCxmQtjY5xTTMwdh/K/e2k2k+KfZzNOu0gn7Np1muY53lFWig0k8D/zN9
- HwNQWpei34DChZFwgxu1o79VJJLT2FwcdufL3F8UU0j6QhiyXc/jYPUZlrfblSf/gcjR
- B6tkTFJRzUoqoIXAOaarxSRBcx2J5kjUCw8kUSINI21nhYvCH9lKMYrI/TAeHOBEKVT1 ng== 
-Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hx783d5cm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 19 Aug 2022 03:39:05 -0700
-Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Fri, 19 Aug 2022 03:39:01 -0700
-From:   Dragos-Marian Panait <dragos.panait@windriver.com>
-To:     <stable@vger.kernel.org>
-CC:     Pavel Skripkin <paskripkin@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 5.10 0/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Fri, 19 Aug 2022 13:38:51 +0300
-Message-ID: <20220819103852.902332-1-dragos.panait@windriver.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 06:42:34 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28CDF4CA0;
+        Fri, 19 Aug 2022 03:42:33 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id i7so2955085qka.13;
+        Fri, 19 Aug 2022 03:42:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=f2ymQP7RmyhXPwARC3XVO6qBIZTzz5uQg4wHNvMjs4k=;
+        b=mCPV9jMIz0oEOjkgWgvplWqWmlNVEzR7uz2r+pEAWeJebgT5MlOkKaYqLlHrZqOp/j
+         DS66dyi7cQXSSGVTIZI+OkYU/TO5792CsscgKhvoNQotG9iQsj74xQZHbxxvIjlsh324
+         suGLCjyMSgI7tJGzT2qcyk875xTTh2jUH/cDV/FKtvVES1qzNorrJ2ilrb72mNnyhHCs
+         XlCGcB/E2y5Vk1hieATHIc0jW5jyZ+MmmckyahgUPanINAQB7GfwgataySfYaV06gnyW
+         swMrPb6rO52QIgVPAVwlU+PzEDw1+uyNmuH3VOFysKrhqsjdEwd1jw+IDWM+Zr86qZ0H
+         iRRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=f2ymQP7RmyhXPwARC3XVO6qBIZTzz5uQg4wHNvMjs4k=;
+        b=iFxA+t2UONJUCFQZUxmb6LJZSftkBc/IHijHl++EouU88Ccs61rU9z/hW2zG5q33rA
+         6PJekYsxW4TerAlaBOKn0762UMT90td7NkKZ9H8H/mQ8kcOCO3zH2mYpCVon5OeQjcFI
+         ns2ra9CWwkdGwG1yi4Ll2/P7RITuiFOiUOwVVn4SC3v3wL2McSoRdYB7e9XWSiZz7kCf
+         gUV6ms3KmyysqrBvKDlJBWa+esIWpXjx0FXAri5H6H+UKWuZVVX1usmbm5bITmYtl4rm
+         WMq5r1u7Ga5VXpCOrWVba0G720mpJxIM7q4gzxCC7ijiDH4zs6V+DZ0I+fgIWqUWZOSa
+         03ZQ==
+X-Gm-Message-State: ACgBeo2VCB/LJfVbP/HBfa75Vf4XHEu8dZq/9lSJ9ieIQscTp0yKb9T1
+        sm7LJXR1ZvNC+7gPIYVc0rmYm8VyTnofUjtRavM=
+X-Google-Smtp-Source: AA6agR4WT/qaoOUdtk1Itp7c3bhT+eoG2hRYXMONj34prB+dXxr5zgJu5oFbq2rNTgmJuezsOmwy4NFU/np3CyxDxJI=
+X-Received: by 2002:a05:620a:254d:b0:6ab:84b8:25eb with SMTP id
+ s13-20020a05620a254d00b006ab84b825ebmr4710971qko.383.1660905752738; Fri, 19
+ Aug 2022 03:42:32 -0700 (PDT)
 MIME-Version: 1.0
+References: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
+ <1660649244-146842-2-git-send-email-john.garry@huawei.com>
+ <CAHp75Vc4vT==hB=svhDBhSpNFCQXwzZ1RMxy4mQspFhmSjQ03g@mail.gmail.com>
+ <366fd6dd-a37b-c7ec-fdf3-48f8a8024834@huawei.com> <CAHp75Vd-6mfK=Or4MjXswUZsovHhMyDDJCv8srBH70f24MGvpA@mail.gmail.com>
+ <1a5eb773-d339-512f-7c5d-7ef72edfdc2a@huawei.com>
+In-Reply-To: <1a5eb773-d339-512f-7c5d-7ef72edfdc2a@huawei.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 19 Aug 2022 13:41:56 +0300
+Message-ID: <CAHp75VeGpOh4REjUK+iBKr6AD7szSdd8HZoMZeX3oBtqu50C7w@mail.gmail.com>
+Subject: Re: [PATCH PoC 1/3] ACPI / PNP: Don't add enumeration_by_parent devices
+To:     John Garry <john.garry@huawei.com>
+Cc:     Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linuxarm <linuxarm@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [128.224.125.191]
-X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
- ala-exchng01.corp.ad.wrs.com (147.11.82.252)
-X-Proofpoint-ORIG-GUID: inYO1mV4n7fjUxtR6KRXfBoSYH-eQHjP
-X-Proofpoint-GUID: inYO1mV4n7fjUxtR6KRXfBoSYH-eQHjP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- spamscore=0 impostorscore=0 suspectscore=0 phishscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 adultscore=0 priorityscore=1501
- mlxlogscore=307 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208190041
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit is needed to fix CVE-2022-1679:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ac4827f78c7ffe8eef074bc010e7e34bc22f533
+On Fri, Aug 19, 2022 at 1:20 PM John Garry <john.garry@huawei.com> wrote:
+> On 19/08/2022 10:59, Andy Shevchenko wrote:
+> >>>> The hisi_lpc driver also creates a platform device serial device for uart,
+> >>>> which is the actual uart which we want to use - see
+> >>>> hisi_lpc_acpi_add_child(). That function does not check
+> >>>> physical_node_count value, but acpi_create_platform_device() does check it.
+> >>>> So if we were to move hisi_lpc_acpi_add_child() across to use
+> >>>> acpi_create_platform_device(), then the change in this patch is required to
+> >>>> not create the PNP binding (so that physical_node_count is not set from
+> >>>> PNP probe).
+> >>> Hmm... The flag, as I interpret it, is equal to "the device in
+> >>> question is a peripheral device to the non-discoverable bus, such as
+> >>> SPI, I2C or UART". I.o.w. I do not see how PNP suits here. So, from my
+> >>> point of view it seems like an abuse of the flag. Not sure the current
+> >>> state of affairs in ACPI glue layer regarding this, though.
+> >> Sorry, but I'm not following you here. Which flag are you talking about?
+> > "enumerated by parent".
+>
+> ok, right. So I thought that PNP0501 was a standard cid to describe
+> 16550-compat UART which may be on an LPC bus. And a LPC bus is
+> non-discoverable, like SPI or I2C, which also use "enumerated by parent".
 
-Pavel Skripkin (1):
-  ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+While in most cases the above-mentioned UART is sitting behind LPC and
+what you described is all true, there is no requirement to have
+PNP0501 to be tightened to LPC bus, so it can be any 8250-compatible
+UART.
 
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+> Indeed, using PNP0501 for hisi lpc UART cid would be without problem,
+> apart from the fact that we can't do all the PIO translation (so need
+> "enumerated by parent").
 
+Yeah, what can use this flag is the UART peer that connects to the
+UART host, but it's a bit grey, because UART is p2p and not
+controller-peripheral type of connections.
 
-base-commit: 6eae1503ddf94b4c3581092d566b17ed12d80f20
 -- 
-2.37.1
-
+With Best Regards,
+Andy Shevchenko
