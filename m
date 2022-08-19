@@ -2,54 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A506C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9579C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351203AbiHSRuR (ORCPT
+        id S1350264AbiHSRwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
+        Fri, 19 Aug 2022 13:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351301AbiHSRt3 (ORCPT
+        with ESMTP id S1354825AbiHSRvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:49:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C557C32F;
-        Fri, 19 Aug 2022 10:20:20 -0700 (PDT)
+        Fri, 19 Aug 2022 13:51:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E704B79;
+        Fri, 19 Aug 2022 10:24:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C3AFB82852;
-        Fri, 19 Aug 2022 17:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6B2EC433D6;
-        Fri, 19 Aug 2022 17:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660929618;
-        bh=pqfYAKcyggEoIGvq/LHNLs/YpU/JRraQ9n78keTDpNk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y2EltIagHroUZbMf+CyAqnokaZoI983lqcAJO3KuyWlHrGajVQ6J5saQ4e/VCY5Bw
-         Bd/3+gzN9heMk2mlUteyp49dHgxtUz0uhkRMJ1NFoYl7j4TfCY8WFZ/dCj7AGEpH6B
-         sLH2QTzOLx6D2xra3Pjrfe21Mxn1xNkAErjaIeTh9jrjcVUJoKc9Tc8AuEdSaA/nw1
-         6YS53b6vd2bpmwSgtbLKJhsKAgaR3tDEHq3iHP66ZNbGjreKktn090wsA5RXJKOFBa
-         KK2UkNmajG0qnFu03YyrmMTWjKmkN5QjjIGJvfFLXArpjZ1E3N/XSNxFjAh1nbLSBB
-         UYsaF+97i+qsg==
-Date:   Fri, 19 Aug 2022 18:30:52 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, lee@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lars@metafoo.de,
-        sboyd@kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v8 3/5] iio: adc: qcom-spmi-adc5: add ADC5_VREF_VADC to
- rev2 ADC5
-Message-ID: <20220819183052.49cf14e9@jic23-huawei>
-In-Reply-To: <20220818221815.346233-3-robimarko@gmail.com>
-References: <20220818221815.346233-1-robimarko@gmail.com>
-        <20220818221815.346233-3-robimarko@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBF76170E;
+        Fri, 19 Aug 2022 17:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04697C433D6;
+        Fri, 19 Aug 2022 17:24:56 +0000 (UTC)
+Date:   Fri, 19 Aug 2022 13:25:09 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Qing Zhang <zhangqing@loongson.cn>
+Cc:     Huacai Chen <chenhuacai@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn
+Subject: Re: [PATCH 1/9] LoongArch/ftrace: Add basic support
+Message-ID: <20220819132509.127a1353@gandalf.local.home>
+In-Reply-To: <20220819081403.7143-2-zhangqing@loongson.cn>
+References: <20220819081403.7143-1-zhangqing@loongson.cn>
+        <20220819081403.7143-2-zhangqing@loongson.cn>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,37 +44,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 00:18:13 +0200
-Robert Marko <robimarko@gmail.com> wrote:
+On Fri, 19 Aug 2022 16:13:55 +0800
+Qing Zhang <zhangqing@loongson.cn> wrote:
 
-> Add support for ADC5_VREF_VADC channel to rev2 ADC5 channel list.
-> This channel measures the VADC reference LDO output.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> +#define MCOUNT_STACK_SIZE	(2 * SZREG)
+> +#define MCOUNT_S0_OFFSET	(0)
+> +#define MCOUNT_RA_OFFSET	(SZREG)
+> +
+> +	.macro MCOUNT_SAVE_REGS
+> +	PTR_ADDI sp, sp, -MCOUNT_STACK_SIZE
+> +	PTR_S	s0, sp, MCOUNT_S0_OFFSET
+> +	PTR_S	ra, sp, MCOUNT_RA_OFFSET
+> +	move	s0, a0
+> +	.endm
+> +
+> +	.macro MCOUNT_RESTORE_REGS
+> +	move	a0, s0
+> +	PTR_L	ra, sp, MCOUNT_RA_OFFSET
+> +	PTR_L	s0, sp, MCOUNT_S0_OFFSET
+> +	PTR_ADDI sp, sp, MCOUNT_STACK_SIZE
+> +	.endm
+> +
+> +
+> +SYM_FUNC_START(_mcount)
+> +	la	t1, ftrace_stub
+> +	la	t2, ftrace_trace_function	/* Prepare t2 for (1) */
+> +	PTR_L	t2, t2, 0
+> +	beq	t1, t2, fgraph_trace
+> +
+> +	MCOUNT_SAVE_REGS
+> +
+> +	move	a0, ra				/* arg0: self return address */
+> +	move	a1, s0				/* arg1: parent's return address */
+> +	jirl	ra, t2, 0			/* (1) call *ftrace_trace_function */
+> +
+> +	MCOUNT_RESTORE_REGS
 
-I've changed my mind on this, mostly because we've reached a new
-cycle and I'd rather not see a v9 series + Lee is (I think)
-keen to only take stuff through MFD if there is a build time
-dependency.
+You know, if you can implement CONFIG_FTRACE_WITH_ARGS, where the default
+function callback gets a ftrace_regs pointer (that only holds what is
+needed for the arguments of the function as well as the stack pointer),
+then you could also implement function graph on top of that, and remove the
+need for the below "fgraph_trace" trampoline.
 
-Applied this patch directly to the togreg branch of iio.git
-and pushed that out as testing for 0-day to play with it.
-> ---
->  drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-> index e96da2ef1964..821fee60a765 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
-> @@ -597,6 +597,8 @@ static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
->  					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
->  					SCALE_HW_CALIB_DEFAULT)
-> +	[ADC5_VREF_VADC]	= ADC5_CHAN_VOLT("vref_vadc", 0,
-> +					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
->  					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+I'd really would like all architectures to go that way. Also, the
+CONFIG_FTRACE_WITH_ARGS is all you need for live kernel patching.
 
+-- Steve
+
+
+> +
+> +fgraph_trace:
+> +#ifdef	CONFIG_FUNCTION_GRAPH_TRACER
+> +	la	t1, ftrace_stub
+> +	la	t3, ftrace_graph_return
+> +	PTR_L	t3, t3, 0
+> +	bne	t1, t3, ftrace_graph_caller
+> +	la	t1, ftrace_graph_entry_stub
+> +	la	t3, ftrace_graph_entry
+> +	PTR_L	t3, t3, 0
+> +	bne	t1, t3, ftrace_graph_caller
+> +#endif
+> +
+> +	.globl ftrace_stub
+> +ftrace_stub:
+> +	jirl	zero, ra, 0
+> +SYM_FUNC_END(_mcount)
+> +EXPORT_SYMBOL(_mcount)
+> +
+> +#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+> +SYM_FUNC_START(ftrace_graph_caller)
+> +	MCOUNT_SAVE_REGS
+> +
+> +	PTR_ADDI	a0, ra, -4			/* arg0: Callsite self return addr */
+> +	PTR_ADDI	a1, sp, MCOUNT_STACK_SIZE	/* arg1: Callsite sp */
+> +	move	a2, s0					/* arg2: Callsite parent ra */
+> +	bl	prepare_ftrace_return
+> +
+> +	MCOUNT_RESTORE_REGS
+> +	jirl	zero, ra, 0
+> +SYM_FUNC_END(ftrace_graph_caller)
