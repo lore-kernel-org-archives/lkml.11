@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7760FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B55C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354018AbiHSQvz (ORCPT
+        id S1354067AbiHSQv6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37102 "EHLO
+        Fri, 19 Aug 2022 12:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354113AbiHSQtb (ORCPT
+        with ESMTP id S1354044AbiHSQuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:49:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1217E20F4B;
-        Fri, 19 Aug 2022 09:13:17 -0700 (PDT)
+        Fri, 19 Aug 2022 12:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F21CD44;
+        Fri, 19 Aug 2022 09:13:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EFE561199;
-        Fri, 19 Aug 2022 16:12:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CB12C433D6;
-        Fri, 19 Aug 2022 16:12:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0CF0618BB;
+        Fri, 19 Aug 2022 16:12:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA62BC433D7;
+        Fri, 19 Aug 2022 16:12:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925534;
-        bh=2odhcsxlfATn5F60Mw01yiIgEalIkAXeZLNlpAr2qGE=;
+        s=korg; t=1660925547;
+        bh=ckohcA+yLadJmCHut3jj5GmAulVKJf3WkhvytL8MJkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sz9S2V+WPORhjl2W9BxGj96NpFLsImAoZqEgzdaHm6aNxjzMRYoua9kM7F6GAo/1P
-         +I+Pm3W5Z1CHX9wzC4Y5pKx/6r//ldr2RnEwr+bT5Kl7kQPppYnVPAS3oylDkQno3N
-         H2DbrjJYCA+JVMOm/LAnQTOcXA+SEiSHtvD9CEmc=
+        b=tkbtsv97Elp5LRd5gjNBQLayVrrFgEhmASk4a1fYgpTSgrfhEpqRaCM8UYQyD+PtR
+         UgGXzVPZI1lGDlNj1Ym7Sy2xDkQzJNOxoXTjJ62qW1DM1CScuUuzu5v5qLSO3AVQNC
+         sd//j498jH8PFfGvh2gaWUDOPzluaOY7Ch8gusVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Eric Whitney <enwlinux@gmail.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.10 522/545] ext4: fix extent status tree race in writeback error recovery path
-Date:   Fri, 19 Aug 2022 17:44:52 +0200
-Message-Id: <20220819153852.907508416@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.10 525/545] dm raid: fix address sanitizer warning in raid_resume
+Date:   Fri, 19 Aug 2022 17:44:55 +0200
+Message-Id: <20220819153853.049218454@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,52 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Whitney <enwlinux@gmail.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 7f0d8e1d607c1a4fa9a27362a108921d82230874 upstream.
+commit 7dad24db59d2d2803576f2e3645728866a056dab upstream.
 
-A race can occur in the unlikely event ext4 is unable to allocate a
-physical cluster for a delayed allocation in a bigalloc file system
-during writeback.  Failure to allocate a cluster forces error recovery
-that includes a call to mpage_release_unused_pages().  That function
-removes any corresponding delayed allocated blocks from the extent
-status tree.  If a new delayed write is in progress on the same cluster
-simultaneously, resulting in the addition of an new extent containing
-one or more blocks in that cluster to the extent status tree, delayed
-block accounting can be thrown off if that delayed write then encounters
-a similar cluster allocation failure during future writeback.
+There is a KASAN warning in raid_resume when running the lvm test
+lvconvert-raid.sh. The reason for the warning is that mddev->raid_disks
+is greater than rs->raid_disks, so the loop touches one entry beyond
+the allocated length.
 
-Write lock the i_data_sem in mpage_release_unused_pages() to fix this
-problem.  Ext4's block/cluster accounting code for bigalloc relies on
-i_data_sem for mutual exclusion, as is found in the delayed write path,
-and the locking in mpage_release_unused_pages() is missing.
-
-Cc: stable@kernel.org
-Reported-by: Ye Bin <yebin10@huawei.com>
-Signed-off-by: Eric Whitney <enwlinux@gmail.com>
-Link: https://lore.kernel.org/r/20220615160530.1928801-1-enwlinux@gmail.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/md/dm-raid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1577,7 +1577,14 @@ static void mpage_release_unused_pages(s
- 		ext4_lblk_t start, last;
- 		start = index << (PAGE_SHIFT - inode->i_blkbits);
- 		last = end << (PAGE_SHIFT - inode->i_blkbits);
-+
-+		/*
-+		 * avoid racing with extent status tree scans made by
-+		 * ext4_insert_delayed_block()
-+		 */
-+		down_write(&EXT4_I(inode)->i_data_sem);
- 		ext4_es_remove_extent(inode, start, last - start + 1);
-+		up_write(&EXT4_I(inode)->i_data_sem);
- 	}
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3794,7 +3794,7 @@ static void attempt_restore_of_faulty_de
  
- 	pagevec_init(&pvec);
+ 	memset(cleared_failed_devices, 0, sizeof(cleared_failed_devices));
+ 
+-	for (i = 0; i < mddev->raid_disks; i++) {
++	for (i = 0; i < rs->raid_disks; i++) {
+ 		r = &rs->dev[i].rdev;
+ 		/* HM FIXME: enhance journal device recovery processing */
+ 		if (test_bit(Journal, &r->flags))
 
 
