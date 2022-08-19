@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F014C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4899EC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353620AbiHSQnv (ORCPT
+        id S1353766AbiHSQn6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        Fri, 19 Aug 2022 12:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353882AbiHSQlM (ORCPT
+        with ESMTP id S1353926AbiHSQlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:12 -0400
+        Fri, 19 Aug 2022 12:41:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE81D1256DB;
-        Fri, 19 Aug 2022 09:09:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B103B1257AD;
+        Fri, 19 Aug 2022 09:09:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D9E661838;
-        Fri, 19 Aug 2022 16:08:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F45CC433D7;
-        Fri, 19 Aug 2022 16:08:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E9A5612DF;
+        Fri, 19 Aug 2022 16:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FE5CC433D7;
+        Fri, 19 Aug 2022 16:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925293;
-        bh=zrrn6LAh6NYx6fLBmOiaBaMtl8pQ4I2f5vpr76aVJU4=;
+        s=korg; t=1660925338;
+        bh=2GBGupkGmPPsc1wBOEr2Ccz90RLAFSQA6sMKSheLK9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xJdMp2tLEumL1h05TGJd+6/hpBa2LPj0qaqDl1uZ3IWwjnP9tDASMauD4fuyeZUZO
-         9Hh3vlROK0rRyU+xcCJurEd8X7D/uzFP1cvB+n9YY/CADh9vT5HKoypLlaSRyVw6Hk
-         zORc1/7YMcLcUI76Wl7ALKs4+ggSXviTipy7W88s=
+        b=LULW53L1mL2pb+QriGxrkq3RB4IquNJlfUHBQym2u7xGBcNm7Ybj2+ZInG+4+h4mk
+         3VnNrkfjVnAIePxmGHcFYeMm8uM50AICqX9p5X5pLnVYvxNXtCRRnedW50m5mKti1u
+         hGwEvKOiHTRMZaMRmPK88x7Im5PcIhJ/y2QNN/iA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 406/545] s390/dump: fix old lowcore virtual vs physical address confusion
-Date:   Fri, 19 Aug 2022 17:42:56 +0200
-Message-Id: <20220819153847.598763008@linuxfoundation.org>
+Subject: [PATCH 5.10 459/545] mtd: rawnand: arasan: Check the proposed data interface is supported
+Date:   Fri, 19 Aug 2022 17:43:49 +0200
+Message-Id: <20220819153849.921260433@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,80 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Gordeev <agordeev@linux.ibm.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit dc306186a130c6d9feb0aabc1c71b8ed1674a3bf ]
+[ Upstream commit 4dd7ef970bee8a93e1817ec028a7e26aef046d0d ]
 
-Virtual addresses of vmcore_info and os_info members are
-wrongly passed to copy_oldmem_kernel(), while the function
-expects physical address of the source. Instead, __pa()
-macro should have been applied.
+Check the data interface is supported in ->setup_interface() before
+acknowledging the timings.
 
-Yet, use of __pa() macro could be somehow confusing, since
-copy_oldmem_kernel() may treat the source as an offset, not
-as a direct physical address (that depens from the oldmem
-availability and location).
-
-Fix the virtual vs physical address confusion and make the
-way the old lowcore is read consistent across all sources.
-
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20210505213750.257417-3-miquel.raynal@bootlin.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/asm-offsets.c | 2 ++
- arch/s390/kernel/crash_dump.c  | 2 +-
- arch/s390/kernel/os_info.c     | 3 ++-
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/mtd/nand/raw/arasan-nand-controller.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/s390/kernel/asm-offsets.c b/arch/s390/kernel/asm-offsets.c
-index 483051e10db3..e070073930a9 100644
---- a/arch/s390/kernel/asm-offsets.c
-+++ b/arch/s390/kernel/asm-offsets.c
-@@ -150,6 +150,8 @@ int main(void)
- 	OFFSET(__LC_BR_R1, lowcore, br_r1_trampoline);
- 	/* software defined ABI-relevant lowcore locations 0xe00 - 0xe20 */
- 	OFFSET(__LC_DUMP_REIPL, lowcore, ipib);
-+	OFFSET(__LC_VMCORE_INFO, lowcore, vmcore_info);
-+	OFFSET(__LC_OS_INFO, lowcore, os_info);
- 	/* hardware defined lowcore locations 0x1000 - 0x18ff */
- 	OFFSET(__LC_MCESAD, lowcore, mcesad);
- 	OFFSET(__LC_EXT_PARAMS2, lowcore, ext_params2);
-diff --git a/arch/s390/kernel/crash_dump.c b/arch/s390/kernel/crash_dump.c
-index 205b2e2648aa..76762dc67ca9 100644
---- a/arch/s390/kernel/crash_dump.c
-+++ b/arch/s390/kernel/crash_dump.c
-@@ -432,7 +432,7 @@ static void *get_vmcoreinfo_old(unsigned long *size)
- 	Elf64_Nhdr note;
- 	void *addr;
+diff --git a/drivers/mtd/nand/raw/arasan-nand-controller.c b/drivers/mtd/nand/raw/arasan-nand-controller.c
+index cea57de5e6cd..f9fb3b7a3ec3 100644
+--- a/drivers/mtd/nand/raw/arasan-nand-controller.c
++++ b/drivers/mtd/nand/raw/arasan-nand-controller.c
+@@ -884,6 +884,11 @@ static int anfc_setup_interface(struct nand_chip *chip, int target,
+ 	struct anand *anand = to_anand(chip);
+ 	struct arasan_nfc *nfc = to_anfc(chip->controller);
+ 	struct device_node *np = nfc->dev->of_node;
++	const struct nand_sdr_timings *sdr;
++
++	sdr = nand_get_sdr_timings(conf);
++	if (IS_ERR(sdr))
++		return PTR_ERR(sdr);
  
--	if (copy_oldmem_kernel(&addr, &S390_lowcore.vmcore_info, sizeof(addr)))
-+	if (copy_oldmem_kernel(&addr, (void *)__LC_VMCORE_INFO, sizeof(addr)))
- 		return NULL;
- 	memset(nt_name, 0, sizeof(nt_name));
- 	if (copy_oldmem_kernel(&note, addr, sizeof(note)))
-diff --git a/arch/s390/kernel/os_info.c b/arch/s390/kernel/os_info.c
-index 0a5e4bafb6ad..1b8e2aff20e3 100644
---- a/arch/s390/kernel/os_info.c
-+++ b/arch/s390/kernel/os_info.c
-@@ -15,6 +15,7 @@
- #include <asm/checksum.h>
- #include <asm/lowcore.h>
- #include <asm/os_info.h>
-+#include <asm/asm-offsets.h>
- 
- /*
-  * OS info structure has to be page aligned
-@@ -123,7 +124,7 @@ static void os_info_old_init(void)
- 		return;
- 	if (!OLDMEM_BASE)
- 		goto fail;
--	if (copy_oldmem_kernel(&addr, &S390_lowcore.os_info, sizeof(addr)))
-+	if (copy_oldmem_kernel(&addr, (void *)__LC_OS_INFO, sizeof(addr)))
- 		goto fail;
- 	if (addr == 0 || addr % PAGE_SIZE)
- 		goto fail;
+ 	if (target < 0)
+ 		return 0;
 -- 
 2.35.1
 
