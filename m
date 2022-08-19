@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A63EC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 536ECC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349344AbiHSOC7 (ORCPT
+        id S1349331AbiHSODH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52330 "EHLO
+        Fri, 19 Aug 2022 10:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349181AbiHSOC4 (ORCPT
+        with ESMTP id S1349328AbiHSOC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:02:56 -0400
+        Fri, 19 Aug 2022 10:02:59 -0400
 Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3747100F0E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:02:54 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id x21so5797637edd.3
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:02:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EEE100F0E
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:02:57 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id s11so5760038edd.13
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:02:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ventanamicro.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=gWpCeboSTd362c81JJRbfvlhocgLTAM7tdDbcBSzWLo=;
-        b=nAbT1+smFaqdX4qfGI5TykDxMyIbjzhqPcHArokTkIhBwchex3uvH78ENi3Bnt4BX0
-         7w5W23B0DjDiFlHt0tvmIR7ZBNYQXCvUgD8pwYp8qlP3gFqj6NxL89vjWHt8T25TT1Wy
-         UrKpuERmkAa5DCCZ1tOsYOxShaMrJ1Purq4AJ0OlUWJZnLKm9oeL6UTGZSl4ncJ7MzFr
-         82RvD6l56TIYCeypl3BK4Mgyzwq3H8JprBrW79AqcMzodyc7wGF4QoM8pQgA9htThGnF
-         pqTJ9f/BsE6PliI6Iwsc5feBsinOW5WQUQkxw0puSHoOgvWPFWikY5bEgkDHA8tOF5ra
-         LK2Q==
+        bh=eHs+z8DwNs709gkux1J21T7x+ZKZRefKINTUPP0jqqE=;
+        b=MiVkDd4ypsClXPfrJblJPX1o05V2XlMgkABPNa+ANz5bpPHj3bz+KUWKPLbj4eMh2e
+         Rf+Yfig8Yqutna/Gl1ZlvDAYMbONm2a1faNbFHIgth+0jnO5iCoOoiGUO2cdhbMbPcoX
+         NMC2DiHTYwuBlGQ0fm+hNXHeNI+FOZwopJW5bb9kQ/vLNIsHRnM3VsLkUoUfyPkguFPn
+         DdTu45vwCCHA2KHOEW12+Ilk7iklf/ig1tuAmHI2WDQHVgWZwZRBHOq+P9Rx6AdrUeSA
+         /uUw748nFBk8M/HHgh89LcniBs/ZOywQ1MUrAVWqnhGA8R57j5Uu3Etgfl+IUxWQLBCC
+         crfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=gWpCeboSTd362c81JJRbfvlhocgLTAM7tdDbcBSzWLo=;
-        b=oxrs42yKyr9qY7hmx/evpjMKc1vEUaH1tdiZ9Z0ZHNRGi9pP/gQ/2crjwvHPCclesL
-         7M9YdViO9VqErx6sRbTUn+QlM3KzCQWm8x3qkzR5wbaJsiczWh5K00gsaCBZD4G/OQ06
-         9zEU78YPh31JGsRuYXkLkS70mbG2OkSYjbWw4vI1ohBEVt1Ua857mw0CTN36eAOxGwkB
-         bZfM+zQyBi3Gc3YDtiRCFF4ogIIg8RuMxZbO4JXRL19ei9/mFvpO/i92JdJVihISKi6Q
-         43q7lMeBmQoPa+DaxeOL+IwuQZwOLwaTXhiof1Qg3gYlW0OHtcR/73IFqhxs3P4ztFus
-         qzOg==
-X-Gm-Message-State: ACgBeo1QC2Qs9KK4gBDHRV/hflbIci11IbHx/6YYP0kYNuM/pTXEv0iD
-        CNwgRhaDG8dwrDLSc0BTKxlwww==
-X-Google-Smtp-Source: AA6agR6iqHD8BlV5q3t5q+oMfU59Fa2v3ezBpXzZ0BeKOHeC9Vpm41nPJvjiQV3QcFghPode/hRkQw==
-X-Received: by 2002:a05:6402:198:b0:442:da5a:6716 with SMTP id r24-20020a056402019800b00442da5a6716mr6164620edv.5.1660917773621;
-        Fri, 19 Aug 2022 07:02:53 -0700 (PDT)
+        bh=eHs+z8DwNs709gkux1J21T7x+ZKZRefKINTUPP0jqqE=;
+        b=F16PfevaaFS1p57HJl4m9zhnjgpJ/BH+ZEPhh4kRV4/C1z49fpO7Tlrez+WH3BcSix
+         z71Ads+AgOf49tjJ70H/2CEGz4dSQJf2rqpA2/X0UCPI7T+lNUTQNWaMbFKZAYyJtUsg
+         Dl6HQyecAV/wZS+dZ0oUV16dE2Trc0ebVvL89jHmTn9Om5b5/6cGcURL3nB59o2EhNZ8
+         7g4HQtZyMwHgCBXe48VUNgfGi+h+2PCyX2ykn1BtsBw8IANPwG/UTtLSBMqpi4aK4nDu
+         3OTCOwTQdeslIaxE3KVv+XyTVKJKj5lUSZpyKx+yqL4WSUXzDbqgn61cFSXL3UPetgS3
+         V1AQ==
+X-Gm-Message-State: ACgBeo28MKf7vVU8ouH8nJAYB2UkYI105XtJBE33CLFiPwMeFP65v3xE
+        JGtQ0o2vd/rUraDOFOhyo+22fQ==
+X-Google-Smtp-Source: AA6agR63VI1qC3a/Avg6iK+EkZbCELYZLImNqOEsToeYNls3s6oXmzXpKEmehFYJbdsLBfBuKZi0RQ==
+X-Received: by 2002:a05:6402:1044:b0:446:27c1:49a4 with SMTP id e4-20020a056402104400b0044627c149a4mr4331991edu.53.1660917776492;
+        Fri, 19 Aug 2022 07:02:56 -0700 (PDT)
 Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id q15-20020a170906360f00b00730a73cbe08sm2383101ejb.169.2022.08.19.07.02.52
+        by smtp.gmail.com with ESMTPSA id b9-20020a17090630c900b0073c9d68ca0dsm1434287ejb.133.2022.08.19.07.02.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 07:02:53 -0700 (PDT)
+        Fri, 19 Aug 2022 07:02:56 -0700 (PDT)
 From:   Andrew Jones <ajones@ventanamicro.com>
 To:     linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, paul.walmsley@sifive.com,
         palmer@dabbelt.com, aou@eecs.berkeley.edu, anup@brainfault.org,
         mchitale@ventanamicro.com, heiko@sntech.de
-Subject: [PATCH 1/4] riscv: Add X register names to gpr-nums
-Date:   Fri, 19 Aug 2022 16:02:47 +0200
-Message-Id: <20220819140250.3892995-2-ajones@ventanamicro.com>
+Subject: [PATCH 3/4] riscv: KVM: Apply insn-def to hfence encodings
+Date:   Fri, 19 Aug 2022 16:02:49 +0200
+Message-Id: <20220819140250.3892995-4-ajones@ventanamicro.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220819140250.3892995-1-ajones@ventanamicro.com>
 References: <20220819140250.3892995-1-ajones@ventanamicro.com>
@@ -67,41 +67,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When encoding instructions it's sometimes necessary to set a
-register field to a precise number. This is easiest to do using
-the x<num> naming.
+Introduce hfence instruction encodings and apply them to KVM's use.
+With the self-documenting nature of the instruction encoding macros,
+and a spec always within arm's reach, it's safe to remove the
+comments, so we do that too.
 
 Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
 ---
- arch/riscv/include/asm/gpr-num.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/riscv/include/asm/insn-def.h |   8 ++
+ arch/riscv/kvm/tlb.c              | 117 ++++--------------------------
+ 2 files changed, 21 insertions(+), 104 deletions(-)
 
-diff --git a/arch/riscv/include/asm/gpr-num.h b/arch/riscv/include/asm/gpr-num.h
-index dfee2829fc7c..efeb5edf8a3a 100644
---- a/arch/riscv/include/asm/gpr-num.h
-+++ b/arch/riscv/include/asm/gpr-num.h
-@@ -3,6 +3,11 @@
- #define __ASM_GPR_NUM_H
+diff --git a/arch/riscv/include/asm/insn-def.h b/arch/riscv/include/asm/insn-def.h
+index 4cd0208068dd..cd1c0d365f47 100644
+--- a/arch/riscv/include/asm/insn-def.h
++++ b/arch/riscv/include/asm/insn-def.h
+@@ -79,4 +79,12 @@
+ #define RS1(v)		__REG(v)
+ #define RS2(v)		__REG(v)
  
- #ifdef __ASSEMBLY__
++#define OPCODE_SYSTEM	OPCODE(115)
 +
-+	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
-+	.equ	.L__gpr_num_x\num, \num
-+	.endr
++#define HFENCE_VVMA(vaddr, asid)	\
++	INSN_R(OPCODE_SYSTEM, FUNC3(0), FUNC7(17), RD(0), vaddr, asid)
 +
- 	.equ	.L__gpr_num_zero,	0
- 	.equ	.L__gpr_num_ra,		1
- 	.equ	.L__gpr_num_sp,		2
-@@ -39,6 +44,9 @@
- #else /* __ASSEMBLY__ */
++#define HFENCE_GVMA(gaddr, vmid)	\
++	INSN_R(OPCODE_SYSTEM, FUNC3(0), FUNC7(49), RD(0), gaddr, vmid)
++
+ #endif /* __ASM_INSN_DEF_H */
+diff --git a/arch/riscv/kvm/tlb.c b/arch/riscv/kvm/tlb.c
+index 1a76d0b1907d..f742a0d888e1 100644
+--- a/arch/riscv/kvm/tlb.c
++++ b/arch/riscv/kvm/tlb.c
+@@ -12,22 +12,7 @@
+ #include <linux/kvm_host.h>
+ #include <asm/cacheflush.h>
+ #include <asm/csr.h>
+-
+-/*
+- * Instruction encoding of hfence.gvma is:
+- * HFENCE.GVMA rs1, rs2
+- * HFENCE.GVMA zero, rs2
+- * HFENCE.GVMA rs1
+- * HFENCE.GVMA
+- *
+- * rs1!=zero and rs2!=zero ==> HFENCE.GVMA rs1, rs2
+- * rs1==zero and rs2!=zero ==> HFENCE.GVMA zero, rs2
+- * rs1!=zero and rs2==zero ==> HFENCE.GVMA rs1
+- * rs1==zero and rs2==zero ==> HFENCE.GVMA
+- *
+- * Instruction encoding of HFENCE.GVMA is:
+- * 0110001 rs2(5) rs1(5) 000 00000 1110011
+- */
++#include <asm/insn-def.h>
  
- #define __DEFINE_ASM_GPR_NUMS					\
-+"	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31\n" \
-+"	.equ	.L__gpr_num_x\\num, \\num\n"			\
-+"	.endr\n"						\
- "	.equ	.L__gpr_num_zero,	0\n"			\
- "	.equ	.L__gpr_num_ra,		1\n"			\
- "	.equ	.L__gpr_num_sp,		2\n"			\
+ void kvm_riscv_local_hfence_gvma_vmid_gpa(unsigned long vmid,
+ 					  gpa_t gpa, gpa_t gpsz,
+@@ -41,31 +26,14 @@ void kvm_riscv_local_hfence_gvma_vmid_gpa(unsigned long vmid,
+ 	}
+ 
+ 	for (pos = gpa; pos < (gpa + gpsz); pos += BIT(order)) {
+-		/*
+-		 * rs1 = a0 (GPA >> 2)
+-		 * rs2 = a1 (VMID)
+-		 * HFENCE.GVMA a0, a1
+-		 * 0110001 01011 01010 000 00000 1110011
+-		 */
+-		asm volatile ("srli a0, %0, 2\n"
+-			      "add a1, %1, zero\n"
+-			      ".word 0x62b50073\n"
+-			      :: "r" (pos), "r" (vmid)
+-			      : "a0", "a1", "memory");
++		asm volatile (HFENCE_GVMA("%0", "%1")
++		: : "r" (pos >> 2), "r" (vmid) : "memory");
+ 	}
+ }
+ 
+ void kvm_riscv_local_hfence_gvma_vmid_all(unsigned long vmid)
+ {
+-	/*
+-	 * rs1 = zero
+-	 * rs2 = a0 (VMID)
+-	 * HFENCE.GVMA zero, a0
+-	 * 0110001 01010 00000 000 00000 1110011
+-	 */
+-	asm volatile ("add a0, %0, zero\n"
+-		      ".word 0x62a00073\n"
+-		      :: "r" (vmid) : "a0", "memory");
++	asm volatile(HFENCE_GVMA("zero", "%0") : : "r" (vmid) : "memory");
+ }
+ 
+ void kvm_riscv_local_hfence_gvma_gpa(gpa_t gpa, gpa_t gpsz,
+@@ -79,45 +47,16 @@ void kvm_riscv_local_hfence_gvma_gpa(gpa_t gpa, gpa_t gpsz,
+ 	}
+ 
+ 	for (pos = gpa; pos < (gpa + gpsz); pos += BIT(order)) {
+-		/*
+-		 * rs1 = a0 (GPA >> 2)
+-		 * rs2 = zero
+-		 * HFENCE.GVMA a0
+-		 * 0110001 00000 01010 000 00000 1110011
+-		 */
+-		asm volatile ("srli a0, %0, 2\n"
+-			      ".word 0x62050073\n"
+-			      :: "r" (pos) : "a0", "memory");
++		asm volatile(HFENCE_GVMA("%0", "zero")
++		: : "r" (pos >> 2) : "memory");
+ 	}
+ }
+ 
+ void kvm_riscv_local_hfence_gvma_all(void)
+ {
+-	/*
+-	 * rs1 = zero
+-	 * rs2 = zero
+-	 * HFENCE.GVMA
+-	 * 0110001 00000 00000 000 00000 1110011
+-	 */
+-	asm volatile (".word 0x62000073" ::: "memory");
++	asm volatile(HFENCE_GVMA("zero", "zero") : : : "memory");
+ }
+ 
+-/*
+- * Instruction encoding of hfence.gvma is:
+- * HFENCE.VVMA rs1, rs2
+- * HFENCE.VVMA zero, rs2
+- * HFENCE.VVMA rs1
+- * HFENCE.VVMA
+- *
+- * rs1!=zero and rs2!=zero ==> HFENCE.VVMA rs1, rs2
+- * rs1==zero and rs2!=zero ==> HFENCE.VVMA zero, rs2
+- * rs1!=zero and rs2==zero ==> HFENCE.VVMA rs1
+- * rs1==zero and rs2==zero ==> HFENCE.VVMA
+- *
+- * Instruction encoding of HFENCE.VVMA is:
+- * 0010001 rs2(5) rs1(5) 000 00000 1110011
+- */
+-
+ void kvm_riscv_local_hfence_vvma_asid_gva(unsigned long vmid,
+ 					  unsigned long asid,
+ 					  unsigned long gva,
+@@ -134,17 +73,8 @@ void kvm_riscv_local_hfence_vvma_asid_gva(unsigned long vmid,
+ 	hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
+ 
+ 	for (pos = gva; pos < (gva + gvsz); pos += BIT(order)) {
+-		/*
+-		 * rs1 = a0 (GVA)
+-		 * rs2 = a1 (ASID)
+-		 * HFENCE.VVMA a0, a1
+-		 * 0010001 01011 01010 000 00000 1110011
+-		 */
+-		asm volatile ("add a0, %0, zero\n"
+-			      "add a1, %1, zero\n"
+-			      ".word 0x22b50073\n"
+-			      :: "r" (pos), "r" (asid)
+-			      : "a0", "a1", "memory");
++		asm volatile(HFENCE_VVMA("%0", "%1")
++		: : "r" (pos), "r" (asid) : "memory");
+ 	}
+ 
+ 	csr_write(CSR_HGATP, hgatp);
+@@ -157,15 +87,7 @@ void kvm_riscv_local_hfence_vvma_asid_all(unsigned long vmid,
+ 
+ 	hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
+ 
+-	/*
+-	 * rs1 = zero
+-	 * rs2 = a0 (ASID)
+-	 * HFENCE.VVMA zero, a0
+-	 * 0010001 01010 00000 000 00000 1110011
+-	 */
+-	asm volatile ("add a0, %0, zero\n"
+-		      ".word 0x22a00073\n"
+-		      :: "r" (asid) : "a0", "memory");
++	asm volatile(HFENCE_VVMA("zero", "%0") : : "r" (asid) : "memory");
+ 
+ 	csr_write(CSR_HGATP, hgatp);
+ }
+@@ -184,15 +106,8 @@ void kvm_riscv_local_hfence_vvma_gva(unsigned long vmid,
+ 	hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
+ 
+ 	for (pos = gva; pos < (gva + gvsz); pos += BIT(order)) {
+-		/*
+-		 * rs1 = a0 (GVA)
+-		 * rs2 = zero
+-		 * HFENCE.VVMA a0
+-		 * 0010001 00000 01010 000 00000 1110011
+-		 */
+-		asm volatile ("add a0, %0, zero\n"
+-			      ".word 0x22050073\n"
+-			      :: "r" (pos) : "a0", "memory");
++		asm volatile(HFENCE_VVMA("%0", "zero")
++		: : "r" (pos) : "memory");
+ 	}
+ 
+ 	csr_write(CSR_HGATP, hgatp);
+@@ -204,13 +119,7 @@ void kvm_riscv_local_hfence_vvma_all(unsigned long vmid)
+ 
+ 	hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
+ 
+-	/*
+-	 * rs1 = zero
+-	 * rs2 = zero
+-	 * HFENCE.VVMA
+-	 * 0010001 00000 00000 000 00000 1110011
+-	 */
+-	asm volatile (".word 0x22000073" ::: "memory");
++	asm volatile(HFENCE_VVMA("zero", "zero") : : : "memory");
+ 
+ 	csr_write(CSR_HGATP, hgatp);
+ }
 -- 
 2.37.1
 
