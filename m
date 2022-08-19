@@ -2,247 +2,415 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F15C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 008E0C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348986AbiHSMaE (ORCPT
+        id S1348970AbiHSMeE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
+        Fri, 19 Aug 2022 08:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348983AbiHSMaB (ORCPT
+        with ESMTP id S1348339AbiHSMeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:30:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541C6100F08;
-        Fri, 19 Aug 2022 05:30:00 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBfsCV016808;
-        Fri, 19 Aug 2022 12:29:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=6d5xYz3i348rkn2bGaqNtfW82ghg3p8FmBpjICbEdXA=;
- b=aZapU+t4Mi4RagJWI4Exjx/MUb2jqp6WiuO0ra4VttYlg9B6bh11413jMcrgmJIGVVar
- W8pzijOxW8eKlUzs+W6EO0q7hFZ7hSy0ia/tfeTwkI1S0iRdcTYRmojfjb8Bf48KHwUF
- wNRu1ok1+c847XPi9sQWC42I46ygzCGJwu+H3+AWrVASzGu5HT7HsQeuxXxTer4/cJKv
- fKX6v73RzdjyOLB9i0H0TUIyULf91E2bP4uxSPHGe7G+0uNxblE34KuB+4R7dx5FzP5O
- tfX4zd3QCGW6Ry/itzx2351gkYwgsPwDb5VGAX0wlBhUdiyq2j/94oeUUvGAtjZYSSzj Xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j29vc17hc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 12:29:57 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27JBlGDn005801;
-        Fri, 19 Aug 2022 12:29:56 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j29vc17gb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 12:29:56 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27JCKp0L023998;
-        Fri, 19 Aug 2022 12:29:54 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3hx37jf84p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 12:29:54 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27JCToKb29884804
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Aug 2022 12:29:50 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 962B7A405B;
-        Fri, 19 Aug 2022 12:29:50 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4E00DA4054;
-        Fri, 19 Aug 2022 12:29:48 +0000 (GMT)
-Received: from li-c6ac47cc-293c-11b2-a85c-d421c8e4747b.ibm.com.com (unknown [9.171.40.114])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 19 Aug 2022 12:29:48 +0000 (GMT)
-From:   Pierre Morel <pmorel@linux.ibm.com>
-To:     mjrosato@linux.ibm.com
-Cc:     rdunlap@infradead.org, linux-kernel@vger.kernel.org, lkp@intel.com,
-        borntraeger@linux.ibm.com, farman@linux.ibm.com,
-        linux-s390@vger.kernel.org, kvm@vger.kernel.org, gor@linux.ibm.com,
-        hca@linux.ibm.com, schnelle@linux.ibm.com, frankja@linux.ibm.com,
-        alex.williamson@redhat.com, cohuck@redhat.com
-Subject: [PATCH v2] KVM: s390: pci: Hook to access KVM lowlevel from VFIO
-Date:   Fri, 19 Aug 2022 14:29:45 +0200
-Message-Id: <20220819122945.9309-1-pmorel@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 19 Aug 2022 08:34:02 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC741C2EAB
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:34:00 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id s9so4393286ljs.6
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=NZ2a/CLKJIs4lmdXrW3UiRmiAr4+TW2WhgSNxOGzccA=;
+        b=daMwtJbKHJ61v5sf8VR7TC5uSa0rwHZ5W0gVzElMX9oJVSe9W7bBDvKUCZTJbQ9ozW
+         33BR3WdXynzMxZ81mkppceDeuCtkGmjCOKGM6G/SYtVP91LVsdVmcpTeWpv8LVaPD0DA
+         wxtCN+kwW5SL1jzMNoVuSVzPLg+ztQh/sFYEYMiaE29up+77vyn9qkZROsFcEHgyPzRN
+         7Blaqd/boZ5LQVIE7Quc6epJJUkQXaRs5ff/Xc1jgHkZAOfUDCa+tcFUNHeE/+6/x0Bm
+         YSbrIiP+QTvn8gicSUuaLJutFj7z04wtM0iXz5pu/ushTYDoVb5VKpzt3wIEKYXxe22g
+         XYVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=NZ2a/CLKJIs4lmdXrW3UiRmiAr4+TW2WhgSNxOGzccA=;
+        b=Ce4pPxP3on0bfIXBdEYBwh39g7gF7GT+qQM0vTq4ADny8Ku8C99fLJ3Q/+JCop02n1
+         02UpXPFGMDjZEWkb/mETg8O8P7NA9f4Ix3tHr1MFqo1Yp74bwIOZ0FsoQ4msmCtvCTaj
+         VIQJNk9Q4PBW26YdIzlV5pvP7Qi7DF13rMDnMUwotpnQ2dNCOO9qkbDddlC8GHSV6vGw
+         srdrGMvCe61XPoqvDhpDGuDqo9wiIlt+Ugs4O7QlaxteMkL39QNum7nhv0O1TEMNR+Wr
+         vXOGKyKqlBl8fyUicnju288UcYtgGuUCVrN8xvlZnaZQaMj82JzLCK8SDqhHfW+z1XhF
+         /lgg==
+X-Gm-Message-State: ACgBeo0QUhUcPKdcnZad9Wwdz1BUQXMiiTUSKJdnt0e6PbcYtzCDRwlN
+        IfZi4FwImlXGbolP/OLiFujf/akdBRHw7uRI17hp4Q==
+X-Google-Smtp-Source: AA6agR5jhs1yh7KPRbY65asU6KWhzCzjs3Ki1+AluIKvIb8QFo+TO+AkXMZ7l8p0rd2isfUXBta7pRZbnJDAMfvAVkw=
+X-Received: by 2002:a05:651c:1695:b0:261:b5d4:371a with SMTP id
+ bd21-20020a05651c169500b00261b5d4371amr1716631ljb.154.1660912438814; Fri, 19
+ Aug 2022 05:33:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gTrCtLvoPBEtCO3MN1Iy94peFugVxJy2
-X-Proofpoint-GUID: pTKi6qLsfQA1GRVqUXgg4EIkBHBpht8D
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- priorityscore=1501 lowpriorityscore=0 mlxlogscore=915 suspectscore=0
- malwarescore=0 impostorscore=0 clxscore=1015 mlxscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208190047
+References: <20220819053234.241501-1-tales.aparecida@gmail.com> <20220819053234.241501-2-tales.aparecida@gmail.com>
+In-Reply-To: <20220819053234.241501-2-tales.aparecida@gmail.com>
+From:   Sadiya Kazi <sadiyakazi@google.com>
+Date:   Fri, 19 Aug 2022 18:03:47 +0530
+Message-ID: <CAO2JNKUByc9FcvqcmKe+N7NoJDU8+1U7S5PC-HfkptheeTq-Ww@mail.gmail.com>
+Subject: Re: [PATCH 1/8] Documentation: KUnit: remove duplicated docs for kunit_tool
+To:     Tales Aparecida <tales.aparecida@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        David Gow <davidgow@google.com>, corbet@lwn.net,
+        brendan.higgins@linux.dev, Trevor Woerner <twoerner@gmail.com>,
+        siqueirajordao@riseup.net, mwen@igalia.com, andrealmeid@riseup.net,
+        mairacanal@riseup.net, Isabella Basso <isabbasso@riseup.net>,
+        magalilemes00@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have a cross dependency between KVM and VFIO when using
-s390 vfio_pci_zdev extensions for PCI passthrough
-To be able to keep both subsystem modular we add a registering
-hook inside the S390 core code.
+On Fri, Aug 19, 2022 at 11:02 AM Tales Aparecida
+<tales.aparecida@gmail.com> wrote:
+>
+> Delete "kunit-tool.rst" to remove repeated info from KUnit docs.
+> "What is kunit_tool?" was integrated into index.rst, the remaining
+> sections were moved into run_wrapper.rst and renamed as follows:
+>
+> "What is a .kunitconfig?" -> "Create a ``.kunitconfig`` File"
+> "Getting Started with kunit_tool" -> "Run Tests with kunit_tool"
+> "Configuring, Building, and Running Tests" ->
+>   "Configure, Build, and Run Tests"
+> "Running Tests on QEMU" -> "Run Tests on QEMU"
+> "Parsing Test Results" -> "Parse Test Results"
+> "Filtering Tests" -> "Run Selected Test Suites"
+> "Other Useful Options" -> "Command-Line Arguments"
+>
+> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
+> ---
 
-This fixes a build problem when VFIO is built-in and KVM is built
-as a module.
+Hi Tales,
+Thank you for removing repeated content from the docs. It definitely
+helps. You could change the headings as follows:
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-Fixes: 09340b2fca007 ("KVM: s390: pci: add routines to start/stop interpretive execution")
-Cc: <stable@vger.kernel.org>
----
- arch/s390/include/asm/kvm_host.h | 17 ++++++-----------
- arch/s390/kvm/pci.c              | 12 ++++++++----
- arch/s390/pci/Makefile           |  2 +-
- arch/s390/pci/pci_kvm_hook.c     | 11 +++++++++++
- drivers/vfio/pci/vfio_pci_zdev.c |  8 ++++++--
- 5 files changed, 32 insertions(+), 18 deletions(-)
- create mode 100644 arch/s390/pci/pci_kvm_hook.c
+"What is a .kunitconfig?" -> "Create a ``.kunitconfig`` File". Keep it
+as "Creating a ``.kunitconfig`` file".
+"Getting Started with kunit_tool" -> "Run Tests with kunit_tool". Keep
+it as "Running tests with kunit_tool".
+ "Configuring, Building, and Running Tests" ->
+ "Configure, Build, and Run Tests". Keep it as "Configuring, building,
+and running tests"
+"Running Tests on QEMU" -> "Run Tests on QEMU". Keep it as "Running
+tests on QEMU"
+"Parsing Test Results" -> "Parse Test Results".  Keep it as "Parsing
+test results"
+"Filtering Tests" -> "Run Selected Test Suites".  Keep it as "Filtering tests"
+"Other Useful Options" -> "Command-Line Arguments".  Keep it as
+"Running command-line arguments". This would help to display the right
+results when any user is searching with the keyword command-line.
+Makes the document more discoverable.
 
-diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
-index f39092e0ceaa..b1e98a9ed152 100644
---- a/arch/s390/include/asm/kvm_host.h
-+++ b/arch/s390/include/asm/kvm_host.h
-@@ -1038,16 +1038,11 @@ static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
- #define __KVM_HAVE_ARCH_VM_FREE
- void kvm_arch_free_vm(struct kvm *kvm);
- 
--#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
--int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm);
--void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev);
--#else
--static inline int kvm_s390_pci_register_kvm(struct zpci_dev *dev,
--					    struct kvm *kvm)
--{
--	return -EPERM;
--}
--static inline void kvm_s390_pci_unregister_kvm(struct zpci_dev *dev) {}
--#endif
-+struct zpci_kvm_hook {
-+	int (*kvm_register)(void *opaque, struct kvm *kvm);
-+	void (*kvm_unregister)(void *opaque);
-+};
-+
-+extern struct zpci_kvm_hook zpci_kvm_hook;
- 
- #endif
-diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
-index 4946fb7757d6..bb8c335d17b9 100644
---- a/arch/s390/kvm/pci.c
-+++ b/arch/s390/kvm/pci.c
-@@ -431,8 +431,9 @@ static void kvm_s390_pci_dev_release(struct zpci_dev *zdev)
-  * available, enable them and let userspace indicate whether or not they will
-  * be used (specify SHM bit to disable).
-  */
--int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm)
-+static int kvm_s390_pci_register_kvm(void *opaque, struct kvm *kvm)
- {
-+	struct zpci_dev *zdev = opaque;
- 	int rc;
- 
- 	if (!zdev)
-@@ -510,10 +511,10 @@ int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm)
- 	kvm_put_kvm(kvm);
- 	return rc;
- }
--EXPORT_SYMBOL_GPL(kvm_s390_pci_register_kvm);
- 
--void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev)
-+static void kvm_s390_pci_unregister_kvm(void *opaque)
- {
-+	struct zpci_dev *zdev = opaque;
- 	struct kvm *kvm;
- 
- 	if (!zdev)
-@@ -566,7 +567,6 @@ void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev)
- 
- 	kvm_put_kvm(kvm);
- }
--EXPORT_SYMBOL_GPL(kvm_s390_pci_unregister_kvm);
- 
- void kvm_s390_pci_init_list(struct kvm *kvm)
- {
-@@ -678,6 +678,8 @@ int kvm_s390_pci_init(void)
- 
- 	spin_lock_init(&aift->gait_lock);
- 	mutex_init(&aift->aift_lock);
-+	zpci_kvm_hook.kvm_register = kvm_s390_pci_register_kvm;
-+	zpci_kvm_hook.kvm_unregister = kvm_s390_pci_unregister_kvm;
- 
- 	return 0;
- }
-@@ -685,6 +687,8 @@ int kvm_s390_pci_init(void)
- void kvm_s390_pci_exit(void)
- {
- 	mutex_destroy(&aift->aift_lock);
-+	zpci_kvm_hook.kvm_register = NULL;
-+	zpci_kvm_hook.kvm_unregister = NULL;
- 
- 	kfree(aift);
- }
-diff --git a/arch/s390/pci/Makefile b/arch/s390/pci/Makefile
-index bf557a1b789c..5ae31ca9dd44 100644
---- a/arch/s390/pci/Makefile
-+++ b/arch/s390/pci/Makefile
-@@ -5,5 +5,5 @@
- 
- obj-$(CONFIG_PCI)	+= pci.o pci_irq.o pci_dma.o pci_clp.o pci_sysfs.o \
- 			   pci_event.o pci_debug.o pci_insn.o pci_mmio.o \
--			   pci_bus.o
-+			   pci_bus.o pci_kvm_hook.o
- obj-$(CONFIG_PCI_IOV)	+= pci_iov.o
-diff --git a/arch/s390/pci/pci_kvm_hook.c b/arch/s390/pci/pci_kvm_hook.c
-new file mode 100644
-index 000000000000..ff34baf50a3e
---- /dev/null
-+++ b/arch/s390/pci/pci_kvm_hook.c
-@@ -0,0 +1,11 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * VFIO ZPCI devices support
-+ *
-+ * Copyright (C) IBM Corp. 2022.  All rights reserved.
-+ *	Author(s): Pierre Morel <pmorel@linux.ibm.com>
-+ */
-+#include <linux/kvm_host.h>
-+
-+struct zpci_kvm_hook zpci_kvm_hook;
-+EXPORT_SYMBOL_GPL(zpci_kvm_hook);
-diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
-index e163aa9f6144..0cbdcd14f1c8 100644
---- a/drivers/vfio/pci/vfio_pci_zdev.c
-+++ b/drivers/vfio/pci/vfio_pci_zdev.c
-@@ -151,7 +151,10 @@ int vfio_pci_zdev_open_device(struct vfio_pci_core_device *vdev)
- 	if (!vdev->vdev.kvm)
- 		return 0;
- 
--	return kvm_s390_pci_register_kvm(zdev, vdev->vdev.kvm);
-+	if (zpci_kvm_hook.kvm_register)
-+		return zpci_kvm_hook.kvm_register(zdev, vdev->vdev.kvm);
-+
-+	return -ENOENT;
- }
- 
- void vfio_pci_zdev_close_device(struct vfio_pci_core_device *vdev)
-@@ -161,5 +164,6 @@ void vfio_pci_zdev_close_device(struct vfio_pci_core_device *vdev)
- 	if (!zdev || !vdev->vdev.kvm)
- 		return;
- 
--	kvm_s390_pci_unregister_kvm(zdev);
-+	if (zpci_kvm_hook.kvm_unregister)
-+		zpci_kvm_hook.kvm_unregister(zdev);
- }
--- 
-2.31.1
 
+Reviewed-by: Sadiya Kazi <sadiyakazi@google.com>
+
+Regards,
+Sadiya Kazi
+
+>  Documentation/dev-tools/kunit/index.rst       |   3 -
+>  Documentation/dev-tools/kunit/kunit-tool.rst  | 232 ------------------
+>  Documentation/dev-tools/kunit/run_wrapper.rst |   4 +-
+>  Documentation/dev-tools/kunit/start.rst       |   2 -
+>  4 files changed, 2 insertions(+), 239 deletions(-)
+>  delete mode 100644 Documentation/dev-tools/kunit/kunit-tool.rst
+>
+> diff --git a/Documentation/dev-tools/kunit/index.rst b/Documentation/dev-tools/kunit/index.rst
+> index bc91ad7b8961..d7187282ba28 100644
+> --- a/Documentation/dev-tools/kunit/index.rst
+> +++ b/Documentation/dev-tools/kunit/index.rst
+> @@ -13,7 +13,6 @@ KUnit - Linux Kernel Unit Testing
+>         run_wrapper
+>         run_manual
+>         usage
+> -       kunit-tool
+>         api/index
+>         style
+>         faq
+> @@ -109,7 +108,5 @@ How do I use it?
+>      examples.
+>  *   Documentation/dev-tools/kunit/api/index.rst - KUnit APIs
+>      used for testing.
+> -*   Documentation/dev-tools/kunit/kunit-tool.rst - kunit_tool helper
+> -    script.
+>  *   Documentation/dev-tools/kunit/faq.rst - KUnit common questions and
+>      answers.
+> diff --git a/Documentation/dev-tools/kunit/kunit-tool.rst b/Documentation/dev-tools/kunit/kunit-tool.rst
+> deleted file mode 100644
+> index ae52e0f489f9..000000000000
+> --- a/Documentation/dev-tools/kunit/kunit-tool.rst
+> +++ /dev/null
+> @@ -1,232 +0,0 @@
+> -.. SPDX-License-Identifier: GPL-2.0
+> -
+> -=================
+> -kunit_tool How-To
+> -=================
+> -
+> -What is kunit_tool?
+> -===================
+> -
+> -kunit_tool is a script (``tools/testing/kunit/kunit.py``) that aids in building
+> -the Linux kernel as UML (`User Mode Linux
+> -<http://user-mode-linux.sourceforge.net/>`_), running KUnit tests, parsing
+> -the test results and displaying them in a user friendly manner.
+> -
+> -kunit_tool addresses the problem of being able to run tests without needing a
+> -virtual machine or actual hardware with User Mode Linux. User Mode Linux is a
+> -Linux architecture, like ARM or x86; however, unlike other architectures it
+> -compiles the kernel as a standalone Linux executable that can be run like any
+> -other program directly inside of a host operating system. To be clear, it does
+> -not require any virtualization support: it is just a regular program.
+> -
+> -What is a .kunitconfig?
+> -=======================
+> -
+> -It's just a defconfig that kunit_tool looks for in the build directory
+> -(``.kunit`` by default).  kunit_tool uses it to generate a .config as you might
+> -expect. In addition, it verifies that the generated .config contains the CONFIG
+> -options in the .kunitconfig; the reason it does this is so that it is easy to
+> -be sure that a CONFIG that enables a test actually ends up in the .config.
+> -
+> -It's also possible to pass a separate .kunitconfig fragment to kunit_tool,
+> -which is useful if you have several different groups of tests you wish
+> -to run independently, or if you want to use pre-defined test configs for
+> -certain subsystems.
+> -
+> -Getting Started with kunit_tool
+> -===============================
+> -
+> -If a kunitconfig is present at the root directory, all you have to do is:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run
+> -
+> -However, you most likely want to use it with the following options:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run --timeout=30 --jobs=`nproc --all`
+> -
+> -- ``--timeout`` sets a maximum amount of time to allow tests to run.
+> -- ``--jobs`` sets the number of threads to use to build the kernel.
+> -
+> -.. note::
+> -       This command will work even without a .kunitconfig file: if no
+> -       .kunitconfig is present, a default one will be used instead.
+> -
+> -If you wish to use a different .kunitconfig file (such as one provided for
+> -testing a particular subsystem), you can pass it as an option.
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run --kunitconfig=fs/ext4/.kunitconfig
+> -
+> -For a list of all the flags supported by kunit_tool, you can run:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run --help
+> -
+> -Configuring, Building, and Running Tests
+> -========================================
+> -
+> -It's also possible to run just parts of the KUnit build process independently,
+> -which is useful if you want to make manual changes to part of the process.
+> -
+> -A .config can be generated from a .kunitconfig by using the ``config`` argument
+> -when running kunit_tool:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py config
+> -
+> -Similarly, if you just want to build a KUnit kernel from the current .config,
+> -you can use the ``build`` argument:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py build
+> -
+> -And, if you already have a built UML kernel with built-in KUnit tests, you can
+> -run the kernel and display the test results with the ``exec`` argument:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py exec
+> -
+> -The ``run`` command which is discussed above is equivalent to running all three
+> -of these in sequence.
+> -
+> -All of these commands accept a number of optional command-line arguments. The
+> -``--help`` flag will give a complete list of these, or keep reading this page
+> -for a guide to some of the more useful ones.
+> -
+> -Parsing Test Results
+> -====================
+> -
+> -KUnit tests output their results in TAP (Test Anything Protocol) format.
+> -kunit_tool will, when running tests, parse this output and print a summary
+> -which is much more pleasant to read. If you wish to look at the raw test
+> -results in TAP format, you can pass the ``--raw_output`` argument.
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run --raw_output
+> -
+> -The raw output from test runs may contain other, non-KUnit kernel log
+> -lines. You can see just KUnit output with ``--raw_output=kunit``:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run --raw_output=kunit
+> -
+> -If you have KUnit results in their raw TAP format, you can parse them and print
+> -the human-readable summary with the ``parse`` command for kunit_tool. This
+> -accepts a filename for an argument, or will read from standard input.
+> -
+> -.. code-block:: bash
+> -
+> -       # Reading from a file
+> -       ./tools/testing/kunit/kunit.py parse /var/log/dmesg
+> -       # Reading from stdin
+> -       dmesg | ./tools/testing/kunit/kunit.py parse
+> -
+> -This is very useful if you wish to run tests in a configuration not supported
+> -by kunit_tool (such as on real hardware, or an unsupported architecture).
+> -
+> -Filtering Tests
+> -===============
+> -
+> -It's possible to run only a subset of the tests built into a kernel by passing
+> -a filter to the ``exec`` or ``run`` commands. For example, if you only wanted
+> -to run KUnit resource tests, you could use:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run 'kunit-resource*'
+> -
+> -This uses the standard glob format for wildcards.
+> -
+> -Running Tests on QEMU
+> -=====================
+> -
+> -kunit_tool supports running tests on QEMU as well as via UML (as mentioned
+> -elsewhere). The default way of running tests on QEMU requires two flags:
+> -
+> -``--arch``
+> -       Selects a collection of configs (Kconfig as well as QEMU configs
+> -       options, etc) that allow KUnit tests to be run on the specified
+> -       architecture in a minimal way; this is usually not much slower than
+> -       using UML. The architecture argument is the same as the name of the
+> -       option passed to the ``ARCH`` variable used by Kbuild. Not all
+> -       architectures are currently supported by this flag, but can be handled
+> -       by the ``--qemu_config`` discussed later. If ``um`` is passed (or this
+> -       this flag is ignored) the tests will run via UML. Non-UML architectures,
+> -       e.g. i386, x86_64, arm, um, etc. Non-UML run on QEMU.
+> -
+> -``--cross_compile``
+> -       Specifies the use of a toolchain by Kbuild. The argument passed here is
+> -       the same passed to the ``CROSS_COMPILE`` variable used by Kbuild. As a
+> -       reminder this will be the prefix for the toolchain binaries such as gcc
+> -       for example ``sparc64-linux-gnu-`` if you have the sparc toolchain
+> -       installed on your system, or
+> -       ``$HOME/toolchains/microblaze/gcc-9.2.0-nolibc/microblaze-linux/bin/microblaze-linux-``
+> -       if you have downloaded the microblaze toolchain from the 0-day website
+> -       to a directory in your home directory called ``toolchains``.
+> -
+> -In many cases it is likely that you may want to run an architecture which is
+> -not supported by the ``--arch`` flag, or you may want to just run KUnit tests
+> -on QEMU using a non-default configuration. For this use case, you can write
+> -your own QemuConfig. These QemuConfigs are written in Python. They must have an
+> -import line ``from ..qemu_config import QemuArchParams`` at the top of the file
+> -and the file must contain a variable called ``QEMU_ARCH`` that has an instance
+> -of ``QemuArchParams`` assigned to it. An example can be seen in
+> -``tools/testing/kunit/qemu_configs/x86_64.py``.
+> -
+> -Once you have a QemuConfig you can pass it into kunit_tool using the
+> -``--qemu_config`` flag; when used this flag replaces the ``--arch`` flag. If we
+> -were to do this with the ``x86_64.py`` example from above, the invocation would
+> -look something like this:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run \
+> -               --timeout=60 \
+> -               --jobs=12 \
+> -               --qemu_config=./tools/testing/kunit/qemu_configs/x86_64.py
+> -
+> -Other Useful Options
+> -====================
+> -
+> -kunit_tool has a number of other command-line arguments which can be useful
+> -when adapting it to fit your environment or needs.
+> -
+> -Some of the more useful ones are:
+> -
+> -``--help``
+> -       Lists all of the available options. Note that different commands
+> -       (``config``, ``build``, ``run``, etc) will have different supported
+> -       options. Place ``--help`` before the command to list common options,
+> -       and after the command for options specific to that command.
+> -
+> -``--build_dir``
+> -       Specifies the build directory that kunit_tool will use. This is where
+> -       the .kunitconfig file is located, as well as where the .config and
+> -       compiled kernel will be placed. Defaults to ``.kunit``.
+> -
+> -``--make_options``
+> -       Specifies additional options to pass to ``make`` when compiling a
+> -       kernel (with the ``build`` or ``run`` commands). For example, to enable
+> -       compiler warnings, you can pass ``--make_options W=1``.
+> -
+> -``--alltests``
+> -        Builds a UML kernel with all config options enabled using ``make
+> -        allyesconfig``. This allows you to run as many tests as is possible,
+> -        but is very slow and prone to breakage as new options are added or
+> -        modified. In most cases, enabling all tests which have satisfied
+> -        dependencies by adding ``CONFIG_KUNIT_ALL_TESTS=1`` to your
+> -        .kunitconfig is preferable.
+> -
+> -There are several other options (and new ones are often added), so do check
+> -``--help`` if you're looking for something not mentioned here.
+> diff --git a/Documentation/dev-tools/kunit/run_wrapper.rst b/Documentation/dev-tools/kunit/run_wrapper.rst
+> index a1070def284f..24373db26f9d 100644
+> --- a/Documentation/dev-tools/kunit/run_wrapper.rst
+> +++ b/Documentation/dev-tools/kunit/run_wrapper.rst
+> @@ -58,7 +58,7 @@ To view kunit_tool flags (optional command-line arguments), run:
+>
+>         ./tools/testing/kunit/kunit.py run --help
+>
+> -Create a  ``.kunitconfig`` File
+> +Create a ``.kunitconfig`` File
+>  ===============================
+>
+>  If we want to run a specific set of tests (rather than those listed
+> @@ -167,7 +167,7 @@ This uses the standard glob format with wildcard characters.
+>
+>  .. _kunit-on-qemu:
+>
+> -Run Tests on qemu
+> +Run Tests on QEMU
+>  =================
+>
+>  kunit_tool supports running tests on  qemu as well as
+> diff --git a/Documentation/dev-tools/kunit/start.rst b/Documentation/dev-tools/kunit/start.rst
+> index 867a4bba6bf6..e730df1f468e 100644
+> --- a/Documentation/dev-tools/kunit/start.rst
+> +++ b/Documentation/dev-tools/kunit/start.rst
+> @@ -254,7 +254,5 @@ Next Steps
+>      examples.
+>  *   Documentation/dev-tools/kunit/api/index.rst - KUnit APIs
+>      used for testing.
+> -*   Documentation/dev-tools/kunit/kunit-tool.rst - kunit_tool helper
+> -    script.
+>  *   Documentation/dev-tools/kunit/faq.rst - KUnit common questions and
+>      answers.
+> --
+> 2.37.1
+>
