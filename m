@@ -2,192 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C7FC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 03:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DFCC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 03:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344394AbiHSD2S (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 23:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S241383AbiHSD2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 23:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245469AbiHSD1v (ORCPT
+        with ESMTP id S1345184AbiHSD2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 23:27:51 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F704DF66C;
-        Thu, 18 Aug 2022 20:27:50 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id x15so2359011pfp.4;
-        Thu, 18 Aug 2022 20:27:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=abditIbeCMAlg4Lgjtnw6BuqzTgkBra7/BZ++TtmQH0=;
-        b=FoR4esG3naAZvD5ET0fIP7JoscoSZEe2D9CdGwLFqnn8sACiGaIL3eRxZeHBe2dnim
-         L9yy8LF0Ar1gbh3psPQ3bvF5v2pgI/8n0Mkq30m+F4/3GdBABLYzz1RweFCsYqrE+ofp
-         jBg+Xe7diJQgt9hcOQ5vg3YlVF6k5Cf56QDUfoBMTj/VUvegBcmCmutGH34jmPw+dAca
-         bJR4d1CewkruvRewgn7hNVX3P+Z2BYie936cMuqo1QfoaexoK5eSSu/y/eWSscucFvv7
-         As4fgf7aIz5gI3o941VTB7q/jCRfjQTuL02bviT/VKIvwLzj3VtVHPDn2QBJxS0ZBYF1
-         HDwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=abditIbeCMAlg4Lgjtnw6BuqzTgkBra7/BZ++TtmQH0=;
-        b=lGsUGnc2QBModhldUpxul4uA8uEUQliRhFLLkcxp8Dd4Ey6fXJyVFRZY9pY1qwKUQ/
-         A8lM8CEXE2E8KLaKnvqLgepKaMqI5HiI8iuEqbhUxIM6YN9II9aHTLUQe/w6/iI/cpkj
-         03GGbfVTTnZCpPK9DlKvX4PCFAW7cemjIgeQl3rh21XOVc8u3a9ZqzMtaL+AyP+yq4qv
-         +mjEptbXf6Re5FRBYtmBrv+l9SEPP9oDrQwaTnHWKF47P0qK8sSYIemdZpDddP/P2VSX
-         5r5RzzCma+dRcpi6oQxBpMSdosVzlKiWJvhyCSIwa1/5OAhLSHKUApGHhaqVZ7y1k/+c
-         GdJA==
-X-Gm-Message-State: ACgBeo3I7W/DD/pjSldUllB5j98EYcMWi8Z/2ivk5rnbw23+XC6t+/Mt
-        TTk/uOCBF6LhbeYJTKCbn4A=
-X-Google-Smtp-Source: AA6agR4ydE9Jdft06fHaVL5VcjIHMZdpBuzj28WisXtAQ2xWPuaoXKSadlaBrCf3Ecr9vuI/Xei1VQ==
-X-Received: by 2002:a63:d847:0:b0:41a:dbc4:ef9e with SMTP id k7-20020a63d847000000b0041adbc4ef9emr4726043pgj.379.1660879669947;
-        Thu, 18 Aug 2022 20:27:49 -0700 (PDT)
-Received: from localhost.localdomain (li567-56.members.linode.com. [192.155.81.56])
-        by smtp.gmail.com with ESMTPSA id q5-20020a170902a3c500b0016befc83c6bsm2101032plb.165.2022.08.18.20.27.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 20:27:49 -0700 (PDT)
-From:   Jeff Xie <xiehuan09@gmail.com>
-To:     rostedt@goodmis.org
-Cc:     mingo@redhat.com, mhiramat@kernel.org, zanussi@kernel.org,
-        linux-kernel@vger.kernel.org, chensong_2000@189.cn,
-        Jeff Xie <xiehuan09@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
-Subject: [PATCH v15 4/4] Documentation: trace/objtrace: Add documentation for objtrace
-Date:   Fri, 19 Aug 2022 11:27:06 +0800
-Message-Id: <20220819032706.695212-5-xiehuan09@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220819032706.695212-1-xiehuan09@gmail.com>
-References: <20220819032706.695212-1-xiehuan09@gmail.com>
+        Thu, 18 Aug 2022 23:28:41 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA8C2B25C
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 20:28:35 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M86ZZ3dCBz1N7SG;
+        Fri, 19 Aug 2022 11:25:10 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 11:28:33 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 11:28:33 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH 1/2] mm: memory-failure: kill soft_offline_free_page()
+Date:   Fri, 19 Aug 2022 11:34:01 +0800
+Message-ID: <20220819033402.156519-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation explaining how to use objtrace trigger to get the value
-of the object.
+Open-code the page_handle_poison() into soft_offline_page() and
+kill unneeded soft_offline_free_page().
 
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>
-Cc: linux-doc@vger.kernel.org
-Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
-Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
-Changelog:
-V15:
-- Add syntax suggested by Joel for usage of objtrace
+ mm/memory-failure.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
- Documentation/trace/events.rst | 90 ++++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
-
-diff --git a/Documentation/trace/events.rst b/Documentation/trace/events.rst
-index c47f381d0c00..1209f3cd8f1d 100644
---- a/Documentation/trace/events.rst
-+++ b/Documentation/trace/events.rst
-@@ -546,6 +546,96 @@ The following commands are supported:
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index e48f6f6a259d..1a7d6548ccb2 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -2511,16 +2511,6 @@ static int soft_offline_in_use_page(struct page *page)
+ 	return __soft_offline_page(page);
+ }
  
-   See Documentation/trace/histogram.rst for details and examples.
- 
-+- objtrace
-+
-+  This command provides a way to get the value of any object, The object
-+  can be obtained from the dynamic event (kprobe_event/uprobe_event) or the
-+  static event (tracepoint).
-+
-+  Syntax:
-+        objtrace:add:obj[,offset][:type][:count][if <filter>]
-+
-+  Usage:
-+  When using the kprobe event, by only need to set the objtrace (a new
-+  trigger), we can get the value of object that is set by kprobe event.
-+
-+  For example, for the function bio_add_page():
-+
-+  .. code-block:: c
-+
-+     int bio_add_page(struct bio *bio, struct page *page,
-+	              unsigned int len, unsigned int offset)
-+
-+  Firstly, we can set the base of the object as first parameter (arg1) to
-+  to the function:
-+
-+  .. code-block::
-+
-+     # echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
-+
-+  Secondly, we can get the value dynamically based on the object:
-+
-+  .. code-block::
-+
-+     find the offset of the bi_size in struct bio:
-+     $ gdb vmlinux
-+     (gdb) p &(((struct bio *)0)->bi_iter.bi_size)
-+     $1 = (unsigned int *) 0x28
-+
-+     # echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/ \
-+       p_bio_add_page_0/trigger
-+
-+     # cd /sys/kernel/debug/tracing/
-+     # echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
-+     # echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/p_bio_add_page_0/trigger
-+
-+     # du -sh /test.txt
-+     12.0K   /test.txt
-+
-+     # cat  /test.txt > /dev/null
-+     # cat ./trace
-+     # tracer: nop
-+     #
-+     # entries-in-buffer/entries-written: 128/128   #P:4
-+     #
-+     #                                _-----=> irqs-off/BH-disabled
-+     #                               / _----=> need-resched
-+     #                              | / _---=> hardirq/softirq
-+     #                              || / _--=> preempt-depth
-+     #                              ||| / _-=> migrate-disable
-+     #                              |||| /     delay
-+     #           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
-+     #              | |         |   |||||     |         |
-+                  cat-117     [002] ...1.     1.602243: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x0
-+                  cat-117     [002] ...1.     1.602244: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x0
-+                  cat-117     [002] ...2.     1.602244: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x1000
-+                  cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
-+                  cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
-+                  cat-117     [002] ...2.     1.602245: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x2000
-+                  cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
-+                  cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
-+                  cat-117     [002] ...1.     1.602245: submit_bio <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602245: submit_bio_noacct <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: __submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: submit_bio_checks <-__submit_bio object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: __cond_resched <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: should_fail_bio <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: blk_mq_submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: blk_attempt_plug_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602246: blk_mq_sched_bio_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602247: __rcu_read_lock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602247: __rcu_read_unlock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+                  cat-117     [002] ...1.     1.602247: __blk_mq_alloc_requests <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+               <idle>-0       [002] d..3.     1.602298: bio_endio <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602298: mpage_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602298: __read_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602300: bio_put <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602300: bio_free <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602300: mempool_free <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602300: mempool_free_slab <-blk_update_request object:0xffff88811bee4000 value:0x0
-+               <idle>-0       [002] d..3.     1.602300: kmem_cache_free <-blk_update_request object:0xffff88811bee4000 value:0x0
-+                ...
-+
- 7. In-kernel trace event API
- ============================
- 
+-static int soft_offline_free_page(struct page *page)
+-{
+-	int rc = 0;
+-
+-	if (!page_handle_poison(page, true, false))
+-		rc = -EBUSY;
+-
+-	return rc;
+-}
+-
+ static void put_ref_page(struct page *page)
+ {
+ 	if (page)
+@@ -2598,7 +2588,7 @@ int soft_offline_page(unsigned long pfn, int flags)
+ 	if (ret > 0) {
+ 		ret = soft_offline_in_use_page(page);
+ 	} else if (ret == 0) {
+-		if (soft_offline_free_page(page) && try_again) {
++		if (!page_handle_poison(page, true, false) && try_again) {
+ 			try_again = false;
+ 			flags &= ~MF_COUNT_INCREASED;
+ 			goto retry;
 -- 
-2.25.1
+2.35.3
 
