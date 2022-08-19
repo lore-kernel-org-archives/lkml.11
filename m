@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABCBC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0440DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352182AbiHSQTz (ORCPT
+        id S1352188AbiHSQUA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
+        Fri, 19 Aug 2022 12:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352168AbiHSQPu (ORCPT
+        with ESMTP id S1352197AbiHSQPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:15:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E347FE398D;
-        Fri, 19 Aug 2022 08:58:50 -0700 (PDT)
+        Fri, 19 Aug 2022 12:15:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A17EE86B3;
+        Fri, 19 Aug 2022 08:59:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1398617A6;
-        Fri, 19 Aug 2022 15:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C883C433D6;
-        Fri, 19 Aug 2022 15:58:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 196EFCE26B7;
+        Fri, 19 Aug 2022 15:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17606C433D6;
+        Fri, 19 Aug 2022 15:59:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924729;
-        bh=H0jdplw0fqiMze9MxaK/cIh5ZG+lDAueEBDJlsMIsKY=;
+        s=korg; t=1660924741;
+        bh=Vgx2IQuBGe2TlPRL5ofApdMmc10UjK42/Nn9oSwg9p0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZdw+dQDMnrIslUaIk1+2Jw85TVLkQN+lr4XbIqbp7nSwaMzEKYF94oDr3XGMY9IO
-         /cOOWIC7/9trz4S+u50txAqd1UvpPv1qXXja4XBpg8aoEcgdh1rxkoxAJLfGxkeHop
-         BSUr1uB9wwtJ3KYOETINbG19F2h9VOHebiaDLSLw=
+        b=OI7kmaQN4Z/sIBLPUFFKDRawRdN5bkxS0zkGjj4krSqOHy9GGI43OMCyTbcdRcFZC
+         +YMKgl7pUGRpu781rQQ3SIKIxUs8rWqRGuGlAk/aMQ2cesxWB2FUO54nUQVfm3KhLh
+         CfRt7l+f6+t3e2U8PleU7ZC/kt40lFvWHCdQu7Vk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 264/545] net: rose: fix netdev reference changes
-Date:   Fri, 19 Aug 2022 17:40:34 +0200
-Message-Id: <20220819153841.133848298@linuxfoundation.org>
+Subject: [PATCH 5.10 267/545] wireguard: ratelimiter: use hrtimer in selftest
+Date:   Fri, 19 Aug 2022 17:40:37 +0200
+Message-Id: <20220819153841.272787644@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,108 +51,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
+[ Upstream commit 151c8e499f4705010780189377f85b57400ccbf5 ]
 
-Bernard reported that trying to unload rose module would lead
-to infamous messages:
+Using msleep() is problematic because it's compared against
+ratelimiter.c's ktime_get_coarse_boottime_ns(), which means on systems
+with slow jiffies (such as UML's forced HZ=100), the result is
+inaccurate. So switch to using schedule_hrtimeout().
 
-unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
+However, hrtimer gives us access only to the traditional posix timers,
+and none of the _COARSE variants. So now, rather than being too
+imprecise like jiffies, it's too precise.
 
-This patch solves the issue, by making sure each socket referring to
-a netdevice holds a reference count on it, and properly releases it
-in rose_release().
+One solution would be to give it a large "range" value, but this will
+still fire early on a loaded system. A better solution is to align the
+timeout to the actual coarse timer, and then round up to the nearest
+tick, plus change.
 
-rose_dev_first() is also fixed to take a device reference
-before leaving the rcu_read_locked section.
+So add the timeout to the current coarse time, and then
+schedule_hrtimer() until the absolute computed time.
 
-Following patch will add ref_tracker annotations to ease
-future bug hunting.
+This should hopefully reduce flakes in CI as well. Note that we keep the
+retry loop in case the entire function is running behind, because the
+test could still be scheduled out, by either the kernel or by the
+hypervisor's kernel, in which case restarting the test and hoping to not
+be scheduled out still helps.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Bernard Pidoux <f6bvp@free.fr>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Tested-by: Bernard Pidoux <f6bvp@free.fr>
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rose/af_rose.c    | 11 +++++++++--
- net/rose/rose_route.c |  2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/wireguard/selftest/ratelimiter.c | 25 +++++++++++---------
+ kernel/time/hrtimer.c                        |  1 +
+ 2 files changed, 15 insertions(+), 11 deletions(-)
 
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index cf7d974e0f61..29a208ed8fb8 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -191,6 +191,7 @@ static void rose_kill_by_device(struct net_device *dev)
- 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
- 			if (rose->neighbour)
- 				rose->neighbour->use--;
-+			dev_put(rose->device);
- 			rose->device = NULL;
+diff --git a/drivers/net/wireguard/selftest/ratelimiter.c b/drivers/net/wireguard/selftest/ratelimiter.c
+index 007cd4457c5f..ba87d294604f 100644
+--- a/drivers/net/wireguard/selftest/ratelimiter.c
++++ b/drivers/net/wireguard/selftest/ratelimiter.c
+@@ -6,28 +6,29 @@
+ #ifdef DEBUG
+ 
+ #include <linux/jiffies.h>
++#include <linux/hrtimer.h>
+ 
+ static const struct {
+ 	bool result;
+-	unsigned int msec_to_sleep_before;
++	u64 nsec_to_sleep_before;
+ } expected_results[] __initconst = {
+ 	[0 ... PACKETS_BURSTABLE - 1] = { true, 0 },
+ 	[PACKETS_BURSTABLE] = { false, 0 },
+-	[PACKETS_BURSTABLE + 1] = { true, MSEC_PER_SEC / PACKETS_PER_SECOND },
++	[PACKETS_BURSTABLE + 1] = { true, NSEC_PER_SEC / PACKETS_PER_SECOND },
+ 	[PACKETS_BURSTABLE + 2] = { false, 0 },
+-	[PACKETS_BURSTABLE + 3] = { true, (MSEC_PER_SEC / PACKETS_PER_SECOND) * 2 },
++	[PACKETS_BURSTABLE + 3] = { true, (NSEC_PER_SEC / PACKETS_PER_SECOND) * 2 },
+ 	[PACKETS_BURSTABLE + 4] = { true, 0 },
+ 	[PACKETS_BURSTABLE + 5] = { false, 0 }
+ };
+ 
+ static __init unsigned int maximum_jiffies_at_index(int index)
+ {
+-	unsigned int total_msecs = 2 * MSEC_PER_SEC / PACKETS_PER_SECOND / 3;
++	u64 total_nsecs = 2 * NSEC_PER_SEC / PACKETS_PER_SECOND / 3;
+ 	int i;
+ 
+ 	for (i = 0; i <= index; ++i)
+-		total_msecs += expected_results[i].msec_to_sleep_before;
+-	return msecs_to_jiffies(total_msecs);
++		total_nsecs += expected_results[i].nsec_to_sleep_before;
++	return nsecs_to_jiffies(total_nsecs);
+ }
+ 
+ static __init int timings_test(struct sk_buff *skb4, struct iphdr *hdr4,
+@@ -42,8 +43,12 @@ static __init int timings_test(struct sk_buff *skb4, struct iphdr *hdr4,
+ 	loop_start_time = jiffies;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(expected_results); ++i) {
+-		if (expected_results[i].msec_to_sleep_before)
+-			msleep(expected_results[i].msec_to_sleep_before);
++		if (expected_results[i].nsec_to_sleep_before) {
++			ktime_t timeout = ktime_add(ktime_add_ns(ktime_get_coarse_boottime(), TICK_NSEC * 4 / 3),
++						    ns_to_ktime(expected_results[i].nsec_to_sleep_before));
++			set_current_state(TASK_UNINTERRUPTIBLE);
++			schedule_hrtimeout_range_clock(&timeout, 0, HRTIMER_MODE_ABS, CLOCK_BOOTTIME);
++		}
+ 
+ 		if (time_is_before_jiffies(loop_start_time +
+ 					   maximum_jiffies_at_index(i)))
+@@ -127,7 +132,7 @@ bool __init wg_ratelimiter_selftest(void)
+ 	if (IS_ENABLED(CONFIG_KASAN) || IS_ENABLED(CONFIG_UBSAN))
+ 		return true;
+ 
+-	BUILD_BUG_ON(MSEC_PER_SEC % PACKETS_PER_SECOND != 0);
++	BUILD_BUG_ON(NSEC_PER_SEC % PACKETS_PER_SECOND != 0);
+ 
+ 	if (wg_ratelimiter_init())
+ 		goto out;
+@@ -176,7 +181,6 @@ bool __init wg_ratelimiter_selftest(void)
+ 				test += test_count;
+ 				goto err;
+ 			}
+-			msleep(500);
+ 			continue;
+ 		} else if (ret < 0) {
+ 			test += test_count;
+@@ -195,7 +199,6 @@ bool __init wg_ratelimiter_selftest(void)
+ 				test += test_count;
+ 				goto err;
+ 			}
+-			msleep(50);
+ 			continue;
  		}
- 	}
-@@ -591,6 +592,8 @@ static struct sock *rose_make_new(struct sock *osk)
- 	rose->idle	= orose->idle;
- 	rose->defer	= orose->defer;
- 	rose->device	= orose->device;
-+	if (rose->device)
-+		dev_hold(rose->device);
- 	rose->qbitincl	= orose->qbitincl;
+ 		test += test_count;
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index 4ef90718c114..544ce87ba38a 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -2209,6 +2209,7 @@ schedule_hrtimeout_range_clock(ktime_t *expires, u64 delta,
  
- 	return sk;
-@@ -644,6 +647,7 @@ static int rose_release(struct socket *sock)
- 		break;
- 	}
+ 	return !t.task ? 0 : -EINTR;
+ }
++EXPORT_SYMBOL_GPL(schedule_hrtimeout_range_clock);
  
-+	dev_put(rose->device);
- 	sock->sk = NULL;
- 	release_sock(sk);
- 	sock_put(sk);
-@@ -720,7 +724,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	struct rose_sock *rose = rose_sk(sk);
- 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
- 	unsigned char cause, diagnostic;
--	struct net_device *dev;
- 	ax25_uid_assoc *user;
- 	int n, err = 0;
- 
-@@ -777,9 +780,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	}
- 
- 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
-+		struct net_device *dev;
-+
- 		sock_reset_flag(sk, SOCK_ZAPPED);
- 
--		if ((dev = rose_dev_first()) == NULL) {
-+		dev = rose_dev_first();
-+		if (!dev) {
- 			err = -ENETUNREACH;
- 			goto out_release;
- 		}
-@@ -787,6 +793,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 		user = ax25_findbyuid(current_euid());
- 		if (!user) {
- 			err = -EINVAL;
-+			dev_put(dev);
- 			goto out_release;
- 		}
- 
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index 95b198f84a3a..981bdefd478b 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -613,6 +613,8 @@ struct net_device *rose_dev_first(void)
- 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
- 				first = dev;
- 	}
-+	if (first)
-+		dev_hold(first);
- 	rcu_read_unlock();
- 
- 	return first;
+ /**
+  * schedule_hrtimeout_range - sleep until timeout
 -- 
 2.35.1
 
