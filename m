@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F9BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34189C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351322AbiHSQFI (ORCPT
+        id S1351202AbiHSQFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
+        Fri, 19 Aug 2022 12:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351462AbiHSQBm (ORCPT
+        with ESMTP id S1351450AbiHSQBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:42 -0400
+        Fri, 19 Aug 2022 12:01:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D0F108F1D;
-        Fri, 19 Aug 2022 08:53:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86BEF10AE1A;
+        Fri, 19 Aug 2022 08:53:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6C54B82814;
-        Fri, 19 Aug 2022 15:53:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3051AC433C1;
-        Fri, 19 Aug 2022 15:53:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9955CB82816;
+        Fri, 19 Aug 2022 15:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9C83C433D6;
+        Fri, 19 Aug 2022 15:53:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924404;
-        bh=1tBHeFIEQC/xbFFgNO0fwdZJn6eyhjD4eBeuyYuriOg=;
+        s=korg; t=1660924414;
+        bh=jf8Sd1limL+roBuK7Uscg4a20NxbVJNZTR5nepUuyeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e8tQgp7ztz7NXFdeT4bJpYznqNQdWkJ6DkxcHAK333Pm+ZB8Hm8EQnkMDa62sdy6l
-         LXt6+wdoqk3Gl8hCgcid61KoWaUhrW7045eqLkQfWArncB4q0DqJWK00BVjZOW9S2w
-         4uBDheYuqO8tQM1SWUvNlGeRadkz7Pc+wp9h9X3k=
+        b=wq1/7Jpnv+C+rwp6mxFeX60AFydMsCD4w9XFkLdJo55mD4tIeD8Vhz5hzPfGPtC/d
+         dxeACnZrziPaEwNXagPf/CHhJMpalIF9vSpSrr86OW/nPgWwf5EbIRNKIIx+CEudUM
+         iCG1riHrCmulsbhWXh+341/3n23mXAGvSHIpvfkQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        David Lechner <david@lechnology.com>,
+        stable@vger.kernel.org, Yunhao Tian <t123yh.xyz@gmail.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 160/545] drm/st7735r: Fix module autoloading for Okaya RH128128T
-Date:   Fri, 19 Aug 2022 17:38:50 +0200
-Message-Id: <20220819153836.520320999@linuxfoundation.org>
+Subject: [PATCH 5.10 163/545] drm/mipi-dbi: align max_chunk to 2 in spi_transfer
+Date:   Fri, 19 Aug 2022 17:38:53 +0200
+Message-Id: <20220819153836.656237907@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,49 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Yunhao Tian <t123yh.xyz@gmail.com>
 
-[ Upstream commit 9ad6f181ad9a19a26bda73a7b199df44ccfcdaba ]
+[ Upstream commit 435c249008cba04ed6a7975e9411f3b934620204 ]
 
-The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
-registered via OF. This means that the st7735r.ko module won't autoload if
-a DT has a node with a compatible "okaya,rh128128t" string.
+In __spi_validate, there's a validation that no partial transfers
+are accepted (xfer->len % w_size must be zero). When
+max_chunk is not a multiple of bpw (e.g. max_chunk = 65535,
+bpw = 16), the transfer will be rejected.
 
-In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
-instead will get a "MODALIAS=spi:rh128128t", which is not present in the
-list of aliases:
+This patch aligns max_chunk to 2 bytes (the maximum value of bpw is 16),
+so that no partial transfer will occur.
 
-  $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
-  alias:          of:N*T*Cokaya,rh128128tC*
-  alias:          of:N*T*Cokaya,rh128128t
-  alias:          of:N*T*Cjianda,jd-t18003-t01C*
-  alias:          of:N*T*Cjianda,jd-t18003-t01
-  alias:          spi:jd-t18003-t01
+Fixes: d23d4d4dac01 ("drm/tinydrm: Move tinydrm_spi_transfer()")
 
-To workaround this issue, add in the SPI table an entry for that device.
-
-Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: David Lechner <david@lechnology.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220520091602.179078-1-javierm@redhat.com
+Signed-off-by: Yunhao Tian <t123yh.xyz@gmail.com>
+Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220510030219.2486687-1-t123yh.xyz@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tiny/st7735r.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/drm_mipi_dbi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/gpu/drm/tiny/st7735r.c b/drivers/gpu/drm/tiny/st7735r.c
-index c0bc2a18edde..9d0c127bdb0c 100644
---- a/drivers/gpu/drm/tiny/st7735r.c
-+++ b/drivers/gpu/drm/tiny/st7735r.c
-@@ -175,6 +175,7 @@ MODULE_DEVICE_TABLE(of, st7735r_of_match);
+diff --git a/drivers/gpu/drm/drm_mipi_dbi.c b/drivers/gpu/drm/drm_mipi_dbi.c
+index 230c4fd7131c..9f132229aed1 100644
+--- a/drivers/gpu/drm/drm_mipi_dbi.c
++++ b/drivers/gpu/drm/drm_mipi_dbi.c
+@@ -1137,6 +1137,13 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
+ 	size_t chunk;
+ 	int ret;
  
- static const struct spi_device_id st7735r_id[] = {
- 	{ "jd-t18003-t01", (uintptr_t)&jd_t18003_t01_cfg },
-+	{ "rh128128t", (uintptr_t)&rh128128t_cfg },
- 	{ },
- };
- MODULE_DEVICE_TABLE(spi, st7735r_id);
++	/* In __spi_validate, there's a validation that no partial transfers
++	 * are accepted (xfer->len % w_size must be zero).
++	 * Here we align max_chunk to multiple of 2 (16bits),
++	 * to prevent transfers from being rejected.
++	 */
++	max_chunk = ALIGN_DOWN(max_chunk, 2);
++
+ 	spi_message_init_with_transfers(&m, &tr, 1);
+ 
+ 	while (len) {
 -- 
 2.35.1
 
