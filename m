@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 784C6C38142
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CBF9C3814E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354088AbiHSQpt (ORCPT
+        id S1353657AbiHSQq0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45714 "EHLO
+        Fri, 19 Aug 2022 12:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353702AbiHSQnI (ORCPT
+        with ESMTP id S1353720AbiHSQnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:43:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A0D111C1F;
-        Fri, 19 Aug 2022 09:11:04 -0700 (PDT)
+        Fri, 19 Aug 2022 12:43:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329DD111C23;
+        Fri, 19 Aug 2022 09:11:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA94B617A5;
-        Fri, 19 Aug 2022 16:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1E4C433D6;
-        Fri, 19 Aug 2022 16:09:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93690B8281A;
+        Fri, 19 Aug 2022 16:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB256C433C1;
+        Fri, 19 Aug 2022 16:11:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925387;
-        bh=pA8ISevhUsGe/p5+9L1xkYfUhHfjRk8HP8uS3OlHxrU=;
+        s=korg; t=1660925466;
+        bh=MeueB1VICeYwOx5V+NEyLArwKuISXywHXupW8fCtY8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXT0Le89m5TMyOI2g6MZ/cTgLXhkM2aH1WsXX2LHo8TV2np+I00uEaKQ3YzmcsSN3
-         AWGga7MuSLubxkZ2UTDMibFXgOpx1B0u5PT9qLtDaNsxRP6EBkUUNNZ9V/Pf3tagyy
-         uxo+rSIy1YB+xlKrlhJZeyTV0SBGJeVeHT7x21xQ=
+        b=lbXGT/kP41TFPA1fXHnT27O00xVJw4nx5kLSvD2uj6BstwISVzZ7ORG9egspt/Id4
+         jt/c8PMYAmsPGin2G1AmxbQA1eATc5pJUS824agFLoQsAIuyiLllwzhMg70jY2J+Bc
+         2dAcsQc+2KQxDcftUhkxRKqmDXmyBg1rn631Bu6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 446/545] ftrace/x86: Add back ftrace_expected assignment
-Date:   Fri, 19 Aug 2022 17:43:36 +0200
-Message-Id: <20220819153849.395764010@linuxfoundation.org>
+        stable@vger.kernel.org, Stas Sergeev <stsp@users.sourceforge.net>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 499/545] KVM: VMX: Drop guest CPUID check for VMXE in vmx_set_cr4()
+Date:   Fri, 19 Aug 2022 17:44:29 +0200
+Message-Id: <20220819153851.818824528@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -54,44 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-commit ac6c1b2ca77e722a1e5d651f12f437f2f237e658 upstream.
+[ Upstream commit d3a9e4146a6f79f19430bca3f2a4d6ebaaffe36b ]
 
-When a ftrace_bug happens (where ftrace fails to modify a location) it is
-helpful to have what was at that location as well as what was expected to
-be there.
+Drop vmx_set_cr4()'s somewhat hidden guest_cpuid_has() check on VMXE now
+that common x86 handles the check by incorporating VMXE into the CR4
+reserved bits, i.e. in cr4_guest_rsvd_bits.  This fixes a bug where KVM
+incorrectly rejects KVM_SET_SREGS with CR4.VMXE=1 if it's executed
+before KVM_SET_CPUID{,2}.
 
-But with the conversion to text_poke() the variable that assigns the
-expected for debugging was dropped. Unfortunately, I noticed this when I
-needed it. Add it back.
-
-Link: https://lkml.kernel.org/r/20220726101851.069d2e70@gandalf.local.home
-
-Cc: "x86@kernel.org" <x86@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: stable@vger.kernel.org
-Fixes: 768ae4406a5c ("x86/ftrace: Use text_poke()")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5e1746d6205d ("KVM: nVMX: Allow setting the VMXE bit in CR4")
+Reported-by: Stas Sergeev <stsp@users.sourceforge.net>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Message-Id: <20201007014417.29276-2-sean.j.christopherson@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/ftrace.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/vmx/vmx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -93,6 +93,7 @@ static int ftrace_verify_code(unsigned l
- 
- 	/* Make sure it is what we expect it to be */
- 	if (memcmp(cur_code, old_code, MCOUNT_INSN_SIZE) != 0) {
-+		ftrace_expected = old_code;
- 		WARN_ON(1);
- 		return -EINVAL;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 9b520da3f748..1b75847d8a49 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -3217,9 +3217,10 @@ int vmx_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
+ 		 * must first be able to turn on cr4.VMXE (see handle_vmon()).
+ 		 * So basically the check on whether to allow nested VMX
+ 		 * is here.  We operate under the default treatment of SMM,
+-		 * so VMX cannot be enabled under SMM.
++		 * so VMX cannot be enabled under SMM.  Note, guest CPUID is
++		 * intentionally ignored, it's handled by cr4_guest_rsvd_bits.
+ 		 */
+-		if (!nested_vmx_allowed(vcpu) || is_smm(vcpu))
++		if (!nested || is_smm(vcpu))
+ 			return 1;
  	}
+ 
+-- 
+2.35.1
+
 
 
