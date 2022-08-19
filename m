@@ -2,85 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CABC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C92C5C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354488AbiHSRCh (ORCPT
+        id S1350727AbiHSRE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
+        Fri, 19 Aug 2022 13:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350956AbiHSRCL (ORCPT
+        with ESMTP id S1349920AbiHSREh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:02:11 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E751DB1F1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:22:20 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id t5so1491696lfk.3
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:22:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=sMprv05w5IskCFoyfwS5UYEIwrpKuClOKU9gkRsfBNY=;
-        b=tN2OGb0AoeH/bSob2TcaGg/hetoANoifeQJtF6SLcOUJ15TL51TwaJAnpMCKhbIPky
-         dS+IqHhvMMN3swuoF25vuvnfMz35OAyoIuOu8K5yGHDOU1KlSdEkMRrZgBAsSPtEnCwH
-         JafiVT0+26fqE8WlZ+CKRaoJjbVqE23ly+JPftX9+mzAoDybUtxmMwrJuXoq0zi7AABG
-         vxURUWs/EszYLL7nfuIS9A1cPJyCu/0u7h0wMizc9XxUNRxfunqsCFHyt+tiDu3mnk2n
-         M2WUadmX+e+IQYON0oY5l+DIAIbx3l7pmiUtc8isC+82BtjUSt9NSVUBFo51lwPN1qmq
-         TVnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=sMprv05w5IskCFoyfwS5UYEIwrpKuClOKU9gkRsfBNY=;
-        b=Q0fqeGKZpzHePBBVA0iulyLXZlh5grl4/xyPKRMpPJgLo7GugEua8AbeEwMXv427C0
-         WJYB7BciPMlRefi2WSetlcMP+BGNPO5q65zahZENfJ+BMv0YMednFdLtcKX6XziMP+8h
-         gJPXWjRVZbIU/5tzQjFUwjdm3plnMbKWZyZosqsOpehsFAcgQ19wHcqofyeMwaofi3M4
-         Q5c8ZGfg9zljJtWFnJy1EYCBDj6xHOMZlLqSPHuztTD6UJ3Ml3tfNMzjJyG3x3+udAw0
-         DGimkqtATIMcw4NKBhWtIkVFKIo2ucA0g1zOEyk99vPX5p6vnBBgtgS/dHFy0rmuatjd
-         iMqQ==
-X-Gm-Message-State: ACgBeo3H2/SKx0md4wW/Dm8cjG20Lz+YfBGhpgGnwar+rKvK5b5qb5na
-        H3S3pBaEBI8kPN1R8YthXTTY5GV8j8e9lF/4f5DADA==
-X-Google-Smtp-Source: AA6agR7p8QQf6SCRKcUBdKnNdJxTCt9PEcSVf/ErqTZQTl47xFsXxziZKMRPcte5NTXneV1I/qG2j7GPGEFajY1k8Bg=
-X-Received: by 2002:a05:6512:b28:b0:48d:b55:c061 with SMTP id
- w40-20020a0565120b2800b0048d0b55c061mr2549425lfu.302.1660926129623; Fri, 19
- Aug 2022 09:22:09 -0700 (PDT)
+        Fri, 19 Aug 2022 13:04:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCED13729B;
+        Fri, 19 Aug 2022 09:25:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFE46B8281F;
+        Fri, 19 Aug 2022 16:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEF7C433D6;
+        Fri, 19 Aug 2022 16:23:47 +0000 (UTC)
+Date:   Fri, 19 Aug 2022 12:23:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        John Stultz <jstultz@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>, bpf@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH] kernel: move from strlcpy with unused retval to strscpy
+Message-ID: <20220819122359.050a3432@gandalf.local.home>
+In-Reply-To: <Yv8lb1tUKxYlAcp8@shikoro>
+References: <20220818210202.8227-1-wsa+renesas@sang-engineering.com>
+        <20220818181506.0d838d02@gandalf.local.home>
+        <Yv8lb1tUKxYlAcp8@shikoro>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220803224957.1285926-1-seanjc@google.com> <20220803224957.1285926-3-seanjc@google.com>
-In-Reply-To: <20220803224957.1285926-3-seanjc@google.com>
-From:   David Matlack <dmatlack@google.com>
-Date:   Fri, 19 Aug 2022 09:21:42 -0700
-Message-ID: <CALzav=e_H0LU+2-KcG_bPahVhJM8YGnH24J6aJ9HG9Eqj-waew@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] KVM: x86/mmu: Fully re-evaluate MMIO caching when
- SPTE masks change
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kai Huang <kai.huang@intel.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 3:50 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> Fully re-evaluate whether or not MMIO caching can be enabled when SPTE
-> masks change; simply clearing enable_mmio_caching when a configuration
-> isn't compatible with caching fails to handle the scenario where the
-> masks are updated, e.g. by VMX for EPT or by SVM to account for the C-bit
-> location, and toggle compatibility from false=>true.
->
-> Snapshot the original module param so that re-evaluating MMIO caching
-> preserves userspace's desire to allow caching.  Use a snapshot approach
-> so that enable_mmio_caching still reflects KVM's actual behavior.
+On Fri, 19 Aug 2022 07:53:51 +0200
+Wolfram Sang <wsa+renesas@sang-engineering.com> wrote:
 
-Is updating module parameters to reflect the actual behavior (vs.
-userspace desire) something we should do for all module parameters?
+> > But in my cases I actually do trust the source string. They are all  
+> 
+> The ultimate goal is to remove strlcpy entirely. My motivation is to get
+> rid of the extra work for maintainers that they need to ensure that the
+> author of a patch paid attention to the detail that the source string
+> must be trusted.
 
-I am doing an unrelated refactor to the tdp_mmu module parameter and
-noticed it is not updated e.g. if userspace loads kvm_intel with
-ept=N.
+After reading Linus's rant, I figured as much.
+
+-- Steve
