@@ -2,125 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3587DC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93903C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240140AbiHSWSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 18:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
+        id S240356AbiHSWTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 18:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239974AbiHSWS2 (ORCPT
+        with ESMTP id S229802AbiHSWS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 18:18:28 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB3652FDF
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:18:26 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-335624d1e26so156726777b3.4
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=g970rHvYU+jzmjt/ipCa52Mq2yPk1D8evtOuUbEWCCc=;
-        b=ocmXEsD9wtMUp2BtyAWhiufuKaIOEGosHOSfxRSr3HFM1Qrcft04gjrF4UZxdX9dHH
-         gytaAiBGMkGekR5z16JQGZsEG/HcyVq8PEnRGi6/NxSo+ulnqDji9PKVXy9hSVNJjRlX
-         IdmvwY+XCFyJf8Ruv6DeyT0BpJiM736Z1b58o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=g970rHvYU+jzmjt/ipCa52Mq2yPk1D8evtOuUbEWCCc=;
-        b=XWjQkE+ttpHi8T8YEmAM2Ux1ANt1uUiCfGtCrsyu49Mms2UaJuDKeQyJOgiz+mnq9y
-         jE4ajYwh3dOCyrTa9SCqnZQGO27B6aT0Q5AetIh8kt8H8qm5ifLMh+xeGK9iPLqDwixs
-         xBbgYeBa2e8dQ6EcJjUQ0PVO8H4l7AYnxOT/xuzULzpGaSy+cQN58cTc4uHHWT/UcAK2
-         I+1PNB+YfacDjCjAdSa/EtTXl9l9ktvh+9JST4BQ8Mj6l4hS0yRXvaeGCNwdzDzRAWuP
-         Phhel8PVtNM2yjCAMWbFMo5+MrsFo3NArTYwAeXSBoL9JlDpubnMluAFQepoJW/eIqnm
-         bZkw==
-X-Gm-Message-State: ACgBeo2oi6QG/i1PlZXV79g0YHWkLayH6E28OLmyAbOTUxluH4idAsN+
-        vdMxk1oeEjmi81pLn/YEqTNlXdkRqrDKv+7FbduOzQ==
-X-Google-Smtp-Source: AA6agR7fSsmOLXd0g2A9PAmqngdkh9aPq8/Qdvd6Jegkja7GbS6agFmvsjzLn5OaFoEquCygqR9BgaqT+UJZmO2up0o=
-X-Received: by 2002:a0d:d80b:0:b0:336:8219:8675 with SMTP id
- a11-20020a0dd80b000000b0033682198675mr9954844ywe.269.1660947505669; Fri, 19
- Aug 2022 15:18:25 -0700 (PDT)
+        Fri, 19 Aug 2022 18:18:59 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9984EB2851;
+        Fri, 19 Aug 2022 15:18:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=pfV3W5tIDS7uvHHlXIEyDkDagWNi+Z86KWqZSqCzOrI=; b=sY1n8Aq6cKn+8C+zsSeV/uxggm
+        nsj/09ZQvFYE+q97bRBlzjnW1zw5RbFDAnFolBKYT6KrCpDrsXE1skijRnZWS19ElGNWcV5X4mpAU
+        dPTTKVW8Ybf0lsZ+/2nZtUSKRL8Tsrvh7PeUAO5+1gcci5JuGcxPHddWjR8qmRG7owXlYfJB4r7z2
+        gygAEeJyjzZWEZLKLqNxZ2NITsVeZECMoYr2HilmMgOn6hF92BWV6bQedzTrYdl8A4e5mubOIC1f3
+        GjHAfCmlUSyzNEzj/212l9Gi3pAbATQtzxezcnnn2wIWy1pePhpNmlSJIReIg6cL3Lz4Qmauejy6k
+        jX0jtSbQ==;
+Received: from [179.232.144.59] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oPAJo-00Carb-O5; Sat, 20 Aug 2022 00:18:22 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, xuqiang36@huawei.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        bcm-kernel-feedback-list@broadcom.com, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-um@lists.infradead.org
+Subject: [PATCH V3 00/11] The panic notifiers refactor - fixes/clean-ups (V3)
+Date:   Fri, 19 Aug 2022 19:17:20 -0300
+Message-Id: <20220819221731.480795-1-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20220810204750.3672362-1-bjorn.andersson@linaro.org>
- <20220810204750.3672362-2-bjorn.andersson@linaro.org> <a13bce60-25b4-d075-d56a-d1283e91e3ba@linaro.org>
- <20220814210104.GA690892-robh@kernel.org> <Yv1y9Wjp16CstJvK@baldur>
- <CAE-0n53AjJ_G6yZoTALWpKvZUdF+8nFZ+TQh=Ch=8xgdMVqDkw@mail.gmail.com>
- <CACeCKadP-AZ8OU4A=7CrwAz7yuLvMvjvAcw7K-FORFmkMvx7cA@mail.gmail.com>
- <CAE-0n53C+D=9gdSXKsjr4KZVrb-gpeo_EyuX3DfNKp19FoicXA@mail.gmail.com> <YwADGgNVwtKacUBR@builder.lan>
-In-Reply-To: <YwADGgNVwtKacUBR@builder.lan>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Fri, 19 Aug 2022 15:18:15 -0700
-Message-ID: <CACeCKaeXpU+AxFNAwkutMX9LT2XLgAv1XmwJRyj7Exqxg6v8rA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: usb: Introduce GPIO-based SBU mux
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Pin-yen Lin <treapking@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 2:39 PM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> On Fri 19 Aug 15:49 CDT 2022, Stephen Boyd wrote:
->
-> > > I like 2 endpoints to represent the usb-c-connector, but that doesn't seem
-> > > to be compatible (without introducing `data-lanes`, at least) with all
-> > > the various
-> > > combinations on the remote side, if that remote side is a DRM bridge with DP
-> > > output capability (like it6505 or anx7625).
-> > > That type of DRM bridge supports 1, 2 or 4 lane DP connections.
-> >
-> > Why can't the remote side that's a pure DP bridge (it6505) bundle
-> > however many lanes it wants into one endpoint? If it's a pure DP bridge
-> > we should design the bridge binding to have up to 4 endpoints, but
-> > sometimes 2 or 1 and then overlay data-lanes onto that binding so that
-> > we can tell the driver how to remap the lanes if it can. If the hardware
-> > can't support remapping lanes then data-lanes shouldn't be in the
-> > binding.
+Hey everybody, this the third iteration of the panic notifiers
+fixes/clean-ups;
 
-2 endpoints sounds fine to me. The overloading of the bridge-side endpoint
-to mean different things depending on what it's connected to seemed odd to
-me, but if that is acceptable for the bridge binding, then great.
+V2 available at:
+https://lore.kernel.org/lkml/20220719195325.402745-1-gpiccoli@igalia.com/
 
-> The existing implementation provides the interfaces usb_role_switch,
-> usb_typec_mux and usb_typec_switch. These works based on the concept
-> that the USB Type-C controller will request the endpoints connected to
-> the usb-c-connector about changes such as "switch to host mode", "switch
-> to 2+2 USB/DP combo" and "switch orientation to reverse". We use this
-> same operations to inform any endpoint at any port about these events
-> and they all react accordingly.
+V1 (including the refactor) available at:
+https://lore.kernel.org/lkml/20220427224924.592546-1-gpiccoli@igalia.com/
 
-Right, but that implementation/assumption doesn't work so well when you
-have 2 Type-C ports which might route to the same bridge (2 lane from each).
-The other 2 lanes from the other endpoints can go to (say) a USB HUB.
 
->
-> Perhaps I'm misunderstanding your suggestion, but if you start
-> representing each individual lane in the SuperSpeed interface I believe
-> you would have to just abandon this interface and replace it with
-> something like "give me USB on port@1/endpoint@0 and port@1/endpoint@1
-> and give me DP on port@1/endpoint@2 and port@1/endpoint@3".
+There wasn't much change here compared to V2 (the specifics are in the
+patches), but a global change is that I've rebased against 6.0-rc1.
+One patch got merged in -next, another one was re-submit in a standalone
+format (requested by maintainer), so both of these are not here anymore.
 
-I don't think that is necessary. The switch driver can register the switches (
-and it can find out which end-points map to the same usb-c-connector).
 
-From the port driver, the port driver just needs to tell each switch
-registered for it's port that "I want
-DP Pin assignment C/ DP Pin assignment D / Plain USB3.x" and the
-switch driver(s) can figure out what to output on its pins (since
-the Type-C binding will specify ep0 = A2-A3 (TX1), ep1 = B10-B11 , etc)
+As usual, tested this series building for all affected architecture/drivers
+and also through some boot/runtime tests; below the test "matrix" used:
 
-orientation-switch can tell the switch if the signals need to be swapped around.
+Build tests (using cross-compilers): alpha, arm, arm64, parisc, um, x86_64.
+Boot/Runtime tests: x86_64 (QEMU guests and Steam Deck).
 
-The above notwithstanding, it sounds like the 2-ep approach has more support
-than 4 ep-approach, so this specific example is moot.
+Here is the link with the .config files used:
+https://people.igalia.com/gpiccoli/panic_notifiers_configs/6.0-rc1/
+
+
+About the merge strategy: I've noticed there is a difference in maintainers
+preferences (and my preference as well), so I see 3 strategies for merge:
+
+(a) Maintainers pick patches that are good from the series and merge in
+their trees;
+
+(b) Some maintainer would pick the whole series and merge, at once, given
+that everything is fine/ack/reviewed.
+
+(c) I must re-send patches individually once they are reviewed/acked, as
+standalone patches to the relevant maintainers, so they can merge it in
+their trees.
+
+I'm willing to do what's best for everybody - (a) is my choice when possible,
+(b) seems to stall things and potentially cause conflicts, (c) seems to be
+the compromise. I'll do that as per preference of the respective maintainers.
+
+
+As usual, reviews / comments are always welcome, thanks in advance for them!
+Cheers,
+
+Guilherme
+
+
+Guilherme G. Piccoli (11):
+  ARM: Disable FIQs (but not IRQs) on CPUs shutdown paths
+  notifier: Add panic notifiers info and purge trailing whitespaces
+  alpha: Clean-up the panic notifier code
+  um: Improve panic notifiers consistency and ordering
+  parisc: Replace regular spinlock with spin_trylock on panic path
+  tracing: Improve panic/die notifiers
+  notifiers: Add tracepoints to the notifiers infrastructure
+  EDAC/altera: Skip the panic notifier if kdump is loaded
+  video/hyperv_fb: Avoid taking busy spinlock on panic path
+  drivers/hv/vmbus, video/hyperv_fb: Untangle and refactor Hyper-V panic notifiers
+  panic: Fixes the panic_print NMI backtrace setting
+
+ arch/alpha/kernel/setup.c        |  36 +++++-----
+ arch/arm/kernel/machine_kexec.c  |   2 +
+ arch/arm/kernel/smp.c            |   5 +-
+ arch/parisc/include/asm/pdc.h    |   1 +
+ arch/parisc/kernel/firmware.c    |  27 ++++++--
+ arch/um/drivers/mconsole_kern.c  |   7 +-
+ arch/um/kernel/um_arch.c         |   8 +--
+ drivers/edac/altera_edac.c       |  16 +++--
+ drivers/hv/ring_buffer.c         |  13 ++++
+ drivers/hv/vmbus_drv.c           | 109 +++++++++++++++++++------------
+ drivers/parisc/power.c           |  17 +++--
+ drivers/video/fbdev/hyperv_fb.c  |  16 ++++-
+ include/linux/hyperv.h           |   2 +
+ include/linux/notifier.h         |   8 ++-
+ include/trace/events/notifiers.h |  69 +++++++++++++++++++
+ kernel/notifier.c                |   6 ++
+ kernel/panic.c                   |  47 +++++++------
+ kernel/trace/trace.c             |  55 ++++++++--------
+ 18 files changed, 302 insertions(+), 142 deletions(-)
+ create mode 100644 include/trace/events/notifiers.h
+
+-- 
+2.37.2
+
