@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 692FDC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 784C6C38142
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354063AbiHSQpq (ORCPT
+        id S1354088AbiHSQpt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        Fri, 19 Aug 2022 12:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353681AbiHSQmz (ORCPT
+        with ESMTP id S1353702AbiHSQnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:42:55 -0400
+        Fri, 19 Aug 2022 12:43:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A17111C2D;
-        Fri, 19 Aug 2022 09:11:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A0D111C1F;
+        Fri, 19 Aug 2022 09:11:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08A4B61831;
-        Fri, 19 Aug 2022 16:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07248C433C1;
-        Fri, 19 Aug 2022 16:11:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA94B617A5;
+        Fri, 19 Aug 2022 16:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1E4C433D6;
+        Fri, 19 Aug 2022 16:09:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925469;
-        bh=76ZGQOkP+oP8gNAIe5MRNKdqBKfUTNnmdCtMPmtdlHY=;
+        s=korg; t=1660925387;
+        bh=pA8ISevhUsGe/p5+9L1xkYfUhHfjRk8HP8uS3OlHxrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXqkimD3VdpHHR6xucdS6C37/lyPRQCe4n/iUZkL57brpA6RgHXM9RIIIlZX0+BD/
-         cj8za4Hpoc0HeY6XR9IbKkNe4kG0kMzx/nw4N7WT5Ud3Bu8ZKuNpoCICsstW2E3z1E
-         PV5xW0oHgRyl6cgGFbPI//EEX7gStoEn+kf/CHZc=
+        b=IXT0Le89m5TMyOI2g6MZ/cTgLXhkM2aH1WsXX2LHo8TV2np+I00uEaKQ3YzmcsSN3
+         AWGga7MuSLubxkZ2UTDMibFXgOpx1B0u5PT9qLtDaNsxRP6EBkUUNNZ9V/Pf3tagyy
+         uxo+rSIy1YB+xlKrlhJZeyTV0SBGJeVeHT7x21xQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean V Kelley <sean.v.kelley@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 473/545] PCI/AER: Write AER Capability only when we control it
-Date:   Fri, 19 Aug 2022 17:44:03 +0200
-Message-Id: <20220819153850.566901888@linuxfoundation.org>
+        stable@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.10 446/545] ftrace/x86: Add back ftrace_expected assignment
+Date:   Fri, 19 Aug 2022 17:43:36 +0200
+Message-Id: <20220819153849.395764010@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,83 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean V Kelley <sean.v.kelley@intel.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 50cc18fcd3053fb46a09db5a39e6516e9560f765 ]
+commit ac6c1b2ca77e722a1e5d651f12f437f2f237e658 upstream.
 
-If an OS has not been granted AER control via _OSC, it should not make
-changes to PCI_ERR_ROOT_COMMAND and PCI_ERR_ROOT_STATUS related registers.
-Per section 4.5.1 of the System Firmware Intermediary (SFI) _OSC and DPC
-Updates ECN [1], this bit also covers these aspects of the PCI Express
-Advanced Error Reporting. Based on the above and earlier discussion [2],
-make the following changes:
+When a ftrace_bug happens (where ftrace fails to modify a location) it is
+helpful to have what was at that location as well as what was expected to
+be there.
 
-Add a check for the native case (i.e., AER control via _OSC)
+But with the conversion to text_poke() the variable that assigns the
+expected for debugging was dropped. Unfortunately, I noticed this when I
+needed it. Add it back.
 
-Note that the previous "clear, reset, enable" order suggests that the reset
-might cause errors that we should ignore. After this commit, those errors
-(if any) will remain logged in the PCI_ERR_ROOT_STATUS register.
+Link: https://lkml.kernel.org/r/20220726101851.069d2e70@gandalf.local.home
 
-[1] System Firmware Intermediary (SFI) _OSC and DPC Updates ECN, Feb 24,
-    2020, affecting PCI Firmware Specification, Rev. 3.2
-    https://members.pcisig.com/wg/PCI-SIG/document/14076
-[2] https://lore.kernel.org/linux-pci/20201020162820.GA370938@bjorn-Precision-5520/
-
-Link: https://lore.kernel.org/r/20201121001036.8560-2-sean.v.kelley@intel.com
-Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
-Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: "x86@kernel.org" <x86@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: 768ae4406a5c ("x86/ftrace: Use text_poke()")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pcie/aer.c | 29 ++++++++++++++++-------------
- 1 file changed, 16 insertions(+), 13 deletions(-)
+ arch/x86/kernel/ftrace.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index c40546eeecb3..61f78b20b0cf 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -1366,23 +1366,26 @@ static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
- 	u32 reg32;
- 	int rc;
+--- a/arch/x86/kernel/ftrace.c
++++ b/arch/x86/kernel/ftrace.c
+@@ -93,6 +93,7 @@ static int ftrace_verify_code(unsigned l
  
--
--	/* Disable Root's interrupt in response to error messages */
--	pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
--	reg32 &= ~ROOT_PORT_INTR_ON_MESG_MASK;
--	pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
-+	if (pcie_aer_is_native(dev)) {
-+		/* Disable Root's interrupt in response to error messages */
-+		pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
-+		reg32 &= ~ROOT_PORT_INTR_ON_MESG_MASK;
-+		pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
-+	}
- 
- 	rc = pci_bus_error_reset(dev);
--	pci_info(dev, "Root Port link has been reset\n");
-+	pci_info(dev, "Root Port link has been reset (%d)\n", rc);
- 
--	/* Clear Root Error Status */
--	pci_read_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, &reg32);
--	pci_write_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, reg32);
-+	if (pcie_aer_is_native(dev)) {
-+		/* Clear Root Error Status */
-+		pci_read_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, &reg32);
-+		pci_write_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, reg32);
- 
--	/* Enable Root Port's interrupt in response to error messages */
--	pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
--	reg32 |= ROOT_PORT_INTR_ON_MESG_MASK;
--	pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
-+		/* Enable Root Port's interrupt in response to error messages */
-+		pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
-+		reg32 |= ROOT_PORT_INTR_ON_MESG_MASK;
-+		pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
-+	}
- 
- 	return rc ? PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_RECOVERED;
- }
--- 
-2.35.1
-
+ 	/* Make sure it is what we expect it to be */
+ 	if (memcmp(cur_code, old_code, MCOUNT_INSN_SIZE) != 0) {
++		ftrace_expected = old_code;
+ 		WARN_ON(1);
+ 		return -EINVAL;
+ 	}
 
 
