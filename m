@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D92EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF59C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353833AbiHSQoh (ORCPT
+        id S1353718AbiHSQor (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32864 "EHLO
+        Fri, 19 Aug 2022 12:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353778AbiHSQkw (ORCPT
+        with ESMTP id S1354094AbiHSQlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:40:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC558124F1C;
-        Fri, 19 Aug 2022 09:09:17 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A455112847F;
+        Fri, 19 Aug 2022 09:10:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB00CB8281F;
-        Fri, 19 Aug 2022 16:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A40C433D7;
-        Fri, 19 Aug 2022 16:08:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C60E761861;
+        Fri, 19 Aug 2022 16:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9B2C43470;
+        Fri, 19 Aug 2022 16:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925316;
-        bh=2/L29mzLUGWxBty/CKSXc4bgzSJhfSHaQ+Q+8OtgU8I=;
+        s=korg; t=1660925353;
+        bh=AUCerK9XH4FBAwVk7/scMA0QJUrR5R/M7yfoBaW/UjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+7S0pEoHbH3hDG5tNr79SOFPqRC1BUi+/4Q6Uk4A3RmmUMgdUF3ityAJIujttrOt
-         2CLa4ZmY2e9jFcBWW/OU/E/9++DEHhggvlaXEgi5sjElQalypI9TpORF3E4RIb0ciD
-         JlmC6drGyCev3U1dhg3dKdfzPiwNb0mS14L1URYc=
+        b=WnRXXviz760PPFfQEFOuwqUFD7yWINe6SCnlVXIjR9XpqlVfpbJBCOnjEqwYAAd6D
+         qPKHuiBPEiILw2YsfcOesNjR4OlLOKQO+utvehWxPB1oMRFb3KNjjWKB9ZGmse+qmV
+         +QskScC1cNlep0ostI8UHecUg3puJJYv1x9mVNwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julien STEPHAN <jstephan@baylibre.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 453/545] drm/mediatek: Allow commands to be sent during video mode
-Date:   Fri, 19 Aug 2022 17:43:43 +0200
-Message-Id: <20220819153849.669537539@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.10 464/545] usbnet: smsc95xx: Dont clear read-only PHY interrupt
+Date:   Fri, 19 Aug 2022 17:43:54 +0200
+Message-Id: <20220819153850.160518535@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,91 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julien STEPHAN <jstephan@baylibre.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 81cc7e51c4f1686b71e30046437056ece6b2cb4d ]
+[ Upstream commit 3108871f19221372b251f7da1ac38736928b5b3a ]
 
-Mipi dsi panel drivers can use mipi_dsi_dcs_{set,get}_display_brightness()
-to request backlight changes.
+Upon receiving data from the Interrupt Endpoint, the SMSC LAN95xx driver
+attempts to clear the signaled interrupts by writing "all ones" to the
+Interrupt Status Register.
 
-This can be done during panel initialization (dsi is in command mode)
-or afterwards (dsi is in Video Mode).
+However the driver only ever enables a single type of interrupt, namely
+the PHY Interrupt.  And according to page 119 of the LAN950x datasheet,
+its bit in the Interrupt Status Register is read-only.  There's no other
+way to clear it than in a separate PHY register:
 
-When the DSI is in Video Mode, all commands are rejected.
+https://www.microchip.com/content/dam/mchp/documents/UNG/ProductDocuments/DataSheets/LAN950x-Data-Sheet-DS00001875D.pdf
 
-Detect current DSI mode in mtk_dsi_host_transfer() and switch modes
-temporarily to allow commands to be sent.
+Consequently, writing "all ones" to the Interrupt Status Register is
+pointless and can be dropped.
 
-Signed-off-by: Julien STEPHAN <jstephan@baylibre.com>
-Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 33 ++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+ drivers/net/usb/smsc95xx.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index f39785934999..9d54bb6aec30 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -910,24 +910,33 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
- 	u8 read_data[16];
- 	void *src_addr;
- 	u8 irq_flag = CMD_DONE_INT_FLAG;
-+	u32 dsi_mode;
-+	int ret;
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index e5b744851146..b1d7331c3c5c 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -570,10 +570,6 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	unsigned long flags;
+ 	int ret;
  
--	if (readl(dsi->regs + DSI_MODE_CTRL) & MODE) {
--		DRM_ERROR("dsi engine is not command mode\n");
--		return -EINVAL;
-+	dsi_mode = readl(dsi->regs + DSI_MODE_CTRL);
-+	if (dsi_mode & MODE) {
-+		mtk_dsi_stop(dsi);
-+		ret = mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
-+		if (ret)
-+			goto restore_dsi_mode;
- 	}
- 
- 	if (MTK_DSI_HOST_IS_READ(msg->type))
- 		irq_flag |= LPRX_RD_RDY_INT_FLAG;
- 
--	if (mtk_dsi_host_send_cmd(dsi, msg, irq_flag) < 0)
--		return -ETIME;
-+	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
-+	if (ret)
-+		goto restore_dsi_mode;
- 
--	if (!MTK_DSI_HOST_IS_READ(msg->type))
--		return 0;
-+	if (!MTK_DSI_HOST_IS_READ(msg->type)) {
-+		recv_cnt = 0;
-+		goto restore_dsi_mode;
-+	}
- 
- 	if (!msg->rx_buf) {
- 		DRM_ERROR("dsi receive buffer size may be NULL\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto restore_dsi_mode;
- 	}
- 
- 	for (i = 0; i < 16; i++)
-@@ -952,7 +961,13 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
- 	DRM_INFO("dsi get %d byte data from the panel address(0x%x)\n",
- 		 recv_cnt, *((u8 *)(msg->tx_buf)));
- 
--	return recv_cnt;
-+restore_dsi_mode:
-+	if (dsi_mode & MODE) {
-+		mtk_dsi_set_mode(dsi);
-+		mtk_dsi_start(dsi);
-+	}
-+
-+	return ret < 0 ? ret : recv_cnt;
- }
- 
- static const struct mipi_dsi_host_ops mtk_dsi_ops = {
+-	ret = smsc95xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL_);
+-	if (ret < 0)
+-		return ret;
+-
+ 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
+ 	if (pdata->phydev->duplex != DUPLEX_FULL) {
+ 		pdata->mac_cr &= ~MAC_CR_FDPX_;
 -- 
 2.35.1
 
