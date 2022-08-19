@@ -2,157 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CB5C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5A7C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241224AbiHSWUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 18:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        id S241349AbiHSWVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 18:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240632AbiHSWUq (ORCPT
+        with ESMTP id S241023AbiHSWVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 18:20:46 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E4ED399B
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:20:45 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id b38so5183673lfv.4
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:20:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=1w9j2CnxvpyDXJP79Sumgew0FP16DRtCEadh0HEfiw0=;
-        b=nedrGMevZdy6slVv+dPk/OuT3aiMTrep7kHueX8UNcmcbH7GyPzBhhYgPUFsOfqfNa
-         n4llUV8b8GJ5N4LkrWz39ExnK9T0PGbLFPxu0/0dE4FarUGHi8OiQNr+x0kc8rHjtjVU
-         zjXNZ+W2SU5Megg3N/ZtK5sNEZZ8HV9Su2YP6YvRfn68rxabxzX6ZNOwC4+TPsEMpveC
-         Jy0DRc+tyU7gpFK7LgXAvuM4oylAn+PgIZdTA898ydx9yuwKghWkn+7Ug9xLXWq99xCG
-         G9qY82cQ/oSQE5ffiGv1wvIxLGRD1nqH3LlP6D7NCQV9nKG3Tio5zHsGjrtdv8vsMBv3
-         y35Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=1w9j2CnxvpyDXJP79Sumgew0FP16DRtCEadh0HEfiw0=;
-        b=v3r+IXNAbv2hW7b4ZbE9xaA0CVFZ9bo8Zmv/5DJIM6j2V0HvFf+55pNE4FA75lvxq4
-         FvahKGM85Q9xxYf+qln8X5sMHp8bzQIoFCibogh1VYbGM9nLSGXBkrxfzpCWiDBYYn8E
-         jIhyhDXPZ0uuXxXCPgYu9pWk/sK/cCIqlDKUWQjeZB7jTkzD96HZVp6Rqx/2Bl+1X3HS
-         C9iGJAiJwDdMmYNk9CJmNRwT+f7cSoI1rw4K6KwRyswfd6Xw/LSSZ3V8d3RP2z/40Rxr
-         2ve8lLUPScgMa4/VnItBKVIjc1nw7EYiCVoloEPb6DLN6JYr8dftNeUJ/DvyZYCSpS6C
-         yJ4A==
-X-Gm-Message-State: ACgBeo3rqPJfwdqX5GX8qftSJ8YvWJqYQH0sZQfnlkZ4fViI8te7zkt/
-        zZ0EFP7uyEZCNGImhhs03pRzlzQcb98uHskkuUKFFg==
-X-Google-Smtp-Source: AA6agR7gzGL5Ufc+3smMEbm6na/bSIYdDXa20mn3jdUHyqDKUAL5i1UlTnXmF2upgUWAg2TYuw9QSJv6kvqkax+xddg=
-X-Received: by 2002:a05:6512:139c:b0:48f:da64:d050 with SMTP id
- p28-20020a056512139c00b0048fda64d050mr2796700lfa.268.1660947643331; Fri, 19
- Aug 2022 15:20:43 -0700 (PDT)
+        Fri, 19 Aug 2022 18:21:13 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE99108975;
+        Fri, 19 Aug 2022 15:21:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=w+V+d2Ou90II75S8tjeZPRXSUk1hOHxUHRxe/lCKYf8=; b=GcJDyWLUFBDhdhZRicD7s2hGOp
+        JNq9aL5jXzUOnIeWtwVFCPgVcltgOhopGclsa1YufcOPLbtTcP52b96sRcg4Rr5NnLWUnqDdbBLRf
+        NB6idHbm9fRY0m1Lf4ADFrv9tOw+wBEwSzawjHvCBKjAeiOSlrtuZFD2tfR6s3JAfm+lJDZx5WGTE
+        B2t21P0zsAbg8Snpm8jCtem3l7gcR/0NlgfLESKnD/RfPAXhKLHmOYrtiI7YWJkYYWt0U30EqV8yO
+        v9sbxOm+eq6ThJinbMItFxXhaYH3/0in9o9u5UM61ccxHNnKo/j827E6OHmdh6SjAp28YRHON5w1m
+        ZCXcatNg==;
+Received: from [179.232.144.59] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oPAMH-00Cazj-Pv; Sat, 20 Aug 2022 00:21:01 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, xuqiang36@huawei.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        linux-alpha@vger.kernel.org,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Richard Henderson <rth@gcc.gnu.org>
+Subject: [PATCH V3 03/11] alpha: Clean-up the panic notifier code
+Date:   Fri, 19 Aug 2022 19:17:23 -0300
+Message-Id: <20220819221731.480795-4-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819221731.480795-1-gpiccoli@igalia.com>
+References: <20220819221731.480795-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-References: <20220819210737.763135-1-vipinsh@google.com> <YwAC1f5wTYpTdeh+@google.com>
-In-Reply-To: <YwAC1f5wTYpTdeh+@google.com>
-From:   Vipin Sharma <vipinsh@google.com>
-Date:   Fri, 19 Aug 2022 15:20:06 -0700
-Message-ID: <CAHVum0ecr7S9QS4+3kS3Yd-eQJ5ZY_GicQWurVFnAif6oOYhOg@mail.gmail.com>
-Subject: Re: [PATCH v2] KVM: selftests: Run dirty_log_perf_test on specific cpus
-To:     David Matlack <dmatlack@google.com>
-Cc:     seanjc@google.com, pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 2:38 PM David Matlack <dmatlack@google.com> wrote:
->
-> On Fri, Aug 19, 2022 at 02:07:37PM -0700, Vipin Sharma wrote:
-> > +static int atoi_paranoid(const char *num_str)
-> > +{
-> > +     int num;
-> > +     char *end_ptr;
-> > +
-> > +     errno = 0;
-> > +     num = (int)strtol(num_str, &end_ptr, 10);
-> > +     TEST_ASSERT(errno == 0, "Conversion error: %d\n", errno);
-> > +     TEST_ASSERT(num_str != end_ptr && *end_ptr == '\0',
-> > +                 "Invalid number string.\n");
-> > +
-> > +     return num;
-> > +}
->
-> Introduce atoi_paranoid() and upgrade existing atoi() users in a
-> separate commit. Also please put it in e.g. test_util.c so that it can
-> be used by other tests (and consider upgrading other tests to use it in
-> your commit).
->
+The alpha panic notifier has some code issues, not following
+the conventions of other notifiers. Also, it might halt the
+machine but still it is set to run as early as possible, which
+doesn't seem to be a good idea.
 
-Sure, I will add a separate commit.
+So, let's clean the code and set the notifier to run as the
+latest, following the same approach other architectures are
+doing - also, remove the unnecessary include of a header already
+included indirectly.
+
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <rth@gcc.gnu.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+
+---
+
+V3:
+- No changes.
+
+V2:
+- Fixed rth email address;
+- Added Petr's review tag - thanks!
 
 
-> > -     while ((opt = getopt(argc, argv, "eghi:p:m:nb:f:v:os:x:")) != -1) {
-> > +     while ((opt = getopt(argc, argv, "c:eghi:p:m:nb:f:v:os:x:")) != -1) {
-> >               switch (opt) {
-> > +             case 'c':
-> > +                     nr_lcpus = parse_cpu_list(optarg, lcpu_list, KVM_MAX_VCPUS + 1);
->
-> I think we should move all the logic to pin threads to perf_test_util.c.
-> The only thing dirty_log_perf_test.c should do is pass optarg into
-> perf_test_util.c. This will make it trivial for any other test based on
-> pef_test_util.c to also use pinning.
->
-> e.g. All a test needs to do to use pinning is add a flag to the optlist
-> and add a case statement like:
->
->         case 'c':
->                 perf_test_setup_pinning(optarg);
->                 break;
->
-> perf_test_setup_pinning() would:
->  - Parse the list and populate perf_test_vcpu_args with each vCPU's
->    assigned pCPU.
->  - Pin the current thread to it's assigned pCPU if one is provided.
->
+ arch/alpha/kernel/setup.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
 
-This will assume all tests have the same pinning requirement and
-format. What if some tests have more than one worker threads after the
-vcpus?
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index b4fbbba30aa2..d88bdf852753 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -41,19 +41,11 @@
+ #include <linux/sysrq.h>
+ #include <linux/reboot.h>
+ #endif
+-#include <linux/notifier.h>
+ #include <asm/setup.h>
+ #include <asm/io.h>
+ #include <linux/log2.h>
+ #include <linux/export.h>
+ 
+-static int alpha_panic_event(struct notifier_block *, unsigned long, void *);
+-static struct notifier_block alpha_panic_block = {
+-	alpha_panic_event,
+-        NULL,
+-        INT_MAX /* try to do it first */
+-};
+-
+ #include <linux/uaccess.h>
+ #include <asm/hwrpb.h>
+ #include <asm/dma.h>
+@@ -435,6 +427,21 @@ static const struct sysrq_key_op srm_sysrq_reboot_op = {
+ };
+ #endif
+ 
++static int alpha_panic_event(struct notifier_block *this,
++			     unsigned long event, void *ptr)
++{
++	/* If we are using SRM and serial console, just hard halt here. */
++	if (alpha_using_srm && srmcons_output)
++		__halt();
++
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block alpha_panic_block = {
++	.notifier_call = alpha_panic_event,
++	.priority = INT_MIN, /* may not return, do it last */
++};
++
+ void __init
+ setup_arch(char **cmdline_p)
+ {
+@@ -1427,19 +1434,6 @@ const struct seq_operations cpuinfo_op = {
+ 	.show	= show_cpuinfo,
+ };
+ 
+-
+-static int
+-alpha_panic_event(struct notifier_block *this, unsigned long event, void *ptr)
+-{
+-#if 1
+-	/* FIXME FIXME FIXME */
+-	/* If we are using SRM and serial console, just hard halt here. */
+-	if (alpha_using_srm && srmcons_output)
+-		__halt();
+-#endif
+-        return NOTIFY_DONE;
+-}
+-
+ static __init int add_pcspkr(void)
+ {
+ 	struct platform_device *pd;
+-- 
+2.37.2
 
-Maybe I should:
-1. Create a generic function which parses a csv of integers, put it in
-test_util.c
-2. Provide a function to populate perf_test_vcpus_args in perf_test_util.c
-3. Provide a function to migrate self to some cpu in perf_test_util.c.
-This will work for now, but in future if there are more than 1 worker
-we need to revisit it.
-
-I will also be fine implementing what you suggested and keep working
-under the precondition that there will be only one worker thread, if
-that is okay to assume.
-
-> Validating that the number of pCPUs == number of vCPUs is a little
-> tricky. But that could be done as part of
-> perf_test_start_vcpu_threads(). Alternatively, you could set up pinning
-> after getting the number of vCPUs. e.g.
->
->         const char *cpu_list = NULL;
->
->         ...
->
->         while ((opt = getopt(...)) != -1) {
->                 switch (opt) {
->                 case 'c':
->                         cpu_list = optarg;  // is grabbing optarg here safe?
-
-I am not sure how it is internally implemented. API doesn't mention
-anything. Better to be safe and assume it is not valid later.
-
->                         break;
->                 }
->                 ...
->         }
->
->         if (cpu_list)
->                 perf_test_setup_pinning(cpu_list, nr_vcpus);
->
-
-Better to have a copy of the argument or just get list of cpus after
-parsing and then do the verification. What is the point in doing all
-extra parsing work when we are gonna abort the process due to some
-invalid condition.
