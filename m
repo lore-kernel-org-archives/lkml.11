@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D8DC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DB1C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354440AbiHSQxz (ORCPT
+        id S1354065AbiHSQx7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
+        Fri, 19 Aug 2022 12:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354665AbiHSQvc (ORCPT
+        with ESMTP id S1354704AbiHSQvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:51:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A03BD41AA;
-        Fri, 19 Aug 2022 09:14:30 -0700 (PDT)
+        Fri, 19 Aug 2022 12:51:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDE112D988;
+        Fri, 19 Aug 2022 09:14:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E626617A5;
-        Fri, 19 Aug 2022 16:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3922AC433D6;
-        Fri, 19 Aug 2022 16:13:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2BB9B82820;
+        Fri, 19 Aug 2022 16:13:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F97C433C1;
+        Fri, 19 Aug 2022 16:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925587;
-        bh=17bYil4JyMXoB4xB2BsKG7VYGMh9hdXICcVXPEgPOqQ=;
+        s=korg; t=1660925621;
+        bh=74affbnttGnyqEhedSfWUdEvnKEhCwGfv9CcwS7CboE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a8wfIYlCvqzF51yQETAtf3fH3v77vCQvhbr3esOgztDa97bzqGkFYcOv/rag5aYqW
-         vbqcTbVCoOtlTyRzUAoc8QFrwM1Ubxolk1kiLNMoywRq8Bv2kJZx/gRHY6nogI6woo
-         tR3+jCSHkGy49u2Im6SZts9/e8jO9ye3bp3Xo4MI=
+        b=CT0qFnhCg+ORyluzgiXE/92FuBhjhtJUw9Al+CzAD5uIK6cqto8j0VlvMjuk4ByBM
+         SBi1IBB6PZDr5aXWMa88LeHX6TXFOJpG9dOKob8Y/2BVTZwyaRX7e2jCNCt0rhKavU
+         58yDVt5BWvANmCFYk4yYuW8caRDwmwROZCVssYis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 509/545] KVM: x86/pmu: Ignore pmu->global_ctrl check if vPMU doesnt support global_ctrl
-Date:   Fri, 19 Aug 2022 17:44:39 +0200
-Message-Id: <20220819153852.259470699@linuxfoundation.org>
+        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH 5.10 541/545] net/9p: Initialize the iounit field during fid creation
+Date:   Fri, 19 Aug 2022 17:45:11 +0200
+Message-Id: <20220819153853.812789162@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,39 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-[ Upstream commit 98defd2e17803263f49548fea930cfc974d505aa ]
+commit aa7aeee169480e98cf41d83c01290a37e569be6d upstream.
 
-MSR_CORE_PERF_GLOBAL_CTRL is introduced as part of Architecture PMU V2,
-as indicated by Intel SDM 19.2.2 and the intel_is_valid_msr() function.
+Ensure that the fid's iounit field is set to zero when a new fid is
+created. Certain 9P operations, such as OPEN and CREATE, allow the
+server to reply with an iounit size which the client code assigns to the
+p9_fid struct shortly after the fid is created by p9_fid_create(). On
+the other hand, an XATTRWALK operation doesn't allow for the server to
+specify an iounit value. The iounit field of the newly allocated p9_fid
+struct remained uninitialized in that case. Depending on allocation
+patterns, the iounit value could have been something reasonable that was
+carried over from previously freed fids or, in the worst case, could
+have been arbitrary values from non-fid related usages of the memory
+location.
 
-So in the absence of global_ctrl support, all PMCs are enabled as AMD does.
+The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
+after the uninitialized iounit field resulted in the typical sequence of
+two getxattr(2) syscalls, one to get the size of an xattr and another
+after allocating a sufficiently sized buffer to fit the xattr value, to
+hit an unexpected ERANGE error in the second call to getxattr(2). An
+uninitialized iounit field would sometimes force rsize to be smaller
+than the xattr value size in p9_client_read_once() and the 9P server in
+WSL refused to chunk up the READ on the attr_fid and, instead, returned
+ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
+the READ and this problem goes undetected there.
 
-Signed-off-by: Like Xu <likexu@tencent.com>
-Message-Id: <20220509102204.62389-1-likexu@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220710141402.803295-1-tyhicks@linux.microsoft.com
+Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+[tyhicks: Adjusted context due to:
+ - Lack of fid refcounting introduced in v5.11 commit 6636b6dcc3db ("9p:
+   add refcount to p9_fid struct")
+ - Difference in how buffer sizes are specified v5.16 commit
+   6e195b0f7c8e ("9p: fix a bunch of checkpatch warnings")]
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/9p/client.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index e73378b6f10c..f938fc997766 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -104,6 +104,9 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -893,16 +893,13 @@ static struct p9_fid *p9_fid_create(stru
+ 	struct p9_fid *fid;
  
-+	if (pmu->version < 2)
-+		return true;
-+
- 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
- }
+ 	p9_debug(P9_DEBUG_FID, "clnt %p\n", clnt);
+-	fid = kmalloc(sizeof(struct p9_fid), GFP_KERNEL);
++	fid = kzalloc(sizeof(struct p9_fid), GFP_KERNEL);
+ 	if (!fid)
+ 		return NULL;
  
--- 
-2.35.1
-
+-	memset(&fid->qid, 0, sizeof(struct p9_qid));
+ 	fid->mode = -1;
+ 	fid->uid = current_fsuid();
+ 	fid->clnt = clnt;
+-	fid->rdir = NULL;
+-	fid->fid = 0;
+ 
+ 	idr_preload(GFP_KERNEL);
+ 	spin_lock_irq(&clnt->lock);
 
 
