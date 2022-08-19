@@ -2,136 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 093D5C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE2CC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348547AbiHSLFq (ORCPT
+        id S1348612AbiHSLGl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
+        Fri, 19 Aug 2022 07:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348538AbiHSLEy (ORCPT
+        with ESMTP id S1348532AbiHSLGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:04:54 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDE8FBA4E;
-        Fri, 19 Aug 2022 04:04:50 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4M8Jmx2M9YzDqk5;
-        Fri, 19 Aug 2022 11:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1660907089; bh=VgOwRaOafAKxvvihQoE/8VDW5Esy6FtftczhQnuuQ1A=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=TtWBCbEYHbFsL3Di1OQMTocjrUJrb7sOaMwMUTYo/5Nbvq0+Jvs/zYa5Vmk6KOWGf
-         XJJ62VD5tcs6AXsGMg4lOYUvqAAjSU/mzNlgjse1kUgs5AkyZQQl8xAydj28O+OGnX
-         e6vTm/aqZ3zSD0MPDvKdBdtQmnZVZHlkCXEEY9lY=
-X-Riseup-User-ID: 8A77544D1EBCD6A7168097DB83EDE48ACD5A381A6AE8078A5709A25E3121680F
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4M8Jmr4Qt5z5vcM;
-        Fri, 19 Aug 2022 11:04:44 +0000 (UTC)
-Message-ID: <f0c491f2-39fd-b778-bc63-99b3338c6d8a@riseup.net>
-Date:   Fri, 19 Aug 2022 08:04:41 -0300
+        Fri, 19 Aug 2022 07:06:14 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0F1FEC56
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 04:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660907155; x=1692443155;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OojHl87OofFEiZuXyy3Mpun/Qp6Et0dskOZz4kO9rOU=;
+  b=eIcY6YykoHd9R4FfH9FJt3icOCA2jfm1s/8my/Ut5zDEoKJLDgoyr22c
+   HO3+x6TLKmpKJtQH3TpSReDTXpCpkNPkbjCshFoy0VzVg5Kr6P49mr1hK
+   0ZcNP7g8GnVJ8cy6uk5vgKlPHtwn+EcHSPGM409OQQQOMu6R4ca2fF/xG
+   q7U4yHp9Kn47wuxC0eX6SJG+aNCg0ztZt4dDfLgr6tikF0vsRZzsEKiBQ
+   Nly4aBVgCcuIo6CihnOXjxBt0+qmYFE4+layCDy+C43jCGezlp1E7rWvY
+   3AQ20Qv+BlErAqlK4xnQdf3JDHo4+s8fF02FMHlVX2VQyfH2OIP3uY9S5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="279953755"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="279953755"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 04:05:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="584622967"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 19 Aug 2022 04:05:52 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOzp2-0001Nb-0X;
+        Fri, 19 Aug 2022 11:05:52 +0000
+Date:   Fri, 19 Aug 2022 19:05:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
+        Anup Patel <anup@brainfault.org>
+Subject: arch/riscv/kvm/vcpu_timer.c:302:23: warning: variable 'csr' set but
+ not used
+Message-ID: <202208191955.gp7xM6nG-lkp@intel.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/8] Documentation: KUnit: avoid repeating "kunit.py run"
- in start.rst
-Content-Language: en-US
-To:     Tales Aparecida <tales.aparecida@gmail.com>,
-        Sadiya Kazi <sadiyakazi@google.com>
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        davidgow@google.com, corbet@lwn.net, brendan.higgins@linux.dev,
-        Trevor Woerner <twoerner@gmail.com>, siqueirajordao@riseup.net,
-        mwen@igalia.com, andrealmeid@riseup.net,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com
-References: <20220819053234.241501-1-tales.aparecida@gmail.com>
- <20220819053234.241501-3-tales.aparecida@gmail.com>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
-In-Reply-To: <20220819053234.241501-3-tales.aparecida@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tales
+arch/riscv/include/asm/kvm_vcpu_timer.h
+arch/riscv/include/uapi/asm/kvm.h
+arch/riscv/kvm/vcpu.c
+arch/riscv/kvm/vcpu_timer.c
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4c2d0b039c5cc0112206a5b22431b577cb1c57ad
+commit: 8f5cb44b1bae8520c0705ce348b30ffb1fdda43a RISC-V: KVM: Support sstc extension
+date:   7 days ago
+config: riscv-randconfig-r023-20220819 (https://download.01.org/0day-ci/archive/20220819/202208191955.gp7xM6nG-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 0ac597f3cacf60479ffd36b03766fa7462dabd78)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8f5cb44b1bae8520c0705ce348b30ffb1fdda43a
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 8f5cb44b1bae8520c0705ce348b30ffb1fdda43a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kvm/
 
-On 8/19/22 02:32, Tales Aparecida wrote:
-> Combine two sections mentioning "kunit.py run" to streamline the
-> getting-started guide.
-> 
-> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
-> ---
->  Documentation/dev-tools/kunit/start.rst | 38 ++++++++++---------------
->  1 file changed, 15 insertions(+), 23 deletions(-)
-> 
-> diff --git a/Documentation/dev-tools/kunit/start.rst b/Documentation/dev-tools/kunit/start.rst
-> index e730df1f468e..165d7964aa13 100644
-> --- a/Documentation/dev-tools/kunit/start.rst
-> +++ b/Documentation/dev-tools/kunit/start.rst
-> @@ -19,7 +19,21 @@ can run kunit_tool:
->  
->  	./tools/testing/kunit/kunit.py run
->  
-> -For more information on this wrapper, see:
-> +If everything worked correctly, you should see the following:
-> +
-> +.. code-block::
-> +
-> +	Generating .config ...
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-When I run ./tools/testing/kunit/kunit.py run, I usually see
-"Configuring KUnit Kernel ..." instead of "Generating .config ...".
-Maybe there was a change in the code that didn't reflect on the docs.
+All warnings (new ones prefixed by >>):
 
-> +	Building KUnit Kernel ...
-> +	Starting KUnit Kernel ...
-> +
-> +The tests will pass or fail.
-> +
-> +.. note ::
-> +   Because it is building a lot of sources for the first time, the
-> +   ``Building KUnit kernel`` may take a while.
+>> arch/riscv/kvm/vcpu_timer.c:302:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
+           struct kvm_vcpu_csr *csr;
+                                ^
+   arch/riscv/kvm/vcpu_timer.c:327:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
+           struct kvm_vcpu_csr *csr;
+                                ^
+   2 warnings generated.
 
-Minor nit: s/``Building KUnit kernel``/``Building KUnit Kernel``
 
-Best Regards,
-- Maíra Canal
+vim +/csr +302 arch/riscv/kvm/vcpu_timer.c
 
-> +
-> +For detailed information on this wrapper, see:
->  Documentation/dev-tools/kunit/run_wrapper.rst.
->  
->  Creating a ``.kunitconfig``
-> @@ -74,28 +88,6 @@ you if you have not included dependencies for the options used.
->     tools like ``make menuconfig O=.kunit``. As long as its a superset of
->     ``.kunitconfig``, kunit.py won't overwrite your changes.
->  
-> -Running Tests (KUnit Wrapper)
-> ------------------------------
-> -1. To make sure that everything is set up correctly, invoke the Python
-> -   wrapper from your kernel repository:
-> -
-> -.. code-block:: bash
-> -
-> -	./tools/testing/kunit/kunit.py run
-> -
-> -If everything worked correctly, you should see the following:
-> -
-> -.. code-block::
-> -
-> -	Generating .config ...
-> -	Building KUnit Kernel ...
-> -	Starting KUnit Kernel ...
-> -
-> -The tests will pass or fail.
-> -
-> -.. note ::
-> -   Because it is building a lot of sources for the first time, the
-> -   ``Building KUnit kernel`` may take a while.
->  
->  Running Tests without the KUnit Wrapper
->  =======================================
+   299	
+   300	void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
+   301	{
+ > 302		struct kvm_vcpu_csr *csr;
+   303		struct kvm_vcpu_timer *t = &vcpu->arch.timer;
+   304	
+   305		kvm_riscv_vcpu_update_timedelta(vcpu);
+   306	
+   307		if (!t->sstc_enabled)
+   308			return;
+   309	
+   310		csr = &vcpu->arch.guest_csr;
+   311	#if defined(CONFIG_32BIT)
+   312		csr_write(CSR_VSTIMECMP, (u32)t->next_cycles);
+   313		csr_write(CSR_VSTIMECMPH, (u32)(t->next_cycles >> 32));
+   314	#else
+   315		csr_write(CSR_VSTIMECMP, t->next_cycles);
+   316	#endif
+   317	
+   318		/* timer should be enabled for the remaining operations */
+   319		if (unlikely(!t->init_done))
+   320			return;
+   321	
+   322		kvm_riscv_vcpu_timer_unblocking(vcpu);
+   323	}
+   324	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
