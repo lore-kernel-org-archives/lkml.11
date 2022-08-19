@@ -2,97 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF067C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D3BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbiHSA3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 20:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55800 "EHLO
+        id S240806AbiHSAdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 20:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243261AbiHSA3X (ORCPT
+        with ESMTP id S229899AbiHSAdR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 20:29:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132B17B289
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:29:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660868961;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=QjKDaOf5VrUR9aSan2WIUuQM3BhgteOS+VRIFGCRBQA=;
-        b=dYHCzmkXiQttu03DI6qIY05+CEGx+7kBI533Dxpe2QjmPpyzCDVEU+ct6ZWkyHuEibqgBs
-        /XIrOtpmJM4ACL8n7o5FDIYCQo3RsPQ2n/OMI+OWk48FSuCJhtNuS3wC5CNkgBtiyNxdIk
-        de8CIZtllAdmegXvCYAoTxiz7eb9Z3w=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-639-rYWBLkzzPzyuag8J59Y72Q-1; Thu, 18 Aug 2022 20:29:11 -0400
-X-MC-Unique: rYWBLkzzPzyuag8J59Y72Q-1
-Received: by mail-ed1-f70.google.com with SMTP id t13-20020a056402524d00b0043db1fbefdeso1843535edd.2
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:29:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=QjKDaOf5VrUR9aSan2WIUuQM3BhgteOS+VRIFGCRBQA=;
-        b=HZYOUDJMqmxrcJ8aSA0+Z8GtUrSPffd8mSWcqSeLnIBGhZVNysW9K2D9hJkUohfPCJ
-         otFm6XwT0BchzlsY2CtxbKlsZrgII9htl7OObiGy5vz9tnowcJvhGP26gx6Tl+ISrOzb
-         6vhzf0z3+8AHOMACUCw7msbG3liUp79SHMoBsJSMFUQqPaeQd4PUhkhIbmQ60ZqO/JVw
-         Nj60oTGAHT/bxyiultHAx8Yx77mAx+IJLelHPiuTYkX/wEwixjhuSpZyJrMTBkR9rQDJ
-         ZRim+PPduSDnpl9Lbm/81T1bP/P+mevqoP2mC1D2rZRZlSsR8RXS4erS8/gV9/FZGBIO
-         aUgg==
-X-Gm-Message-State: ACgBeo2Q8uJPx87fFQScmpkHFg6ElxyhpC2VtL8LgopYRUkHk0dQI4SJ
-        6dT/V69RJKtAEcXaRc2guAYhUsHKvfh4lQJKuPY9bIakBzogqDSmYclJ+Cjd7FB9aK/wNsB47Zp
-        z/sh03zMuo738f24pOg6RV3i5
-X-Received: by 2002:a17:907:b19:b0:730:b0d8:750 with SMTP id h25-20020a1709070b1900b00730b0d80750mr3251511ejl.46.1660868950481;
-        Thu, 18 Aug 2022 17:29:10 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR41UEbU7E96B5pVjIewvKNNPfANaqzwVo+RAQVp2oV943hHXtlWHyB65FWfFjj1qjf2AX2dHA==
-X-Received: by 2002:a17:907:b19:b0:730:b0d8:750 with SMTP id h25-20020a1709070b1900b00730b0d80750mr3251501ejl.46.1660868950316;
-        Thu, 18 Aug 2022 17:29:10 -0700 (PDT)
-Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id b26-20020aa7cd1a000000b004460b020ffdsm2027913edw.83.2022.08.18.17.29.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 17:29:09 -0700 (PDT)
-From:   Danilo Krummrich <dakr@redhat.com>
-To:     daniel@ffwll.ch, airlied@linux.ie, tzimmermann@suse.de,
-        mripard@kernel.org
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH drm-misc-next 0/3] Fixes for vc4 hotplug rework
-Date:   Fri, 19 Aug 2022 02:29:02 +0200
-Message-Id: <20220819002905.82095-1-dakr@redhat.com>
-X-Mailer: git-send-email 2.37.2
+        Thu, 18 Aug 2022 20:33:17 -0400
+Received: from maynard.decadent.org.uk (maynard.decadent.org.uk [95.217.213.242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984A1FD00;
+        Thu, 18 Aug 2022 17:33:15 -0700 (PDT)
+Received: from 213.219.160.184.adsl.dyn.edpnet.net ([213.219.160.184] helo=deadeye)
+        by maynard with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1oOpwj-0000wB-3a; Fri, 19 Aug 2022 02:33:09 +0200
+Received: from ben by deadeye with local (Exim 4.96)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1oOpwi-000a0S-0N;
+        Fri, 19 Aug 2022 02:33:08 +0200
+Date:   Fri, 19 Aug 2022 02:33:08 +0200
+From:   Ben Hutchings <ben@decadent.org.uk>
+To:     x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org, 1017425@bugs.debian.org,
+        =?iso-8859-1?Q?Martin-=C9ric?= Racine <martin-eric.racine@iki.fi>,
+        stable@vger.kernel.org, regressions@lists.linux.dev,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Subject: [PATCH] x86/speculation: Avoid LFENCE in FILL_RETURN_BUFFER on CPUs
+ that lack it
+Message-ID: <Yv7aRJ/SvVhSdnSB@decadent.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="eT0M3T1LYdQ/WIvW"
+Content-Disposition: inline
+X-SA-Exim-Connect-IP: 213.219.160.184
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on maynard); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-I've found a few potential issues left after the hotplug rework.
+--eT0M3T1LYdQ/WIvW
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-In vc4_hdmi.c we're missing two mutex_unlock() calls when the device is
-unplugged.
+=46rom: Ben Hutchings <benh@debian.org>
 
-vc4_crtc and vc4_plane seem to miss some drm_dev_enter()/drm_dev_exit() calls
-to protect against resource access after the device/driver is unbound, but the
-DRM potentially isn't freed yet and userspace can still call into the driver.
+The mitigation for PBRSB includes adding LFENCE instructions to the
+RSB filling sequence.  However, RSB filling is done on some older CPUs
+that don't support the LFENCE instruction.
 
-Danilo Krummrich (3):
-  drm/vc4: hdmi: unlock mutex when device is unplugged
-  drm/vc4: plane: protect device resources after removal
-  drm/vc4: crtc: protect device resources after removal
+Define and use a BARRIER_NOSPEC macro which makes the LFENCE
+conditional on X86_FEATURE_LFENCE_RDTSC, like the barrier_nospec()
+macro defined for C code in <asm/barrier.h>.
 
- drivers/gpu/drm/vc4/vc4_crtc.c  | 41 ++++++++++++++++++++++++++++++++-
- drivers/gpu/drm/vc4/vc4_drv.h   |  1 +
- drivers/gpu/drm/vc4/vc4_hdmi.c  |  7 ++++--
- drivers/gpu/drm/vc4/vc4_plane.c | 25 ++++++++++++++++++++
- 4 files changed, 71 insertions(+), 3 deletions(-)
+Reported-by: Martin-=C9ric Racine <martin-eric.racine@iki.fi>
+References: https://bugs.debian.org/1017425
+Cc: stable@vger.kernel.org
+Cc: regressions@lists.linux.dev
+Cc: Daniel Sneddon <daniel.sneddon@linux.intel.com>
+Cc: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Fixes: 2b1299322016 ("x86/speculation: Add RSB VM Exit protections")
+Fixes: ba6e31af2be9 ("x86/speculation: Add LFENCE to RSB fill sequence")
+Signed-off-by: Ben Hutchings <benh@debian.org>
+---
+Re-sending this with properly matched From address and server.
+Apologies if you got 2 copies.
 
+Ben.
 
-base-commit: 8ba9249396bef37cb68be9e8dee7847f1737db9d
--- 
-2.37.2
+ arch/x86/include/asm/nospec-branch.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/no=
+spec-branch.h
+index e64fd20778b6..b1029fd88474 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -34,6 +34,11 @@
+=20
+ #define RSB_CLEAR_LOOPS		32	/* To forcibly overwrite all entries */
+=20
++#ifdef __ASSEMBLY__
++
++/* Prevent speculative execution past this barrier. */
++#define BARRIER_NOSPEC ALTERNATIVE "", "lfence", X86_FEATURE_LFENCE_RDTSC
++
+ /*
+  * Google experimented with loop-unrolling and this turned out to be
+  * the optimal version - two calls, each with their own speculation
+@@ -62,9 +67,7 @@
+ 	dec	reg;				\
+ 	jnz	771b;				\
+ 	/* barrier for jnz misprediction */	\
+-	lfence;
+-
+-#ifdef __ASSEMBLY__
++	BARRIER_NOSPEC;
+=20
+ /*
+  * This should be used immediately before an indirect jump/call. It tells
+@@ -138,7 +141,7 @@
+ 	int3
+ .Lunbalanced_ret_guard_\@:
+ 	add $(BITS_PER_LONG/8), %_ASM_SP
+-	lfence
++	BARRIER_NOSPEC
+ .endm
+=20
+  /*
+
+--eT0M3T1LYdQ/WIvW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAmL+2j0ACgkQ57/I7JWG
+EQlPgA/+JoIOscO32lmTqexszlIn0F8EUMhfZfCh6h3mSgt0w8B1r4oBmEZTs9x5
+HOHjeG0ZtdQvTKm10bCn2eCQq9xhH35m/OSNoysS64lFsQLyKmvXoV2U36nvxSnu
+S7Dd0pt1Mgxs6o7+l/Gxhd1Jva6JagwjZjcOe3cPmcMtgbBZfPsmAofkSbq/89u4
+iBeUm7YE5i7zRB5DZWHbMs+GIEGdyRplu1u7pYxRSg9XQg/zSdNdS02c5v8/PLx2
+NgTGVR+t858WG791oTNXqkV1SG1s3LNuimJej155QCxyMNrJgAqre713cv9x5uEA
+tU/VRZdPoYkee/L6d31p77C9+BV1PD2wy1pUFVBEvXV7cbDXvpXNjb5ZRAHPSBIa
+1LBP1jrvCfeq7r4qQPIjIU5T8mU6ClJKkHLnf0ZjFwDvyNOEHy9dlH5ShjYy/oFX
+Wedrbb7Y/sk39fxF5km0ns8gL/s689HbT1quEbqE2NhjfurOlSTuejwE4kZv8+O9
+OTvzIPOoM0rjNZOWKn89zLwSygZxJeEczWiA6dml6vuqdU9p0TAI5b7DCvbcr71J
+KziLwMJAGHIik+FYKS34tKsQaHTUIIbgNV3H1GLZnQrcYH0zfSDvO0q+X8bVcSWB
+5k23Kkd4wwcu/WEVBSAIkiMoHmQrxUauVOcIDBXOoi0je9B67kQ=
+=/q8V
+-----END PGP SIGNATURE-----
+
+--eT0M3T1LYdQ/WIvW--
