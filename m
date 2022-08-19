@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C37C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE5BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353307AbiHSQfH (ORCPT
+        id S1353172AbiHSQfN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
+        Fri, 19 Aug 2022 12:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353482AbiHSQbq (ORCPT
+        with ESMTP id S1353495AbiHSQbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F18A11DF79;
-        Fri, 19 Aug 2022 09:06:05 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47D466A68;
+        Fri, 19 Aug 2022 09:05:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9EC1617F2;
-        Fri, 19 Aug 2022 16:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3992C433C1;
-        Fri, 19 Aug 2022 16:05:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A11056177D;
+        Fri, 19 Aug 2022 16:05:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1795C433C1;
+        Fri, 19 Aug 2022 16:05:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925131;
-        bh=ZxhMVr49eMNwslMvCFUqsr9mcAHtbfXm7urEzpKHVlo=;
+        s=korg; t=1660925128;
+        bh=lYj+03FoQAUy9tB3RaLxYF1iOT8ybR+2ua3LKkOFXpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FzVZiOGt9Fy+zM7uksxaqmWgAMYmNgn/KQPGpBT7i34ahzYrqFtaiNGUWCvwDmnzV
-         jDIAMxu1r+gVcKJz5pJVMXaU4GI8U+dozqNG4ihA0chyXjGMrkd2TxmVDz9JfD7ovv
-         T5vj02G9kS71h/UKrjN2jZeLmVL34C6FE20tAKjs=
+        b=E5oBTDfS6ee64g06XgjyxmwCA1tc6oIRWbEfoCJw4VReoO3ZBeX6PxJp+heTpp1ES
+         2Vrff8/KhrYWCl3apfiJiCItE1oKNrkrH0S/apoJOm+sEkuwCRwkpDig1fzKbidYWl
+         4+6HaLNmHzeTcCMiswxro3tYxpu1YaYc0jKSiX2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Lawrence <joe.lawrence@redhat.com>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 376/545] selftests/livepatch: better synchronize test_klp_callbacks_busy
-Date:   Fri, 19 Aug 2022 17:42:26 +0200
-Message-Id: <20220819153846.236093717@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 393/545] vfio/ccw: Do not change FSM state in subchannel event
+Date:   Fri, 19 Aug 2022 17:42:43 +0200
+Message-Id: <20220819153847.004043859@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,74 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Lawrence <joe.lawrence@redhat.com>
+From: Eric Farman <farman@linux.ibm.com>
 
-[ Upstream commit 55eb9a6c8bf3e2099863118ef53e02d9f44f85a8 ]
+[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
 
-The test_klp_callbacks_busy module conditionally blocks a future
-livepatch transition by busy waiting inside its workqueue function,
-busymod_work_func().  After scheduling this work, a test livepatch is
-loaded, introducing the transition under test.
+The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
+specifically machine checks, on behalf of vfio-ccw. It correctly calls
+cio_update_schib(), and if that fails (meaning the subchannel is gone)
+it makes an FSM event call to mark the subchannel Not Operational.
 
-Both events are marked in the kernel log for later verification, but
-there is no synchronization to ensure that busymod_work_func() logs its
-function entry message before subsequent selftest commands log their own
-messages.  This can lead to a rare test failure due to unexpected
-ordering like:
+If that worked, however, then it decides that if the FSM state was already
+Not Operational (implying the subchannel just came back), then it should
+simply change the FSM to partially- or fully-open.
 
-#  --- expected
-#  +++ result
-#  @@ -1,7 +1,7 @@
-#   % modprobe test_klp_callbacks_busy block_transition=Y
-#   test_klp_callbacks_busy: test_klp_callbacks_busy_init
-#  -test_klp_callbacks_busy: busymod_work_func enter
-#   % modprobe test_klp_callbacks_demo
-#  +test_klp_callbacks_busy: busymod_work_func enter
-#   livepatch: enabling patch 'test_klp_callbacks_demo'
-#   livepatch: 'test_klp_callbacks_demo': initializing patching transition
-#   test_klp_callbacks_demo: pre_patch_callback: vmlinux
+Remove this trickery, since a subchannel returning will require more
+probing than simply "oh all is well again" to ensure it works correctly.
 
-Force the module init function to wait until busymod_work_func() has
-started (and logged its message), before exiting to the next selftest
-steps.
-
-Fixes: 547840bd5ae5 ("selftests/livepatch: simplify test-klp-callbacks busy target tests")
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220602203233.979681-1-joe.lawrence@redhat.com
+Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/livepatch/test_klp_callbacks_busy.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
---- a/lib/livepatch/test_klp_callbacks_busy.c
-+++ b/lib/livepatch/test_klp_callbacks_busy.c
-@@ -16,10 +16,12 @@ MODULE_PARM_DESC(block_transition, "bloc
+diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
+index 9b61e9b131ad..e3c1060b6056 100644
+--- a/drivers/s390/cio/vfio_ccw_drv.c
++++ b/drivers/s390/cio/vfio_ccw_drv.c
+@@ -288,19 +288,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
+ 	if (work_pending(&sch->todo_work))
+ 		goto out_unlock;
  
- static void busymod_work_func(struct work_struct *work);
- static DECLARE_WORK(work, busymod_work_func);
-+static DECLARE_COMPLETION(busymod_work_started);
+-	if (cio_update_schib(sch)) {
+-		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
+-		rc = 0;
+-		goto out_unlock;
+-	}
+-
+-	private = dev_get_drvdata(&sch->dev);
+-	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
+-		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
+-				 VFIO_CCW_STATE_STANDBY;
+-	}
+ 	rc = 0;
  
- static void busymod_work_func(struct work_struct *work)
- {
- 	pr_info("%s enter\n", __func__);
-+	complete(&busymod_work_started);
- 
- 	while (READ_ONCE(block_transition)) {
- 		/*
-@@ -37,6 +39,12 @@ static int test_klp_callbacks_busy_init(
- 	pr_info("%s\n", __func__);
- 	schedule_work(&work);
- 
-+	/*
-+	 * To synchronize kernel messages, hold the init function from
-+	 * exiting until the work function's entry message has printed.
-+	 */
-+	wait_for_completion(&busymod_work_started);
++	if (cio_update_schib(sch))
++		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
 +
- 	if (!block_transition) {
- 		/*
- 		 * Serialize output: print all messages from the work
+ out_unlock:
+ 	spin_unlock_irqrestore(sch->lock, flags);
+ 
+-- 
+2.35.1
+
 
 
