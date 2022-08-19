@@ -2,539 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6C9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E800DC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347714AbiHSJJt (ORCPT
+        id S1347626AbiHSJJx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        Fri, 19 Aug 2022 05:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346826AbiHSJJq (ORCPT
+        with ESMTP id S1345291AbiHSJJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:09:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F144DF0760;
-        Fri, 19 Aug 2022 02:09:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C43DB81F65;
-        Fri, 19 Aug 2022 09:09:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B41C433D7;
-        Fri, 19 Aug 2022 09:09:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660900182;
-        bh=LUSLArIjZVGEJGr7HaA5jN1R84iWYbA8vizX1CTJoig=;
-        h=From:To:Cc:Subject:Date:From;
-        b=k1UnI1aLycCotRcOx7jv7hGQ7B5fbng4Q1s1U+bCrsS+OZm3PdB1BNdvZv39oZLCR
-         GOmHexaykxMMB02WS/k7bgvm4oq4q5NqvtjP0cs2ODefolgPu2CDPWFaStNffRIpju
-         BRy0QvhIqT8uBKoudU1X9fd7GIDovGTxk33QyV9MddpWTQv4Nqt3IJcif3fhC9XQus
-         1J0LD9B0yielWpYa3p/6P+UK6crtd1Bc9jzOiCh9tvYeVxnrMlVn/p6VDOjKC+Dcjt
-         HVy53UOLsVqqH90n423d5l91Ku8ccslrkFTyrboskcyjVWWni1Ta3BllbA4gQPv+me
-         3z6mpr10Y0yWg==
-Received: by pali.im (Postfix)
-        id CEB25761; Fri, 19 Aug 2022 11:09:38 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc/85xx: DTS: Add CPLD definitions for P1021RDB Combo Board CPL Design
-Date:   Fri, 19 Aug 2022 10:44:33 +0200
-Message-Id: <20220819084433.26011-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Fri, 19 Aug 2022 05:09:48 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3BA17A9B
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:09:47 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id x19so5316917lfq.7
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=G5NAqTux0bOKykcXT0wq7j9epj8v8D7Om8beKuCJzt8=;
+        b=GEm+toPB7s/85Tf4ejtzhH+vMhvU+PeGUhf7rXYBXhLcgaPZRYan8pyh47nO0P3rfL
+         TdjsMv2NONrjdYIJEJD3YSyKfnCunWW2/EAfXZubV5emXm48dBhDONK7MdkGr71TCPFr
+         b7mwBc5GsC63xQd4Lg/XY5gtbRW73Hs2HtMTbguE8jaHv03/tYxGzOlhICrW/Q8b72qt
+         j2h4ovR9MH46YtmAq4Rg7iefCFUj22H7rA9eqwhFHQ5Ba9moPjmZJrFEjcZcVlZgyNFA
+         VnHIC6kSiLH3aYFavmH+OYhgYgxmpmoffHi2IIsxwYq5hWzZCUX2EtCgGDb8qI5RiFYO
+         fwfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=G5NAqTux0bOKykcXT0wq7j9epj8v8D7Om8beKuCJzt8=;
+        b=b6IUG91Wkbqe5YH+dfgueRgDen8eenH+09Nb+UvIKBsKtxRfhCdo05NQ9G+qJ6GLYw
+         k8dAKM9GvzgOgGV0+NVfpkIbszt5DWaLippkAGDSKelF3Ksi3/flpERllscnPrY/1f7I
+         puZfTpUflpk845k37EchA8+IhCHERw9IYXALFr+mNXb69obucjicOf3tO0ZPGMuMEQal
+         ZaHWtYcqWH3GT6h95DHkiTYx45SvgQBhwbVVsUclHcv28QLtjb5tVNukFiwZh+voHSxJ
+         JnOn/OFC5by2/h5+uRcdfijdqHHUqkTh3ILpc9kR5lqOBkPemjq9JqsBFft/Qj6PXTFP
+         zcUg==
+X-Gm-Message-State: ACgBeo0DXTyeKkLFDRBcq4nq16Ef/9yoV2ecBcT/UD0lncz+SkCHld43
+        p7qej8GtecgsqtemuggrHxckVg==
+X-Google-Smtp-Source: AA6agR6N3Py2jGhuCpuhSNB73nreMYs2MhssmyKwqw2ZIa+aUj65/gNBqA/6D2rGBHLR6HDoAltPRA==
+X-Received: by 2002:a05:6512:280e:b0:48b:132:c420 with SMTP id cf14-20020a056512280e00b0048b0132c420mr2080357lfb.542.1660900185712;
+        Fri, 19 Aug 2022 02:09:45 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id cf29-20020a056512281d00b0048a828b6b2dsm561027lfb.182.2022.08.19.02.09.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 02:09:45 -0700 (PDT)
+Message-ID: <9bf85483-61b4-f57c-d46e-fd18b8cce399@linaro.org>
+Date:   Fri, 19 Aug 2022 12:09:44 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] dt-bindings: usb: mtu3: add compatible for mt8188
+Content-Language: en-US
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220819081027.32382-1-chunfeng.yun@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220819081027.32382-1-chunfeng.yun@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-P1021RDB Combo Board CPLD Design is used on following Freescale boards:
-P1021RDB-PC, P1020RDB-PD, P1020MBG-PC, P1020UTM-PC and P2020RDB-PCA.
+On 19/08/2022 11:10, Chunfeng Yun wrote:
+> Add a new compatible for mt8188
+> 
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-Add CPLD definitions for all these boards for which already exist DTS file.
 
-CPLD has bank size 128kB, it is connected via CS3 on LBC and mapped to
-memory range 0xFFA00000~0xFFA1FFFF.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-As CPLD firmware is common on all these boards, use just one compatible
-string "fsl,p1021rdb-pc-cpld".
 
-In some DTS files is CPLD already defined, but definition is either
-incomplete or wrong. So fix it.
-
-All these boards have via CPLD connected max6370 watchdog at offset 0x2
-with GPIO 11, status led at offset 0x8 and reset controller at offset 0xd.
-Additionally P1020MBG-PC and P1020RDB-PD boards have FXO led at offset 0x9
-and FXS leds at offset 0xa.
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi    | 92 +++++++++++++++++++
- arch/powerpc/boot/dts/fsl/p1020mbg-pc_32b.dts |  6 +-
- arch/powerpc/boot/dts/fsl/p1020mbg-pc_36b.dts |  6 +-
- arch/powerpc/boot/dts/fsl/p1020rdb-pd.dts     | 44 +++++++--
- arch/powerpc/boot/dts/fsl/p1020utm-pc.dtsi    | 37 ++++++++
- arch/powerpc/boot/dts/fsl/p1020utm-pc_32b.dts |  4 +-
- arch/powerpc/boot/dts/fsl/p1020utm-pc_36b.dts |  4 +-
- arch/powerpc/boot/dts/fsl/p1021rdb-pc.dtsi    | 37 ++++++++
- arch/powerpc/boot/dts/fsl/p1021rdb-pc_32b.dts |  5 +-
- arch/powerpc/boot/dts/fsl/p1021rdb-pc_36b.dts |  5 +-
- arch/powerpc/boot/dts/fsl/p2020rdb-pc.dtsi    | 33 ++++++-
- 11 files changed, 251 insertions(+), 22 deletions(-)
-
-diff --git a/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi b/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi
-index a24699cfea9c..c73996dcd809 100644
---- a/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi
-@@ -83,6 +83,95 @@
- 		compatible = "vitesse-7385";
- 		reg = <0x2 0x0 0x20000>;
- 	};
-+
-+	cpld@3,0 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		compatible = "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
-+		reg = <0x3 0x0 0x20000>;
-+		ranges = <0x0 0x3 0x0 0x20000>;
-+
-+		watchdog@2 {
-+			compatible = "maxim,max6370";
-+			reg = <0x2 0x1>;
-+			gpios = <&gpio 11 1>;
-+		};
-+
-+		led@8 {
-+			compatible = "register-bit-led";
-+			reg = <0x8 0x1>;
-+			offset = <0x8>;
-+			mask = <0x1>;
-+			active-low;
-+			default-state = "keep";
-+			label = "status";
-+			function = "status";
-+			color = <6>; /* LED_COLOR_ID_YELLOW */
-+		};
-+
-+		led@9 {
-+			compatible = "register-bit-led";
-+			reg = <0x9 0x1>;
-+			offset = <0x9>;
-+			mask = <0x1>;
-+			active-low;
-+			default-state = "keep";
-+			label = "fxo";
-+			color = <2>; /* LED_COLOR_ID_GREEN */
-+		};
-+
-+		led@a,0 {
-+			compatible = "register-bit-led";
-+			reg = <0xa 0x1>;
-+			offset = <0xa>;
-+			mask = <0x1>;
-+			active-low;
-+			default-state = "keep";
-+			label = "fxs0";
-+			color = <2>; /* LED_COLOR_ID_GREEN */
-+		};
-+
-+		led@a,1 {
-+			compatible = "register-bit-led";
-+			reg = <0xa 0x1>;
-+			offset = <0xa>;
-+			mask = <0x2>;
-+			active-low;
-+			default-state = "keep";
-+			label = "fxs1";
-+			color = <2>; /* LED_COLOR_ID_GREEN */
-+		};
-+
-+		led@a,2 {
-+			compatible = "register-bit-led";
-+			reg = <0xa 0x1>;
-+			offset = <0xa>;
-+			mask = <0x4>;
-+			active-low;
-+			default-state = "keep";
-+			label = "fxs2";
-+			color = <2>; /* LED_COLOR_ID_GREEN */
-+		};
-+
-+		led@a,3 {
-+			compatible = "register-bit-led";
-+			reg = <0xa 0x1>;
-+			offset = <0xa>;
-+			mask = <0x8>;
-+			active-low;
-+			default-state = "keep";
-+			label = "fxs3";
-+			color = <2>; /* LED_COLOR_ID_GREEN */
-+		};
-+
-+		reboot@d {
-+			compatible = "syscon-reboot";
-+			reg = <0xd 0x1>;
-+			offset = <0xd>;
-+			mask = <0x1>;
-+			value = <0x1>;
-+		};
-+	};
- };
- 
- &soc {
-@@ -93,6 +182,9 @@
- 		};
- 	};
- 
-+	gpio: gpio-controller@fc00 {
-+	};
-+
- 	mdio@24000 {
- 		phy0: ethernet-phy@0 {
- 			interrupts = <3 1 0 0>;
-diff --git a/arch/powerpc/boot/dts/fsl/p1020mbg-pc_32b.dts b/arch/powerpc/boot/dts/fsl/p1020mbg-pc_32b.dts
-index b29d1fcb5e6b..29847d395f1f 100644
---- a/arch/powerpc/boot/dts/fsl/p1020mbg-pc_32b.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1020mbg-pc_32b.dts
-@@ -44,10 +44,10 @@
- 	lbc: localbus@ffe05000 {
- 		reg = <0x0 0xffe05000 0x0 0x1000>;
- 
--		/* NOR and L2 switch */
-+		/* NOR, L2 switch and CPLD */
- 		ranges = <0x0 0x0 0x0 0xec000000 0x04000000
--			  0x1 0x0 0x0 0xffa00000 0x00040000
--			  0x2 0x0 0x0 0xffb00000 0x00020000>;
-+			  0x2 0x0 0x0 0xffb00000 0x00020000
-+			  0x3 0x0 0x0 0xffa00000 0x00040000>;
- 	};
- 
- 	soc: soc@ffe00000 {
-diff --git a/arch/powerpc/boot/dts/fsl/p1020mbg-pc_36b.dts b/arch/powerpc/boot/dts/fsl/p1020mbg-pc_36b.dts
-index 678d0eec24e2..b0ce561c38ff 100644
---- a/arch/powerpc/boot/dts/fsl/p1020mbg-pc_36b.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1020mbg-pc_36b.dts
-@@ -44,10 +44,10 @@
- 	lbc: localbus@fffe05000 {
- 		reg = <0xf 0xffe05000 0x0 0x1000>;
- 
--		/* NOR and L2 switch */
-+		/* NOR, L2 switch and CPLD */
- 		ranges = <0x0 0x0 0xf 0xec000000 0x04000000
--			  0x1 0x0 0xf 0xffa00000 0x00040000
--			  0x2 0x0 0xf 0xffb00000 0x00020000>;
-+			  0x2 0x0 0xf 0xffb00000 0x00020000
-+			  0x3 0x0 0xf 0xffa00000 0x00040000>;
- 	};
- 
- 	soc: soc@fffe00000 {
-diff --git a/arch/powerpc/boot/dts/fsl/p1020rdb-pd.dts b/arch/powerpc/boot/dts/fsl/p1020rdb-pd.dts
-index f2dc6c09be52..1c44a1690065 100644
---- a/arch/powerpc/boot/dts/fsl/p1020rdb-pd.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1020rdb-pd.dts
-@@ -47,8 +47,8 @@
- 		/* NOR, NAND flash, L2 switch and CPLD */
- 		ranges = <0x0 0x0 0x0 0xec000000 0x04000000
- 			  0x1 0x0 0x0 0xff800000 0x00040000
--			  0x2 0x0 0x0 0xffa00000 0x00020000
--			  0x3 0x0 0x0 0xffb00000 0x00020000>;
-+			  0x2 0x0 0x0 0xffb00000 0x00020000
-+			  0x3 0x0 0x0 0xffa00000 0x00020000>;
- 
- 		nor@0,0 {
- 			#address-cells = <1>;
-@@ -128,16 +128,45 @@
- 			};
- 		};
- 
--		cpld@2,0 {
--			compatible = "fsl,p1020rdb-pd-cpld";
-+		L2switch@2,0 {
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			compatible = "vitesse-7385";
- 			reg = <0x2 0x0 0x20000>;
- 		};
- 
--		L2switch@3,0 {
-+		cpld@3,0 {
- 			#address-cells = <1>;
- 			#size-cells = <1>;
--			compatible = "vitesse-7385";
-+			compatible = "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
- 			reg = <0x3 0x0 0x20000>;
-+			ranges = <0x0 0x3 0x0 0x20000>;
-+
-+			watchdog@2 {
-+				compatible = "maxim,max6370";
-+				reg = <0x2 0x1>;
-+				gpios = <&gpio 11 1>;
-+			};
-+
-+			led@8 {
-+				compatible = "register-bit-led";
-+				reg = <0x8 0x1>;
-+				offset = <0x8>;
-+				mask = <0x1>;
-+				active-low;
-+				default-state = "keep";
-+				label = "status";
-+				function = "status";
-+				color = <6>; /* LED_COLOR_ID_YELLOW */
-+			};
-+
-+			reboot@d {
-+				compatible = "syscon-reboot";
-+				reg = <0xd 0x1>;
-+				offset = <0xd>;
-+				mask = <0x1>;
-+				value = <0x1>;
-+			};
- 		};
- 	};
- 
-@@ -199,6 +228,9 @@
- 			};
- 		};
- 
-+		gpio: gpio-controller@fc00 {
-+		};
-+
- 		mdio@24000 {
- 			phy0: ethernet-phy@0 {
- 				interrupts = <3 1 0 0>;
-diff --git a/arch/powerpc/boot/dts/fsl/p1020utm-pc.dtsi b/arch/powerpc/boot/dts/fsl/p1020utm-pc.dtsi
-index 7ea85eabcc5c..070296d96aac 100644
---- a/arch/powerpc/boot/dts/fsl/p1020utm-pc.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/p1020utm-pc.dtsi
-@@ -68,6 +68,40 @@
- 			read-only;
- 		};
- 	};
-+
-+	cpld@3,0 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		compatible = "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
-+		reg = <0x3 0x0 0x20000>;
-+		ranges = <0x0 0x3 0x0 0x20000>;
-+
-+		watchdog@2 {
-+			compatible = "maxim,max6370";
-+			reg = <0x2 0x1>;
-+			gpios = <&gpio 11 1>;
-+		};
-+
-+		led@8 {
-+			compatible = "register-bit-led";
-+			reg = <0x8 0x1>;
-+			offset = <0x8>;
-+			mask = <0x1>;
-+			active-low;
-+			default-state = "keep";
-+			label = "status";
-+			function = "status";
-+			color = <6>; /* LED_COLOR_ID_YELLOW */
-+		};
-+
-+		reboot@d {
-+			compatible = "syscon-reboot";
-+			reg = <0xd 0x1>;
-+			offset = <0xd>;
-+			mask = <0x1>;
-+			value = <0x1>;
-+		};
-+	};
- };
- 
- &soc {
-@@ -78,6 +112,9 @@
- 		};
- 	};
- 
-+	gpio: gpio-controller@fc00 {
-+	};
-+
- 	mdio@24000 {
- 		phy0: ethernet-phy@0 {
- 			interrupts = <3 1 0 0>;
-diff --git a/arch/powerpc/boot/dts/fsl/p1020utm-pc_32b.dts b/arch/powerpc/boot/dts/fsl/p1020utm-pc_32b.dts
-index bc03ef611f98..9cc8f6726ca7 100644
---- a/arch/powerpc/boot/dts/fsl/p1020utm-pc_32b.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1020utm-pc_32b.dts
-@@ -46,8 +46,8 @@
- 
- 		/* NOR */
- 		ranges = <0x0 0x0 0x0 0xec000000 0x02000000
--			  0x1 0x0 0x0 0xffa00000 0x00040000
--			  0x2 0x0 0x0 0xffb00000 0x00020000>;
-+			  0x2 0x0 0x0 0xffb00000 0x00020000
-+			  0x3 0x0 0x0 0xffa00000 0x00040000>;
- 	};
- 
- 	soc: soc@ffe00000 {
-diff --git a/arch/powerpc/boot/dts/fsl/p1020utm-pc_36b.dts b/arch/powerpc/boot/dts/fsl/p1020utm-pc_36b.dts
-index 32766f6a475e..d60fb898399f 100644
---- a/arch/powerpc/boot/dts/fsl/p1020utm-pc_36b.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1020utm-pc_36b.dts
-@@ -46,8 +46,8 @@
- 
- 		/* NOR */
- 		ranges = <0x0 0x0 0xf 0xec000000 0x02000000
--			  0x1 0x0 0xf 0xffa00000 0x00040000
--			  0x2 0x0 0xf 0xffb00000 0x00020000>;
-+			  0x2 0x0 0xf 0xffb00000 0x00020000
-+			  0x3 0x0 0xf 0xffa00000 0x00040000>;
- 	};
- 
- 	soc: soc@fffe00000 {
-diff --git a/arch/powerpc/boot/dts/fsl/p1021rdb-pc.dtsi b/arch/powerpc/boot/dts/fsl/p1021rdb-pc.dtsi
-index 18f9b31602d0..e2c56ee01039 100644
---- a/arch/powerpc/boot/dts/fsl/p1021rdb-pc.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/p1021rdb-pc.dtsi
-@@ -136,6 +136,40 @@
- 		compatible = "vitesse-7385";
- 		reg = <0x2 0x0 0x20000>;
- 	};
-+
-+	cpld@3,0 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		compatible = "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
-+		reg = <0x3 0x0 0x20000>;
-+		ranges = <0x0 0x3 0x0 0x20000>;
-+
-+		watchdog@2 {
-+			compatible = "maxim,max6370";
-+			reg = <0x2 0x1>;
-+			gpios = <&gpio 11 1>;
-+		};
-+
-+		led@8 {
-+			compatible = "register-bit-led";
-+			reg = <0x8 0x1>;
-+			offset = <0x8>;
-+			mask = <0x1>;
-+			active-low;
-+			default-state = "keep";
-+			label = "status";
-+			function = "status";
-+			color = <6>; /* LED_COLOR_ID_YELLOW */
-+		};
-+
-+		reboot@d {
-+			compatible = "syscon-reboot";
-+			reg = <0xd 0x1>;
-+			offset = <0xd>;
-+			mask = <0x1>;
-+			value = <0x1>;
-+		};
-+	};
- };
- 
- &soc {
-@@ -187,6 +221,9 @@
- 		};
- 	};
- 
-+	gpio: gpio-controller@fc00 {
-+	};
-+
- 	usb@22000 {
- 		phy_type = "ulpi";
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/p1021rdb-pc_32b.dts b/arch/powerpc/boot/dts/fsl/p1021rdb-pc_32b.dts
-index d2b4710357ac..9721e5ecc86b 100644
---- a/arch/powerpc/boot/dts/fsl/p1021rdb-pc_32b.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1021rdb-pc_32b.dts
-@@ -44,10 +44,11 @@
- 	lbc: localbus@ffe05000 {
- 		reg = <0 0xffe05000 0 0x1000>;
- 
--		/* NOR, NAND Flashes and Vitesse 5 port L2 switch */
-+		/* NOR, NAND Flashes, Vitesse 5 port L2 switch and CPLD */
- 		ranges = <0x0 0x0 0x0 0xef000000 0x01000000
- 			  0x1 0x0 0x0 0xff800000 0x00040000
--			  0x2 0x0 0x0 0xffb00000 0x00020000>;
-+			  0x2 0x0 0x0 0xffb00000 0x00020000
-+			  0x3 0x0 0x0 0xffa00000 0x00020000>;
- 	};
- 
- 	soc: soc@ffe00000 {
-diff --git a/arch/powerpc/boot/dts/fsl/p1021rdb-pc_36b.dts b/arch/powerpc/boot/dts/fsl/p1021rdb-pc_36b.dts
-index e298c29e5606..edea14e5d806 100644
---- a/arch/powerpc/boot/dts/fsl/p1021rdb-pc_36b.dts
-+++ b/arch/powerpc/boot/dts/fsl/p1021rdb-pc_36b.dts
-@@ -44,10 +44,11 @@
- 	lbc: localbus@fffe05000 {
- 		reg = <0xf 0xffe05000 0 0x1000>;
- 
--		/* NOR, NAND Flashes and Vitesse 5 port L2 switch */
-+		/* NOR, NAND Flashes, Vitesse 5 port L2 switch and CPLD */
- 		ranges = <0x0 0x0 0xf 0xef000000 0x01000000
- 			  0x1 0x0 0xf 0xff800000 0x00040000
--			  0x2 0x0 0xf 0xffb00000 0x00020000>;
-+			  0x2 0x0 0xf 0xffb00000 0x00020000
-+			  0x3 0x0 0xf 0xffa00000 0x00020000>;
- 	};
- 
- 	soc: soc@fffe00000 {
-diff --git a/arch/powerpc/boot/dts/fsl/p2020rdb-pc.dtsi b/arch/powerpc/boot/dts/fsl/p2020rdb-pc.dtsi
-index 03c9afc82436..0be63fa76422 100644
---- a/arch/powerpc/boot/dts/fsl/p2020rdb-pc.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/p2020rdb-pc.dtsi
-@@ -133,9 +133,35 @@
- 	cpld@3,0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
--		compatible = "cpld";
-+		compatible = "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
- 		reg = <0x3 0x0 0x20000>;
--		read-only;
-+		ranges = <0x0 0x3 0x0 0x20000>;
-+
-+		watchdog@2 {
-+			compatible = "maxim,max6370";
-+			reg = <0x2 0x1>;
-+			gpios = <&gpio 11 1>;
-+		};
-+
-+		led@8 {
-+			compatible = "register-bit-led";
-+			reg = <0x8 0x1>;
-+			offset = <0x8>;
-+			mask = <0x1>;
-+			active-low;
-+			default-state = "keep";
-+			label = "status";
-+			function = "status";
-+			color = <6>; /* LED_COLOR_ID_YELLOW */
-+		};
-+
-+		reboot@d {
-+			compatible = "syscon-reboot";
-+			reg = <0xd 0x1>;
-+			offset = <0xd>;
-+			mask = <0x1>;
-+			value = <0x1>;
-+		};
- 	};
- };
- 
-@@ -188,6 +214,9 @@
- 		};
- 	};
- 
-+	gpio: gpio-controller@fc00 {
-+	};
-+
- 	usb@22000 {
- 		phy_type = "ulpi";
- 	};
--- 
-2.20.1
-
+Best regards,
+Krzysztof
