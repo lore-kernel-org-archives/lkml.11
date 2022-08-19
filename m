@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACBAC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D9BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353676AbiHSQmr (ORCPT
+        id S1353686AbiHSQm4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
+        Fri, 19 Aug 2022 12:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353332AbiHSQkF (ORCPT
+        with ESMTP id S1353448AbiHSQkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:40:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0887BC6B5C;
-        Fri, 19 Aug 2022 09:08:32 -0700 (PDT)
+        Fri, 19 Aug 2022 12:40:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3381812420F;
+        Fri, 19 Aug 2022 09:08:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25C7AB82822;
-        Fri, 19 Aug 2022 16:08:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82872C433D6;
-        Fri, 19 Aug 2022 16:08:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E296661825;
+        Fri, 19 Aug 2022 16:07:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8679C433C1;
+        Fri, 19 Aug 2022 16:07:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925289;
-        bh=NvIn2LoP/495gjA98dLbCw3goiC192Zqfodd4zGLDLg=;
+        s=korg; t=1660925274;
+        bh=FSjGEW/rKIhnK/pYE+w8JHxX2GWGcmQAudzXX4aoGf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dArxODaDmrOdMtQxKDhPMFHY6TeRh50goWZinEXRYfu3Xijv3q1XmNnr6qnynl33J
-         tZKXKDq9CW8zgjFpFL22yFO7ok0fGzLRUTTNZwjsAROu5R2gjA88cvZEJclUIofR/d
-         NSBtSp/UZXnuDPaJgCeTWCvYPaE4Pr7RUgh81VYw=
+        b=MQP8YmD/lRHZawFVdCgjt0YfuW1gh0kzwmDGSxkzYEe90y+ZYTroWaU3EThIiPENP
+         tyAL8uO+VlUSb/XncCd4rB9R35FZoLPzMGoLfKINoz/ohevZokxTwkpl5QFblTz1F3
+         5lZ2F7VV7UAmTwjumioNSG29M2Ns3ChpZJl1rxFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 415/545] ASoC: mchp-spdifrx: disable end of block interrupt on failures
-Date:   Fri, 19 Aug 2022 17:43:05 +0200
-Message-Id: <20220819153848.008018637@linuxfoundation.org>
+Subject: [PATCH 5.10 410/545] fuse: Remove the control interface for virtio-fs
+Date:   Fri, 19 Aug 2022 17:43:00 +0200
+Message-Id: <20220819153847.769646478@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,57 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit 768ac4f12ca0fda935f58eb8c5120e9d795bc6e3 ]
+[ Upstream commit c64797809a64c73497082aa05e401a062ec1af34 ]
 
-Disable end of block interrupt in case of wait for completion timeout
-or errors to undo previously enable operation (done in
-mchp_spdifrx_isr_blockend_en()). Otherwise we can end up with an
-unbalanced reference counter for this interrupt.
+The commit 15c8e72e88e0 ("fuse: allow skipping control interface and forced
+unmount") tries to remove the control interface for virtio-fs since it does
+not support aborting requests which are being processed. But it doesn't
+work now.
 
-Fixes: ef265c55c1ac ("ASoC: mchp-spdifrx: add driver for SPDIF RX")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220727090814.2446111-2-claudiu.beznea@microchip.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This patch fixes it by skipping creating the control interface if
+fuse_conn->no_control is set.
+
+Fixes: 15c8e72e88e0 ("fuse: allow skipping control interface and forced unmount")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/mchp-spdifrx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/fuse/control.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/atmel/mchp-spdifrx.c b/sound/soc/atmel/mchp-spdifrx.c
-index e6ded6f8453f..46f3407ed0e8 100644
---- a/sound/soc/atmel/mchp-spdifrx.c
-+++ b/sound/soc/atmel/mchp-spdifrx.c
-@@ -288,15 +288,17 @@ static void mchp_spdifrx_isr_blockend_en(struct mchp_spdifrx_dev *dev)
- 	spin_unlock_irqrestore(&dev->blockend_lock, flags);
- }
+diff --git a/fs/fuse/control.c b/fs/fuse/control.c
+index cc7e94d73c6c..24b4d9db231d 100644
+--- a/fs/fuse/control.c
++++ b/fs/fuse/control.c
+@@ -275,7 +275,7 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
+ 	struct dentry *parent;
+ 	char name[32];
  
--/* called from atomic context only */
-+/* called from atomic/non-atomic context */
- static void mchp_spdifrx_isr_blockend_dis(struct mchp_spdifrx_dev *dev)
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return 0;
+ 
+ 	parent = fuse_control_sb->s_root;
+@@ -313,7 +313,7 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
  {
--	spin_lock(&dev->blockend_lock);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dev->blockend_lock, flags);
- 	dev->blockend_refcount--;
- 	/* don't enable BLOCKEND interrupt if it's already enabled */
- 	if (dev->blockend_refcount == 0)
- 		regmap_write(dev->regmap, SPDIFRX_IDR, SPDIFRX_IR_BLOCKEND);
--	spin_unlock(&dev->blockend_lock);
-+	spin_unlock_irqrestore(&dev->blockend_lock, flags);
- }
+ 	int i;
  
- static irqreturn_t mchp_spdif_interrupt(int irq, void *dev_id)
-@@ -575,6 +577,7 @@ static int mchp_spdifrx_subcode_ch_get(struct mchp_spdifrx_dev *dev,
- 	if (ret <= 0) {
- 		dev_dbg(dev->dev, "user data for channel %d timeout\n",
- 			channel);
-+		mchp_spdifrx_isr_blockend_dis(dev);
- 		return ret;
- 	}
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return;
  
+ 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
 -- 
 2.35.1
 
