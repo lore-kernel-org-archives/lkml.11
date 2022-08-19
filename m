@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F5EC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47771C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352562AbiHSQXY (ORCPT
+        id S1352202AbiHSQX2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
+        Fri, 19 Aug 2022 12:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352880AbiHSQSB (ORCPT
+        with ESMTP id S1352884AbiHSQSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:18:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2555E1184D3;
-        Fri, 19 Aug 2022 09:00:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8891184E5;
+        Fri, 19 Aug 2022 09:01:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 677266178A;
-        Fri, 19 Aug 2022 16:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C655C433C1;
-        Fri, 19 Aug 2022 16:00:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F86E617A7;
+        Fri, 19 Aug 2022 16:00:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612A4C433C1;
+        Fri, 19 Aug 2022 16:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924834;
-        bh=Sl8pAt6Q0dhidSZAmwSvNFkkV5IgZon/SaDP+uWCIr0=;
+        s=korg; t=1660924843;
+        bh=eR0tZIvRvaH/L5ucyop9lSP+vc7zcIFE4nTjR/Nsrr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UtEhaITqvq7v2/yeDgKDD5/TybOH8qurl1X5pfbFdqx/D3qxvodg6KQAizNURy9IU
-         Lj2c0XKbgSjPZA9fB37nwb+Fe2NT1Zi1D2rKxd0IMYJ19Z2bR8lZXv20WM0CuLySxF
-         g5iMUu6Ko25uwb4pj0OkytS1VJWksvQo/34+LPD0=
+        b=QoQwS19xQB1IUj5Sl81qovHvOi85lmKmHw0O5/aagQslZtpbtteKtSzbRVQPH8+0p
+         bl25AoJv0Kk75WZQLTt3neFVUWy8Nnu4KseEDnv1dqQKSAeEtkZPg0mnTzaYgREISK
+         eUzxpw0oHOii4EhC1nCxBZ3hY1RZO2tZ2L/j1mQw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        stable@vger.kernel.org,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 297/545] clk: qcom: ipq8074: SW workaround for UBI32 PLL lock
-Date:   Fri, 19 Aug 2022 17:41:07 +0200
-Message-Id: <20220819153842.623711925@linuxfoundation.org>
+Subject: [PATCH 5.10 300/545] clk: qcom: camcc-sdm845: Fix topology around titan_top power domain
+Date:   Fri, 19 Aug 2022 17:41:10 +0200
+Message-Id: <20220819153842.763464524@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,42 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-[ Upstream commit 3401ea2856ef84f39b75f0dc5ebcaeda81cb90ec ]
+[ Upstream commit 103dd2338bbff567bce7acd00fc5a09c806b38ec ]
 
-UBI32 Huayra PLL fails to lock in 5 us in some SoC silicon and thus it
-will cause the wait_for_pll() to timeout and thus return the error
-indicating that the PLL failed to lock.
+On SDM845 two found VFE GDSC power domains shall not be operated, if
+titan top is turned off, thus the former power domains will be set as
+subdomains by a GDSC registration routine.
 
-This is bug in Huayra PLL HW for which SW workaround
-is to set bit 26 of TEST_CTL register.
-
-This is ported from the QCA 5.4 based downstream kernel.
-
-Fixes: b8e7e519625f ("clk: qcom: ipq8074: add remaining PLL’s")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
+Fixes: 78412c262004 ("clk: qcom: Add camera clock controller driver for SDM845")
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-2-robimarko@gmail.com
+Link: https://lore.kernel.org/r/20220519214133.1728979-2-vladimir.zapolskiy@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/clk/qcom/camcc-sdm845.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 1a5141da7e23..b4291ba53c78 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -4805,6 +4805,9 @@ static int gcc_ipq8074_probe(struct platform_device *pdev)
- 	if (IS_ERR(regmap))
- 		return PTR_ERR(regmap);
+diff --git a/drivers/clk/qcom/camcc-sdm845.c b/drivers/clk/qcom/camcc-sdm845.c
+index 1b2cefef7431..a8a2cfa83290 100644
+--- a/drivers/clk/qcom/camcc-sdm845.c
++++ b/drivers/clk/qcom/camcc-sdm845.c
+@@ -1521,6 +1521,8 @@ static struct clk_branch cam_cc_sys_tmr_clk = {
+ 	},
+ };
  
-+	/* SW Workaround for UBI32 Huayra PLL */
-+	regmap_update_bits(regmap, 0x2501c, BIT(26), BIT(26));
++static struct gdsc titan_top_gdsc;
 +
- 	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
- 	clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
- 				&nss_crypto_pll_config);
+ static struct gdsc bps_gdsc = {
+ 	.gdscr = 0x6004,
+ 	.pd = {
+@@ -1554,6 +1556,7 @@ static struct gdsc ife_0_gdsc = {
+ 		.name = "ife_0_gdsc",
+ 	},
+ 	.flags = POLL_CFG_GDSCR,
++	.parent = &titan_top_gdsc.pd,
+ 	.pwrsts = PWRSTS_OFF_ON,
+ };
+ 
+@@ -1563,6 +1566,7 @@ static struct gdsc ife_1_gdsc = {
+ 		.name = "ife_1_gdsc",
+ 	},
+ 	.flags = POLL_CFG_GDSCR,
++	.parent = &titan_top_gdsc.pd,
+ 	.pwrsts = PWRSTS_OFF_ON,
+ };
+ 
 -- 
 2.35.1
 
