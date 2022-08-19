@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0719C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3FDC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350547AbiHSPyM (ORCPT
+        id S1350608AbiHSPy2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
+        Fri, 19 Aug 2022 11:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350548AbiHSPx0 (ORCPT
+        with ESMTP id S1350584AbiHSPxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:53:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26889104B3A;
-        Fri, 19 Aug 2022 08:49:14 -0700 (PDT)
+        Fri, 19 Aug 2022 11:53:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA04107761;
+        Fri, 19 Aug 2022 08:49:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 877B4B8280F;
-        Fri, 19 Aug 2022 15:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C99D1C433C1;
-        Fri, 19 Aug 2022 15:49:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11227616B3;
+        Fri, 19 Aug 2022 15:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD11BC433C1;
+        Fri, 19 Aug 2022 15:49:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924152;
-        bh=1UqnW2Xqw0WuyU18/hUB7OjVcVCOS70Xm3MNH5+JMew=;
+        s=korg; t=1660924161;
+        bh=1CxuOg8SWJNRYSad+XAcI0z8/fgiwfsl4ADjr8TjHVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1g6IFMv3qyhAasE3VZkkAQ82Z7yZXEe3bRyriKTv6sVuKeu7VIP+0SfzhHXp0C/Z
-         DYVnQL8peWU41QyjvlliEgARF7HtxUNwHyKfPN9gqUSi1dLkJYeiF4hgO7WkqUDqqI
-         lrgt3Ani8faiMDalUGvsC37GD8iUgwHU/OlUyV5A=
+        b=SSBbWpSlkC0M5OHsKezt0bL3hwFPNp4yEycZVquq9S/9HSGRaO/a6Wj1cJ3Zg9FdH
+         xG5R6uvgUdE9v2TId5fTiEedVAR3oVAiNGzwE5VR8qnQzG+o43DueMN0penFqM3JtN
+         pxjWvf1f/Z3RKE7DpsccaqGsr75EqnuFDXVy35cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 073/545] netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
-Date:   Fri, 19 Aug 2022 17:37:23 +0200
-Message-Id: <20220819153832.533116527@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Segall <bsegall@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Roman Penyaev <rpenyaev@suse.de>,
+        Jason Baron <jbaron@akamai.com>,
+        Khazhismel Kumykov <khazhy@google.com>, Heiher <r@hev.cc>,
+        stable@kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.10 076/545] epoll: autoremove wakers even more aggressively
+Date:   Fri, 19 Aug 2022 17:37:26 +0200
+Message-Id: <20220819153832.667365217@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,66 +56,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Benjamin Segall <bsegall@google.com>
 
-commit 95f466d22364a33d183509629d0879885b4f547e upstream.
+commit a16ceb13961068f7209e34d7984f8e42d2c06159 upstream.
 
-When doing lookups for chains on the same batch by using its ID, a chain
-from a different table can be used. If a rule is added to a table but
-refers to a chain in a different table, it will be linked to the chain in
-table2, but would have expressions referring to objects in table1.
+If a process is killed or otherwise exits while having active network
+connections and many threads waiting on epoll_wait, the threads will all
+be woken immediately, but not removed from ep->wq.  Then when network
+traffic scans ep->wq in wake_up, every wakeup attempt will fail, and will
+not remove the entries from the list.
 
-Then, when table1 is removed, the rule will not be removed as its linked to
-a chain in table2. When expressions in the rule are processed or removed,
-that will lead to a use-after-free.
+This means that the cost of the wakeup attempt is far higher than usual,
+does not decrease, and this also competes with the dying threads trying to
+actually make progress and remove themselves from the wq.
 
-When looking for chains by ID, use the table that was used for the lookup
-by name, and only return chains belonging to that same table.
+Handle this by removing visited epoll wq entries unconditionally, rather
+than only when the wakeup succeeds - the structure of ep_poll means that
+the only potential loss is the timed_out->eavail heuristic, which now can
+race and result in a redundant ep_send_events attempt.  (But only when
+incoming data and a timeout actually race, not on every timeout)
 
-Fixes: 837830a4b439 ("netfilter: nf_tables: add NFTA_RULE_CHAIN_ID attribute")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Shakeel added:
+
+: We are seeing this issue in production with real workloads and it has
+: caused hard lockups.  Particularly network heavy workloads with a lot
+: of threads in epoll_wait() can easily trigger this issue if they get
+: killed (oom-killed in our case).
+
+Link: https://lkml.kernel.org/r/xm26fsjotqda.fsf@google.com
+Signed-off-by: Ben Segall <bsegall@google.com>
+Tested-by: Shakeel Butt <shakeelb@google.com>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Shakeel Butt <shakeelb@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Roman Penyaev <rpenyaev@suse.de>
+Cc: Jason Baron <jbaron@akamai.com>
+Cc: Khazhismel Kumykov <khazhy@google.com>
+Cc: Heiher <r@hev.cc>
+Cc: <stable@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/eventpoll.c |   22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2265,6 +2265,7 @@ err:
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -1804,6 +1804,21 @@ static inline struct timespec64 ep_set_m
+ 	return timespec64_add_safe(now, ts);
  }
  
- static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
-+					       const struct nft_table *table,
- 					       const struct nlattr *nla)
- {
- 	u32 id = ntohl(nla_get_be32(nla));
-@@ -2274,6 +2275,7 @@ static struct nft_chain *nft_chain_looku
- 		struct nft_chain *chain = trans->ctx.chain;
++/*
++ * autoremove_wake_function, but remove even on failure to wake up, because we
++ * know that default_wake_function/ttwu will only fail if the thread is already
++ * woken, and in that case the ep_poll loop will remove the entry anyways, not
++ * try to reuse it.
++ */
++static int ep_autoremove_wake_function(struct wait_queue_entry *wq_entry,
++				       unsigned int mode, int sync, void *key)
++{
++	int ret = default_wake_function(wq_entry, mode, sync, key);
++
++	list_del_init(&wq_entry->entry);
++	return ret;
++}
++
+ /**
+  * ep_poll - Retrieves ready events, and delivers them to the caller supplied
+  *           event buffer.
+@@ -1881,8 +1896,15 @@ fetch_events:
+ 		 * normal wakeup path no need to call __remove_wait_queue()
+ 		 * explicitly, thus ep->lock is not taken, which halts the
+ 		 * event delivery.
++		 *
++		 * In fact, we now use an even more aggressive function that
++		 * unconditionally removes, because we don't reuse the wait
++		 * entry between loop iterations. This lets us also avoid the
++		 * performance issue if a process is killed, causing all of its
++		 * threads to wake up without being removed normally.
+ 		 */
+ 		init_wait(&wait);
++		wait.func = ep_autoremove_wake_function;
  
- 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
-+		    chain->table == table &&
- 		    id == nft_trans_chain_id(trans))
- 			return chain;
- 	}
-@@ -3199,7 +3201,7 @@ static int nf_tables_newrule(struct net
- 			return -EOPNOTSUPP;
- 
- 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
--		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
-+		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
- 		if (IS_ERR(chain)) {
- 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
- 			return PTR_ERR(chain);
-@@ -8671,7 +8673,7 @@ static int nft_verdict_init(const struct
- 						 tb[NFTA_VERDICT_CHAIN],
- 						 genmask);
- 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
--			chain = nft_chain_lookup_byid(ctx->net,
-+			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
- 						      tb[NFTA_VERDICT_CHAIN_ID]);
- 			if (IS_ERR(chain))
- 				return PTR_ERR(chain);
+ 		write_lock_irq(&ep->lock);
+ 		/*
 
 
