@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC5BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1889DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354222AbiHSQt0 (ORCPT
+        id S1354228AbiHSQt3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
+        Fri, 19 Aug 2022 12:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354005AbiHSQqx (ORCPT
+        with ESMTP id S1354047AbiHSQrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:46:53 -0400
+        Fri, 19 Aug 2022 12:47:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF34312C359;
-        Fri, 19 Aug 2022 09:12:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C290E12C374;
+        Fri, 19 Aug 2022 09:12:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0175618B3;
-        Fri, 19 Aug 2022 16:12:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F35C433D6;
-        Fri, 19 Aug 2022 16:12:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8FDE61811;
+        Fri, 19 Aug 2022 16:12:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84B5C433C1;
+        Fri, 19 Aug 2022 16:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925538;
-        bh=UAT7Y9+eghMhtipisJYCxWU40Q9aQYtPksCApGHfw04=;
+        s=korg; t=1660925544;
+        bh=gUSJxQ8QEVwUaFALIAVJU9UAMMts31rTtHwyE9iXfRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1i12ifhyDbQ+tpISgMweUsnT/s4gxxfjM9mMiwt/2KcJ30ocvIKlpZ5uPzXPalno
-         BMXwP0VlmUBBzVgrQW99yoNkM5dJhaY7XzvzwC+zPs9iBvN6gSOlA751t1GPKscqeU
-         L0HUJuDQ3GG4HHkD9G4xKINPQ7gapwhv7Iiz9cSw=
+        b=v2pxTufqX6232Y6xYluB3lK4RHPeJzSiCQSDS0dnRkR0yTcoonLHO26QHpapqxsO0
+         EWKqOtTSTl2/3VnF8zv/5MgyMvwm+po+AJjafhNoRgI3qCRiWin/7lCFAUs/FAVFVQ
+         CDnPgzj50mdbPfkVITZOcrlHKj/gA0vhUaXCEWeQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 505/545] KVM: x86/pmu: Use binary search to check filtered events
-Date:   Fri, 19 Aug 2022 17:44:35 +0200
-Message-Id: <20220819153852.083624234@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 524/545] ext4: correct the misjudgment in ext4_iget_extra_inode
+Date:   Fri, 19 Aug 2022 17:44:54 +0200
+Message-Id: <20220819153853.004464225@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,92 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit 7ff775aca48adc854436b92c060e5eebfffb6a4a ]
+commit fd7e672ea98b95b9d4c9dae316639f03c16a749d upstream.
 
-The PMU event filter may contain up to 300 events. Replace the linear
-search in reprogram_gp_counter() with a binary search.
+Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
+determine whether the inode have xattr space.
 
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Message-Id: <20220115052431.447232-2-jmattson@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-5-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/pmu.c | 30 +++++++++++++++++++-----------
- 1 file changed, 19 insertions(+), 11 deletions(-)
+ fs/ext4/inode.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 2f83b5d948b3..350e7cdaad02 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -13,6 +13,8 @@
- #include <linux/types.h>
- #include <linux/kvm_host.h>
- #include <linux/perf_event.h>
-+#include <linux/bsearch.h>
-+#include <linux/sort.h>
- #include <asm/perf_event.h>
- #include "x86.h"
- #include "cpuid.h"
-@@ -168,13 +170,17 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
- 	return true;
- }
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4613,8 +4613,7 @@ static inline int ext4_iget_extra_inode(
+ 	__le32 *magic = (void *)raw_inode +
+ 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
  
-+static int cmp_u64(const void *a, const void *b)
-+{
-+	return *(__u64 *)a - *(__u64 *)b;
-+}
-+
- void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- {
- 	u64 config;
- 	u32 type = PERF_TYPE_RAW;
- 	struct kvm *kvm = pmc->vcpu->kvm;
- 	struct kvm_pmu_event_filter *filter;
--	int i;
- 	bool allow_event = true;
- 
- 	if (eventsel & ARCH_PERFMON_EVENTSEL_PIN_CONTROL)
-@@ -189,16 +195,13 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 
- 	filter = srcu_dereference(kvm->arch.pmu_event_filter, &kvm->srcu);
- 	if (filter) {
--		for (i = 0; i < filter->nevents; i++)
--			if (filter->events[i] ==
--			    (eventsel & AMD64_RAW_EVENT_MASK_NB))
--				break;
--		if (filter->action == KVM_PMU_EVENT_ALLOW &&
--		    i == filter->nevents)
--			allow_event = false;
--		if (filter->action == KVM_PMU_EVENT_DENY &&
--		    i < filter->nevents)
--			allow_event = false;
-+		__u64 key = eventsel & AMD64_RAW_EVENT_MASK_NB;
-+
-+		if (bsearch(&key, filter->events, filter->nevents,
-+			    sizeof(__u64), cmp_u64))
-+			allow_event = filter->action == KVM_PMU_EVENT_ALLOW;
-+		else
-+			allow_event = filter->action == KVM_PMU_EVENT_DENY;
- 	}
- 	if (!allow_event)
- 		return;
-@@ -507,6 +510,11 @@ int kvm_vm_ioctl_set_pmu_event_filter(struct kvm *kvm, void __user *argp)
- 	/* Ensure nevents can't be changed between the user copies. */
- 	*filter = tmp;
- 
-+	/*
-+	 * Sort the in-kernel list so that we can search it with bsearch.
-+	 */
-+	sort(&filter->events, filter->nevents, sizeof(__u64), cmp_u64, NULL);
-+
- 	mutex_lock(&kvm->lock);
- 	filter = rcu_replace_pointer(kvm->arch.pmu_event_filter, filter,
- 				     mutex_is_locked(&kvm->lock));
--- 
-2.35.1
-
+-	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
+-	    EXT4_INODE_SIZE(inode->i_sb) &&
++	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
+ 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
+ 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
+ 		return ext4_find_inline_data_nolock(inode);
 
 
