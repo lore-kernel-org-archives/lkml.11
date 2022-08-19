@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE7CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D787C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352943AbiHSQ30 (ORCPT
+        id S1352952AbiHSQ3c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43880 "EHLO
+        Fri, 19 Aug 2022 12:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353097AbiHSQ0M (ORCPT
+        with ESMTP id S1353158AbiHSQ0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:26:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B60118C97;
-        Fri, 19 Aug 2022 09:03:56 -0700 (PDT)
+        Fri, 19 Aug 2022 12:26:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC0810F698;
+        Fri, 19 Aug 2022 09:03:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D52EC617F1;
-        Fri, 19 Aug 2022 16:03:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1DEC43140;
-        Fri, 19 Aug 2022 16:03:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8987C617A8;
+        Fri, 19 Aug 2022 16:03:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C9AC433C1;
+        Fri, 19 Aug 2022 16:03:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925035;
-        bh=WDNnPOBERHt5+eoDNxGRACSNg3dxrCW6GtFXzhVsNRc=;
+        s=korg; t=1660925023;
+        bh=hetWV8UaTx9nf9SJteaS+CRHYoqVCfrTSvqfCWuDS1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eeThMjRjat89SNSNTph0TBswNfABU4eO6ePxvBrly874Cc3CmxChMD0tLKn5+W5kL
-         nNEO+HTEiIoRLL9N708q28C4OZCtohcOzg8rMR2UCT4w6XsDLhcGpIm7s3qdRmbl56
-         5MeqTwsdrXML+agmmuPgI4OxsbS+KCgyvqYL9tyo=
+        b=UMJVgTPLhYt8rcj3MYHZPsUu9xEzkT6Hg3etivpvtc7KfcsOgdKRltgjlNckI6KSc
+         EIYddLH7ytGsnoOOXnX+6yRIZIwu8H/N1F8gSr7A9dVkrZJgt2gkTzcEk9xNu7gidu
+         B22SRlILQyqL6qSo9EIHbDdbuWJym99HVtItfAAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 362/545] usb: cdns3: Dont use priv_dev uninitialized in cdns3_gadget_ep_enable()
-Date:   Fri, 19 Aug 2022 17:42:12 +0200
-Message-Id: <20220819153845.581978538@linuxfoundation.org>
+Subject: [PATCH 5.10 359/545] jbd2: fix outstanding credits assert in jbd2_journal_commit_transaction()
+Date:   Fri, 19 Aug 2022 17:42:09 +0200
+Message-Id: <20220819153845.451878736@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,79 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit 78acd4ca433425e6dd4032cfc2156c60e34931f2 ]
+[ Upstream commit a89573ce4ad32f19f43ec669771726817e185be0 ]
 
-Clang warns:
+We catch an assert problem in jbd2_journal_commit_transaction() when
+doing fsstress and request falut injection tests. The problem is
+happened in a race condition between jbd2_journal_commit_transaction()
+and ext4_end_io_end(). Firstly, ext4_writepages() writeback dirty pages
+and start reserved handle, and then the journal was aborted due to some
+previous metadata IO error, jbd2_journal_abort() start to commit current
+running transaction, the committing procedure could be raced by
+ext4_end_io_end() and lead to subtract j_reserved_credits twice from
+commit_transaction->t_outstanding_credits, finally the
+t_outstanding_credits is mistakenly smaller than t_nr_buffers and
+trigger assert.
 
-  drivers/usb/cdns3/cdns3-gadget.c:2290:11: error: variable 'priv_dev' is uninitialized when used here [-Werror,-Wuninitialized]
-                  dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
-                          ^~~~~~~~
-  include/linux/dev_printk.h:155:18: note: expanded from macro 'dev_dbg'
-          dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-                          ^~~
-  include/linux/dynamic_debug.h:167:7: note: expanded from macro 'dynamic_dev_dbg'
-                          dev, fmt, ##__VA_ARGS__)
-                          ^~~
-  include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
-          __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                              ^~~~~~~~~~~
-  include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
-                  func(&id, ##__VA_ARGS__);               \
-                              ^~~~~~~~~~~
-  drivers/usb/cdns3/cdns3-gadget.c:2278:31: note: initialize the variable 'priv_dev' to silence this warning
-          struct cdns3_device *priv_dev;
-                                      ^
-                                      = NULL
-  1 error generated.
+kjournald2           kworker
 
-The priv_dev assignment was moved below the if statement to avoid
-potentially dereferencing ep before it was checked but priv_dev is used
-in the dev_dbg() call.
+jbd2_journal_commit_transaction()
+ write_unlock(&journal->j_state_lock);
+ atomic_sub(j_reserved_credits, t_outstanding_credits); //sub once
 
-To fix this, move the priv_dev and comp_desc assignments back to their
-original spot and hoist the ep check above those assignments with a call
-to pr_debug() instead of dev_dbg().
+     	             jbd2_journal_start_reserved()
+     	              start_this_handle()  //detect aborted journal
+     	              jbd2_journal_free_reserved()  //get running transaction
+                       read_lock(&journal->j_state_lock)
+     	                __jbd2_journal_unreserve_handle()
+     	               atomic_sub(j_reserved_credits, t_outstanding_credits);
+                       //sub again
+                       read_unlock(&journal->j_state_lock);
 
-Fixes: c3ffc9c4ca44 ("usb: cdns3: change place of 'priv_ep' assignment in cdns3_gadget_ep_dequeue(), cdns3_gadget_ep_enable()")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1680
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+ journal->j_running_transaction = NULL;
+ J_ASSERT(t_nr_buffers <= t_outstanding_credits) //bomb!!!
+
+Fix this issue by using journal->j_state_lock to protect the subtraction
+in jbd2_journal_commit_transaction().
+
+Fixes: 96f1e0974575 ("jbd2: avoid long hold times of j_state_lock while committing a transaction")
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220611130426.2013258-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/gadget.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ fs/jbd2/commit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
-index c1b39a7acabc..f120da442d43 100644
---- a/drivers/usb/cdns3/gadget.c
-+++ b/drivers/usb/cdns3/gadget.c
-@@ -2293,16 +2293,20 @@ static int cdns3_gadget_ep_enable(struct usb_ep *ep,
- 	int ret = 0;
- 	int val;
+diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
+index 867362f45cf6..98cfa73cb165 100644
+--- a/fs/jbd2/commit.c
++++ b/fs/jbd2/commit.c
+@@ -564,13 +564,13 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+ 	 */
+ 	jbd2_journal_switch_revoke_table(journal);
  
-+	if (!ep) {
-+		pr_debug("usbss: ep not configured?\n");
-+		return -EINVAL;
-+	}
-+
- 	priv_ep = ep_to_cdns3_ep(ep);
-+	priv_dev = priv_ep->cdns3_dev;
-+	comp_desc = priv_ep->endpoint.comp_desc;
++	write_lock(&journal->j_state_lock);
+ 	/*
+ 	 * Reserved credits cannot be claimed anymore, free them
+ 	 */
+ 	atomic_sub(atomic_read(&journal->j_reserved_credits),
+ 		   &commit_transaction->t_outstanding_credits);
  
--	if (!ep || !desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
-+	if (!desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
- 		dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
- 		return -EINVAL;
- 	}
- 
--	comp_desc = priv_ep->endpoint.comp_desc;
--	priv_dev = priv_ep->cdns3_dev;
--
- 	if (!desc->wMaxPacketSize) {
- 		dev_err(priv_dev->dev, "usbss: missing wMaxPacketSize\n");
- 		return -EINVAL;
+-	write_lock(&journal->j_state_lock);
+ 	trace_jbd2_commit_flushing(journal, commit_transaction);
+ 	stats.run.rs_flushing = jiffies;
+ 	stats.run.rs_locked = jbd2_time_diff(stats.run.rs_locked,
 -- 
 2.35.1
 
