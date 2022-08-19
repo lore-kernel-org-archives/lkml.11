@@ -2,141 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F2E9C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB5FC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349822AbiHSRzD (ORCPT
+        id S1351243AbiHSRzP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
+        Fri, 19 Aug 2022 13:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349956AbiHSRyf (ORCPT
+        with ESMTP id S1351220AbiHSRyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:54:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93D75B07B;
-        Fri, 19 Aug 2022 10:34:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 578AFCE2638;
-        Fri, 19 Aug 2022 17:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B621CC433C1;
-        Fri, 19 Aug 2022 17:34:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660930463;
-        bh=iN73GdUjnPeKZ1+z54YawEVKxrH8HjG373BwJUVD51Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SsSKP1QgP1Ld2LHGqOgoXwYXYs2eY7ro0MlNnbugBueQiM8wDEVUZtxpym5wyDIHA
-         /LsBDL96a2Dlh1RmI3kNlJR5m6n16/rrD0OOKAQ32icSqdepa7AM/Dj+qgr0sXmwqh
-         psNkzYybSEHiTSwWOLrwF9k5nXrAK2OxchbIC7/6U46PMQynXPLRz70SXHu5scQdfi
-         iHr3BqkaDAzDb1AZyNfw9RNQ+fzoNsKg1VIRMXcHy/GF6HL9n3rYvvaCD6cS3XCZ5t
-         qvLskNFO2tXY5VKYzzc++FlmPzfyfyMMh5egPTqCyqBszfi1XmaaWXhbHK2Zj9biYb
-         SnTeXRISaOpaQ==
-Date:   Fri, 19 Aug 2022 18:44:59 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Artur Rojek <contact@artur-rojek.eu>
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: add iio_channel_cb_get_iio_buffer helper
-Message-ID: <20220819184459.34a12f3f@jic23-huawei>
-In-Reply-To: <20220817105643.95710-3-contact@artur-rojek.eu>
-References: <20220817105643.95710-1-contact@artur-rojek.eu>
-        <20220817105643.95710-3-contact@artur-rojek.eu>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 19 Aug 2022 13:54:50 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4389184ECC;
+        Fri, 19 Aug 2022 10:35:23 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id k14so4935413pfh.0;
+        Fri, 19 Aug 2022 10:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc;
+        bh=HJOADyjEijTZgHMmhk5s3Tca02tMu8m4cNUu2EhYaAU=;
+        b=fdmiJtb9RMBLJTQ+Xgl/kx6fm6FmEyy0L/lYlYxIWJX5k3m+R5z3YbZgU7aYih8WAc
+         sAmQjBqm9+W17s6M38OvDRgjiaSaOqlC0SCu+JBOU3BI1QYBGiJOsQ+t76kaxgeBcVGJ
+         NuCOoSKl8ukmGAzUbJrV5NkBVynK+S6LGQjUYKInpZa7u/wu9ffgjzLdBX0VsxlKllze
+         1VjABlNkXWdpcbqbtajq/AT7I3QwDIS9ZOX2ev3qXXy/waWCcM9UnVkD2OOyffE+BsUR
+         ZRZQCqFQ25mZ5LqtHndedni2VRA0mWJ1bu8qjDcUWiWZEPkPcZiQmUfAl3l5vL+MdaJs
+         46vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc;
+        bh=HJOADyjEijTZgHMmhk5s3Tca02tMu8m4cNUu2EhYaAU=;
+        b=fMpIqFjexyWXUNpjOBoyThm/LCu/sacwSJruEYbesWRFU3J3dCvR5kz3iGVZF7hZGF
+         1t//iqk/lv37ZOqbj0yymmrD2F8YyqSM282mE1gBHqrbMx3NkJ37jEbxOAC+ojyhvjka
+         W8zx3lt9KUMhVYzKRv4zdFb9hj5+bN69JITRyhPzNxt2+AoQmKrhPjC9KaE5zzdj3HdI
+         ey9mr8rO98098U+7t4HHp1B00KTCgwO7NsAjlF84+NCSVOPt5TOEXpOY0GZaWuimkh47
+         ewiesEvhWlAUZFl/QMvhCrhP7wAjBeqJ4j7OHdf+lUlW4aCcLsYaZNDwieaa3+GOuNfk
+         XW3Q==
+X-Gm-Message-State: ACgBeo1yoItwAIg4zkUFZf5Nz2WnAoffiCJfdqDFysglCHtuxfltawdF
+        ZCbHJBmD0AKjpfdAHedc8pBfRecml7o=
+X-Google-Smtp-Source: AA6agR4oZ1QImb2//4w2oB/fgGghUe4I3us2MzRuh0RNXn7NIGpxiEUSBf0ktiEmz2DtHEXYyrshdQ==
+X-Received: by 2002:a63:dc56:0:b0:419:e9df:28ce with SMTP id f22-20020a63dc56000000b00419e9df28cemr7006612pgj.48.1660930522661;
+        Fri, 19 Aug 2022 10:35:22 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:db7d])
+        by smtp.gmail.com with ESMTPSA id c9-20020a170902d48900b0016db43e5212sm3489712plg.175.2022.08.19.10.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 10:35:22 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Fri, 19 Aug 2022 07:35:20 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        "yukuai (C)" <yukuai3@huawei.com>
+Subject: Re: [PATCH v7 9/9] blk-throttle: clean up flag 'THROTL_TG_PENDING'
+Message-ID: <Yv/J2CXNdEimfqlv@slm.duckdns.org>
+References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
+ <20220802140415.2960284-10-yukuai1@huaweicloud.com>
+ <Yvv6kk/RD5LT+3dk@slm.duckdns.org>
+ <65d93ec6-2465-35f1-314f-f092ce631100@huaweicloud.com>
+ <Yv0rR9gBL0qbYeXp@slm.duckdns.org>
+ <841b7b5a-b908-649a-c09d-32c8de5f1c14@huaweicloud.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <841b7b5a-b908-649a-c09d-32c8de5f1c14@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 12:56:41 +0200
-Artur Rojek <contact@artur-rojek.eu> wrote:
-
-> Introduce a helper function to retrieve an iio_buffer from
-> iio_cb_buffer.
+On Thu, Aug 18, 2022 at 05:29:39PM +0800, Yu Kuai wrote:
+> Hi, Tejun!
 > 
-> This is useful for consumers that need to extract metadata about
-> the buffer, e.g. get the channel offsets.
+> 在 2022/08/18 1:54, Tejun Heo 写道:
+> > Hello,
+> > 
+> > On Wed, Aug 17, 2022 at 09:45:13AM +0800, Yu Kuai wrote:
+> > > > I don't know whether this is better or not. It's minutely less lines of code
+> > > > but also makes the code a bit more fragile. I'm ambivalent. At any rate,
+> > > > please move these trivial patches to the head of the series or post them
+> > > > separately.
+> > > 
+> > > Can I ask why do you think this patch makes the code a bit more fragile?
+> > 
+> > It's just one step further removed. Before, the flag was trivially in sync
+> > with the on queue status. After, the relationship is more indirect and
+> > easier to break accidentally. Not that it's a major problem. Just not sure
+> > what the benefit of the change is.
 > 
-> Tested-by: Paul Cercueil <paul@crapouillou.net>
-> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+> If you are worried about that, I can keep the flag, then the last two
+> patches will cleanup:
 
-Hmm. I'm not keen on breaking this boundary between
-exposed interface and implementation like this.
+I wasn't necessarily worried. It's more that I couldn't tell why the code is
+better afterwards. Maybe update the commit message to explain why the new
+code is better?
 
-The intent was always that the consumer knew what it was
-requesting and had access to all the channel information
-so should know what the buffer alignment is.
+Thanks.
 
-In this driver there is a call to devm_iio_channel_get_all()
-which returns the channels.
-
-The buffer offsets can be calculated from that information
-as the alignement in a buffer a consumer sees is entirely
-controlled by that information.
-
-It might be helpful to provide some helper functions to allow
-the consumer to establish where particular channels are though.
-(which will look very like what userspace code has to do as the
-information available is much the same).
-
-Perhaps I'm missing some information that is missing from what
-is exposed to consumers?
-
-Jonathan
-
-
-
-
-> ---
->  drivers/iio/buffer/industrialio-buffer-cb.c |  7 +++++++
->  include/linux/iio/consumer.h                | 12 ++++++++++++
->  2 files changed, 19 insertions(+)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-buffer-cb.c b/drivers/iio/buffer/industrialio-buffer-cb.c
-> index 4c12b7a94af5..47d6e28b4d36 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-cb.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-cb.c
-> @@ -151,6 +151,13 @@ struct iio_dev
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_cb_get_iio_dev);
->  
-> +struct iio_buffer
-> +*iio_channel_cb_get_iio_buffer(struct iio_cb_buffer *cb_buffer)
-> +{
-> +	return &cb_buffer->buffer;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_channel_cb_get_iio_buffer);
-> +
->  MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
->  MODULE_DESCRIPTION("Industrial I/O callback buffer");
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 6802596b017c..c28925d5b69c 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -196,6 +196,18 @@ struct iio_channel
->  struct iio_dev
->  *iio_channel_cb_get_iio_dev(const struct iio_cb_buffer *cb_buffer);
->  
-> +/**
-> + * iio_channel_cb_get_iio_buffer() - get access to the underlying buffer.
-> + * @cb_buffer:		The callback buffer from whom we want the buffer
-> + *			information.
-> + *
-> + * This function allows one to obtain information about the buffer.
-> + * The primary aim is to allow drivers that are consuming a buffer to query
-> + * things like channel offsets in the buffer.
-> + */
-> +struct iio_buffer
-> +*iio_channel_cb_get_iio_buffer(struct iio_cb_buffer *cb_buffer);
-> +
->  /**
->   * iio_read_channel_raw() - read from a given channel
->   * @chan:		The channel being queried.
-
+-- 
+tejun
