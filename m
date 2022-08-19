@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 695A0C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F39FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354330AbiHSQwl (ORCPT
+        id S1354339AbiHSQwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
+        Fri, 19 Aug 2022 12:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354488AbiHSQvE (ORCPT
+        with ESMTP id S1354518AbiHSQvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:51:04 -0400
+        Fri, 19 Aug 2022 12:51:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763242BEC;
-        Fri, 19 Aug 2022 09:14:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CA6D8E24;
+        Fri, 19 Aug 2022 09:14:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91FC4B82819;
-        Fri, 19 Aug 2022 16:12:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB4DC433D7;
-        Fri, 19 Aug 2022 16:12:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05A4FB82824;
+        Fri, 19 Aug 2022 16:13:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECD5C433C1;
+        Fri, 19 Aug 2022 16:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925572;
-        bh=zuv1MP5ABNGIITBFu1rW9h/yCGoWH0d7mHpSVdLV2t8=;
+        s=korg; t=1660925593;
+        bh=we86j3RT/2hs2MMR1fPjFUQ1s8lZ+1GT3C9CJeRZlN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJuZcZawUks42Q5WqEPB/Mz/hBwmImg+y0foHZZe1Vhe2xFpmtNFzURjtMUijr524
-         1vX8oXeFo7whwDhUyaJgJfLfDUwEpy+L1ejMcmxMbokYYzF61GFuKe1bJdnnjPMeOo
-         y/7DoTArnbucsEwHCagBJr1MTXg7tLiaDxwzi9P8=
+        b=b3dwE4+agcE5Y0BKyPxktSAoSfHLmEdzhBUGOZbOf2PVkvyVOdRPloIufrQlTAApC
+         cFT0tng4SP5cmYnRbS3BpEykDJMndlIMZMzpobV+b3RyF9pEkxK6BMKGrGgrdAzWW3
+         gHBKuMAtDWVmOIg+wSz8jEP2jTgmeX5eVQAHfMKE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 506/545] KVM: x86/pmu: Use different raw event masks for AMD and Intel
-Date:   Fri, 19 Aug 2022 17:44:36 +0200
-Message-Id: <20220819153852.128099515@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>,
+        Maximilian Heyne <mheyne@amazon.de>,
+        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.10 511/545] xen-blkback: Apply feature_persistent parameter when connect
+Date:   Fri, 19 Aug 2022 17:44:41 +0200
+Message-Id: <20220819153852.357084367@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,89 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: Maximilian Heyne <mheyne@amazon.de>
 
-[ Upstream commit 95b065bf5c431c06c68056a03a5853b660640ecc ]
+commit e94c6101e151b019b8babc518ac2a6ada644a5a1 upstream.
 
-The third nybble of AMD's event select overlaps with Intel's IN_TX and
-IN_TXCP bits. Therefore, we can't use AMD64_RAW_EVENT_MASK on Intel
-platforms that support TSX.
+In some use cases[1], the backend is created while the frontend doesn't
+support the persistent grants feature, but later the frontend can be
+changed to support the feature and reconnect.  In the past, 'blkback'
+enabled the persistent grants feature since it unconditionally checked
+if frontend supports the persistent grants feature for every connect
+('connect_ring()') and decided whether it should use persistent grans or
+not.
 
-Declare a raw_event_mask in the kvm_pmu structure, initialize it in
-the vendor-specific pmu_refresh() functions, and use that mask for
-PERF_TYPE_RAW configurations in reprogram_gp_counter().
+However, commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has mistakenly changed the behavior.
+It made the frontend feature support check to not be repeated once it
+shown the 'feature_persistent' as 'false', or the frontend doesn't
+support persistent grants.
 
-Fixes: 710c47651431 ("KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW")
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Message-Id: <20220308012452.3468611-1-jmattson@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This commit changes the behavior of the parameter to make effect for
+every connect, so that the previous workflow can work again as expected.
+
+[1] https://lore.kernel.org/xen-devel/CAJwUmVB6H3iTs-C+U=v-pwJB7-_ZRHPxHzKRJZ22xEPW7z8a=g@mail.gmail.com/
+
+Reported-by: Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220715225108.193398-3-sj@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h | 1 +
- arch/x86/kvm/pmu.c              | 3 ++-
- arch/x86/kvm/svm/pmu.c          | 1 +
- arch/x86/kvm/vmx/pmu_intel.c    | 1 +
- 4 files changed, 5 insertions(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-driver-xen-blkback |    2 +-
+ drivers/block/xen-blkback/xenbus.c                 |    9 +++------
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 87c13ef4ee8e..613334d626b2 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -439,6 +439,7 @@ struct kvm_pmu {
- 	u64 global_ctrl_mask;
- 	u64 global_ovf_ctrl_mask;
- 	u64 reserved_bits;
-+	u64 raw_event_mask;
- 	u8 version;
- 	struct kvm_pmc gp_counters[INTEL_PMC_MAX_GENERIC];
- 	struct kvm_pmc fixed_counters[INTEL_PMC_MAX_FIXED];
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 350e7cdaad02..8b622ae9f2b4 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -181,6 +181,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 	u32 type = PERF_TYPE_RAW;
- 	struct kvm *kvm = pmc->vcpu->kvm;
- 	struct kvm_pmu_event_filter *filter;
-+	struct kvm_pmu *pmu = vcpu_to_pmu(pmc->vcpu);
- 	bool allow_event = true;
+--- a/Documentation/ABI/testing/sysfs-driver-xen-blkback
++++ b/Documentation/ABI/testing/sysfs-driver-xen-blkback
+@@ -42,5 +42,5 @@ KernelVersion:  5.10
+ Contact:        SeongJae Park <sjpark@amazon.de>
+ Description:
+                 Whether to enable the persistent grants feature or not.  Note
+-                that this option only takes effect on newly created backends.
++                that this option only takes effect on newly connected backends.
+                 The default is Y (enable).
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -186,8 +186,6 @@ static struct xen_blkif *xen_blkif_alloc
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
  
- 	if (eventsel & ARCH_PERFMON_EVENTSEL_PIN_CONTROL)
-@@ -217,7 +218,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+-	blkif->vbd.feature_gnt_persistent = feature_persistent;
+-
+ 	return blkif;
+ }
+ 
+@@ -1090,10 +1088,9 @@ static int connect_ring(struct backend_i
+ 		xenbus_dev_fatal(dev, err, "unknown fe protocol %s", protocol);
+ 		return -ENOSYS;
  	}
+-	if (blkif->vbd.feature_gnt_persistent)
+-		blkif->vbd.feature_gnt_persistent =
+-			xenbus_read_unsigned(dev->otherend,
+-					"feature-persistent", 0);
++
++	blkif->vbd.feature_gnt_persistent = feature_persistent &&
++		xenbus_read_unsigned(dev->otherend, "feature-persistent", 0);
  
- 	if (type == PERF_TYPE_RAW)
--		config = eventsel & AMD64_RAW_EVENT_MASK;
-+		config = eventsel & pmu->raw_event_mask;
+ 	blkif->vbd.overflow_max_grants = 0;
  
- 	if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
- 		return;
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index 49e5be735f14..35da84f63b20 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -295,6 +295,7 @@ static void amd_pmu_refresh(struct kvm_vcpu *vcpu)
- 
- 	pmu->counter_bitmask[KVM_PMC_GP] = ((u64)1 << 48) - 1;
- 	pmu->reserved_bits = 0xfffffff000280000ull;
-+	pmu->raw_event_mask = AMD64_RAW_EVENT_MASK;
- 	pmu->version = 1;
- 	/* not applicable to AMD; but clean them to prevent any fall out */
- 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index b3ca19682975..663b6eb5de66 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -333,6 +333,7 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
- 	pmu->version = 0;
- 	pmu->reserved_bits = 0xffffffff00200000ull;
-+	pmu->raw_event_mask = X86_RAW_EVENT_MASK;
- 
- 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
- 	if (!entry)
--- 
-2.35.1
-
 
 
