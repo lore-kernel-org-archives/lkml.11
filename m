@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E4BC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BC9C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350302AbiHSPvW (ORCPT
+        id S1350323AbiHSPva (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
+        Fri, 19 Aug 2022 11:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350304AbiHSPuC (ORCPT
+        with ESMTP id S1350134AbiHSPuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:02 -0400
+        Fri, 19 Aug 2022 11:50:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4C810520F;
-        Fri, 19 Aug 2022 08:47:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A1110522F;
+        Fri, 19 Aug 2022 08:48:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96E30616E8;
-        Fri, 19 Aug 2022 15:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A005BC433C1;
-        Fri, 19 Aug 2022 15:47:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42115616F9;
+        Fri, 19 Aug 2022 15:48:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECA5C433D6;
+        Fri, 19 Aug 2022 15:47:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924074;
-        bh=IOxgtDmPpVjP8587LHjBfY0P8ncSQRLCxaF/iEAO7LE=;
+        s=korg; t=1660924079;
+        bh=ajfY1cKPPdwe5FTthnuG6ewUtH2PDjpg5AYoSXiLcqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yOvr9bMcrBjlWjeaW5JcNt2mqP0rXUKFYHyaZjrRWESqfBfx92tDs8w4m92+JgbSk
-         2hBp0nX8Z0a/LibxOeHGulILAAY0otU71NBsQcNvRFWpsW+RAmXU0XnH6Oxl6j9TG/
-         ln2OH9yJ/4J1ip22bE8lw3xQFui/CS7Gi1qucMJ0=
+        b=OK/KVC/goxsQo+WJzOa7rjzVsw/uQNT5E1DAnH72rvWwAfn5HzN8rHbjsb22ZBIQr
+         uruWOxxFJtsrb3zmwpPnmNZ3R48zLQ9XfA+34CVNozttUEORFPFt0fivdosRhDdOZ1
+         6DqhLJJY8hCduPOIes44wtuz3j5O2J7pzOCR083A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.10 045/545] drm/nouveau: Dont pm_runtime_put_sync(), only pm_runtime_put_autosuspend()
-Date:   Fri, 19 Aug 2022 17:36:55 +0200
-Message-Id: <20220819153831.233833810@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Subject: [PATCH 5.10 047/545] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
+Date:   Fri, 19 Aug 2022 17:36:57 +0200
+Message-Id: <20220819153831.317705356@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,54 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Leo Li <sunpeng.li@amd.com>
 
-commit c96cfaf8fc02d4bb70727dfa7ce7841a3cff9be2 upstream.
+commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
 
-While trying to fix another issue, it occurred to me that I don't actually
-think there is any situation where we want pm_runtime_put() in nouveau to
-be synchronous. In fact, this kind of just seems like it would cause
-issues where we may unexpectedly block a thread we don't expect to be
-blocked.
+When pinning a buffer, we should check to see if there are any
+additional restrictions imposed by bo->preferred_domains. This will
+prevent the BO from being moved to an invalid domain when pinning.
 
-So, let's only use pm_runtime_put_autosuspend().
+For example, this can happen if the user requests to create a BO in GTT
+domain for display scanout. amdgpu_dm will allow pinning to either VRAM
+or GTT domains, since DCN can scanout from either or. However, in
+amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
+adequate carveout. This can lead to pinning to VRAM despite the user
+requesting GTT placement for the BO.
 
-Changes since v1:
-* Use pm_runtime_put_autosuspend(), not pm_runtime_put()
+v2: Allow the kernel to override the domain, which can happen when
+    exporting a BO to a V4L camera (for example).
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: 3a6536c51d5d ("drm/nouveau: Intercept ACPI_VIDEO_NOTIFY_PROBE")
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: <stable@vger.kernel.org> # v4.10+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-3-lyude@redhat.com
+Signed-off-by: Leo Li <sunpeng.li@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
- drivers/gpu/drm/nouveau/nouveau_fbcon.c   |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/gpu/drm/nouveau/nouveau_display.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_display.c
-@@ -521,7 +521,7 @@ nouveau_display_hpd_work(struct work_str
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -905,6 +905,10 @@ int amdgpu_bo_pin_restricted(struct amdg
+ 	if (WARN_ON_ONCE(min_offset > max_offset))
+ 		return -EINVAL;
  
- 	pm_runtime_mark_last_busy(drm->dev->dev);
- noop:
--	pm_runtime_put_sync(drm->dev->dev);
-+	pm_runtime_put_autosuspend(dev->dev);
- }
- 
- #ifdef CONFIG_ACPI
---- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-@@ -464,7 +464,7 @@ nouveau_fbcon_set_suspend_work(struct wo
- 	if (state == FBINFO_STATE_RUNNING) {
- 		nouveau_fbcon_hotplug_resume(drm->fbcon);
- 		pm_runtime_mark_last_busy(drm->dev->dev);
--		pm_runtime_put_sync(drm->dev->dev);
-+		pm_runtime_put_autosuspend(drm->dev->dev);
- 	}
- }
- 
++	/* Check domain to be pinned to against preferred domains */
++	if (bo->preferred_domains & domain)
++		domain = bo->preferred_domains & domain;
++
+ 	/* A shared bo cannot be migrated to VRAM */
+ 	if (bo->prime_shared_count) {
+ 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
 
 
