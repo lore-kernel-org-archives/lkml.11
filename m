@@ -2,85 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9115C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 02:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAAFC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 03:01:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345260AbiHSC6p (ORCPT
+        id S1345330AbiHSDBM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 22:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
+        Thu, 18 Aug 2022 23:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344655AbiHSC6e (ORCPT
+        with ESMTP id S1344539AbiHSDBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 22:58:34 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3C633406
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 19:58:30 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M85vs02bQz1N7RY;
-        Fri, 19 Aug 2022 10:55:05 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 10:58:27 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.174) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 10:58:26 +0800
-From:   Li Huafei <lihuafei1@huawei.com>
-To:     <guoren@kernel.org>, <mhiramat@kernel.org>, <palmer@dabbelt.com>
-CC:     <rostedt@goodmis.org>, <mingo@redhat.com>,
-        <paul.walmsley@sifive.com>, <aou@eecs.berkeley.edu>,
-        <naveen.n.rao@linux.ibm.com>, <anil.s.keshavamurthy@intel.com>,
-        <davem@davemloft.net>, <jszhang@kernel.org>,
-        <peterz@infradead.org>, <liaochang1@huawei.com>, <me@packi.ch>,
-        <penberg@kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 1/2] riscv: ftrace: Fix the comments about the number of ftrace instruction
-Date:   Fri, 19 Aug 2022 10:55:21 +0800
-Message-ID: <20220819025522.154189-1-lihuafei1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 18 Aug 2022 23:01:02 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B18D5E81
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 20:00:59 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id f4so2512491qkl.7
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 20:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc;
+        bh=SqzHyhYdK1V4JBswn3yCW3hnqnnsbZPFsQYu2RllJTY=;
+        b=MxC5bzVaVdTyRqcXd62vZSPNLWDIJzWO3NZV9BGtCGtukJbO3aGq8wTVM4NPvqGiXM
+         Gwc6h1B2pl0StsRb9qHw1ezYc+eQKsJIFXHOJkJLQK56Yba/yXH12A/qAvt/GHNn4Nya
+         D707Il8MyVwvmgV3dWYtEIyhdJZzXlXNrItW6N159s2XcDc/5O67GqerWAOl040sCh35
+         4zpUkW1pYDENJhKanUxKdo667PCS62uqKq4XmxXxPY4k3OmC4ujqf2Q1wmpbT3OoINdz
+         1+IaFPCzNeCdYyUh7KL9Q1cBjUgSUMCQLB6oYTt/hylhnCM1omtR0JcwyZbN6lcakGds
+         Oplg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc;
+        bh=SqzHyhYdK1V4JBswn3yCW3hnqnnsbZPFsQYu2RllJTY=;
+        b=SrE9V4j8SWzuO+2qXcL0uskNf6R52Vsfe4/hTi0BAT7MLrD3Oo+0ka9aQ5AYcZBbKJ
+         HivHPMEQWKOPKVSAG+IsKIUcqz0yayw96EYvXhrdI3zGBGVdctW4/ekHwXh8EiFylEP1
+         DVUELfXE2bUjPCv4mlKOtbSHcu/nzJY/qf5L8nSMazHLjtBSnT6ckTWqr4YOvBolqH/C
+         Ya8b/3sD7daZDubkftd1HOL9DGhlKteYI1BOawJiXRTR/JCyOmoPdHLJ2BZE6FVdL3hh
+         EovunsiqwhcHnQvXpNLBdgoLjeiRAygDuHvoouSV5wgMChQripel5Co8VNrzKBBxskq2
+         7yLg==
+X-Gm-Message-State: ACgBeo1aBV+VsDSlBwCcySFooAWnK707ykF0IquvqV5F1ErwgbkLfjeH
+        9gWumU1qLOOt3jPwZWx2MpNJtQ==
+X-Google-Smtp-Source: AA6agR7KQTVz3JYFrJLB5lhd2uJBBP000qbAVx/oSm/fFTrnVR58FRN6Fmbj1fOpDd+LLvaHPxpv8g==
+X-Received: by 2002:a05:620a:1d0e:b0:6ba:c419:81a1 with SMTP id dl14-20020a05620a1d0e00b006bac41981a1mr4066120qkb.526.1660878058827;
+        Thu, 18 Aug 2022 20:00:58 -0700 (PDT)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id a18-20020ac844b2000000b0031ef69c9024sm2045363qto.91.2022.08.18.20.00.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 20:00:58 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 20:00:41 -0700 (PDT)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+cc:     Hugh Dickins <hughd@google.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
+        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
+        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+In-Reply-To: <20220818132421.6xmjqduempmxnnu2@box>
+Message-ID: <c6ccbb96-5849-2e2f-3b49-4ea711af525d@google.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com> <ff5c5b97-acdf-9745-ebe5-c6609dd6322e@google.com> <20220818132421.6xmjqduempmxnnu2@box>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.174]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When DYNAMIC_FTRACE is enabled, we put 8 16-bit instructions in front of
-the function for ftrace use, not 5.
+On Thu, 18 Aug 2022, Kirill A . Shutemov wrote:
+> On Wed, Aug 17, 2022 at 10:40:12PM -0700, Hugh Dickins wrote:
+> > 
+> > If your memory could be swapped, that would be enough of a good reason
+> > to make use of shmem.c: but it cannot be swapped; and although there
+> > are some references in the mailthreads to it perhaps being swappable
+> > in future, I get the impression that will not happen soon if ever.
+> > 
+> > If your memory could be migrated, that would be some reason to use
+> > filesystem page cache (because page migration happens to understand
+> > that type of memory): but it cannot be migrated.
+> 
+> Migration support is in pipeline. It is part of TDX 1.5 [1]. And swapping
+> theoretically possible, but I'm not aware of any plans as of now.
+> 
+> [1] https://www.intel.com/content/www/us/en/developer/articles/technical/intel-trust-domain-extensions.html
 
-Fixes: afc76b8b8011 ("riscv: Using PATCHABLE_FUNCTION_ENTRY instead of MCOUNT")
-Suggested-by: Guo Ren <guoren@kernel.org>
-Signed-off-by: Li Huafei <lihuafei1@huawei.com>
----
-v1: https://lore.kernel.org/lkml/20220426015751.88582-1-lihuafei1@huawei.com/
+I always forget, migration means different things to different audiences.
+As an mm person, I was meaning page migration, whereas a virtualization
+person thinks VM live migration (which that reference appears to be about),
+a scheduler person task migration, an ornithologist bird migration, etc.
 
-Changlog in v1 -> v2:
- - Add the fix tag.
- - Delete the expression "4 instructions".
+But you're an mm person too: you may have cited that reference in the
+knowledge that TDX 1.5 Live Migration will entail page migration of the
+kind I'm thinking of.  (Anyway, it's not important to clarify that here.)
 
- arch/riscv/kernel/ftrace.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> > Some of these impressions may come from earlier iterations of the
+> > patchset (v7 looks better in several ways than v5).  I am probably
+> > underestimating the extent to which you have taken on board other
+> > usages beyond TDX and SEV private memory, and rightly want to serve
+> > them all with similar interfaces: perhaps there is enough justification
+> > for shmem there, but I don't see it.  There was mention of userfaultfd
+> > in one link: does that provide the justification for using shmem?
+> > 
+> > I'm afraid of the special demands you may make of memory allocation
+> > later on - surprised that huge pages are not mentioned already;
+> > gigantic contiguous extents? secretmem removed from direct map?
+> 
+> The design allows for extension to hugetlbfs if needed. Combination of
+> MFD_INACCESSIBLE | MFD_HUGETLB should route this way. There should be zero
+> implications for shmem. It is going to be separate struct memfile_backing_store.
 
-diff --git a/arch/riscv/kernel/ftrace.c b/arch/riscv/kernel/ftrace.c
-index 2086f6585773..552088e9acc4 100644
---- a/arch/riscv/kernel/ftrace.c
-+++ b/arch/riscv/kernel/ftrace.c
-@@ -71,8 +71,8 @@ static int __ftrace_modify_call(unsigned long hook_pos, unsigned long target,
- }
- 
- /*
-- * Put 5 instructions with 16 bytes at the front of function within
-- * patchable function entry nops' area.
-+ * Put 16 bytes at the front of the function within the patchable function
-+ * entry nops' area.
-  *
-  * 0: REG_S  ra, -SZREG(sp)
-  * 1: auipc  ra, 0x?
--- 
-2.17.1
+Last year's MFD_HUGEPAGE proposal would have allowed you to do it with
+memfd via tmpfs without needing to involve hugetlbfs; but you may prefer
+the determinism of hugetlbfs, relying on /proc/sys/vm/nr_hugepages etc.
 
+But I've yet to see why you want to involve this or that filesystem
+(with all its filesystem-icity suppressed) at all.  The backing store
+is host memory, and tmpfs and hugetlbfs just impose their own
+idiosyncrasies on how that memory is allocated; but I think you would
+do better to choose your own idiosyncrasies in allocation directly -
+you don't need a different "backing store" to choose between 4k or 2M
+or 1G or whatever allocations.
+
+tmpfs and hugetlbfs and page cache are designed around sharing memory:
+TDX is designed around absolutely not sharing memory; and the further
+uses which Sean foresees appear not to need it as page cache either.
+
+Except perhaps for page migration reasons.  It's somewhat incidental,  
+but of course page migration knows how to migrate page cache, so
+masquerading as page cache will give a short cut to page migration,
+when page migration becomes at all possible.
+
+> 
+> I'm not sure secretmem is a fit here as we want to extend MFD_INACCESSIBLE
+> to be movable if platform supports it and secretmem is not migratable by
+> design (without direct mapping fragmentations).
+> 
+> > Here's what I would prefer, and imagine much easier for you to maintain;
+> > but I'm no system designer, and may be misunderstanding throughout.
+> > 
+> > QEMU gets fd from opening /dev/kvm_something, uses ioctls (or perhaps
+> > the fallocate syscall interface itself) to allocate and free the memory,
+> > ioctl for initializing some of it too.  KVM in control of whether that
+> > fd can be read or written or mmap'ed or whatever, no need to prevent it
+> > in shmem.c, no need for flags, seals, notifications to and fro because
+> > KVM is already in control and knows the history.  If shmem actually has
+> > value, call into it underneath - somewhat like SysV SHM, and /dev/zero
+> > mmap, and i915/gem make use of it underneath.  If shmem has nothing to
+> > add, just allocate and free kernel memory directly, recorded in your
+> > own xarray.
+> 
+> I guess shim layer on top of shmem *can* work. I don't see immediately why
+> it would not. But I'm not sure it is right direction. We risk creating yet
+> another parallel VM with own rules/locking/accounting that opaque to
+> core-mm.
+
+You are already proposing a new set of rules, foreign to how tmpfs works
+for others.  You're right that KVM allocating large amounts of memory,
+opaque to core-mm, carries risk: and you'd be right to say that shmem.c
+provides some clues (security_vm_enough_memory checks, memcg charging,
+user_shm_lock accounting) on what to remember.
+
+But I'm not up to the job of being the one to police you there,
+and you don't want to be waiting on me either.
+
+To take a rather silly example: Ted just added chattr support to tmpfs,
+and it fits in well.  But I don't now want to have to decide whether
+"chattr +i" FS_IMMUTABLE_FL is or is not compatible with
+MEMFILE_F_USER_INACCESSIBLE.  They are from different worlds,
+and I'd prefer KVM to carry the weight of imposing INACCESSIBLE:
+which seems easily done if it manages the fd, without making the
+memory allocated to that fd accessible to those who hold the fd.
+
+> 
+> Note that on machines that run TDX guests such memory would likely be the
+> bulk of memory use. Treating it as a fringe case may bite us one day.
+
+Yes, I suspected that machines running TDX guests might well consume
+most of the memory that way, but glad(?) to hear it confirmed.
+
+I am not suggesting that this memory be treated as a fringe case, rather
+the reverse: a different case, not something to hide away inside shmem.c.
+
+Is there a notion that /proc/meminfo "Shmem:" is going to be a good hint
+of this usage?  Whether or not it's also included in "Shmem:", I expect
+that its different characteristics will deserve its own display.
+
+Hugh
