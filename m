@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF59C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A43C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353718AbiHSQor (ORCPT
+        id S1353395AbiHSQox (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        Fri, 19 Aug 2022 12:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354094AbiHSQlr (ORCPT
+        with ESMTP id S1354113AbiHSQlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A455112847F;
-        Fri, 19 Aug 2022 09:10:31 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBEE1296C3;
+        Fri, 19 Aug 2022 09:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C60E761861;
-        Fri, 19 Aug 2022 16:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9B2C43470;
-        Fri, 19 Aug 2022 16:09:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9B4161811;
+        Fri, 19 Aug 2022 16:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05A6C433C1;
+        Fri, 19 Aug 2022 16:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925353;
-        bh=AUCerK9XH4FBAwVk7/scMA0QJUrR5R/M7yfoBaW/UjE=;
+        s=korg; t=1660925434;
+        bh=OuBP3EZABoATWLplK79AVl6BvvWf0TZZLXbKO6eBR7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WnRXXviz760PPFfQEFOuwqUFD7yWINe6SCnlVXIjR9XpqlVfpbJBCOnjEqwYAAd6D
-         qPKHuiBPEiILw2YsfcOesNjR4OlLOKQO+utvehWxPB1oMRFb3KNjjWKB9ZGmse+qmV
-         +QskScC1cNlep0ostI8UHecUg3puJJYv1x9mVNwE=
+        b=SWKdCw/I6f8ggFnefNCfXIuLR1MUSgf082/Fnw9CSEmq9Ks2K60e8VSnfoyP87JK6
+         DnHrHEaBexNI8P0F/sTQY2X1I5zg0EoWdHT3oySiq0ctFnFafYJV7ewcYyprboT3Rm
+         z6sRyp3rqnadf2/HkN9VgZ6v8/Rzu7LGFuvrHVOU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: [PATCH 5.10 464/545] usbnet: smsc95xx: Dont clear read-only PHY interrupt
-Date:   Fri, 19 Aug 2022 17:43:54 +0200
-Message-Id: <20220819153850.160518535@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 472/545] iommu/vt-d: avoid invalid memory access via node_online(NUMA_NO_NODE)
+Date:   Fri, 19 Aug 2022 17:44:02 +0200
+Message-Id: <20220819153850.522230547@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,49 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 3108871f19221372b251f7da1ac38736928b5b3a ]
+[ Upstream commit b0b0b77ea611e3088e9523e60860f4f41b62b235 ]
 
-Upon receiving data from the Interrupt Endpoint, the SMSC LAN95xx driver
-attempts to clear the signaled interrupts by writing "all ones" to the
-Interrupt Status Register.
+KASAN reports:
 
-However the driver only ever enables a single type of interrupt, namely
-the PHY Interrupt.  And according to page 119 of the LAN950x datasheet,
-its bit in the Interrupt Status Register is read-only.  There's no other
-way to clear it than in a separate PHY register:
+[ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+[    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
+[    4.683454][    T0]
+[    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
+[    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
+[    4.703196][    T0] Call Trace:
+[    4.706334][    T0]  <TASK>
+[ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
 
-https://www.microchip.com/content/dam/mchp/documents/UNG/ProductDocuments/DataSheets/LAN950x-Data-Sheet-DS00001875D.pdf
+after converting the type of the first argument (@nr, bit number)
+of arch_test_bit() from `long` to `unsigned long`[0].
 
-Consequently, writing "all ones" to the Interrupt Status Register is
-pointless and can be dropped.
+Under certain conditions (for example, when ACPI NUMA is disabled
+via command line), pxm_to_node() can return %NUMA_NO_NODE (-1).
+It is valid 'magic' number of NUMA node, but not valid bit number
+to use in bitops.
+node_online() eventually descends to test_bit() without checking
+for the input, assuming it's on caller side (which might be good
+for perf-critical tasks). There, -1 becomes %ULONG_MAX which leads
+to an insane array index when calculating bit position in memory.
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+For now, add an explicit check for @node being not %NUMA_NO_NODE
+before calling test_bit(). The actual logics didn't change here
+at all.
+
+[0] https://github.com/norov/linux/commit/0e862838f290147ea9c16db852d8d494b552d38d
+
+Fixes: ee34b32d8c29 ("dmar: support for parsing Remapping Hardware Static Affinity structure")
+Cc: stable@vger.kernel.org # 2.6.33+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/smsc95xx.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/iommu/intel/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index e5b744851146..b1d7331c3c5c 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -570,10 +570,6 @@ static int smsc95xx_link_reset(struct usbnet *dev)
- 	unsigned long flags;
- 	int ret;
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 70d569b80ecf..0bc497f4cb9f 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -497,7 +497,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
+ 		if (drhd->reg_base_addr == rhsa->base_address) {
+ 			int node = pxm_to_node(rhsa->proximity_domain);
  
--	ret = smsc95xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL_);
--	if (ret < 0)
--		return ret;
--
- 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
- 	if (pdata->phydev->duplex != DUPLEX_FULL) {
- 		pdata->mac_cr &= ~MAC_CR_FDPX_;
+-			if (!node_online(node))
++			if (node != NUMA_NO_NODE && !node_online(node))
+ 				node = NUMA_NO_NODE;
+ 			drhd->iommu->node = node;
+ 			return 0;
 -- 
 2.35.1
 
