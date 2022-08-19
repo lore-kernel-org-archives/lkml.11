@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E72E4C38142
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6BEC32792
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353778AbiHSQq3 (ORCPT
+        id S1353835AbiHSQqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
+        Fri, 19 Aug 2022 12:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353775AbiHSQoB (ORCPT
+        with ESMTP id S1353779AbiHSQoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:44:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EE611231F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DF610F6B2;
         Fri, 19 Aug 2022 09:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D774B8282A;
-        Fri, 19 Aug 2022 16:10:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7433FC433D6;
-        Fri, 19 Aug 2022 16:10:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39B2FB8280D;
+        Fri, 19 Aug 2022 16:09:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE14C433C1;
+        Fri, 19 Aug 2022 16:09:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925405;
-        bh=3+8jeA0wp8PJ0PEzbB8vnRQ2Naz3OJjw1F1s8NNDeWs=;
+        s=korg; t=1660925383;
+        bh=3CDcV5huQiytvVWR8wB+nj8DNkS2O9rtLflfbJ1e1SU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hC9qG3XgcOjS8D5Ok0KS+yTitVJF1sLixSNhcguUSQDXVNROzAjZsf1hlMD7tKUPD
-         F/JwKFcumc/BRhqZDG+z+721ipzlGHVOrFZqax2c+iVRfFvny8EJFUrdGBtqdx6HLK
-         oNkrlzMG+Y3XcEQng6BSdZpDe41MP15p4wMGxyog=
+        b=dV62Tq/2wTAzZjcRdN3PIUoJZYGp3VjgE26NZVfFo5P/l5B3fMukJpCL7XsydFcHh
+         LK1u22v4sESG5bs510Ek7FEtV769ZBlVVUXLm5VIF/TcejBtNAn7oPXk49Z3ZoVYO+
+         POcFCnrdZZn5WmTn8yU98Do+s76ngYSN8FS0DHYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meeta Saggi <msaggi@purestorage.com>,
-        Mohamed Khalfella <mkhalfella@purestorage.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Eric Badger <ebadger@purestorage.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 482/545] PCI/AER: Iterate over error counters instead of error strings
-Date:   Fri, 19 Aug 2022 17:44:12 +0200
-Message-Id: <20220819153851.001765437@linuxfoundation.org>
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.10 445/545] x86/bugs: Enable STIBP for IBPB mitigated RETBleed
+Date:   Fri, 19 Aug 2022 17:43:35 +0200
+Message-Id: <20220819153849.347431154@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,61 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohamed Khalfella <mkhalfella@purestorage.com>
+From: Kim Phillips <kim.phillips@amd.com>
 
-[ Upstream commit 5e6ae050955b566484f3cc6a66e3925eae87a0ed ]
+commit e6cfcdda8cbe81eaf821c897369a65fec987b404 upstream.
 
-Previously we iterated over AER stat *names*, e.g.,
-aer_correctable_error_string[32], but the actual stat *counters* may not be
-that large, e.g., pdev->aer_stats->dev_cor_errs[16], which means that we
-printed junk in the sysfs stats files.
+AMD's "Technical Guidance for Mitigating Branch Type Confusion,
+Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
+Privileged Mode Entry / SMT Safety" says:
 
-Iterate over the stat counter arrays instead of the names to avoid this
-junk.
+  Similar to the Jmp2Ret mitigation, if the code on the sibling thread
+  cannot be trusted, software should set STIBP to 1 or disable SMT to
+  ensure SMT safety when using this mitigation.
 
-Also, added a build time check to make sure all
-counters have entries in strings array.
+So, like already being done for retbleed=unret, and now also for
+retbleed=ibpb, force STIBP on machines that have it, and report its SMT
+vulnerability status accordingly.
 
-Fixes: 0678e3109a3c ("PCI/AER: Simplify __aer_print_error()")
-Link: https://lore.kernel.org/r/20220509181441.31884-1-mkhalfella@purestorage.com
-Reported-by: Meeta Saggi <msaggi@purestorage.com>
-Signed-off-by: Mohamed Khalfella <mkhalfella@purestorage.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Meeta Saggi <msaggi@purestorage.com>
-Reviewed-by: Eric Badger <ebadger@purestorage.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ [ bp: Remove the "we" and remove "[AMD]" applicability parameter which
+   doesn't work here. ]
+
+Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org # 5.10, 5.15, 5.19
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
+Link: https://lore.kernel.org/r/20220804192201.439596-1-kim.phillips@amd.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pcie/aer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ Documentation/admin-guide/kernel-parameters.txt |   29 +++++++++++++++++-------
+ arch/x86/kernel/cpu/bugs.c                      |   10 ++++----
+ 2 files changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index 2ab708ab7218..9564b74003f0 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -538,7 +538,7 @@ static const char *aer_agent_string[] = {
- 	struct pci_dev *pdev = to_pci_dev(dev);				\
- 	u64 *stats = pdev->aer_stats->stats_array;			\
- 									\
--	for (i = 0; i < ARRAY_SIZE(strings_array); i++) {		\
-+	for (i = 0; i < ARRAY_SIZE(pdev->aer_stats->stats_array); i++) {\
- 		if (strings_array[i])					\
- 			str += sprintf(str, "%s %llu\n",		\
- 				       strings_array[i], stats[i]);	\
-@@ -1338,6 +1338,11 @@ static int aer_probe(struct pcie_device *dev)
- 	struct device *device = &dev->device;
- 	struct pci_dev *port = dev->port;
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4662,20 +4662,33 @@
+ 			Speculative Code Execution with Return Instructions)
+ 			vulnerability.
  
-+	BUILD_BUG_ON(ARRAY_SIZE(aer_correctable_error_string) <
-+		     AER_MAX_TYPEOF_COR_ERRS);
-+	BUILD_BUG_ON(ARRAY_SIZE(aer_uncorrectable_error_string) <
-+		     AER_MAX_TYPEOF_UNCOR_ERRS);
++			AMD-based UNRET and IBPB mitigations alone do not stop
++			sibling threads from influencing the predictions of other
++			sibling threads. For that reason, STIBP is used on pro-
++			cessors that support it, and mitigate SMT on processors
++			that don't.
 +
- 	/* Limit to Root Ports or Root Complex Event Collectors */
- 	if ((pci_pcie_type(port) != PCI_EXP_TYPE_RC_EC) &&
- 	    (pci_pcie_type(port) != PCI_EXP_TYPE_ROOT_PORT))
--- 
-2.35.1
-
+ 			off          - no mitigation
+ 			auto         - automatically select a migitation
+ 			auto,nosmt   - automatically select a mitigation,
+ 				       disabling SMT if necessary for
+ 				       the full mitigation (only on Zen1
+ 				       and older without STIBP).
+-			ibpb	     - mitigate short speculation windows on
+-				       basic block boundaries too. Safe, highest
+-				       perf impact.
+-			unret        - force enable untrained return thunks,
+-				       only effective on AMD f15h-f17h
+-				       based systems.
+-			unret,nosmt  - like unret, will disable SMT when STIBP
+-			               is not available.
++			ibpb         - On AMD, mitigate short speculation
++				       windows on basic block boundaries too.
++				       Safe, highest perf impact. It also
++				       enables STIBP if present. Not suitable
++				       on Intel.
++			ibpb,nosmt   - Like "ibpb" above but will disable SMT
++				       when STIBP is not available. This is
++				       the alternative for systems which do not
++				       have STIBP.
++			unret        - Force enable untrained return thunks,
++				       only effective on AMD f15h-f17h based
++				       systems.
++			unret,nosmt  - Like unret, but will disable SMT when STIBP
++				       is not available. This is the alternative for
++				       systems which do not have STIBP.
+ 
+ 			Selecting 'auto' will choose a mitigation method at run
+ 			time according to the CPU.
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -144,7 +144,7 @@ void __init check_bugs(void)
+ 	/*
+ 	 * spectre_v2_user_select_mitigation() relies on the state set by
+ 	 * retbleed_select_mitigation(); specifically the STIBP selection is
+-	 * forced for UNRET.
++	 * forced for UNRET or IBPB.
+ 	 */
+ 	spectre_v2_user_select_mitigation();
+ 	ssb_select_mitigation();
+@@ -1135,7 +1135,8 @@ spectre_v2_user_select_mitigation(void)
+ 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
+ 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
+ 
+-	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
++	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
++	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
+ 		if (mode != SPECTRE_V2_USER_STRICT &&
+ 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
+ 			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
+@@ -2283,10 +2284,11 @@ static ssize_t srbds_show_state(char *bu
+ 
+ static ssize_t retbleed_show_state(char *buf)
+ {
+-	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
++	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
++	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
+ 	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
+ 		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
+-		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
++		    return sprintf(buf, "Vulnerable: untrained return thunk / IBPB on non-AMD based uarch\n");
+ 
+ 	    return sprintf(buf, "%s; SMT %s\n",
+ 			   retbleed_strings[retbleed_mitigation],
 
 
