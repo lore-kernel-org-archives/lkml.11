@@ -2,107 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0217C28D13
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2803C28D13
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240381AbiHSXc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 19:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        id S241663AbiHSXdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 19:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231538AbiHSXcU (ORCPT
+        with ESMTP id S240543AbiHSXdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 19:32:20 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DA91141BC
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:32:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660951939; x=1692487939;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cK2y3zq/UHNXdhzrLcmcGxw12nkzYqryneLPcAANBU0=;
-  b=SWY/WTuS4Gmik8NLxwCwnvrcXHJgD2b2LHdKmu12N+WQGytlLQRiGBs3
-   ocOCI2OvooQz7Ol55poUL5IlkQci3DLuS/03eh1RPOWhGFGJx3AyHhz6G
-   lRpnhS+XhpIHDjO2juoicD5d2wwRrJcotczNXQCJ3VYNQWGnl4ahgn3Hp
-   cfyAGLA0XN4W4DuEPh2qeC3jahUPmPYMSo/BFBgot+sHphqZYukLdD/Z6
-   XdkN4QvF9ob/RATjP+UFxQBbdrCAD4rESLHz/t/r/SsaIPgycY0pTloCN
-   RC6oQKZB4H09mATpOr8O3yCLxwu0gOCb9Be63q12/7NyOHWQn6wfLQ78y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="291872467"
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="291872467"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 16:32:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="559110741"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 19 Aug 2022 16:32:16 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPBTL-0001v5-13;
-        Fri, 19 Aug 2022 23:32:15 +0000
-Date:   Sat, 20 Aug 2022 07:32:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [intel-tdx:guest-hardening-rebased 11/36]
- arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for
- 'tdx_write_msr'
-Message-ID: <202208200701.4mWLrcXi-lkp@intel.com>
+        Fri, 19 Aug 2022 19:33:00 -0400
+Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CB3114A5C;
+        Fri, 19 Aug 2022 16:32:59 -0700 (PDT)
+Received: by mail-vk1-xa2a.google.com with SMTP id i67so2957627vkb.2;
+        Fri, 19 Aug 2022 16:32:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=8Ftt3u2zVCJ1XlR/QC6Ig2RR9m+8QvnAb/eHfD5q1ag=;
+        b=eo8bqwAPmtSdzpfC2DXbNh1J+I4B3JgMZPZGvQwqJZ8zZiILLZeVZxbp+nNPCMQgir
+         ND29DitHrMJ5vWipZ//ZPEFizYP6eeFn/DiDdrGg26CZgXcvLA5j9Ho1GTHzhZ3t7oE/
+         luOF4fjMXtVJfi6YzE9a+DljBgBmoaUjqr2KlVEzzppf9JjF3cZlhZmh/vGq5IkcfnLj
+         XfGp407fNCISq1mZdY79HdDwvNEm3o6fg8NwGfoAUDlzbAzu3EXnYacVWVN3XYTruSi3
+         yRvda0WWPHy0zxa7c2Fm/RjxoFZS0HwBAL9/nxZVcMgSdywfaH3wZjxC3J7qQVyB3Wn/
+         8pRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=8Ftt3u2zVCJ1XlR/QC6Ig2RR9m+8QvnAb/eHfD5q1ag=;
+        b=m7fw3visih2cB3/NcyKErXYIwXNaGIO3i68WqwLKzwn0zQtedodzegUSpmikgPr7JI
+         9tEgPKMoKD+S0TzjOdG/ishXb6E3ZQuGW8STj6SQ0M/d9vfFHSVVQw4vFlFnIWAgnk7o
+         hJNMAYRvwgpdUmyt9jm2z1CHw8J/9C7udYqW6h7mwLXCJOcsr2z1/Z4h4IEa/ESe5xR1
+         +IUfWm2M5/o5KnfCpjraoAWETeGCuJ7pQKTwYvCw6cp1w9dJ4R6DHsENynqMFRV06CIj
+         T5wAYbbUdkxJEbWXL3Jh2Jth1I3/Lkb6f0yxNiUUPFM7uEfcefDhh1cX8pBLJNZxPLp3
+         Reqg==
+X-Gm-Message-State: ACgBeo2qCKPU2Z/vdHwRgXTBpJtkGSMg9oISfWkVFVlzx5FKFDAK+PF+
+        eodEyqbwMZD8HpR8vEpjG8JM9mlDqFYiuR6NUIA=
+X-Google-Smtp-Source: AA6agR6eJaaqNg8VDsxPvmfVCSoGG2OIUBTxkWbH6MePnRJAOqSfJjo7UZdduGoUilT7hODPdRuYkkP+jlm7KDQsFVY=
+X-Received: by 2002:ac5:c7d7:0:b0:389:61cd:ac2d with SMTP id
+ e23-20020ac5c7d7000000b0038961cdac2dmr1482277vkn.27.1660951978768; Fri, 19
+ Aug 2022 16:32:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
+ <20220818232040.GA3505561@roeck-us.net> <CAHp75Vf+-4U6OW4sf+mKsPt8WoRL_jN-sYtzOMzhhH8--+OU1w@mail.gmail.com>
+ <20220819130955.GB3108215@roeck-us.net>
+In-Reply-To: <20220819130955.GB3108215@roeck-us.net>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 20 Aug 2022 02:32:22 +0300
+Message-ID: <CAHp75VetU7_sJ-n6UHgFE+NU56t2Gw83x9E+OHETZkyxyF1qBQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/3] hwmon: (pwm-fan) Make use of device properties
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/x86/coco/tdx/tdx.c
-tree:   https://github.com/intel/tdx.git guest-hardening-rebased
-head:   d941f409a509c084250b50a3b5fc1c3c84a596a0
-commit: a9189da9f0413f85d9072894ccb973cf785d2c0d [11/36] x86/tdx: Use direct paravirt call for wrmsrl
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220820/202208200701.4mWLrcXi-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/a9189da9f0413f85d9072894ccb973cf785d2c0d
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-hardening-rebased
-        git checkout a9189da9f0413f85d9072894ccb973cf785d2c0d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
+On Fri, Aug 19, 2022 at 4:09 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On Fri, Aug 19, 2022 at 12:56:42PM +0300, Andy Shevchenko wrote:
+> > On Fri, Aug 19, 2022 at 2:41 AM Guenter Roeck <linux@roeck-us.net> wrot=
+e:
+> > > On Sat, Aug 06, 2022 at 06:25:15PM +0300, Andy Shevchenko wrote:
+> > > > Convert the module to be property provider agnostic and allow
+> > > > it to be used on non-OF platforms.
+> > > >
+> > > > Add mod_devicetable.h include.
+> > > >
+> > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > > Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > >
+> > > I had another look at this patch. A substantial part of the changes
+> > > is because device properties don't support of_property_read_u32_index=
+(),
+> > > reworking the code to use device_property_read_u32_array() instead.
+> > > Sorry, I don't like it, it results in a substantial number of unneces=
+sary
+> > > changes. Device properties should support the equivalent of
+> > > of_property_read_u32_index() instead to simplify conversions.
+> >
+> > Not all (device property) providers can have such API available. Are
+> > you suggesting to
+> >  a) alloc memory for entire array;
+> >  b) cache one for a given index;
+> >  c) free a memory;
+> >  d) loop as many times as index op is called.
+> >
+> > Sorry, this is way too far and non-optimal in comparison to the
+> > substantial number of unnecessary changes (two or three small
+> > refactorings?).
+> >
+> > Another way is to provide a pwm-fan-acpi, which will be the copy of
+> > the driver after this patch is applied. I don't think it's a very
+> > bright idea either.
+> >
+> An alternative might be to split the patch in two parts, one replacing
+> of_property_read_u32_index() with of_property_read_u32_array() as
+> preparation, with the above rationale and a note that this is to
+> prepare for the switch to device properties, and then the actual device
+> property switch. Some context showing how other conversions handled this
+> problem would also be nice, though not necessary.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for the idea, I like it and it would indeed simplify the
+understanding of the changes made.
 
-All warnings (new ones prefixed by >>):
-
->> arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for 'tdx_write_msr' [-Wmissing-prototypes]
-     298 | void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
-         |              ^~~~~~~~~~~~~
-
-
-vim +/tdx_write_msr +298 arch/x86/coco/tdx/tdx.c
-
-   297	
- > 298	void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
-   299	{
-   300		struct tdx_hypercall_args args = {
-   301			.r10 = TDX_HYPERCALL_STANDARD,
-   302			.r11 = hcall_func(EXIT_REASON_MSR_WRITE),
-   303			.r12 = msr,
-   304			.r13 = (u64)high << 32 | low,
-   305		};
-   306	
-   307		if (tdx_fast_tdcall_path_msr(msr))
-   308			__tdx_hypercall(&args, 0);
-   309		else
-   310			native_write_msr(msr, low, high);
-   311	}
-   312	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--=20
+With Best Regards,
+Andy Shevchenko
