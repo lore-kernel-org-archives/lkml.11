@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5FDC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:17:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DA5C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350824AbiHSTRc (ORCPT
+        id S1349713AbiHSTRg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 15:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33532 "EHLO
+        Fri, 19 Aug 2022 15:17:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349506AbiHSTRH (ORCPT
+        with ESMTP id S1351193AbiHSTRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 15:17:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BEC112330
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBED11232A
         for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:17:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD42B82886
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 19:17:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8006C433B5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A162DB827CC
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 19:17:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16399C433D7;
         Fri, 19 Aug 2022 19:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660936622;
-        bh=RoXrwfU/s5vurCwlxvo8Vd+Lw1JXCW4diLyk4VZ6JDI=;
+        s=k20201202; t=1660936621;
+        bh=evTFJOZkg0tavzSABFrNQzTpKadK2avGSqbk5clFvMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g/yIDSq5tz/8o9kUNSGR2WjXk99zL+giUdFlfKqysPvpQHpMEpSV4s+340Igg9BCU
-         Pyn24U/6pa4/MiLG4JKW5a0SVYG+x10i+8RBJLh27uC5b9BNjYC/VOrTjItYfycV5I
-         sQS+TZbnbNe8WB2OQBesyRZjgho1h3+ZzVa6QBu+qHLqYP+MA6Yhq3aPgdxNADh8HV
-         3GijZPFm7+cDyjbdBSzbJ4QNll2FugdmTyiS22WvplaPh4nZlj5p1o7neZl/6XAilY
-         QKtIETbODj6FHDXQolqp8v/R0qX6aGiRJMr78uDjn9l11cHqu7bLQUxqxcGR3wncI6
-         yO2X6nIqOhlag==
+        b=XFiU8hLOFxouRha9xeLdMQ7zYGJvI+gF0WnuJNyMxaytSkue2twOU1SXiL3EmDdoe
+         8OdoJDVhhAZYjn2U6o86fw4W0JxGaci1SimmT7tbsmdeMgVOjszK9HIMGpqqwkMW65
+         8+uirZAFFN05ROHssQjGF09udyth4mqafBUrR/ZK5iav4jTgKwNiKPReSCoyia9tlY
+         /15EX2RhXPYxMSI7ZRFPc2eUY0l/n+YUFFzKlOzZl6uyxbX07Bg+Mu/JaE75zXRQkb
+         kpvGyeYpJOp//Wyq5vsla/qFzCAIJMkbw3s/7VCF9n6CgbphmAewC0Ln+We3neQPJE
+         X1jJ1U4stYgLg==
 Received: by pali.im (Postfix)
-        id C66E82980; Fri, 19 Aug 2022 21:16:58 +0200 (CEST)
+        id C2489761; Fri, 19 Aug 2022 21:17:00 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -43,9 +43,9 @@ To:     Michael Ellerman <mpe@ellerman.id.au>,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Sinan Akman <sinan@writeme.com>
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/7] powerpc/85xx: Mark mpc85xx_ds_pic_init() as static
-Date:   Fri, 19 Aug 2022 21:15:52 +0200
-Message-Id: <20220819191557.28116-3-pali@kernel.org>
+Subject: [PATCH 4/7] powerpc/85xx: p2020: Unify .setup_arch and .init_IRQ callbacks
+Date:   Fri, 19 Aug 2022 21:15:54 +0200
+Message-Id: <20220819191557.28116-5-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220819191557.28116-1-pali@kernel.org>
 References: <20220819191557.28116-1-pali@kernel.org>
@@ -56,26 +56,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Function mpc85xx_ds_pic_init() is not used out of the mpc85xx_ds.c file.
+Make just one .setup_arch and one .init_IRQ callback implementation for all
+P2020 board code. This deduplicate repeated and same code.
 
 Signed-off-by: Pali Rohár <pali@kernel.org>
 ---
- arch/powerpc/platforms/85xx/mpc85xx_ds.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/85xx/p2020.c | 97 +++++++++--------------------
+ 1 file changed, 30 insertions(+), 67 deletions(-)
 
-diff --git a/arch/powerpc/platforms/85xx/mpc85xx_ds.c b/arch/powerpc/platforms/85xx/mpc85xx_ds.c
-index f8d2c97f39bd..9a6d637ef54a 100644
---- a/arch/powerpc/platforms/85xx/mpc85xx_ds.c
-+++ b/arch/powerpc/platforms/85xx/mpc85xx_ds.c
-@@ -54,7 +54,7 @@ static void mpc85xx_8259_cascade(struct irq_desc *desc)
- }
- #endif	/* CONFIG_PPC_I8259 */
+diff --git a/arch/powerpc/platforms/85xx/p2020.c b/arch/powerpc/platforms/85xx/p2020.c
+index d65d4c88ac47..d327e6c9b838 100644
+--- a/arch/powerpc/platforms/85xx/p2020.c
++++ b/arch/powerpc/platforms/85xx/p2020.c
+@@ -42,9 +42,8 @@
+ #define DBG(fmt, args...)
+ #endif
  
--void __init mpc85xx_ds_pic_init(void)
-+static void __init mpc85xx_ds_pic_init(void)
- {
- 	struct mpic *mpic;
+-#ifdef CONFIG_MPC85xx_DS
+-
  #ifdef CONFIG_PPC_I8259
++
+ static void mpc85xx_8259_cascade(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = irq_desc_get_chip(desc);
+@@ -55,37 +54,21 @@ static void mpc85xx_8259_cascade(struct irq_desc *desc)
+ 	}
+ 	chip->irq_eoi(&desc->irq_data);
+ }
+-#endif	/* CONFIG_PPC_I8259 */
+ 
+-static void __init mpc85xx_ds_pic_init(void)
++static void mpc85xx_8259_init(void)
+ {
+-	struct mpic *mpic;
+-#ifdef CONFIG_PPC_I8259
+ 	struct device_node *np;
+ 	struct device_node *cascade_node = NULL;
+ 	int cascade_irq;
+-#endif
+-
+-	mpic = mpic_alloc(NULL, 0,
+-		  MPIC_BIG_ENDIAN |
+-		  MPIC_SINGLE_DEST_CPU,
+-		0, 256, " OpenPIC  ");
+ 
+-	BUG_ON(mpic == NULL);
+-	mpic_init(mpic);
+-
+-#ifdef CONFIG_PPC_I8259
+-	/* Initialize the i8259 controller */
+ 	for_each_node_by_type(np, "interrupt-controller")
+ 	    if (of_device_is_compatible(np, "chrp,iic")) {
+ 		cascade_node = np;
+ 		break;
+ 	}
+ 
+-	if (cascade_node == NULL) {
+-		printk(KERN_DEBUG "Could not find i8259 PIC\n");
++	if (cascade_node == NULL)
+ 		return;
+-	}
+ 
+ 	cascade_irq = irq_of_parse_and_map(cascade_node, 0);
+ 	if (!cascade_irq) {
+@@ -93,12 +76,30 @@ static void __init mpc85xx_ds_pic_init(void)
+ 		return;
+ 	}
+ 
+-	DBG("mpc85xxds: cascade mapped to irq %d\n", cascade_irq);
++	DBG("i8259: cascade mapped to irq %d\n", cascade_irq);
+ 
+ 	i8259_init(cascade_node, 0);
+ 	of_node_put(cascade_node);
+ 
+ 	irq_set_chained_handler(cascade_irq, mpc85xx_8259_cascade);
++}
++
++#endif	/* CONFIG_PPC_I8259 */
++
++static void __init p2020_pic_init(void)
++{
++	struct mpic *mpic;
++
++	mpic = mpic_alloc(NULL, 0,
++		  MPIC_BIG_ENDIAN |
++		  MPIC_SINGLE_DEST_CPU,
++		0, 256, " OpenPIC  ");
++
++	BUG_ON(mpic == NULL);
++	mpic_init(mpic);
++
++#ifdef CONFIG_PPC_I8259
++	mpc85xx_8259_init();
+ #endif	/* CONFIG_PPC_I8259 */
+ }
+ 
+@@ -138,58 +139,20 @@ static void __init mpc85xx_ds_uli_init(void)
+ #endif
+ }
+ 
+-#endif /* CONFIG_MPC85xx_DS */
+-
+-#ifdef CONFIG_MPC85xx_RDB
+-static void __init mpc85xx_rdb_pic_init(void)
+-{
+-	struct mpic *mpic;
+-
+-	mpic = mpic_alloc(NULL, 0,
+-	  MPIC_BIG_ENDIAN |
+-	  MPIC_SINGLE_DEST_CPU,
+-	  0, 256, " OpenPIC  ");
+-
+-	BUG_ON(mpic == NULL);
+-	mpic_init(mpic);
+-}
+-#endif /* CONFIG_MPC85xx_RDB */
+-
+ /*
+  * Setup the architecture
+  */
+-#ifdef CONFIG_MPC85xx_DS
+-static void __init mpc85xx_ds_setup_arch(void)
++static void __init p2020_setup_arch(void)
+ {
+-	if (ppc_md.progress)
+-		ppc_md.progress("mpc85xx_ds_setup_arch()", 0);
+-
+ 	swiotlb_detect_4g();
+ 	fsl_pci_assign_primary();
+ 	mpc85xx_ds_uli_init();
+ 	mpc85xx_smp_init();
+ 
+-	printk("MPC85xx DS board from Freescale Semiconductor\n");
+-}
+-#endif /* CONFIG_MPC85xx_DS */
+-
+-#ifdef CONFIG_MPC85xx_RDB
+-static void __init mpc85xx_rdb_setup_arch(void)
+-{
+-	if (ppc_md.progress)
+-		ppc_md.progress("mpc85xx_rdb_setup_arch()", 0);
+-
+-	mpc85xx_smp_init();
+-
+-	fsl_pci_assign_primary();
+-
+ #ifdef CONFIG_QUICC_ENGINE
+ 	mpc85xx_qe_par_io_init();
+-#endif	/* CONFIG_QUICC_ENGINE */
+-
+-	printk(KERN_INFO "MPC85xx RDB board from Freescale Semiconductor\n");
++#endif
+ }
+-#endif /* CONFIG_MPC85xx_RDB */
+ 
+ #ifdef CONFIG_MPC85xx_DS
+ machine_arch_initcall(p2020_ds, mpc85xx_common_publish_devices);
+@@ -230,8 +193,8 @@ static int __init p2020_rdb_pc_probe(void)
+ define_machine(p2020_ds) {
+ 	.name			= "P2020 DS",
+ 	.probe			= p2020_ds_probe,
+-	.setup_arch		= mpc85xx_ds_setup_arch,
+-	.init_IRQ		= mpc85xx_ds_pic_init,
++	.setup_arch		= p2020_setup_arch,
++	.init_IRQ		= p2020_pic_init,
+ #ifdef CONFIG_PCI
+ 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+ 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+@@ -246,8 +209,8 @@ define_machine(p2020_ds) {
+ define_machine(p2020_rdb) {
+ 	.name			= "P2020 RDB",
+ 	.probe			= p2020_rdb_probe,
+-	.setup_arch		= mpc85xx_rdb_setup_arch,
+-	.init_IRQ		= mpc85xx_rdb_pic_init,
++	.setup_arch		= p2020_setup_arch,
++	.init_IRQ		= p2020_pic_init,
+ #ifdef CONFIG_PCI
+ 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+ 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+@@ -260,8 +223,8 @@ define_machine(p2020_rdb) {
+ define_machine(p2020_rdb_pc) {
+ 	.name			= "P2020RDB-PC",
+ 	.probe			= p2020_rdb_pc_probe,
+-	.setup_arch		= mpc85xx_rdb_setup_arch,
+-	.init_IRQ		= mpc85xx_rdb_pic_init,
++	.setup_arch		= p2020_setup_arch,
++	.init_IRQ		= p2020_pic_init,
+ #ifdef CONFIG_PCI
+ 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+ 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 -- 
 2.20.1
 
