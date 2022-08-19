@@ -2,67 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9C8C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 11:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD01C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 11:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiHULIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 07:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        id S230083AbiHULL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 07:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiHULIP (ORCPT
+        with ESMTP id S229537AbiHULLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 07:08:15 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44B1F2D
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:08:13 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id n13-20020a056e02140d00b002dfa5464967so6428411ilo.19
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:08:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=fltaNMKt2+22E8y3r6VHjG+0AEE0+JQww0vhwiR7T5k=;
-        b=cKVFUesYZ4OhxPY07Q9sOuUVPawiCzGAt9jmA/5J+7EJi2BHkw1cGgUefsXm90+wEb
-         2b2JVVQSL8DTsfqjmLuD31qfIBsUGoy45IrbzJgIcmK2rXohzCY6CsQdMH99TNjp2A2n
-         r+36jIaUOgr0hOcKynJZGTbvyv6CmK/7nOltXOQXpfec0zsDFCiDvyCX28B7iEXmUNH2
-         2cG52eE07eBQuZeR24M/k85GhzccWM3Tcu6QSCJ12Ey4N21zz+N2FDvJMbz595ftjrj2
-         xkFFhbmTcLEFbsXcUY8WXqyy8oxZ7NFcFjJDPSWTiIL6ZpGoWyVJ6bfgNHrRACLI3C/A
-         Sj4Q==
-X-Gm-Message-State: ACgBeo2KP9SzzIJ6hBNokUUtLPxeVurmJZ+6Gn43cs24H4uQbVv2RgZw
-        8CXPoC4tEOnT0/ErWvy0NEa46EfighjVLdxDLYWcKo66RHM8
-X-Google-Smtp-Source: AA6agR4MLdnEFOXrMdbuKX/AyhsGmAefaq+1NG4/k7peTWb2pugVPvzUVEMKhkr6rNJwca6dWBCzWey0RPuvyBWugg92yTNDjzsP
+        Sun, 21 Aug 2022 07:11:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AF32182C;
+        Sun, 21 Aug 2022 04:11:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AE42B80CAD;
+        Sun, 21 Aug 2022 11:11:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29073C433D7;
+        Sun, 21 Aug 2022 11:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661080279;
+        bh=KF1qUz3ux0OOkdgqM3kCWxPNn0XERP5yppsRrW59h/g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C4YSRWJEydPmmmt0BWXCi9EKw61QM1BCbV466Q8YOIKNSozfNAWMiGTmeWJsOYze+
+         nHq5eCOGAOLMZ9Ug5uGGyTDo2y4zQUM/yFOseYfNpNTb6XIQnqEVKJZHOt38U9CE0j
+         Qopg+OPBM3XibcwE+2RM6g1aNyMnW4hUwKGWE2j4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 485/545] serial: 8250_pci: Refactor the loop in pci_ite887x_init()
+Date:   Fri, 19 Aug 2022 17:44:15 +0200
+Message-Id: <20220819153851.139216174@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-X-Received: by 2002:a92:c908:0:b0:2e9:549d:2e7b with SMTP id
- t8-20020a92c908000000b002e9549d2e7bmr4086768ilp.143.1661080092978; Sun, 21
- Aug 2022 04:08:12 -0700 (PDT)
-Date:   Sun, 21 Aug 2022 04:08:12 -0700
-In-Reply-To: <20220821101652.1872-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e2b58805e6be580b@google.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in kvm_put_kvm
-From:   syzbot <syzbot+ee478a0237db20ef61f1@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+[ Upstream commit 35b4f17231923e2f64521bdf7a2793ce2c3c74a6 ]
 
-Reported-and-tested-by: syzbot+ee478a0237db20ef61f1@syzkaller.appspotmail.com
+The loop can be refactored by using ARRAY_SIZE() instead of NULL terminator.
+This reduces code base and makes it easier to read and understand.
 
-Tested on:
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Jiri Slaby <jslaby@kernel.org>
+Link: https://lore.kernel.org/r/20211022135147.70965-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/8250/8250_pci.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-commit:         7ebfc85e Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=12379b85080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
-dashboard link: https://syzkaller.appspot.com/bug?extid=ee478a0237db20ef61f1
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=13d2c57b080000
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index bdc262b4109c..7ce755b47a3d 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -897,18 +897,16 @@ static int pci_netmos_init(struct pci_dev *dev)
+ /* enable IO_Space bit */
+ #define ITE_887x_POSIO_ENABLE		(1 << 31)
+ 
++/* inta_addr are the configuration addresses of the ITE */
++static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280 };
+ static int pci_ite887x_init(struct pci_dev *dev)
+ {
+-	/* inta_addr are the configuration addresses of the ITE */
+-	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
+-							0x200, 0x280, 0 };
+ 	int ret, i, type;
+ 	struct resource *iobase = NULL;
+ 	u32 miscr, uartbar, ioport;
+ 
+ 	/* search for the base-ioport */
+-	i = 0;
+-	while (inta_addr[i] && iobase == NULL) {
++	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
+ 		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
+ 								"ite887x");
+ 		if (iobase != NULL) {
+@@ -925,12 +923,10 @@ static int pci_ite887x_init(struct pci_dev *dev)
+ 				break;
+ 			}
+ 			release_region(iobase->start, ITE_887x_IOSIZE);
+-			iobase = NULL;
+ 		}
+-		i++;
+ 	}
+ 
+-	if (!inta_addr[i]) {
++	if (i == ARRAY_SIZE(inta_addr)) {
+ 		dev_err(&dev->dev, "ite887x: could not find iobase\n");
+ 		return -ENODEV;
+ 	}
+-- 
+2.35.1
 
-Note: testing is done by a robot and is best-effort only.
+
+
