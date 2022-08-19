@@ -2,142 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB47C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5720C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:36:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242661AbiHSAfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 20:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
+        id S244840AbiHSAgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 20:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239622AbiHSAfP (ORCPT
+        with ESMTP id S242755AbiHSAgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 20:35:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2413FD7407;
-        Thu, 18 Aug 2022 17:35:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD7A960A2C;
-        Fri, 19 Aug 2022 00:35:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A1DC43144;
-        Fri, 19 Aug 2022 00:35:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660869313;
-        bh=Jj6QaMzYytoQyWIf74AXya0oZmQ9hNahkdCnnbw4nLk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ISYnhaLdHw0CetX3806/kgbLf5Ku5YvEFDUTn61y+gMIDMGKEV/wjxNoxXoBUda23
-         bNyrs4AzWMqIGI6x4du1h3jVB0LfcrUj1Iog3gUa3GFmZQt8VoYxC+NXukPdrbqzdP
-         Vir/Cn37g7UFzGU/di14TTTGaLsxECu2PRQSEuCofHJ5LCajkiKvdHp88Q9uBwq8td
-         qS8/hdrkNsmAVodpTr/Yh2+5xc5Y1WajhyyMso2uTNSAY5aebaZ7kL9W+8cji5pWGP
-         mfePQ7OeUPG8pISYVUNG2eie4/yzhS4wyqoqcOvu/zN9fuiYdwh+1Wtjcg/w9ud0YQ
-         kQ8qukYpH53wg==
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-11ba6e79dd1so3614415fac.12;
-        Thu, 18 Aug 2022 17:35:13 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0PyTEfcQUZWE5OihP6dCg2hEuA0eI4AfpdtSL3VKmX2Qobpqz+
-        88RUPGnpGyuGXnO97I/3wvJL4LPtYOQf/sTB53w=
-X-Google-Smtp-Source: AA6agR7G9Tvye6mFaZwo5kwGfhqNYR9Y0qsd6PWGmcMkNJCGqp08gjlaI3/OWVhmguVjf2VJB/PV0gmkcC5p2OLG5X0=
-X-Received: by 2002:a05:6870:8a13:b0:10e:7c08:36ba with SMTP id
- p19-20020a0568708a1300b0010e7c0836bamr5327167oaq.19.1660869312123; Thu, 18
- Aug 2022 17:35:12 -0700 (PDT)
+        Thu, 18 Aug 2022 20:36:49 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EF8DEA7F;
+        Thu, 18 Aug 2022 17:36:48 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 202so2526813pgc.8;
+        Thu, 18 Aug 2022 17:36:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=84gL6qYXoIL91eAhUH7dgvAezoFgyrY4+iuV6650YZc=;
+        b=X4JKtGGQOwyyDoEC+VjchavxLOpFCxVxZQ0CCAZ7ACmwPRkTvgUONVgjP3rC1he8K0
+         7hKw5+oE8a1OmPwaTVVyL+qktbAuXlzkb7vC7Ul4Kusr2fnmIZVL+HoL/uSpEnjWuguE
+         NKxj/NogYkNlG1IeOxq61SxDQKdXf1BDS5PX8aquzO5V+EhdXyMaIwaEVUg9oHMQv6OH
+         bd83XVnJFLm+sHAQVFfuEhBGKRRCEFSeOvMRVbjMpUJIupMJ5azWO/8XVws2aJ3mY75m
+         TMGpfTYRw2HU0NuahqwxO4cAeu32caQVBzFTayJlof6nWY1QVhX0SJgRGQClblSvtfv3
+         hEJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=84gL6qYXoIL91eAhUH7dgvAezoFgyrY4+iuV6650YZc=;
+        b=bJ7sz9rJIog2LjRGQPEPWu4pvxrn/mUKD8yg4hX/yYINjeB/Ia4LZh9+hgz4pnApPN
+         7hDX3D52qveRevWxIlJOnkaar2R/I5nX3o7N0qPNM5v073t9mDdHFJwS3i2Ggt5kGJz0
+         AVu+eGA6o3o0O6q5gnouJMdmx2jykXsgje4ELdCzrACfO7SfEeREDWmue7T7fXdqq2kF
+         cUTWFwgcHh1WqRzm5Up59aUEuOHsoGfauNCwfl33lel1h/aniZLg2wuhwtGCJkKqm6Vk
+         GjB31JUyOs/kBgvhGY6+5de9GBfU4uStb0iWnle/r0JgST1G9FxlMnjrx/oyuq5EvPaw
+         QaBA==
+X-Gm-Message-State: ACgBeo21RePOxROogOLLAtLvg7d/eY7l+DUW76dP7loxcbJYJMuosk6m
+        WXnh5vEzeG6QbxmK0Wuo7FY=
+X-Google-Smtp-Source: AA6agR7dHikG9IfUHMQRRWFsLO3xfKjnnMD8fKhAVwzmi6Mc9ill7Io6mAvEK1mjqDDSreQDebQmRg==
+X-Received: by 2002:aa7:96d5:0:b0:52e:e2a:9c79 with SMTP id h21-20020aa796d5000000b0052e0e2a9c79mr5338582pfq.55.1660869408017;
+        Thu, 18 Aug 2022 17:36:48 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1040:436c:3fa9:2b77:a856])
+        by smtp.gmail.com with ESMTPSA id e5-20020a17090a4a0500b001f303d149casm2057567pjh.50.2022.08.18.17.36.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 17:36:47 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 1/4] tools headers UAPI: Sync linux/perf_event.h with the kernel sources
+Date:   Thu, 18 Aug 2022 17:36:41 -0700
+Message-Id: <20220819003644.508916-2-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220819003644.508916-1-namhyung@kernel.org>
+References: <20220819003644.508916-1-namhyung@kernel.org>
 MIME-Version: 1.0
-References: <20220816012701.561435-3-guoren@kernel.org> <202208181520.fYQOePu6-lkp@intel.com>
-In-Reply-To: <202208181520.fYQOePu6-lkp@intel.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 19 Aug 2022 08:34:59 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTRA-UfM17jxTn3_Mdf3Xy5Sw9EdhEsA6i6T4veyowYxrg@mail.gmail.com>
-Message-ID: <CAJF2gTRA-UfM17jxTn3_Mdf3Xy5Sw9EdhEsA6i6T4veyowYxrg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] riscv: kexec: Implement crash_smp_send_stop with
- percpu crash_save_cpu
-To:     kernel test robot <lkp@intel.com>
-Cc:     xianting.tian@linux.alibaba.com, palmer@dabbelt.com,
-        heiko@sntech.de, llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, liaochang1@huawei.com,
-        mick@ics.forth.gr, jszhang@kernel.org,
-        Guo Ren <guoren@linux.alibaba.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thx, It's a bug from !SMP. I would fixup it in the next version.
+To pick the trivial change in:
 
-On Thu, Aug 18, 2022 at 3:58 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on linus/master]
-> [also build test ERROR on v6.0-rc1 next-20220818]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/guoren-kernel-org/riscv-kexec-Support-crash_save-percpu-and-machine_kexec_mask_interrupts/20220816-144442
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-> config: riscv-randconfig-r035-20220818 (https://download.01.org/0day-ci/archive/20220818/202208181520.fYQOePu6-lkp@intel.com/config)
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install riscv cross compiling tool for clang build
->         # apt-get install binutils-riscv64-linux-gnu
->         # https://github.com/intel-lab-lkp/linux/commit/0abdaf7e1f44634e1cee484e3cf01b7e8c851950
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review guoren-kernel-org/riscv-kexec-Support-crash_save-percpu-and-machine_kexec_mask_interrupts/20220816-144442
->         git checkout 0abdaf7e1f44634e1cee484e3cf01b7e8c851950
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
->
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
-> >> arch/riscv/kernel/machine_kexec.c:217:7: error: call to undeclared function 'smp_crash_stop_failed'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
->            WARN(smp_crash_stop_failed(),
->                 ^
->    1 error generated.
->
->
-> vim +/smp_crash_stop_failed +217 arch/riscv/kernel/machine_kexec.c
->
->    193
->    194  /*
->    195   * machine_kexec - Jump to the loaded kimage
->    196   *
->    197   * This function is called by kernel_kexec which is called by the
->    198   * reboot system call when the reboot cmd is LINUX_REBOOT_CMD_KEXEC,
->    199   * or by crash_kernel which is called by the kernel's arch-specific
->    200   * trap handler in case of a kernel panic. It's the final stage of
->    201   * the kexec process where the pre-loaded kimage is ready to be
->    202   * executed. We assume at this point that all other harts are
->    203   * suspended and this hart will be the new boot hart.
->    204   */
->    205  void __noreturn
->    206  machine_kexec(struct kimage *image)
->    207  {
->    208          struct kimage_arch *internal = &image->arch;
->    209          unsigned long jump_addr = (unsigned long) image->start;
->    210          unsigned long first_ind_entry = (unsigned long) &image->head;
->    211          unsigned long this_cpu_id = __smp_processor_id();
->    212          unsigned long this_hart_id = cpuid_to_hartid_map(this_cpu_id);
->    213          unsigned long fdt_addr = internal->fdt_addr;
->    214          void *control_code_buffer = page_address(image->control_code_page);
->    215          riscv_kexec_method kexec_method = NULL;
->    216
->  > 217          WARN(smp_crash_stop_failed(),
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+  119a784c8127 ("perf/core: Add a new read format to get a number of lost samples")
 
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/include/uapi/linux/perf_event.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-
+diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
+index e2b77fbca91e..581ed4bdc062 100644
+--- a/tools/include/uapi/linux/perf_event.h
++++ b/tools/include/uapi/linux/perf_event.h
+@@ -301,6 +301,7 @@ enum {
+  *	  { u64		time_enabled; } && PERF_FORMAT_TOTAL_TIME_ENABLED
+  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
+  *	  { u64		id;           } && PERF_FORMAT_ID
++ *	  { u64		lost;         } && PERF_FORMAT_LOST
+  *	} && !PERF_FORMAT_GROUP
+  *
+  *	{ u64		nr;
+@@ -308,6 +309,7 @@ enum {
+  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
+  *	  { u64		value;
+  *	    { u64	id;           } && PERF_FORMAT_ID
++ *	    { u64	lost;         } && PERF_FORMAT_LOST
+  *	  }		cntr[nr];
+  *	} && PERF_FORMAT_GROUP
+  * };
+@@ -317,8 +319,9 @@ enum perf_event_read_format {
+ 	PERF_FORMAT_TOTAL_TIME_RUNNING		= 1U << 1,
+ 	PERF_FORMAT_ID				= 1U << 2,
+ 	PERF_FORMAT_GROUP			= 1U << 3,
++	PERF_FORMAT_LOST			= 1U << 4,
+ 
+-	PERF_FORMAT_MAX = 1U << 4,		/* non-ABI */
++	PERF_FORMAT_MAX = 1U << 5,		/* non-ABI */
+ };
+ 
+ #define PERF_ATTR_SIZE_VER0	64	/* sizeof first published struct */
 -- 
-Best Regards
- Guo Ren
+2.37.1.595.g718a3a8f04-goog
+
