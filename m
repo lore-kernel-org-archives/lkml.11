@@ -2,164 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40581C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EFCC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 00:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242094AbiHSA40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 20:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
+        id S243573AbiHSA4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 20:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241354AbiHSA4V (ORCPT
+        with ESMTP id S242143AbiHSA4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 20:56:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD54ADEB74
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:56:20 -0700 (PDT)
+        Thu, 18 Aug 2022 20:56:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77743DF0A5
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:56:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660870579;
+        s=mimecast20190719; t=1660870606;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WKb8wMv3kp7XDXlLqqFY9ANzF7bJt+tTfj6q5NOVelU=;
-        b=ec2XFyMXYeBcjPdDJflfR1zjljUBRKeojH3/gPxkyYWlZZz8pCMHOTEV/MgrmFvd8cUJtu
-        nA68CLZ9oKpoXZ/RKA/hIRuy3tKNeDCM4DnmtZIrZ59WHfDaDjtqZecRxnChMXMCEPJMk6
-        htEFX8vt1hg7SATHW7rYn5sBUXqLKM8=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-60-QX0upE8DNB65-fJ3x_SjLQ-1; Thu, 18 Aug 2022 20:56:18 -0400
-X-MC-Unique: QX0upE8DNB65-fJ3x_SjLQ-1
-Received: by mail-lf1-f72.google.com with SMTP id p36-20020a05651213a400b004779d806c13so963136lfa.10
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 17:56:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=WKb8wMv3kp7XDXlLqqFY9ANzF7bJt+tTfj6q5NOVelU=;
-        b=KfeoFbi126m8MlMIrD9thnxrGVDBEE6FQUHvJ2y38vcm+E0GpNtapiFZs9EOsg8ghn
-         R/m9dy6p7kRWbdyfDMlS5WOf3o1NXfqOE/YwZdFQgKCLYVn1nQzN5wmrsgwq0mz6+IYh
-         y2wsF8IAhJyiL5yDcjjrYeNQXEh4xfboc8IhJhRYIB74A2l/lWIhVfvFffSqbMGq+yr1
-         r9IWudxaoe2RVpoKqDu7a6X5QmvQntFgIJhxrBalaR+6FitH/IGDRsNVRCJ0EnjHeu89
-         beCWMYBc//AJz7Fu/0G+/M5OTTvB6n2lf2I05y3zacl1xBSZoaMIIGoW7hh3J9JKNtq2
-         VOQg==
-X-Gm-Message-State: ACgBeo17OMGHEYNiYOOd8Uw1NaQjOfMjVXFVellRLFODgyHYP4ytp/Ap
-        4NaatLzfMAcfr0LBAanSQO3+YRcgcDaykLqK16+hkiytH0Vs9mztwbm6PfEsSjJVYmrTDFlePQ8
-        9eVP/scsdrXm3ZQ1ryRkYBwiat19hC/nsCxoZ3wGa
-X-Received: by 2002:ac2:43b0:0:b0:48b:1eb:d1e5 with SMTP id t16-20020ac243b0000000b0048b01ebd1e5mr1802700lfl.641.1660870577143;
-        Thu, 18 Aug 2022 17:56:17 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7i0/dwaRBFTHT8A2/Jz8ujQitDss25BNCKH8nNf+19R4cWCFm5sm5DSkA6hOMvI0i7uaE60wq6AqnZvmyYw6M=
-X-Received: by 2002:ac2:43b0:0:b0:48b:1eb:d1e5 with SMTP id
- t16-20020ac243b0000000b0048b01ebd1e5mr1802668lfl.641.1660870576846; Thu, 18
- Aug 2022 17:56:16 -0700 (PDT)
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0mjtjKvaCKjFD+8hWTDMS94mOG+sVGwcb17W8u/FnUA=;
+        b=OJewxCy1v8Jz/cUhkSlzoPZf8k7hqb0KPRfKOrPPwnc50VefmSxrXV+WXvcYUSwEIqwZ1H
+        CIIZYADXCbsBMRVrifPcabMzIKY2huZzuODnGp+jeN3u5QLBf6VGQF78z+ADrHzVynr2ZZ
+        GLjZyzhm/Ippj8PyZsLPtS5vsSX/VYA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-317--evnGzXCP_CdJVefZLfQyg-1; Thu, 18 Aug 2022 20:56:42 -0400
+X-MC-Unique: -evnGzXCP_CdJVefZLfQyg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0D370802D2C;
+        Fri, 19 Aug 2022 00:56:41 +0000 (UTC)
+Received: from gshan.redhat.com (vpn2-54-16.bne.redhat.com [10.64.54.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 51086C15BB8;
+        Fri, 19 Aug 2022 00:56:31 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, peterx@redhat.com,
+        pbonzini@redhat.com, corbet@lwn.net, maz@kernel.org,
+        james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, oliver.upton@linux.dev,
+        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
+        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
+        shan.gavin@gmail.com
+Subject: [PATCH v1 0/5] KVM: arm64: Enable ring-based dirty memory tracking
+Date:   Fri, 19 Aug 2022 08:55:56 +0800
+Message-Id: <20220819005601.198436-1-gshan@redhat.com>
 MIME-Version: 1.0
-References: <20220811135353.2549658-1-eperezma@redhat.com> <20220811135353.2549658-3-eperezma@redhat.com>
-In-Reply-To: <20220811135353.2549658-3-eperezma@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 19 Aug 2022 08:56:05 +0800
-Message-ID: <CACGkMEsMbXyXY94dB2NW_uUK=sXQNd7LTRBgOQVE=zMzHA69Gw@mail.gmail.com>
-Subject: Re: [PATCH v8 2/3] vdpa: Remove wrong doc of VHOST_VDPA_SUSPEND ioctl
-To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, ecree.xilinx@gmail.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, Cindy Lu <lulu@redhat.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 9:54 PM Eugenio P=C3=A9rez <eperezma@redhat.com> wr=
-ote:
->
-> It was a leftover from previous versions.
->
-> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+This series enables the ring-based dirty memory tracking for ARM64. 
+The feature has been available and enabled on x86 for a while. It
+is beneficial when the number of dirty pages is small in a checkpointing
+system or live migration scenario. More details can be found from
+fb04a1eddb1a ("KVM: X86: Implement ring-based dirty memory tracking").
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+The generic part has been comprehensive enough, meaning there isn't too
+much work, needed to extend it to ARM64. 
 
-> ---
->  include/linux/vdpa.h       |  2 +-
->  include/uapi/linux/vhost.h | 15 +++++----------
->  2 files changed, 6 insertions(+), 11 deletions(-)
->
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index d282f464d2f1..6c4e6ea7f7eb 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -218,7 +218,7 @@ struct vdpa_map_file {
->   * @reset:                     Reset device
->   *                             @vdev: vdpa device
->   *                             Returns integer: success (0) or error (< =
-0)
-> - * @suspend:                   Suspend or resume the device (optional)
-> + * @suspend:                   Suspend the device (optional)
->   *                             @vdev: vdpa device
->   *                             Returns integer: success (0) or error (< =
-0)
->   * @get_config_size:           Get the size of the configuration space i=
-ncludes
-> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> index 6d9f45163155..89fcb2afe472 100644
-> --- a/include/uapi/linux/vhost.h
-> +++ b/include/uapi/linux/vhost.h
-> @@ -171,17 +171,12 @@
->  #define VHOST_VDPA_SET_GROUP_ASID      _IOW(VHOST_VIRTIO, 0x7C, \
->                                              struct vhost_vring_state)
->
-> -/* Suspend or resume a device so it does not process virtqueue requests =
-anymore
-> +/* Suspend a device so it does not process virtqueue requests anymore
->   *
-> - * After the return of ioctl with suspend !=3D 0, the device must finish=
- any
-> - * pending operations like in flight requests. It must also preserve all=
- the
-> - * necessary state (the virtqueue vring base plus the possible device sp=
-ecific
-> - * states) that is required for restoring in the future. The device must=
- not
-> - * change its configuration after that point.
-> - *
-> - * After the return of ioctl with suspend =3D=3D 0, the device can conti=
-nue
-> - * processing buffers as long as typical conditions are met (vq is enabl=
-ed,
-> - * DRIVER_OK status bit is enabled, etc).
-> + * After the return of ioctl the device must finish any pending operatio=
-ns. It
-> + * must also preserve all the necessary state (the virtqueue vring base =
-plus
-> + * the possible device specific states) that is required for restoring i=
-n the
-> + * future. The device must not change its configuration after that point=
-.
->   */
->  #define VHOST_VDPA_SUSPEND             _IOW(VHOST_VIRTIO, 0x7D, int)
->
-> --
-> 2.31.1
->
+- PATCH[1]   enables the feature on ARM64
+- PATCH[2-5] improves kvm/selftests/dirty_log_test
+
+Testing
+=======
+
+- kvm/selftests/dirty_log_test
+- Live migration by QEMU
+- Host with 4KB or 64KB base page size
+
+Gavin Shan (5):
+  KVM: arm64: Enable ring-based dirty memory tracking
+  KVM: selftests: Use host page size to map ring buffer in
+    dirty_log_test
+  KVM: selftests: Dirty host pages in dirty_log_test
+  KVM: selftests: Clear dirty ring states between two modes in
+    dirty_log_test
+  KVM: selftests: Automate choosing dirty ring size in dirty_log_test
+
+ Documentation/virt/kvm/api.rst               |   2 +-
+ arch/arm64/include/uapi/asm/kvm.h            |   1 +
+ arch/arm64/kvm/Kconfig                       |   1 +
+ arch/arm64/kvm/arm.c                         |   8 ++
+ tools/testing/selftests/kvm/dirty_log_test.c | 101 ++++++++++++++-----
+ tools/testing/selftests/kvm/lib/kvm_util.c   |   2 +-
+ 6 files changed, 88 insertions(+), 27 deletions(-)
+
+-- 
+2.23.0
 
