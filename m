@@ -2,174 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E974C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C33F7C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352058AbiHSQTV (ORCPT
+        id S1352116AbiHSQTY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        Fri, 19 Aug 2022 12:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352101AbiHSQPl (ORCPT
+        with ESMTP id S1352108AbiHSQPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:15:41 -0400
+        Fri, 19 Aug 2022 12:15:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11195D87FB;
-        Fri, 19 Aug 2022 08:58:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330E5D83ED;
+        Fri, 19 Aug 2022 08:58:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70C62617A6;
-        Fri, 19 Aug 2022 15:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7746EC433D6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D94561644;
         Fri, 19 Aug 2022 15:58:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924719;
-        bh=uEzdrsGwU5pPciNry8swXqdHQ4FEomp+gHkX3Nx+RUA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o/VH/Ph1GnCC2uoyRrHNTCFNhT0+m4UgCvYhcYn6ZUdQBMO+6Dmps59gUiyktiwZx
-         pD3XV8CRqOH0NmQ/tARo6jcimRo5yYWIfXBY0uVktl1jyUL6YaD2Jw7aTcHhgzJ5iy
-         61WecMrSDmYqD6j1pzWi0S36kz32IJVTYwKePhGk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Manning <mvrmanning@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 261/545] net: allow unbound socket for packets in VRF when tcp_l3mdev_accept set
-Date:   Fri, 19 Aug 2022 17:40:31 +0200
-Message-Id: <20220819153841.026048281@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CCBC433C1;
+        Fri, 19 Aug 2022 15:58:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660924718;
+        bh=jZkm9DTACQV+CBvNGwKYZM0g86biojOTExli8sSeSBs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b9yiSyZeJErT7d9JnfdCGOhfzh3cyYM4ixrg4XFeiNauXu5J3I9j/C8qKwnFdo6Ih
+         9NhAEQqCMNsRIfUxA5xcl07bt5ChbG2uSgpAWasMqkqo5Er5iR7VaI35jDdnhqoTet
+         4G6QkVgp7tDfnvn5loQ5NhX9lAONn0MmnmX5jfKpEKy3G1TsCBG8DKNRl3EMDT9eFM
+         76GRmncGRPQpI6xV1bE3drTV+fRu9+YabOQrzbTomxRzS/qTcRPXpvlsAFaD7GFfnA
+         L/kB8FUACwjYcfw8/YN6SS43ImvyHrLCb5HiIVgjDlkR9i0M9VaKeOy4rHu481zuQ0
+         p78Zi5RCO04xw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0BEFC4035A; Fri, 19 Aug 2022 12:58:36 -0300 (-03)
+Date:   Fri, 19 Aug 2022 12:58:35 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        German Gomez <german.gomez@arm.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 4/6] perf cpumap: Fix alignment for masks in event
+ encoding
+Message-ID: <Yv+zK8UxUAP83zkp@kernel.org>
+References: <20220614143353.1559597-1-irogers@google.com>
+ <20220614143353.1559597-5-irogers@google.com>
+ <Yv60COAP90TEiWkx@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yv60COAP90TEiWkx@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Manning <mvrmanning@gmail.com>
+Em Thu, Aug 18, 2022 at 06:50:00PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Tue, Jun 14, 2022 at 07:33:51AM -0700, Ian Rogers escreveu:
+> > A mask encoding of a cpu map is laid out as:
+> >   u16 nr
+> >   u16 long_size
+> >   unsigned long mask[];
+> > However, the mask may be 8-byte aligned meaning there is a 4-byte pad
+> > after long_size. This means 32-bit and 64-bit builds see the mask as
+> > being at different offsets. On top of this the structure is in the byte
+> > data[] encoded as:
+> >   u16 type
+> >   char data[]
+> > This means the mask's struct isn't the required 4 or 8 byte aligned, but
+> > is offset by 2. Consequently the long reads and writes are causing
+> > undefined behavior as the alignment is broken.
+> > 
+> > Fix the mask struct by creating explicit 32 and 64-bit variants, use a
+> > union to avoid data[] and casts; the struct must be packed so the
+> > layout matches the existing perf.data layout. Taking an address of a
+> > member of a packed struct breaks alignment so pass the packed
+> > perf_record_cpu_map_data to functions, so they can access variables with
+> > the right alignment.
+> > 
+> > As the 64-bit version has 4 bytes of padding, optimizing writing to only
+> > write the 32-bit version.
+> > 
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/lib/perf/include/perf/event.h | 36 +++++++++++--
+> >  tools/perf/tests/cpumap.c           | 19 ++++---
+> >  tools/perf/util/cpumap.c            | 80 +++++++++++++++++++++++------
+> >  tools/perf/util/cpumap.h            |  4 +-
+> >  tools/perf/util/session.c           | 30 +++++------
+> >  tools/perf/util/synthetic-events.c  | 34 +++++++-----
+> >  6 files changed, 143 insertions(+), 60 deletions(-)
+> > 
+> > diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
+> > index e7758707cadd..d2d32589758a 100644
+> > --- a/tools/lib/perf/include/perf/event.h
+> > +++ b/tools/lib/perf/include/perf/event.h
+> > @@ -6,6 +6,7 @@
+> >  #include <linux/types.h>
+> >  #include <linux/limits.h>
+> >  #include <linux/bpf.h>
+> > +#include <linux/compiler.h>
+> >  #include <sys/types.h> /* pid_t */
+> >  
+> >  #define event_contains(obj, mem) ((obj).header.size > offsetof(typeof(obj), mem))
+> > @@ -153,20 +154,47 @@ enum {
+> >  	PERF_CPU_MAP__MASK = 1,
+> >  };
+> >  
+> > +/*
+> > + * Array encoding of a perf_cpu_map where nr is the number of entries in cpu[]
+> > + * and each entry is a value for a CPU in the map.
+> > + */
+> >  struct cpu_map_entries {
+> >  	__u16			 nr;
+> >  	__u16			 cpu[];
+> >  };
+> >  
+> > -struct perf_record_record_cpu_map {
+> > +/* Bitmap encoding of a perf_cpu_map where bitmap entries are 32-bit. */
+> > +struct perf_record_mask_cpu_map32 {
+> > +	/* Number of mask values. */
+> >  	__u16			 nr;
+> > +	/* Constant 4. */
+> >  	__u16			 long_size;
+> > -	unsigned long		 mask[];
+> > +	/* Bitmap data. */
+> > +	__u32			 mask[];
+> >  };
+> >  
+> > -struct perf_record_cpu_map_data {
+> > +/* Bitmap encoding of a perf_cpu_map where bitmap entries are 64-bit. */
+> > +struct perf_record_mask_cpu_map64 {
+> > +	/* Number of mask values. */
+> > +	__u16			 nr;
+> > +	/* Constant 8. */
+> > +	__u16			 long_size;
+> > +	/* Legacy padding. */
+> > +	char                     __pad[4];
+> > +	/* Bitmap data. */
+> > +	__u64			 mask[];
+> > +};
+> > +
+> > +struct __packed perf_record_cpu_map_data {
+> 
+> In various places I'm getting this:
+> 
+> [perfbuilder@five x-riscv]$ export BUILD_TARBALL=http://192.168.86.14/perf/perf-6.0.0-rc1.tar.xz
+> [perfbuilder@five x-riscv]$ time dm .
+>    1     5.47 ubuntu:22.04-x-riscv64        : FAIL gcc version 11.2.0 (Ubuntu 11.2.0-16ubuntu1)
+>     In file included from mmap.c:10:
+>     /git/perf-6.0.0-rc1/tools/lib/perf/include/perf/event.h:190:34: error: packed attribute causes inefficient alignment for 'type' [-Werror=attributes]
+>       190 |         __u16                    type;
+>           |                                  ^~~~
+>     cc1: all warnings being treated as errors
+>     In file included from util/event.h:12,
+>                      from builtin-diff.c:12:
+>     /git/perf-6.0.0-rc1/tools/lib/perf/include/perf/event.h:190:34: error: packed attribute causes inefficient alignment for 'type' [-Werror=attributes]
+>       190 |         __u16                    type;
+>           |                                  ^~~~
+>     In file included from util/events_stats.h:6,
+>                      from util/evlist.h:12,
+>                      from builtin-evlist.c:11:
+>     /git/perf-6.0.0-rc1/tools/lib/perf/include/perf/event.h:190:34: error: packed attribute causes inefficient alignment for 'type' [-Werror=attributes]
+>       190 |         __u16                    type;
+>           |                                  ^~~~
+> 
+> So probably we need to disable this -Werror=attributes in some
+> architectures?
 
-[ Upstream commit 944fd1aeacb627fa617f85f8e5a34f7ae8ea4d8e ]
+Slapped this there:
 
-The commit 3c82a21f4320 ("net: allow binding socket in a VRF when
-there's an unbound socket") changed the inet socket lookup to avoid
-packets in a VRF from matching an unbound socket. This is to ensure the
-necessary isolation between the default and other VRFs for routing and
-forwarding. VRF-unaware processes running in the default VRF cannot
-access another VRF and have to be run with 'ip vrf exec <vrf>'. This is
-to be expected with tcp_l3mdev_accept disabled, but could be reallowed
-when this sysctl option is enabled. So instead of directly checking dif
-and sdif in inet[6]_match, here call inet_sk_bound_dev_eq(). This
-allows a match on unbound socket for non-zero sdif i.e. for packets in
-a VRF, if tcp_l3mdev_accept is enabled.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpacked"
+#pragma GCC diagnostic ignored "-Wattributes"
 
-Fixes: 3c82a21f4320 ("net: allow binding socket in a VRF when there's an unbound socket")
-Signed-off-by: Mike Manning <mvrmanning@gmail.com>
-Link: https://lore.kernel.org/netdev/a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de/
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/net/inet6_hashtables.h |  7 +++----
- include/net/inet_hashtables.h  | 19 +++----------------
- include/net/inet_sock.h        | 11 +++++++++++
- 3 files changed, 17 insertions(+), 20 deletions(-)
+struct __packed perf_record_cpu_map_data {
+        __u16                    type;
+        union {
+                /* Used when type == PERF_CPU_MAP__CPUS. */
+                struct cpu_map_entries cpus_data;
+                /* Used when type == PERF_CPU_MAP__MASK and long_size == 4. */
+                struct perf_record_mask_cpu_map32 mask32_data;
+                /* Used when type == PERF_CPU_MAP__MASK and long_size == 8. */
+                struct perf_record_mask_cpu_map64 mask64_data;
+        };
+};
 
-diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
-index f259e1ae14ba..56f1286583d3 100644
---- a/include/net/inet6_hashtables.h
-+++ b/include/net/inet6_hashtables.h
-@@ -110,8 +110,6 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
- 			       const __portpair ports,
- 			       const int dif, const int sdif)
- {
--	int bound_dev_if;
--
- 	if (!net_eq(sock_net(sk), net) ||
- 	    sk->sk_family != AF_INET6 ||
- 	    sk->sk_portpair != ports ||
-@@ -119,8 +117,9 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
- 	    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
- 		return false;
- 
--	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
--	return bound_dev_if == dif || bound_dev_if == sdif;
-+	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
-+	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
-+				    sdif);
- }
- #endif /* IS_ENABLED(CONFIG_IPV6) */
- 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 1a3bf9726b75..c9e387d174c6 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -197,17 +197,6 @@ static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
- 	hashinfo->ehash_locks = NULL;
- }
- 
--static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
--					int dif, int sdif)
--{
--#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
--	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
--				 bound_dev_if, dif, sdif);
--#else
--	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
--#endif
--}
--
- struct inet_bind_bucket *
- inet_bind_bucket_create(struct kmem_cache *cachep, struct net *net,
- 			struct inet_bind_hashbucket *head,
-@@ -305,16 +294,14 @@ static inline bool INET_MATCH(struct net *net, const struct sock *sk,
- 			      const __addrpair cookie, const __portpair ports,
- 			      int dif, int sdif)
- {
--	int bound_dev_if;
--
- 	if (!net_eq(sock_net(sk), net) ||
- 	    sk->sk_portpair != ports ||
- 	    sk->sk_addrpair != cookie)
- 	        return false;
- 
--	/* Paired with WRITE_ONCE() from sock_bindtoindex_locked() */
--	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
--	return bound_dev_if == dif || bound_dev_if == sdif;
-+	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
-+	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
-+				    sdif);
- }
- 
- /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index 4908513c6dfb..f0faf9d0e7fb 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -149,6 +149,17 @@ static inline bool inet_bound_dev_eq(bool l3mdev_accept, int bound_dev_if,
- 	return bound_dev_if == dif || bound_dev_if == sdif;
- }
- 
-+static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
-+					int dif, int sdif)
-+{
-+#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
-+	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
-+				 bound_dev_if, dif, sdif);
-+#else
-+	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
-+#endif
-+}
-+
- struct inet_cork {
- 	unsigned int		flags;
- 	__be32			addr;
--- 
-2.35.1
-
-
+#pragma GCC diagnostic pop
 
