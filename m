@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B28E0C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08843C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350989AbiHSP7p (ORCPT
+        id S1350997AbiHSP7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
+        Fri, 19 Aug 2022 11:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350749AbiHSP5M (ORCPT
+        with ESMTP id S1350776AbiHSP5U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:57:12 -0400
+        Fri, 19 Aug 2022 11:57:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCBD108B12;
-        Fri, 19 Aug 2022 08:51:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE5B108B0B;
+        Fri, 19 Aug 2022 08:51:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8722FB82813;
-        Fri, 19 Aug 2022 15:51:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8104C433D6;
-        Fri, 19 Aug 2022 15:51:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67508B8280C;
+        Fri, 19 Aug 2022 15:51:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9870C433B5;
+        Fri, 19 Aug 2022 15:51:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924293;
-        bh=Hyuywz+z7CWKpmEKM5kFQPCFcyHEzObPK3WHe3L0lew=;
+        s=korg; t=1660924296;
+        bh=ltYDY9G7Zack908ouLmYzw2Sy6UDALWdUOfZXHQKLx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2t0pAUWgxkjrVTFQHim0p5SEzMKG74YJJr+eFYaOt+UppJY0kOViQ0+rj9Z5uaWwv
-         4WCV0bkMelGhO5VH6/IEezwWpjjzEuY0d0FH00kl/sJkhJyp1IpEhSOHyhjoJ6l5GL
-         N/CK5iOPtfc1WUtViC7B4CkbJIwPm0cgk3Pcql0w=
+        b=SohTHp6oNScg8PpIpU+U9NrPZRBPUH8cF/sOT3sCvGcPGllqBo4hNwEhsxpeWK+4M
+         elwVeFYkIWlQTs3jr6UWzN3e9S3PUmMzEgwI4+R0cj0ZD76lddrt2iDv80tYZ5QanY
+         ZpsGOoyd78UKY0efmunfX8EuJK7HirR2SxdhJUv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 080/545] ext2: Add more validity checks for inode counts
-Date:   Fri, 19 Aug 2022 17:37:30 +0200
-Message-Id: <20220819153832.840053031@linuxfoundation.org>
+        Renesas Vietnam via Yoshihiro Shimoda 
+        <yoshihiro.shimoda.uh@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 115/545] soc: renesas: r8a779a0-sysc: Fix A2DP1 and A2CV[2357] PDR values
+Date:   Fri, 19 Aug 2022 17:38:05 +0200
+Message-Id: <20220819153834.443931780@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,53 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
+[ Upstream commit bccceabb92ce8eb78bbf2de08308e2cc2761a2e5 ]
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+The PDR values for the A2DP1 and A2CV[2357] power areas on R-Car V3U are
+incorrect (copied-and-pasted from A2DP0 and A2CV[0146]).
+Fix them.
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
+Reported-by: Renesas Vietnam via Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Fixes: 1b4298f000064cc2 ("soc: renesas: r8a779a0-sysc: Add r8a779a0 support")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/87bc2e70ba4082970cf8c65871beae4be3503189.1654696188.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/soc/renesas/r8a779a0-sysc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index b6314d3c6a87..9a6475b2ab28 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1060,9 +1060,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
- 	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1072,6 +1073,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
-+	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array (db_count,
+diff --git a/drivers/soc/renesas/r8a779a0-sysc.c b/drivers/soc/renesas/r8a779a0-sysc.c
+index d464ffa1be33..d0a5434715b8 100644
+--- a/drivers/soc/renesas/r8a779a0-sysc.c
++++ b/drivers/soc/renesas/r8a779a0-sysc.c
+@@ -83,11 +83,11 @@ static struct r8a779a0_sysc_area r8a779a0_areas[] __initdata = {
+ 	{ "a2cv6",	R8A779A0_PD_A2CV6, R8A779A0_PD_A3IR },
+ 	{ "a2cn2",	R8A779A0_PD_A2CN2, R8A779A0_PD_A3IR },
+ 	{ "a2imp23",	R8A779A0_PD_A2IMP23, R8A779A0_PD_A3IR },
+-	{ "a2dp1",	R8A779A0_PD_A2DP0, R8A779A0_PD_A3IR },
+-	{ "a2cv2",	R8A779A0_PD_A2CV0, R8A779A0_PD_A3IR },
+-	{ "a2cv3",	R8A779A0_PD_A2CV1, R8A779A0_PD_A3IR },
+-	{ "a2cv5",	R8A779A0_PD_A2CV4, R8A779A0_PD_A3IR },
+-	{ "a2cv7",	R8A779A0_PD_A2CV6, R8A779A0_PD_A3IR },
++	{ "a2dp1",	R8A779A0_PD_A2DP1, R8A779A0_PD_A3IR },
++	{ "a2cv2",	R8A779A0_PD_A2CV2, R8A779A0_PD_A3IR },
++	{ "a2cv3",	R8A779A0_PD_A2CV3, R8A779A0_PD_A3IR },
++	{ "a2cv5",	R8A779A0_PD_A2CV5, R8A779A0_PD_A3IR },
++	{ "a2cv7",	R8A779A0_PD_A2CV7, R8A779A0_PD_A3IR },
+ 	{ "a2cn1",	R8A779A0_PD_A2CN1, R8A779A0_PD_A3IR },
+ 	{ "a1cnn0",	R8A779A0_PD_A1CNN0, R8A779A0_PD_A2CN0 },
+ 	{ "a1cnn2",	R8A779A0_PD_A1CNN2, R8A779A0_PD_A2CN2 },
 -- 
 2.35.1
 
