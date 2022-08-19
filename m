@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4899EC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 527D5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353766AbiHSQn6 (ORCPT
+        id S1353635AbiHSQoG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
+        Fri, 19 Aug 2022 12:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353926AbiHSQlT (ORCPT
+        with ESMTP id S1353981AbiHSQl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B103B1257AD;
-        Fri, 19 Aug 2022 09:09:48 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3B5127BE1;
+        Fri, 19 Aug 2022 09:10:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E9A5612DF;
-        Fri, 19 Aug 2022 16:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FE5CC433D7;
-        Fri, 19 Aug 2022 16:08:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 334FF61826;
+        Fri, 19 Aug 2022 16:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24962C433C1;
+        Fri, 19 Aug 2022 16:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925338;
-        bh=2GBGupkGmPPsc1wBOEr2Ccz90RLAFSQA6sMKSheLK9Q=;
+        s=korg; t=1660925319;
+        bh=3puHSXokcytXBi8/BS7xGw0gqdsNB8AaGMGI6JR8Myg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LULW53L1mL2pb+QriGxrkq3RB4IquNJlfUHBQym2u7xGBcNm7Ybj2+ZInG+4+h4mk
-         3VnNrkfjVnAIePxmGHcFYeMm8uM50AICqX9p5X5pLnVYvxNXtCRRnedW50m5mKti1u
-         hGwEvKOiHTRMZaMRmPK88x7Im5PcIhJ/y2QNN/iA=
+        b=i/aBTmIzOBkbqRPrg8ACqwmh16dZm88fXPPAf4gHjSHmJSYEBqMjqUUxdeN42NtFK
+         W44DUyIlBca7mnzXDYHNtUcXP2BZ0EKZ807DjoGKEyRcUa2Rlvnsasia+FmvnL6i9W
+         qfqRHQR2bDsK72AkjP2iu9DRQlluT8dUzPNFWwOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 459/545] mtd: rawnand: arasan: Check the proposed data interface is supported
-Date:   Fri, 19 Aug 2022 17:43:49 +0200
-Message-Id: <20220819153849.921260433@linuxfoundation.org>
+Subject: [PATCH 5.10 454/545] drm/mediatek: Keep dsi as LP00 before dcs cmds transfer
+Date:   Fri, 19 Aug 2022 17:43:44 +0200
+Message-Id: <20220819153849.716224298@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,36 +54,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Jitao Shi <jitao.shi@mediatek.com>
 
-[ Upstream commit 4dd7ef970bee8a93e1817ec028a7e26aef046d0d ]
+[ Upstream commit 39e8d062b03c3dc257d880d82bd55cdd9e185a3b ]
 
-Check the data interface is supported in ->setup_interface() before
-acknowledging the timings.
+To comply with the panel sequence, hold the mipi signal to LP00 before
+the dcs cmds transmission, and pull the mipi signal high from LP00 to
+LP11 until the start of the dcs cmds transmission.
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20210505213750.257417-3-miquel.raynal@bootlin.com
+The normal panel timing is :
+(1) pp1800 DC pull up
+(2) avdd & avee AC pull high
+(3) lcm_reset pull high -> pull low -> pull high
+(4) Pull MIPI signal high (LP11) -> initial code -> send video data
+    (HS mode)
+
+The power-off sequence is reversed.
+If dsi is not in cmd mode, then dsi will pull the mipi signal high in
+the mtk_output_dsi_enable function. The delay in lane_ready func is
+the reaction time of dsi_rx after pulling up the mipi signal.
+
+Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
+
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-4-git-send-email-xinlei.lee@mediatek.com/
+Cc: <stable@vger.kernel.org> # 5.10.x: 7f6335c6a258: drm/mediatek: Modify dsi funcs to atomic operations
+Cc: <stable@vger.kernel.org> # 5.10.x: cde7e2e35c28: drm/mediatek: Separate poweron/poweroff from enable/disable and define new funcs
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/arasan-nand-controller.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/arasan-nand-controller.c b/drivers/mtd/nand/raw/arasan-nand-controller.c
-index cea57de5e6cd..f9fb3b7a3ec3 100644
---- a/drivers/mtd/nand/raw/arasan-nand-controller.c
-+++ b/drivers/mtd/nand/raw/arasan-nand-controller.c
-@@ -884,6 +884,11 @@ static int anfc_setup_interface(struct nand_chip *chip, int target,
- 	struct anand *anand = to_anand(chip);
- 	struct arasan_nfc *nfc = to_anfc(chip->controller);
- 	struct device_node *np = nfc->dev->of_node;
-+	const struct nand_sdr_timings *sdr;
-+
-+	sdr = nand_get_sdr_timings(conf);
-+	if (IS_ERR(sdr))
-+		return PTR_ERR(sdr);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 9d54bb6aec30..7d37d2a01e3c 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -202,6 +202,7 @@ struct mtk_dsi {
+ 	struct mtk_phy_timing phy_timing;
+ 	int refcount;
+ 	bool enabled;
++	bool lanes_ready;
+ 	u32 irq_data;
+ 	wait_queue_head_t irq_wait_queue;
+ 	const struct mtk_dsi_driver_data *driver_data;
+@@ -644,18 +645,11 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_phy_timconfig(dsi);
  
- 	if (target < 0)
- 		return 0;
+-	mtk_dsi_rxtx_control(dsi);
+-	usleep_range(30, 100);
+-	mtk_dsi_reset_dphy(dsi);
+ 	mtk_dsi_ps_control_vact(dsi);
+ 	mtk_dsi_set_vm_cmd(dsi);
+ 	mtk_dsi_config_vdo_timing(dsi);
+ 	mtk_dsi_set_interrupt_enable(dsi);
+ 
+-	mtk_dsi_clk_ulp_mode_leave(dsi);
+-	mtk_dsi_lane0_ulp_mode_leave(dsi);
+-	mtk_dsi_clk_hs_mode(dsi, 0);
+-
+ 	return 0;
+ err_disable_engine_clk:
+ 	clk_disable_unprepare(dsi->engine_clk);
+@@ -686,6 +680,23 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	clk_disable_unprepare(dsi->digital_clk);
+ 
+ 	phy_power_off(dsi->phy);
++
++	dsi->lanes_ready = false;
++}
++
++static void mtk_dsi_lane_ready(struct mtk_dsi *dsi)
++{
++	if (!dsi->lanes_ready) {
++		dsi->lanes_ready = true;
++		mtk_dsi_rxtx_control(dsi);
++		usleep_range(30, 100);
++		mtk_dsi_reset_dphy(dsi);
++		mtk_dsi_clk_ulp_mode_leave(dsi);
++		mtk_dsi_lane0_ulp_mode_leave(dsi);
++		mtk_dsi_clk_hs_mode(dsi, 0);
++		msleep(20);
++		/* The reaction time after pulling up the mipi signal for dsi_rx */
++	}
+ }
+ 
+ static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
+@@ -693,6 +704,7 @@ static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
+ 	if (dsi->enabled)
+ 		return;
+ 
++	mtk_dsi_lane_ready(dsi);
+ 	mtk_dsi_set_mode(dsi);
+ 	mtk_dsi_clk_hs_mode(dsi, 1);
+ 
+@@ -924,6 +936,8 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
+ 	if (MTK_DSI_HOST_IS_READ(msg->type))
+ 		irq_flag |= LPRX_RD_RDY_INT_FLAG;
+ 
++	mtk_dsi_lane_ready(dsi);
++
+ 	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
+ 	if (ret)
+ 		goto restore_dsi_mode;
 -- 
 2.35.1
 
