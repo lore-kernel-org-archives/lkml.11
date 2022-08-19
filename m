@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B4EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210E2C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354384AbiHSQxO (ORCPT
+        id S1354358AbiHSQxU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56624 "EHLO
+        Fri, 19 Aug 2022 12:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354598AbiHSQvX (ORCPT
+        with ESMTP id S1354596AbiHSQvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:51:23 -0400
+        Fri, 19 Aug 2022 12:51:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68ABC12C7F5;
-        Fri, 19 Aug 2022 09:14:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4F412C7CA;
+        Fri, 19 Aug 2022 09:14:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 022E461864;
-        Fri, 19 Aug 2022 16:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA634C433D6;
-        Fri, 19 Aug 2022 16:08:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC21961888;
+        Fri, 19 Aug 2022 16:12:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC7BC433B5;
+        Fri, 19 Aug 2022 16:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925307;
-        bh=8GABC+rFRN2IOozQSIWeSogO1F9b7NmRyvI3OdajCNY=;
+        s=korg; t=1660925578;
+        bh=JzNyOjPqScsDh3zi5uTklk9irWG3lV3kPgocQL+6EgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YgKeoEFKd3gcBjW7vD1Wq8zPbE83WnSaXDsf+6JaCxaayZp8AK1IJ8ijoQb4+Fxcf
-         1reM9qtuNrEVA/Xc/SlnlWslSFIoXB3rb0VMKTKJn29v7zpW4MTb2xorovGEh4OHx1
-         FroxO9wpZjjkBSQukEUzWLh265k8yFFPmRgJ6j/s=
+        b=xSnkc9nXChvNOd7iSKMuFwdQd5bfQ/85QNf/+2aFkOKvQunf5QqsODNnpehIjEWLk
+         RqD4JteCa1b07cvpIySHqeQ9EU88aXhTM3bzgxg0tr6P8g19RV1WBk2LTXl5GCJ+XC
+         g6tMfyQTcIJvmHnwQhVTJhg6EG46Yk9UndAe7zWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 5.10 450/545] __follow_mount_rcu(): verify that mount_lock remains unchanged
-Date:   Fri, 19 Aug 2022 17:43:40 +0200
-Message-Id: <20220819153849.563763081@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: [PATCH 5.10 534/545] drm/bridge: tc358767: Fix (e)DP bridge endpoint parsing in dedicated function
+Date:   Fri, 19 Aug 2022 17:45:04 +0200
+Message-Id: <20220819153853.475086204@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,46 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Marek Vasut <marex@denx.de>
 
-commit 20aac6c60981f5bfacd66661d090d907bf1482f0 upstream.
+commit 9030a9e571b3ba250d3d450a98310e3c74ecaff4 upstream.
 
-Validate mount_lock seqcount as soon as we cross into mount in RCU
-mode.  Sure, ->mnt_root is pinned and will remain so until we
-do rcu_read_unlock() anyway, and we will eventually fail to unlazy if
-the mount_lock had been touched, but we might run into a hard error
-(e.g. -ENOENT) before trying to unlazy.  And it's possible to end
-up with RCU pathwalk racing with rename() and umount() in a way
-that would fail with -ENOENT while non-RCU pathwalk would've
-succeeded with any timings.
+Per toshiba,tc358767.yaml DT binding document, port@2 the output (e)DP
+port is optional. In case this port is not described in DT, the bridge
+driver operates in DPI-to-DP mode. The drm_of_find_panel_or_bridge()
+call in tc_probe_edp_bridge_endpoint() returns -ENODEV in case port@2
+is not present in DT and this specific return value is incorrectly
+propagated outside of tc_probe_edp_bridge_endpoint() function. All
+other error values must be propagated and are propagated correctly.
 
-Once upon a time we hadn't needed that, but analysis had been subtle,
-brittle and went out of window as soon as RENAME_EXCHANGE had been
-added.
+Return 0 in case the port@2 is missing instead, that reinstates the
+original behavior before the commit this patch fixes.
 
-It's narrow, hard to hit and won't get you anything other than
-stray -ENOENT that could be arranged in much easier way with the
-same priveleges, but it's a bug all the same.
-
-Cc: stable@kernel.org
-X-sky-is-falling: unlikely
-Fixes: da1ce0670c14 "vfs: add cross-rename"
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Fixes: 8478095a8c4b ("drm/bridge: tc358767: Move (e)DP bridge endpoint parsing into dedicated function")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220428213132.447890-1-marex@denx.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/namei.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/bridge/tc358767.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -1348,6 +1348,8 @@ static bool __follow_mount_rcu(struct na
- 				 * becoming unpinned.
- 				 */
- 				flags = dentry->d_flags;
-+				if (read_seqretry(&mount_lock, nd->m_seq))
-+					return false;
- 				continue;
- 			}
- 			if (read_seqretry(&mount_lock, nd->m_seq))
+--- a/drivers/gpu/drm/bridge/tc358767.c
++++ b/drivers/gpu/drm/bridge/tc358767.c
+@@ -1559,7 +1559,7 @@ static int tc_probe_edp_bridge_endpoint(
+ 		tc->bridge.type = DRM_MODE_CONNECTOR_DisplayPort;
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static void tc_clk_disable(void *data)
 
 
