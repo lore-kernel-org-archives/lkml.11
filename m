@@ -2,129 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAB1C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:05:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92884C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347679AbiHSJFt (ORCPT
+        id S1347348AbiHSJGn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34494 "EHLO
+        Fri, 19 Aug 2022 05:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347983AbiHSJFf (ORCPT
+        with ESMTP id S1345743AbiHSJGj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:05:35 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46672F074A
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:05:34 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id q7so1643033lfu.5
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:05:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Lv2fWdRF99e7CpwgYLWA5Mtojc32Wbh8AA81DkMthw4=;
-        b=OSGiqt9yFp/YqXKBx4gm2F8C5JxtKpDRqyj2mKp7sWIlRwe+Fh+hasNwc2qRl47Ppw
-         I0GTNSWETzMrFZXfvSCKi1k7ttl2x1/FWvPrs9VFF3u/xg315gfvjd/F9cJD87Gf0oKB
-         rxgEjSMEqcjJVSCcgdApLk2/LNjbnpM4Kfe7rrX5rKBWTHdqsxxnq0ZTHVxbZrQG7Uj9
-         nfTf1I2n/ZqUJGTygLPCTFUNTYVj8sQ/5abcrw1zkK7h0TfvD3lLulpQuZUQET/vl5ix
-         Ve2DVwY0zoVo1krsxTiSN73f0SID8KNQRh6jdUDmLbhoQ+vT6JaFFDHUM8/jBfke43WQ
-         6L5w==
+        Fri, 19 Aug 2022 05:06:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2913FEE6B9
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:06:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660899998;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=R0Slx1DKcgKnlcXGqv5kEXSQpwXtWUMVWojFb3cRpXU=;
+        b=fLDpsblBLgt0MzoOjbbHuSGXwi7y6d9vCUQLkgHNkfVfY46BAeMCFpRaHmTj7Tj2KwKVqf
+        mnUJnH2NyJF1APnrL1O2Rsv4l73/MFrYjatDNmbXWZgWK2iVD610iE9Wv7dVCm9Vxq1dS9
+        XG68xXkWTkcliNN8fZ70e4+HFx2GdlI=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-520-MQ5jPsDbP66vV3JRfu-Mgg-1; Fri, 19 Aug 2022 05:06:37 -0400
+X-MC-Unique: MQ5jPsDbP66vV3JRfu-Mgg-1
+Received: by mail-ed1-f69.google.com with SMTP id w5-20020a05640234c500b0043dda025648so2497724edc.8
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:06:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=Lv2fWdRF99e7CpwgYLWA5Mtojc32Wbh8AA81DkMthw4=;
-        b=un+kccp6kBk0Q0dGlybkR0TzljVKGg6PlCz07CRQJD/GZw+aAGsUOylnKfyvKfW5SD
-         QUBNoJl2OASacbAJtAJ2uWjJqO3su+XXV7l4Ld18ZV8Xyx7sim7js9r2HDHXe7mWR5Iv
-         CfjpU/aBj7psAfJKUBpha36RUz3jrvILbU4xog/yKR1XTpnKtk7UrhZd3PXeqIshCUhH
-         5RVl4BEFCZB+pdeT8QkjB2hx1S6VyRS81djCZVuUqbnanhwZcoQ7kwqm8p+Z0YJeD5eo
-         ksI9dsoCobOma1xCnNieATjFbGMXo0cyIwItLiW/aYvNYk5z3ytX/uuj604bTODvMErR
-         w+gA==
-X-Gm-Message-State: ACgBeo2WP9VbGTMNc1GxgOnnar+N9DAoVsm9zh39zveln3NLzsFpuo3B
-        KQfG47VqmFDxRACjE/SJ4oraeA==
-X-Google-Smtp-Source: AA6agR4BD6cmbcbpC+BCZcvzn3RJP06MHPv/v/nVtuxaILQVOTEbitSObHN+inl836TTz+WCde6f7A==
-X-Received: by 2002:a05:6512:1686:b0:491:3199:d407 with SMTP id bu6-20020a056512168600b004913199d407mr2203181lfb.476.1660899932670;
-        Fri, 19 Aug 2022 02:05:32 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id x7-20020a056512078700b00492c627cab5sm321401lfr.254.2022.08.19.02.05.31
+        bh=R0Slx1DKcgKnlcXGqv5kEXSQpwXtWUMVWojFb3cRpXU=;
+        b=gWkQUtoPsGfsyVLwAij59RCrWimCzRRAPExYAT4IQBnZA4VIoMVIB8O8yARpPe8Pw2
+         lTAQrSIBEnwpBFnN3RF/g2BUJJgFniw39R6qGbHaj++bbUxeb6/oVPVeNhmxH3bS61Dt
+         Oiu14vxvQQOXH8h+EC2QeNC+3zQAbu4v20ZIWPD9ZHqeuEr+coDl4gqSgcuTKs0ZsPhe
+         hXolM7gmuTy8dud5qH+a4LBJ8g3f7t7C9Otwe2qFS5RIxDRl1H3HtkbMH+p+gDUWzylT
+         iCLzRgnwL47DnBeuUypzMpQKHnOFqIoQOka7iScFnVMUTY4BPARw6Z57YupipLg1YEe5
+         JLww==
+X-Gm-Message-State: ACgBeo0YFi91dKZerCGD3XcPhXNYe8xV89HDaysnNwmVjsMsQaMcxHYG
+        gYatmLxydt89JAh2NPKNgizoMczMSbZhHWONHBw8qNSCk1WCz9KdV2AQz01eMZttiR4G9r8XbVk
+        2wjLHGAKt9rqdd71MAmz5uONZ
+X-Received: by 2002:a05:6402:415:b0:446:230d:2b82 with SMTP id q21-20020a056402041500b00446230d2b82mr3765981edv.200.1660899995764;
+        Fri, 19 Aug 2022 02:06:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5iIcoNNPB6uqme/iA6yUwtAgX+OaDu1Z5NLDXlToy8Aw88ALMoFC2xRIWKIwiF7QVj2WRWRQ==
+X-Received: by 2002:a05:6402:415:b0:446:230d:2b82 with SMTP id q21-20020a056402041500b00446230d2b82mr3765972edv.200.1660899995626;
+        Fri, 19 Aug 2022 02:06:35 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id kw5-20020a170907770500b0073c82539183sm1233883ejc.91.2022.08.19.02.06.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 02:05:32 -0700 (PDT)
-Message-ID: <0aba8906-ed30-786e-cff4-6cb70d6e73c5@linaro.org>
-Date:   Fri, 19 Aug 2022 12:05:30 +0300
+        Fri, 19 Aug 2022 02:06:34 -0700 (PDT)
+Message-ID: <d2f4a83d-6e15-b8ca-0bc6-d3a39915b7ad@redhat.com>
+Date:   Fri, 19 Aug 2022 11:06:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
- json-schema
+Subject: Re: [PATCH 0/7] staging: rtl8723bs: remove dead functions
 Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Sergiu.Moga@microchip.com, lee@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
-        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
-        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        admin@hifiphile.com, Kavyasree.Kotagiri@microchip.com
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20220817075517.49575-1-sergiu.moga@microchip.com>
- <20220817075517.49575-3-sergiu.moga@microchip.com>
- <942accc5-70aa-3bb2-63dd-306a39ee5ea4@linaro.org>
- <d1aad8ea-3852-f36b-366b-7aa67d2dd9d5@microchip.com>
- <ec86420c-a210-facd-ab3a-5baf84a736f3@linaro.org>
-In-Reply-To: <ec86420c-a210-facd-ab3a-5baf84a736f3@linaro.org>
+To:     Nam Cao <namcaov@gmail.com>, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Larry.Finger@lwfinger.net
+References: <cover.1660898432.git.namcaov@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <cover.1660898432.git.namcaov@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 11:47, Krzysztof Kozlowski wrote:
-> On 19/08/2022 11:38, Sergiu.Moga@microchip.com wrote:
->> On 18.08.2022 11:39, Krzysztof Kozlowski wrote:
->>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>>
->>> On 17/08/2022 10:55, Sergiu Moga wrote:
->>>> Convert at91 USART DT Binding for Atmel/Microchip SoCs to
->>>> json-schema format.
->>>>
->>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
->>>> ---
->>>>   .../bindings/mfd/atmel,at91-usart.yaml        | 190 ++++++++++++++++++
->>>>   .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
->>>>   2 files changed, 190 insertions(+), 98 deletions(-)
->>>>   create mode 100644 Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
->>>>   delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
->>>> new file mode 100644
->>>> index 000000000000..cf15d73fa1e8
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
->>> One more thing - I think this should be in serial directory, not mfd,
->>> even though it includes SPI. MFD is just a Linux naming/wrapper device.
->>>
->>> Best regards,
->>> Krzysztof
->>
->> I would rather keep it in this directory, since its corresponding driver 
->> is also in the mfd directory.
+Hi,
+
+On 8/19/22 10:52, Nam Cao wrote:
+> Remove some functions in this driver because they are not used anywhere.
 > 
-> Sorry, but that's poor argument. Driver subsystems match Linux
-> convention, not necessarily hardware type/naming. Bindings directories
-> match hardware. MFD bindings are only for MFD wrapper drivers and this
-> is a serial interface. Not a MFD. You even do not add MFD devices in the
-> driver but add *always one* device depending on serial feature you want.
-> This is not even MFD device but regular platform device with children.
+> Nam Cao (7):
+>   staging: rtl8723bs: remove function rtw_odm_dbg_comp_msg
+>   staging: rtl8723bs: remove function rtw_get_ch_setting_union
+>   staging: rtl8723bs: remove function rtw_odm_ability_set
+>   staging: rtl8723bs: remove function GetFractionValueFromString
+>   staging: rtl8723bs: remove function IsCommentString
+>   staging: rtl8723bs: remove function rtw_odm_adaptivity_parm_msg
+>   staging: rtl8723bs: remove function rtw_odm_dbg_comp_set
 > 
-> You put it in SoC, though, because all other SoCs store it there...
+>  drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 21 -------
+>  drivers/staging/rtl8723bs/core/rtw_odm.c      | 44 ---------------
+>  drivers/staging/rtl8723bs/hal/hal_com.c       | 55 -------------------
+>  drivers/staging/rtl8723bs/include/hal_com.h   |  5 --
+>  .../staging/rtl8723bs/include/rtw_mlme_ext.h  |  1 -
+>  drivers/staging/rtl8723bs/include/rtw_odm.h   |  4 --
+>  6 files changed, 130 deletions(-)
 
-The last one should be:
+Thanks, the entire series looks good to me:
 
-You could put it in SoC, though, because all other SoCs store it there...
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-Best regards,
-Krzysztof
+for the series.
+
+Regards,
+
+Hans
+
