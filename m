@@ -2,175 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F170EC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A49C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349605AbiHSOpo (ORCPT
+        id S1349396AbiHSOrY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53676 "EHLO
+        Fri, 19 Aug 2022 10:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349286AbiHSOpl (ORCPT
+        with ESMTP id S1349128AbiHSOrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:45:41 -0400
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDCBCD539;
-        Fri, 19 Aug 2022 07:45:39 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 55E9A606; Fri, 19 Aug 2022 09:45:37 -0500 (CDT)
-Date:   Fri, 19 Aug 2022 09:45:37 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
-        tixxdz@gmail.com
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-Message-ID: <20220819144537.GA16552@mail.hallyn.com>
-References: <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
- <8735dux60p.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
- <871qte8wy3.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
- <8735du7fnp.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
- <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
- <20220818140521.GA1000@mail.hallyn.com>
- <CAHC9VhRqBxtV04ARQFPWpMf1aFZo0HP_HiJ+8VpXAT-zXF6UXw@mail.gmail.com>
+        Fri, 19 Aug 2022 10:47:21 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC547ED03A
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:47:20 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oP3HC-0003wt-2B; Fri, 19 Aug 2022 16:47:10 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oP3H9-000jRx-Q8; Fri, 19 Aug 2022 16:47:07 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oP3H9-00Ckm6-4a; Fri, 19 Aug 2022 16:47:07 +0200
+Date:   Fri, 19 Aug 2022 16:44:53 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Romain Perier <romain.perier@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] pwm: Add support for the MSTAR MSC313 PWM
+Message-ID: <20220819144453.4pegktwwargunlzl@pengutronix.de>
+References: <20220615070813.7720-1-romain.perier@gmail.com>
+ <20220615070813.7720-3-romain.perier@gmail.com>
+ <20220619213520.qonqdv4e7zkvpeo7@pengutronix.de>
+ <CABgxDo+_uZyO2vV4QxmVLTo2ohpAxzC89jcGJ3oksT6XxEBCmA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gulr5uxr5zgvdp56"
 Content-Disposition: inline
-In-Reply-To: <CAHC9VhRqBxtV04ARQFPWpMf1aFZo0HP_HiJ+8VpXAT-zXF6UXw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <CABgxDo+_uZyO2vV4QxmVLTo2ohpAxzC89jcGJ3oksT6XxEBCmA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 11:11:06AM -0400, Paul Moore wrote:
-> On Thu, Aug 18, 2022 at 10:05 AM Serge E. Hallyn <serge@hallyn.com> wrote:
-> > On Wed, Aug 17, 2022 at 04:24:28PM -0500, Eric W. Biederman wrote:
-> > > Paul Moore <paul@paul-moore.com> writes:
-> > > > On Wed, Aug 17, 2022 at 4:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > > >> Paul Moore <paul@paul-moore.com> writes:
-> > > >> > On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > > >> >> Paul Moore <paul@paul-moore.com> writes:
-> > > >> >>
-> > > >> >> > At the end of the v4 patchset I suggested merging this into lsm/next
-> > > >> >> > so it could get a full -rc cycle in linux-next, assuming no issues
-> > > >> >> > were uncovered during testing
-> > > >> >>
-> > > >> >> What in the world can be uncovered in linux-next for code that has no in
-> > > >> >> tree users.
-> > > >> >
-> > > >> > The patchset provides both BPF LSM and SELinux implementations of the
-> > > >> > hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
-> > > >> > If no one beats me to it, I plan to work on adding a test to the
-> > > >> > selinux-testsuite as soon as I'm done dealing with other urgent
-> > > >> > LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
-> > > >> > run these tests multiple times a week (multiple times a day sometimes)
-> > > >> > against the -rcX kernels with the lsm/next, selinux/next, and
-> > > >> > audit/next branches applied on top.  I know others do similar things.
-> > > >>
-> > > >> A layer of hooks that leaves all of the logic to userspace is not an
-> > > >> in-tree user for purposes of understanding the logic of the code.
-> > > >
-> > > > The BPF LSM selftests which are part of this patchset live in-tree.
-> > > > The SELinux hook implementation is completely in-tree with the
-> > > > subject/verb/object relationship clearly described by the code itself.
-> > > > After all, the selinux_userns_create() function consists of only two
-> > > > lines, one of which is an assignment.  Yes, it is true that the
-> > > > SELinux policy lives outside the kernel, but that is because there is
-> > > > no singular SELinux policy for everyone.  From a practical
-> > > > perspective, the SELinux policy is really just a configuration file
-> > > > used to setup the kernel at runtime; it is not significantly different
-> > > > than an iptables script, /etc/sysctl.conf, or any of the other myriad
-> > > > of configuration files used to configure the kernel during boot.
-> > >
-> > > I object to adding the new system configuration knob.
+
+--gulr5uxr5zgvdp56
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Romain,
+
+On Fri, Aug 19, 2022 at 03:12:56PM +0200, Romain Perier wrote:
+> Le dim. 19 juin 2022 =E0 23:35, Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> a =E9crit :
+> > > +static void msc313e_pwm_writecounter(struct regmap_field *low, struc=
+t regmap_field *high, u32 value)
+> > > +{
+> > > +     regmap_field_write(low, value);
+> > > +     regmap_field_write(high, value >> 16);
 > >
-> > I do strongly sympathize with Eric's points.  It will be very easy, once
-> > user namespace creation has been further restricted in some distros, to
-> > say "well see this stuff is silly" and go back to simply requiring root
-> > to create all containers and namespaces, which is generally quite a bit
-> > easier anywway.  And then, of course, give everyone root so they can
-> > start containers.
-> 
-> That's assuming a lot.  Many years have passed since namespaces were
-> first introduced, and awareness of good security practices has
-> improved, perhaps not as much as any of us would like, but to say that
-> distros, system builders, and even users are the same as they were so
-> many years ago is a bit of a stretch in my opinion.
+> > Is this racy? E.g. if the hw is running and the low register overflows
+> > before the high register is updated?
+> >
+>=20
+> Ack, I am re-working most of the stuff you noticed. The problem with
+> this IP blocks (and others...) is we have close registers
+> but we only need to write or read 16 bits in each of these (it is
+> mainly reverse engineered from vendor source or runtime most of the
+> time) . You cannot really do a single read (except by doing an obscur
+> thing via readq ? ...)
 
-Maybe.  But I do get a bit worried based on some of what I've been
-reading in mailing lists lately.  Kernel dev definitely moves like
-fashion - remember when every api should have its own filesystem?
-That was not a different group of people.
+This is fine, but pleast document that in a comment.
 
-> However, even ignoring that for a moment, do we really want to go to a
-> place where we dictate how users compose and secure their systems?
-> Linux "took over the world" because it offered a level of flexibility
-> that wasn't really possible before, and it has flourished because it
-> has kept that mentality.  The Linux Kernel can be shoehorned onto most
-> hardware that you can get your hands on these days, with driver
-> support for most anything you can think to plug into the system.  Do
-> you want a single-user environment with no per-user separation?  We
-> can do that.  Do you want a traditional DAC based system that leans
-> heavy on ACLs and capabilities?  We can do that.  Do you want a
-> container host that allows you to carve up the system with a high
-> degree of granularity thanks to the different namespaces?  We can do
-> that.  How about a system that leverages the LSM to enforce a least
-> privilege ideal, even on the most privileged root user?  We can do
-> that too.  This patchset is about giving distro, system builders, and
-> users another choice in how they build their system.  We've seen both
+Best regards
+Uwe
 
-Oh, you misunderstand.  Whereas I do feel there are important concerns in
-Eric's objections, and whereas I don't feel this set sufficiently
-addresses the problems that I see and outlined above, I do see value in
-this set, and was not aiming to deter it.  We need better ways to
-mitigate a certain clas sof 0-days without completely disallowing use of
-user namespaces, and this may help.
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-> in this patchset and in previously failed attempts that there is a
-> definite want from a user perspective for functionality such as this,
-> and I think it's time we deliver it in the upstream kernel so they
-> don't have to keep patching their own systems with out-of-tree
-> patches.
-> 
-> > Eric and Paul, I wonder, will you - or some people you'd like to represent
-> > you - be at plumbers in September?  Should there be a BOF session there?  (I
-> > won't be there, but could join over video)  I think a brainstorming session
-> > for solutions to the above problems would be good.
-> 
-> Regardless of if Eric or I will be at LPC, it is doubtful that all of
-> the people who have participated in this discussion will be able to
-> attend, and I think it's important that the users who are asking for
-> this patchset have a chance to be heard in each forum where this is
-> discussed.  While conferences are definitely nice - I definitely
-> missed them over the past couple of years - we can't use them as a
-> crutch to help us reach a conclusion on this issue; we've debated much
+--gulr5uxr5zgvdp56
+Content-Type: application/pgp-signature; name="signature.asc"
 
-No I wasn't thinking we would use LPC to decide on this patchset.  As far
-as I can see, the patchset is merged.  I am hoping we can come up with
-"something better" to address people's needs, make everyone happy, and
-bring forth world peace.  Which would stack just fine with what's here
-for defense in depth.
+-----BEGIN PGP SIGNATURE-----
 
-You may well not be interested in further work, and that's fine.  I need
-to set aside a few days to think on this.
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmL/oeIACgkQwfwUeK3K
+7AnLfAf/Q730KOcWvic9TGtU5LYxv/PYwKyDY+F+78jFpI+Q15r9ECURWXCeXVx8
+Qr5883rCMEpqlcwUvP30Gosy0oFVvhAsZMg/Jq/BOQMJMyFwb8L7Dxw814dIeqdq
+7K6BLh3PP9AjkqCH1d8l2PxsPmmovPASki2/olFnHrN/MQdzgN+bAow52Ua1Rj4k
+7xdu3AQlhQf4O3ohpshUFxoxi+9lS9tcD+QSOxHoG5cXyQgC0UxMhhxEyu0ojiGJ
+klX5Qw4oRmRm35cfupZhfitj00+RbF/VLeMY0sLqyYIKoGJbr+y5PEH4XSP4wmAS
+MeyGeP0/BKsW8Awe3iK9F6urs60esA==
+=+A3G
+-----END PGP SIGNATURE-----
 
-> more difficult things over the mailing lists, I see no reason why this
-> would be any different.
-> 
-> -- 
-> paul-moore.com
+--gulr5uxr5zgvdp56--
