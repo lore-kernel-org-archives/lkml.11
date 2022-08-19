@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7903C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2D0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354282AbiHSQy5 (ORCPT
+        id S1354508AbiHSQzM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
+        Fri, 19 Aug 2022 12:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354421AbiHSQxh (ORCPT
+        with ESMTP id S1354313AbiHSQyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:53:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3E931DED;
-        Fri, 19 Aug 2022 09:15:16 -0700 (PDT)
+        Fri, 19 Aug 2022 12:54:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0705612E3C9;
+        Fri, 19 Aug 2022 09:15:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3DEC4CE26AC;
-        Fri, 19 Aug 2022 16:13:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D11EC433C1;
-        Fri, 19 Aug 2022 16:13:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C765CB82821;
+        Fri, 19 Aug 2022 16:09:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F63C433D6;
+        Fri, 19 Aug 2022 16:09:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925609;
-        bh=3CxRal1Wz7dBYYhtwSv0Lq8UgsO8mOKXA/8E1KJSgzY=;
+        s=korg; t=1660925365;
+        bh=h8IyBVO2lyakzG8OlSbZNlxR0q9T5IL2p0yWfBHLfbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VNYe5B+99BccbWn/3SSx+uUspZpdoQ9ARa7pYGjyX8RO/SXphcRXWpkP1CwnwM1Gu
-         fD6OAPwDtc2KgVvkAYs69y/PVGEKFD1PyMMBMy2yJAj0CyoBP9HbrP29OkjeWj4dBI
-         JfLARyOKsL/DF+65f+JruKK1RckjpEZOHkkjr02Y=
+        b=C0HK3sBnL4ao3T2SggmFOkGslfbfo9lq1p1nSK0bgQW2yy8UwDDP95xGmrCq5totl
+         evOwA74oJilV5WBw4hfAAwaEFthGKze19vNHYof5n74EuLjYd8Xfu3QD1ohC334kAv
+         TtzdHcIUFWGcYeb19YVocE930vg9iCiFXkXxxv8U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.10 537/545] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
-Date:   Fri, 19 Aug 2022 17:45:07 +0200
-Message-Id: <20220819153853.617121540@linuxfoundation.org>
+        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 441/545] scsi: qla2xxx: Turn off multi-queue for 8G adapters
+Date:   Fri, 19 Aug 2022 17:43:31 +0200
+Message-Id: <20220819153849.164637463@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,56 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
+commit 5304673bdb1635e27555bd636fd5d6956f1cd552 upstream.
 
-The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
-by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
-static checker warning:
+For 8G adapters, multi-queue was enabled accidentally. Make sure
+multi-queue is not enabled.
 
-        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
-        error: we previously assumed 'c' could be null (see line 1996)
-
-Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Link: https://lore.kernel.org/r/20220616053508.27186-5-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/l2cap_core.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/scsi/qla2xxx/qla_def.h |    4 ++--
+ drivers/scsi/qla2xxx/qla_isr.c |   16 ++++++----------
+ 2 files changed, 8 insertions(+), 12 deletions(-)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1966,11 +1966,11 @@ static struct l2cap_chan *l2cap_global_c
- 						   bdaddr_t *dst,
- 						   u8 link_type)
- {
--	struct l2cap_chan *c, *c1 = NULL;
-+	struct l2cap_chan *c, *tmp, *c1 = NULL;
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -4135,8 +4135,8 @@ struct qla_hw_data {
+ #define IS_OEM_001(ha)          ((ha)->device_type & DT_OEM_001)
+ #define HAS_EXTENDED_IDS(ha)    ((ha)->device_type & DT_EXTENDED_IDS)
+ #define IS_CT6_SUPPORTED(ha)	((ha)->device_type & DT_CT6_SUPPORTED)
+-#define IS_MQUE_CAPABLE(ha)	((ha)->mqenable || IS_QLA83XX(ha) || \
+-				IS_QLA27XX(ha) || IS_QLA28XX(ha))
++#define IS_MQUE_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
++				 IS_QLA28XX(ha))
+ #define IS_BIDI_CAPABLE(ha) \
+     (IS_QLA25XX(ha) || IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+ /* Bit 21 of fw_attributes decides the MCTP capabilities */
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -4054,16 +4054,12 @@ msix_register_fail:
+ 	}
  
- 	read_lock(&chan_list_lock);
- 
--	list_for_each_entry(c, &chan_list, global_l) {
-+	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
- 		if (state && c->state != state)
- 			continue;
- 
-@@ -1989,11 +1989,10 @@ static struct l2cap_chan *l2cap_global_c
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
- 				c = l2cap_chan_hold_unless_zero(c);
--				if (!c)
--					continue;
--
--				read_unlock(&chan_list_lock);
--				return c;
-+				if (c) {
-+					read_unlock(&chan_list_lock);
-+					return c;
-+				}
- 			}
- 
- 			/* Closest match */
+ 	/* Enable MSI-X vector for response queue update for queue 0 */
+-	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+-		if (ha->msixbase && ha->mqiobase &&
+-		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
+-		     ql2xmqsupport))
+-			ha->mqenable = 1;
+-	} else
+-		if (ha->mqiobase &&
+-		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
+-		     ql2xmqsupport))
+-			ha->mqenable = 1;
++	if (IS_MQUE_CAPABLE(ha) &&
++	    (ha->msixbase && ha->mqiobase && ha->max_qpairs))
++		ha->mqenable = 1;
++	else
++		ha->mqenable = 0;
++
+ 	ql_dbg(ql_dbg_multiq, vha, 0xc005,
+ 	    "mqiobase=%p, max_rsp_queues=%d, max_req_queues=%d.\n",
+ 	    ha->mqiobase, ha->max_rsp_queues, ha->max_req_queues);
 
 
