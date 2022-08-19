@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE5BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB70BC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353172AbiHSQfN (ORCPT
+        id S1353321AbiHSQfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
+        Fri, 19 Aug 2022 12:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353495AbiHSQbs (ORCPT
+        with ESMTP id S1353480AbiHSQbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47D466A68;
-        Fri, 19 Aug 2022 09:05:59 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C886911E915;
+        Fri, 19 Aug 2022 09:06:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A11056177D;
-        Fri, 19 Aug 2022 16:05:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1795C433C1;
-        Fri, 19 Aug 2022 16:05:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2C08B82804;
+        Fri, 19 Aug 2022 16:06:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB6E8C433C1;
+        Fri, 19 Aug 2022 16:06:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925128;
-        bh=lYj+03FoQAUy9tB3RaLxYF1iOT8ybR+2ua3LKkOFXpY=;
+        s=korg; t=1660925162;
+        bh=9aFWhDb0sLjSYCbmI8Iu1nyBKM24DyHPC+Y0uMpBoEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E5oBTDfS6ee64g06XgjyxmwCA1tc6oIRWbEfoCJw4VReoO3ZBeX6PxJp+heTpp1ES
-         2Vrff8/KhrYWCl3apfiJiCItE1oKNrkrH0S/apoJOm+sEkuwCRwkpDig1fzKbidYWl
-         4+6HaLNmHzeTcCMiswxro3tYxpu1YaYc0jKSiX2Y=
+        b=YkwE/jvJlz/xvPdGYjduTJP0vi1CcTjL+8j0be4X5cW29HaEjY5EfQCU7RLVxeiNo
+         PscwnutkEy4dNMWVn8Gd/hB6mra8/kvlWADGlTn7s87L+ifFZjvIbxqOueTWefZj2s
+         v27xCWc+FR5qErfzooFGhV5qjKku4HmbTkN/ZblQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 393/545] vfio/ccw: Do not change FSM state in subchannel event
-Date:   Fri, 19 Aug 2022 17:42:43 +0200
-Message-Id: <20220819153847.004043859@linuxfoundation.org>
+Subject: [PATCH 5.10 403/545] mfd: max77620: Fix refcount leak in max77620_initialise_fps
+Date:   Fri, 19 Aug 2022 17:42:53 +0200
+Message-Id: <20220819153847.468618053@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,59 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Farman <farman@linux.ibm.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
+[ Upstream commit 1520669c8255bd637c6b248b2be910e2688d38dd ]
 
-The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
-specifically machine checks, on behalf of vfio-ccw. It correctly calls
-cio_update_schib(), and if that fails (meaning the subchannel is gone)
-it makes an FSM event call to mark the subchannel Not Operational.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-If that worked, however, then it decides that if the FSM state was already
-Not Operational (implying the subchannel just came back), then it should
-simply change the FSM to partially- or fully-open.
-
-Remove this trickery, since a subchannel returning will require more
-probing than simply "oh all is well again" to ensure it works correctly.
-
-Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
-Signed-off-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Fixes: 327156c59360 ("mfd: max77620: Add core driver for MAX77620/MAX20024")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220601043222.64441-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/mfd/max77620.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
-index 9b61e9b131ad..e3c1060b6056 100644
---- a/drivers/s390/cio/vfio_ccw_drv.c
-+++ b/drivers/s390/cio/vfio_ccw_drv.c
-@@ -288,19 +288,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
- 	if (work_pending(&sch->todo_work))
- 		goto out_unlock;
+diff --git a/drivers/mfd/max77620.c b/drivers/mfd/max77620.c
+index fec2096474ad..a6661e07035b 100644
+--- a/drivers/mfd/max77620.c
++++ b/drivers/mfd/max77620.c
+@@ -419,9 +419,11 @@ static int max77620_initialise_fps(struct max77620_chip *chip)
+ 		ret = max77620_config_fps(chip, fps_child);
+ 		if (ret < 0) {
+ 			of_node_put(fps_child);
++			of_node_put(fps_np);
+ 			return ret;
+ 		}
+ 	}
++	of_node_put(fps_np);
  
--	if (cio_update_schib(sch)) {
--		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
--		rc = 0;
--		goto out_unlock;
--	}
--
--	private = dev_get_drvdata(&sch->dev);
--	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
--		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
--				 VFIO_CCW_STATE_STANDBY;
--	}
- 	rc = 0;
- 
-+	if (cio_update_schib(sch))
-+		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
-+
- out_unlock:
- 	spin_unlock_irqrestore(sch->lock, flags);
- 
+ 	config = chip->enable_global_lpm ? MAX77620_ONOFFCNFG2_SLP_LPM_MSK : 0;
+ 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
 -- 
 2.35.1
 
