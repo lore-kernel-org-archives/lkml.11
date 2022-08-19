@@ -2,99 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C25C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A49BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348735AbiHSL7l (ORCPT
+        id S1348782AbiHSMBh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        Fri, 19 Aug 2022 08:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347592AbiHSL7j (ORCPT
+        with ESMTP id S1347592AbiHSMBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:59:39 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE26C6B60;
-        Fri, 19 Aug 2022 04:59:38 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id e21so531479edc.7;
-        Fri, 19 Aug 2022 04:59:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc;
-        bh=OFbstuxh2bM00OlidvhlMfZ5HY1I75qAICyPsDUJ70Y=;
-        b=BO95pDtWkzJrDZfzILRRYN7GrY3Hnz3RqM3ZNMuGI1FC3WfZQ5P+c5D73FTi4mEs2j
-         Jub1BH/HYKTPwoLXYzUAlcDx7+XKfyORexNQ/dU5y/eb4VD3RUG9N0/qiDoEMrtBCyfH
-         udo10JlvI1DRloNgVjvIIY1zAMF0nYMwnN+3TwIWttFZ1JrUpJINL+ubOiDY3sWZK2xh
-         /Ecxrl2Xicoxtc34yDJ00SzeHUZwTtLGxneGyLFR/SY8IGUc76EnCwF7FwX4YZUmFw6l
-         jsAbrNskECodtzXG6WG24P34Fn0sD+4EgULBrvRkYWShUyIEgQ8A+nqzMvFYTak4zA/N
-         CkzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc;
-        bh=OFbstuxh2bM00OlidvhlMfZ5HY1I75qAICyPsDUJ70Y=;
-        b=eFbpvyDHk3XH9okWmqHFxMyVCFsDWHY5ePqflyfyqtqXgabW+U0e2kURw/18Q7zShX
-         papafXxswXJqAm9GpahfEQ3Dhrd9LK43EljoRbqw0Gc0gbOXq+krrrgrCHePhfZv42SH
-         IaOwuDizGboZw43tMuczAFGl3lFAhAQhsecSfol34aU3Wa5/hfYv46QLM5nNFANjh50V
-         bUYZzjXnbkhB4IYHzV3YIdVl0AZZ3aC0J+jhQylH0ZNZAw9W0zPTWG0icJh5j6c4yrvP
-         6dj18ggcodVS+VSs7Sw1IuN/j0Ie3/vFhiFRndkFbilgtzmZOlQ10NxDJw43ajTkojjH
-         ORzw==
-X-Gm-Message-State: ACgBeo2izRGo9DcxKAFnzo8YE/COdQj66B0ELynw7bZ+3Qhhp09PJNFR
-        dHbDfjIsYc3wAPGQLPnIRPQ=
-X-Google-Smtp-Source: AA6agR5+6v4xRQkCgYSr0SgKCtDdo+WH/SiJO/XJBRmGpNFZoYhAvvs0LMK2+lBFa4Bh1phS9IMOFw==
-X-Received: by 2002:a05:6402:4282:b0:43e:612c:fcf7 with SMTP id g2-20020a056402428200b0043e612cfcf7mr5785323edc.242.1660910376823;
-        Fri, 19 Aug 2022 04:59:36 -0700 (PDT)
-Received: from Ansuel-xps. (host-95-250-253-218.retail.telecomitalia.it. [95.250.253.218])
-        by smtp.gmail.com with ESMTPSA id r9-20020a1709061ba900b007317f017e64sm2222207ejg.134.2022.08.19.04.59.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 04:59:36 -0700 (PDT)
-Message-ID: <62ff7b28.170a0220.91820.52c8@mx.google.com>
-X-Google-Original-Message-ID: <Yv93fbdoPfRAaR0P@Ansuel-xps.>
-Date:   Fri, 19 Aug 2022 13:43:57 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Fri, 19 Aug 2022 08:01:34 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EB3E2C43
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:01:32 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oP0ge-0007mg-NM; Fri, 19 Aug 2022 14:01:16 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oP0gc-000hbU-AV; Fri, 19 Aug 2022 14:01:14 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oP0ga-00GBah-81; Fri, 19 Aug 2022 14:01:12 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] net: dsa: qca8k: convert to regmap
- read/write API
-References: <20220806192253.7567-1-ansuelsmth@gmail.com>
- <20220806192253.7567-1-ansuelsmth@gmail.com>
- <20220818165119.c5cgk5og7jhmzpo6@skbuf>
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: [PATCH net-next v1 1/7] dt-bindings: net: pse-dt: add bindings for generic PSE controller
+Date:   Fri, 19 Aug 2022 14:01:03 +0200
+Message-Id: <20220819120109.3857571-2-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818165119.c5cgk5og7jhmzpo6@skbuf>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 07:51:19PM +0300, Vladimir Oltean wrote:
-> On Sat, Aug 06, 2022 at 09:22:53PM +0200, Christian Marangi wrote:
-> > Convert qca8k to regmap read/write bulk API. The mgmt eth can write up
-> > to 16 bytes of data at times. Currently we use a custom function to do
-> > it but regmap now supports declaration of read/write bulk even without a
-> > bus.
-> > 
-> > Drop the custom function and rework the regmap function to this new
-> > implementation.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> 
-> Nothing in this change jumps out as wrong to me, but maybe you should
-> copy Mark Brown too when you submit it proper, as the first user of the
-> bulk regmap read/write over Ethernet, IIUC.
+Add binding for generic Ethernet PSE controller.
 
-Should I send a v2 without RFC and CC Mark or CC directly here in the
-RFC? This is ready so v2 won't have changes.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../bindings/net/pse-pd/generic-pse.yaml      | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
 
+diff --git a/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml b/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
+new file mode 100644
+index 0000000000000..64f91efa79a56
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/pse-pd/generic-pse.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Generic Power Sourcing Equipment
++
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
++
++description: |
++  Generic PSE controller. The device must be referenced by the PHY node
++  to control power injection to the Ethernet cable.
++
++properties:
++  compatible:
++    const: ieee802.3-podl-pse-generic
++
++  '#pse-cells':
++    const: 0
++
++  ieee802.3-podl-pse-supply:
++    description: |
++      Power supply for the PSE controller
++
++additionalProperties: false
++
++required:
++  - compatible
++  - '#pse-cells'
++  - ieee802.3-podl-pse-supply
++
++examples:
++  - |
++    ethernet-pse-1 {
++      compatible = "ieee802.3-podl-pse-generic";
++      ieee802.3-podl-pse-supply = <&reg_t1l1>;
++      #pse-cells = <0>;
++    };
 -- 
-	Ansuel
+2.30.2
+
