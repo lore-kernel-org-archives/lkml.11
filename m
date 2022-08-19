@@ -2,78 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1742BC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 13:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11071C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 13:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349502AbiHSNz4 (ORCPT
+        id S1348853AbiHSN4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 09:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        Fri, 19 Aug 2022 09:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348475AbiHSNzz (ORCPT
+        with ESMTP id S1348940AbiHSN4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 09:55:55 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CDEAE211;
-        Fri, 19 Aug 2022 06:55:53 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 36BCC2D7;
-        Fri, 19 Aug 2022 13:55:53 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 36BCC2D7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1660917353; bh=xxoEfJJqE8JslHY5gkAIae7dMgC9uE88hH40n9nxHi8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=SCJpO8D9cRS7XwxlWlkwMl08EuEddMkZ1DZ/f0QOlcxLLVIt4cxcjasZ4bL/IzfRC
-         dk7vcxYT5jVs76iOckX47JcILK9yiMoB4HZmCdefP+oPZd5BETXubDC0/qDfflTzWv
-         NGcenoQGz3tlv51NGl2qy4zvhhZ1lTo800G+vI1EZ308EZ9z3UMMXwksFvpZ63fdOA
-         EbsYL7iqQkW58h1K3GBVcvKaLGGPETzBMPwXvEN7yG/HPzWu7GmJTawfdbWwLHWThv
-         cszT1+1YMvt6O0LsQU0AHaR+XjXDDj5L98DIslF+HGb9onywRXOyuZIJ1CnnXrR4Of
-         719AWnSNVszxg==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tsugikazu Shibata <shibata@linuxfoundation.org>
-Subject: Re: [PATCH] docs/ja_JP/SubmittingPatches: Remove reference to
- submitting-drivers.rst
-In-Reply-To: <83347b74-5075-90ad-1f8e-575bf4cdaf50@gmail.com>
-References: <acaf13cd-52f0-c7c2-add0-0644cb1e77e4@gmail.com>
- <87edxdcwnj.fsf@meer.lwn.net>
- <83347b74-5075-90ad-1f8e-575bf4cdaf50@gmail.com>
-Date:   Fri, 19 Aug 2022 07:55:52 -0600
-Message-ID: <878rnkbamv.fsf@meer.lwn.net>
+        Fri, 19 Aug 2022 09:56:04 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2AA100947;
+        Fri, 19 Aug 2022 06:56:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1660917343;
+        bh=m4iYsB5d5uosfD01rYjV31/9/HdBp1rmh1L13Gst1ro=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=igTHqTcT7CkSqZmCBJ30gPCV/M2A7E+6V6YrNB+greWX1H4MqEgR/NXdKbxoAcMmU
+         9xwlKJdHdERZmFFB1VKEsvghudN3hFxEoRfeS/5i+0W6UNTYAY/z/bNFGchrULzp12
+         eImI0DISRNvtvWkrA5hxauXYmjBw8X2KYenGz1D4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.153.160]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mj8qj-1njuQM2ebF-00fDp2; Fri, 19
+ Aug 2022 15:55:43 +0200
+Message-ID: <39ee0ca2-48a0-755b-605c-3ce1205b9715@gmx.de>
+Date:   Fri, 19 Aug 2022 15:54:45 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: linux-parisc compile failure in current git
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+Cc:     Parisc List <linux-parisc@vger.kernel.org>,
+        Meelis Roos <mroos@linux.ee>,
+        Linux Kernel Development <linux-kernel@vger.kernel.org>
+References: <892b6ab7-862c-1c0a-2996-0f8408e5043d@linux.ee>
+ <89515325-fc21-31da-d238-6f7a9abbf9a0@gmx.de>
+ <CAK7LNATuzry1MUj-VruOVUwU_nH2xJd_2SxD_s_Z1QBb3PVnQw@mail.gmail.com>
+ <5dfd81eb-c8ca-b7f5-e80e-8632767c022d@gmx.de>
+ <CAK7LNATO_30uHzAe-Vsy+hgu=wwEN_aPGET4Ys78rc3=nSuJsg@mail.gmail.com>
+ <YNOafsB81ZcP2r7z@ls3530>
+ <f599c358-815f-088e-f2aa-b064ccb64e44@infradead.org>
+ <CAK7LNAREcSW2Hn3Ty_zTVzTCLgYnFfo=ZcibE2zif1mBWp==4A@mail.gmail.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <CAK7LNAREcSW2Hn3Ty_zTVzTCLgYnFfo=ZcibE2zif1mBWp==4A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:5voilb2YEtIWZGdXSHYpNN2AZZLkzvFBOVIR4KETBKiIhC6FYKi
+ 1ChCc5GbUYz6NS3NrMKbQTa3y4I4NR4+uVbLEy69CpAC4Tqn8P7Fo+ZeNF1KI60XDygpojM
+ Z6dfoBPnp17VXZjvOOD01oLZhTFHd18hM0kk5nmQ1NkguZfyEBFn7TpRgsC2q1UlM5Vgmcs
+ m7G4xwh6vGv53ijUviqEQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ocTAnYQ5Tco=:ZJZU2tNYh63sohDrhzLQFe
+ 9FVVjSjYVnF7D/znlZgEo1kdsoEWPEdPIuGdKGchtwp1d+MjkWDxGlgPJeeQ1KkRiSsOx666c
+ gkFteogeA4EM9uS4wJopoj748eOw+LbaLcOxHYCbpgY7YSU9AymuHTO9qHl/VZWKmStynCft4
+ IXDzTbXOzwkYegZx4mP6+GPfFqt/Cft1ZHm+35Xb5GKpnXRD214ubDjprQ/2b4IMtPFM9x6si
+ 1x/2RJ4008VbWL6ev9IW8yR1revakLvJgSQ1Y9lj9YyukT98l9O2wuBkgvopdXqpaZOPsY/Zl
+ TTPb8WSJxN/j2nrlCDOhpqOHBkxRIafbcD+gE88ZLEII5r8FLsJlsxgx8fEs/IXXsjRZC5zcF
+ oXIeMs09fybv+66eC2Tw6fUU0fR2ou4ACl3FomN6tAZcVmjdsHG1wzZqmwnS2+oo0DixBlo4b
+ yPIy9kn7eNDRuocCIzjVtuoDcUfJqIL1pfDjwcYvJkQ0Ts0bVR6rBDjN1AbECqaVTvKAQ3oSn
+ s9wc3yJ+24Zk/DYZqG1h8Tisy7lPvX/eOFTZ1IpRgIjXv9R7PzjJXOg1pN2Wqi5veo9mwoQ/T
+ 2Lyuz8o79d4lQ0ZNrELN0QL96FG8H4SM+2OHXhFB5HJKQFoM7K3mpR4iAhu5Moh1QD67cGRPI
+ Mv4eJ8u+Vf6Za+uO74hC/IMLqRIadD8pLl7iIkG6Gznfup8a/zuTuIioFSB/M479n8f6zFBXv
+ gFTyhalDr3P66gqdava4K/Pazhr0yz+xGERaFRuexnJvpg7L8r9vwQkiH94JNza7+oQXmsCJ1
+ YkWshFmkrNnUOMolZKl19pqWoILES5/YrbAzn/LDS7Fn72VKFX1aUQ9nfW+vIZWrgmAY3TRs1
+ zXmW5JikUeZ4k5plWETIEfsr3/vcE0kVmyfR53O0poTH4vXGXQ+2Sl2Ya/7m75Wu6YcCSxNkg
+ +plhPvMFFZfisjhtANpIyKs31QxOiVEorE0qnLF7mqvKPBggeOX3JNVTPJFVmlDOSxHy+YFJW
+ ddZijG60jO4KVB/NnB0jXT/Yj1jRGzIP02tj0A+g//Xz1625EcedVtjn8HONFSMohjdz81M8D
+ R4d3RB8Z9F5uXN6ecHXwiKWdMWSOLkQ7bkmgnGYrFayBrtYmWRLiVLHaw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akira Yokosawa <akiyks@gmail.com> writes:
-
-> On Thu, 18 Aug 2022 11:02:40 -0600, Jonathan Corbet wrote:
->> Akira Yokosawa <akiyks@gmail.com> writes:
->> 
->>> Reflect changes made in commit 9db370de2780 ("docs: process: remove
->>> outdated submitting-drivers.rst")
+On 8/19/22 14:45, Masahiro Yamada wrote:
+> On Thu, Aug 18, 2022 at 5:59 AM Randy Dunlap <rdunlap@infradead.org> wro=
+te:
+>>
+>> Hi--
+>>
+>> On 6/23/21 13:33, Helge Deller wrote:
+>>> * Masahiro Yamada <masahiroy@kernel.org>:
+>>>> On Thu, Jun 10, 2021 at 4:04 PM Helge Deller <deller@gmx.de> wrote:
+>>>>>
+>>>>> Hi Masahiro,
+>>>>>
+>>>>> On 6/10/21 4:03 AM, Masahiro Yamada wrote:
+>>>>>> On Thu, Jun 10, 2021 at 7:50 AM Helge Deller <deller@gmx.de> wrote:
+>>
+>> [snip]
+>>
+>>>>>> But, please keep in mind that there is an issue remaining.
+>>>>>>
+>>>>>> Please see this code:
+>>>>>>
+>>>>>> ifdef CONFIG_64BIT
+>>>>>> UTS_MACHINE :=3D parisc64
+>>>>>> CHECKFLAGS +=3D -D__LP64__=3D1
+>>>>>> CC_ARCHES =3D hppa64
+>>>>>> LD_BFD :=3D elf64-hppa-linux
+>>>>>> else # 32-bit
+>>>>>> CC_ARCHES =3D hppa hppa2.0 hppa1.1
+>>>>>> LD_BFD :=3D elf32-hppa-linux
+>>>>>> endif
+>>>>>>
+>>>>>>
+>>>>>> UTS_MACHINE is determined by CONFIG_64BIT.
+>>>>>>
+>>>>>> CONFIG_64BIT is defined only after Kconfig is finished.
+>>>>>> When you are trying to configure the .config,
+>>>>>> CONFIG_64BIT is not defined yet.
+>>>>>> So UTS_MACHINE is always 'parisc'.
+>>>>>
+>>>>> Yes.
+>>>>> See above, but it worked when I had SUBARCH=3Dx86 (when running my l=
+aptop).
+>>>>>
+>>>>>
+>>>>>> As you know, Kconfig files now have a bunch of 'cc-option' syntax
+>>>>>> to check the compiler capability in Kconfig time.
+>>>>>> Hence, you need to provide a proper compiler in Kconfig time too.
+>>>>>>
+>>>>>> When you build a 64-bit parisc kernel on a 32-bit parisc machine,
+>>>>>
+>>>>> Please note, that we don't have a 64-bit parisc userspace yet (just =
+kernel).
+>>>>> This means, that all builds on parisc machines are 32bit and do a
+>>>>> cross-compilation to a parisc64 kernel if requested in the .config.
+>>>>>
+>>>>>> Kconfig is passed with CC=3Dgcc since SUBARCH=3D=3DUTS_MACHINE=3D=
+=3Dparisc.
+>>>>>> After Kconfig, CROSS_COMPILE=3Dhppa64-* is set,
+>>>>>> and the kernel is built by CC=3Dhppa64-*-gcc.
+>>>>>
+>>>>> Right. That is the old behaviour. Based on the CONFIG_64BIT option
+>>>>> the hppa64 compiler is choosen for CROSS_COMPILE.
+>>>>>
+>>>>>> So, Kconfig evaluated a compiletely different compiler. This is poi=
+ntless.
+>>>>>
+>>>>> Yes, probably.
+>>>>>
+>>>>>
+>>>>>> There are some options
+>>>>>>
+>>>>>> [option 1]
+>>>>>>    revert the parisc bit of 23243c1ace9fb4eae2f75e0fe0ece8e3219fb4f=
+3
+>>>>>>    This will restore the functionality you may want, but
+>>>>>>    as I said above, Kconfig is doing pointless things.
+>>>>>
+>>>>> as mentioned above: Doesn't solve the issue.
+>>>>>
+>>>>>> [option 2]
+>>>>>>     Stop using cc-cross-prefix, and pass CROSS_COMPILE explicitly.
+>>>>>>     This is what many architectures including arm, arm64 do.
+>>>>>>     You need to explicitly pass CROSS_COMPILE=3Daarch64-linux-gnu- =
+etc.
+>>>>>>     if you are cross-compiling arm64.
+>>>>>
+>>>>> Might be an option, but it's not as handy as simply choosing CONFIG_=
+64BIT
+>>>>> and then things are done automatically.
+>>>>>
+>>>>>> [option 3]
+>>>>>>     Introduce ARCH=3Dparisc64.
+>>>>>>
+>>>>>>     When you are building 64-bit kernel, you can pass ARCH=3Dparisc=
+64
+>>>>>>      A patch attached.  (but not tested much)
+>>>>>
+>>>>> Tried it, but doesn't work.
+>>>>> asm-offsets.c is still preprocessed with 32bit compiler (gcc, not hp=
+pa20-gcc).
+>>>>>
+>>>>> Thanks for your help so far!
+>>>>> If you like I'm happy to give you an account on a hppa64 machine to =
+reproduce yourself.
+>>>>> I'll now try to bisect where it goes wrong. There must be something =
+else before commit 23243c1ace9fb4eae2f75e0fe0ece8e3219fb4f3.
+>>>>>
+>>>>> Helge
+>>>>
+>>>>
+>>>> Sorry for my late reply.
 >>>
->>> Reported-by: Mauro Carvalho Chehab <mchehab@kernel.org>
->>> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
->>> Fixes: 9db370de2780 ("docs: process: remove outdated submitting-drivers.rst")
->>> Cc: Tsugikazu Shibata <shibata@linuxfoundation.org>
->> 
->> So I can't get this patch to apply; I'm not really sure what the problem
->> is.  Does it apply on your side?
+>>> Me too.... :-(
+>>
+>> Sorry to jump in even later, but:
+>>
+>> I see that
+>> $ make ARCH=3Dparisc64 defconfig
+>> does set CONFIG_64BIT.
 >
-> Looks like thunderbird used "Content-Transfer-Encoding: base64".
-> Resent using "git send-email" with "Content-Transfer-Encoding: 8bit"
-> Hopefully it works for you.
+> Strange. It does for me.
+> masahiro@grover:~/ref/linux-next$ make ARCH=3Dparisc64 defconfig
+> *** Default configuration is based on 'generic-64bit_defconfig'
+> #
+> # configuration written to .config
+> #
+> masahiro@grover:~/ref/linux-next$ grep CONFIG_64BIT .config
+> CONFIG_64BIT=3Dy
 
-I'd noticed that, but "git am" can handle the decoding - it was able to
-show me the patch it couldn't apply.  Dunno...in any case, the new patch
-applied just fine, thanks.
+Yes, as Randy said, this works.
 
-jon
+>> Is there a way to do
+>> $ make ARCH=3Dparisc64 allmodconfig
+>> ?
+>> That does not set CONFIG_64BIT in my testing.
+>> (testing on linux-next-20220817)
+>
+> Right.
+> allmodconfig does not set CONFIG_64BIT.
+>
+> I think it is the same as before.
+
+Yep.
+
+> Is this thread related?
+
+What thread?
+
+> The reason is 64BIT depends on PA8X00.
+>
+> allmodconfig chooses PA7000 instead of PA8X00
+> in the "Processor type" choice since
+> PA7000 is the default.
+>
+>
+> If you apply this patch,
+>
+>
+>
+> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+> index 7f059cd1196a..458b8e22e240 100644
+> --- a/arch/parisc/Kconfig
+> +++ b/arch/parisc/Kconfig
+> @@ -146,7 +146,7 @@ menu "Processor type and features"
+>
+>  choice
+>         prompt "Processor type"
+> -       default PA7000
+> +       default PA8X00
+>
+>  config PA7000
+>         bool "PA7000/PA7100"
+>
+> allmodconfig will start enabling CONFIG_64BIT,
+> but it is up to Helge.
+
+That patch "partly" works, in the sense that with:
+make ARCH=3Dparisc64 randconfig
+
+you randomly end up with a 32- or 64-bit kernel.
+Since "ARCH=3Dparisc64" was given, one probably would expect a 64-bit-enab=
+led kernel randconfig,
+and with "ARCH=3Dparisc" a 32-bit randconfig.
+But, I'm not sure if this intended or not and works that way on other arch=
+es as well.
+
+As written in the other mail, I added this patch in for-next:
+https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git/co=
+mmit/?h=3Dfor-next&id=3D34793a5d09d9122f90acfa7e8f705436d5090d4d
+The downside is, you need to give a special make target: parisc_randconfig=
+ / parisc64_randconfig
+
+Helge
