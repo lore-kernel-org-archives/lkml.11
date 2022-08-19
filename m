@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8359BC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B91C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352036AbiHSQPa (ORCPT
+        id S1349877AbiHSQSO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
+        Fri, 19 Aug 2022 12:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351834AbiHSQO1 (ORCPT
+        with ESMTP id S1351953AbiHSQOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:14:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD9C1758F;
-        Fri, 19 Aug 2022 08:58:10 -0700 (PDT)
+        Fri, 19 Aug 2022 12:14:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6327C7E309;
+        Fri, 19 Aug 2022 08:58:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DC18612E6;
-        Fri, 19 Aug 2022 15:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60617C433C1;
-        Fri, 19 Aug 2022 15:57:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A526B82819;
+        Fri, 19 Aug 2022 15:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A29AC433D6;
+        Fri, 19 Aug 2022 15:58:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924674;
-        bh=qthlUxLyneTrQoXxQBbYo31Gy/R5BpXEYmeBs7zGNCU=;
+        s=korg; t=1660924689;
+        bh=aQEoMfCovPkTWLiJW3uCpiZOLirceCKWhcTPW0uKekk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PaRHqHUmG0E/aPVypK1aZbHPDALWRA8eY/3vHqw1K11acPiFR01rfMLjHi5SjhZQW
-         opwZG/ASZfGIg17nccGtwHj/6dQ05uPUiwB6vnNJqcKTtrPPCcou8LoCywZJsVx81h
-         PxXnEPKO122iAraGlMSdkwidUQPSy8ApkZ9DEsQQ=
+        b=nrUvMpFAgdz0k2XwEZOjdMRSYDeGF9ajclElGvGpZ8qKyKmXcXM78RGZS+LxzoDuj
+         NKaetiGue9VH8Bds/dJf/3p72r5JKfhadeO4wHbX1H6hzRmdLgKW6gRkMYocnW0+8N
+         XEwJiQwVfeH5YKgqVccj3wX07i4yPLBCku938dME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Houlong Wei <houlong.wei@mediatek.com>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 217/545] drm/msm/mdp5: Fix global state lock backoff
-Date:   Fri, 19 Aug 2022 17:39:47 +0200
-Message-Id: <20220819153839.072427077@linuxfoundation.org>
+Subject: [PATCH 5.10 221/545] media: platform: mtk-mdp: Fix mdp_ipi_comm structure alignment
+Date:   Fri, 19 Aug 2022 17:39:51 +0200
+Message-Id: <20220819153839.245865776@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,83 +55,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[ Upstream commit 92ef86ab513593c6329d04146e61f9a670e72fc5 ]
+[ Upstream commit ab14c99c035da7156a3b66fa171171295bc4b89a ]
 
-We need to grab the lock after the early return for !hwpipe case.
-Otherwise, we could have hit contention yet still returned 0.
+The mdp_ipi_comm structure defines a command that is either
+PROCESS (start processing) or DEINIT (destroy instance); we
+are using this one to send PROCESS or DEINIT commands from Linux
+to an MDP instance through a VPU write but, while the first wants
+us to stay 4-bytes aligned, the VPU instead requires an 8-bytes
+data alignment.
 
-Fixes an issue that the new CONFIG_DRM_DEBUG_MODESET_LOCK stuff flagged
-in CI:
+Keeping in mind that these commands are executed immediately
+after sending them (hence not chained with others before the
+VPU/MDP "actually" start executing), it is fine to simply add
+a padding of 4 bytes to this structure: this keeps the same
+performance as before, as we're still stack-allocating it,
+while avoiding hackery inside of mtk-vpu to ensure alignment
+bringing a definitely bigger performance impact.
 
-   WARNING: CPU: 0 PID: 282 at drivers/gpu/drm/drm_modeset_lock.c:296 drm_modeset_lock+0xf8/0x154
-   Modules linked in:
-   CPU: 0 PID: 282 Comm: kms_cursor_lega Tainted: G        W         5.19.0-rc2-15930-g875cc8bc536a #1
-   Hardware name: Qualcomm Technologies, Inc. DB820c (DT)
-   pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-   pc : drm_modeset_lock+0xf8/0x154
-   lr : drm_atomic_get_private_obj_state+0x84/0x170
-   sp : ffff80000cfab6a0
-   x29: ffff80000cfab6a0 x28: 0000000000000000 x27: ffff000083bc4d00
-   x26: 0000000000000038 x25: 0000000000000000 x24: ffff80000957ca58
-   x23: 0000000000000000 x22: ffff000081ace080 x21: 0000000000000001
-   x20: ffff000081acec18 x19: ffff80000cfabb80 x18: 0000000000000038
-   x17: 0000000000000000 x16: 0000000000000000 x15: fffffffffffea0d0
-   x14: 0000000000000000 x13: 284e4f5f4e524157 x12: 5f534b434f4c5f47
-   x11: ffff80000a386aa8 x10: 0000000000000029 x9 : ffff80000cfab610
-   x8 : 0000000000000029 x7 : 0000000000000014 x6 : 0000000000000000
-   x5 : 0000000000000001 x4 : ffff8000081ad904 x3 : 0000000000000029
-   x2 : ffff0000801db4c0 x1 : ffff80000cfabb80 x0 : ffff000081aceb58
-   Call trace:
-    drm_modeset_lock+0xf8/0x154
-    drm_atomic_get_private_obj_state+0x84/0x170
-    mdp5_get_global_state+0x54/0x6c
-    mdp5_pipe_release+0x2c/0xd4
-    mdp5_plane_atomic_check+0x2ec/0x414
-    drm_atomic_helper_check_planes+0xd8/0x210
-    drm_atomic_helper_check+0x54/0xb0
-    ...
-   ---[ end trace 0000000000000000 ]---
-   drm_modeset_lock attempting to lock a contended lock without backoff:
-      drm_modeset_lock+0x148/0x154
-      mdp5_get_global_state+0x30/0x6c
-      mdp5_pipe_release+0x2c/0xd4
-      mdp5_plane_atomic_check+0x290/0x414
-      drm_atomic_helper_check_planes+0xd8/0x210
-      drm_atomic_helper_check+0x54/0xb0
-      drm_atomic_check_only+0x4b0/0x8f4
-      drm_atomic_commit+0x68/0xe0
-
-Fixes: d59be579fa93 ("drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Patchwork: https://patchwork.freedesktop.org/patch/492701/
-Link: https://lore.kernel.org/r/20220707162040.1594855-1-robdclark@gmail.com
+Fixes: c8eb2d7e8202 ("[media] media: Add Mediatek MDP Driver")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
+Reviewed-by: Irui Wang <irui.wang@mediatek.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-index a4f5cb90f3e8..e4b8a789835a 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-@@ -123,12 +123,13 @@ int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
- {
- 	struct msm_drm_private *priv = s->dev->dev_private;
- 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
--	struct mdp5_global_state *state = mdp5_get_global_state(s);
-+	struct mdp5_global_state *state;
- 	struct mdp5_hw_pipe_state *new_state;
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+index 2cb8cecb3077..b810c96695c8 100644
+--- a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
++++ b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+@@ -40,12 +40,14 @@ struct mdp_ipi_init {
+  * @ipi_id        : IPI_MDP
+  * @ap_inst       : AP mtk_mdp_vpu address
+  * @vpu_inst_addr : VPU MDP instance address
++ * @padding       : Alignment padding
+  */
+ struct mdp_ipi_comm {
+ 	uint32_t msg_id;
+ 	uint32_t ipi_id;
+ 	uint64_t ap_inst;
+ 	uint32_t vpu_inst_addr;
++	uint32_t padding;
+ };
  
- 	if (!hwpipe)
- 		return 0;
- 
-+	state = mdp5_get_global_state(s);
- 	if (IS_ERR(state))
- 		return PTR_ERR(state);
- 
+ /**
 -- 
 2.35.1
 
