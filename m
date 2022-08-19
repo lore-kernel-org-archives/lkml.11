@@ -2,107 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB5FC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65F9C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351243AbiHSRzP (ORCPT
+        id S1349928AbiHSR40 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        Fri, 19 Aug 2022 13:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351220AbiHSRyu (ORCPT
+        with ESMTP id S1352295AbiHSRzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:54:50 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4389184ECC;
-        Fri, 19 Aug 2022 10:35:23 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id k14so4935413pfh.0;
-        Fri, 19 Aug 2022 10:35:23 -0700 (PDT)
+        Fri, 19 Aug 2022 13:55:43 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA56754A4;
+        Fri, 19 Aug 2022 10:37:36 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id gb36so10051413ejc.10;
+        Fri, 19 Aug 2022 10:37:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc;
-        bh=HJOADyjEijTZgHMmhk5s3Tca02tMu8m4cNUu2EhYaAU=;
-        b=fdmiJtb9RMBLJTQ+Xgl/kx6fm6FmEyy0L/lYlYxIWJX5k3m+R5z3YbZgU7aYih8WAc
-         sAmQjBqm9+W17s6M38OvDRgjiaSaOqlC0SCu+JBOU3BI1QYBGiJOsQ+t76kaxgeBcVGJ
-         NuCOoSKl8ukmGAzUbJrV5NkBVynK+S6LGQjUYKInpZa7u/wu9ffgjzLdBX0VsxlKllze
-         1VjABlNkXWdpcbqbtajq/AT7I3QwDIS9ZOX2ev3qXXy/waWCcM9UnVkD2OOyffE+BsUR
-         ZRZQCqFQ25mZ5LqtHndedni2VRA0mWJ1bu8qjDcUWiWZEPkPcZiQmUfAl3l5vL+MdaJs
-         46vQ==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc;
+        bh=XMhdxcayB7NvmBY1v3/q80/CfpweTA7+ilDxiqMN9/E=;
+        b=BvV0lSHZe5gbu00tO9mrrGfNwZojebEXelBO7GXkcjZXOsMLqDadmtUKTyIhETABLa
+         t59lbqaSYmfbQ4lmBhx3hiHSGkuQ4JlBNoEwxofMXhAoMr5Kcad137QapAoWY5NFh3fh
+         Y1O6BiS3xXe59S531bEeKL6kNKd+fZk4VNQJIJmIZ+1YDjHwSmoQhW501secDGxpN907
+         QbdWP6t634cYXlYPDCoUj1tmR0DrXBq8Dl4gX2jZ6uz7A5+HiwannZRBu5mLqg9G1UW6
+         Re70d88rysUQFODy6hSr6/zD5YvT/CXuLr1qH2QtSumQGXvVa1wAbvnVuj0m2opCJDMF
+         NfBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=HJOADyjEijTZgHMmhk5s3Tca02tMu8m4cNUu2EhYaAU=;
-        b=fMpIqFjexyWXUNpjOBoyThm/LCu/sacwSJruEYbesWRFU3J3dCvR5kz3iGVZF7hZGF
-         1t//iqk/lv37ZOqbj0yymmrD2F8YyqSM282mE1gBHqrbMx3NkJ37jEbxOAC+ojyhvjka
-         W8zx3lt9KUMhVYzKRv4zdFb9hj5+bN69JITRyhPzNxt2+AoQmKrhPjC9KaE5zzdj3HdI
-         ey9mr8rO98098U+7t4HHp1B00KTCgwO7NsAjlF84+NCSVOPt5TOEXpOY0GZaWuimkh47
-         ewiesEvhWlAUZFl/QMvhCrhP7wAjBeqJ4j7OHdf+lUlW4aCcLsYaZNDwieaa3+GOuNfk
-         XW3Q==
-X-Gm-Message-State: ACgBeo1yoItwAIg4zkUFZf5Nz2WnAoffiCJfdqDFysglCHtuxfltawdF
-        ZCbHJBmD0AKjpfdAHedc8pBfRecml7o=
-X-Google-Smtp-Source: AA6agR4oZ1QImb2//4w2oB/fgGghUe4I3us2MzRuh0RNXn7NIGpxiEUSBf0ktiEmz2DtHEXYyrshdQ==
-X-Received: by 2002:a63:dc56:0:b0:419:e9df:28ce with SMTP id f22-20020a63dc56000000b00419e9df28cemr7006612pgj.48.1660930522661;
-        Fri, 19 Aug 2022 10:35:22 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:db7d])
-        by smtp.gmail.com with ESMTPSA id c9-20020a170902d48900b0016db43e5212sm3489712plg.175.2022.08.19.10.35.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 10:35:22 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 19 Aug 2022 07:35:20 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        "yukuai (C)" <yukuai3@huawei.com>
-Subject: Re: [PATCH v7 9/9] blk-throttle: clean up flag 'THROTL_TG_PENDING'
-Message-ID: <Yv/J2CXNdEimfqlv@slm.duckdns.org>
-References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
- <20220802140415.2960284-10-yukuai1@huaweicloud.com>
- <Yvv6kk/RD5LT+3dk@slm.duckdns.org>
- <65d93ec6-2465-35f1-314f-f092ce631100@huaweicloud.com>
- <Yv0rR9gBL0qbYeXp@slm.duckdns.org>
- <841b7b5a-b908-649a-c09d-32c8de5f1c14@huaweicloud.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc;
+        bh=XMhdxcayB7NvmBY1v3/q80/CfpweTA7+ilDxiqMN9/E=;
+        b=LvR87bhgZ9H5G8bBYdaeMhkubv++dRycjk3UH6dTMkwReuQVS868w5Qxs/Wd1Vs8HL
+         V3M1uYb1ict3u96GSBLiZbJR/RaiD9OBGa6pmmrPU7CvdLUOi8aBoXwwyzi+GoKkQT/9
+         hLecV99IBBl6tgNUTJhHIJTlQcFn9fE1e69/K4TsUMBS0hSaBhux3mW6c31wIWLjFP0O
+         +EgNh0eRzHMqAhhBUhRZvheXFSmvcJ6XTy8Uth4izeGEuSHyfaGlZJ4rd+FENwyf+l34
+         acX0e+c7nyJF1Tn9wnqlbnvi12j7nJdQ5DS1Wyxb+TNbg017V2eer9FTm69avWDXlIgv
+         gr/A==
+X-Gm-Message-State: ACgBeo0QfyuSG25vosOLALbkfAkLSHSpQZ/3zj9kXouUk1SKJsTwbUuA
+        nfl6UDLlsxa4ANpk9/4HDhE=
+X-Google-Smtp-Source: AA6agR7h/IQJ5GacyKlcm1YG1B4x2HSBa5tDFoJT4ecn4SSoEK+VDOXxxv01YQG2gnhlRef2dfCX7Q==
+X-Received: by 2002:a17:907:1c8f:b0:6e8:f898:63bb with SMTP id nb15-20020a1709071c8f00b006e8f89863bbmr5639177ejc.721.1660930654898;
+        Fri, 19 Aug 2022 10:37:34 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id b15-20020a1709063f8f00b007336c3f05bdsm2646738ejj.178.2022.08.19.10.37.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 10:37:34 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <bab3cc28-4473-d446-bb6d-bca6939adb63@redhat.com>
+Date:   Fri, 19 Aug 2022 19:37:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <841b7b5a-b908-649a-c09d-32c8de5f1c14@huaweicloud.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 2/3] KVM: x86/mmu: Fully re-evaluate MMIO caching when
+ SPTE masks change
+Content-Language: en-US
+To:     David Matlack <dmatlack@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kai Huang <kai.huang@intel.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+References: <20220803224957.1285926-1-seanjc@google.com>
+ <20220803224957.1285926-3-seanjc@google.com>
+ <CALzav=e_H0LU+2-KcG_bPahVhJM8YGnH24J6aJ9HG9Eqj-waew@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CALzav=e_H0LU+2-KcG_bPahVhJM8YGnH24J6aJ9HG9Eqj-waew@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 05:29:39PM +0800, Yu Kuai wrote:
-> Hi, Tejun!
+On 8/19/22 18:21, David Matlack wrote:
+> On Wed, Aug 3, 2022 at 3:50 PM Sean Christopherson <seanjc@google.com> wrote:
+>>
+>> Fully re-evaluate whether or not MMIO caching can be enabled when SPTE
+>> masks change; simply clearing enable_mmio_caching when a configuration
+>> isn't compatible with caching fails to handle the scenario where the
+>> masks are updated, e.g. by VMX for EPT or by SVM to account for the C-bit
+>> location, and toggle compatibility from false=>true.
+>>
+>> Snapshot the original module param so that re-evaluating MMIO caching
+>> preserves userspace's desire to allow caching.  Use a snapshot approach
+>> so that enable_mmio_caching still reflects KVM's actual behavior.
 > 
-> 在 2022/08/18 1:54, Tejun Heo 写道:
-> > Hello,
-> > 
-> > On Wed, Aug 17, 2022 at 09:45:13AM +0800, Yu Kuai wrote:
-> > > > I don't know whether this is better or not. It's minutely less lines of code
-> > > > but also makes the code a bit more fragile. I'm ambivalent. At any rate,
-> > > > please move these trivial patches to the head of the series or post them
-> > > > separately.
-> > > 
-> > > Can I ask why do you think this patch makes the code a bit more fragile?
-> > 
-> > It's just one step further removed. Before, the flag was trivially in sync
-> > with the on queue status. After, the relationship is more indirect and
-> > easier to break accidentally. Not that it's a major problem. Just not sure
-> > what the benefit of the change is.
+> Is updating module parameters to reflect the actual behavior (vs.
+> userspace desire) something we should do for all module parameters?
 > 
-> If you are worried about that, I can keep the flag, then the last two
-> patches will cleanup:
+> I am doing an unrelated refactor to the tdp_mmu module parameter and
+> noticed it is not updated e.g. if userspace loads kvm_intel with
+> ept=N.
 
-I wasn't necessarily worried. It's more that I couldn't tell why the code is
-better afterwards. Maybe update the commit message to explain why the new
-code is better?
+If it is cheap/easy then yeah, updating the parameters is the right 
+thing to do.  Generally, however, this is only done for 
+kvm_intel/kvm_amd modules that depend on hardware features, because they 
+are more important for debugging user issues.  (Or at least they were 
+until vmx features were added to /proc/cpuinfo).
 
-Thanks.
-
--- 
-tejun
+Paolo
