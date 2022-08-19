@@ -2,245 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D782AC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE528C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346938AbiHSHA6 (ORCPT
+        id S1346922AbiHSHBB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 03:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
+        Fri, 19 Aug 2022 03:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346817AbiHSHAl (ORCPT
+        with ESMTP id S1346858AbiHSHAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 03:00:41 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A351BD296
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:00:33 -0700 (PDT)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220819070028epoutp0193c187e01f2ff1ed2d8edc2b4c888d23~MrN0RWdIU1887018870epoutp01h
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:00:28 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220819070028epoutp0193c187e01f2ff1ed2d8edc2b4c888d23~MrN0RWdIU1887018870epoutp01h
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1660892428;
-        bh=wSppfcu80Jat1P3mvcqiATRJLkc71gy/XgEBekoydYg=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=sPTAWW8f7SH5QsZvUNC61uEFeu2maaxrjY/22RXykOEIw81XTXw+KPb+/h61dTKCx
-         dm3wM/DUoSVm9GRkxJYgIOaCS2Fr/swqzcxVvTAPXoO/gfwYclySfQYbZ/S3QcsNKh
-         zXonbo6xqQgRkmSQghkSqkcCNkhs4FceSdbGwC0c=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220819070027epcas5p14fc654a5e47ce4e043303cbbac216009~MrNz6UoHF1013110131epcas5p10;
-        Fri, 19 Aug 2022 07:00:27 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.177]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4M8CLx0lXYz4x9Q1; Fri, 19 Aug
-        2022 07:00:25 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A8.1E.09494.6053FF26; Fri, 19 Aug 2022 16:00:22 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220819043928epcas5p33942271e69c4e21dcbc506cce74fbbf4~MpStYb-Rn0547805478epcas5p3R;
-        Fri, 19 Aug 2022 04:39:28 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220819043928epsmtrp1555f02093d2b9c4faaaa3f73211af9fe~MpStXnuob2633826338epsmtrp13;
-        Fri, 19 Aug 2022 04:39:28 +0000 (GMT)
-X-AuditID: b6c32a4a-201ff70000012516-35-62ff3506c782
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        5B.4C.08802.0041FF26; Fri, 19 Aug 2022 13:39:28 +0900 (KST)
-Received: from mshams02 (unknown [107.122.12.94]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220819043927epsmtip13e2ba04fe94b991e2fe5faa9abda3172~MpSsSrgch1298112981epsmtip16;
-        Fri, 19 Aug 2022 04:39:26 +0000 (GMT)
-From:   "m.shams" <m.shams@samsung.com>
-To:     =?iso-8859-1?Q?'Uwe_Kleine-K=F6nig'?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     <thierry.reding@gmail.com>, <lee.jones@linaro.org>,
-        <linux-pwm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <alim.akhtar@samsung.com>
-In-Reply-To: <20220810171033.bfkzkdipw2v5yorh@pengutronix.de>
-Subject: RE: [PATCH] pwm: removes period check from pwm_apply_state()
-Date:   Fri, 19 Aug 2022 10:09:18 +0530
-Message-ID: <009c01d8b385$aa615f40$ff241dc0$@samsung.com>
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2078.outbound.protection.outlook.com [40.107.22.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA551A83B;
+        Fri, 19 Aug 2022 00:00:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dpBhCRreRtAsetNaqRYtFz/7uhXS2Zc5YXYiX7yJnEq2DF4Jgkumx99JDHw20rBfOodvjyvoFoRKnC3CbbODUldcSDYyJcq+Ww08kyQieKQrqlslFkdgTtVZEVyIh+IVBoXxHbzF8tuBRw7qoD0w3CVw+kcVYIEWWhaZmxVDSyrDFbJlJsNjAi/E8Jb3KMhTJLDyquRN5NeqcGahFm1jPLbOnK560nLHfvk/S4gsWXKqXq4a+C/k5YqdZG4XY0uDU+kXUbuamn2HLHiIdCvBBTYHVx35VUcbY9bf+4TlDQ1XzhBeQ4akjV8uAr8+N8YCxSc3AH2P8Jy1629q+IhsmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gd3VYNsGQXI3W91x8h9TQ2L9ikaOGmPCMBRYTR6flyM=;
+ b=KPloVDin7TaIhsycEscYwMfBtjbxvQAjFpuXEOwqffnQ6tcj+6LVcLb29nj9E6TbaXDX3sRlv74kBm8Dhkys8DDK1ltmoM217oW1Az9zoHBcvFcHJxAGxfptLsa/j2aMP3jf0nznMMs3XYMahrJViqXSuNZ64sP1TFhyadV/ZSDvGn0M8/l3CVSFVxZF6GxW4zgnJeb0OL7j+dsoGOztDfeNkLKcNQBjqLervZxXxqhaD9bpQkOs89fibf0L5nVDxMhH7qSFlT42k4H4PBIe20I9Qw/SyxzADhpg0FEjnn8MGK3y2PyWyvTmeXsmZnU0/6p7QwqobSPkbB0pTU5H3Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 139.15.153.203) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=in.bosch.com;
+ dmarc=pass (p=reject sp=none pct=100) action=none header.from=in.bosch.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.bosch.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gd3VYNsGQXI3W91x8h9TQ2L9ikaOGmPCMBRYTR6flyM=;
+ b=Kzv4w4PrMsqecBlJZ67Ap+G/idoD3FiGH9EhYtQXtdnnwqf+Z55/nU89/ElNMaIZ3ci9Jn1Q6TZRwNTauAE9DGlUAvOgYxY+769r2lDonqwf9hmHUMCBUXALI5SHldS6dQaWxyXnKuZmGinfmfpklKIXokMu1yQISZDChXcAA3Y=
+Received: from DB8PR09CA0011.eurprd09.prod.outlook.com (2603:10a6:10:a0::24)
+ by VI1PR10MB3535.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:13e::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Fri, 19 Aug
+ 2022 07:00:33 +0000
+Received: from DBAEUR03FT020.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:10:a0:cafe::f1) by DB8PR09CA0011.outlook.office365.com
+ (2603:10a6:10:a0::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11 via Frontend
+ Transport; Fri, 19 Aug 2022 07:00:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 139.15.153.203)
+ smtp.mailfrom=in.bosch.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=in.bosch.com;
+Received-SPF: Pass (protection.outlook.com: domain of in.bosch.com designates
+ 139.15.153.203 as permitted sender) receiver=protection.outlook.com;
+ client-ip=139.15.153.203; helo=eop.bosch-org.com; pr=C
+Received: from eop.bosch-org.com (139.15.153.203) by
+ DBAEUR03FT020.mail.protection.outlook.com (100.127.143.27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5546.15 via Frontend Transport; Fri, 19 Aug 2022 07:00:33 +0000
+Received: from SI-EXCAS2001.de.bosch.com (10.139.217.202) by eop.bosch-org.com
+ (139.15.153.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.31; Fri, 19 Aug
+ 2022 09:00:33 +0200
+Received: from FE-HUB2000.de.bosch.com (10.4.103.109) by
+ SI-EXCAS2001.de.bosch.com (10.139.217.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Fri, 19 Aug 2022 09:00:32 +0200
+Received: from localhost.localdomain (10.167.0.81) by FE-HUB2000.de.bosch.com
+ (10.4.103.109) with Microsoft SMTP Server id 15.1.2375.31; Fri, 19 Aug 2022
+ 09:00:29 +0200
+From:   <Gireesh.Hiremath@in.bosch.com>
+To:     <linux-omap@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+        <bcousson@baylibre.com>, <tony@atomide.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <dmitry.torokhov@gmail.com>,
+        <mkorpershoek@baylibre.com>, <davidgow@google.com>,
+        <m.felsch@pengutronix.de>, <swboyd@chromium.org>,
+        <fengping.yu@mediatek.com>, <y.oudjana@protonmail.com>,
+        <rdunlap@infradead.org>, <colin.king@intel.com>,
+        <Gireesh.Hiremath@in.bosch.com>
+CC:     <sjoerd.simons@collabora.co.uk>, <VinayKumar.Shettar@in.bosch.com>,
+        <Govindaraji.Sivanantham@in.bosch.com>,
+        <anaclaudia.dias@de.bosch.com>
+Subject: [PATCH v3 3/3] dt-bindings: input: gpio-matrix-keypad: add reduced matrix keypad bindings definition
+Date:   Fri, 19 Aug 2022 06:59:46 +0000
+Message-ID: <20220819065946.9572-3-Gireesh.Hiremath@in.bosch.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220819065946.9572-1-Gireesh.Hiremath@in.bosch.com>
+References: <20220819065946.9572-1-Gireesh.Hiremath@in.bosch.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQE14N23Ecc1n6hvU/1TooO9Vl2YEgEF3maVAoBW2yoC+wqOdQK9h22TAppw35ICpXWcEK6HU1ow
-Content-Language: en-in
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmli6b6f8kg3XrrSwezNvGZnH/61FG
-        i8u75rBZ3L27itHi5655LBa3J05mdGDz2DnrLrvHnWt72Dz6/xp49G1ZxejxeZNcAGtUtk1G
-        amJKapFCal5yfkpmXrqtkndwvHO8qZmBoa6hpYW5kkJeYm6qrZKLT4CuW2YO0AFKCmWJOaVA
-        oYDE4mIlfTubovzSklSFjPziElul1IKUnAKTAr3ixNzi0rx0vbzUEitDAwMjU6DChOyMp687
-        GQsmeFW8//mCtYFxgkcXIyeHhICJxI+2LuYuRi4OIYHdjBJHtv1mg3A+MUrs2TSfEcL5zCjx
-        blU7G0zLpd07WSESuxglZvRchep/xihxbd4PoAwHB5uAqsSOmyIgDSICXhJzL+9mB6lhFpjE
-        KPGj/xgrSIJTwFZizvfDTCD1wgKuEh9/MYKEWYBau1f9AFvGK2Ap8ejFWShbUOLkzCcsIDaz
-        gJ7EjalT2CBsbYllC18zQxynIPHz6TKwE0QEoiRWPU+CKBGXOPqzB+xMCYGJHBLf1r+GesZF
-        Yvulg1C2sMSr41vYIWwpiZf9bVB2usTch71MEHaBxLJd36Hi9hIHrsxhgbBlJaaeWscEsYxP
-        ovf3E6h6Xokd82BsRYn/u/uhesUl3q2YwjqBUWkWktdmIXltFpLXZiH5YQEjyypGydSC4tz0
-        1GLTAqO81HJ4jCfn525iBCdQLa8djA8ffNA7xMjEwXiIUYKDWUmE98adP0lCvCmJlVWpRfnx
-        RaU5qcWHGE2BAT6RWUo0OR+YwvNK4g1NLA1MzMzMTCyNzQyVxHm9rm5KEhJITyxJzU5NLUgt
-        gulj4uCUamDqTZOQdN+llsH4sPVbZ0dhxavwM5WneQrldE+c9L2u/albdvNcBa4vG2sduTLn
-        Lf23Pm1nktMb1i9iVWr9ro78Z07y6h+fWe0XcqZDM9wucIXXx2Jl/fRp+3mynI0lfgioMOW7
-        fONOeOT5/9/Mmz7hpxMaWc7vrNi+z+zn6c56rnX/vO0PpbOW3lqxN+b661UXj6/u/zlRp+E7
-        w5T/h54ed7OV+3j6gvqdLTvuz9qwwlLWpp+T9bYW47xLYkJLZc5/XGDm67rx5Luq7NQJM5dz
-        2Gy2WVSSXyWg0LuNRYZR5tStXRpSJcKOzzZxapw1ZVrA2H3u+aE/+xRKkuXDeFjFb07d4v1H
-        8MJRnkajSmUlluKMREMt5qLiRABOLV6UKQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNLMWRmVeSWpSXmKPExsWy7bCSnC6DyP8kg+dLWSwezNvGZnH/61FG
-        i8u75rBZ3L27itHi5655LBa3J05mdGDz2DnrLrvHnWt72Dz6/xp49G1ZxejxeZNcAGsUl01K
-        ak5mWWqRvl0CV8a8jmOsBWf0Kz4fvcTcwLhIpYuRk0NCwETi0u6drF2MXBxCAjsYJb71PWCH
-        SIhLTPu1nxHCFpZY+e85WFxI4AmjxLIjIl2MHBxsAqoSO26KgIRFBLwk5l7ezQ4yh1lgGqPE
-        1Nt3GSGG/mSSWLh4GTNIFaeArcSc74eZQJqFBVwlPv4Cm88CNKd71Q82EJtXwFLi0YuzULag
-        xMmZT1hAbGYBA4n7hzpYIWxtiWULXzND3KYg8fPpMlaQkSICURKrnidBlIhLHP3ZwzyBUXgW
-        kkmzkEyahWTSLCQtCxhZVjFKphYU56bnFhsWGOWllusVJ+YWl+al6yXn525iBMePltYOxj2r
-        PugdYmTiYDzEKMHBrCTCe+POnyQh3pTEyqrUovz4otKc1OJDjNIcLErivBe6TsYLCaQnlqRm
-        p6YWpBbBZJk4OKUamLYkXr2yYgX7x9i2ORvStdQ2Vy8MKpm8l3lVyN4ct68+5/keRfxbkpvv
-        Kfv8a42snNDfXS9qtp2bzLRS5XIZv3lf8rVvOcvuHfOvKlVrjMz5cj9+897GXqMti2U+F0z8
-        7tf43GgHi8wNX6/5nwqb3ybkfkwR5LI9uaZ7oevCaWFp9rEMxj2qSpt/B+Wbr30wpSFqe400
-        0/X3Zd/PtoQqnN9z5W3NToV9p9xn/U7MnWimYVNlKGUwb+NHxhzz13q/6xes+bZINNJ8lXXP
-        +Y9TEniezHgjz6ygx9G+7rdF5c6Zz5uid5T26MZdTXKJe8UdI6dqcrIr51VxeGx4rhSXuZ5E
-        4X2bdM6rp7bZbjvCpsRSnJFoqMVcVJwIAHWq6X4OAwAA
-X-CMS-MailID: 20220819043928epcas5p33942271e69c4e21dcbc506cce74fbbf4
-X-Msg-Generator: CA
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea
-References: <CGME20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea@epcas5p2.samsung.com>
-        <20220805101125.47955-1-m.shams@samsung.com>
-        <20220805155509.edqwxcvyoqfic4pn@pengutronix.de>
-        <019701d8ab31$94c86d60$be594820$@samsung.com>
-        <20220808174842.jiato34jzqstchdn@pengutronix.de>
-        <004301d8acad$e31fee70$a95fcb50$@samsung.com>
-        <20220810171033.bfkzkdipw2v5yorh@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.167.0.81]
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f28012e3-4ae4-4ce1-207a-08da81b082d5
+X-MS-TrafficTypeDiagnostic: VI1PR10MB3535:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QBTm6S3Lm9eZlfqvKHnxFToa+7YmL+W2hXhiEH+QoXs73Z0Iqm3E9Qt7b96wubq7cht84u5n+gbZ2k7bbk2zN5uJ22edrD0VwieU8C/xeKxvUsdH6bmiQraX1h3xO7FTdPexe+hPtdU/yDhdgCyvdZRkZ9yI5ekNxUTu82VPQJiRiQqhVyM2ObYmQrAp12uMsKuX50/FJ0DYd9tnMtI6jHg5brBX7gOFkfe7Fgk3nddm1rPTX8SrY2h1puMM0V+gvgG+FXWRueWF28VkEgG/9zX7n6gVgkFWAUMVJguPsio8EgEz2fBfC4uIKwqoem1UqBqkk6K8mvTT+pqECzTtoyWAkueArp26PHQRqtLNjc4bhfbC65lqJYUziiGyZhLDMueuMCYWQ0S7mvX4GPJmpOuTPzR1QkqAHnTAcvBO+cDfEEOBvgIxRlbwWDYB0wCny6V7GhIy3EWHfqmdbhwyoXRTm0k+NPjfh5bcKdzJzKpH1NyzhF1dm+Wsnd+sy9owIGVN/ptzpuS763JIMnnaDbhJC5zEiBKmNN3y75jzFyUTlxshDvJNrQSnH/QgtXf1M2YTUb3xbwxuLNUHFH24xjUsPsAgvRfolU/4dToXOHnKgMewnZfwHWdsUGBRxOYP9s/LD5s0FWRqX5swzhN6mJq7reKcPLqRi2apB3rW0gNgqT6Z08VHqrPSbwjnsKCrav4CjCf0fL4baaMI0ezSg6896dROhad3ahJn+q5x4qQDJ9U6/k8IMtJaZ87k3hFsEvMOms8utxz3mgC/jNI5Tb2bbsj10lW4CaUDytMr5zDLY0sNVbCqY5HNJ3JZmexU
+X-Forefront-Antispam-Report: CIP:139.15.153.203;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:eop.bosch-org.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(376002)(39860400002)(136003)(46966006)(36840700001)(40470700004)(7049001)(81166007)(82960400001)(82310400005)(316002)(110136005)(54906003)(8676002)(356005)(4326008)(8936002)(70206006)(86362001)(5660300002)(70586007)(26005)(40480700001)(47076005)(36860700001)(40460700003)(107886003)(2616005)(186003)(16526019)(336012)(1076003)(82740400003)(7416002)(6666004)(41300700001)(478600001)(921005)(2906002)(2876002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: in.bosch.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 07:00:33.4329
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f28012e3-4ae4-4ce1-207a-08da81b082d5
+X-MS-Exchange-CrossTenant-Id: 0ae51e19-07c8-4e4b-bb6d-648ee58410f4
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=0ae51e19-07c8-4e4b-bb6d-648ee58410f4;Ip=[139.15.153.203];Helo=[eop.bosch-org.com]
+X-MS-Exchange-CrossTenant-AuthSource: DBAEUR03FT020.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3535
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Uwe,
+From: Gireesh Hiremath <Gireesh.Hiremath@in.bosch.com>
 
-> -----Original Message-----
-> From: Uwe Kleine-K=F6nig=20=5Bmailto:u.kleine-koenig=40pengutronix.de=5D=
-=0D=0A>=20Sent:=2010=20August=202022=2022:41=0D=0A>=20To:=20m.shams=20<m.sh=
-ams=40samsung.com>=0D=0A>=20Cc:=20thierry.reding=40gmail.com;=20lee.jones=
-=40linaro.org;=20linux-=0D=0A>=20pwm=40vger.kernel.org;=20linux-kernel=40vg=
-er.kernel.org;=0D=0A>=20alim.akhtar=40samsung.com=0D=0A>=20Subject:=20Re:=
-=20=5BPATCH=5D=20pwm:=20removes=20period=20check=20from=20pwm_apply_state()=
-=0D=0A>=20=0D=0A>=20Hello,=0D=0A>=20=0D=0A>=20On=20Wed,=20Aug=2010,=202022=
-=20at=2005:09:30PM=20+0530,=20m.shams=20wrote:=0D=0A>=20>=20>=20I=20fixed=
-=20up=20the=20quoting=20for=20you=20in=20this=20mail.=20Please=20fix=20your=
-=20mailer=0D=0A>=20>=20>=20to=20not=0D=0A>=20>=20break=0D=0A>=20>=20>=20quo=
-tes,=20this=20is=20quite=20annoying.=20(Looking=20at=20the=20headers=20of=
-=20your=20mail=0D=0A>=20>=20you're=20using=0D=0A>=20>=20>=20Outlook.=20Then=
-=20your=20only=20viable=20option=20is=20to=20switch=20to=20a=20saner=0D=0A>=
-=20>=20>=20client.)=0D=0A>=20>=20>=0D=0A>=20>=0D=0A>=20>=20Sorry=20for=20th=
-e=20inconvenience.=20I=20have=20fixed=20my=20mailer.=0D=0A>=20=0D=0A>=20No=
-=20you=20didn't.=0D=0A>=20=0D=0A>=20>=20>=20On=20Mon,=20Aug=2008,=202022=20=
-at=2007:47:03PM=20+0530,=20m.shams=20wrote:=0D=0A>=20>=20>=20>=20On=20Fri,=
-=20Aug=2005,=202022=20at=2003:41:25PM=20+0530,=20Tamseel=20Shams=20wrote:=
-=0D=0A>=20>=20>=20>=20>=20>=20There=20may=20be=20situation=20when=20PWM=20i=
-s=20exported=20using=20sysfs,=20but=0D=0A>=20>=20>=20>=20>=20>=20at=20that=
-=20point=20PWM=20period=20is=20not=20set.=20At=20this=20situation=20if=20we=
-=0D=0A>=20>=20>=20>=20>=20>=20issue=20a=20system=20suspend,=20it=20calls=20=
-pwm_class_suspend=20which=20in=0D=0A>=20>=20>=20>=20>=20>=20turn=20calls=20=
-pwm_apply_state,=20where=20PWM=20period=20value=20is=20checked=0D=0A>=20>=
-=20>=20>=20>=20>=20which=20returns=20an=20invalid=20argument=20error=20casu=
-ing=20Kernel=20to=0D=0A>=20>=20>=20>=20>=20>=20panic.=20So,=20check=20for=
-=20PWM=20period=20value=20is=20removed=20so=20as=20to=20fix=0D=0A>=20>=20>=
-=20>=20>=20>=20the=20kernel=20panic=20observed=20during=20suspend.=0D=0A>=
-=20>=20>=20>=20>=0D=0A>=20>=20>=20>=20>=20This=20looks=20and=20sounds=20wro=
-ng.=20One=20thing=20I=20would=20accept=20is:=0D=0A>=20>=20>=20>=20>=0D=0A>=
-=20>=20>=20>=20>=20diff=20--git=20a/drivers/pwm/core.c=20b/drivers/pwm/core=
-.c=20index=0D=0A>=20>=20>=20>=20>=200e042410f6b9..075bbcdad6c1=20100644=0D=
-=0A>=20>=20>=20>=20>=20---=20a/drivers/pwm/core.c=0D=0A>=20>=20>=20>=20>=20=
-+++=20b/drivers/pwm/core.c=0D=0A>=20>=20>=20>=20>=20=40=40=20-557,8=20+557,=
-8=20=40=40=20int=20pwm_apply_state(struct=20pwm_device=0D=0A>=20*pwm,=0D=0A=
->=20>=20>=20const=20struct=20pwm_state=20*state)=0D=0A>=20>=20>=20>=20>=20=
-=09=20*/=0D=0A>=20>=20>=20>=20>=20=09might_sleep();=0D=0A>=20>=20>=20>=20>=
-=0D=0A>=20>=20>=20>=20>=20-=09if=20(=21pwm=20=7C=7C=20=21state=20=7C=7C=20=
-=21state->period=20=7C=7C=0D=0A>=20>=20>=20>=20>=20-=09=20=20=20=20state->d=
-uty_cycle=20>=20state->period)=0D=0A>=20>=20>=20>=20>=20+=09if=20(=21pwm=20=
-=7C=7C=20=21state=20=7C=7C=20state->enabled=20&&=20(=21state->period=20=7C=
-=7C=0D=0A>=20>=20>=20>=20>=20+=09=20=20=20=20state->duty_cycle=20>=20state-=
->period))=0D=0A>=20>=20>=20>=20>=20=20=09=09return=20-EINVAL;=0D=0A>=20>=20=
->=20>=20>=0D=0A>=20>=20>=20>=20>=20=09chip=20=3D=20pwm->chip;=0D=0A>=20>=20=
->=20>=20>=0D=0A>=20>=20>=20>=20>=20That=20is,=20don't=20refuse=20calling=20=
-pwm_apply_state()=20for=0D=0A>=20>=20>=20>=20>=20state->period=20=3D=0D=0A>=
-=20>=20>=20>=20>=200=20and=20even=20state->duty_cycle=20>=20state->period=
-=20if=20the=20>=20>=20PWM=20is=0D=0A>=20>=20>=20>=20>=20not=0D=0A>=20>=20en=
-abled.=0D=0A>=20>=20>=20>=0D=0A>=20>=20>=20>=20By=20this=20do=20you=20mean=
-=20doing=20it=20following=20way?=0D=0A>=20>=20>=20>=0D=0A>=20>=20>=20>=20if=
-=20(=21pwm=20=7C=7C=20=21state=20=7C=7C=20(pwm=20&&=20=21state->period)=20=
-=7C=7C=0D=0A>=20>=20>=20>=20=09=20=20=20=20(pwm=20&&=20state->duty_cycle=20=
->=20state->period))=0D=0A>=20>=20>=20>=20=09=09return=20-EINVAL;=0D=0A>=20>=
-=20>=0D=0A>=20>=20>=20No.=20Your=20expression=20is=20logically=20equivalent=
-=20to=20what=20we=20already=20have.=0D=0A>=20>=20>=20I=0D=0A>=20>=20>=20mea=
-nt:=0D=0A>=20>=20>=0D=0A>=20>=20>=20=09if=20(=21pwm=20=7C=7C=20=21state=20=
-=7C=7C=20state->enabled=20&&=20(=21state->period=20=7C=7C=0D=0A>=20>=20>=20=
-=09=20=20=20=20state->duty_cycle=20>=20state->period))=0D=0A>=20>=20>=20=09=
-=09return=20-EINVAL;=0D=0A>=20>=20>=0D=0A>=20>=20>=20Learning=20to=20read=
-=20diffs=20(maybe=20Outlook=20scrambled=20the=20view=20for=20you,=0D=0A>=20=
->=20>=20too?)=20is=0D=0A>=20>=20a=0D=0A>=20>=20>=20nice=20capability=20you=
-=20should=20master.=0D=0A>=20>=20>=0D=0A>=20>=20>=20>=20>=20But=20anyhow,=
-=20even=20without=20that=20the=20kernel=20should=20not=20panic.=20So=20I=0D=
-=0A>=20>=20>=20>=20>=20ask=20you=20to=20research=20and=20provide=20some=20m=
-ore=20info=20about=20>=20>=20the=0D=0A>=20problem.=0D=0A>=20>=20>=20>=20>=
-=20(Which=20hardware=20does=20it=20affect?=20Where=20does=20it=20panic?=20.=
-..)=0D=0A>=20>=20>=20>=0D=0A>=20>=20>=20>=20Observing=20Kernel=20panic=20in=
-=20exynos=20SoC=20when=20we=20issue=20system=20suspend.=0D=0A>=20>=20>=20>=
-=20Following=20is=20the=20snippet=20of=20error:=0D=0A>=20>=20>=20>=0D=0A>=
-=20>=20>=20>=20=23=20echo=20mem=20>=20/sys/power/state=0D=0A>=20>=20>=20>=
-=20=5B=20=20=2029.224784=5D=20010:=20Kernel=20panic=20-=20not=20syncing:=20=
-pwm=20pwmchip0:=0D=0A>=20>=20>=20>=20dpm_run_callback=20failure=0D=0A>=20>=
-=20>=20>=20=5B=20=20=2029.240134=5D=20010:=20Call=20trace:=0D=0A>=20>=20>=
-=20>=20=5B=20=20=2029.242993=5D=20010:=20=20dump_backtrace+0x0/0x1b8=0D=0A>=
-=20>=20>=20>=20=5B=20=20=2029.247067=5D=20010:=20=20show_stack+0x24/0x30=0D=
-=0A>=20>=20>=20>=20=5B=20=20=2029.250793=5D=20010:=20=20dump_stack+0xb8/0x1=
-14=0D=0A>=20>=20>=20>=20=5B=20=20=2029.254606=5D=20010:=20=20panic+0x180/0x=
-398=0D=0A>=20>=20>=20>=20=5B=20=20=2029.258073=5D=20010:=20=20dpm_run_callb=
-ack+0x270/0x278=0D=0A>=20>=20>=20>=20=5B=20=20=2029.262493=5D=20010:=20=20_=
-_device_suspend+0x15c/0x628=0D=0A>=20>=20>=20>=20=5B=20=20=2029.266913=5D=
-=20010:=20=20dpm_suspend+0x124/0x3b0=0D=0A>=20>=20>=20>=20=5B=20=20=2029.27=
-0899=5D=20010:=20=20dpm_suspend_start+0xa0/0xa8=0D=0A>=20>=20>=20>=20=5B=20=
-=20=2029.275233=5D=20010:=20=20suspend_devices_and_enter+0x110/0x968=0D=0A>=
-=20>=20>=20>=20=5B=20=20=2029.280433=5D=20010:=20=20pm_suspend+0x308/0x3d8=
-=0D=0A>=20>=20>=20>=20=5B=20=20=2029.284333=5D=20010:=20=20state_store+0x8c=
-/0x110=0D=0A>=20>=20>=20>=20=5B=20=20=2029.288233=5D=20010:=20=20kobj_attr_=
-store+0x14/0x28=0D=0A>=20>=20>=20>=20=5B=20=20=2029.292393=5D=20010:=20=20s=
-ysfs_kf_write+0x5c/0x78=0D=0A>=20>=20>=20>=20=5B=20=20=2029.296466=5D=20010=
-:=20=20kernfs_fop_write+0x10c/0x220=0D=0A>=20>=20>=20>=20=5B=20=20=2029.300=
-886=5D=20010:=20=20__vfs_write+0x48/0x90=0D=0A>=20>=20>=20>=20=5B=20=20=202=
-9.304699=5D=20010:=20=20vfs_write+0xb8/0x1c0=0D=0A>=20>=20>=20>=20=5B=20=20=
-=2029.308426=5D=20010:=20=20ksys_write+0x74/0x100=0D=0A>=20>=20>=20>=20=5B=
-=20=20=2029.312240=5D=20010:=20=20__arm64_sys_write+0x24/0x30=0D=0A>=20>=20=
->=20>=20=5B=20=20=2029.316573=5D=20010:=20=20el0_svc_handler+0x110/0x1b8=0D=
-=0A>=20>=20>=20>=20=5B=20=20=2029.320906=5D=20010:=20=20el0_svc+0x8/0x1bc=
-=0D=0A>=20>=20>=20>=20=5B=20=20=2029.324374=5D=20010:=20SMP:=20stopping=20s=
-econdary=20CPUs=0D=0A>=20>=20>=20>=20=5B=20=20=2029.328711=5D=20010:=20Kern=
-el=20Offset:=20disabled=0D=0A>=20>=20>=20>=20=5B=20=20=2029.332607=5D=20010=
-:=20CPU=20features:=200x0002,00006008=0D=0A>=20>=20>=20>=20=5B=20=20=2029.3=
-37026=5D=20010:=20Memory=20Limit:=20none=0D=0A>=20>=20>=20>=20=5B=20=20=202=
-9.343949=5D=20010:=20Rebooting=20in=201=20seconds..=0D=0A>=20>=20>=20>=20=
-=5B=20=20=2030.344539=5D=20010:=20Disabling=20non-boot=20CPUs=20...=0D=0A>=
-=20>=20>=0D=0A>=20>=20>=20Just=20locking=20at=20that=20and=20starring=20at=
-=20drivers/base/power/main.c=20for=20a=0D=0A>=20>=20>=20while=20doesn't=20m=
-ake=20this=20clearer=20to=20me.=20Are=20you=20using=20a=20mainline=0D=0Aker=
-nel?=0D=0A>=20>=20>=20Which=20version?=0D=0A>=20>=20>=0D=0A>=20>=0D=0A>=20>=
-=20Looks=20like=20I=20had=20some=20local=20patch=20which=20was=20causing=20=
-the=20error=20to=0D=0A>=20>=20trigger=20Kernel=20Panic=20(sorry=20about=20t=
-hat).=0D=0A>=20>=20On=20removing=20those=20local=20changes,=20I=20do=20not=
-=20observe=20kernel=20panic,=20but=0D=0A>=20>=20observe=20following=20error=
-=20and=20then=20suspend=20fails.=0D=0A>=20>=0D=0A>=20>=20=5B=20=20=2063.963=
-063=5D=20pwm=20pwmchip0:=20PM:=20dpm_run_callback=20():=0D=0A>=20>=20pwm_cl=
-ass_suspend+0x0/0xf8=20returns=20-22=0D=0A>=20>=20=5B=20=20=2063.963079=5D=
-=20pwm=20pwmchip0:=20PM:=20failed=20to=20suspend:=20error=20-22=0D=0A>=20>=
-=0D=0A>=20>=20So,=20as=20to=20fix=20this=20issue=20I=20will=20post=20a=20ne=
-w=20version=20of=20patch=20containing=0D=0A>=20>=20change=20suggested=20by=
-=20you.=0D=0A>=20=0D=0A>=20Note=20that=20my=20suggestion=20only=20covers=20=
-you=20problem,=20it=20doesn't=20solve=20it.=0D=0A>=20=0D=0A=0D=0AYour=20sug=
-gestion=20looks=20like=20a=20permanent=20fix,=20as=20there=20should=20not=
-=20be=20any=20use=0D=0Acase=0D=0Awhere=20we=20check=20for=20=22period=22=20=
-and=20=22duty_cycle=22,=20without=20PWM=20being=20in=20enabled=0D=0Astate.=
-=0D=0A=0D=0AThanks=20&=20Regards,=0D=0ATamseel=20Shams=0D=0A=0D=0A=0D=0A
+Add binding definition for the support of the reduced matrix
+keypad driver.
+
+Signed-off-by: Gireesh Hiremath <Gireesh.Hiremath@in.bosch.com>
+---
+ .../bindings/input/gpio-matrix-keypad.txt     | 96 +++++++++++++++++++
+ 1 file changed, 96 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/input/gpio-matrix-keypad.txt b/Documentation/devicetree/bindings/input/gpio-matrix-keypad.txt
+index 570dc10f0cd7..1cedec29505c 100644
+--- a/Documentation/devicetree/bindings/input/gpio-matrix-keypad.txt
++++ b/Documentation/devicetree/bindings/input/gpio-matrix-keypad.txt
+@@ -1,11 +1,46 @@
+ * GPIO driven matrix keypad device tree bindings
+ 
+ GPIO driven matrix keypad is used to interface a SoC with a matrix keypad.
++
++Generic mode:
+ The matrix keypad supports multiple row and column lines, a key can be
+ placed at each intersection of a unique row and a unique column. The matrix
+ keypad can sense a key-press and key-release by means of GPIO lines and
+ report the event using GPIO interrupts to the cpu.
+ 
++Reduced mode:
++The reduced matric keypad supports multiple gpio lines, all gpio lines
++act as row as well as column lines, a key can be placed at each intersection
++of a row number not equal to a column number and they are diagonally
++symmetric.
++
++Example- For 5 gpio lines, possible matrix is 5x5 and maximum possible
++	keys are 10.
++
++	Sample matrix table for 7 buttons and 5 gpio lines
++
++        ------------------------------------------------------
++        |Row\Col |GPIO 0 | GPIO 1 | GPIO 2 | GPIO 3 | GPIO 4 |
++        ------------------------------------------------------
++        | GPIO 0 |  X    | KEY_9  | KEY_2  |   X    | KEY_1  |
++        ------------------------------------------------------
++        | GPIO 1 | KEY_9 |  X     | KEY_6  |   X    |  X     |
++        ------------------------------------------------------
++        | GPIO 2 | KEY_2 | KEY_6  |  X     | KEY_4  | KEY_7  |
++        ------------------------------------------------------
++        | GPIO 3 |  X    |  X     | KEY_4  |  X     | KEY_8  |
++        ------------------------------------------------------
++        | GPIO 4 | KEY_1 |  X     | KEY_7  | KEY_8  |  X     |
++        ------------------------------------------------------
++        X - invalid key
++        KEY_x - preferred key code
++
++The reduced mode sense a key-press and key-release by polling
++GPIO lines and report the event.
++
++
++Generic mode:
++
+ Required Properties:
+ - compatible:		Should be "gpio-matrix-keypad"
+ - row-gpios:		List of gpios used as row lines. The gpio specifier
+@@ -47,3 +82,64 @@ Example:
+ 				0x0101001C
+ 				0x0201006C>;
+ 	};
++
++Reduced mode:
++
++Required Properties:
++- compatible:		Should be "gpio-matrix-keypad-reduced"
++- number-of-buttons:	Number of buttons connected to the keypad controller.
++- line-gpios:		Gpio lines connected to keypad controller.
++			all gpio lines act as row as well as column lines.
++- linux,keymap:		An array of packed 1-cell entries containing the
++			equivalent of row, column and linux key-code.
++			The 32-bit big endian cell is packed as:
++			row << 24 | column << 16 | key-code
++
++Optional Properties:
++- poll-interval-ms:	Time interval between poll.
++- linux,no-autorepeat:	Do no enable autorepeat feature.
++- col-scan-delay-us:	Delay before scanning next active line.
++
++Example:
++        keypad {
++                compatible = "gpio-matrix-keypad-reduced";
++                poll-interval-ms = <10>;
++                col-scan-delay-us = <2>;
++                number-of-buttons = <7>;
++                linux,no-autorepeat;
++                line-gpios = <
++                        &gpio1 24 1     /*gpio_56*/
++                        &gpio1 23 1     /*gpio_55*/
++                        &gpio1 22 1     /*gpio_54*/
++                        &gpio1 20 1     /*gpio_52*/
++                        &gpio1 16 1     /*gpio_48*/
++                >;
++                linux,keymap = <
++                        0x00000000 /* row 0, col 0, KEY_RESERVED */
++                        0x0001000a /* row 0, col 1, KEY_9 */
++                        0x00020003 /* row 0, col 2, KEY_2 */
++                        0x00030000 /* row 0, col 3, KEY_RESERVED */
++                        0x00040002 /* row 0, col 4, KEY_1 */
++                        0x0100000a /* row 1, col 0, KEY_9 */
++                        0x01010000 /* row 1, col 1, KEY_RESERVED */
++                        0x01020007 /* row 1, col 2, KEY_6 */
++                        0x01030000 /* row 1, col 3, KEY_RESERVED */
++                        0x01040000 /* row 1, col 4, KEY_RESERVED */
++                        0x02000003 /* row 2, col 0, KEY_2 */
++                        0x02010007 /* row 2, col 1, KEY_6 */
++                        0x02020000 /* row 2, col 2, KEY_RESERVED */
++                        0x02030005 /* row 2, col 3, KEY_4 */
++                        0x02040008 /* row 2, col 4, KEY_7 */
++                        0x03000000 /* row 3, col 0, KEY_RESERVED */
++                        0x03010000 /* row 3, col 1, KEY_RESERVED */
++                        0x03020005 /* row 3, col 2, KEY_4 */
++                        0x03030000 /* row 3, col 3, KEY_RESERVED */
++                        0x03040009 /* row 3, col 4, KEY_8 */
++                        0x04000002 /* row 4, col 0, KEY_1 */
++                        0x04010000 /* row 4, col 1, KEY_RESERVED */
++                        0x04020008 /* row 4, col 2, KEY_7 */
++                        0x04030009 /* row 4, col 3, KEY_8 */
++                        0x04040000 /* row 4, col 4, KEY_RESERVED */
++                >;
++
++        };
+-- 
+2.20.1
+
