@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 572ACC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EFCC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353216AbiHSQeB (ORCPT
+        id S1353229AbiHSQeJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        Fri, 19 Aug 2022 12:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353151AbiHSQap (ORCPT
+        with ESMTP id S1353188AbiHSQbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:30:45 -0400
+        Fri, 19 Aug 2022 12:31:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91F411C95A;
-        Fri, 19 Aug 2022 09:04:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147CB11D529;
+        Fri, 19 Aug 2022 09:05:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 852996181A;
-        Fri, 19 Aug 2022 16:04:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775FEC433D6;
-        Fri, 19 Aug 2022 16:04:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B107761825;
+        Fri, 19 Aug 2022 16:04:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E92C433D6;
+        Fri, 19 Aug 2022 16:04:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925091;
-        bh=Q1XKlkSmNB0ooyHW5Aovx9xJyAFbdCyQd9xyTfaZqJY=;
+        s=korg; t=1660925094;
+        bh=0rSuf08xxpAs4juZrf9DdyilhYifmFUsrkyHzwVov84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QRk1aIW+yfGFHAVld46MtZFY/YEtQMen13nZ+c72v+zRIYMk+bvb1B+ta9YAlRg5G
-         hnMgn8eZTZjsyxYHy6Em1i56ORO6J8gXMGEvLzwT424GNqECoTRwb4BNX95+tUUTkr
-         rfWtYuRTJOd2ndG6n6F18aTt1bSNYar2OkkkzH2Q=
+        b=2kTlsVujd273sMzw0OvFCxbxse9Xu9EBn3RzBQFkvCSETh3q1FhYfhovrZ/fLV26h
+         3flVRBE2uXzHcW+52ESDqRNmqsL+DrIlvjqLC3AtVcmFo+hXJSQ+6yIka3ujPSwkWM
+         6g53l/Jko3UVBROyj/z/Moixig6lZDDeQy5h13hM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Robert Richter <rric@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 351/545] RDMA/srpt: Introduce a reference count in struct srpt_device
-Date:   Fri, 19 Aug 2022 17:42:01 +0200
-Message-Id: <20220819153845.086670476@linuxfoundation.org>
+Subject: [PATCH 5.10 342/545] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
+Date:   Fri, 19 Aug 2022 17:41:52 +0200
+Message-Id: <20220819153844.706015370@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,92 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit aa7dfbb41b5a60ab90e244d6f586b8cb5c791c3e ]
+[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
 
-This will be used to keep struct srpt_device around as long as either the
-RDMA port exists or a LIO target port is associated with the struct
-srpt_device.
+In octeon_mmc_probe(), we should call of_node_put() when breaking
+out of for_each_child_of_node() which has increased and decreased
+the refcount during each iteration.
 
-Link: https://lore.kernel.org/r/20220727193415.1583860-3-bvanassche@acm.org
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Robert Richter <rric@kernel.org>
+Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/srpt/ib_srpt.c | 17 +++++++++++++++--
- drivers/infiniband/ulp/srpt/ib_srpt.h |  2 ++
- 2 files changed, 17 insertions(+), 2 deletions(-)
+ drivers/mmc/host/cavium-octeon.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
-index 4cecdcee606a..211d4e82e4ba 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.c
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
-@@ -3101,6 +3101,18 @@ static int srpt_use_srq(struct srpt_device *sdev, bool use_srq)
- 	return ret;
- }
- 
-+static void srpt_free_sdev(struct kref *refcnt)
-+{
-+	struct srpt_device *sdev = container_of(refcnt, typeof(*sdev), refcnt);
-+
-+	kfree(sdev);
-+}
-+
-+static void srpt_sdev_put(struct srpt_device *sdev)
-+{
-+	kref_put(&sdev->refcnt, srpt_free_sdev);
-+}
-+
- /**
-  * srpt_add_one - InfiniBand device addition callback function
-  * @device: Describes a HCA.
-@@ -3118,6 +3130,7 @@ static int srpt_add_one(struct ib_device *device)
- 	if (!sdev)
- 		return -ENOMEM;
- 
-+	kref_init(&sdev->refcnt);
- 	sdev->device = device;
- 	mutex_init(&sdev->sdev_mutex);
- 
-@@ -3213,7 +3226,7 @@ static int srpt_add_one(struct ib_device *device)
- 	srpt_free_srq(sdev);
- 	ib_dealloc_pd(sdev->pd);
- free_dev:
--	kfree(sdev);
-+	srpt_sdev_put(sdev);
- 	pr_info("%s(%s) failed.\n", __func__, dev_name(&device->dev));
- 	return ret;
- }
-@@ -3257,7 +3270,7 @@ static void srpt_remove_one(struct ib_device *device, void *client_data)
- 
- 	ib_dealloc_pd(sdev->pd);
- 
--	kfree(sdev);
-+	srpt_sdev_put(sdev);
- }
- 
- static struct ib_client srpt_client = {
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
-index 1d28f13196c9..978a338f1f0e 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.h
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
-@@ -434,6 +434,7 @@ struct srpt_port {
- 
- /**
-  * struct srpt_device - information associated by SRPT with a single HCA
-+ * @refcnt:	   Reference count for this device.
-  * @device:        Backpointer to the struct ib_device managed by the IB core.
-  * @pd:            IB protection domain.
-  * @lkey:          L_Key (local key) with write access to all local memory.
-@@ -449,6 +450,7 @@ struct srpt_port {
-  * @port:          Information about the ports owned by this HCA.
-  */
- struct srpt_device {
-+	struct kref		refcnt;
- 	struct ib_device	*device;
- 	struct ib_pd		*pd;
- 	u32			lkey;
+diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
+index 2c4b2df52adb..12dca91a8ef6 100644
+--- a/drivers/mmc/host/cavium-octeon.c
++++ b/drivers/mmc/host/cavium-octeon.c
+@@ -277,6 +277,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "Error populating slots\n");
+ 			octeon_mmc_set_shared_power(host, 0);
++			of_node_put(cn);
+ 			goto error;
+ 		}
+ 		i++;
 -- 
 2.35.1
 
