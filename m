@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6BEC32792
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B071C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353835AbiHSQqc (ORCPT
+        id S1353892AbiHSQqi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
+        Fri, 19 Aug 2022 12:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353779AbiHSQoB (ORCPT
+        with ESMTP id S1353817AbiHSQoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:44:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DF610F6B2;
-        Fri, 19 Aug 2022 09:11:17 -0700 (PDT)
+        Fri, 19 Aug 2022 12:44:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EA065E3;
+        Fri, 19 Aug 2022 09:11:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39B2FB8280D;
-        Fri, 19 Aug 2022 16:09:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE14C433C1;
-        Fri, 19 Aug 2022 16:09:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC7B561826;
+        Fri, 19 Aug 2022 16:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E20C433D6;
+        Fri, 19 Aug 2022 16:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925383;
-        bh=3CDcV5huQiytvVWR8wB+nj8DNkS2O9rtLflfbJ1e1SU=;
+        s=korg; t=1660925425;
+        bh=YH1HjJ5J06cjceDHma5h8vxIfYAmdw4IVgK48rtx978=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dV62Tq/2wTAzZjcRdN3PIUoJZYGp3VjgE26NZVfFo5P/l5B3fMukJpCL7XsydFcHh
-         LK1u22v4sESG5bs510Ek7FEtV769ZBlVVUXLm5VIF/TcejBtNAn7oPXk49Z3ZoVYO+
-         POcFCnrdZZn5WmTn8yU98Do+s76ngYSN8FS0DHYk=
+        b=mORsSMTHZE6LKmOnoUabuI1hSsodmsHk7y0XActvj4/2Qk9b5WR4WfLtP8a9ypdeI
+         RvoCZLP6+rj37ILKS5rQW8UUF+S4NtFl+pZKBfkWyjiaYe0gUWarWizcItJaL/KwoB
+         7OkW6yG4fDIhVqhLtxQeLR7nCO6kIkGuGJu4S60s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 445/545] x86/bugs: Enable STIBP for IBPB mitigated RETBleed
-Date:   Fri, 19 Aug 2022 17:43:35 +0200
-Message-Id: <20220819153849.347431154@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 487/545] serial: 8250: Fold EndRun device support into OxSemi Tornado code
+Date:   Fri, 19 Aug 2022 17:44:17 +0200
+Message-Id: <20220819153851.231234740@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,115 +50,177 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit e6cfcdda8cbe81eaf821c897369a65fec987b404 upstream.
+[ Upstream commit 1f32c65bad24b9787d3e52843de375430e3df822 ]
 
-AMD's "Technical Guidance for Mitigating Branch Type Confusion,
-Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
-Privileged Mode Entry / SMT Safety" says:
+The EndRun PTP/1588 dual serial port device is based on the Oxford
+Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
+for EndRun Technologies and uses the same sequence to determine the
+number of ports available.  Despite that we have duplicate code
+specific to the EndRun device.
 
-  Similar to the Jmp2Ret mitigation, if the code on the sibling thread
-  cannot be trusted, software should set STIBP to 1 or disable SMT to
-  ensure SMT safety when using this mitigation.
+Remove redundant code then and factor out OxSemi Tornado device
+detection.
 
-So, like already being done for retbleed=unret, and now also for
-retbleed=ibpb, force STIBP on machines that have it, and report its SMT
-vulnerability status accordingly.
-
- [ bp: Remove the "we" and remove "[AMD]" applicability parameter which
-   doesn't work here. ]
-
-Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org # 5.10, 5.15, 5.19
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
-Link: https://lore.kernel.org/r/20220804192201.439596-1-kim.phillips@amd.com
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181516220.9383@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |   29 +++++++++++++++++-------
- arch/x86/kernel/cpu/bugs.c                      |   10 ++++----
- 2 files changed, 27 insertions(+), 12 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c | 76 ++++++++++--------------------
+ 1 file changed, 25 insertions(+), 51 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4662,20 +4662,33 @@
- 			Speculative Code Execution with Return Instructions)
- 			vulnerability.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index d2b38ae896d1..df10cc606582 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -994,41 +994,29 @@ static void pci_ite887x_exit(struct pci_dev *dev)
+ }
  
-+			AMD-based UNRET and IBPB mitigations alone do not stop
-+			sibling threads from influencing the predictions of other
-+			sibling threads. For that reason, STIBP is used on pro-
-+			cessors that support it, and mitigate SMT on processors
-+			that don't.
-+
- 			off          - no mitigation
- 			auto         - automatically select a migitation
- 			auto,nosmt   - automatically select a mitigation,
- 				       disabling SMT if necessary for
- 				       the full mitigation (only on Zen1
- 				       and older without STIBP).
--			ibpb	     - mitigate short speculation windows on
--				       basic block boundaries too. Safe, highest
--				       perf impact.
--			unret        - force enable untrained return thunks,
--				       only effective on AMD f15h-f17h
--				       based systems.
--			unret,nosmt  - like unret, will disable SMT when STIBP
--			               is not available.
-+			ibpb         - On AMD, mitigate short speculation
-+				       windows on basic block boundaries too.
-+				       Safe, highest perf impact. It also
-+				       enables STIBP if present. Not suitable
-+				       on Intel.
-+			ibpb,nosmt   - Like "ibpb" above but will disable SMT
-+				       when STIBP is not available. This is
-+				       the alternative for systems which do not
-+				       have STIBP.
-+			unret        - Force enable untrained return thunks,
-+				       only effective on AMD f15h-f17h based
-+				       systems.
-+			unret,nosmt  - Like unret, but will disable SMT when STIBP
-+				       is not available. This is the alternative for
-+				       systems which do not have STIBP.
+ /*
+- * EndRun Technologies.
+- * Determine the number of ports available on the device.
++ * Oxford Semiconductor Inc.
++ * Check if an OxSemi device is part of the Tornado range of devices.
+  */
+ #define PCI_VENDOR_ID_ENDRUN			0x7401
+ #define PCI_DEVICE_ID_ENDRUN_1588	0xe100
  
- 			Selecting 'auto' will choose a mitigation method at run
- 			time according to the CPU.
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -144,7 +144,7 @@ void __init check_bugs(void)
- 	/*
- 	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
--	 * forced for UNRET.
-+	 * forced for UNRET or IBPB.
- 	 */
- 	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
-@@ -1135,7 +1135,8 @@ spectre_v2_user_select_mitigation(void)
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 		if (mode != SPECTRE_V2_USER_STRICT &&
- 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
- 			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
-@@ -2283,10 +2284,11 @@ static ssize_t srbds_show_state(char *bu
- 
- static ssize_t retbleed_show_state(char *buf)
+-static int pci_endrun_init(struct pci_dev *dev)
++static bool pci_oxsemi_tornado_p(struct pci_dev *dev)
  {
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
- 		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
--		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+		    return sprintf(buf, "Vulnerable: untrained return thunk / IBPB on non-AMD based uarch\n");
+-	u8 __iomem *p;
+-	unsigned long deviceID;
+-	unsigned int  number_uarts = 0;
++	/* OxSemi Tornado devices are all 0xCxxx */
++	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
++	    (dev->device & 0xf000) != 0xc000)
++		return false;
  
- 	    return sprintf(buf, "%s; SMT %s\n",
- 			   retbleed_strings[retbleed_mitigation],
+-	/* EndRun device is all 0xexxx */
++	/* EndRun devices are all 0xExxx */
+ 	if (dev->vendor == PCI_VENDOR_ID_ENDRUN &&
+-		(dev->device & 0xf000) != 0xe000)
+-		return 0;
+-
+-	p = pci_iomap(dev, 0, 5);
+-	if (p == NULL)
+-		return -ENOMEM;
++	    (dev->device & 0xf000) != 0xe000)
++		return false;
+ 
+-	deviceID = ioread32(p);
+-	/* EndRun device */
+-	if (deviceID == 0x07000200) {
+-		number_uarts = ioread8(p + 4);
+-		pci_dbg(dev, "%d ports detected on EndRun PCI Express device\n", number_uarts);
+-	}
+-	pci_iounmap(dev, p);
+-	return number_uarts;
++	return true;
+ }
+ 
+ /*
+- * Oxford Semiconductor Inc.
+- * Check that device is part of the Tornado range of devices, then determine
+- * the number of ports available on the device.
++ * Determine the number of ports available on a Tornado device.
+  */
+ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+ {
+@@ -1036,9 +1024,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+ 	unsigned long deviceID;
+ 	unsigned int  number_uarts = 0;
+ 
+-	/* OxSemi Tornado devices are all 0xCxxx */
+-	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
+-	    (dev->device & 0xF000) != 0xC000)
++	if (!pci_oxsemi_tornado_p(dev))
+ 		return 0;
+ 
+ 	p = pci_iomap(dev, 0, 5);
+@@ -1049,7 +1035,10 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+ 	/* Tornado device */
+ 	if (deviceID == 0x07000200) {
+ 		number_uarts = ioread8(p + 4);
+-		pci_dbg(dev, "%d ports detected on Oxford PCI Express device\n", number_uarts);
++		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
++			number_uarts,
++			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
++			"EndRun" : "Oxford");
+ 	}
+ 	pci_iounmap(dev, p);
+ 	return number_uarts;
+@@ -2506,7 +2495,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_ANY_ID,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_endrun_init,
++		.init		= pci_oxsemi_tornado_init,
+ 		.setup		= pci_default_setup,
+ 	},
+ 	/*
+@@ -2929,7 +2918,6 @@ enum pci_board_num_t {
+ 	pbn_panacom2,
+ 	pbn_panacom4,
+ 	pbn_plx_romulus,
+-	pbn_endrun_2_3906250,
+ 	pbn_oxsemi,
+ 	pbn_oxsemi_1_3906250,
+ 	pbn_oxsemi_2_3906250,
+@@ -3455,20 +3443,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.first_offset	= 0x03,
+ 	},
+ 
+-	/*
+-	 * EndRun Technologies
+-	* Uses the size of PCI Base region 0 to
+-	* signal now many ports are available
+-	* 2 port 952 Uart support
+-	*/
+-	[pbn_endrun_2_3906250] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 3906250,
+-		.uart_offset	= 0x200,
+-		.first_offset	= 0x1000,
+-	},
+-
+ 	/*
+ 	 * This board uses the size of PCI Base region 0 to
+ 	 * signal now many ports are available
+@@ -4400,13 +4374,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_ROMULUS,
+ 		0x10b5, 0x106a, 0, 0,
+ 		pbn_plx_romulus },
+-	/*
+-	* EndRun Technologies. PCI express device range.
+-	*    EndRun PTP/1588 has 2 Native UARTs.
+-	*/
+-	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_endrun_2_3906250 },
+ 	/*
+ 	 * Quatech cards. These actually have configurable clocks but for
+ 	 * now we just use the default.
+@@ -4668,6 +4635,13 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_2_OX_IBM,
+ 		PCI_SUBVENDOR_ID_IBM, PCI_ANY_ID, 0, 0,
+ 		pbn_oxsemi_2_3906250 },
++	/*
++	 * EndRun Technologies. PCI express device range.
++	 * EndRun PTP/1588 has 2 Native UARTs utilizing OxSemi 952.
++	 */
++	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_2_3906250 },
+ 
+ 	/*
+ 	 * SBS Technologies, Inc. P-Octal and PMC-OCTPRO cards,
+-- 
+2.35.1
+
 
 
