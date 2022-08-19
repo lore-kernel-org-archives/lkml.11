@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B00CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B15CC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352896AbiHSQ24 (ORCPT
+        id S1352903AbiHSQ3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41910 "EHLO
+        Fri, 19 Aug 2022 12:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353008AbiHSQ0A (ORCPT
+        with ESMTP id S1353030AbiHSQ0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:26:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A20F14D6;
-        Fri, 19 Aug 2022 09:03:45 -0700 (PDT)
+        Fri, 19 Aug 2022 12:26:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B72510F689;
+        Fri, 19 Aug 2022 09:03:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F134612DF;
-        Fri, 19 Aug 2022 16:03:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C282C433D7;
-        Fri, 19 Aug 2022 16:03:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 207FAB82813;
+        Fri, 19 Aug 2022 16:03:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBBCC433C1;
+        Fri, 19 Aug 2022 16:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925011;
-        bh=fafzBX3pbMLUlCle5R2Fa+/PttDn+jS3CmHEktaG9G4=;
+        s=korg; t=1660925025;
+        bh=/4ZOjVGkzyskBJxw7fJOb8dioi+LGEMss3iRlveg4x0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w4aEHsZklvg4dGXTMOgEoO3a2Ndy7xwrjQTlipwHMq/RuGAoN4RMTcyeo28+LhKZ+
-         DCiGKkDyfcJG29L6hcDOh82Fh5AX/gCI4Bt0f5iT2cRU0nRwnzv4/jkm/ygB7KIQcf
-         ZbXS7ysP3nB3EQgQ+NBBXolLuzoAj5lYtpM2VRmE=
+        b=vFfUrYf0fZ47w+GUEKYqBVoHiwKhuOZbz9I96qIKtDPe2xyKpAgQqBH9u6USYn6IF
+         eZYL+6JJ+udhkN/t2zyh1H6zd/368ybox8u/WB4t+SCufpCYknr9MsmHoAmp76WH9P
+         NNo6M0QBSfW0bDlaVrPlcU4PYnE40KleaVhEH+Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Aveksis <itayav@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Li Lingfeng <lilingfeng3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 355/545] RDMA/mlx5: Add missing check for return value in get namespace flow
-Date:   Fri, 19 Aug 2022 17:42:05 +0200
-Message-Id: <20220819153845.279115503@linuxfoundation.org>
+Subject: [PATCH 5.10 360/545] ext4: recover csum seed of tmp_inode after migrating to extents
+Date:   Fri, 19 Aug 2022 17:42:10 +0200
+Message-Id: <20220819153845.495249814@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,44 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Li Lingfeng <lilingfeng3@huawei.com>
 
-[ Upstream commit c9776457bd5eaad4ce4ecb17af8d8f3cc6957c0b ]
+[ Upstream commit 07ea7a617d6b278fb7acedb5cbe1a81ce2de7d0c ]
 
-Add missing check for return value when calling to
-mlx5_ib_ft_type_to_namespace, even though it can't really fail in this
-specific call.
+When migrating to extents, the checksum seed of temporary inode
+need to be replaced by inode's, otherwise the inode checksums
+will be incorrect when swapping the inodes data.
 
-Fixes: 52438be44112 ("RDMA/mlx5: Allow inserting a steering rule to the FDB")
-Link: https://lore.kernel.org/r/7b9ceda217d9368a51dc47a46b769bad4af9ac92.1659256069.git.leonro@nvidia.com
-Reviewed-by: Itay Aveksis <itayav@nvidia.com>
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+However, the temporary inode can not match it's checksum to
+itself since it has lost it's own checksum seed.
+
+mkfs.ext4 -F /dev/sdc
+mount /dev/sdc /mnt/sdc
+xfs_io -fc "pwrite 4k 4k" -c "fsync" /mnt/sdc/testfile
+chattr -e /mnt/sdc/testfile
+chattr +e /mnt/sdc/testfile
+umount /dev/sdc
+fsck -fn /dev/sdc
+
+========
+...
+Pass 1: Checking inodes, blocks, and sizes
+Inode 13 passes checks, but checksum does not match inode.  Fix? no
+...
+========
+
+The fix is simple, save the checksum seed of temporary inode, and
+recover it after migrating to extents.
+
+Fixes: e81c9302a6c3 ("ext4: set csum seed in tmp inode while migrating to extents")
+Signed-off-by: Li Lingfeng <lilingfeng3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220617062515.2113438-1-lilingfeng3@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/fs.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ fs/ext4/migrate.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
-index b3391ecedda7..0404e6f22d37 100644
---- a/drivers/infiniband/hw/mlx5/fs.c
-+++ b/drivers/infiniband/hw/mlx5/fs.c
-@@ -2081,12 +2081,10 @@ static int mlx5_ib_matcher_ns(struct uverbs_attr_bundle *attrs,
- 		if (err)
- 			return err;
+diff --git a/fs/ext4/migrate.c b/fs/ext4/migrate.c
+index 49912814f3d8..04320715d61f 100644
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -417,7 +417,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	struct inode *tmp_inode = NULL;
+ 	struct migrate_struct lb;
+ 	unsigned long max_entries;
+-	__u32 goal;
++	__u32 goal, tmp_csum_seed;
+ 	uid_t owner[2];
  
--		if (flags) {
--			mlx5_ib_ft_type_to_namespace(
-+		if (flags)
-+			return mlx5_ib_ft_type_to_namespace(
- 				MLX5_IB_UAPI_FLOW_TABLE_TYPE_NIC_TX,
- 				&obj->ns_type);
--			return 0;
--		}
- 	}
+ 	/*
+@@ -465,6 +465,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	 * the migration.
+ 	 */
+ 	ei = EXT4_I(inode);
++	tmp_csum_seed = EXT4_I(tmp_inode)->i_csum_seed;
+ 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+@@ -575,6 +576,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	 * the inode is not visible to user space.
+ 	 */
+ 	tmp_inode->i_blocks = 0;
++	EXT4_I(tmp_inode)->i_csum_seed = tmp_csum_seed;
  
- 	obj->ns_type = MLX5_FLOW_NAMESPACE_BYPASS;
+ 	/* Reset the extent details */
+ 	ext4_ext_tree_init(handle, tmp_inode);
 -- 
 2.35.1
 
