@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8154C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2191C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350370AbiHSQeQ (ORCPT
+        id S1353245AbiHSQeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
+        Fri, 19 Aug 2022 12:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353218AbiHSQbG (ORCPT
+        with ESMTP id S1353271AbiHSQbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A1311D51F;
-        Fri, 19 Aug 2022 09:05:13 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E1011DD71;
+        Fri, 19 Aug 2022 09:05:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2A996177D;
-        Fri, 19 Aug 2022 16:05:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06484C433C1;
-        Fri, 19 Aug 2022 16:05:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA6F6B82802;
+        Fri, 19 Aug 2022 16:05:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F014AC433C1;
+        Fri, 19 Aug 2022 16:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925109;
-        bh=0LRa2qW6GKXsFvHpfCpJ6RmeVaMfVKEE0QrVISvZ+qo=;
+        s=korg; t=1660925100;
+        bh=+UtN0AIL922XwYUjvPUsGMiAJ8uKZqCejSINW9N/Hfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2shO/PaKC6MCx39owtaV6w9+DQUR77JpfN1oj6JCrh7WYJX3+Ay7jIhWjj5fzBsI6
-         UCejbJsJSfbV5romun8oyrRVLbzfqvC+7s03F/nJU/riwy7jyH+Iwyqio9g8ksuevG
-         2qFYIyD6KYAoslpJshR5oMuVRil1jKoIEfLCXwM4=
+        b=I7UFDJHvNjK/CKxWjXGIBz2dT2bK66j7hbdVxCdSaZGgFvp382HbFilcQsyD1aU5r
+         dIFf9+xqz7FaLEqHl1raNp2mW6wVHCGkWgcIzgHOi74nMf1QB2Dvh3AI2tzGSC8+K/
+         CF6Ya6jaOmBUxZ5nW9CSZS4owl42JtbGd99M6L1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.10 387/545] ASoC: qcom: Fix missing of_node_put() in asoc_qcom_lpass_cpu_platform_probe()
-Date:   Fri, 19 Aug 2022 17:42:37 +0200
-Message-Id: <20220819153846.722891413@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 384/545] tty: n_gsm: fix non flow control frames during mux flow off
+Date:   Fri, 19 Aug 2022 17:42:34 +0200
+Message-Id: <20220819153846.598477709@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,35 +49,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit f507c0c67dac57d2bcd5dcae4b6139b0305d8957 ]
+[ Upstream commit bec0224816d19abe4fe503586d16d51890540615 ]
 
-We should call of_node_put() for the reference 'dsp_of_node' returned by
-of_parse_phandle() which will increase the refcount.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.6 states that FCoff stops the
+transmission on all channels except the control channel. This is already
+implemented in gsm_data_kick(). However, chapter 5.4.8.1 explains that this
+shall result in the same behavior as software flow control on the ldisc in
+advanced option mode. That means only flow control frames shall be sent
+during flow off. The current implementation does not consider this case.
 
-Fixes: 9bae4880acee ("ASoC: qcom: move ipq806x specific bits out of lpass driver.")
-Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220702020109.263980-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Change gsm_data_kick() to send only flow control frames if constipated to
+abide the standard. gsm_read_ea_val() and gsm_is_flow_ctrl_msg() are
+introduced as helper functions for this.
+It is planned to use gsm_read_ea_val() in later code cleanups for other
+functions, too.
+
+Fixes: c01af4fec2c8 ("n_gsm : Flow control handling in Mux driver")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220701061652.39604-5-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/lpass-cpu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/n_gsm.c | 54 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/qcom/lpass-cpu.c b/sound/soc/qcom/lpass-cpu.c
-index e620a62ef534..03abb3d719d0 100644
---- a/sound/soc/qcom/lpass-cpu.c
-+++ b/sound/soc/qcom/lpass-cpu.c
-@@ -846,6 +846,7 @@ int asoc_qcom_lpass_cpu_platform_probe(struct platform_device *pdev)
- 	dsp_of_node = of_parse_phandle(pdev->dev.of_node, "qcom,adsp", 0);
- 	if (dsp_of_node) {
- 		dev_err(dev, "DSP exists and holds audio resources\n");
-+		of_node_put(dsp_of_node);
- 		return -EBUSY;
- 	}
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index cb8de8d61265..fe14eed0aa2e 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -417,6 +417,27 @@ static int gsm_read_ea(unsigned int *val, u8 c)
+ 	return c & EA;
+ }
  
++/**
++ *	gsm_read_ea_val	-	read a value until EA
++ *	@val: variable holding value
++ *	@data: buffer of data
++ *	@dlen: length of data
++ *
++ *	Processes an EA value. Updates the passed variable and
++ *	returns the processed data length.
++ */
++static unsigned int gsm_read_ea_val(unsigned int *val, const u8 *data, int dlen)
++{
++	unsigned int len = 0;
++
++	for (; dlen > 0; dlen--) {
++		len++;
++		if (gsm_read_ea(val, *data++))
++			break;
++	}
++	return len;
++}
++
+ /**
+  *	gsm_encode_modem	-	encode modem data bits
+  *	@dlci: DLCI to encode from
+@@ -653,6 +674,37 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
+ 	return m;
+ }
+ 
++/**
++ *	gsm_is_flow_ctrl_msg	-	checks if flow control message
++ *	@msg: message to check
++ *
++ *	Returns true if the given message is a flow control command of the
++ *	control channel. False is returned in any other case.
++ */
++static bool gsm_is_flow_ctrl_msg(struct gsm_msg *msg)
++{
++	unsigned int cmd;
++
++	if (msg->addr > 0)
++		return false;
++
++	switch (msg->ctrl & ~PF) {
++	case UI:
++	case UIH:
++		cmd = 0;
++		if (gsm_read_ea_val(&cmd, msg->data + 2, msg->len - 2) < 1)
++			break;
++		switch (cmd & ~PF) {
++		case CMD_FCOFF:
++		case CMD_FCON:
++			return true;
++		}
++		break;
++	}
++
++	return false;
++}
++
+ /**
+  *	gsm_data_kick		-	poke the queue
+  *	@gsm: GSM Mux
+@@ -671,7 +723,7 @@ static void gsm_data_kick(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ 	int len;
+ 
+ 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_list, list) {
+-		if (gsm->constipated && msg->addr)
++		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
+ 			continue;
+ 		if (gsm->encoding != 0) {
+ 			gsm->txframe[0] = GSM1_SOF;
 -- 
 2.35.1
 
