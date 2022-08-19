@@ -2,187 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98870C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA9EC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239228AbiHSWLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 18:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
+        id S237417AbiHSWN3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 18:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239022AbiHSWLQ (ORCPT
+        with ESMTP id S233564AbiHSWNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 18:11:16 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361D8D7D1B
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:11:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660947075; x=1692483075;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wkSL4YcRImAsSr0vR7QMBeygezS34rFVcTAH931PSlI=;
-  b=cmqtIKfbmciiCeTMwI+5QgC4M7eSzMObHlQBcYaUgqE/2Rm+EKABmNR6
-   5hAineaaG235orBC2D8Csmbs9pOQBWrHeE5pErQAZdE3+ybXb9NgGGFJN
-   WJy9Rniep571fuY5EZOTqtaqpBdwe0AjXe3miPvnXXdCNz0U52Mf3O7gR
-   bQQ7IwRP28xaiMa57MiEwNI/EbVqKxwpiqPq37m0SgHn0geljs2M1V0IL
-   C7sHY2j6omdGSvNo0C7yPEJZLvXKFXQt4k58aMpu8gEroAyQ504sLipIG
-   h+o4ZD9GyuF5kjZQUTYmxNRLPm3Wgsv8o3SnuabQhpes2Q01imiyosnAm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="276146523"
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="276146523"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 15:11:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="641402174"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 19 Aug 2022 15:11:13 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPACu-0001rJ-2g;
-        Fri, 19 Aug 2022 22:11:12 +0000
-Date:   Sat, 20 Aug 2022 06:10:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [intel-tdx:guest-hardening-rebased 35/36]
- drivers/virtio/virtio_mmio.c:611:6: error: implicit declaration of function
- 'cc_platform_has' is invalid in C99
-Message-ID: <202208200658.d5mG6HxB-lkp@intel.com>
+        Fri, 19 Aug 2022 18:13:24 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B26CE22
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:13:23 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id u15so2526708ejt.6
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=16fAIGzEbw49AZ48+GRIZV4iZqYCUe0NmdYkhGz6SEg=;
+        b=eD7eDFBykw9Q5L2Rz1bnauG31uWhhvgzRSgKTzkdL/yvd7d+nYzjACqlpg8hTLOOOF
+         LzwH0BhAHiKd8e2qickT3fWHfCNtK4lbIC0PoWTE/kIZgvVcA3W07jkroHUUPOajxr7e
+         CbasemjSBSrWUyTs9YeCuPKk7+PSUWK5zPynTe5DpSYXWlUQFmoCnypBgzH80x8w5iW+
+         diZE+YUjkqqxJXw4GCT/lAaKLL7MPB3xhG2HJUOSwaxCTtLXRJ7TnpYyfYI6bgz1vvYI
+         5aLXQCaUXgxoXLpz2g3pzcXs9v0+Ml6t1tTwjwz6sjiU5Z/XmtpbKYSFQNDefhw2nXfU
+         YdHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=16fAIGzEbw49AZ48+GRIZV4iZqYCUe0NmdYkhGz6SEg=;
+        b=NW7nNYH9RlnSJaHtHh0vTe7iXGFn41z5hq/ZW/oajh9V9B6+gkaFm3MBIwZEprph6I
+         15t93qs2DUa2DgP9h6FBKDlUgMQvsXXwoXn58LE67Y4yn7qc6nc6TEm7OEo0e7xbCKo0
+         q+vtHK5ZMTHnytf9xo3V+vwRUdddDrWSsLhEMdYuv7TjlQ9347BmGuewzu2FYbXDMkpm
+         XHQH8NbssfkcpPIMXk6PoM0azncL5ju4ncl3i1WC9zob2VcpGM1CymfN/+3FhgkZf84G
+         2hCbca24lwsMKLb9A2bOopR7LORMYEcJC07Gx5yHgRulAZYnS/BkZn5w2dQtZIndRD37
+         ZXVw==
+X-Gm-Message-State: ACgBeo00eEHQlgk1CyRJiI0gOsOLWRpOkpqsChT/hYYXfQUZncxvD2hS
+        ikVOPG0cE/Yy/CG0yS0o8pwi5uEFCbR+4dvSr06SDQ==
+X-Google-Smtp-Source: AA6agR6exRbXrSWA4PZkprt/ywDmZGOGor6d/7N9S7XW/yyVnnhi3RWm9fYmE4MuuVQubZLREAMzqWQ/74Obz8Kt5gk=
+X-Received: by 2002:a17:906:5a71:b0:730:aaa1:a9ec with SMTP id
+ my49-20020a1709065a7100b00730aaa1a9ecmr6143409ejc.440.1660947202148; Fri, 19
+ Aug 2022 15:13:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220805134908.749935-1-conor.dooley@microchip.com>
+In-Reply-To: <20220805134908.749935-1-conor.dooley@microchip.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 20 Aug 2022 00:13:11 +0200
+Message-ID: <CACRpkdb1jnq2C+ke1i-tis-2jMLjxbb14YusMRp607Avm4k6ow@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: add PolarFire SoC dt bindings
+To:     Conor Dooley <conor.dooley@microchip.com>
+Cc:     Daire McNamara <daire.mcnamara@microchip.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, Mark Brown <broonie@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/virtio/virtio_mmio.c
-tree:   https://github.com/intel/tdx.git guest-hardening-rebased
-head:   d941f409a509c084250b50a3b5fc1c3c84a596a0
-commit: 8aee8422c3b96f5d4dde1f31f8a96409a3e55c48 [35/36] virtio-mmio: Disable in TDX guest
-config: hexagon-buildonly-randconfig-r005-20220820 (https://download.01.org/0day-ci/archive/20220820/202208200658.d5mG6HxB-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 0ac597f3cacf60479ffd36b03766fa7462dabd78)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/8aee8422c3b96f5d4dde1f31f8a96409a3e55c48
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-hardening-rebased
-        git checkout 8aee8422c3b96f5d4dde1f31f8a96409a3e55c48
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/virtio/
+On Fri, Aug 5, 2022 at 3:49 PM Conor Dooley <conor.dooley@microchip.com> wr=
+ote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> So far when I added bindings for the platform I never added them to
+> our MAINTAINERS entry. No time like the present to improve the coverage.
+>
+> Suggested-by: Mark Brown <broonie@kernel.org>
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+> I have another maintainers change queued, I'll send this via soc along
+> with it unless there are any objections.
+>
+> CC: Mark Brown <broonie@kernel.org>
+> CC: Wolfram Sang <wsa@kernel.org>
+> CC: Thierry Reding <thierry.reding@gmail.com>
+> CC: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> CC: Jassi Brar <jassisinghbrar@gmail.com>
+> CC: Linus Walleij <linus.walleij@linaro.org>
+> CC: Bartosz Golaszewski <brgl@bgdev.pl>
+> CC: Wolfgang Grandegger <wg@grandegger.com>
+> CC: Marc Kleine-Budde <mkl@pengutronix.de>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Arnd Bergmann <arnd@arndb.de>
+> CC: Olof Johansson <olof@lixom.net>
+> CC: Michael Turquette <mturquette@baylibre.com>
+> CC: Stephen Boyd <sboyd@kernel.org>
 
-All errors (new ones prefixed by >>):
+The Subject on this patch is wrong?
 
->> drivers/virtio/virtio_mmio.c:611:6: error: implicit declaration of function 'cc_platform_has' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-               ^
->> drivers/virtio/virtio_mmio.c:611:22: error: use of undeclared identifier 'CC_ATTR_GUEST_HARDENED'
-           if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-                               ^
->> drivers/virtio/virtio_mmio.c:611:22: error: use of undeclared identifier 'CC_ATTR_GUEST_HARDENED'
->> drivers/virtio/virtio_mmio.c:611:22: error: use of undeclared identifier 'CC_ATTR_GUEST_HARDENED'
-   drivers/virtio/virtio_mmio.c:657:33: warning: shift count >= width of type [-Wshift-count-overflow]
-                   rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-                                                 ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   drivers/virtio/virtio_mmio.c:666:46: warning: shift count >= width of type [-Wshift-count-overflow]
-                   rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-                                                              ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   2 warnings and 4 errors generated.
-
-
-vim +/cc_platform_has +611 drivers/virtio/virtio_mmio.c
-
-   604	
-   605	static int virtio_mmio_probe(struct platform_device *pdev)
-   606	{
-   607		struct virtio_mmio_device *vm_dev;
-   608		unsigned long magic;
-   609		int rc;
-   610	
- > 611		if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-   612			return -ENODEV;
-   613	
-   614		vm_dev = devm_kzalloc(&pdev->dev, sizeof(*vm_dev), GFP_KERNEL);
-   615		if (!vm_dev)
-   616			return -ENOMEM;
-   617	
-   618		vm_dev->vdev.dev.parent = &pdev->dev;
-   619		vm_dev->vdev.dev.release = virtio_mmio_release_dev;
-   620		vm_dev->vdev.config = &virtio_mmio_config_ops;
-   621		vm_dev->pdev = pdev;
-   622		INIT_LIST_HEAD(&vm_dev->virtqueues);
-   623		spin_lock_init(&vm_dev->lock);
-   624	
-   625		vm_dev->base = devm_platform_ioremap_resource(pdev, 0);
-   626		if (IS_ERR(vm_dev->base))
-   627			return PTR_ERR(vm_dev->base);
-   628	
-   629		/* Check magic value */
-   630		magic = readl(vm_dev->base + VIRTIO_MMIO_MAGIC_VALUE);
-   631		if (magic != ('v' | 'i' << 8 | 'r' << 16 | 't' << 24)) {
-   632			dev_warn(&pdev->dev, "Wrong magic value 0x%08lx!\n", magic);
-   633			return -ENODEV;
-   634		}
-   635	
-   636		/* Check device version */
-   637		vm_dev->version = readl(vm_dev->base + VIRTIO_MMIO_VERSION);
-   638		if (vm_dev->version < 1 || vm_dev->version > 2) {
-   639			dev_err(&pdev->dev, "Version %ld not supported!\n",
-   640					vm_dev->version);
-   641			return -ENXIO;
-   642		}
-   643	
-   644		vm_dev->vdev.id.device = readl(vm_dev->base + VIRTIO_MMIO_DEVICE_ID);
-   645		if (vm_dev->vdev.id.device == 0) {
-   646			/*
-   647			 * virtio-mmio device with an ID 0 is a (dummy) placeholder
-   648			 * with no function. End probing now with no error reported.
-   649			 */
-   650			return -ENODEV;
-   651		}
-   652		vm_dev->vdev.id.vendor = readl(vm_dev->base + VIRTIO_MMIO_VENDOR_ID);
-   653	
-   654		if (vm_dev->version == 1) {
-   655			writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
-   656	
-   657			rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-   658			/*
-   659			 * In the legacy case, ensure our coherently-allocated virtio
-   660			 * ring will be at an address expressable as a 32-bit PFN.
-   661			 */
-   662			if (!rc)
-   663				dma_set_coherent_mask(&pdev->dev,
-   664						      DMA_BIT_MASK(32 + PAGE_SHIFT));
-   665		} else {
-   666			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-   667		}
-   668		if (rc)
-   669			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-   670		if (rc)
-   671			dev_warn(&pdev->dev, "Failed to enable 64-bit or 32-bit DMA.  Trying to continue, but this might not work.\n");
-   672	
-   673		platform_set_drvdata(pdev, vm_dev);
-   674	
-   675		rc = register_virtio_device(&vm_dev->vdev);
-   676		if (rc)
-   677			put_device(&vm_dev->vdev.dev);
-   678	
-   679		return rc;
-   680	}
-   681	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Yours,
+Linus Walleij
