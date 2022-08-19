@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8209C28D13
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAC6C28D13
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242191AbiHSXdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 19:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
+        id S242859AbiHSXdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 19:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241901AbiHSXdS (ORCPT
+        with ESMTP id S241985AbiHSXdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 19:33:18 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5658D25C9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:33:14 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id m3so2302433lfg.10
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Y7BwhUziN7Shv1IDBl73QA6DiHDSzdgJ+ZuTLbMJXkA=;
-        b=Ns54S2g0WBfzfkVQ7/nUOVRNeJaY6npkvHh5zPjpWOZ2JmKtTcTlturtO5zz/h6fyr
-         e354YBuRd+kKsyTy14dJMoQYiD7ll25eIDfcdKLDeq82K7bGN+x/BXRWG4FsL0yhHHkj
-         r+WE5mJQpLd9OcYg5Em0yjmJffK7BiDgDa5hiTS+XWT2Qso4P44deem8MyK77H7dTM4c
-         r0mb92hdAoDu2oX0yWLCx5/ad3Gg9yHQ2rL0wm24k0guhLoRORzYID1pD3RAZ3hU6mDT
-         ycg3m2U0UaA1iJN1rSSwPbjiarcDqYbxCY8/OjcHd2dqsUJSi/6oyQTwuEbg4NXcBzl3
-         LCIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Y7BwhUziN7Shv1IDBl73QA6DiHDSzdgJ+ZuTLbMJXkA=;
-        b=TLu2X0nLKYudgWqEPuHKvenejXaMp9C5q1NOceRT6G3oQk9iyYwUANXvsCvg+ixaNy
-         hloZF/IMZQTJavyhU1AUWS2zfApreKhwEhtDcFJfLokAenLJxcJGYOhwiRA+iyhSv3HP
-         rSqrHB8u5uCjNCdsEIXgt/QU7ePFUghiQraAuwIK90I1idJJTMzRrIZZ9yhpo5MJmi9R
-         FNRWy+L4+eFwfDWdl1ipsmBE8E6ULkrbjOyi+/K/gyQDckyBQ5qWI2E0dWTQB+ZUrTm1
-         Bj5Btw6AzZdjCR1aoOfs/k2VQVR+JdQgbzL38yIu5gg3vffxQoqBqzxcfnK3Y3Wcys61
-         /cHg==
-X-Gm-Message-State: ACgBeo3txPCwY3Re8krWbXng4RfCk8BNlAXwKevxSO2X6Kms1CdrzrID
-        IPAuNsALmhFMJCcvdz7Twnaag1A3UCvN7CeUv8PuzA==
-X-Google-Smtp-Source: AA6agR6S8k2SWNo73q0AqnEABg/vA4UxgEFYZMPy3fg9+zE7sPqCQNmlirz1q5SseKIFDBSMz2y0P8IyMhiFebJK3UM=
-X-Received: by 2002:ac2:4f03:0:b0:48a:6061:bd8e with SMTP id
- k3-20020ac24f03000000b0048a6061bd8emr3463711lfr.647.1660951992444; Fri, 19
- Aug 2022 16:33:12 -0700 (PDT)
+        Fri, 19 Aug 2022 19:33:20 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB02762EC
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:33:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660951997; x=1692487997;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rVUc2cvO9irhJ0g2IQoFQs1xyLGgP+CiOwLPP+GADmI=;
+  b=gq4Gr0lD6I6gnsy51pcEJ9hgmjoBQ9WtIpWyyovjX1Ufa4aPG3xhltkg
+   lCywTrf6Wrra5gw9mhS/09DFAEHbAnONgbHWc1KgmoOaX72g7+ow4tuBR
+   iG21wONPomlI5T+vi04KkImv/1oG+PP5JPWC2nxpH9HW0ANQwslvB0FgG
+   9ONjJKJxFM4syFYWLzb5bXdWP+MfztPQGegaNmV+dbZFrAGL9osUyYh8k
+   94VxUO6ggbROY0RcrjMoGG3UsyQA5UF/njSqUlOfrifeXM2Yzk5hvMV5C
+   A+BFz7Xe3uZsPd0cER5J167fvEsfaw2J/cFnwzN1ttZLo2wMVFG3MTKxv
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="280088957"
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="280088957"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 16:33:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="936388583"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Aug 2022 16:33:15 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oPBUJ-0001v9-17;
+        Fri, 19 Aug 2022 23:33:15 +0000
+Date:   Sat, 20 Aug 2022 07:32:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>, Fuad Tabba <tabba@google.com>
+Subject: arch/arm64/kvm/hyp/nvhe/stacktrace.c:10:1: sparse: sparse: symbol
+ '__pcpu_scope_overflow_stack' was not declared. Should it be static?
+Message-ID: <202208200751.t9a4zfuz-lkp@intel.com>
 MIME-Version: 1.0
-References: <CGME20220716081736epcas2p346100e67cf44b1dbb79f6e2a4ab07dbf@epcas2p3.samsung.com>
- <20220716084532.2324050-1-youngmin.nam@samsung.com> <CAK7LNAR3YGoQU6ZTZmC84C1OoH0rPinjoyPDXCD0BDPoRS4NDA@mail.gmail.com>
-In-Reply-To: <CAK7LNAR3YGoQU6ZTZmC84C1OoH0rPinjoyPDXCD0BDPoRS4NDA@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 19 Aug 2022 16:33:00 -0700
-Message-ID: <CAKwvOd=FBDqutQ-6De577GDje=YR32GxDbkgcGeP9J=2Lb3CqQ@mail.gmail.com>
-Subject: Re: [PATCH] Makefile.extrawarn: add -Wformat-insufficient-args for
- clang build
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Youngmin Nam <youngmin.nam@samsung.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        hosung0.kim@samsung.com, d7271.choe@samsung.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 9:22 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Sat, Jul 16, 2022 at 5:17 PM Youngmin Nam <youngmin.nam@samsung.com> wrote:
-> >
-> > The -Wformat-insufficient-args for clang is useful to detect the situation
-> > when the total number is unmatched between format specifiers and arguments.
-> >
-> > Originally, this option is enabled by default(Link[1]), but it is disabled by
-> > -Wno-format explicitly so that we can't detect this unmatched situation.
-> >
-> > We can enable it by adding this option after -Wno-format.
-> >
-> > Link[1]: https://releases.llvm.org/13.0.0/tools/clang/docs/DiagnosticsReference.html#wformat-insufficient-args
-> > Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
-> > ---
->
->
-> Please let me hold on this patch because
-> I'd rather go straight to the removal of  -Wno-format.
->
-> https://lore.kernel.org/linux-kbuild/CAFhGd8pk+0XEz0tMiJcwMM7B3NYF=yF4cHW8A-6-81SgpKFPNw@mail.gmail.com/T/#m4becf6ed91f25217b59a840ed1829f36e49fe347
+arch/arm64/kvm/hyp/nvhe/Makefile
+arch/arm64/kvm/hyp/nvhe/host.S
+arch/arm64/kvm/hyp/nvhe/stacktrace.c
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   50cd95ac46548429e5bba7ca75cc97d11a697947
+commit: 548ec3336f323db56260b312c232ab37285f0284 KVM: arm64: On stack overflow switch to hyp overflow_stack
+date:   4 weeks ago
+config: arm64-randconfig-s042-20220820 (https://download.01.org/0day-ci/archive/20220820/202208200751.t9a4zfuz-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=548ec3336f323db56260b312c232ab37285f0284
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 548ec3336f323db56260b312c232ab37285f0284
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kvm/
 
-Let's see what the feedback on
-https://reviews.llvm.org/D132266 is. If it lands, I will send a series
-with this patch first, then wrap it in the else clause of a
-conditional like: if clang version >= 16 then enable -Wformat else
-enable -Wformat-insufficient-args.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
->
->
->
-> >  scripts/Makefile.extrawarn | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-> > index f5f0d6f09053..c23d7c286bad 100644
-> > --- a/scripts/Makefile.extrawarn
-> > +++ b/scripts/Makefile.extrawarn
-> > @@ -48,6 +48,7 @@ else
-> >  ifdef CONFIG_CC_IS_CLANG
-> >  KBUILD_CFLAGS += -Wno-initializer-overrides
-> >  KBUILD_CFLAGS += -Wno-format
-> > +KBUILD_CFLAGS += -Wformat-insufficient-args
-> >  KBUILD_CFLAGS += -Wno-sign-compare
-> >  KBUILD_CFLAGS += -Wno-format-zero-length
-> >  KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
-> > --
-> > 2.34.0
-> >
->
->
-> --
-> Best Regards
-> Masahiro Yamada
+sparse warnings: (new ones prefixed by >>)
+>> arch/arm64/kvm/hyp/nvhe/stacktrace.c:10:1: sparse: sparse: symbol '__pcpu_scope_overflow_stack' was not declared. Should it be static?
 
+vim +/__pcpu_scope_overflow_stack +10 arch/arm64/kvm/hyp/nvhe/stacktrace.c
 
+  > 10	#include <asm/percpu.h>
+    11	
 
 -- 
-Thanks,
-~Nick Desaulniers
+0-DAY CI Kernel Test Service
+https://01.org/lkp
