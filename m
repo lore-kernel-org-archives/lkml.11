@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EC2C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7311C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350411AbiHSPwa (ORCPT
+        id S1350413AbiHSPwv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        Fri, 19 Aug 2022 11:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350570AbiHSPvA (ORCPT
+        with ESMTP id S1350253AbiHSPvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:51:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64AD31EC5;
-        Fri, 19 Aug 2022 08:48:32 -0700 (PDT)
+        Fri, 19 Aug 2022 11:51:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160C64F684;
+        Fri, 19 Aug 2022 08:48:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BA1D6170B;
-        Fri, 19 Aug 2022 15:48:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14152C433D6;
-        Fri, 19 Aug 2022 15:48:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B111B82811;
+        Fri, 19 Aug 2022 15:48:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7AE1C433D6;
+        Fri, 19 Aug 2022 15:48:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924111;
-        bh=kydCZxS2HyPc3cC1Mr1++qUBFTk6gJM/dRcmOx+uCNg=;
+        s=korg; t=1660924117;
+        bh=b09QnvDg7xfHPslMRVg7vHUSCPbJTeYQlqKvtTja7U4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=doakN1Hp/rHVIeO4/zxqBINxWYdfxdDCivffvAAhsp9wQD9TOcml1QM6ja1idIp9x
-         SarHN6Hm8y+ntN6dz8xNUUkaVKHYIXEZyhD504bixLWhZtpqGd6YAZ6sqlrlsVRMYS
-         6XkmfyEUrWrR74xZYioaRR25QoAhpDZ/4hY7LtH0=
+        b=AOiJQRieqHgb4P+4Sv8oaTLfo6M5zUtqdc8veue/p+llwlrnLsN9Pc12lTM4w7QOM
+         /kyDE8tFOU9I7YtAtGYS+WZ+YNlKu9ROs6U9pBnMC3qI7MOXzovsmOzrXp4+hFiX4I
+         4c4nzitpxRo1Js9oOiSm+ltk9ZN/Lsne5Bv5Z40M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 060/545] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
-Date:   Fri, 19 Aug 2022 17:37:10 +0200
-Message-Id: <20220819153831.920784306@linuxfoundation.org>
+Subject: [PATCH 5.10 062/545] powerpc/powernv: Avoid crashing if rng is NULL
+Date:   Fri, 19 Aug 2022 17:37:12 +0200
+Message-Id: <20220819153832.012015356@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,83 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit 0c551abfa004ce154d487d91777bf221c808a64f upstream.
+commit 90b5d4fe0b3ba7f589c6723c6bfb559d9e83956a upstream.
 
-By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
-Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
-board which has this pre-3.0 controller:
+On a bare-metal Power8 system that doesn't have an "ibm,power-rng", a
+malicious QEMU and guest that ignore the absence of the
+KVM_CAP_PPC_HWRNG flag, and calls H_RANDOM anyway, will dereference a
+NULL pointer.
 
-  $ lspci -bvnn
-  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
-          !!! Invalid class 0b20 for header type 01
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+In practice all Power8 machines have an "ibm,power-rng", but let's not
+rely on that, add a NULL check and early return in
+powernv_get_random_real_mode().
 
-Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
-Port to the Freescale specific PCIe register 0x474.
-
-With this change lspci -b output is:
-
-  $ lspci -bvnn
-  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
-
-Without any "Invalid class" error. So class code was properly reflected
-into standard (read-only) PCI register 0x08.
-
-Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
-http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
-
-Fix activated by U-Boot stay active also after booting Linux kernel.
-But boards which use older U-Boot version without that fix are affected and
-still require this fix.
-
-So implement this class code fix also in kernel fsl_pci.c driver.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
+Cc: stable@vger.kernel.org # v4.1+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220706101043.4867-1-pali@kernel.org
+Link: https://lore.kernel.org/r/20220727143219.2684192-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/sysdev/fsl_pci.c |    8 ++++++++
- arch/powerpc/sysdev/fsl_pci.h |    1 +
- 2 files changed, 9 insertions(+)
+ arch/powerpc/platforms/powernv/rng.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/powerpc/sysdev/fsl_pci.c
-+++ b/arch/powerpc/sysdev/fsl_pci.c
-@@ -520,6 +520,7 @@ int fsl_add_bridge(struct platform_devic
- 	struct resource rsrc;
- 	const int *bus_range;
- 	u8 hdr_type, progif;
-+	u32 class_code;
- 	struct device_node *dev;
- 	struct ccsr_pci __iomem *pci;
- 	u16 temp;
-@@ -593,6 +594,13 @@ int fsl_add_bridge(struct platform_devic
- 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
- 		if (fsl_pcie_check_link(hose))
- 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
-+		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
-+		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
-+			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
-+			class_code &= 0xff;
-+			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
-+			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
-+		}
- 	} else {
- 		/*
- 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
---- a/arch/powerpc/sysdev/fsl_pci.h
-+++ b/arch/powerpc/sysdev/fsl_pci.h
-@@ -18,6 +18,7 @@ struct platform_device;
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -63,6 +63,8 @@ int powernv_get_random_real_mode(unsigne
+ 	struct powernv_rng *rng;
  
- #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
- #define PCIE_LTSSM_L0	0x16		/* L0 state */
-+#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
- #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
- #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
- #define PIWAR_EN		0x80000000	/* Enable */
+ 	rng = raw_cpu_read(powernv_rng);
++	if (!rng)
++		return 0;
+ 
+ 	*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
+ 
 
 
