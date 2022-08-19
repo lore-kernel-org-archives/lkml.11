@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF469C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB5DC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351126AbiHSQDP (ORCPT
+        id S1351149AbiHSQDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
+        Fri, 19 Aug 2022 12:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351094AbiHSQAj (ORCPT
+        with ESMTP id S1351118AbiHSQAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:00:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEA3109753;
-        Fri, 19 Aug 2022 08:52:35 -0700 (PDT)
+        Fri, 19 Aug 2022 12:00:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D60649B75;
+        Fri, 19 Aug 2022 08:52:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA334B827F8;
-        Fri, 19 Aug 2022 15:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34213C433C1;
-        Fri, 19 Aug 2022 15:52:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB396615E9;
+        Fri, 19 Aug 2022 15:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B48B2C433C1;
+        Fri, 19 Aug 2022 15:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924353;
-        bh=2P86ZKNFEU5wzeVoOvbD8JQFIyb0ga6RcvV8rBd+ApA=;
+        s=korg; t=1660924325;
+        bh=Hp1dkGzsLKhbd6JiKMgEQvwajSh0f8J5uvcz+zEZevM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OgkuIGHkAKjP6dJ76AJGzhaf1HghFqW15u7XefNHvAtgkJ/ms3WblJhZPNzQtMPZF
-         r6sDWg3u4DT3U+f2P/OlrKvwuDYQqEYAW1ZL2JjUbQJFfVa884UhTnRMfReiXmqDHO
-         3nZACIe0r+5V9nyOYu2bYXrRXKJIuNZzRBqcSW8c=
+        b=0ffk7MC103G9N821p6getTyWaswBlFCG3SDxNeFnjiH/vJyIpTd5QNkpzuQhLggd1
+         IJM0uTXVIPcce+9k6aAP3QEHs/4BNtRTiqFs9C8UbMdSBlZDXHsut0jiYn9Km1IhWQ
+         M01qbmXSpQ3QWrFVdyBR4nrXLRaghaYDxyNZs7Ck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Junichi Nomura <junichi.nomura@nec.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Mike Christie <michael.christie@oracle.com>,
-        Li Zefan <lizf@cn.fujitsu.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 142/545] blktrace: Trace remapped requests correctly
-Date:   Fri, 19 Aug 2022 17:38:32 +0200
-Message-Id: <20220819153835.687614029@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 133/545] soc: qcom: aoss: Fix refcount leak in qmp_cooling_devices_register
+Date:   Fri, 19 Aug 2022 17:38:23 +0200
+Message-Id: <20220819153835.286935073@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -54,41 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 22c80aac882f712897b88b7ea8f5a74ea19019df ]
+[ Upstream commit e6e0951414a314e7db3e9e24fd924b3e15515288 ]
 
-Trace the remapped operation and its flags instead of only the data
-direction of remapped operations. This issue was detected by analyzing
-the warnings reported by sparse related to the new blk_opf_t type.
+Every iteration of for_each_available_child_of_node() decrements
+the reference count of the previous node.
+When breaking early from a for_each_available_child_of_node() loop,
+we need to explicitly call of_node_put() on the child node.
+Add missing of_node_put() to avoid refcount leak.
 
-Reviewed-by: Jun'ichi Nomura <junichi.nomura@nec.com>
-Cc: Mike Snitzer <snitzer@kernel.org>
-Cc: Mike Christie <michael.christie@oracle.com>
-Cc: Li Zefan <lizf@cn.fujitsu.com>
-Cc: Chaitanya Kulkarni <kch@nvidia.com>
-Fixes: 1b9a9ab78b0a ("blktrace: use op accessors")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Link: https://lore.kernel.org/r/20220714180729.1065367-11-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 05589b30b21a ("soc: qcom: Extend AOSS QMP driver to support resources that are used to wake up the SoC.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220606064252.42595-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/blktrace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/qcom/qcom_aoss.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
-index 7f625400763b..15a376f85e09 100644
---- a/kernel/trace/blktrace.c
-+++ b/kernel/trace/blktrace.c
-@@ -1100,7 +1100,7 @@ static void blk_add_trace_rq_remap(void *ignore, struct request *rq, dev_t dev,
- 	r.sector_from = cpu_to_be64(from);
+diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
+index 941499b11758..401a0be3675a 100644
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -493,8 +493,10 @@ static int qmp_cooling_devices_register(struct qmp *qmp)
+ 			continue;
+ 		ret = qmp_cooling_device_add(qmp, &qmp->cooling_devs[count++],
+ 					     child);
+-		if (ret)
++		if (ret) {
++			of_node_put(child);
+ 			goto unroll;
++		}
+ 	}
  
- 	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
--			rq_data_dir(rq), 0, BLK_TA_REMAP, 0,
-+			req_op(rq), rq->cmd_flags, BLK_TA_REMAP, 0,
- 			sizeof(r), &r, blk_trace_request_get_cgid(rq));
- 	rcu_read_unlock();
- }
+ 	if (!count)
 -- 
 2.35.1
 
