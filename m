@@ -2,251 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B3DC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920DDC32774
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348330AbiHSKGc (ORCPT
+        id S1347846AbiHSKHh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 06:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
+        Fri, 19 Aug 2022 06:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348314AbiHSKGa (ORCPT
+        with ESMTP id S1346395AbiHSKHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:06:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83500EEF1E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 03:06:29 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOytN-0003b6-Nm; Fri, 19 Aug 2022 12:06:17 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oOytM-0007Hx-PP; Fri, 19 Aug 2022 12:06:16 +0200
-Date:   Fri, 19 Aug 2022 12:06:16 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Jacopo Mondi <jacopo@jmondi.org>
-Cc:     mchehab@kernel.org, sakari.ailus@linux.intel.com,
-        laurent.pinchart+renesas@ideasonboard.com,
-        jacopo+renesas@jmondi.org, akinobu.mita@gmail.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH 1/4] media: mt9m111: add V4L2_CID_PIXEL_RATE support
-Message-ID: <20220819100616.askwm5e675ov6y3p@pengutronix.de>
-References: <20220818144712.997477-1-m.felsch@pengutronix.de>
- <20220818161108.dlmi77o6j7wcyayc@uno.localdomain>
- <20220819075615.a3nuakrac54kn7t3@pengutronix.de>
- <20220819081548.q6c5pwio2z2ambqq@uno.localdomain>
- <20220819090438.72vlat6by3ag6pvd@pengutronix.de>
- <20220819094659.tgngnhr5taup2lhl@uno.localdomain>
+        Fri, 19 Aug 2022 06:07:35 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1CDEEF3D;
+        Fri, 19 Aug 2022 03:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1660903645; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ryDfhbtuwYy5c1tcol3QoAaRVgMHXbulgS9d5yfa2n8=;
+        b=AyDj/vtHJrg0GK0pZAzam8akj3i9uUkn1TYV42yobzb9ve+gR5E0rUoRTqd5PXElNpRFvi
+        pVtLmsqz8sfYBiV6AqLbf2iXzzKeYazBTwKu/fqHD8GItAq4w23N7Kbin4XdywM7BUmXBl
+        kpitl0lC36Tkswi2CoMT8GbetEW2KY8=
+Date:   Fri, 19 Aug 2022 12:07:16 +0200
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 1/4] iio/adc: ingenic: fix channel offsets in buffer
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Artur Rojek <contact@artur-rojek.eu>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        BROADCOM NVRAM DRIVER <linux-mips@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>
+Message-Id: <4GXUGR.SAF00K92YJMF@crapouillou.net>
+In-Reply-To: <CAHp75Vd49aCKkK+KvmxJrW2mKk7=VgtSBCTYE9umOhZhc4Y8FA@mail.gmail.com>
+References: <20220817105643.95710-1-contact@artur-rojek.eu>
+        <20220817105643.95710-2-contact@artur-rojek.eu>
+        <CAHp75Vd49aCKkK+KvmxJrW2mKk7=VgtSBCTYE9umOhZhc4Y8FA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819094659.tgngnhr5taup2lhl@uno.localdomain>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-08-19, Jacopo Mondi wrote:
-> Hi Marco,
-> 
-> On Fri, Aug 19, 2022 at 11:04:38AM +0200, Marco Felsch wrote:
-> > On 22-08-19, Jacopo Mondi wrote:
-> > > Hi Marco
-> > >
-> > > On Fri, Aug 19, 2022 at 09:56:15AM +0200, Marco Felsch wrote:
-> > > > Hi Jacopo,
-> > > >
-> > > > On 22-08-18, Jacopo Mondi wrote:
-> > > > > Hi Marco
-> > > > >
-> > > > > On Thu, Aug 18, 2022 at 04:47:09PM +0200, Marco Felsch wrote:
-> > > > > > Add support to report the PIXEL_RATE so a host or bridge device can ask
-> > > > > > the sensor.
-> > > > > >
-> > > > > > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
-> > > > > > ---
-> > > > > >  drivers/media/i2c/mt9m111.c | 15 ++++++++++++++-
-> > > > > >  1 file changed, 14 insertions(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/drivers/media/i2c/mt9m111.c b/drivers/media/i2c/mt9m111.c
-> > > > > > index afc86efa9e3e..cdaf283e1309 100644
-> > > > > > --- a/drivers/media/i2c/mt9m111.c
-> > > > > > +++ b/drivers/media/i2c/mt9m111.c
-> > > > > > @@ -908,6 +908,8 @@ static int mt9m111_s_ctrl(struct v4l2_ctrl *ctrl)
-> > > > > >  		return mt9m111_set_test_pattern(mt9m111, ctrl->val);
-> > > > > >  	case V4L2_CID_COLORFX:
-> > > > > >  		return mt9m111_set_colorfx(mt9m111, ctrl->val);
-> > > > > > +	case V4L2_CID_PIXEL_RATE:
-> > > > > > +		return 0;
-> > > > >
-> > > > > By default PIXEL_RATE is read-only.
-> > > > > Do you get a call to s_ctrl for it ?
-> > > >
-> > > > You're absolutly right, we don't need to do this.
-> > > >
-> > > > > >  	}
-> > > > > >
-> > > > > >  	return -EINVAL;
-> > > > > > @@ -1249,6 +1251,7 @@ static int mt9m111_probe(struct i2c_client *client)
-> > > > > >  {
-> > > > > >  	struct mt9m111 *mt9m111;
-> > > > > >  	struct i2c_adapter *adapter = client->adapter;
-> > > > > > +	unsigned long mclk_rate;
-> > > > > >  	int ret;
-> > > > > >
-> > > > > >  	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WORD_DATA)) {
-> > > > > > @@ -1271,6 +1274,13 @@ static int mt9m111_probe(struct i2c_client *client)
-> > > > > >  	if (IS_ERR(mt9m111->clk))
-> > > > > >  		return PTR_ERR(mt9m111->clk);
-> > > > > >
-> > > > > > +	ret = clk_prepare_enable(mt9m111->clk);
-> > > > > > +	if (ret < 0)
-> > > > > > +		return ret;
-> > > > > > +
-> > > > >
-> > > > > Do you need to enable clock to read its rate ?
-> > > >
-> > > > Yes, accroding the API [1].
-> > > >
-> > > > [1] https://elixir.bootlin.com/linux/v6.0-rc1/source/include/linux/clk.h#L682
-> > >
-> > > So weird! none of the drivers I checked do that. The most common
-> > > pattern is
-> > >
-> > >         clk = devm_clk_get();
-> > >         rate = clk_get_rate(clk)
-> > >         if (rate != RATE)
-> > >                 ...
-> >
-> > Yep, I know. There are a lot of drivers not respecting this.
-> >
-> 
-> I wonder if it's really necessary then :)
+Hi Andy,
 
-I would rather keep in sync with the official API ^^
+Le ven., ao=FBt 19 2022 at 11:12:38 +0300, Andy Shevchenko=20
+<andy.shevchenko@gmail.com> a =E9crit :
+> On Wed, Aug 17, 2022 at 1:58 PM Artur Rojek <contact@artur-rojek.eu>=20
+> wrote:
+>>=20
+>>  Consumers expect the buffer to only contain enabled channels. While
+>>  preparing the buffer, the driver also (incorrectly) inserts empty=20
+>> data
+>>  for disabled channels, causing the enabled channels to appear at=20
+>> wrong
+>>  offsets. Fix that.
+>=20
+> What consumers? Have you tested on all of them? Please, elaborate. It
+> might be that some of them have to be fixed. In such case you need to
+> report the issue to their respective channels and put the
+> corresponding links here.
 
-> > > >
-> > > > > > +	mclk_rate = clk_get_rate(mt9m111->clk);
-> > > > > > +	clk_disable_unprepare(mt9m111->clk);
-> > > > > > +
-> > > > > >  	mt9m111->regulator = devm_regulator_get(&client->dev, "vdd");
-> > > > > >  	if (IS_ERR(mt9m111->regulator)) {
-> > > > > >  		dev_err(&client->dev, "regulator not found: %ld\n",
-> > > > > > @@ -1285,7 +1295,7 @@ static int mt9m111_probe(struct i2c_client *client)
-> > > > > >  	mt9m111->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
-> > > > > >  				 V4L2_SUBDEV_FL_HAS_EVENTS;
-> > > > > >
-> > > > > > -	v4l2_ctrl_handler_init(&mt9m111->hdl, 7);
-> > > > > > +	v4l2_ctrl_handler_init(&mt9m111->hdl, 8);
-> > > > > >  	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops,
-> > > > > >  			V4L2_CID_VFLIP, 0, 1, 1, 0);
-> > > > > >  	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops,
-> > > > > > @@ -1309,6 +1319,9 @@ static int mt9m111_probe(struct i2c_client *client)
-> > > > > >  				BIT(V4L2_COLORFX_NEGATIVE) |
-> > > > > >  				BIT(V4L2_COLORFX_SOLARIZATION)),
-> > > > > >  			V4L2_COLORFX_NONE);
-> > > > > > +	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops, V4L2_CID_PIXEL_RATE,
-> > > > > > +			  mclk_rate, mclk_rate, 1, mclk_rate);
-> > > > > > +
-> > > > >
-> > > > > I don't have a datasheet but it seems a little weird that the mclk
-> > > > > frequency is the same as the pixel clock rate ?
-> > > >
-> > > > I see your confusion here. I can only speak for the MT9M131 device which
-> > > > is covered by this driver as well. This device is composed of a
-> > > > internal-sensor and a internal-isp. The internal-sensor is clocked by
-> > > > mclk/2 but the final image device/sensor output-fifo is clocked by mclk.
-> > >
-> > > No PLL, no rate multiplier/divider ? Does this sensor only work with
-> > > one pixel rate that is defined by the input clock rate ?
-> > >
-> > > > There are options to devide the output clock as well, but these options
-> > > > are not enabled yet. So yes, the pixel clock rate == mclk rate. To avoid
-> > >
-> > > Ah ok
-> > >
-> > > Could you share your setup mclk, resolution and frame rate to show how
-> > > the pixel rate and the mclk rate are related ?
-> >
-> >
-> > mclk:      54 MHz (input)
-> > pixelclk:  54 MHz (output)
-> > res:       1280x1024
-> 
-> You should take blankings into account as well, even if I havent'
-> found where they are programmed in the driver
+There are no consumers to fix, only this driver. I believe it  wasn't=20
+noticed until now because all consumers were only using channels 0 and=20
+1.
 
-Yes, thats right. This is only the actice pixel array.
+Cheers,
+-Paul
 
-> > fps:       15
-> > bus-width: 8
-> > bpp:       16
-> >
-> > After re-reading the PIXEL_RATE, maybe I missunderstood the control. As
-> > of now I thought it is the amount of bytes per second send on the bus.
-> 
-> Not bytes but pixels :)
-> 
-> And the above gives me a 19.660.800 Hz pixel rate
+> P.S. It doesn't mean I'm against the patch.
+>=20
+> --
+> With Best Regards,
+> Andy Shevchenko
 
-Yep, I re-calced this on my side as well and got the same.
 
-> > But the documentation says pixels per second... Is there a control to
-> > expose the current pixelclk on the mbus? What I wanna do in the end is
-> > to calculate the througput on the (parallel-)bus.
-> 
-> Not for parallel busses as far as I'm aware as my understanding is
-> that CID_LINK_FREQ applies to CSI-2 setups only.
-
-Yes, while I was working on this topic (4 years back) this was the case.
-After your good thoughts I re-checked the control and now it is within
-[1] and there the parallel bus is mentioned as well. So this is the
-correct control :)
-
-[1] ext-ctrls-image-process.rst
-
-> To get the byte rate on the bus I would simply multiply the pixel
-> clock by the number of bytes per pixel, in this case 2.
-
-Please see above. My goal is to request the bus-frequency from the
-sensor. With that and the knowledge about the bus-width, we can
-calculate the bus throughput.
-
-Regards,
-  Marco
-
-> >
-> > > > confusion I could rename the mclk_rate to extclk_rate but then clock
-> > > > request is not 100% correct since we are requesting a "mclk", this
-> > > > should be "extclk".
-> > >
-> > > Doesn't really make a difference!
-> > >
-> > > A comment in the code to explain what happens would help though!
-> >
-> > I did that right now, after your confusion :)
-> >
-> > Regards,
-> >   Marco
-> >
-> > >
-> > > >
-> > > > Regards,
-> > > >   Marco
-> > > >
-> > > > > >  	mt9m111->subdev.ctrl_handler = &mt9m111->hdl;
-> > > > > >  	if (mt9m111->hdl.error) {
-> > > > > >  		ret = mt9m111->hdl.error;
-> > > > > > --
-> > > > > > 2.30.2
-> > > > > >
-> > > > >
-> > >
-> 
