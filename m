@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1D2C32773
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FABBC32771
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351778AbiHSQKe (ORCPT
+        id S1351752AbiHSQK0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
+        Fri, 19 Aug 2022 12:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351459AbiHSQHo (ORCPT
+        with ESMTP id S1351369AbiHSQH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:07:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B96F10E7B3;
-        Fri, 19 Aug 2022 08:56:19 -0700 (PDT)
+        Fri, 19 Aug 2022 12:07:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E108F10E7AA;
+        Fri, 19 Aug 2022 08:56:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2CF614DA;
-        Fri, 19 Aug 2022 15:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC09EC433C1;
-        Fri, 19 Aug 2022 15:56:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F9B7B8280C;
+        Fri, 19 Aug 2022 15:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 793C2C433C1;
+        Fri, 19 Aug 2022 15:56:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924578;
-        bh=YQduwSTiQg41hg0PepeKUrWVaNK157UtIZtmCjpbLAM=;
+        s=korg; t=1660924567;
+        bh=LZk7gSWpaSoUsHd/k9TE2xG/PGVAIeKrKwCihr/MDmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fAdFP6ghxLT5om2jfQHvlHcQ4Uw1ne0o37NWwMGhc2V1smESV+U+dqfAtXegOAjzu
-         DoIIlSD7FIU3xnQk8Ee8mi2jv5QRU/odCZo7o55QYKk5qZeWbMwmqkRg3/BwC+2UUr
-         T2Pt6gjqOhKKnJ9sXUs8e5OlvpZR1ubgrtwAoqds=
+        b=PPi0K4bUqvOHRU8I5pMxvisGoWttKwREP1EwCVBwoT1dw+Qm0ion528CKidsxYWjQ
+         8gghU+C3Tubx1qbXPJUQPT3AnazPlhqc1/a60uVpY0UHJxoaN+rjJZxWi+HM9WgpXI
+         RIEMcrKMe3NBS2r3mXOsi+yFdVyCrsxQv51je5CQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 185/545] drm/mcde: Fix refcount leak in mcde_dsi_bind
-Date:   Fri, 19 Aug 2022 17:39:15 +0200
-Message-Id: <20220819153837.644832936@linuxfoundation.org>
+Subject: [PATCH 5.10 211/545] drm: bridge: sii8620: fix possible off-by-one
+Date:   Fri, 19 Aug 2022 17:39:41 +0200
+Message-Id: <20220819153838.805153736@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,36 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 3a149169e4a2f9127022fec6ef5d71b4e804b3b9 ]
+[ Upstream commit 21779cc21c732c5eff8ea1624be6590450baa30f ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference counter of the previous node. There is no decrement
-when break out from the loop and results in refcount leak.
-Add missing of_node_put() to fix this.
+The next call to sii8620_burst_get_tx_buf will result in off-by-one
+When ctx->burst.tx_count + size == ARRAY_SIZE(ctx->burst.tx_buf). The same
+thing happens in sii8620_burst_get_rx_buf.
 
-Fixes: 5fc537bfd000 ("drm/mcde: Add new driver for ST-Ericsson MCDE")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220525115411.65455-1-linmq006@gmail.com
+This patch also change tx_count and tx_buf to rx_count and rx_buf in
+sii8620_burst_get_rx_buf. It is unreasonable to check tx_buf's size and
+use rx_buf.
+
+Fixes: e19e9c692f81 ("drm/bridge/sii8620: add support for burst eMSC transmissions")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220518065856.18936-1-hbh25y@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mcde/mcde_dsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/bridge/sil-sii8620.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/mcde/mcde_dsi.c b/drivers/gpu/drm/mcde/mcde_dsi.c
-index 5275b2723293..64e6fb806290 100644
---- a/drivers/gpu/drm/mcde/mcde_dsi.c
-+++ b/drivers/gpu/drm/mcde/mcde_dsi.c
-@@ -1118,6 +1118,7 @@ static int mcde_dsi_bind(struct device *dev, struct device *master,
- 			bridge = of_drm_find_bridge(child);
- 			if (!bridge) {
- 				dev_err(dev, "failed to find bridge\n");
-+				of_node_put(child);
- 				return -EINVAL;
- 			}
- 		}
+diff --git a/drivers/gpu/drm/bridge/sil-sii8620.c b/drivers/gpu/drm/bridge/sil-sii8620.c
+index ec7745c31da0..ab0bce4a988c 100644
+--- a/drivers/gpu/drm/bridge/sil-sii8620.c
++++ b/drivers/gpu/drm/bridge/sil-sii8620.c
+@@ -605,7 +605,7 @@ static void *sii8620_burst_get_tx_buf(struct sii8620 *ctx, int len)
+ 	u8 *buf = &ctx->burst.tx_buf[ctx->burst.tx_count];
+ 	int size = len + 2;
+ 
+-	if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
++	if (ctx->burst.tx_count + size >= ARRAY_SIZE(ctx->burst.tx_buf)) {
+ 		dev_err(ctx->dev, "TX-BLK buffer exhausted\n");
+ 		ctx->error = -EINVAL;
+ 		return NULL;
+@@ -622,7 +622,7 @@ static u8 *sii8620_burst_get_rx_buf(struct sii8620 *ctx, int len)
+ 	u8 *buf = &ctx->burst.rx_buf[ctx->burst.rx_count];
+ 	int size = len + 1;
+ 
+-	if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
++	if (ctx->burst.rx_count + size >= ARRAY_SIZE(ctx->burst.rx_buf)) {
+ 		dev_err(ctx->dev, "RX-BLK buffer exhausted\n");
+ 		ctx->error = -EINVAL;
+ 		return NULL;
 -- 
 2.35.1
 
