@@ -2,76 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 614E8C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 096C6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347446AbiHSIIj (ORCPT
+        id S1347455AbiHSIJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37814 "EHLO
+        Fri, 19 Aug 2022 04:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347437AbiHSIIf (ORCPT
+        with ESMTP id S1347437AbiHSIJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:08:35 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E3B1F2E0;
-        Fri, 19 Aug 2022 01:08:34 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id y18so2821812qtv.5;
-        Fri, 19 Aug 2022 01:08:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Phy2kavk45HzuAR99SKpcbN4U9hypiQhPKgRRZqp7Do=;
-        b=ma8LA8qwXOWommtex1+VBB+xZNgJWmJWlNxr/798VJgFGYGZIimCjRxTJpEoD7rVM3
-         XLvpuvV9PyFIPH9ls48Ri8w1fIkikoWWxR9A+ODnu/mSWdgegrS5bP0J+lsGRwzSKAQv
-         QRGT115Z9Lqi48WO0ZSKoEEyLcrx1rMszzhwIUqi2uioKo6GV5udra2zt6Z5Ss10m94K
-         eZCOgx3iBIZq5/Ajm42XaozhtuqkOFIIMWPcxtmVJ3gysQqksOPU+QTe90DKrz5cJIFy
-         pRtTJ+bzwSgGb9vKm9uZIY0aLm5fge91t9Uxt5R/lXLYIRh3p5xAXQMZfutsZQ+Q/U+m
-         EAqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Phy2kavk45HzuAR99SKpcbN4U9hypiQhPKgRRZqp7Do=;
-        b=DucFF0IyVn+l/g8wcn7BRaBqLoLzzHmSCX8EEdp8B7qofPASl1dhmFzN7wbML+zhUF
-         Mf6U1e+ziTVe3mWB03BKTbzEjQzOcgTwlaIeqsS/oGdRmXrKbXDQHpzcAMkVVY8r5slB
-         58n6jBptCIS6ql3k+ngvQ/WfTEhGsdPx8vylE83kf4dvKhra6qOer42pOuV4adV/VGdv
-         j9LXWe2/ja+fY9Xr5GYEbZXUrotHSRSZIqvqBXYEyjE/RFvAfxO1+EZKt2f1YhWgLrvF
-         wHPKLq3LPGG5GD+knG03h7loQ3Ebey6stWGBMEcmIFKFoEsemAUlVyKMSBWBInYNTFKx
-         hJuA==
-X-Gm-Message-State: ACgBeo1ta8OMmBXdAW2E9+lj9tlt2Rx5Q+bbq+72V9vdZP1ZjnpmSf0M
-        EkgJ9w2KVevoWRkAssLu8q4/sWsKGaLAnw8WiF8=
-X-Google-Smtp-Source: AA6agR4E11iRlTvq05swpUjD9iCFubVB68ZvURZJmtFuncbDZmR1eGMlJgTJbnoCJnuysTcMmt6mQEP5L2GYSE2eB38=
-X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
- v6-20020ac85786000000b003433051170dmr5493279qta.429.1660896513674; Fri, 19
- Aug 2022 01:08:33 -0700 (PDT)
+        Fri, 19 Aug 2022 04:09:24 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51109AFBF;
+        Fri, 19 Aug 2022 01:09:22 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27J6vIV1019537;
+        Fri, 19 Aug 2022 08:09:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=Udv9bz/xQJBZrSCR6IODRmBEUGm4gg5qONcdmdNP+Lc=;
+ b=WZybTPf3J1T/jjLIymqVirEde9WA41zu5MRphcAHYnlnW4qUM0XPXZk7pRmJx1yhbdWF
+ qStAZzOtISdMXBCEebsIM2E7C2d+lccWBExHRwj5hZ9poq7bifQtjBXVOxIWFfE9i58C
+ TDHh9fb6lOL+po1W98S/lkSCvspFboK6WjNe6KB81YerTjxYcdQcsfiYszI5W3fOzSy7
+ 5uatsUjMsLVl3IrL+UIrkNfafGnv/zQR57o2Dh9pY1y/z8TpSwSBW5+3se0b/rFJ+uJm
+ LRCW0xKUC1EKpy6NvyCkpCe77ZsJKgqpShpSNle8PrJx0H4o1oe0r9m+PeBCZlMrOmrW Aw== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j25q3a6u4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 08:09:18 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27J86Aaa001381;
+        Fri, 19 Aug 2022 08:09:16 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 3hx3k8w5rj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 08:09:15 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27J89CcY24772874
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Aug 2022 08:09:12 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7E984A4051;
+        Fri, 19 Aug 2022 08:09:12 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D6482A4040;
+        Fri, 19 Aug 2022 08:09:11 +0000 (GMT)
+Received: from [9.145.158.147] (unknown [9.145.158.147])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 19 Aug 2022 08:09:11 +0000 (GMT)
+Message-ID: <580bf781-81f6-5f8e-12bf-7195f7a62b36@linux.ibm.com>
+Date:   Fri, 19 Aug 2022 10:09:11 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Content-Language: en-US
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 07MBEEmAI3oDzTfECX0PkbivG95bSTto
+X-Proofpoint-ORIG-GUID: 07MBEEmAI3oDzTfECX0PkbivG95bSTto
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220818210017.6817-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220818210017.6817-1-wsa+renesas@sang-engineering.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 19 Aug 2022 11:07:56 +0300
-Message-ID: <CAHp75Ve+xuqRAiRO=7wQBBmjKm9P-_iEiHWt23E7c82RcFutVA@mail.gmail.com>
-Subject: Re: [PATCH] iio: move from strlcpy with unused retval to strscpy
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_04,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 mlxscore=0 spamscore=0 adultscore=0
+ clxscore=1011 phishscore=0 impostorscore=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=911 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208190032
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 12:02 AM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
+
+
+On 18.08.22 23:01, Wolfram Sang wrote:
 > Follow the advice of the below link and prefer 'strscpy' in this
 > subsystem. Conversion is 1:1 because the return value is not used.
 > Generated by a coccinelle script.
+> 
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  drivers/s390/block/dasd_devmap.c | 2 +-
+>  drivers/s390/block/dasd_eer.c    | 4 ++--
+>  drivers/s390/block/dcssblk.c     | 2 +-
+>  drivers/s390/char/hmcdrv_cache.c | 2 +-
+>  drivers/s390/char/tape_class.c   | 4 ++--
+>  drivers/s390/cio/qdio_debug.c    | 2 +-
+>  drivers/s390/net/ctcm_main.c     | 2 +-
+>  drivers/s390/net/fsm.c           | 2 +-
+>  drivers/s390/net/qeth_ethtool.c  | 4 ++--
+>  drivers/s390/scsi/zfcp_aux.c     | 2 +-
+>  drivers/s390/scsi/zfcp_fc.c      | 2 +-
+>  11 files changed, 14 insertions(+), 14 deletions(-)
+> 
 
-Same comments as per similar patch you submit to PDx86.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thank you. Ack'ed for drivers/s390/net and drivers/s390/cio
+Acked-by: Alexandra Winter <wintera@linux.ibm.com>
