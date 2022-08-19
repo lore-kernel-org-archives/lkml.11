@@ -2,182 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B70C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FB4C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351112AbiHSRqJ (ORCPT
+        id S1354697AbiHSRqb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50960 "EHLO
+        Fri, 19 Aug 2022 13:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354895AbiHSRpo (ORCPT
+        with ESMTP id S1354960AbiHSRpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:45:44 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD03B105213
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:09:53 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id p128so5409005oif.9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:09:53 -0700 (PDT)
+        Fri, 19 Aug 2022 13:45:53 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4465E108F2F;
+        Fri, 19 Aug 2022 10:10:29 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id w138so2229947pfc.10;
+        Fri, 19 Aug 2022 10:10:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=1M77VSUpHBdJuUWHFqZxpANGXLDy3KTKNScQlSKbJdw=;
-        b=aI7IOaWMzXerBLtn/yA++X6Xa61OTxWBkbbMvNVBzqCiLV2LwKGTB9/nO1m4WU97Vd
-         7LfrRux4dkuqSm90eKKFUUnElWo7YRaIR4BG9CO0NXs/mJig8JFSHdz2vRD2KZ0PmiBz
-         UFD0GzM3at1fWBunNVITUdVzxU1NPJ5FLAAMA=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=7WjX18+SJwTo5iBm+RDyyQ38vzw7KWPpCCkeot28T3I=;
+        b=S2LQx7r114T3Une2zfGFyLwMrHa53oIGdjnC12/4bfWAbMWUv2OE+868ZxwJnKnTK5
+         gIVgFaQYliBJlbsl93dYwckLq4nOrsq10YPb+jlSAjq9Umnyphckr+qnSL2aQVpzGVto
+         vewKy7me+Lzo+L3NyBQSpckbYXsXXPhMFBybX8rTpvLr/JylVeX0hnH49TJcdqZADlz/
+         EAdt9R3Hp5ulkjlW1/sWG3jBtntFH3F7J/pb/QIn81PIGqEbXw1nDsCA6B2zLes55j0a
+         lqyzknuwoXDpW3Yokmnj3pI8Unzw9HnSTknRp/Z9t7fKbEETpV2Eg4zTWPxQK3Pq9zlH
+         pV1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=1M77VSUpHBdJuUWHFqZxpANGXLDy3KTKNScQlSKbJdw=;
-        b=WVkisHZgxtzj5pRHwvEaaJst2qfS82FVnqzGLP7B6wFcsfUzqrwRG0BkHvNh5n5Jek
-         GODio/ju8cyIIccipPLFR2qHbwh4oGiwyWmje5/U85yE5W2sp3xCec8RTZb/a74Y668+
-         Sbqvxnm4oS+UZfhD8ugQt2awAkJg1mhp6KbR86kswbSK2AsDDO37h6WKGS8YFsnxXRgl
-         mz4BPGdz6lsqC98+mHWiotVfx1Gw9anCql9bAsvjs4zlC4EWttNzHdGKlu9skljYzXtv
-         LZ4xWMt939w51PMQuXOsUuZTgrY30EiRaUCKqse357q1p2FjLYoxbl8vF0gUNXYTOqgq
-         i/SQ==
-X-Gm-Message-State: ACgBeo3PnynBoqUEn6tC/t+TarEl8yLFsoy/9f2SGkjq3e1VvyZ9ETUz
-        UIMZCLu+Dj8ln3VDMGM9mb7XttbEbKdk+w==
-X-Google-Smtp-Source: AA6agR5iZZJbAl076hf1lC6WhLSavxW7q0wcpxah1mrhQ6OOlPXJUqTLvAVYq4ZpFRfr1PTvl1nhBQ==
-X-Received: by 2002:a05:6808:488:b0:344:d066:5177 with SMTP id z8-20020a056808048800b00344d0665177mr3744941oid.210.1660928993062;
-        Fri, 19 Aug 2022 10:09:53 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id x19-20020a4a6213000000b004320b0cc5acsm1036958ooc.48.2022.08.19.10.09.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 10:09:52 -0700 (PDT)
-Subject: Re: [PATCH] usbip: add USBIP_URB_* URB transfer flags
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     valentina.manea.m@gmail.com, shuah@kernel.org,
-        mailhol.vincent@wanadoo.fr, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Hongren Zenithal Zheng <i@zenithal.me>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220816215711.55025-1-skhan@linuxfoundation.org>
- <Yv9J2d1bVe7Xntxu@kroah.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <f2cf1fad-143f-f09b-0874-7e68c675697c@linuxfoundation.org>
-Date:   Fri, 19 Aug 2022 11:09:50 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=7WjX18+SJwTo5iBm+RDyyQ38vzw7KWPpCCkeot28T3I=;
+        b=gpRYK45372CdZburhq2qQvsLrXqTSmpo5WCUgwfhggzYTe7gFgvs2TkNe04Y5m8ZIq
+         DR3JeYR9E2YqP6W6iferXqT81Wzn5v8lIGs9TEf4oC6j20mg+AfRK41Krx6QvBXSmTMg
+         j2AvdyRal43zHg01WHbfnJ5OVtIAGdZXuWdukjMl2gN+Y3Y+J7/Z0Q3b15N/O50foq8i
+         pEZRfr26gP6lcSso/fSSS+tNXaU/OB7MCKL7rJrkbjWYXCqE+3b0DughXfzP9KhpbU8a
+         uquAxBS1Piooq8Y4GePHgZYrJ0YQM4IsrhRE2uukwmYZ8ZyyO2Io/PtMIS6SIxbAfYRy
+         RV/Q==
+X-Gm-Message-State: ACgBeo0SbzLVbU8tkkLh12kPL9Uch1txTMb4ISpriUE8vVWtUmXcdhcJ
+        DfMu7A+a9JmtcpkBDZCfcOM=
+X-Google-Smtp-Source: AA6agR4N4u7pHPc2TIUiawaqfkhsiNKVDn/EG+sF93jrjzRMMKCrNOEKARKB8/S+80/4KDYKfmdAPw==
+X-Received: by 2002:a65:6854:0:b0:41c:feab:e17c with SMTP id q20-20020a656854000000b0041cfeabe17cmr7097086pgt.256.1660929028734;
+        Fri, 19 Aug 2022 10:10:28 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:db7d])
+        by smtp.gmail.com with ESMTPSA id f23-20020a17090a121700b001f94d25bfabsm5451928pja.28.2022.08.19.10.10.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 10:10:28 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Fri, 19 Aug 2022 07:10:26 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Zhaoyang Huang <huangzhaoyang@gmail.com>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, ke.wang@unisoc.com,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
+Message-ID: <Yv/EArPDTcCrGqJh@slm.duckdns.org>
+References: <1660908562-17409-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <Yv+6YjaGAv52yvq9@slm.duckdns.org>
+ <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <Yv9J2d1bVe7Xntxu@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/19/22 2:29 AM, Greg KH wrote:
+On Fri, Aug 19, 2022 at 10:08:59AM -0700, Shakeel Butt wrote:
+> On Fri, Aug 19, 2022 at 9:29 AM Tejun Heo <tj@kernel.org> wrote:
+> >
+> > On Fri, Aug 19, 2022 at 07:29:22PM +0800, zhaoyang.huang wrote:
+> > > From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > >
+> > > It is observed in android system where per-app cgroup is demanded by freezer
+> > > subsys and part of groups require memory control. The hierarchy could be simplized
+> > > as bellowing where memory charged on group B abserved while we only want have
+> > > group E's memory be controlled and B's descendants compete freely for memory.
+> > > This should be the consequences of unified hierarchy.
+> > > Under this scenario, less efficient memory reclaim is observed when comparing
+> > > with no memory control. It is believed that multi LRU scanning introduces some
+> > > of the overhead. Furthermore, page thrashing is also heavier than global LRU
+> > > which could be the consequences of partial failure of WORKINGSET mechanism as
+> > > LRU is too short to protect the active pages.
+> > >
+> > > A(subtree_control = memory) - B(subtree_control = NULL) - C()
+> > >                                                       \ D()
+> > >                           - E(subtree_control = memory) - F()
+> > >                                                         \ G()
+> > >
+> > > Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> >
+> > Just in case it wasn't clear.
+> >
+> > Nacked-by: Tejun Heo <tj@kernel.org>
+> >
+> > Thanks.
+> >
 > 
-> Overall, nice work, thanks for adding this, minor comments below:
-> 
-> On Tue, Aug 16, 2022 at 03:57:11PM -0600, Shuah Khan wrote:
->> USBIP driver packs URB transfer flags in PDUs that are exchanged
-> 
-> What is a "PDU"?
+> Was there a previous discussion on this? The commit message is unreadable.
 
-Protocol Data Unit - I will expand or reword to drop it.
+http://lkml.kernel.org/r/1660298966-11493-1-git-send-email-zhaoyang.huang@unisoc.com
 
-[snip]
+Thanks.
 
->>   +-----------+--------+---------------------------------------------------+
->>   | 0x14      | 4      | transfer_flags: possible values depend on the     |
->>   |           |        | URB transfer_flags (refer to URB doc in           |
-> 
-> You can drop the second "URB" here, as it's an USBIP document being
-> referred to, right?
-
-This refers to USB URB document. I can rephrase it to USBIP_URB transfer flags
-as it is the API now.
-
->>   
->> +		/* Unpack the pdu to an urb (map USBIP_URB_* to URB_* flags) */
-> 
-> No need to mention the mapping everywhere in these comments as the
-> function handles that.
-> 
-
-These comments were primarily added for making sure right mapping is done.
-Will remove them.
-
-
->> +	}
->> +	pr_debug("%s: flag = %u map_flags = %u\n", __func__,
->> +		 flags, map_flags);
-> 
-> When using pr_debug (or dev_dbg()), you already have access to the
-> __func__ in the output automatically, so there's never a need to add it
-> again, it would just show up twice.
-> 
-
-Good point.
-
-> Also, this should be dev_dbg(), as it's a driver, and you have access to
-> the device being handled (well, it needs to be passed to the
-> function...)
-> 
-
-I am going to delete these - debug message isn't really needed.
-
->> +
->> +	return map_flags;
->> +}
->> +
->> +static unsigned int usbip_to_urb(unsigned int flags)
->> +{
->> +	unsigned int map_flags = 0;
->> +	int loop;
->> +
->> +	for (loop = 0; loop < NUM_USBIP_FLAGS; loop++) {
->> +		if (flags & flag_map[loop].usbip_flag)
->> +			map_flags |= flag_map[loop].urb_flag;
->> +	}
->> +	pr_debug("%s: flag = %u map_flags = %u\n", __func__,
->> +		 flags, map_flags);
-> 
-> Same debug comment as above.
-
-Same as above. I will just delete the message.
-
-> 
-
->> + * As a result of coying the transfer flags, they now have become part
-> 
-> "coying"?  :)
-
-Thanks for catching this :)
-
-> 
->> + * of the API. Any changes to kernel flags now impact the USBIP user-space.
->> + * In addition, it will be compatibility problem between server and client.
->> + * These defines aren't directly referenced and it is an obscure usage
->> + * hidden away in the packets.
-> 
-> No need to mention the history here, just say "here are the flags for
-> the transfer types"
-> 
-
-Will do.
-
-> 
->> + *
->> + * Add code to translate the values between the numbers used in userspace
->> + * and the numbers used in the kernel. This will help with any future
->> + * changes to kernel flags breaking the API.
-> 
-> There's no code being added in this uapi file, so you might want to
-> reword all of this.  Possibly by removing most of it, as the history
-> here might not be necessary to document.
-> 
-
-Will do.
-
-thanks for the review. Will send v2.
-
-thanks,
--- Shuah
-
+-- 
+tejun
