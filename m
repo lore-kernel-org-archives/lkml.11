@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9C5C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4552BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351524AbiHSQIN (ORCPT
+        id S1351537AbiHSQIT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
+        Fri, 19 Aug 2022 12:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351381AbiHSQFh (ORCPT
+        with ESMTP id S1351432AbiHSQFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:05:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0166D3882;
-        Fri, 19 Aug 2022 08:55:08 -0700 (PDT)
+        Fri, 19 Aug 2022 12:05:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAF710BE00;
+        Fri, 19 Aug 2022 08:55:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41538B8280D;
-        Fri, 19 Aug 2022 15:54:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AEFC433D7;
-        Fri, 19 Aug 2022 15:54:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E722616FD;
+        Fri, 19 Aug 2022 15:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17360C433B5;
+        Fri, 19 Aug 2022 15:55:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924479;
-        bh=Dd1/kZE90y3ZLIWYyhjlSznE+IxnV0q0nBbqPMWqTnw=;
+        s=korg; t=1660924506;
+        bh=GS1BWbFJARh6QNENN/HRDmTcg2DRzvBQ6icflFq/bEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ac86+leVXgM3uLA4FfQRx54WV5qV4pUGxZsb8rbb038+RTqSo7cHu4lVc0ODuV5jD
-         wea9eYiSjxbOrRMEHDh1Lju/gG0QjeRJ60iebK9KIJsg3PK6cl/F7k+7Wy/o+t6eic
-         J1bCRu4jEFb3FwK9hCO7h7g1JM9062WsiN7ubCDE=
+        b=qDACznHNwWioKxmmtONRE/QH9Y69jE2mYS32GUY45zo2aM6y/j+d/9wV+Jst1JHW2
+         gnlmpY46VKRS4tcLdpyLvJsFJzMtkcCSom2ywN/Zbk3qKQ4AQf/ECFyFl67G52V8nX
+         a1CtNLotMpRdmRY6f5Dss3+wT6+Tu1WjKyzK8+o4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 153/545] pwm: sifive: Simplify offset calculation for PWMCMP registers
-Date:   Fri, 19 Aug 2022 17:38:43 +0200
-Message-Id: <20220819153836.181913009@linuxfoundation.org>
+Subject: [PATCH 5.10 193/545] drm/vc4: drv: Remove the DSI pointer in vc4_drv
+Date:   Fri, 19 Aug 2022 17:39:23 +0200
+Message-Id: <20220819153837.998234535@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,69 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 20550a61880fc55e68a0d290ad195b74729c0e7b ]
+[ Upstream commit 51f4fcd9c4ea867c3b4fe58111f342ad0e80642a ]
 
-Instead of explicitly using PWM_SIFIVE_PWMCMP0 + pwm->hwpwm *
-PWM_SIFIVE_SIZE_PWMCMP for each access to one of the PWMCMP registers,
-introduce a macro that takes the hwpwm id as parameter.
+That pointer isn't used anywhere, so there's no point in keeping it.
 
-For the register definition using a plain 4 instead of the cpp constant
-PWM_SIFIVE_SIZE_PWMCMP is easier to read, so define the offset macro
-without the constant. The latter can then be dropped as there are no
-users left.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20201203132543.861591-2-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-sifive.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/vc4/vc4_drv.h | 1 -
+ drivers/gpu/drm/vc4/vc4_dsi.c | 9 ---------
+ 2 files changed, 10 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index 8c6de4f41076..cc32f7ce09a6 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -23,7 +23,7 @@
- #define PWM_SIFIVE_PWMCFG		0x0
- #define PWM_SIFIVE_PWMCOUNT		0x8
- #define PWM_SIFIVE_PWMS			0x10
--#define PWM_SIFIVE_PWMCMP0		0x20
-+#define PWM_SIFIVE_PWMCMP(i)		(0x20 + 4 * (i))
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
+index 9809c3a856c6..921463625d82 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -77,7 +77,6 @@ struct vc4_dev {
+ 	struct vc4_hvs *hvs;
+ 	struct vc4_v3d *v3d;
+ 	struct vc4_dpi *dpi;
+-	struct vc4_dsi *dsi1;
+ 	struct vc4_vec *vec;
+ 	struct vc4_txp *txp;
  
- /* PWMCFG fields */
- #define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
-@@ -36,8 +36,6 @@
- #define PWM_SIFIVE_PWMCFG_GANG		BIT(24)
- #define PWM_SIFIVE_PWMCFG_IP		BIT(28)
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 153ad9048db5..6222e4058c85 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -1449,7 +1449,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct drm_device *drm = dev_get_drvdata(master);
+-	struct vc4_dev *vc4 = to_vc4_dev(drm);
+ 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
+ 	struct vc4_dsi_encoder *vc4_dsi_encoder;
+ 	struct drm_panel *panel;
+@@ -1602,9 +1601,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 	if (ret)
+ 		return ret;
  
--/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX registers */
--#define PWM_SIFIVE_SIZE_PWMCMP		4
- #define PWM_SIFIVE_CMPWIDTH		16
- #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
+-	if (dsi->port == 1)
+-		vc4->dsi1 = dsi;
+-
+ 	drm_simple_encoder_init(drm, dsi->encoder, DRM_MODE_ENCODER_DSI);
+ 	drm_encoder_helper_add(dsi->encoder, &vc4_dsi_encoder_helper_funcs);
  
-@@ -112,8 +110,7 @@ static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
- 	u32 duty, val;
+@@ -1633,8 +1629,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ static void vc4_dsi_unbind(struct device *dev, struct device *master,
+ 			   void *data)
+ {
+-	struct drm_device *drm = dev_get_drvdata(master);
+-	struct vc4_dev *vc4 = to_vc4_dev(drm);
+ 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
  
--	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP0 +
--		     pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
+ 	if (dsi->bridge)
+@@ -1646,9 +1640,6 @@ static void vc4_dsi_unbind(struct device *dev, struct device *master,
+ 	 */
+ 	list_splice_init(&dsi->bridge_chain, &dsi->encoder->bridge_chain);
+ 	drm_encoder_cleanup(dsi->encoder);
+-
+-	if (dsi->port == 1)
+-		vc4->dsi1 = NULL;
+ }
  
- 	state->enabled = duty > 0;
- 
-@@ -194,8 +191,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		pwm_sifive_update_clock(ddata, clk_get_rate(ddata->clk));
- 	}
- 
--	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP0 +
--	       pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
- 
- 	if (state->enabled != enabled)
- 		pwm_sifive_enable(chip, state->enabled);
+ static const struct component_ops vc4_dsi_ops = {
 -- 
 2.35.1
 
