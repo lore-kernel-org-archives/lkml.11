@@ -2,132 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4E9C32774
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87086C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349852AbiHSPjt (ORCPT
+        id S1349859AbiHSPjx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
+        Fri, 19 Aug 2022 11:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349629AbiHSPjj (ORCPT
+        with ESMTP id S1349293AbiHSPjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:39:39 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106971ADBA;
-        Fri, 19 Aug 2022 08:39:39 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (zone.collabora.co.uk [167.235.23.81])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Fri, 19 Aug 2022 11:39:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF531D306;
+        Fri, 19 Aug 2022 08:39:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: nicolas)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8309A6601DC1;
-        Fri, 19 Aug 2022 16:39:35 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1660923577;
-        bh=Sf7z9oeTO/SV+Jx+YtJSmjHObIi/DpjdAj42YvmAPrM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=LqXt2BZwCkQQURlf7+9KbYDQ21otTAD7DhkbvXvTi0DXAbR5J7moONn+JfJBM+M67
-         2l6pDutujwBQVR1lPvHrbb3xf7qoFV6nnL13b+arC09ZwbopdaUW4NWxVwZt4RN9sM
-         oM5TJpu+9IR91xawmul8A0Dzurl5RG3+0np1OG+Xv1QaPnfq3mp+kRZz70iEaWksYD
-         lLJwT1zRzGMHj67HqVObU+H0D5ejshNrhEU2VXAr1FH9UcfM/jXmnkVby9tsbzZdvF
-         YSh847gyNmBRpmSm4fkMHFQYA7wNj5wTtvcTCUOeoAffxftQiSryS1FYPeNZsvCFR8
-         +yMDLfljF/kXw==
-Message-ID: <52bb86cf12450ce78d2f196a1b86b4137ec61a07.camel@collabora.com>
-Subject: Re: [PATCH v1 3/3] media: cedrus: Fix endless loop in
- cedrus_h265_skip_bits()
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Jernej =?UTF-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        linux-media@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     kernel@collabora.com,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        stable@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 19 Aug 2022 11:39:25 -0400
-In-Reply-To: <5849126.lOV4Wx5bFT@jernej-laptop>
-References: <20220818203308.439043-1-nicolas.dufresne@collabora.com>
-         <20220818203308.439043-4-nicolas.dufresne@collabora.com>
-         <5849126.lOV4Wx5bFT@jernej-laptop>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        by ams.source.kernel.org (Postfix) with ESMTPS id C95CFB8280C;
+        Fri, 19 Aug 2022 15:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C262C433D6;
+        Fri, 19 Aug 2022 15:39:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660923578;
+        bh=QXKbbD2rBMM2SVJ7jtAh4BSriiVTIwVcRFRHymGJ04g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b3SAMutcobvIlFHxK4hNs1QaoUFVLom0IE0Fxj9yVTU8M6obnF888bzlg4h0FDJf6
+         7/5i5WrdYUoVQaZhozyBAwQXzBk9z5xtlD7aUpXYe+8YPrDm41i4fN4duZ+0e4pWc7
+         uCSb/KkhALgtJHY5k9LWlb+HA7fMklgoWfmPWu/k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 3/7] net_sched: cls_route: disallow handle of 0
+Date:   Fri, 19 Aug 2022 17:39:19 +0200
+Message-Id: <20220819153711.691135829@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153711.552247994@linuxfoundation.org>
+References: <20220819153711.552247994@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le vendredi 19 ao=C3=BBt 2022 =C3=A0 06:16 +0200, Jernej =C5=A0krabec a =C3=
-=A9crit=C2=A0:
-> Dne =C4=8Detrtek, 18. avgust 2022 ob 22:33:08 CEST je Nicolas Dufresne na=
-pisal(a):
-> > From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> >=20
-> > The busy status bit may never de-assert if number of programmed skip
-> > bits is incorrect, resulting in a kernel hang because the bit is polled
-> > endlessly in the code. Fix it by adding timeout for the bit-polling.
-> > This problem is reproducible by setting the data_bit_offset field of
-> > the HEVC slice params to a wrong value by userspace.
-> >=20
-> > Cc: stable@vger.kernel.org
-> > Reported-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> > Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
->=20
-> Fixes tag would be nice.
->=20
-> > ---
-> >  drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-> > b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c index
-> > f703c585d91c5..f0bc118021b0a 100644
-> > --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-> > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-> > @@ -227,6 +227,7 @@ static void cedrus_h265_pred_weight_write(struct
-> > cedrus_dev *dev, static void cedrus_h265_skip_bits(struct cedrus_dev *d=
-ev,
-> > int num) {
-> >  	int count =3D 0;
-> > +	u32 reg;
-> >=20
-> >  	while (count < num) {
-> >  		int tmp =3D min(num - count, 32);
-> > @@ -234,8 +235,9 @@ static void cedrus_h265_skip_bits(struct cedrus_dev
-> > *dev, int num) cedrus_write(dev, VE_DEC_H265_TRIGGER,
-> >  			     VE_DEC_H265_TRIGGER_FLUSH_BITS |
-> >  			     VE_DEC_H265_TRIGGER_TYPE_N_BITS(tmp));
-> > -		while (cedrus_read(dev, VE_DEC_H265_STATUS) &
-> > VE_DEC_H265_STATUS_VLD_BUSY) -			udelay(1);
-> > +
-> > +		if (cedrus_wait_for(dev, VE_DEC_H265_STATUS,
-> > VE_DEC_H265_STATUS_VLD_BUSY)) +		=09
-> dev_err_ratelimited(dev->dev, "timed out
-> > waiting to skip bits\n");
->=20
-> Reporting issue is nice, but better would be to propagate error, since th=
-ere=20
-> is no way to properly decode this slice if above code block fails.
+From: Jamal Hadi Salim <jhs@mojatatu.com>
 
-This mimic what was already there, mind if we do that later ? The propagati=
-on is
-doing to be a lot more intrusive.
+commit 02799571714dc5dd6948824b9d080b44a295f695 upstream.
 
->=20
-> Best regards,
-> Jernej
->=20
-> >=20
-> >  		count +=3D tmp;
-> >  	}
->=20
->=20
->=20
->=20
+Follows up on:
+https://lore.kernel.org/all/20220809170518.164662-1-cascardo@canonical.com/
+
+handle of 0 implies from/to of universe realm which is not very
+sensible.
+
+Lets see what this patch will do:
+$sudo tc qdisc add dev $DEV root handle 1:0 prio
+
+//lets manufacture a way to insert handle of 0
+$sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 \
+route to 0 from 0 classid 1:10 action ok
+
+//gets rejected...
+Error: handle of 0 is not valid.
+We have an error talking to the kernel, -1
+
+//lets create a legit entry..
+sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 route from 10 \
+classid 1:10 action ok
+
+//what did the kernel insert?
+$sudo tc filter ls dev $DEV parent 1:0
+filter protocol ip pref 100 route chain 0
+filter protocol ip pref 100 route chain 0 fh 0x000a8000 flowid 1:10 from 10
+	action order 1: gact action pass
+	 random type none pass val 0
+	 index 1 ref 1 bind 1
+
+//Lets try to replace that legit entry with a handle of 0
+$ sudo tc filter replace dev $DEV parent 1:0 protocol ip prio 100 \
+handle 0x000a8000 route to 0 from 0 classid 1:10 action drop
+
+Error: Replacing with handle of 0 is invalid.
+We have an error talking to the kernel, -1
+
+And last, lets run Cascardo's POC:
+$ ./poc
+0
+0
+-22
+-22
+-22
+
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/sched/cls_route.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -424,6 +424,11 @@ static int route4_set_parms(struct net *
+ 			return -EINVAL;
+ 	}
+ 
++	if (!nhandle) {
++		NL_SET_ERR_MSG(extack, "Replacing with handle of 0 is invalid");
++		return -EINVAL;
++	}
++
+ 	h1 = to_hash(nhandle);
+ 	b = rtnl_dereference(head->table[h1]);
+ 	if (!b) {
+@@ -477,6 +482,11 @@ static int route4_change(struct net *net
+ 	int err;
+ 	bool new = true;
+ 
++	if (!handle) {
++		NL_SET_ERR_MSG(extack, "Creating with handle of 0 is invalid");
++		return -EINVAL;
++	}
++
+ 	if (opt == NULL)
+ 		return handle ? -EINVAL : 0;
+ 
+
 
