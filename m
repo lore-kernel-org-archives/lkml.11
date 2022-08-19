@@ -2,80 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D2B6C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB669C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346830AbiHSG6o (ORCPT
+        id S1346840AbiHSG6u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 02:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
+        Fri, 19 Aug 2022 02:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346741AbiHSG6b (ORCPT
+        with ESMTP id S1346750AbiHSG6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 02:58:31 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00E81EC52;
-        Thu, 18 Aug 2022 23:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660892301; x=1692428301;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ob9MacsV5GXRyXPT49XZK1wc9X7fKtaBbfaQau5wbrU=;
-  b=DNXYjw1Znmg/8Azt2lngfl07s77ASoL34/N+KBugQFlMv7SmCyeaLJsI
-   peop49wgecRSoAHADocoyUiSBBD2VeupztF8QGvLsijl08nPlgAwyIxSs
-   xX7f225UrRexgOOn7Ds/f9oN5BDXtKH+8fFaKXo9o9lSD6c2cfW+3Nbaj
-   ndjPFo7eZr1IChvs/CVLTDQWGvjz2gOyKh7praxFVzdWNNL9+WUFKt0ei
-   ZaWl77WOzLb0o239+X7xqhG8VhTn1nooObfzXWlTG8HrbEYHe4Kp8kty8
-   y7p0jJCLPwsZSOjjjqrHE5/0oJOGK+y2sv7tSK6a/LKAdZlYvAfMyMMEZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="356937371"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="356937371"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 23:58:19 -0700
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="711236869"
-Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 23:58:17 -0700
-Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
-        by paasikivi.fi.intel.com (Postfix) with SMTP id A600E20970;
-        Fri, 19 Aug 2022 09:58:15 +0300 (EEST)
-Date:   Fri, 19 Aug 2022 06:58:15 +0000
-From:   Sakari Ailus <sakari.ailus@linux.intel.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-kernel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Jan-Simon Moeller <jansimon.moeller@gmx.de>,
-        linux-leds@vger.kernel.org
-Subject: Re: [PATCH] leds: move from strlcpy with unused retval to strscpy
-Message-ID: <Yv80h9jw3R/AbFPm@paasikivi.fi.intel.com>
-References: <20220818210024.6913-1-wsa+renesas@sang-engineering.com>
+        Fri, 19 Aug 2022 02:58:32 -0400
+Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08322662;
+        Thu, 18 Aug 2022 23:58:26 -0700 (PDT)
+Received: from grover.sesame ([133.106.49.178]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 27J6uUCM012757;
+        Fri, 19 Aug 2022 15:56:30 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 27J6uUCM012757
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1660892191;
+        bh=kLteZgzDyCsUaZbAhJIThD6Chhgc+3Ar23SEEf1zkz8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=wwV9lkhrn16+U7gm+YFpddQAOvKBNo21MwndzEd1hbUr5kQl01tjwsDdVc1rl+xuX
+         ZTamMEMDp2YkQHqXjbVIAqB7aPluHPQOqjmsMPsCLtDFxOrPSOWIj2MkPDORKwYw4E
+         ayzZXLlBofkKBB48QKEQQ/GsniPrWVxmR2OBdaq3cfz9TdCNCPQvL5atvzrEa5JyAQ
+         HoPAo5IX3mX75x86HjMUnU8L87RTl8xY2FD23/iQGxhKKfwEPRzbV8FHP80hpdEdph
+         DmX0c7fME6ugquFwnRmAl2PLIf+HRQ22WC/FEdF7zHSVgRoz8YRlPi2UEpdqBevZL9
+         8SrWSPzrXPZoQ==
+X-Nifty-SrcIP: [133.106.49.178]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Richard Purdie <richard.purdie@linuxfoundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 0/3] kbuild: change the default shell to bash
+Date:   Fri, 19 Aug 2022 15:56:00 +0900
+Message-Id: <20220819065604.295572-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818210024.6913-1-wsa+renesas@sang-engineering.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wolfram,
 
-On Thu, Aug 18, 2022 at 11:00:24PM +0200, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
-> 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  drivers/leds/flash/leds-as3645a.c | 4 ++--
+This is related to the discussion about the portability [1].
 
-Thanks for the patch.
+I wrote this code some time ago for some reason. My motivation at that
+time was trap handling.
 
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com> (as3645a)
-Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+We use the EXIT trap in several places. The POSIX [2] mentions the 'EXIT'
+as the trap condition, but nothing about the actual conditions that trigger
+the EXIT trap. Bash invokes the EXIT trap when it exits after receiving
+an unhandled signal, while dash does not.
+
+I did not submit the patches because I lost the use-case of the EXIT trap
+except cleaning temporary files. It is harmless to have temp files left over.
+
+Recently, I saw a bug report regarding the portability of 'echo'
+('echo' is a shell's built-in command. The behavior is different between
+bash and dash).
+
+I am sharing this patch set as RFC in case somebody might have interest or comment.
+I am still wondering if this might be a big hammer, though.
+
+[1]: https://lore.kernel.org/all/e902a360e3759c7f87d98d71d79a0d5cbe935e3e.camel@linuxfoundation.org/
+[2]: https://pubs.opengroup.org/onlinepubs/009604599/utilities/trap.html
+
+
+
+Masahiro Yamada (3):
+  kconfig: move declarations for prepossessing to internal.h
+  kconfig: allow to choose the shell for $(shell ) functions
+  kbuild: use bash as the default shell for Make and Kconfig
+
+ .../kbuild/kconfig-macro-language.rst         |  4 ++
+ Makefile                                      |  7 ++
+ scripts/Kconfig.include                       |  3 +
+ scripts/kconfig/confdata.c                    |  1 +
+ scripts/kconfig/internal.h                    | 18 +++++
+ scripts/kconfig/lexer.l                       |  1 +
+ scripts/kconfig/lkc_proto.h                   | 13 ----
+ scripts/kconfig/parser.y                      |  1 +
+ scripts/kconfig/preprocess.c                  | 66 +++++++++++++++----
+ 9 files changed, 87 insertions(+), 27 deletions(-)
 
 -- 
-Kind regards,
+2.34.1
 
-Sakari Ailus
