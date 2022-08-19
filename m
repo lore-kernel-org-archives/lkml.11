@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E32C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8359BC32772
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352019AbiHSQPV (ORCPT
+        id S1352036AbiHSQPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
+        Fri, 19 Aug 2022 12:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351711AbiHSQOZ (ORCPT
+        with ESMTP id S1351834AbiHSQO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:14:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7EF140A1;
-        Fri, 19 Aug 2022 08:58:09 -0700 (PDT)
+        Fri, 19 Aug 2022 12:14:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD9C1758F;
+        Fri, 19 Aug 2022 08:58:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48060B82816;
-        Fri, 19 Aug 2022 15:57:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE44C433D7;
-        Fri, 19 Aug 2022 15:57:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DC18612E6;
+        Fri, 19 Aug 2022 15:57:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60617C433C1;
+        Fri, 19 Aug 2022 15:57:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924672;
-        bh=7TerLh21QbI4xEHS6vRstbPd1xTOV8W+7vDm0LspVbY=;
+        s=korg; t=1660924674;
+        bh=qthlUxLyneTrQoXxQBbYo31Gy/R5BpXEYmeBs7zGNCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzJ7SfLby5UcX9g6F4AHEpKF6zUSpvr7vRM7CjczS72DQ45VwMjqSkmbW5F6fbzti
-         pHU5Xk83KMc+jko0n7VT8YkjMZ58lsLI932d+Etx7L6Ep/WH6s886HWV3KAnIjbzYd
-         mtfkl3YgtbQ2VrbmX3HgouRs+zBn9bjaYt+sW67Q=
+        b=PaRHqHUmG0E/aPVypK1aZbHPDALWRA8eY/3vHqw1K11acPiFR01rfMLjHi5SjhZQW
+         opwZG/ASZfGIg17nccGtwHj/6dQ05uPUiwB6vnNJqcKTtrPPCcou8LoCywZJsVx81h
+         PxXnEPKO122iAraGlMSdkwidUQPSy8ApkZ9DEsQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 244/545] can: pch_can: pch_can_error(): initialize errc before using it
-Date:   Fri, 19 Aug 2022 17:40:14 +0200
-Message-Id: <20220819153840.278836924@linuxfoundation.org>
+Subject: [PATCH 5.10 217/545] drm/msm/mdp5: Fix global state lock backoff
+Date:   Fri, 19 Aug 2022 17:39:47 +0200
+Message-Id: <20220819153839.072427077@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,56 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 9950f11211331180269867aef848c7cf56861742 ]
+[ Upstream commit 92ef86ab513593c6329d04146e61f9a670e72fc5 ]
 
-After commit 3a5c7e4611dd, the variable errc is accessed before being
-initialized, c.f. below W=2 warning:
+We need to grab the lock after the early return for !hwpipe case.
+Otherwise, we could have hit contention yet still returned 0.
 
-| In function 'pch_can_error',
-|     inlined from 'pch_can_poll' at drivers/net/can/pch_can.c:739:4:
-| drivers/net/can/pch_can.c:501:29: warning: 'errc' may be used uninitialized [-Wmaybe-uninitialized]
-|   501 |                 cf->data[6] = errc & PCH_TEC;
-|       |                             ^
-| drivers/net/can/pch_can.c: In function 'pch_can_poll':
-| drivers/net/can/pch_can.c:484:13: note: 'errc' was declared here
-|   484 |         u32 errc, lec;
-|       |             ^~~~
+Fixes an issue that the new CONFIG_DRM_DEBUG_MODESET_LOCK stuff flagged
+in CI:
 
-Moving errc initialization up solves this issue.
+   WARNING: CPU: 0 PID: 282 at drivers/gpu/drm/drm_modeset_lock.c:296 drm_modeset_lock+0xf8/0x154
+   Modules linked in:
+   CPU: 0 PID: 282 Comm: kms_cursor_lega Tainted: G        W         5.19.0-rc2-15930-g875cc8bc536a #1
+   Hardware name: Qualcomm Technologies, Inc. DB820c (DT)
+   pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+   pc : drm_modeset_lock+0xf8/0x154
+   lr : drm_atomic_get_private_obj_state+0x84/0x170
+   sp : ffff80000cfab6a0
+   x29: ffff80000cfab6a0 x28: 0000000000000000 x27: ffff000083bc4d00
+   x26: 0000000000000038 x25: 0000000000000000 x24: ffff80000957ca58
+   x23: 0000000000000000 x22: ffff000081ace080 x21: 0000000000000001
+   x20: ffff000081acec18 x19: ffff80000cfabb80 x18: 0000000000000038
+   x17: 0000000000000000 x16: 0000000000000000 x15: fffffffffffea0d0
+   x14: 0000000000000000 x13: 284e4f5f4e524157 x12: 5f534b434f4c5f47
+   x11: ffff80000a386aa8 x10: 0000000000000029 x9 : ffff80000cfab610
+   x8 : 0000000000000029 x7 : 0000000000000014 x6 : 0000000000000000
+   x5 : 0000000000000001 x4 : ffff8000081ad904 x3 : 0000000000000029
+   x2 : ffff0000801db4c0 x1 : ffff80000cfabb80 x0 : ffff000081aceb58
+   Call trace:
+    drm_modeset_lock+0xf8/0x154
+    drm_atomic_get_private_obj_state+0x84/0x170
+    mdp5_get_global_state+0x54/0x6c
+    mdp5_pipe_release+0x2c/0xd4
+    mdp5_plane_atomic_check+0x2ec/0x414
+    drm_atomic_helper_check_planes+0xd8/0x210
+    drm_atomic_helper_check+0x54/0xb0
+    ...
+   ---[ end trace 0000000000000000 ]---
+   drm_modeset_lock attempting to lock a contended lock without backoff:
+      drm_modeset_lock+0x148/0x154
+      mdp5_get_global_state+0x30/0x6c
+      mdp5_pipe_release+0x2c/0xd4
+      mdp5_plane_atomic_check+0x290/0x414
+      drm_atomic_helper_check_planes+0xd8/0x210
+      drm_atomic_helper_check+0x54/0xb0
+      drm_atomic_check_only+0x4b0/0x8f4
+      drm_atomic_commit+0x68/0xe0
 
-Fixes: 3a5c7e4611dd ("can: pch_can: do not report txerr and rxerr during bus-off")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/all/20220721160032.9348-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: d59be579fa93 ("drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Patchwork: https://patchwork.freedesktop.org/patch/492701/
+Link: https://lore.kernel.org/r/20220707162040.1594855-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/pch_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index 1adfcc0b9424..1272ec793a8d 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -489,6 +489,7 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 	if (!skb)
- 		return;
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+index a4f5cb90f3e8..e4b8a789835a 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+@@ -123,12 +123,13 @@ int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+ {
+ 	struct msm_drm_private *priv = s->dev->dev_private;
+ 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
+-	struct mdp5_global_state *state = mdp5_get_global_state(s);
++	struct mdp5_global_state *state;
+ 	struct mdp5_hw_pipe_state *new_state;
  
-+	errc = ioread32(&priv->regs->errc);
- 	if (status & PCH_BUS_OFF) {
- 		pch_can_set_tx_all(priv, 0);
- 		pch_can_set_rx_all(priv, 0);
-@@ -501,7 +502,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 		cf->data[7] = (errc & PCH_REC) >> 8;
- 	}
+ 	if (!hwpipe)
+ 		return 0;
  
--	errc = ioread32(&priv->regs->errc);
- 	/* Warning interrupt. */
- 	if (status & PCH_EWARN) {
- 		state = CAN_STATE_ERROR_WARNING;
++	state = mdp5_get_global_state(s);
+ 	if (IS_ERR(state))
+ 		return PTR_ERR(state);
+ 
 -- 
 2.35.1
 
