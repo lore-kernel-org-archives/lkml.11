@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D6CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BEEC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351659AbiHSQJT (ORCPT
+        id S1351481AbiHSQJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
+        Fri, 19 Aug 2022 12:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351708AbiHSQGY (ORCPT
+        with ESMTP id S1351724AbiHSQG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:24 -0400
+        Fri, 19 Aug 2022 12:06:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1865107DAC;
-        Fri, 19 Aug 2022 08:55:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2633810D5BC;
+        Fri, 19 Aug 2022 08:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E1CFB8280D;
-        Fri, 19 Aug 2022 15:55:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3752C433B5;
-        Fri, 19 Aug 2022 15:55:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 078E1B82811;
+        Fri, 19 Aug 2022 15:55:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC40C43470;
+        Fri, 19 Aug 2022 15:55:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924518;
-        bh=/K+suGuzYj0Rc3Je8z70EE2Cfy6fsI60ENglGQ4vv+Y=;
+        s=korg; t=1660924523;
+        bh=6I0w9ViDntC5SF6upPsG6xsZ4dd8+d6KoR9oeRkH/98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oA0W1yGcVQAicmGAmm7zYjxEYkYBUHIS+UOtHHhUXX6AaLEbzp4jlBtOWKyH6Lnm9
-         Bqp36/cr+J0wBiHThffo43aI8weGB80x5n49W0/DNkmmG7UYyt8ANFFMfZ4wyeurkS
-         WJrnsiEGoaHdtE5ezcB0ENe/AAS7wGnMV4ZNfkFo=
+        b=o36bVtoIDOLVyrCj6O+sd3vCxDRTnhAv8neFMjtT+nJ13ttN/QALpLTnTinBSUdXN
+         MXGsH+CKAmoV1+J8TWf2K2z01/o2P7BkjgDspim/NcPIaGB+iHeWi0bsChpqxkY+Mn
+         LpvFwi9hIDwOvYSbaRpVuPmaPd964FxT/jDw1drE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 197/545] drm/vc4: dsi: Fix dsi0 interrupt support
-Date:   Fri, 19 Aug 2022 17:39:27 +0200
-Message-Id: <20220819153838.188032631@linuxfoundation.org>
+Subject: [PATCH 5.10 199/545] drm/vc4: hdmi: Remove firmware logic for MAI threshold setting
+Date:   Fri, 19 Aug 2022 17:39:29 +0200
+Message-Id: <20220819153838.285646925@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,199 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Dom Cobley <popcornmix@gmail.com>
 
-[ Upstream commit bc5b815e06f90cccdb6461aba1e49fdc2f3c8cd1 ]
+[ Upstream commit 8434111ccfec8fc0549ec325a632067232d38e14 ]
 
-DSI0 seemingly had very little or no testing as a load of
-the register mappings were incorrect/missing, so host
-transfers always timed out due to enabling/checking incorrect
-bits in the interrupt enable and status registers.
+This was a workaround for bugs in hardware on earlier Pi models
+and wasn't totally successful.
 
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-16-maxime@cerno.tech
+It makes audio quality worse on a Pi4 at the higher sample rates
+
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210525132354.297468-10-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 111 ++++++++++++++++++++++++++--------
- 1 file changed, 85 insertions(+), 26 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 22 ++++++----------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 8e2d5c4237ae..43e86f0b5541 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -181,8 +181,50 @@
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index d5822878b5a7..6acc34f1e095 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1031,22 +1031,12 @@ static int vc4_hdmi_audio_hw_params(struct snd_pcm_substream *substream,
+ 	audio_packet_config |= VC4_SET_FIELD(channel_mask,
+ 					     VC4_HDMI_AUDIO_PACKET_CEA_MASK);
  
- #define DSI0_TXPKT_PIX_FIFO		0x20 /* AKA PIX_FIFO */
- 
--#define DSI0_INT_STAT		0x24
--#define DSI0_INT_EN		0x28
-+#define DSI0_INT_STAT			0x24
-+#define DSI0_INT_EN			0x28
-+# define DSI0_INT_FIFO_ERR		BIT(25)
-+# define DSI0_INT_CMDC_DONE_MASK	VC4_MASK(24, 23)
-+# define DSI0_INT_CMDC_DONE_SHIFT	23
-+#  define DSI0_INT_CMDC_DONE_NO_REPEAT		1
-+#  define DSI0_INT_CMDC_DONE_REPEAT		3
-+# define DSI0_INT_PHY_DIR_RTF		BIT(22)
-+# define DSI0_INT_PHY_D1_ULPS		BIT(21)
-+# define DSI0_INT_PHY_D1_STOP		BIT(20)
-+# define DSI0_INT_PHY_RXLPDT		BIT(19)
-+# define DSI0_INT_PHY_RXTRIG		BIT(18)
-+# define DSI0_INT_PHY_D0_ULPS		BIT(17)
-+# define DSI0_INT_PHY_D0_LPDT		BIT(16)
-+# define DSI0_INT_PHY_D0_FTR		BIT(15)
-+# define DSI0_INT_PHY_D0_STOP		BIT(14)
-+/* Signaled when the clock lane enters the given state. */
-+# define DSI0_INT_PHY_CLK_ULPS		BIT(13)
-+# define DSI0_INT_PHY_CLK_HS		BIT(12)
-+# define DSI0_INT_PHY_CLK_FTR		BIT(11)
-+/* Signaled on timeouts */
-+# define DSI0_INT_PR_TO			BIT(10)
-+# define DSI0_INT_TA_TO			BIT(9)
-+# define DSI0_INT_LPRX_TO		BIT(8)
-+# define DSI0_INT_HSTX_TO		BIT(7)
-+/* Contention on a line when trying to drive the line low */
-+# define DSI0_INT_ERR_CONT_LP1		BIT(6)
-+# define DSI0_INT_ERR_CONT_LP0		BIT(5)
-+/* Control error: incorrect line state sequence on data lane 0. */
-+# define DSI0_INT_ERR_CONTROL		BIT(4)
-+# define DSI0_INT_ERR_SYNC_ESC		BIT(3)
-+# define DSI0_INT_RX2_PKT		BIT(2)
-+# define DSI0_INT_RX1_PKT		BIT(1)
-+# define DSI0_INT_CMD_PKT		BIT(0)
-+
-+#define DSI0_INTERRUPTS_ALWAYS_ENABLED	(DSI0_INT_ERR_SYNC_ESC | \
-+					 DSI0_INT_ERR_CONTROL |	 \
-+					 DSI0_INT_ERR_CONT_LP0 | \
-+					 DSI0_INT_ERR_CONT_LP1 | \
-+					 DSI0_INT_HSTX_TO |	 \
-+					 DSI0_INT_LPRX_TO |	 \
-+					 DSI0_INT_TA_TO |	 \
-+					 DSI0_INT_PR_TO)
-+
- # define DSI1_INT_PHY_D3_ULPS		BIT(30)
- # define DSI1_INT_PHY_D3_STOP		BIT(29)
- # define DSI1_INT_PHY_D2_ULPS		BIT(28)
-@@ -892,6 +934,9 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
- 
- 		DSI_PORT_WRITE(PHY_AFEC0, afec0);
- 
-+		/* AFEC reset hold time */
-+		mdelay(1);
-+
- 		DSI_PORT_WRITE(PHY_AFEC1,
- 			       VC4_SET_FIELD(6,  DSI0_PHY_AFEC1_IDR_DLANE1) |
- 			       VC4_SET_FIELD(6,  DSI0_PHY_AFEC1_IDR_DLANE0) |
-@@ -1058,12 +1103,9 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
- 		DSI_PORT_WRITE(CTRL, DSI_PORT_READ(CTRL) | DSI1_CTRL_EN);
- 
- 	/* Bring AFE out of reset. */
--	if (dsi->variant->port == 0) {
+-	/* Set the MAI threshold.  This logic mimics the firmware's. */
+-	if (vc4_hdmi->audio.samplerate > 96000) {
+-		HDMI_WRITE(HDMI_MAI_THR,
+-			   VC4_SET_FIELD(0x12, VC4_HD_MAI_THR_DREQHIGH) |
+-			   VC4_SET_FIELD(0x12, VC4_HD_MAI_THR_DREQLOW));
+-	} else if (vc4_hdmi->audio.samplerate > 48000) {
+-		HDMI_WRITE(HDMI_MAI_THR,
+-			   VC4_SET_FIELD(0x14, VC4_HD_MAI_THR_DREQHIGH) |
+-			   VC4_SET_FIELD(0x12, VC4_HD_MAI_THR_DREQLOW));
 -	} else {
--		DSI_PORT_WRITE(PHY_AFEC0,
--			       DSI_PORT_READ(PHY_AFEC0) &
--			       ~DSI1_PHY_AFEC0_RESET);
+-		HDMI_WRITE(HDMI_MAI_THR,
+-			   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICHIGH) |
+-			   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICLOW) |
+-			   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQHIGH) |
+-			   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQLOW));
 -	}
-+	DSI_PORT_WRITE(PHY_AFEC0,
-+		       DSI_PORT_READ(PHY_AFEC0) &
-+		       ~DSI_PORT_BIT(PHY_AFEC0_RESET));
++	/* Set the MAI threshold */
++	HDMI_WRITE(HDMI_MAI_THR,
++		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICHIGH) |
++		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICLOW) |
++		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQHIGH) |
++		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQLOW));
  
- 	vc4_dsi_ulps(dsi, false);
- 
-@@ -1182,13 +1224,28 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
- 	/* Enable the appropriate interrupt for the transfer completion. */
- 	dsi->xfer_result = 0;
- 	reinit_completion(&dsi->xfer_completion);
--	DSI_PORT_WRITE(INT_STAT, DSI1_INT_TXPKT1_DONE | DSI1_INT_PHY_DIR_RTF);
--	if (msg->rx_len) {
--		DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
--					DSI1_INT_PHY_DIR_RTF));
-+	if (dsi->variant->port == 0) {
-+		DSI_PORT_WRITE(INT_STAT,
-+			       DSI0_INT_CMDC_DONE_MASK | DSI1_INT_PHY_DIR_RTF);
-+		if (msg->rx_len) {
-+			DSI_PORT_WRITE(INT_EN, (DSI0_INTERRUPTS_ALWAYS_ENABLED |
-+						DSI0_INT_PHY_DIR_RTF));
-+		} else {
-+			DSI_PORT_WRITE(INT_EN,
-+				       (DSI0_INTERRUPTS_ALWAYS_ENABLED |
-+					VC4_SET_FIELD(DSI0_INT_CMDC_DONE_NO_REPEAT,
-+						      DSI0_INT_CMDC_DONE)));
-+		}
- 	} else {
--		DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
--					DSI1_INT_TXPKT1_DONE));
-+		DSI_PORT_WRITE(INT_STAT,
-+			       DSI1_INT_TXPKT1_DONE | DSI1_INT_PHY_DIR_RTF);
-+		if (msg->rx_len) {
-+			DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
-+						DSI1_INT_PHY_DIR_RTF));
-+		} else {
-+			DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
-+						DSI1_INT_TXPKT1_DONE));
-+		}
- 	}
- 
- 	/* Send the packet. */
-@@ -1205,7 +1262,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
- 		ret = dsi->xfer_result;
- 	}
- 
--	DSI_PORT_WRITE(INT_EN, DSI1_INTERRUPTS_ALWAYS_ENABLED);
-+	DSI_PORT_WRITE(INT_EN, DSI_PORT_BIT(INTERRUPTS_ALWAYS_ENABLED));
- 
- 	if (ret)
- 		goto reset_fifo_and_return;
-@@ -1251,7 +1308,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
- 		       DSI_PORT_BIT(CTRL_RESET_FIFOS));
- 
- 	DSI_PORT_WRITE(TXPKT1C, 0);
--	DSI_PORT_WRITE(INT_EN, DSI1_INTERRUPTS_ALWAYS_ENABLED);
-+	DSI_PORT_WRITE(INT_EN, DSI_PORT_BIT(INTERRUPTS_ALWAYS_ENABLED));
- 	return ret;
- }
- 
-@@ -1368,26 +1425,28 @@ static irqreturn_t vc4_dsi_irq_handler(int irq, void *data)
- 	DSI_PORT_WRITE(INT_STAT, stat);
- 
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_ERR_SYNC_ESC, "LPDT sync");
-+			 DSI_PORT_BIT(INT_ERR_SYNC_ESC), "LPDT sync");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_ERR_CONTROL, "data lane 0 sequence");
-+			 DSI_PORT_BIT(INT_ERR_CONTROL), "data lane 0 sequence");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_ERR_CONT_LP0, "LP0 contention");
-+			 DSI_PORT_BIT(INT_ERR_CONT_LP0), "LP0 contention");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_ERR_CONT_LP1, "LP1 contention");
-+			 DSI_PORT_BIT(INT_ERR_CONT_LP1), "LP1 contention");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_HSTX_TO, "HSTX timeout");
-+			 DSI_PORT_BIT(INT_HSTX_TO), "HSTX timeout");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_LPRX_TO, "LPRX timeout");
-+			 DSI_PORT_BIT(INT_LPRX_TO), "LPRX timeout");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_TA_TO, "turnaround timeout");
-+			 DSI_PORT_BIT(INT_TA_TO), "turnaround timeout");
- 	dsi_handle_error(dsi, &ret, stat,
--			 DSI1_INT_PR_TO, "peripheral reset timeout");
-+			 DSI_PORT_BIT(INT_PR_TO), "peripheral reset timeout");
- 
--	if (stat & (DSI1_INT_TXPKT1_DONE | DSI1_INT_PHY_DIR_RTF)) {
-+	if (stat & ((dsi->variant->port ? DSI1_INT_TXPKT1_DONE :
-+					  DSI0_INT_CMDC_DONE_MASK) |
-+		    DSI_PORT_BIT(INT_PHY_DIR_RTF))) {
- 		complete(&dsi->xfer_completion);
- 		ret = IRQ_HANDLED;
--	} else if (stat & DSI1_INT_HSTX_TO) {
-+	} else if (stat & DSI_PORT_BIT(INT_HSTX_TO)) {
- 		complete(&dsi->xfer_completion);
- 		dsi->xfer_result = -ETIMEDOUT;
- 		ret = IRQ_HANDLED;
+ 	HDMI_WRITE(HDMI_MAI_CONFIG,
+ 		   VC4_HDMI_MAI_CONFIG_BIT_REVERSE |
 -- 
 2.35.1
 
