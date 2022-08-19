@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 265D1C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B400C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352714AbiHSQ1D (ORCPT
+        id S1352730AbiHSQ1L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35204 "EHLO
+        Fri, 19 Aug 2022 12:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352326AbiHSQWC (ORCPT
+        with ESMTP id S1352526AbiHSQXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:22:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DCED4774;
-        Fri, 19 Aug 2022 09:02:54 -0700 (PDT)
+        Fri, 19 Aug 2022 12:23:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56596109A36;
+        Fri, 19 Aug 2022 09:02:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03469B8280D;
-        Fri, 19 Aug 2022 16:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62715C433C1;
-        Fri, 19 Aug 2022 16:02:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A1C612DF;
+        Fri, 19 Aug 2022 16:02:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2245DC433D6;
+        Fri, 19 Aug 2022 16:02:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924971;
-        bh=8bpU67eqb8WPMzD9hcA8NYNJGxS6i9S0T8KAvq3ofH0=;
+        s=korg; t=1660924977;
+        bh=MHPQppSR0ss8H2c7oFH97tBCudTnbEBjMCtJRGtFqTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mFsLonYcCnxSf0K+qqhy951hK38JjFZs2l/bQUQ0/di4zMjuwMUelrclpiZ19DKqa
-         E0kg7hrg7rkSWIdu5eyTX7DRbUEUgOYX8MaoJkJuU+ZyrPCpOuHycu4dAMUC7jbsqy
-         ok389wZBhpxlwXa2VbnHYez+xgTUS3Vbfc8eth1Q=
+        b=BjcoE7rknLdJddfsp0ZKNZawok3fUq+brNia+vLvgdzAjOCBCsgaMMF6uOBSm9Q/j
+         suBKjjco9eFj8B6eMFL+wPP283lrDr2V6CVBikGUDPr45xirOnpRRa2N1FaQMy2A4c
+         mz9OBpsmqGmvexosTXJiiQa2qqHX5YubErLsjxdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 340/545] gpio: gpiolib-of: Fix refcount bugs in of_mm_gpiochip_add_data()
-Date:   Fri, 19 Aug 2022 17:41:50 +0200
-Message-Id: <20220819153844.610960518@linuxfoundation.org>
+Subject: [PATCH 5.10 314/545] memstick/ms_block: Fix some incorrect memory allocation
+Date:   Fri, 19 Aug 2022 17:41:24 +0200
+Message-Id: <20220819153843.407016403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,51 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 5d07a692f9562f9c06e62cce369e9dd108173a0f ]
+[ Upstream commit 2e531bc3e0d86362fcd8a577b3278d9ef3cc2ba0 ]
 
-We should use of_node_get() when a new reference of device_node
-is created. It is noted that the old reference stored in
-'mm_gc->gc.of_node' should also be decreased.
+Some functions of the bitmap API take advantage of the fact that a bitmap
+is an array of long.
 
-This patch is based on the fact that there is a call site in function
-'qe_add_gpiochips()' of src file 'drivers\soc\fsl\qe\gpio.c'. In this
-function, of_mm_gpiochip_add_data() is contained in an iteration of
-for_each_compatible_node() which will automatically increase and
-decrease the refcount. So we need additional of_node_get() for the
-reference escape in of_mm_gpiochip_add_data().
+So, to make sure this assertion is correct, allocate bitmaps with
+bitmap_zalloc() instead of kzalloc()+hand-computed number of bytes.
 
-Fixes: a19e3da5bc5f ("of/gpio: Kill of_gpio_chip and add members directly to gpio_chip")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+While at it, also use bitmap_free() instead of kfree() to keep the
+semantic.
+
+Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/dbf633c48c24ae6d95f852557e8d8b3bbdef65fe.1656155715.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib-of.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/memstick/core/ms_block.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 01424af654db..2e63274a4c2c 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -863,7 +863,8 @@ int of_mm_gpiochip_add_data(struct device_node *np,
- 	if (mm_gc->save_regs)
- 		mm_gc->save_regs(mm_gc);
+diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
+index bc1f484f50f1..6fa3ad3a94a0 100644
+--- a/drivers/memstick/core/ms_block.c
++++ b/drivers/memstick/core/ms_block.c
+@@ -1335,17 +1335,17 @@ static int msb_ftl_initialize(struct msb_data *msb)
+ 	msb->zone_count = msb->block_count / MS_BLOCKS_IN_ZONE;
+ 	msb->logical_block_count = msb->zone_count * 496 - 2;
  
--	mm_gc->gc.of_node = np;
-+	of_node_put(mm_gc->gc.of_node);
-+	mm_gc->gc.of_node = of_node_get(np);
+-	msb->used_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
+-	msb->erased_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
++	msb->used_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
++	msb->erased_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
+ 	msb->lba_to_pba_table =
+ 		kmalloc_array(msb->logical_block_count, sizeof(u16),
+ 			      GFP_KERNEL);
  
- 	ret = gpiochip_add_data(gc, data);
- 	if (ret)
-@@ -871,6 +872,7 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 	if (!msb->used_blocks_bitmap || !msb->lba_to_pba_table ||
+ 						!msb->erased_blocks_bitmap) {
+-		kfree(msb->used_blocks_bitmap);
++		bitmap_free(msb->used_blocks_bitmap);
++		bitmap_free(msb->erased_blocks_bitmap);
+ 		kfree(msb->lba_to_pba_table);
+-		kfree(msb->erased_blocks_bitmap);
+ 		return -ENOMEM;
+ 	}
  
- 	return 0;
- err2:
-+	of_node_put(np);
- 	iounmap(mm_gc->regs);
- err1:
- 	kfree(gc->label);
+@@ -1953,7 +1953,7 @@ static int msb_bd_open(struct block_device *bdev, fmode_t mode)
+ static void msb_data_clear(struct msb_data *msb)
+ {
+ 	kfree(msb->boot_page);
+-	kfree(msb->used_blocks_bitmap);
++	bitmap_free(msb->used_blocks_bitmap);
+ 	kfree(msb->lba_to_pba_table);
+ 	kfree(msb->cache);
+ 	msb->card = NULL;
 -- 
 2.35.1
 
