@@ -2,106 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2710AC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A44C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348291AbiHSJ6Q (ORCPT
+        id S1348229AbiHSJ6T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
+        Fri, 19 Aug 2022 05:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348306AbiHSJ57 (ORCPT
+        with ESMTP id S1348345AbiHSJ6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:57:59 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A811F4C9B;
-        Fri, 19 Aug 2022 02:57:19 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id g16so2907633qkl.11;
-        Fri, 19 Aug 2022 02:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=/WIizd4+ASdkLn8xaORlftblvX7iF24VmukZ5lVBNU8=;
-        b=WBQ19U1DAzER9eiwrktnTik/2a3VJg3p0hPXXGFvEam0lUqNY7eD/DPZxcH4tnq3hs
-         Kunc2r3YYnuK5MerOwDWN0gKBAFIak8Ry5LelPAGykEL9WcYIO+IJEIpFRn6Emr98geP
-         DhXIXt/a3b9aqVP7/k3K11McCsl4noX7ErwTvu9wbAdthR4OkhScsX2AVz1SDeh+vI4y
-         FzV4wE8pOJ4QK39BIDTOoUbgAqXbWKWNf8BiK2TYQtR+rfV0GUML9oScRLqAtANjxv4B
-         9KkopgiiCNa/LH/tTbhjgOhl8BmxzI2OBawfSRzZ4D6AW9U+x7oNK59HuRwRJ5f+TEz7
-         texQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=/WIizd4+ASdkLn8xaORlftblvX7iF24VmukZ5lVBNU8=;
-        b=p9nT5/eSF9r6oP8cKgdq4CgJcPg9DM48mRNEnfiPmDuGdPP7vQe9Cd9dxvKoRQeKhq
-         J8fYZhS0KzQl+i+Twr1iMYbAqi4aZgLaFRXxhBHZuOd0Mj/CjlZ4Eu8nJGKO4e7+J0sR
-         5BqmPQAt2/abbgeILoLi/Y6gi6zBevizjWDexZJTb2wz/Xr8meplfIz31ROO4C1dliEw
-         AvudU6fHpMU4/MsIsWsOIAaXbOxWYDEGw2DMnJMTuVyxAQoOlEyun74TFXu0r4+HOmyI
-         OqR/8NgpO5BatfxdluyEzG7fi026OxOgOIv6nQphbXCHu1wnYfuU/MxAK4EWwP9ReM8P
-         hDuw==
-X-Gm-Message-State: ACgBeo2twVdL6fKj8bg8cQBKzANd6eRV5HTIaEdaMicVIOVEk/nhuWon
-        0gRRbdoEEfQVNrDXo+HzIbBYWHo/buNMWQdQ5BE=
-X-Google-Smtp-Source: AA6agR51w56fpbskuo54O8W+TZy9Y+3HiBfTHc0Ja/DTeXlR7tEwzfrsY7hfhFOAb40XYnFAHBE+f2rIqZmDJlgHeIo=
-X-Received: by 2002:a05:620a:2987:b0:6ba:dc04:11ae with SMTP id
- r7-20020a05620a298700b006badc0411aemr4696051qkp.748.1660903038316; Fri, 19
- Aug 2022 02:57:18 -0700 (PDT)
+        Fri, 19 Aug 2022 05:58:02 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2063.outbound.protection.outlook.com [40.107.100.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56CEF4CAF;
+        Fri, 19 Aug 2022 02:57:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PcaJuQG0XkQzFIY9mgl+8irI75pfe809eopZlTey9vP7P/oR23/E8U/YKVytoUaqfTkK5SNWRZ+xSU/2s4E2gviwhz1ygQGhjuKBel3x/TOQLazYn8pvpnVw+EfQ+0koIZQlB54JYMgrvp1L0fCQAknEDc3iauRYZCVvUJ3qigHdOM1X/+l2joWd3US3jO2gFOEyM+kVWT6O01FT0bUi2EKd79aPZd0DVwulVrB0+zhZJsprgQ0KxrZ5UcdIjce36xM0LFEWywdeSaFbyKxVdgxEZ93p5BEo1IGqISPXBhVlXEWeZdhOBEzo3/J44ehuyRgmxPVVI4MhlIek+4pb3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6XHmpPXHXsN5X8FzVkM1VXaPsNM7xF7KPABsKSyEVD4=;
+ b=k10dqk9iSbgC8ccrwAh6i/Wmy7FYwifHm6J93MhwvOFaTIZfqWHWCtcn2tzPdLCeKMBhB8v5lFz2FT9pYH0wylchKtlcErIFXSUSQmZhGXOdGKlFzL8Zv5zYmXAXfmh6jGHsGEjVv9YkBguWIZ475YMWKsphrwkYHDmOyiS7A0G7ZXj1kNIvfKfDllqhXsbDp6wmpoDCiryBn4Q7g0esz35l7dIuXnpSMoi/QAqVdWw0GH01hWZDv1Jh2pLLiOm7iqJ9mpV4GMHKEG8RjtFTpRY9dKwpazUW5HBWGKF0kzqfOFL2r91TpRBPUp1EEa3cyxwMtdPwzXJJiYzkFEfauQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6XHmpPXHXsN5X8FzVkM1VXaPsNM7xF7KPABsKSyEVD4=;
+ b=NBUetO0dqeW17KPo4n7HaVHQ6ux8MnZH5zxzZz6OQnNnuEQhWR20eCEZWqJlUUNJ6ws8vb32NT18Oa+RDeZYM0wCgr7KGdL59KOl26x4YtVexRHtdUJ2paH0iyS2BXgchPPu5sJM2AWUH2+09XU5HcglMEtF+UW5tVuIDkRgw5R2K5HWG4y8FuYsiGx37cNy7s3vPwCviMPDBAljvdNSB7SldUW75YqRxNnoleGoNTFi/ZbT5fY+vuWGFg0n+udy+GckRhzpU4hjK0BCMxFWHkWUCldcHifNY5p5e6erRWvDxBB/FvmddfHlPLQUW4tL1Rio8B/6CWNYXKAtmSTLSQ==
+Received: from DS7PR03CA0139.namprd03.prod.outlook.com (2603:10b6:5:3b4::24)
+ by SJ1PR12MB6364.namprd12.prod.outlook.com (2603:10b6:a03:452::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Fri, 19 Aug
+ 2022 09:57:30 +0000
+Received: from DM6NAM11FT101.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b4:cafe::ae) by DS7PR03CA0139.outlook.office365.com
+ (2603:10b6:5:3b4::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.14 via Frontend
+ Transport; Fri, 19 Aug 2022 09:57:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT101.mail.protection.outlook.com (10.13.172.208) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5546.7 via Frontend Transport; Fri, 19 Aug 2022 09:57:29 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 19 Aug
+ 2022 09:57:28 +0000
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 19 Aug
+ 2022 02:57:23 -0700
+References: <20220818210050.7108-1-wsa+renesas@sang-engineering.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: move from strlcpy with unused retval to strscpy
+Date:   Fri, 19 Aug 2022 11:45:57 +0200
+In-Reply-To: <20220818210050.7108-1-wsa+renesas@sang-engineering.com>
+Message-ID: <87czcwmu82.fsf@nvidia.com>
 MIME-Version: 1.0
-References: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com> <20220818232040.GA3505561@roeck-us.net>
-In-Reply-To: <20220818232040.GA3505561@roeck-us.net>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 19 Aug 2022 12:56:42 +0300
-Message-ID: <CAHp75Vf+-4U6OW4sf+mKsPt8WoRL_jN-sYtzOMzhhH8--+OU1w@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] hwmon: (pwm-fan) Make use of device properties
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7593c910-40af-434f-9dc7-08da81c93a7f
+X-MS-TrafficTypeDiagnostic: SJ1PR12MB6364:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wWuakk+IshSPWBii1Sdot7s0Q6Yc0QDjPqCNv7fq9RrOF42257I+EzcRZcy83Dr1nsT08UKmucDmUNuiJy7wYN4KIpj/saB3vA0ENvh3o7c8/ulwiXHkcd/01MAJNdtEpBIi0Y97tKTFgeq4B7Hf4ZxGM/bWUimh5TX9cb0eTcQG0Fey7N/NcBETGG2WzSEu0ugNXI2ntH8DL2yZtx/B75OHhhvrnphPXiojAOSh6NNL79c5Uw5xhtCeisQhc/NKR7NtXuIm7dXJKQ6BkzjN6sw+5IcEhAuFrtqeU71cWHzUg1Jabm3xKkEbzdlKLWn+E4ogFoklOe5altxo9SUjkjaVgkvuCUbbnKRpb2OGQDZEAwALuhKwfo11Oq+R/e52FU40cNwDdcJYqfAtJ40RPPVSQ8IQzv4Rttv7t7QKnZ3t0+DGO4hjST2MpQaK8DCceLO14tmSfDDrgVXhuwYqttP5GzG6SpgSe49CObzNbmCf75WPgMQjrcDXFRBjArxbvYI4hz2VAxnVZdEakozwpQuheIpdKb2PcQuXkypYwK4t5A+ERG9OoFiIKElu7LbN7laddm6YDWDJ9S82IPFFbrb/oPYjC9CtxjJ73Id2tZwhDAWRPMMJfwCp6k2RViHX5yn0SZs71cp7voj99JtMDOpfBckO8QhYSEQH1Fvy+KyZF1rveXkoo+RBgx6ndiPl7IjfIF1wXC1BuY2UQdkz4MZ7OAit1yy2pPO+QWEetOyN59SbHwv+92xbsMFvjEboTdVMEFmT9AemK1CaKlSXYGSDP5S83pmYFmk94dBrF50CfJGAyszbHXIUXEm9nsO3j3dXIFwTsyD0oBqeALO7kw==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(136003)(346002)(46966006)(36840700001)(40470700004)(8676002)(26005)(478600001)(4326008)(86362001)(40460700003)(6666004)(336012)(36860700001)(41300700001)(186003)(2616005)(47076005)(426003)(16526019)(2906002)(8936002)(36756003)(5660300002)(70206006)(356005)(82740400003)(82310400005)(316002)(54906003)(81166007)(40480700001)(70586007)(156123004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 09:57:29.4948
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7593c910-40af-434f-9dc7-08da81c93a7f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT101.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6364
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 2:41 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> On Sat, Aug 06, 2022 at 06:25:15PM +0300, Andy Shevchenko wrote:
-> > Convert the module to be property provider agnostic and allow
-> > it to be used on non-OF platforms.
-> >
-> > Add mod_devicetable.h include.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
->
-> I had another look at this patch. A substantial part of the changes
-> is because device properties don't support of_property_read_u32_index(),
-> reworking the code to use device_property_read_u32_array() instead.
-> Sorry, I don't like it, it results in a substantial number of unnecessary
-> changes. Device properties should support the equivalent of
-> of_property_read_u32_index() instead to simplify conversions.
 
-Not all (device property) providers can have such API available. Are
-you suggesting to
- a) alloc memory for entire array;
- b) cache one for a given index;
- c) free a memory;
- d) loop as many times as index op is called.
+Wolfram Sang <wsa+renesas@sang-engineering.com> writes:
 
-Sorry, this is way too far and non-optimal in comparison to the
-substantial number of unnecessary changes (two or three small
-refactorings?).
+>  drivers/net/ethernet/mellanox/mlxsw/core.c       |  2 +-
+>  drivers/net/ethernet/mellanox/mlxsw/minimal.c    |  4 ++--
+>  .../ethernet/mellanox/mlxsw/spectrum_ethtool.c   |  6 +++---
 
-Another way is to provide a pwm-fan-acpi, which will be the copy of
-the driver after this patch is applied. I don't think it's a very
-bright idea either.
+Reviewed-by: Petr Machata <petrm@nvidia.com> # For drivers/net/ethernet/mellanox/mlxsw
 
---=20
-With Best Regards,
-Andy Shevchenko
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+> index 75553eb2c7f2..7331635607f7 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+> @@ -633,7 +633,7 @@ static void mlxsw_emad_process_string_tlv(const struct sk_buff *skb,
+>  		return;
+>  
+>  	string = mlxsw_emad_string_tlv_string_data(string_tlv);
+> -	strlcpy(trans->emad_err_string, string,
+> +	strscpy(trans->emad_err_string, string,
+>  		MLXSW_EMAD_STRING_TLV_STRING_LEN);
+>  }
+>  
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+> index bb1cd4bae82e..e3c045a82ae2 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+> @@ -94,14 +94,14 @@ static void mlxsw_m_module_get_drvinfo(struct net_device *dev,
+>  	struct mlxsw_m_port *mlxsw_m_port = netdev_priv(dev);
+>  	struct mlxsw_m *mlxsw_m = mlxsw_m_port->mlxsw_m;
+>  
+> -	strlcpy(drvinfo->driver, mlxsw_m->bus_info->device_kind,
+> +	strscpy(drvinfo->driver, mlxsw_m->bus_info->device_kind,
+>  		sizeof(drvinfo->driver));
+>  	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+>  		 "%d.%d.%d",
+>  		 mlxsw_m->bus_info->fw_rev.major,
+>  		 mlxsw_m->bus_info->fw_rev.minor,
+>  		 mlxsw_m->bus_info->fw_rev.subminor);
+> -	strlcpy(drvinfo->bus_info, mlxsw_m->bus_info->device_name,
+> +	strscpy(drvinfo->bus_info, mlxsw_m->bus_info->device_name,
+>  		sizeof(drvinfo->bus_info));
+>  }
+>  
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+> index 915dffb85a1c..dcd79d7e2af4 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+> @@ -14,16 +14,16 @@ static void mlxsw_sp_port_get_drvinfo(struct net_device *dev,
+>  	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
+>  	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+>  
+> -	strlcpy(drvinfo->driver, mlxsw_sp->bus_info->device_kind,
+> +	strscpy(drvinfo->driver, mlxsw_sp->bus_info->device_kind,
+>  		sizeof(drvinfo->driver));
+> -	strlcpy(drvinfo->version, mlxsw_sp_driver_version,
+> +	strscpy(drvinfo->version, mlxsw_sp_driver_version,
+>  		sizeof(drvinfo->version));
+>  	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+>  		 "%d.%d.%d",
+>  		 mlxsw_sp->bus_info->fw_rev.major,
+>  		 mlxsw_sp->bus_info->fw_rev.minor,
+>  		 mlxsw_sp->bus_info->fw_rev.subminor);
+> -	strlcpy(drvinfo->bus_info, mlxsw_sp->bus_info->device_name,
+> +	strscpy(drvinfo->bus_info, mlxsw_sp->bus_info->device_name,
+>  		sizeof(drvinfo->bus_info));
+>  }
