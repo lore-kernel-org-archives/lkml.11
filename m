@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39D7C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1D2C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351743AbiHSQKX (ORCPT
+        id S1351778AbiHSQKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
+        Fri, 19 Aug 2022 12:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351424AbiHSQH3 (ORCPT
+        with ESMTP id S1351459AbiHSQHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:07:29 -0400
+        Fri, 19 Aug 2022 12:07:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0994108100;
-        Fri, 19 Aug 2022 08:56:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B96F10E7B3;
+        Fri, 19 Aug 2022 08:56:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9156061199;
-        Fri, 19 Aug 2022 15:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55E41C433D6;
-        Fri, 19 Aug 2022 15:56:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2CF614DA;
+        Fri, 19 Aug 2022 15:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC09EC433C1;
+        Fri, 19 Aug 2022 15:56:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924572;
-        bh=0YmcELewkq0m2pG7nTjmkORBYFQKbDKx046uezXclag=;
+        s=korg; t=1660924578;
+        bh=YQduwSTiQg41hg0PepeKUrWVaNK157UtIZtmCjpbLAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6In01/FNI1SxcDhZK3qWR4O8S5620UiAM6km83lBTS2SyxkQ1Pfd6rNfWZwFZam5
-         CJpp9rIpPq3nn6Xic6lgbUCMVjFdGqDFnx89FiwAJfshtKditFG40vRmfDg4DPCRsw
-         ssdtVDD9F96b82FhntKFx0odEtQzH3CPx4eXdVWI=
+        b=fAdFP6ghxLT5om2jfQHvlHcQ4Uw1ne0o37NWwMGhc2V1smESV+U+dqfAtXegOAjzu
+         DoIIlSD7FIU3xnQk8Ee8mi2jv5QRU/odCZo7o55QYKk5qZeWbMwmqkRg3/BwC+2UUr
+         T2Pt6gjqOhKKnJ9sXUs8e5OlvpZR1ubgrtwAoqds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 212/545] lib: bitmap: order includes alphabetically
-Date:   Fri, 19 Aug 2022 17:39:42 +0200
-Message-Id: <20220819153838.848648623@linuxfoundation.org>
+Subject: [PATCH 5.10 185/545] drm/mcde: Fix refcount leak in mcde_dsi_bind
+Date:   Fri, 19 Aug 2022 17:39:15 +0200
+Message-Id: <20220819153837.644832936@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,65 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit c13656b904b6173aad723d9680a81c60de2f5edc ]
+[ Upstream commit 3a149169e4a2f9127022fec6ef5d71b4e804b3b9 ]
 
-For better readability and maintenance: order the includes in bitmap
-source files alphabetically.
+Every iteration of for_each_available_child_of_node() decrements
+the reference counter of the previous node. There is no decrement
+when break out from the loop and results in refcount leak.
+Add missing of_node_put() to fix this.
 
-Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: 5fc537bfd000 ("drm/mcde: Add new driver for ST-Ericsson MCDE")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220525115411.65455-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/bitmap.h | 4 ++--
- lib/bitmap.c           | 9 +++++----
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/mcde/mcde_dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-index 99058eb81042..4dd2e1d39c74 100644
---- a/include/linux/bitmap.h
-+++ b/include/linux/bitmap.h
-@@ -4,10 +4,10 @@
- 
- #ifndef __ASSEMBLY__
- 
--#include <linux/types.h>
- #include <linux/bitops.h>
--#include <linux/string.h>
- #include <linux/kernel.h>
-+#include <linux/string.h>
-+#include <linux/types.h>
- 
- /*
-  * bitmaps provide bit arrays that consume one or more unsigned
-diff --git a/lib/bitmap.c b/lib/bitmap.c
-index 75006c4036e9..78f70d9007ad 100644
---- a/lib/bitmap.c
-+++ b/lib/bitmap.c
-@@ -3,17 +3,18 @@
-  * lib/bitmap.c
-  * Helper functions for bitmap.h.
-  */
--#include <linux/export.h>
--#include <linux/thread_info.h>
--#include <linux/ctype.h>
--#include <linux/errno.h>
-+
- #include <linux/bitmap.h>
- #include <linux/bitops.h>
- #include <linux/bug.h>
-+#include <linux/ctype.h>
-+#include <linux/errno.h>
-+#include <linux/export.h>
- #include <linux/kernel.h>
- #include <linux/mm.h>
- #include <linux/slab.h>
- #include <linux/string.h>
-+#include <linux/thread_info.h>
- #include <linux/uaccess.h>
- 
- #include <asm/page.h>
+diff --git a/drivers/gpu/drm/mcde/mcde_dsi.c b/drivers/gpu/drm/mcde/mcde_dsi.c
+index 5275b2723293..64e6fb806290 100644
+--- a/drivers/gpu/drm/mcde/mcde_dsi.c
++++ b/drivers/gpu/drm/mcde/mcde_dsi.c
+@@ -1118,6 +1118,7 @@ static int mcde_dsi_bind(struct device *dev, struct device *master,
+ 			bridge = of_drm_find_bridge(child);
+ 			if (!bridge) {
+ 				dev_err(dev, "failed to find bridge\n");
++				of_node_put(child);
+ 				return -EINVAL;
+ 			}
+ 		}
 -- 
 2.35.1
 
