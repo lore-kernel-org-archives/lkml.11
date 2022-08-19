@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C4EC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A23C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350617AbiHSPye (ORCPT
+        id S1350627AbiHSPyv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
+        Fri, 19 Aug 2022 11:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350512AbiHSPxy (ORCPT
+        with ESMTP id S1350442AbiHSPyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:53:54 -0400
+        Fri, 19 Aug 2022 11:54:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEFE10776A;
-        Fri, 19 Aug 2022 08:49:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7902A103C66;
+        Fri, 19 Aug 2022 08:49:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93C0DB82816;
-        Fri, 19 Aug 2022 15:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF70C43142;
-        Fri, 19 Aug 2022 15:49:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC876B82813;
+        Fri, 19 Aug 2022 15:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24CE2C433D6;
+        Fri, 19 Aug 2022 15:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924158;
-        bh=ZQuuIRzOMKKWgc6aJfJjoNjbZ9e21hi6MJ1/4fo6wvs=;
+        s=korg; t=1660924167;
+        bh=wXCHWPpTDUvlnRJMSnn2hpN/p/CupuSzUfQcIO7JB4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OWS/HgnCoyYFv49qRS3hKmz3AgwhwU/cFSSwdfvl+JFW53atYpJHEf7ni4NcrO1uq
-         bjQ20JW1HkVvw6FdwDyGHWSi7Keu56cfNAS/ejEg/clEEuIaUw8sQ+7pzJwWyPQ+CE
-         TzS203m+FHBCem9KoyIZxBzmqmVZuYB0aV+ZKQOU=
+        b=QBU+Mwwu/kLXtw3viiTUGKJe0NDoS+MflT5WRrzsNi7kGgN9oo6R2CNrcbrw7BQhl
+         QMRBhsED9oe+GxvvRTU/VPmscxnFYQ4XcWtv3f7f+6dYRR24y69TYts3ruxCYtm6gu
+         HOZEWLNjwQSPQu5ea2FuaZbGjZshdsxrdG1Hg84Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 075/545] netfilter: nf_tables: fix null deref due to zeroed list head
-Date:   Fri, 19 Aug 2022 17:37:25 +0200
-Message-Id: <20220819153832.620101129@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Bikash Hazarika <bhazarika@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 051/545] scsi: qla2xxx: Fix incorrect display of max frame size
+Date:   Fri, 19 Aug 2022 17:37:01 +0200
+Message-Id: <20220819153831.515243835@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,45 +52,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Bikash Hazarika <bhazarika@marvell.com>
 
-commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
+commit cf3b4fb655796674e605268bd4bfb47a47c8bce6 upstream.
 
-In nf_tables_updtable, if nf_tables_table_enable returns an error,
-nft_trans_destroy is called to free the transaction object.
+Replace display field with the correct field.
 
-nft_trans_destroy() calls list_del(), but the transaction was never
-placed on a list -- the list head is all zeroes, this results in
-a null dereference:
-
-BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
-Call Trace:
- nft_trans_destroy+0x26/0x59
- nf_tables_newtable+0x4bc/0x9bc
- [..]
-
-Its sane to assume that nft_trans_destroy() can be called
-on the transaction object returned by nft_trans_alloc(), so
-make sure the list head is initialised.
-
-Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
-Reported-by: mingi cho <mgcho.minic@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Link: https://lore.kernel.org/r/20220713052045.10683-3-njavali@marvell.com
+Fixes: 8777e4314d39 ("scsi: qla2xxx: Migrate NVME N2N handling into state machine")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Bikash Hazarika <bhazarika@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_def.h  |    1 +
+ drivers/scsi/qla2xxx/qla_gs.c   |    9 +++------
+ drivers/scsi/qla2xxx/qla_init.c |    2 ++
+ drivers/scsi/qla2xxx/qla_isr.c  |    4 +---
+ 4 files changed, 7 insertions(+), 9 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -114,6 +114,7 @@ static struct nft_trans *nft_trans_alloc
- 	if (trans == NULL)
- 		return NULL;
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -3857,6 +3857,7 @@ struct qla_hw_data {
+ 	/* SRB cache. */
+ #define SRB_MIN_REQ     128
+ 	mempool_t       *srb_mempool;
++	u8 port_name[WWN_SIZE];
  
-+	INIT_LIST_HEAD(&trans->list);
- 	trans->msg_type = msg_type;
- 	trans->ctx	= *ctx;
+ 	volatile struct {
+ 		uint32_t	mbox_int		:1;
+--- a/drivers/scsi/qla2xxx/qla_gs.c
++++ b/drivers/scsi/qla2xxx/qla_gs.c
+@@ -1594,7 +1594,6 @@ qla2x00_hba_attributes(scsi_qla_host_t *
+ 	unsigned int callopt)
+ {
+ 	struct qla_hw_data *ha = vha->hw;
+-	struct init_cb_24xx *icb24 = (void *)ha->init_cb;
+ 	struct new_utsname *p_sysid = utsname();
+ 	struct ct_fdmi_hba_attr *eiter;
+ 	uint16_t alen;
+@@ -1756,8 +1755,8 @@ qla2x00_hba_attributes(scsi_qla_host_t *
+ 	/* MAX CT Payload Length */
+ 	eiter = entries + size;
+ 	eiter->type = cpu_to_be16(FDMI_HBA_MAXIMUM_CT_PAYLOAD_LENGTH);
+-	eiter->a.max_ct_len = cpu_to_be32(le16_to_cpu(IS_FWI2_CAPABLE(ha) ?
+-		icb24->frame_payload_size : ha->init_cb->frame_payload_size));
++	eiter->a.max_ct_len = cpu_to_be32(ha->frame_payload_size >> 2);
++
+ 	alen = sizeof(eiter->a.max_ct_len);
+ 	alen += FDMI_ATTR_TYPELEN(eiter);
+ 	eiter->len = cpu_to_be16(alen);
+@@ -1849,7 +1848,6 @@ qla2x00_port_attributes(scsi_qla_host_t
+ 	unsigned int callopt)
+ {
+ 	struct qla_hw_data *ha = vha->hw;
+-	struct init_cb_24xx *icb24 = (void *)ha->init_cb;
+ 	struct new_utsname *p_sysid = utsname();
+ 	char *hostname = p_sysid ?
+ 		p_sysid->nodename : fc_host_system_hostname(vha->host);
+@@ -1901,8 +1899,7 @@ qla2x00_port_attributes(scsi_qla_host_t
+ 	/* Max frame size. */
+ 	eiter = entries + size;
+ 	eiter->type = cpu_to_be16(FDMI_PORT_MAX_FRAME_SIZE);
+-	eiter->a.max_frame_size = cpu_to_be32(le16_to_cpu(IS_FWI2_CAPABLE(ha) ?
+-		icb24->frame_payload_size : ha->init_cb->frame_payload_size));
++	eiter->a.max_frame_size = cpu_to_be32(ha->frame_payload_size);
+ 	alen = sizeof(eiter->a.max_frame_size);
+ 	alen += FDMI_ATTR_TYPELEN(eiter);
+ 	eiter->len = cpu_to_be16(alen);
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -4328,6 +4328,8 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
+ 			 BIT_6) != 0;
+ 		ql_dbg(ql_dbg_init, vha, 0x00bc, "FA-WWPN Support: %s.\n",
+ 		    (ha->flags.fawwpn_enabled) ? "enabled" : "disabled");
++		/* Init_cb will be reused for other command(s).  Save a backup copy of port_name */
++		memcpy(ha->port_name, ha->init_cb->port_name, WWN_SIZE);
+ 	}
  
+ 	rval = qla2x00_init_firmware(vha, ha->init_cb_size);
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -1202,9 +1202,7 @@ skip_rio:
+ 			if (!vha->vp_idx) {
+ 				if (ha->flags.fawwpn_enabled &&
+ 				    (ha->current_topology == ISP_CFG_F)) {
+-					void *wwpn = ha->init_cb->port_name;
+-
+-					memcpy(vha->port_name, wwpn, WWN_SIZE);
++					memcpy(vha->port_name, ha->port_name, WWN_SIZE);
+ 					fc_host_port_name(vha->host) =
+ 					    wwn_to_u64(vha->port_name);
+ 					ql_dbg(ql_dbg_init + ql_dbg_verbose,
 
 
