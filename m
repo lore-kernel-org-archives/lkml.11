@@ -2,134 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A083C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D97DC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349758AbiHSPcR (ORCPT
+        id S1349777AbiHSPc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        Fri, 19 Aug 2022 11:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349193AbiHSPcN (ORCPT
+        with ESMTP id S1349756AbiHSPcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:32:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A122101C6D
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:32:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3435AB827E3
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:32:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B50C433D6;
-        Fri, 19 Aug 2022 15:32:07 +0000 (UTC)
-Message-ID: <427a05ef-44c0-0044-6ea4-e110afcb75b2@xs4all.nl>
-Date:   Fri, 19 Aug 2022 17:32:05 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [hverkuil-media-tree:for-v6.1c 3/3]
- drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c:905:10: warning: cast to
- smaller integer type 'enum mdp_comp_type' from 'const void *'
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>, Moudy Ho <moudy.ho@mediatek.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>
-References: <202208190957.uDT8XE6b-lkp@intel.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <202208190957.uDT8XE6b-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 19 Aug 2022 11:32:52 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA218101C72;
+        Fri, 19 Aug 2022 08:32:49 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27JFLw53006284;
+        Fri, 19 Aug 2022 10:21:58 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27JFLvQc006283;
+        Fri, 19 Aug 2022 10:21:57 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Fri, 19 Aug 2022 10:21:57 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>, kuba@kernel.org,
+        miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        asml.silence@gmail.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH net-next v4] net: skb: prevent the split of kfree_skb_reason() by gcc
+Message-ID: <20220819152157.GO25951@gate.crashing.org>
+References: <20220816032846.2579217-1-imagedong@tencent.com> <CAKwvOd=accNK7t_SOmybo3e4UcBKoZ6TBPjCHT3eSSpSUouzEA@mail.gmail.com> <CADxym3Yxq0k_W43kVjrofjNoUUag3qwmpRGLLAQL1Emot3irPQ@mail.gmail.com> <20220818165838.GM25951@gate.crashing.org> <CADxym3YEfSASDg9ppRKtZ16NLh_NhH253frd5LXZLGTObsVQ9g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADxym3YEfSASDg9ppRKtZ16NLh_NhH253frd5LXZLGTObsVQ9g@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Moudy,
+Hi!
 
-On 19/08/2022 04:05, kernel test robot wrote:
-> tree:   git://linuxtv.org/hverkuil/media_tree.git for-v6.1c
-> head:   b2273b84e1291c52279edf13b08744833c1faaab
-> commit: b2273b84e1291c52279edf13b08744833c1faaab [3/3] media: platform: mtk-mdp3: add MediaTek MDP3 driver
-> config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220819/202208190957.uDT8XE6b-lkp@intel.com/config)
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install arm64 cross compiling tool for clang build
->         # apt-get install binutils-aarch64-linux-gnu
->         git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
->         git fetch --no-tags hverkuil-media-tree for-v6.1c
->         git checkout b2273b84e1291c52279edf13b08744833c1faaab
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/media/platform/mediatek/mdp3/ drivers/vfio/pci/hisilicon/
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
->>> drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c:905:10: warning: cast to smaller integer type 'enum mdp_comp_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
->                    type = (enum mdp_comp_type)of_id->data;
->                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c:964:10: warning: cast to smaller integer type 'enum mdp_comp_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
->                    type = (enum mdp_comp_type)of_id->data;
->                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+On Fri, Aug 19, 2022 at 10:55:42PM +0800, Menglong Dong wrote:
+> Thanks for your explanation about the usage of 'noinline' and 'no_icf'!
+> I think 'noclone' seems enough in this case? As the function
+> 'kfree_skb_reason' we talk about is a global function, I think that the
+> compiler has no reason to make it inline, or be merged with another
+> function.
 
-Can you fix this? I believe you need to do this to fix this:
+Whether something is inlined is decided per instance (except for
+always_inline and noinline functions).  Of course the function body has
+to be available for anything to be inlined, so barring LTO this can only
+happen for function uses in the same source file.  Not very likely
+indeed, but not entirely impossible either.
 
-(enum mdp_comp_type)(uintptr_t)of_id->data
+A function can be merged if there is another function that does exactly
+the same thing.  This is unlikely with functions that do some serious
+work of course, but it is likely with stub-like functions.
 
-Regards,
+gl;hf,
 
-	Hans
 
->    2 warnings generated.
-> 
-> 
-> vim +905 drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
-> 
->    883	
->    884	static int mdp_comp_sub_create(struct mdp_dev *mdp)
->    885	{
->    886		struct device *dev = &mdp->pdev->dev;
->    887		struct device_node *node, *parent;
->    888	
->    889		parent = dev->of_node->parent;
->    890	
->    891		for_each_child_of_node(parent, node) {
->    892			const struct of_device_id *of_id;
->    893			enum mdp_comp_type type;
->    894			int id, alias_id;
->    895			struct mdp_comp *comp;
->    896	
->    897			of_id = of_match_node(mdp_sub_comp_dt_ids, node);
->    898			if (!of_id)
->    899				continue;
->    900			if (!of_device_is_available(node)) {
->    901				dev_dbg(dev, "Skipping disabled sub comp. %pOF\n", node);
->    902				continue;
->    903			}
->    904	
->  > 905			type = (enum mdp_comp_type)of_id->data;
->    906			alias_id = mdp_comp_alias_id[type];
->    907			id = mdp_comp_get_id(type, alias_id);
->    908			if (id < 0) {
->    909				dev_err(dev,
->    910					"Fail to get sub comp. id: type %d alias %d\n",
->    911					type, alias_id);
->    912				return -EINVAL;
->    913			}
->    914			mdp_comp_alias_id[type]++;
->    915	
->    916			comp = mdp_comp_create(mdp, node, id);
->    917			if (IS_ERR(comp))
->    918				return PTR_ERR(comp);
->    919		}
->    920	
->    921		return 0;
->    922	}
->    923	
-> 
+Segher
