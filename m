@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A558C32773
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59BB7C32793
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354011AbiHSQpk (ORCPT
+        id S1354043AbiHSQpo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        Fri, 19 Aug 2022 12:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353554AbiHSQmn (ORCPT
+        with ESMTP id S1353613AbiHSQmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:42:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99266558C8;
-        Fri, 19 Aug 2022 09:11:06 -0700 (PDT)
+        Fri, 19 Aug 2022 12:42:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2261012980B;
+        Fri, 19 Aug 2022 09:11:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC97361888;
-        Fri, 19 Aug 2022 16:09:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE93CC433D6;
-        Fri, 19 Aug 2022 16:09:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E476B82820;
+        Fri, 19 Aug 2022 16:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED311C433D6;
+        Fri, 19 Aug 2022 16:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925393;
-        bh=THYaxhYxEtt5DwL3NnXBSqE1FH6qDsr39tfqXb4p+iA=;
+        s=korg; t=1660925350;
+        bh=atB0NbHdQuTOfTzEmaJVPF3lRAfd7u2ABwepRCz73Cc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TMPXUY0fxUR252LqFYU76InfDXCRawsqVicLQk22iC5fIorJlBAQuc6nhnKZSmCI1
-         8QGA+EnvHu6qehQMzSrERL3dohibnZX2cJM3cY/19Skv81vHO9D4EcIupaizZ97iZR
-         bAafw7/8tjYYH1IjNrc0ernkgUDqOYzlYO/yMTK8=
+        b=ofk5KrOjTqUXMN1hX3PfeSI2YmfBak3yVmIaoKaWSYvHl1csqJFkuhTtLJ7g1K90C
+         B3gxluLmSX0kmdnOhvPOLaqilTwPN1LIql7tbRaYPyqlt0FHzVm7V1QiVeykd6DcOE
+         tQjo7DG2qnvIuomZb/Fiu7o28o3a5Y3seM1IRHck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 438/545] video: fbdev: s3fb: Check the size of screen before memset_io()
-Date:   Fri, 19 Aug 2022 17:43:28 +0200
-Message-Id: <20220819153849.021915423@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kitaina <okitain@gmail.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 463/545] mtd: rawnand: arasan: Fix clock rate in NV-DDR
+Date:   Fri, 19 Aug 2022 17:43:53 +0200
+Message-Id: <20220819153850.110188262@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,47 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Olga Kitaina <okitain@gmail.com>
 
-[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
+[ Upstream commit e16eceea863b417fd328588b1be1a79de0bc937f ]
 
-In the function s3fb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+According to the Arasan NAND controller spec, the flash clock rate for SDR
+must be <= 100 MHz, while for NV-DDR it must be the same as the rate of the
+CLK line for the mode. The driver previously always set 100 MHz for NV-DDR,
+which would result in incorrect behavior for NV-DDR modes 0-4.
 
-[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
-[   54.083742] #PF: supervisor write access in kernel mode
-[   54.083744] #PF: error_code(0x0002) - not-present page
-[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
-[   54.083782] Call Trace:
-[   54.083788]  s3fb_set_par+0x1ec6/0x4040
-[   54.083806]  fb_set_var+0x604/0xeb0
-[   54.083836]  do_fb_ioctl+0x234/0x670
+The appropriate clock rate can be calculated from the NV-DDR timing
+parameters as 1/tCK, or for rates measured in picoseconds,
+10^12 / nand_nvddr_timings->tCK_min.
 
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 197b88fecc50 ("mtd: rawnand: arasan: Add new Arasan NAND controller")
+CC: stable@vger.kernel.org # 5.8+
+Signed-off-by: Olga Kitaina <okitain@gmail.com>
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220628154824.12222-3-amit.kumar-mahapatra@xilinx.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/s3fb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mtd/nand/raw/arasan-nand-controller.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
-index 5c74253e7b2c..a936455a3df2 100644
---- a/drivers/video/fbdev/s3fb.c
-+++ b/drivers/video/fbdev/s3fb.c
-@@ -902,6 +902,8 @@ static int s3fb_set_par(struct fb_info *info)
- 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
- 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
+diff --git a/drivers/mtd/nand/raw/arasan-nand-controller.c b/drivers/mtd/nand/raw/arasan-nand-controller.c
+index f926d658192b..50643c6f33f4 100644
+--- a/drivers/mtd/nand/raw/arasan-nand-controller.c
++++ b/drivers/mtd/nand/raw/arasan-nand-controller.c
+@@ -907,7 +907,13 @@ static int anfc_setup_interface(struct nand_chip *chip, int target,
+ 		anand->timings = DIFACE_NVDDR |
+ 				 DIFACE_DDR_MODE(conf->timings.mode);
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
+-	anand->clk = ANFC_XLNX_SDR_DFLT_CORE_CLK;
++	if (nand_interface_is_sdr(conf)) {
++		anand->clk = ANFC_XLNX_SDR_DFLT_CORE_CLK;
++	} else {
++		/* ONFI timings are defined in picoseconds */
++		anand->clk = div_u64((u64)NSEC_PER_SEC * 1000,
++				     conf->timings.nvddr.tCK_min);
++	}
+ 
+ 	/*
+ 	 * Due to a hardware bug in the ZynqMP SoC, SDR timing modes 0-1 work
 -- 
 2.35.1
 
