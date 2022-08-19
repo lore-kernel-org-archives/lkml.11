@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15017C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F1AC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351688AbiHSQJr (ORCPT
+        id S1351695AbiHSQJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        Fri, 19 Aug 2022 12:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351758AbiHSQG3 (ORCPT
+        with ESMTP id S1351775AbiHSQGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB23D107F05;
-        Fri, 19 Aug 2022 08:55:48 -0700 (PDT)
+        Fri, 19 Aug 2022 12:06:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0937810DCE9;
+        Fri, 19 Aug 2022 08:55:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78D87616B3;
-        Fri, 19 Aug 2022 15:55:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C805C433C1;
-        Fri, 19 Aug 2022 15:55:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DABD5B82814;
+        Fri, 19 Aug 2022 15:55:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E790C433D7;
+        Fri, 19 Aug 2022 15:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924532;
-        bh=UKa314WESJCjsyExFx48p4VTNyM/6qFWQEI7i2N5gms=;
+        s=korg; t=1660924553;
+        bh=75PJQzjZ5bs1glYwli5PDChBligTr07n+c98BVE86jI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1gTGlnhuyttwDeqeGfFxGwbWpk4kI0o/xxcBMUyUsa2t68cP7RR0hRHRqk88aVIKk
-         oa4vW0/Ys2WvOTavqz+nTGidVHokLV1jFDgoB2I0qwbazSwvmtrMZ3xjSlOPk/tQGt
-         StL5M0ofSQLwtw3w3MuBADdekffKETtmpFWvG2T8=
+        b=2h02apd69zpruO+NNKgePi393OLayDAnbnxQPvbIS3YEzYd1fUqdVhU7JArgsw3jG
+         rfPj/4e3LOCJIbE8+Jl2yJPAnO+BvvykDxu6UO384SjH9DJNNVTCAO7adcYaWEkg0t
+         +VhqcwN6JcmwsAlAjovbxJrWIJtRkRWr/MkBavdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 201/545] drm/vc4: hdmi: Dont access the connector state in reset if kmalloc fails
-Date:   Fri, 19 Aug 2022 17:39:31 +0200
-Message-Id: <20220819153838.387286468@linuxfoundation.org>
+Subject: [PATCH 5.10 208/545] drm/rockchip: Fix an error handling path rockchip_dp_probe()
+Date:   Fri, 19 Aug 2022 17:39:38 +0200
+Message-Id: <20220819153838.682555560@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,43 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit e55a07751146ef8ebc2c561564437b78f46405d3 ]
+[ Upstream commit 5074376822fe99fa4ce344b851c5016d00c0444f ]
 
-drm_atomic_helper_connector_reset uses kmalloc which, from an API
-standpoint, can fail, and thus setting connector->state to NULL.
-However, our reset hook then calls drm_atomic_helper_connector_tv_reset
-that will access connector->state without checking if it's a valid
-pointer or not.
+Should component_add() fail, we should call analogix_dp_remove() in the
+error handling path, as already done in the remove function.
 
-Make sure we don't end up accessing a NULL pointer.
-
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Suggested-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20201215154243.540115-5-maxime@cerno.tech
+Fixes: 152cce0006ab ("drm/bridge: analogix_dp: Split bind() into probe() and real bind()")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/b719d9061bb97eb85145fbd3c5e63f4549f2e13e.1655572071.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/rockchip/analogix_dp-rockchip.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 9a90f22df3d2..978afe706ee2 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -209,7 +209,9 @@ static int vc4_hdmi_connector_get_modes(struct drm_connector *connector)
- static void vc4_hdmi_connector_reset(struct drm_connector *connector)
- {
- 	drm_atomic_helper_connector_reset(connector);
--	drm_atomic_helper_connector_tv_reset(connector);
+diff --git a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+index ade2327a10e2..512581698a1e 100644
+--- a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
++++ b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+@@ -398,7 +398,15 @@ static int rockchip_dp_probe(struct platform_device *pdev)
+ 	if (IS_ERR(dp->adp))
+ 		return PTR_ERR(dp->adp);
+ 
+-	return component_add(dev, &rockchip_dp_component_ops);
++	ret = component_add(dev, &rockchip_dp_component_ops);
++	if (ret)
++		goto err_dp_remove;
 +
-+	if (connector->state)
-+		drm_atomic_helper_connector_tv_reset(connector);
++	return 0;
++
++err_dp_remove:
++	analogix_dp_remove(dp->adp);
++	return ret;
  }
  
- static const struct drm_connector_funcs vc4_hdmi_connector_funcs = {
+ static int rockchip_dp_remove(struct platform_device *pdev)
 -- 
 2.35.1
 
