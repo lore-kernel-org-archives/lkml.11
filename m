@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBA0C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12E8C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350884AbiHSP6o (ORCPT
+        id S1350892AbiHSP6q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
+        Fri, 19 Aug 2022 11:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350948AbiHSP4F (ORCPT
+        with ESMTP id S1350966AbiHSP4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:56:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7B810521C;
-        Fri, 19 Aug 2022 08:50:34 -0700 (PDT)
+        Fri, 19 Aug 2022 11:56:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886FC1CFD8;
+        Fri, 19 Aug 2022 08:51:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF0DDB82813;
-        Fri, 19 Aug 2022 15:50:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB76C433D7;
-        Fri, 19 Aug 2022 15:50:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81B47615E7;
+        Fri, 19 Aug 2022 15:51:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87061C433C1;
+        Fri, 19 Aug 2022 15:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924231;
-        bh=YWfPQ3t+jkwgV2snpf/9bjEHZjXzjouQLMHW9tuflZw=;
+        s=korg; t=1660924262;
+        bh=JmNy9SOqsoECasqAIXzyjV4CCn1OElcxYFq12UPQwfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yx22Ea2TckR53pfmSXtf+cnpeknZnO8zG7rviqlI6TkCbg8WT6PsVMDpRf8PO6SgK
-         wUew2FQfDMnULaaY99HiUrPJTTxiLdGHY/QNxyCq0h5tdiBZXfMN4p5pOftDqwTns0
-         TBmNCQALp6Bv/r6BSnyVJjDCTs6uNG/tYvjVX18M=
+        b=mEUpi6b6Wj4oia+4AXsibQQ5NX3+5X/3OVaBBH4hbCPm3ja+fgxH7Yv2+r5Zm7mJ0
+         EwCZ/CdlZbWOkFtvk09A2Imw6jsWztFpNXHZ7W4cA+xilUihTomvq6/tdTDEqgnASf
+         nD7WxGQz7qx53EMV1dv4Y2rJruvDjYPr6t3o+hcQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 100/545] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
-Date:   Fri, 19 Aug 2022 17:37:50 +0200
-Message-Id: <20220819153833.760276079@linuxfoundation.org>
+Subject: [PATCH 5.10 110/545] arm64: dts: renesas: beacon: Fix regulator node names
+Date:   Fri, 19 Aug 2022 17:38:00 +0200
+Message-Id: <20220819153834.211620489@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,35 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit b8eb2df19fbf97aa1e950cf491232c2e3bef8357 ]
+[ Upstream commit 7512af9f78dedea7e04225f665dad6750df7d095 ]
 
-"status" does not match any pattern in the gpio-leds binding. Rename the
-node to the preferred pattern. This fixes a `make dtbs_check` error.
+Currently there are two nodes named "regulator_camera".  This causes the
+former to be overwritten by the latter.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220702132816.46456-1-samuel@sholland.org
+Fix this by renaming them to unique names, using the preferred hyphen
+instead of an underscore.
+
+While at it, update the name of the audio regulator (which was added in
+the same commit) to use a hyphen.
+
+Fixes: a1d8a344f1ca0709 ("arm64: dts: renesas: Introduce r8a774a1-beacon-rzg2m-kit")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/a9ac82bdf108162487289d091c53a9b3de393f13.1652263918.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-index 70e31743f0ba..3c08497568ea 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-@@ -40,7 +40,7 @@ hdmi_con_in: endpoint {
- 	leds {
- 		compatible = "gpio-leds";
- 
--		status {
-+		led-0 {
- 			label = "orangepi:green:status";
- 			gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11 */
+diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
+index bc4bb5dd8bae..53e1d43cbecf 100644
+--- a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
++++ b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
+@@ -145,7 +145,7 @@ rgb_panel: endpoint {
  		};
+ 	};
+ 
+-	reg_audio: regulator_audio {
++	reg_audio: regulator-audio {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "audio-1.8V";
+ 		regulator-min-microvolt = <1800000>;
+@@ -173,7 +173,7 @@ reg_lcd_reset: regulator-lcd-reset {
+ 		vin-supply = <&reg_lcd>;
+ 	};
+ 
+-	reg_cam0: regulator_camera {
++	reg_cam0: regulator-cam0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "reg_cam0";
+ 		regulator-min-microvolt = <1800000>;
+@@ -182,7 +182,7 @@ reg_cam0: regulator_camera {
+ 		enable-active-high;
+ 	};
+ 
+-	reg_cam1: regulator_camera {
++	reg_cam1: regulator-cam1 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "reg_cam1";
+ 		regulator-min-microvolt = <1800000>;
 -- 
 2.35.1
 
