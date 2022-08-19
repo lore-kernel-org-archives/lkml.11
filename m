@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A897C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38774C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352859AbiHSQel (ORCPT
+        id S1352991AbiHSQeo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
+        Fri, 19 Aug 2022 12:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353365AbiHSQb1 (ORCPT
+        with ESMTP id S1353370AbiHSQb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:31:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4057811DF66;
-        Fri, 19 Aug 2022 09:05:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321EC10BE28;
+        Fri, 19 Aug 2022 09:05:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB3B7612DF;
-        Fri, 19 Aug 2022 16:05:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB496C433D6;
-        Fri, 19 Aug 2022 16:05:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 693CDB8281E;
+        Fri, 19 Aug 2022 16:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B82EC433D6;
+        Fri, 19 Aug 2022 16:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925134;
-        bh=Za0Azl4NUkOLxjsN8UNe5yuo9otj5wpPiE41bAZ7fu8=;
+        s=korg; t=1660925125;
+        bh=Ix70jMqzSR6OVcGgb63FGwt5a3wE/kuBeTUbSi8dQCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gn+QIO7w+kF97StUGkEmaEcbbqJUKAoYDCCuOE83oFamRlNloMZ/nX5LzkiCQM48C
-         R7DLSM3Y2xOMyVcsnM/n271laQFV/7PzD6sn7Zd4z0Jp3GUZXtpDZzghkL7FPE1+Q3
-         /CBRfyMMVsTYn/j3RNAebeVmv+R2HK2e0XKz+Wfg=
+        b=ls98oX7Ii45H6JzvD3qre5Popp27zDw+ptAw6WVITPlKcEMesN6jHYdbAI67jzWFR
+         4bk+H7iUV1cV2d431RsNoGxOuxUrXbDr8UUn2ynAId2J9UKxloLZzgGDtuwlj0n3oX
+         CXt8JV73gLWcCYOQY/8iz9WJfBq8V2gyn3lZv/4g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 394/545] tty: n_gsm: fix wrong T1 retry count handling
-Date:   Fri, 19 Aug 2022 17:42:44 +0200
-Message-Id: <20220819153847.047153638@linuxfoundation.org>
+Subject: [PATCH 5.10 392/545] vfio/mdev: Make to_mdev_device() into a static inline
+Date:   Fri, 19 Aug 2022 17:42:42 +0200
+Message-Id: <20220819153846.954453049@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,53 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-[ Upstream commit f30e10caa80aa1f35508bc17fc302dbbde9a833c ]
+[ Upstream commit 66873b5fa738ca02b5c075ca4a410b13d88e6e9a ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
-maximum number of retransmissions (N2) is from 0 to 255 (both including).
-gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
-retransmission attempts. Setting N2 to zero results in more than 255
-retransmission attempts.
-Fix gsm_dlci_t1() to comply with 3GPP 27.010.
+The macro wrongly uses 'dev' as both the macro argument and the member
+name, which means it fails compilation if any caller uses a word other
+than 'dev' as the single argument. Fix this defect by making it into
+proper static inline, which is more clear and typesafe anyhow.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-1-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 99e3123e3d72 ("vfio-mdev: Make mdev_device private and abstract interfaces")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Message-Id: <11-v3-225de1400dfc+4e074-vfio1_jgg@nvidia.com>
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vfio/mdev/mdev_private.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 969c0de788f8..3f100f7abdb7 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1550,8 +1550,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
+index 7d922950caaf..74c2e5411469 100644
+--- a/drivers/vfio/mdev/mdev_private.h
++++ b/drivers/vfio/mdev/mdev_private.h
+@@ -35,7 +35,10 @@ struct mdev_device {
+ 	bool active;
+ };
  
- 	switch (dlci->state) {
- 	case DLCI_OPENING:
--		dlci->retries--;
- 		if (dlci->retries) {
-+			dlci->retries--;
- 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
-@@ -1566,8 +1566,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+-#define to_mdev_device(dev)	container_of(dev, struct mdev_device, dev)
++static inline struct mdev_device *to_mdev_device(struct device *dev)
++{
++	return container_of(dev, struct mdev_device, dev);
++}
+ #define dev_is_mdev(d)		((d)->bus == &mdev_bus_type)
  
- 		break;
- 	case DLCI_CLOSING:
--		dlci->retries--;
- 		if (dlci->retries) {
-+			dlci->retries--;
- 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else
+ struct mdev_type {
 -- 
 2.35.1
 
