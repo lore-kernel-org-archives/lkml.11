@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E931C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA5D9C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354105AbiHSQrz (ORCPT
+        id S1353990AbiHSQsB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
+        Fri, 19 Aug 2022 12:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353973AbiHSQpe (ORCPT
+        with ESMTP id S1353994AbiHSQph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C54A112FA1;
-        Fri, 19 Aug 2022 09:11:41 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B150012A541;
+        Fri, 19 Aug 2022 09:11:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB00561838;
-        Fri, 19 Aug 2022 16:11:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C94B8C433C1;
-        Fri, 19 Aug 2022 16:11:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87032B8281F;
+        Fri, 19 Aug 2022 16:11:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8361C43140;
+        Fri, 19 Aug 2022 16:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925494;
-        bh=d8wBo+QR4O8JqqkGeeFMtuP8DDWDZNs6/vactNB//FM=;
+        s=korg; t=1660925500;
+        bh=WvyG+94LYEo2znHh2hcujvdWIRJskdaodJa1c98wPh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A2aQ6/dwMk1NY8T3b85J/8GejnhXvz+QXA/X5f9Q+5E+FmhsQDpJ9+BL2DEgyCZiV
-         fCQ0Rymr1xxXv3996s3w7JB4nYcFD5EtZg5EisF6rijNe2qiKmssD1Yqf5SXgBCkpG
-         uGk7cJ2Akiy3010GSDDCyzyMyAvX2sfBqxE3mAkM=
+        b=kVdj30jkozDcgU1hbu4Om8H+w3qBHp4Apv6MfQ/6+tioqT7rafQwR6kspT4ZZ7zjn
+         GwQsIEvsNPxpJ5g3SheKkayFNS9Vzy0QHAsBB4JhEK1jQmupoNZFeWcxn1FVd/xsjb
+         q9farQpf5TpmtyZNy4YHYE3HKfc/nao2IMIePvwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean V Kelley <sean.v.kelley@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Lev Kujawski <lkujaw@member.fsf.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 478/545] PCI/ERR: Use "bridge" for clarity in pcie_do_recovery()
-Date:   Fri, 19 Aug 2022 17:44:08 +0200
-Message-Id: <20220819153850.812193669@linuxfoundation.org>
+Subject: [PATCH 5.10 470/545] KVM: set_msr_mce: Permit guests to ignore single-bit ECC errors
+Date:   Fri, 19 Aug 2022 17:44:00 +0200
+Message-Id: <20220819153850.434906502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,114 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean V Kelley <sean.v.kelley@intel.com>
+From: Lev Kujawski <lkujaw@member.fsf.org>
 
-[ Upstream commit 0791721d800790e6e533bd8467df67f0dc4f2fec ]
+[ Upstream commit 0471a7bd1bca2a47a5f378f2222c5cf39ce94152 ]
 
-pcie_do_recovery() may be called with "dev" being either a bridge (Root
-Port or Switch Downstream Port) or an Endpoint.  The bulk of the function
-deals with the bridge, so if we start with an Endpoint, we reset "dev" to
-be the bridge leading to it.
+Certain guest operating systems (e.g., UNIXWARE) clear bit 0 of
+MC1_CTL to ignore single-bit ECC data errors.  Single-bit ECC data
+errors are always correctable and thus are safe to ignore because they
+are informational in nature rather than signaling a loss of data
+integrity.
 
-For clarity, replace "dev" in the body of the function with "bridge".  No
-functional change intended.
+Prior to this patch, these guests would crash upon writing MC1_CTL,
+with resultant error messages like the following:
 
-Link: https://lore.kernel.org/r/20201121001036.8560-8-sean.v.kelley@intel.com
-Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
-Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+error: kvm run failed Operation not permitted
+EAX=fffffffe EBX=fffffffe ECX=00000404 EDX=ffffffff
+ESI=ffffffff EDI=00000001 EBP=fffdaba4 ESP=fffdab20
+EIP=c01333a5 EFL=00000246 [---Z-P-] CPL=0 II=0 A20=1 SMM=0 HLT=0
+ES =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
+CS =0100 00000000 ffffffff 00c09b00 DPL=0 CS32 [-RA]
+SS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
+DS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
+FS =0000 00000000 ffffffff 00c00000
+GS =0000 00000000 ffffffff 00c00000
+LDT=0118 c1026390 00000047 00008200 DPL=0 LDT
+TR =0110 ffff5af0 00000067 00008b00 DPL=0 TSS32-busy
+GDT=     ffff5020 000002cf
+IDT=     ffff52f0 000007ff
+CR0=8001003b CR2=00000000 CR3=0100a000 CR4=00000230
+DR0=00000000 DR1=00000000 DR2=00000000 DR3=00000000
+DR6=ffff0ff0 DR7=00000400
+EFER=0000000000000000
+Code=08 89 01 89 51 04 c3 8b 4c 24 08 8b 01 8b 51 04 8b 4c 24 04 <0f>
+30 c3 f7 05 a4 6d ff ff 10 00 00 00 74 03 0f 31 c3 33 c0 33 d2 c3 8d
+74 26 00 0f 31 c3
+
+Signed-off-by: Lev Kujawski <lkujaw@member.fsf.org>
+Message-Id: <20220521081511.187388-1-lkujaw@member.fsf.org>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/err.c | 37 ++++++++++++++++++++-----------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+ arch/x86/kvm/x86.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
-index 7a5af873d8bc..46a5b84f8842 100644
---- a/drivers/pci/pcie/err.c
-+++ b/drivers/pci/pcie/err.c
-@@ -151,24 +151,27 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 		pci_ers_result_t (*reset_subordinates)(struct pci_dev *pdev))
- {
- 	int type = pci_pcie_type(dev);
--	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
-+	struct pci_dev *bridge;
- 	struct pci_bus *bus;
-+	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 29a8ca95c581..23a5e5880615 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -2862,10 +2862,13 @@ static int set_msr_mce(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 			/* only 0 or all 1s can be written to IA32_MCi_CTL
+ 			 * some Linux kernels though clear bit 10 in bank 4 to
+ 			 * workaround a BIOS/GART TBL issue on AMD K8s, ignore
+-			 * this to avoid an uncatched #GP in the guest
++			 * this to avoid an uncatched #GP in the guest.
++			 *
++			 * UNIXWARE clears bit 0 of MC1_CTL to ignore
++			 * correctable, single-bit ECC data errors.
+ 			 */
+ 			if ((offset & 0x3) == 0 &&
+-			    data != 0 && (data | (1 << 10)) != ~(u64)0)
++			    data != 0 && (data | (1 << 10) | 1) != ~(u64)0)
+ 				return -1;
  
- 	/*
--	 * Error recovery runs on all subordinates of the first downstream port.
--	 * If the downstream port detected the error, it is cleared at the end.
-+	 * Error recovery runs on all subordinates of the bridge.  If the
-+	 * bridge detected the error, it is cleared at the end.
- 	 */
- 	if (!(type == PCI_EXP_TYPE_ROOT_PORT ||
- 	      type == PCI_EXP_TYPE_DOWNSTREAM))
--		dev = pci_upstream_bridge(dev);
--	bus = dev->subordinate;
-+		bridge = pci_upstream_bridge(dev);
-+	else
-+		bridge = dev;
- 
--	pci_dbg(dev, "broadcast error_detected message\n");
-+	bus = bridge->subordinate;
-+	pci_dbg(bridge, "broadcast error_detected message\n");
- 	if (state == pci_channel_io_frozen) {
- 		pci_walk_bus(bus, report_frozen_detected, &status);
--		status = reset_subordinates(dev);
-+		status = reset_subordinates(bridge);
- 		if (status != PCI_ERS_RESULT_RECOVERED) {
--			pci_warn(dev, "subordinate device reset failed\n");
-+			pci_warn(bridge, "subordinate device reset failed\n");
- 			goto failed;
- 		}
- 	} else {
-@@ -177,7 +180,7 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 
- 	if (status == PCI_ERS_RESULT_CAN_RECOVER) {
- 		status = PCI_ERS_RESULT_RECOVERED;
--		pci_dbg(dev, "broadcast mmio_enabled message\n");
-+		pci_dbg(bridge, "broadcast mmio_enabled message\n");
- 		pci_walk_bus(bus, report_mmio_enabled, &status);
- 	}
- 
-@@ -188,27 +191,27 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 		 * drivers' slot_reset callbacks?
- 		 */
- 		status = PCI_ERS_RESULT_RECOVERED;
--		pci_dbg(dev, "broadcast slot_reset message\n");
-+		pci_dbg(bridge, "broadcast slot_reset message\n");
- 		pci_walk_bus(bus, report_slot_reset, &status);
- 	}
- 
- 	if (status != PCI_ERS_RESULT_RECOVERED)
- 		goto failed;
- 
--	pci_dbg(dev, "broadcast resume message\n");
-+	pci_dbg(bridge, "broadcast resume message\n");
- 	pci_walk_bus(bus, report_resume, &status);
- 
--	if (pcie_aer_is_native(dev))
--		pcie_clear_device_status(dev);
--	pci_aer_clear_nonfatal_status(dev);
--	pci_info(dev, "device recovery successful\n");
-+	if (pcie_aer_is_native(bridge))
-+		pcie_clear_device_status(bridge);
-+	pci_aer_clear_nonfatal_status(bridge);
-+	pci_info(bridge, "device recovery successful\n");
- 	return status;
- 
- failed:
--	pci_uevent_ers(dev, PCI_ERS_RESULT_DISCONNECT);
-+	pci_uevent_ers(bridge, PCI_ERS_RESULT_DISCONNECT);
- 
- 	/* TODO: Should kernel panic here? */
--	pci_info(dev, "device recovery failed\n");
-+	pci_info(bridge, "device recovery failed\n");
- 
- 	return status;
- }
+ 			/* MCi_STATUS */
 -- 
 2.35.1
 
