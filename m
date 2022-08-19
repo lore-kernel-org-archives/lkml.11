@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86210C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF92CC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353281AbiHSQmH (ORCPT
+        id S1353453AbiHSQmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
+        Fri, 19 Aug 2022 12:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353243AbiHSQjz (ORCPT
+        with ESMTP id S1353313AbiHSQkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:39:55 -0400
+        Fri, 19 Aug 2022 12:40:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2082E42F7;
-        Fri, 19 Aug 2022 09:08:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CB618B20;
+        Fri, 19 Aug 2022 09:08:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 042A461811;
-        Fri, 19 Aug 2022 16:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E74BDC433C1;
-        Fri, 19 Aug 2022 16:07:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21DCE6181A;
+        Fri, 19 Aug 2022 16:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F99C433D6;
+        Fri, 19 Aug 2022 16:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925255;
-        bh=xIKOzEbAHX9r+GH4VZhr1OOjANvkwjV7THn/VhsTL20=;
+        s=korg; t=1660925246;
+        bh=DSjYKFmh06ko8rlbhaj8I90fRkZxrFNOwFOoqQGzFfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cdi1j8G0dTzDmeX5vmdm9p/ZO5SHLwH6m82Dhore6P/ohzYoqFYF+EIwwsCyaU608
-         bFoVVjqNHjeePszMeo6SFcbwwUcNLRvwvoDxJnpQG3nWW1uCLaimA29TW/tlvxr+5q
-         N2bL0wBAnJ2vl1KcJ510tYJRRjCXAp0vBAmk86LI=
+        b=d20B2fnK/jRc/sIAOcnBaqDHzjer8CSt1CTmwwJTMTwSC4WgmngOXtR3G+nvVK3en
+         reJww1njkmRZ1HZKRhHmVFwWpdsuj9scn0MjWSckjS8NpNHIUzDqQjc4p4WQeZ9w6w
+         lnS1M9BxsG/RWeTd0IRxjNg+fgl7F5fyidAFhqno=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 433/545] tools/thermal: Fix possible path truncations
-Date:   Fri, 19 Aug 2022 17:43:23 +0200
-Message-Id: <20220819153848.803646606@linuxfoundation.org>
+Subject: [PATCH 5.10 430/545] sched, cpuset: Fix dl_cpu_busy() panic due to empty cs->cpus_allowed
+Date:   Fri, 19 Aug 2022 17:43:20 +0200
+Message-Id: <20220819153848.651668076@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,107 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 6c58cf40e3a1d2f47c09d3489857e9476316788a ]
+[ Upstream commit b6e8d40d43ae4dec00c8fea2593eeea3114b8f44 ]
 
-A build with -D_FORTIFY_SOURCE=2 enabled will produce the following warnings:
+With cgroup v2, the cpuset's cpus_allowed mask can be empty indicating
+that the cpuset will just use the effective CPUs of its parent. So
+cpuset_can_attach() can call task_can_attach() with an empty mask.
+This can lead to cpumask_any_and() returns nr_cpu_ids causing the call
+to dl_bw_of() to crash due to percpu value access of an out of bound
+CPU value. For example:
 
-sysfs.c:63:30: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 0 and 255 [-Wformat-truncation=]
-  snprintf(filepath, 256, "%s/%s", path, filename);
-                              ^~
-Bump up the buffer to PATH_MAX which is the limit and account for all of
-the possible NUL and separators that could lead to exceeding the
-allocated buffer sizes.
+	[80468.182258] BUG: unable to handle page fault for address: ffffffff8b6648b0
+	  :
+	[80468.191019] RIP: 0010:dl_cpu_busy+0x30/0x2b0
+	  :
+	[80468.207946] Call Trace:
+	[80468.208947]  cpuset_can_attach+0xa0/0x140
+	[80468.209953]  cgroup_migrate_execute+0x8c/0x490
+	[80468.210931]  cgroup_update_dfl_csses+0x254/0x270
+	[80468.211898]  cgroup_subtree_control_write+0x322/0x400
+	[80468.212854]  kernfs_fop_write_iter+0x11c/0x1b0
+	[80468.213777]  new_sync_write+0x11f/0x1b0
+	[80468.214689]  vfs_write+0x1eb/0x280
+	[80468.215592]  ksys_write+0x5f/0xe0
+	[80468.216463]  do_syscall_64+0x5c/0x80
+	[80468.224287]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal subsystem")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fix that by using effective_cpus instead. For cgroup v1, effective_cpus
+is the same as cpus_allowed. For v2, effective_cpus is the real cpumask
+to be used by tasks within the cpuset anyway.
+
+Also update task_can_attach()'s 2nd argument name to cs_effective_cpus to
+reflect the change. In addition, a check is added to task_can_attach()
+to guard against the possibility that cpumask_any_and() may return a
+value >= nr_cpu_ids.
+
+Fixes: 7f51412a415d ("sched/deadline: Fix bandwidth check/update when migrating tasks between exclusive cpusets")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lore.kernel.org/r/20220803015451.2219567-1-longman@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/thermal/tmon/sysfs.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ include/linux/sched.h  | 2 +-
+ kernel/cgroup/cpuset.c | 2 +-
+ kernel/sched/core.c    | 8 +++++---
+ 3 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/tools/thermal/tmon/sysfs.c b/tools/thermal/tmon/sysfs.c
-index b00b1bfd9d8e..cb1108bc9249 100644
---- a/tools/thermal/tmon/sysfs.c
-+++ b/tools/thermal/tmon/sysfs.c
-@@ -13,6 +13,7 @@
- #include <stdint.h>
- #include <dirent.h>
- #include <libintl.h>
-+#include <limits.h>
- #include <ctype.h>
- #include <time.h>
- #include <syslog.h>
-@@ -33,9 +34,9 @@ int sysfs_set_ulong(char *path, char *filename, unsigned long val)
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 4bca80c9931f..4e8425c1c560 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1658,7 +1658,7 @@ current_restore_flags(unsigned long orig_flags, unsigned long flags)
+ }
+ 
+ extern int cpuset_cpumask_can_shrink(const struct cpumask *cur, const struct cpumask *trial);
+-extern int task_can_attach(struct task_struct *p, const struct cpumask *cs_cpus_allowed);
++extern int task_can_attach(struct task_struct *p, const struct cpumask *cs_effective_cpus);
+ #ifdef CONFIG_SMP
+ extern void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask);
+ extern int set_cpus_allowed_ptr(struct task_struct *p, const struct cpumask *new_mask);
+diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+index ec39e123c2a5..c51863b63f93 100644
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -2162,7 +2162,7 @@ static int cpuset_can_attach(struct cgroup_taskset *tset)
+ 		goto out_unlock;
+ 
+ 	cgroup_taskset_for_each(task, css, tset) {
+-		ret = task_can_attach(task, cs->cpus_allowed);
++		ret = task_can_attach(task, cs->effective_cpus);
+ 		if (ret)
+ 			goto out_unlock;
+ 		ret = security_task_setscheduler(task);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 042efabf5378..8765de76a179 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6586,7 +6586,7 @@ int cpuset_cpumask_can_shrink(const struct cpumask *cur,
+ }
+ 
+ int task_can_attach(struct task_struct *p,
+-		    const struct cpumask *cs_cpus_allowed)
++		    const struct cpumask *cs_effective_cpus)
  {
- 	FILE *fd;
- 	int ret = -1;
--	char filepath[256];
-+	char filepath[PATH_MAX + 2]; /* NUL and '/' */
+ 	int ret = 0;
  
--	snprintf(filepath, 256, "%s/%s", path, filename);
-+	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+@@ -6605,9 +6605,11 @@ int task_can_attach(struct task_struct *p,
+ 	}
  
- 	fd = fopen(filepath, "w");
- 	if (!fd) {
-@@ -57,9 +58,9 @@ static int sysfs_get_ulong(char *path, char *filename, unsigned long *p_ulong)
- {
- 	FILE *fd;
- 	int ret = -1;
--	char filepath[256];
-+	char filepath[PATH_MAX + 2]; /* NUL and '/' */
+ 	if (dl_task(p) && !cpumask_intersects(task_rq(p)->rd->span,
+-					      cs_cpus_allowed)) {
+-		int cpu = cpumask_any_and(cpu_active_mask, cs_cpus_allowed);
++					      cs_effective_cpus)) {
++		int cpu = cpumask_any_and(cpu_active_mask, cs_effective_cpus);
  
--	snprintf(filepath, 256, "%s/%s", path, filename);
-+	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
++		if (unlikely(cpu >= nr_cpu_ids))
++			return -EINVAL;
+ 		ret = dl_cpu_busy(cpu, p);
+ 	}
  
- 	fd = fopen(filepath, "r");
- 	if (!fd) {
-@@ -76,9 +77,9 @@ static int sysfs_get_string(char *path, char *filename, char *str)
- {
- 	FILE *fd;
- 	int ret = -1;
--	char filepath[256];
-+	char filepath[PATH_MAX + 2]; /* NUL and '/' */
- 
--	snprintf(filepath, 256, "%s/%s", path, filename);
-+	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
- 
- 	fd = fopen(filepath, "r");
- 	if (!fd) {
-@@ -199,8 +200,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
- {
- 	unsigned long trip_instance = 0;
- 	char cdev_name_linked[256];
--	char cdev_name[256];
--	char cdev_trip_name[256];
-+	char cdev_name[PATH_MAX];
-+	char cdev_trip_name[PATH_MAX];
- 	int cdev_id;
- 
- 	if (nl->d_type == DT_LNK) {
-@@ -213,7 +214,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
- 			return -EINVAL;
- 		}
- 		/* find the link to real cooling device record binding */
--		snprintf(cdev_name, 256, "%s/%s", tz_name, nl->d_name);
-+		snprintf(cdev_name, sizeof(cdev_name) - 2, "%s/%s",
-+			 tz_name, nl->d_name);
- 		memset(cdev_name_linked, 0, sizeof(cdev_name_linked));
- 		if (readlink(cdev_name, cdev_name_linked,
- 				sizeof(cdev_name_linked) - 1) != -1) {
-@@ -226,8 +228,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
- 			/* find the trip point in which the cdev is binded to
- 			 * in this tzone
- 			 */
--			snprintf(cdev_trip_name, 256, "%s%s", nl->d_name,
--				"_trip_point");
-+			snprintf(cdev_trip_name, sizeof(cdev_trip_name) - 1,
-+				"%s%s", nl->d_name, "_trip_point");
- 			sysfs_get_ulong(tz_name, cdev_trip_name,
- 					&trip_instance);
- 			/* validate trip point range, e.g. trip could return -1
 -- 
 2.35.1
 
