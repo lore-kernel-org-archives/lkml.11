@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00434C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F12AC32792
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352337AbiHSQUj (ORCPT
+        id S1352370AbiHSQUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
+        Fri, 19 Aug 2022 12:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352307AbiHSQQR (ORCPT
+        with ESMTP id S1352313AbiHSQQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:16:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957B8EE6B7;
-        Fri, 19 Aug 2022 08:59:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562A4115202;
+        Fri, 19 Aug 2022 08:59:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92416612DF;
-        Fri, 19 Aug 2022 15:59:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88285C433C1;
-        Fri, 19 Aug 2022 15:59:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C52D7616F8;
+        Fri, 19 Aug 2022 15:59:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB68FC433C1;
+        Fri, 19 Aug 2022 15:59:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924760;
-        bh=eONovvnXJTkG7yY9lIPAgekg5IfXBFKBNBbY6mwdv6U=;
+        s=korg; t=1660924766;
+        bh=7xBqaD+HrDQJBUfWG4VqvMRucU4PAwrrna9WkfTRE7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Igw++CdLmyuYpst/RmMptmy1LifIv7zWXVZz1BqB9uexYQTHkEKhkxWK4k5unP7O+
-         V6LJYCQm9mMCz15vdhxkyVilO7rWyiWzuWqADqxdOHDsxQJyJQpc4W0qzCYfqvu8z5
-         JBn9xKOZYO4xuxzKH6YGawwNvclT2tKZIu1eSibs=
+        b=NmypBnrDcoLEBJhXj6J/oX8HY/2zki8bUa8XafpfWjjnhvI1WDnXDYQ551EhF43XE
+         3LQNw5Syrxt07F8uoq42hJ2YjCu7Z+szi28G0DRb3sdRbyMgzym8s3a+gcT3k9Hz5f
+         qCiIamIraRnc24YR+3PWZUD9ca40EbJMj9BWj7XM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Vidya Sagar <vidyas@nvidia.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel test robot <lkp@intel.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 273/545] PCI: tegra194: Fix PM error handling in tegra_pcie_config_ep()
-Date:   Fri, 19 Aug 2022 17:40:43 +0200
-Message-Id: <20220819153841.557556633@linuxfoundation.org>
+Subject: [PATCH 5.10 248/545] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
+Date:   Fri, 19 Aug 2022 17:40:18 +0200
+Message-Id: <20220819153840.452845899@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,38 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit e8fbd344a5ea62663554b8546b6bf9f88b93785a ]
+[ Upstream commit d578e0af3a003736f6c440188b156483d451b329 ]
 
-pm_runtime_enable() will increase power disable depth.  If
-dw_pcie_ep_init() fails, we should use pm_runtime_disable() to balance it
-with pm_runtime_enable().
+Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
+but it forgets to change the value to be returned that came from
+simple_write_to_buffer() call. It results in the following warning:
 
-Add missing pm_runtime_disable() for tegra_pcie_config_ep().
+  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
+           return rc;
+                  ^~
 
-Fixes: c57247f940e8 ("PCI: tegra: Add support for PCIe endpoint mode in Tegra194")
-Link: https://lore.kernel.org/r/20220602031910.55859-1-linmq006@gmail.com
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
+Remove rc variable and just return the passed in length if the
+memdup_user() succeeds.
+
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
+Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220724202452.61846-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-tegra194.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index a5b677ec0769..845f1e1de3ab 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -1970,6 +1970,7 @@ static int tegra_pcie_config_ep(struct tegra_pcie_dw *pcie,
- 	if (ret) {
- 		dev_err(dev, "Failed to initialize DWC Endpoint subsystem: %d\n",
- 			ret);
-+		pm_runtime_disable(dev);
- 		return ret;
- 	}
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index 58c98e58bccb..cb40162bae99 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -1010,7 +1010,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 	void *cmd;
+ 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
+ 	u16 cmdid;
+-	int rc, rc1;
++	int rc1;
  
+ 	if (cmdlen < 0 || *ppos != 0)
+ 		return -EINVAL;
+@@ -1027,7 +1027,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 
+ 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
+ 
+-	return rc;
++	return len;
+ }
+ 
+ static const struct file_operations fops_wmi = {
 -- 
 2.35.1
 
