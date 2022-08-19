@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B91C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D13D6C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349877AbiHSQSO (ORCPT
+        id S1351639AbiHSQSU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
+        Fri, 19 Aug 2022 12:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351953AbiHSQOh (ORCPT
+        with ESMTP id S1351965AbiHSQO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:14:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6327C7E309;
-        Fri, 19 Aug 2022 08:58:21 -0700 (PDT)
+        Fri, 19 Aug 2022 12:14:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311C7474DC;
+        Fri, 19 Aug 2022 08:58:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A526B82819;
-        Fri, 19 Aug 2022 15:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A29AC433D6;
-        Fri, 19 Aug 2022 15:58:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9A82B82820;
+        Fri, 19 Aug 2022 15:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F3A8C433C1;
+        Fri, 19 Aug 2022 15:58:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924689;
-        bh=aQEoMfCovPkTWLiJW3uCpiZOLirceCKWhcTPW0uKekk=;
+        s=korg; t=1660924695;
+        bh=sfylS1kA5G0Jiy4gD4HZ0v2qOmq0aop5WJVIEhgmkD0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nrUvMpFAgdz0k2XwEZOjdMRSYDeGF9ajclElGvGpZ8qKyKmXcXM78RGZS+LxzoDuj
-         NKaetiGue9VH8Bds/dJf/3p72r5JKfhadeO4wHbX1H6hzRmdLgKW6gRkMYocnW0+8N
-         XEwJiQwVfeH5YKgqVccj3wX07i4yPLBCku938dME=
+        b=EnwAt4HpAyysPt4didGnBORopcSC4dGRDI9tNSzbQJlyx5dY0S1KjudOGVpi+6qZ2
+         ig+OqIH+gjZqy8nKZFZmtH/MFTon/h79+RVDKpxLd+hJb3uif9Ixtp5n+LYO6p115N
+         Z+AKxT/ukftE07iu0CYe64Lti3EuKV7eIw9pMBZo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Houlong Wei <houlong.wei@mediatek.com>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 221/545] media: platform: mtk-mdp: Fix mdp_ipi_comm structure alignment
-Date:   Fri, 19 Aug 2022 17:39:51 +0200
-Message-Id: <20220819153839.245865776@linuxfoundation.org>
+Subject: [PATCH 5.10 213/545] lib: bitmap: provide devm_bitmap_alloc() and devm_bitmap_zalloc()
+Date:   Fri, 19 Aug 2022 17:39:43 +0200
+Message-Id: <20220819153838.893582339@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -55,55 +51,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-[ Upstream commit ab14c99c035da7156a3b66fa171171295bc4b89a ]
+[ Upstream commit e829c2e4744850bab4d8f8ffebd00df10b4c6c2b ]
 
-The mdp_ipi_comm structure defines a command that is either
-PROCESS (start processing) or DEINIT (destroy instance); we
-are using this one to send PROCESS or DEINIT commands from Linux
-to an MDP instance through a VPU write but, while the first wants
-us to stay 4-bytes aligned, the VPU instead requires an 8-bytes
-data alignment.
+Provide managed variants of bitmap_alloc() and bitmap_zalloc().
 
-Keeping in mind that these commands are executed immediately
-after sending them (hence not chained with others before the
-VPU/MDP "actually" start executing), it is fine to simply add
-a padding of 4 bytes to this structure: this keeps the same
-performance as before, as we're still stack-allocating it,
-while avoiding hackery inside of mtk-vpu to ensure alignment
-bringing a definitely bigger performance impact.
-
-Fixes: c8eb2d7e8202 ("[media] media: Add Mediatek MDP Driver")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
-Reviewed-by: Irui Wang <irui.wang@mediatek.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/bitmap.h |  8 ++++++++
+ lib/bitmap.c           | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
-index 2cb8cecb3077..b810c96695c8 100644
---- a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
-+++ b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
-@@ -40,12 +40,14 @@ struct mdp_ipi_init {
-  * @ipi_id        : IPI_MDP
-  * @ap_inst       : AP mtk_mdp_vpu address
-  * @vpu_inst_addr : VPU MDP instance address
-+ * @padding       : Alignment padding
-  */
- struct mdp_ipi_comm {
- 	uint32_t msg_id;
- 	uint32_t ipi_id;
- 	uint64_t ap_inst;
- 	uint32_t vpu_inst_addr;
-+	uint32_t padding;
- };
+diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+index 4dd2e1d39c74..c4f6a9270c03 100644
+--- a/include/linux/bitmap.h
++++ b/include/linux/bitmap.h
+@@ -9,6 +9,8 @@
+ #include <linux/string.h>
+ #include <linux/types.h>
  
++struct device;
++
+ /*
+  * bitmaps provide bit arrays that consume one or more unsigned
+  * longs.  The bitmap interface and available operations are listed
+@@ -122,6 +124,12 @@ extern unsigned long *bitmap_alloc(unsigned int nbits, gfp_t flags);
+ extern unsigned long *bitmap_zalloc(unsigned int nbits, gfp_t flags);
+ extern void bitmap_free(const unsigned long *bitmap);
+ 
++/* Managed variants of the above. */
++unsigned long *devm_bitmap_alloc(struct device *dev,
++				 unsigned int nbits, gfp_t flags);
++unsigned long *devm_bitmap_zalloc(struct device *dev,
++				  unsigned int nbits, gfp_t flags);
++
+ /*
+  * lib/bitmap.c provides these functions:
+  */
+diff --git a/lib/bitmap.c b/lib/bitmap.c
+index 78f70d9007ad..27e08c0e547e 100644
+--- a/lib/bitmap.c
++++ b/lib/bitmap.c
+@@ -8,6 +8,7 @@
+ #include <linux/bitops.h>
+ #include <linux/bug.h>
+ #include <linux/ctype.h>
++#include <linux/device.h>
+ #include <linux/errno.h>
+ #include <linux/export.h>
+ #include <linux/kernel.h>
+@@ -1263,6 +1264,38 @@ void bitmap_free(const unsigned long *bitmap)
+ }
+ EXPORT_SYMBOL(bitmap_free);
+ 
++static void devm_bitmap_free(void *data)
++{
++	unsigned long *bitmap = data;
++
++	bitmap_free(bitmap);
++}
++
++unsigned long *devm_bitmap_alloc(struct device *dev,
++				 unsigned int nbits, gfp_t flags)
++{
++	unsigned long *bitmap;
++	int ret;
++
++	bitmap = bitmap_alloc(nbits, flags);
++	if (!bitmap)
++		return NULL;
++
++	ret = devm_add_action_or_reset(dev, devm_bitmap_free, bitmap);
++	if (ret)
++		return NULL;
++
++	return bitmap;
++}
++EXPORT_SYMBOL_GPL(devm_bitmap_alloc);
++
++unsigned long *devm_bitmap_zalloc(struct device *dev,
++				  unsigned int nbits, gfp_t flags)
++{
++	return devm_bitmap_alloc(dev, nbits, flags | __GFP_ZERO);
++}
++EXPORT_SYMBOL_GPL(devm_bitmap_zalloc);
++
+ #if BITS_PER_LONG == 64
  /**
+  * bitmap_from_arr32 - copy the contents of u32 array of bits to bitmap
 -- 
 2.35.1
 
