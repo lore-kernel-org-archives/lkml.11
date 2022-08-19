@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC799C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C996C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353370AbiHSQhI (ORCPT
+        id S1353378AbiHSQhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42202 "EHLO
+        Fri, 19 Aug 2022 12:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353681AbiHSQcX (ORCPT
+        with ESMTP id S1353668AbiHSQcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:32:23 -0400
+        Fri, 19 Aug 2022 12:32:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972FA104460;
-        Fri, 19 Aug 2022 09:06:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9241F107755;
+        Fri, 19 Aug 2022 09:06:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EC976177D;
-        Fri, 19 Aug 2022 16:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB635C433D6;
-        Fri, 19 Aug 2022 16:06:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 690DB617A7;
+        Fri, 19 Aug 2022 16:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59A06C433C1;
+        Fri, 19 Aug 2022 16:06:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925171;
-        bh=OaTRRyi9soEAGUwezZ6afXq9Tx652YqDV8+1EJl6L4w=;
+        s=korg; t=1660925187;
+        bh=ZTKYh249t17VI4W2hEGLebc9KiFdDmApGgO4WR5MDvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BzJ+lKqkLRGMwYgDDEmlMRiSngmrIIeiWiXNwWoZ1mpYRMbWwVH4cXQ6Wo91M6132
-         9n+LVAxQeVQUVswCFolUf+VXATx7DHL5iI7hVH3n/EuYe5x6jDqDduYB4/+hWKQS9S
-         GDTYCrXxUnaa7xwYqwONCNPwftNtkq+Pos3i1MbA=
+        b=REGcYcgJW9vO1Y1ow+pRnsUMLGiP7PzSjyhtxoIttSP/4jFBgEJQc0cir+V8HpmrC
+         GsPf3lDiMiM2GWH9IErlMNEmLLVKGirZpcwcKHyOZqKK4GO3NALhBxtDA+6RAnsWeS
+         mZByN/oLcb31VvkO0yB4rSowQFiksgaTNJVFQBX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        kvm@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 405/545] perf tools: Fix dso_id inode generation comparison
-Date:   Fri, 19 Aug 2022 17:42:55 +0200
-Message-Id: <20220819153847.564947709@linuxfoundation.org>
+Subject: [PATCH 5.10 382/545] tty: n_gsm: fix user open not possible at responder until initiator open
+Date:   Fri, 19 Aug 2022 17:42:32 +0200
+Message-Id: <20220819153846.515894494@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,54 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 68566a7cf56bf3148797c218ed45a9de078ef47c ]
+[ Upstream commit ac77f0077c3265197d378158c85a55eee6d21508 ]
 
-Synthesized MMAP events have zero ino_generation, so do not compare
-them to DSOs with a real ino_generation otherwise we end up with a DSO
-without a build id.
+After setting up the control channel on both sides the responder side may
+want to open a virtual tty to listen on until the initiator starts an
+application on a user channel. The current implementation allows the
+open() but no other operation, like termios. These fail with EINVAL.
+The responder sided application has no means to detect an open by the
+initiator sided application this way. And the initiator sided applications
+usually expect the responder sided application to listen on the user
+channel upon open.
+Set the user channel into half-open state on responder side once a user
+application opens the virtual tty to allow IO operations on it.
+Furthermore, keep the user channel constipated until the initiator side
+opens it to give the responder sided application the chance to detect the
+new connection and to avoid data loss if the responder sided application
+starts sending before the user channel is open.
 
-Fixes: 0e3149f86b99ddab ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: kvm@vger.kernel.org
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220711093218.10967-2-adrian.hunter@intel.com
-[ Added clarification to the comment from Ian + more detailed explanation from Adrian ]
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220701061652.39604-1-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/dsos.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
-index 183a81d5b2f9..2db91121bdaf 100644
---- a/tools/perf/util/dsos.c
-+++ b/tools/perf/util/dsos.c
-@@ -20,8 +20,19 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
- 	if (a->ino > b->ino) return -1;
- 	if (a->ino < b->ino) return 1;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 405b55bceba8..c95f7d8314fc 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1429,6 +1429,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
+ 	if (debug & 8)
+ 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
+ 	dlci->state = DLCI_CLOSED;
++	/* Prevent us from sending data before the link is up again */
++	dlci->constipated = true;
+ 	if (dlci->addr != 0) {
+ 		tty_port_tty_hangup(&dlci->port, false);
+ 		spin_lock_irqsave(&dlci->lock, flags);
+@@ -1458,6 +1460,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 	del_timer(&dlci->t1);
+ 	/* This will let a tty open continue */
+ 	dlci->state = DLCI_OPEN;
++	dlci->constipated = false;
+ 	if (debug & 8)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	wake_up(&dlci->gsm->event);
+@@ -1535,6 +1538,25 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
+ 	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ }
  
--	if (a->ino_generation > b->ino_generation) return -1;
--	if (a->ino_generation < b->ino_generation) return 1;
-+	/*
-+	 * Synthesized MMAP events have zero ino_generation, avoid comparing
-+	 * them with MMAP events with actual ino_generation.
-+	 *
-+	 * I found it harmful because the mismatch resulted in a new
-+	 * dso that did not have a build ID whereas the original dso did have a
-+	 * build ID. The build ID was essential because the object was not found
-+	 * otherwise. - Adrian
-+	 */
-+	if (a->ino_generation && b->ino_generation) {
-+		if (a->ino_generation > b->ino_generation) return -1;
-+		if (a->ino_generation < b->ino_generation) return 1;
++/**
++ *	gsm_dlci_set_opening	-	change state to opening
++ *	@dlci: DLCI to open
++ *
++ *	Change internal state to wait for DLCI open from initiator side.
++ *	We set off timers and responses upon reception of an SABM.
++ */
++static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
++{
++	switch (dlci->state) {
++	case DLCI_CLOSED:
++	case DLCI_CLOSING:
++		dlci->state = DLCI_OPENING;
++		break;
++	default:
++		break;
 +	}
- 
- 	return 0;
++}
++
+ /**
+  *	gsm_dlci_begin_close	-	start channel open procedure
+  *	@dlci: DLCI to open
+@@ -1673,10 +1695,13 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
+ 	dlci->addr = addr;
+ 	dlci->adaption = gsm->adaption;
+ 	dlci->state = DLCI_CLOSED;
+-	if (addr)
++	if (addr) {
+ 		dlci->data = gsm_dlci_data;
+-	else
++		/* Prevent us from sending data before the link is up */
++		dlci->constipated = true;
++	} else {
+ 		dlci->data = gsm_dlci_command;
++	}
+ 	gsm->dlci[addr] = dlci;
+ 	return dlci;
+ }
+@@ -3036,6 +3061,8 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
+ 	/* Start sending off SABM messages */
+ 	if (gsm->initiator)
+ 		gsm_dlci_begin_open(dlci);
++	else
++		gsm_dlci_set_opening(dlci);
+ 	/* And wait for virtual carrier */
+ 	return tty_port_block_til_ready(port, tty, filp);
  }
 -- 
 2.35.1
