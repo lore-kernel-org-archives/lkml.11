@@ -2,92 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF9F9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A07B9C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349029AbiHSMoS (ORCPT
+        id S1349039AbiHSMoZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53880 "EHLO
+        Fri, 19 Aug 2022 08:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349019AbiHSMoK (ORCPT
+        with ESMTP id S1349031AbiHSMoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:44:10 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1853A492
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:44:08 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id m3so317293lfg.10
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:44:08 -0700 (PDT)
+        Fri, 19 Aug 2022 08:44:20 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C0350066;
+        Fri, 19 Aug 2022 05:44:19 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id u9so4618332oiv.12;
+        Fri, 19 Aug 2022 05:44:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=g02EyWp//JevB4+ewRf2FLk7rDtVnLg9C24+9DDwDsk=;
-        b=rIo+YCssu+kNCpWs8BCPAd1oGVY4ELsQzrJaEyhbySFiXqmkf8DDlBOuDQtqeQqS7k
-         Ic8ZNFpfe4Hh1JXjQVStebzjSHmfDDMQQvdmHx9FNi8QthT9FrT86G5FSPuwphtC/Ahf
-         QppHUEN88mhRiplbmBROTdwmJ0WCO+uPFw0ip7X9t/5FXYwF7pUitk8gwAl347vP2CUV
-         tlFmIMfxjdG7AfPcSh6sXNG3n0XpauP/cH0wOj62WCheu81YIqzg3lKW7YQhW8kKNcdB
-         iVrBvrIRzXMGH39fgkEm6Uw73n+z3PxZkNfjcdObiMRL05wjwiZNixHuOlC9VYxxut6b
-         L5JQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=olgvWTHr9jS7KCb0QPjN0Q5SDmG5cWSWO8bFNkf78GM=;
+        b=YsEC8qSbFJb+2pn0c5tUK5CAeG6y1dHvZfZ0NSfgRIZX6FQjGTInPfh0y8S3WMXZLp
+         Oji1fcGeAtKlnm0L5NggYNQp33wLRhJvq57bUNeKen1apEwup1vV9F75qlXu3lx0W0d1
+         YX1oOwGOyQXThIb+oSdBseJTDlytEG2g2QstwFs4eCu5EMOIjSs/+G54gEV9ZQ7cKP3l
+         AeKgvsvxgwHz2lV7s8iRnmxO6EGkQoO/0Hl9rPB9BKiNCLxc2YzbNvZMV/2rl0wI9iJU
+         7RhFaCsZemxwLrxzU4gt3YFOfmlvaMuLdkBYPmVNjldvtupG13/N+gjEbJvU4EVYldOj
+         Z1tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=g02EyWp//JevB4+ewRf2FLk7rDtVnLg9C24+9DDwDsk=;
-        b=5uLXAnYMzL/cy6BJmmOWmpRBdJiIrDu1r4NVEO/zImUq/AAB5MlNoRD3nxoO8bOj2W
-         c7rPgQIipkfdFrmQm+SBd+oPm/WU67nFx0qc4Gzlu84rSdG3pTjia8nIuyK4R9KNQYrU
-         i0TTkzftc85z2BojvpMf8tJkGbCJMlLLfkTg4jqsrYPKUVXqE7dzlc+lGYdq2admmcn0
-         MTC5hOdhLUC/LCpgUdLRv6KeI2r8rtze3Qeu6S+7i6+SqGHIkCBJdBqL/zW463g10xqs
-         PuuXuyf5ZiFSpGE15bFVhB4qGcV41LpQoU40Zgj10IbzWpwFz2XuYhv99NMu4KeAHilS
-         HZtw==
-X-Gm-Message-State: ACgBeo0MGkBOQQN9DS8mgiqEwOr+Thidb6A5t+uQyict11rY7RiXP8Xe
-        G7pMz+RsuKT1sUgbE/HWfJ+xIA==
-X-Google-Smtp-Source: AA6agR6/aN0g7sO+3gapHkOZtIhZD+1HpWLEQsCU8k7RAZm5tla+hTcZT/sDeja2yTy5Alm/c0EiEg==
-X-Received: by 2002:ac2:5f77:0:b0:48b:3886:5d55 with SMTP id c23-20020ac25f77000000b0048b38865d55mr2255774lfc.668.1660913047156;
-        Fri, 19 Aug 2022 05:44:07 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id e30-20020a05651c039e00b0025e42b981f9sm594463ljp.44.2022.08.19.05.44.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 05:44:06 -0700 (PDT)
-Message-ID: <9b377685-0471-9ca2-c6a6-1b7f1ce9ec86@linaro.org>
-Date:   Fri, 19 Aug 2022 15:44:05 +0300
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=olgvWTHr9jS7KCb0QPjN0Q5SDmG5cWSWO8bFNkf78GM=;
+        b=TE3QQ7Dbg8WYDmvDdMCPnw4HUpZu7PdCiMgdRQPy/w5qBuakAi3L3N/jz3uM6sviWG
+         baaAf+whSaPTXOJBxlEUauhEYDgKu/m6bfTrQtUszu1OHOUAk661yU/DvVNgNTr6brxU
+         LxzOXuiZZMwHgbKHx4ADp19V490IPEHiLAIts0FtIEIS8liSY9MPRxfmoUDbeuI6Q9sa
+         wfFXLDDqpowHYoUiaGB+WdXcb2HoU1k+1EEwPUuXC6MeKPygN6NLx2tPN2odJMh3DpGL
+         JMU/mDBNyjcEU3BbrgA3cCLEiEESuNMee9ayJDSVH53LZTbZ7//yFyZxnWEnTFoM6NFE
+         4eLg==
+X-Gm-Message-State: ACgBeo35Ru9DHUMryYq8tL/QOJz2FUHFRR0q/mpI2Ez90LbvWlYXFlBU
+        P5WLkYmt/1kUtSlJh2eicgY=
+X-Google-Smtp-Source: AA6agR4TeLAlljlgzU9GM+oiS5UvkUK/mHzEuw8SpgXWqvvKguFcp7gVBgRwHKduQPnsh/7xlsfRmg==
+X-Received: by 2002:a05:6808:14cb:b0:344:cc0b:a567 with SMTP id f11-20020a05680814cb00b00344cc0ba567mr5730686oiw.204.1660913058552;
+        Fri, 19 Aug 2022 05:44:18 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id x37-20020a056870332500b00101bd4914f9sm1220409oae.43.2022.08.19.05.44.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 05:44:18 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 05:42:06 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:HFI1 DRIVER" <linux-rdma@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH v2 1/5] bitops: Introduce find_next_andnot_bit()
+Message-ID: <Yv+FHpyZ6gpIAXMw@yury-laptop>
+References: <20220817175812.671843-1-vschneid@redhat.com>
+ <20220817175812.671843-2-vschneid@redhat.com>
+ <20220818100820.3b45808b@gandalf.local.home>
+ <xhsmh35dtbjr0.mognet@vschneid.remote.csb>
+ <20220818130041.5b7c955f@gandalf.local.home>
+ <CAHp75VcaSwfy7kOm_d28-87QKQ5KPB69=X=Z9OYUzJJKwRCSmQ@mail.gmail.com>
+ <xhsmhk074a5eu.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/6] dt-bindings: clk: rename mpfs-clkcfg binding
-Content-Language: en-US
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-References: <20220819122259.183600-1-conor.dooley@microchip.com>
- <20220819122259.183600-2-conor.dooley@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220819122259.183600-2-conor.dooley@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <xhsmhk074a5eu.mognet@vschneid.remote.csb>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 15:22, Conor Dooley wrote:
-> The filename for a binding is supposed to match the first compatible,
-> but the mpfs-clkcfg file did not follow this policy. Rename it to match
-> so that when other mpfs clock bindings are added things make more sense.
+On Fri, Aug 19, 2022 at 11:34:01AM +0100, Valentin Schneider wrote:
+> On 18/08/22 22:04, Andy Shevchenko wrote:
+> > On Thu, Aug 18, 2022 at 8:18 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+> >> On Thu, 18 Aug 2022 17:26:43 +0100
+> >> Valentin Schneider <vschneid@redhat.com> wrote:
+> >>
+> >> > How about:
+> >>
+> >> >
+> >> >   find the next set bit in (*addr1 & ~*addr2)
+> >>
+> >> I understand the above better. But to convert that into English, we could
+> >> say:
+> >>
+> >>
+> >>   Find the next bit in *addr1 excluding all the bits in *addr2.
+> >>
+> >> or
+> >>
+> >>   Find the next bit in *addr1 that is not set in *addr2.
+> >
+> > With this explanation I'm wondering how different this is to
+> > bitmap_bitremap(), with adjusting to using an inverted mask. If they
+> > have something in common, perhaps make them in the same namespace with
+> > similar naming convention?
+> >
 > 
+> I'm trying to wrap my head around the whole remap thing, IIUC we could have
+> something like remap *addr1 to ~*addr2 and stop rather than continue with a
+> wraparound, but that really feels like shoehorning.
 
+Old and new maps create a simple forward-looking mapping, like this:
+    #0   #4
+old: 0111 0 ...
+     | \\\|
+New: 00 111 ...
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+So if you pass #0, it's wired to 0; but #1 will skip 1 bit and would be
+wired to 2; and so on. There is some puzzling when wraparound comes in
+play, but the general idea is like that.
 
+I think there's nothing common with bitmap_and{,_not}.
 
-Best regards,
-Krzysztof
+Thanks,
+Yury
