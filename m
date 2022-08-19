@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D25C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAEF6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351196AbiHSQD6 (ORCPT
+        id S1351214AbiHSQEF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
+        Fri, 19 Aug 2022 12:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351318AbiHSQBS (ORCPT
+        with ESMTP id S1351314AbiHSQBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E68310A74B;
-        Fri, 19 Aug 2022 08:52:58 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E694DA5;
+        Fri, 19 Aug 2022 08:53:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C6D5616B3;
-        Fri, 19 Aug 2022 15:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63DF8C433C1;
-        Fri, 19 Aug 2022 15:52:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 02577CE26BF;
+        Fri, 19 Aug 2022 15:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFB5C433C1;
+        Fri, 19 Aug 2022 15:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924344;
-        bh=sGSXDUXdTqKHgHCdAfBZV56DJ9OAdRWGh6IRIAjerCE=;
+        s=korg; t=1660924385;
+        bh=opWy0O5OTamT+0c/R43KXN60EgWbjqlI6jS+eL26dls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZvwIRl/pub0Qz9Z5IbyvjZV7fuPm6gXfwMqaNG4cv560kVsl0szrW9xVpU7fIsQ2
-         XP7y0RDLqKTPN7GNWpDxDlI94VdKv9rfF445bL0RVnVapFuuiJCSVD6XDaU+ZKtS1L
-         lHfQaME9cRWHFydhb6lKQegjD3hOeQtXmZh/e6Uc=
+        b=gU1NUn0ByPo+F2VDMaxbmtapqWUhjHg0EIRCyDQRaLur9UDSjeMfApz9A1GYf5DE7
+         pUWqUh374ntWzSCdehqF1A2I2soDYxKwxLttmFdOKbScY/ufgujm6M0mMadzwCcsj8
+         g0ztWjlU4N76C4xDCCdN36uj/AC0i1LcxeJMJ+Nc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
-        Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 139/545] blk-mq: dont create hctx debugfs dir until q->debugfs_dir is created
-Date:   Fri, 19 Aug 2022 17:38:29 +0200
-Message-Id: <20220819153835.557391749@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 123/545] locking/lockdep: Fix lockdep_init_map_*() confusion
+Date:   Fri, 19 Aug 2022 17:38:13 +0200
+Message-Id: <20220819153834.803911319@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,41 +50,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit f3ec5d11554778c24ac8915e847223ed71d104fc ]
+[ Upstream commit eae6d58d67d9739be5f7ae2dbead1d0ef6528243 ]
 
-blk_mq_debugfs_register_hctx() can be called by blk_mq_update_nr_hw_queues
-when gendisk isn't added yet, such as nvme tcp.
+Commit dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t") added yet
+another lockdep_init_map_*() variant, but forgot to update all the
+existing users of the most complicated version.
 
-Fixes the warning of 'debugfs: Directory 'hctx0' with parent '/' already present!'
-which can be observed reliably when running blktests nvme/005.
+This could lead to a loss of lock_type and hence an incorrect report.
+Given the relative rarity of both local_lock and these annotations,
+this is unlikely to happen in practise, still, best fix things.
 
-Fixes: 6cfc0081b046 ("blk-mq: no need to check return value of debugfs_create functions")
-Reported-by: Yi Zhang <yi.zhang@redhat.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Tested-by: Yi Zhang <yi.zhang@redhat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220711090808.259682-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq-debugfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/lockdep.h  | 30 +++++++++++++++++-------------
+ kernel/locking/lockdep.c |  7 ++++---
+ 2 files changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index b5f26082b959..212e1e795469 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -881,6 +881,9 @@ void blk_mq_debugfs_register_hctx(struct request_queue *q,
- 	char name[20];
- 	int i;
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index 20b6797babe2..2c2586312b44 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -192,7 +192,7 @@ static inline void
+ lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
+ 		       struct lock_class_key *key, int subclass, u8 inner, u8 outer)
+ {
+-	lockdep_init_map_type(lock, name, key, subclass, inner, LD_WAIT_INV, LD_LOCK_NORMAL);
++	lockdep_init_map_type(lock, name, key, subclass, inner, outer, LD_LOCK_NORMAL);
+ }
  
-+	if (!q->debugfs_dir)
-+		return;
-+
- 	snprintf(name, sizeof(name), "hctx%u", hctx->queue_num);
- 	hctx->debugfs_dir = debugfs_create_dir(name, q->debugfs_dir);
+ static inline void
+@@ -215,24 +215,28 @@ static inline void lockdep_init_map(struct lockdep_map *lock, const char *name,
+  * or they are too narrow (they suffer from a false class-split):
+  */
+ #define lockdep_set_class(lock, key)				\
+-	lockdep_init_map_waits(&(lock)->dep_map, #key, key, 0,	\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #key, key, 0,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_class_and_name(lock, key, name)		\
+-	lockdep_init_map_waits(&(lock)->dep_map, name, key, 0,	\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, name, key, 0,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_class_and_subclass(lock, key, sub)		\
+-	lockdep_init_map_waits(&(lock)->dep_map, #key, key, sub,\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #key, key, sub,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_subclass(lock, sub)					\
+-	lockdep_init_map_waits(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
+-			       (lock)->dep_map.wait_type_inner,		\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
++			      (lock)->dep_map.wait_type_inner,		\
++			      (lock)->dep_map.wait_type_outer,		\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_novalidate_class(lock) \
+ 	lockdep_set_class_and_name(lock, &__lockdep_no_validate__, #lock)
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index c3387cdc075a..6cbd2b444476 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -5139,9 +5139,10 @@ __lock_set_class(struct lockdep_map *lock, const char *name,
+ 		return 0;
+ 	}
+ 
+-	lockdep_init_map_waits(lock, name, key, 0,
+-			       lock->wait_type_inner,
+-			       lock->wait_type_outer);
++	lockdep_init_map_type(lock, name, key, 0,
++			      lock->wait_type_inner,
++			      lock->wait_type_outer,
++			      lock->lock_type);
+ 	class = register_lock_class(lock, subclass, 0);
+ 	hlock->class_idx = class - lock_classes;
  
 -- 
 2.35.1
