@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB5DC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CC4C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351149AbiHSQDZ (ORCPT
+        id S1351161AbiHSQDa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        Fri, 19 Aug 2022 12:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351118AbiHSQAn (ORCPT
+        with ESMTP id S1351184AbiHSQAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:00:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D60649B75;
-        Fri, 19 Aug 2022 08:52:31 -0700 (PDT)
+        Fri, 19 Aug 2022 12:00:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7906D109A31;
+        Fri, 19 Aug 2022 08:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB396615E9;
-        Fri, 19 Aug 2022 15:52:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B48B2C433C1;
-        Fri, 19 Aug 2022 15:52:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04769615E7;
+        Fri, 19 Aug 2022 15:52:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 104B1C433D6;
+        Fri, 19 Aug 2022 15:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924325;
-        bh=Hp1dkGzsLKhbd6JiKMgEQvwajSh0f8J5uvcz+zEZevM=;
+        s=korg; t=1660924365;
+        bh=uVkf7CN14tgu/MS2uIvLuZPejT79xiG5SYEG9Raoiaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ffk7MC103G9N821p6getTyWaswBlFCG3SDxNeFnjiH/vJyIpTd5QNkpzuQhLggd1
-         IJM0uTXVIPcce+9k6aAP3QEHs/4BNtRTiqFs9C8UbMdSBlZDXHsut0jiYn9Km1IhWQ
-         M01qbmXSpQ3QWrFVdyBR4nrXLRaghaYDxyNZs7Ck=
+        b=xovMHSA5Cndj2jXRAeNQ0RJbehGxDnp5q2p8j3RkVGLaCRGLOwALdfMiiBuA6FVm/
+         kf5+5/xn7B52qXXgJ3fnsZKkZDZ6lgITEs5/IKqrLoNPrNyXJ2xEywJmzSP4mgFvt/
+         wox5RXmwEJdkhJpXr8qEAtVmMK6AA2Fhv9pt47NQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 133/545] soc: qcom: aoss: Fix refcount leak in qmp_cooling_devices_register
-Date:   Fri, 19 Aug 2022 17:38:23 +0200
-Message-Id: <20220819153835.286935073@linuxfoundation.org>
+Subject: [PATCH 5.10 145/545] arm64: dts: qcom: qcs404: Fix incorrect USB2 PHYs assignment
+Date:   Fri, 19 Aug 2022 17:38:35 +0200
+Message-Id: <20220819153835.815965233@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,41 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sumit Garg <sumit.garg@linaro.org>
 
-[ Upstream commit e6e0951414a314e7db3e9e24fd924b3e15515288 ]
+[ Upstream commit 58577966a42fc0b660b5e2c7c9e5a2241363ea83 ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference count of the previous node.
-When breaking early from a for_each_available_child_of_node() loop,
-we need to explicitly call of_node_put() on the child node.
-Add missing of_node_put() to avoid refcount leak.
+Currently the DT for QCS404 SoC has setup for 2 USB2 PHYs with one each
+assigned to USB3 controller and USB2 controller. This assignment is
+incorrect which only works by luck: as when each USB HCI comes up it
+configures the *other* controllers PHY which is enough to make them
+happy. If, for any reason, we were to disable one of the controllers then
+both would stop working.
 
-Fixes: 05589b30b21a ("soc: qcom: Extend AOSS QMP driver to support resources that are used to wake up the SoC.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+This was a difficult inconsistency to be caught which was found while
+trying to enable USB support in u-boot. So with all the required drivers
+ported to u-boot, I couldn't get the same USB storage device enumerated
+in u-boot which was being enumerated fine by the kernel.
+
+The root cause of the problem came out to be that I wasn't enabling USB2
+PHY: "usb2_phy_prim" in u-boot. Then I realised that via simply disabling
+the same USB2 PHY currently assigned to USB2 host controller in the
+kernel disabled enumeration for USB3 host controller as well.
+
+So fix this inconsistency by correctly assigning USB2 PHYs.
+
+Fixes: 9375e7d719b3 ("arm64: dts: qcom: qcs404: Add USB devices and PHYs")
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220606064252.42595-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220711083038.1518529-1-sumit.garg@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/qcom_aoss.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/qcs404.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
-index 941499b11758..401a0be3675a 100644
---- a/drivers/soc/qcom/qcom_aoss.c
-+++ b/drivers/soc/qcom/qcom_aoss.c
-@@ -493,8 +493,10 @@ static int qmp_cooling_devices_register(struct qmp *qmp)
- 			continue;
- 		ret = qmp_cooling_device_add(qmp, &qmp->cooling_devs[count++],
- 					     child);
--		if (ret)
-+		if (ret) {
-+			of_node_put(child);
- 			goto unroll;
-+		}
- 	}
- 
- 	if (!count)
+diff --git a/arch/arm64/boot/dts/qcom/qcs404.dtsi b/arch/arm64/boot/dts/qcom/qcs404.dtsi
+index b654b802e95c..7bddc5ebc6aa 100644
+--- a/arch/arm64/boot/dts/qcom/qcs404.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs404.dtsi
+@@ -548,7 +548,7 @@ dwc3@7580000 {
+ 				compatible = "snps,dwc3";
+ 				reg = <0x07580000 0xcd00>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+-				phys = <&usb2_phy_sec>, <&usb3_phy>;
++				phys = <&usb2_phy_prim>, <&usb3_phy>;
+ 				phy-names = "usb2-phy", "usb3-phy";
+ 				snps,has-lpm-erratum;
+ 				snps,hird-threshold = /bits/ 8 <0x10>;
+@@ -577,7 +577,7 @@ dwc3@78c0000 {
+ 				compatible = "snps,dwc3";
+ 				reg = <0x078c0000 0xcc00>;
+ 				interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
+-				phys = <&usb2_phy_prim>;
++				phys = <&usb2_phy_sec>;
+ 				phy-names = "usb2-phy";
+ 				snps,has-lpm-erratum;
+ 				snps,hird-threshold = /bits/ 8 <0x10>;
 -- 
 2.35.1
 
