@@ -2,106 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E65F9C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0665C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349928AbiHSR40 (ORCPT
+        id S1350863AbiHSR4v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
+        Fri, 19 Aug 2022 13:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352295AbiHSRzn (ORCPT
+        with ESMTP id S1354002AbiHSR4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:55:43 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA56754A4;
-        Fri, 19 Aug 2022 10:37:36 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gb36so10051413ejc.10;
-        Fri, 19 Aug 2022 10:37:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc;
-        bh=XMhdxcayB7NvmBY1v3/q80/CfpweTA7+ilDxiqMN9/E=;
-        b=BvV0lSHZe5gbu00tO9mrrGfNwZojebEXelBO7GXkcjZXOsMLqDadmtUKTyIhETABLa
-         t59lbqaSYmfbQ4lmBhx3hiHSGkuQ4JlBNoEwxofMXhAoMr5Kcad137QapAoWY5NFh3fh
-         Y1O6BiS3xXe59S531bEeKL6kNKd+fZk4VNQJIJmIZ+1YDjHwSmoQhW501secDGxpN907
-         QbdWP6t634cYXlYPDCoUj1tmR0DrXBq8Dl4gX2jZ6uz7A5+HiwannZRBu5mLqg9G1UW6
-         Re70d88rysUQFODy6hSr6/zD5YvT/CXuLr1qH2QtSumQGXvVa1wAbvnVuj0m2opCJDMF
-         NfBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc;
-        bh=XMhdxcayB7NvmBY1v3/q80/CfpweTA7+ilDxiqMN9/E=;
-        b=LvR87bhgZ9H5G8bBYdaeMhkubv++dRycjk3UH6dTMkwReuQVS868w5Qxs/Wd1Vs8HL
-         V3M1uYb1ict3u96GSBLiZbJR/RaiD9OBGa6pmmrPU7CvdLUOi8aBoXwwyzi+GoKkQT/9
-         hLecV99IBBl6tgNUTJhHIJTlQcFn9fE1e69/K4TsUMBS0hSaBhux3mW6c31wIWLjFP0O
-         +EgNh0eRzHMqAhhBUhRZvheXFSmvcJ6XTy8Uth4izeGEuSHyfaGlZJ4rd+FENwyf+l34
-         acX0e+c7nyJF1Tn9wnqlbnvi12j7nJdQ5DS1Wyxb+TNbg017V2eer9FTm69avWDXlIgv
-         gr/A==
-X-Gm-Message-State: ACgBeo0QfyuSG25vosOLALbkfAkLSHSpQZ/3zj9kXouUk1SKJsTwbUuA
-        nfl6UDLlsxa4ANpk9/4HDhE=
-X-Google-Smtp-Source: AA6agR7h/IQJ5GacyKlcm1YG1B4x2HSBa5tDFoJT4ecn4SSoEK+VDOXxxv01YQG2gnhlRef2dfCX7Q==
-X-Received: by 2002:a17:907:1c8f:b0:6e8:f898:63bb with SMTP id nb15-20020a1709071c8f00b006e8f89863bbmr5639177ejc.721.1660930654898;
-        Fri, 19 Aug 2022 10:37:34 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id b15-20020a1709063f8f00b007336c3f05bdsm2646738ejj.178.2022.08.19.10.37.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 10:37:34 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <bab3cc28-4473-d446-bb6d-bca6939adb63@redhat.com>
-Date:   Fri, 19 Aug 2022 19:37:33 +0200
+        Fri, 19 Aug 2022 13:56:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC65E117C;
+        Fri, 19 Aug 2022 10:38:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7639617D8;
+        Fri, 19 Aug 2022 17:38:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53DE7C433C1;
+        Fri, 19 Aug 2022 17:38:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660930724;
+        bh=OKpgMPnKr9d9cTKpfOdmcjkXXNEfExuYIhIkIm7K3RQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uixDXXWkvtEq9Gd/b2RZf6otlbMU4JEP/iz6Ag940SJHlUdBVfDY0VH5ysVrdmg+L
+         zx4mu+vd7OTagl1pX06kbIqOG6r94+Rep+EBnNNhUEaIq7YpP3kJPGNFCDv1B6qO6F
+         zKu+LVkcpyxVXINVvt3c9M2c5hOIS/S+i2gqYefwgF+X1alSoQl16XqNGxrYZfYq18
+         1zCf9Qdz5aCCOlrWUscIXFo7hIYXz4h+5YZDPRMuT1xg5yr41DTzb1ETVaoEhcZ0Lw
+         cJ8qz3H20ycCUoL1odKIeaSC0e1MDB1c78CTX7JtGaIR0tBXtpDLi/nbD/U4KgVGgI
+         R/SwKz7rl06Ng==
+Date:   Fri, 19 Aug 2022 18:49:19 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Artur Rojek <contact@artur-rojek.eu>
+Cc:     Paul Cercueil <paul@crapouillou.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 3/4] iio: add helper function for reading channel offset
+ in buffer
+Message-ID: <20220819184919.6e08ae06@jic23-huawei>
+In-Reply-To: <20220817105643.95710-4-contact@artur-rojek.eu>
+References: <20220817105643.95710-1-contact@artur-rojek.eu>
+        <20220817105643.95710-4-contact@artur-rojek.eu>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 2/3] KVM: x86/mmu: Fully re-evaluate MMIO caching when
- SPTE masks change
-Content-Language: en-US
-To:     David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kai Huang <kai.huang@intel.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-References: <20220803224957.1285926-1-seanjc@google.com>
- <20220803224957.1285926-3-seanjc@google.com>
- <CALzav=e_H0LU+2-KcG_bPahVhJM8YGnH24J6aJ9HG9Eqj-waew@mail.gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <CALzav=e_H0LU+2-KcG_bPahVhJM8YGnH24J6aJ9HG9Eqj-waew@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/19/22 18:21, David Matlack wrote:
-> On Wed, Aug 3, 2022 at 3:50 PM Sean Christopherson <seanjc@google.com> wrote:
->>
->> Fully re-evaluate whether or not MMIO caching can be enabled when SPTE
->> masks change; simply clearing enable_mmio_caching when a configuration
->> isn't compatible with caching fails to handle the scenario where the
->> masks are updated, e.g. by VMX for EPT or by SVM to account for the C-bit
->> location, and toggle compatibility from false=>true.
->>
->> Snapshot the original module param so that re-evaluating MMIO caching
->> preserves userspace's desire to allow caching.  Use a snapshot approach
->> so that enable_mmio_caching still reflects KVM's actual behavior.
-> 
-> Is updating module parameters to reflect the actual behavior (vs.
-> userspace desire) something we should do for all module parameters?
-> 
-> I am doing an unrelated refactor to the tdp_mmu module parameter and
-> noticed it is not updated e.g. if userspace loads kvm_intel with
-> ept=N.
+On Wed, 17 Aug 2022 12:56:42 +0200
+Artur Rojek <contact@artur-rojek.eu> wrote:
 
-If it is cheap/easy then yeah, updating the parameters is the right 
-thing to do.  Generally, however, this is only done for 
-kvm_intel/kvm_amd modules that depend on hardware features, because they 
-are more important for debugging user issues.  (Or at least they were 
-until vmx features were added to /proc/cpuinfo).
+> This is useful for consumers that wish to parse raw buffer data.
+> 
+> Tested-by: Paul Cercueil <paul@crapouillou.net>
+> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+> ---
+>  drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++++++++
+>  include/linux/iio/buffer.h        |  4 ++++
+>  2 files changed, 32 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 228598b82a2f..cf23736610d9 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -691,6 +691,34 @@ static unsigned int iio_storage_bytes_for_si(struct iio_dev *indio_dev,
+>  	return bytes;
+>  }
+>  
+> +int iio_find_channel_offset_in_buffer(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      struct iio_buffer *buffer)
+> +{
+> +	int length, offset = 0;
+> +	unsigned int si;
+> +
+> +	if (chan->scan_index < 0 ||
+> +	    !test_bit(chan->scan_index, buffer->scan_mask)) {
+> +		return -EINVAL;
+> +	}
+> +
+> +	for (si = 0; si < chan->scan_index; ++si) {
+> +		if (!test_bit(si, buffer->scan_mask))
 
-Paolo
+You are walking channels that the consumer should not even know about
+here.
+
+I think you can establish the same easily enough from the channels it
+does know about.  It would be fiddly if you had lots of channels (as
+you might be best off sorting them) but for small numbers of channels
+loop over the array to find lowest scan_index - compute offset due
+to that then move on to next one etc until you reach the scan index
+of the channel you want.
+
+
+> +			continue;
+> +
+> +		length = iio_storage_bytes_for_si(indio_dev, si);
+> +
+> +		/* Account for channel alignment. */
+> +		if (offset % length)
+> +			offset += length - (offset % length);
+> +		offset += length;
+> +	}
+> +
+> +	return offset;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_find_channel_offset_in_buffer);
+> +
+>  static unsigned int iio_storage_bytes_for_timestamp(struct iio_dev *indio_dev)
+>  {
+>  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+> index 418b1307d3f2..b1db74772e77 100644
+> --- a/include/linux/iio/buffer.h
+> +++ b/include/linux/iio/buffer.h
+> @@ -16,6 +16,10 @@ enum iio_buffer_direction {
+>  	IIO_BUFFER_DIRECTION_OUT,
+>  };
+>  
+> +int iio_find_channel_offset_in_buffer(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      struct iio_buffer *buffer);
+> +
+>  int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data);
+>  
+>  int iio_pop_from_buffer(struct iio_buffer *buffer, void *data);
+
