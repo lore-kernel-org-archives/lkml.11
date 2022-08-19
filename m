@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B55C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66415C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353901AbiHSQrV (ORCPT
+        id S1353800AbiHSQrZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        Fri, 19 Aug 2022 12:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353902AbiHSQp1 (ORCPT
+        with ESMTP id S1353929AbiHSQp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B91F128EC5;
-        Fri, 19 Aug 2022 09:11:29 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB0A111C1C;
+        Fri, 19 Aug 2022 09:11:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 110FF612DF;
-        Fri, 19 Aug 2022 16:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03B7EC433C1;
-        Fri, 19 Aug 2022 16:10:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 610C5CE26AC;
+        Fri, 19 Aug 2022 16:10:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 497E6C433C1;
+        Fri, 19 Aug 2022 16:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925437;
-        bh=PMsee/xeDl2L2ooNnHy0RE8rDd2txj4pw7WYdLJn8S0=;
+        s=korg; t=1660925449;
+        bh=Jj7BE93EO4t47Rj72h+wRXR/JqsbRUJh7QiZ1mhpCqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0QL3I+uMJXEEWB+QiTbJm7sdgD8aT2uuc/h3THMKFzqA70yaCWbAJttoL/82Tdhtl
-         Yvvu3+biT5cRYe4zEegDfUrIdbzn8m1QcVJVR08bI6Lz/3uQVfrzX+ySr239cj1NG8
-         Ws/FnrYCT5C5D9uhXMB/wfvOYP8WrjpZz/9oVtl8=
+        b=HU4NoMLmATi/7dWAK2E6nwlxCRX9smCt0jJX2Lwa8aN2ujUXRtVQhhRj1RTtrh1zJ
+         oCShZd+BO2MI53//oUyKRYEprx7BcPTjaCZ72Roj66k+tGvR5ud6KNoepeouH4YMb0
+         U4cUBVDJ+H0RUBF4Gn+CvUUAWAVPVNTRRuPT3flw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Luo Meng <luomeng12@huawei.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 490/545] dm thin: fix use-after-free crash in dm_sm_register_threshold_callback
-Date:   Fri, 19 Aug 2022 17:44:20 +0200
-Message-Id: <20220819153851.377811572@linuxfoundation.org>
+Subject: [PATCH 5.10 494/545] btrfs: reject log replay if there is unsupported RO compat flag
+Date:   Fri, 19 Aug 2022 17:44:24 +0200
+Message-Id: <20220819153851.570309033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,93 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luo Meng <luomeng12@huawei.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit 3534e5a5ed2997ca1b00f44a0378a075bd05e8a3 ]
+[ Upstream commit dc4d31684974d140250f3ee612c3f0cab13b3146 ]
 
-Fault inject on pool metadata device reports:
-  BUG: KASAN: use-after-free in dm_pool_register_metadata_threshold+0x40/0x80
-  Read of size 8 at addr ffff8881b9d50068 by task dmsetup/950
+[BUG]
+If we have a btrfs image with dirty log, along with an unsupported RO
+compatible flag:
 
-  CPU: 7 PID: 950 Comm: dmsetup Tainted: G        W         5.19.0-rc6 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x34/0x44
-   print_address_description.constprop.0.cold+0xeb/0x3f4
-   kasan_report.cold+0xe6/0x147
-   dm_pool_register_metadata_threshold+0x40/0x80
-   pool_ctr+0xa0a/0x1150
-   dm_table_add_target+0x2c8/0x640
-   table_load+0x1fd/0x430
-   ctl_ioctl+0x2c4/0x5a0
-   dm_ctl_ioctl+0xa/0x10
-   __x64_sys_ioctl+0xb3/0xd0
-   do_syscall_64+0x35/0x80
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+log_root		30474240
+...
+compat_flags		0x0
+compat_ro_flags		0x40000003
+			( FREE_SPACE_TREE |
+			  FREE_SPACE_TREE_VALID |
+			  unknown flag: 0x40000000 )
 
-This can be easily reproduced using:
-  echo offline > /sys/block/sda/device/state
-  dd if=/dev/zero of=/dev/mapper/thin bs=4k count=10
-  dmsetup load pool --table "0 20971520 thin-pool /dev/sda /dev/sdb 128 0 0"
+Then even if we can only mount it RO, we will still cause metadata
+update for log replay:
 
-If a metadata commit fails, the transaction will be aborted and the
-metadata space maps will be destroyed. If a DM table reload then
-happens for this failed thin-pool, a use-after-free will occur in
-dm_sm_register_threshold_callback (called from
-dm_pool_register_metadata_threshold).
+  BTRFS info (device dm-1): flagging fs with big metadata feature
+  BTRFS info (device dm-1): using free space tree
+  BTRFS info (device dm-1): has skinny extents
+  BTRFS info (device dm-1): start tree-log replay
 
-Fix this by in dm_pool_register_metadata_threshold() by returning the
--EINVAL error if the thin-pool is in fail mode. Also fail pool_ctr()
-with a new error message: "Error registering metadata threshold".
+This is definitely against RO compact flag requirement.
 
-Fixes: ac8c3f3df65e4 ("dm thin: generate event when metadata threshold passed")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Luo Meng <luomeng12@huawei.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+[CAUSE]
+RO compact flag only forces us to do RO mount, but we will still do log
+replay for plain RO mount.
+
+Thus this will result us to do log replay and update metadata.
+
+This can be very problematic for new RO compat flag, for example older
+kernel can not understand v2 cache, and if we allow metadata update on
+RO mount and invalidate/corrupt v2 cache.
+
+[FIX]
+Just reject the mount unless rescue=nologreplay is provided:
+
+  BTRFS error (device dm-1): cannot replay dirty log with unsupport optional features (0x40000000), try rescue=nologreplay instead
+
+We don't want to set rescue=nologreply directly, as this would make the
+end user to read the old data, and cause confusion.
+
+Since the such case is really rare, we're mostly fine to just reject the
+mount with an error message, which also includes the proper workaround.
+
+CC: stable@vger.kernel.org #4.9+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-thin-metadata.c | 7 +++++--
- drivers/md/dm-thin.c          | 4 +++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ fs/btrfs/disk-io.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/md/dm-thin-metadata.c b/drivers/md/dm-thin-metadata.c
-index 6ebb2127f3e2..842d79e5ea3a 100644
---- a/drivers/md/dm-thin-metadata.c
-+++ b/drivers/md/dm-thin-metadata.c
-@@ -2058,10 +2058,13 @@ int dm_pool_register_metadata_threshold(struct dm_pool_metadata *pmd,
- 					dm_sm_threshold_fn fn,
- 					void *context)
- {
--	int r;
-+	int r = -EINVAL;
- 
- 	pmd_write_lock_in_core(pmd);
--	r = dm_sm_register_threshold_callback(pmd->metadata_sm, threshold, fn, context);
-+	if (!pmd->fail_io) {
-+		r = dm_sm_register_threshold_callback(pmd->metadata_sm,
-+						      threshold, fn, context);
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index 35acdab56a1c..2c7e50980a70 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3104,6 +3104,20 @@ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_device
+ 		err = -EINVAL;
+ 		goto fail_alloc;
+ 	}
++	/*
++	 * We have unsupported RO compat features, although RO mounted, we
++	 * should not cause any metadata write, including log replay.
++	 * Or we could screw up whatever the new feature requires.
++	 */
++	if (unlikely(features && btrfs_super_log_root(disk_super) &&
++		     !btrfs_test_opt(fs_info, NOLOGREPLAY))) {
++		btrfs_err(fs_info,
++"cannot replay dirty log with unsupported compat_ro features (0x%llx), try rescue=nologreplay",
++			  features);
++		err = -EINVAL;
++		goto fail_alloc;
 +	}
- 	pmd_write_unlock(pmd);
++
  
- 	return r;
-diff --git a/drivers/md/dm-thin.c b/drivers/md/dm-thin.c
-index fff4c50df74d..a196d7cb51bd 100644
---- a/drivers/md/dm-thin.c
-+++ b/drivers/md/dm-thin.c
-@@ -3401,8 +3401,10 @@ static int pool_ctr(struct dm_target *ti, unsigned argc, char **argv)
- 						calc_metadata_threshold(pt),
- 						metadata_low_callback,
- 						pool);
--	if (r)
-+	if (r) {
-+		ti->error = "Error registering metadata threshold";
- 		goto out_flags_changed;
-+	}
- 
- 	dm_pool_register_pre_commit_callback(pool->pmd,
- 					     metadata_pre_commit_callback, pool);
+ 	ret = btrfs_init_workqueues(fs_info, fs_devices);
+ 	if (ret) {
 -- 
 2.35.1
 
