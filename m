@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E49DEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D30C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351026AbiHSQAG (ORCPT
+        id S1351032AbiHSQAJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        Fri, 19 Aug 2022 12:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350898AbiHSP6s (ORCPT
+        with ESMTP id S1350932AbiHSP7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:58:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813AE108F87;
-        Fri, 19 Aug 2022 08:51:57 -0700 (PDT)
+        Fri, 19 Aug 2022 11:59:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03F1108F8A;
+        Fri, 19 Aug 2022 08:51:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7285061735;
-        Fri, 19 Aug 2022 15:51:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65B56C433C1;
-        Fri, 19 Aug 2022 15:51:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5DFFB827F8;
+        Fri, 19 Aug 2022 15:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F698C433C1;
+        Fri, 19 Aug 2022 15:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924315;
-        bh=ktBGGngRCtUwE5qaTkYZtXiP7JswiU4a5uYpwUJyQMY=;
+        s=korg; t=1660924304;
+        bh=CMovCprZ5em9db8CogLOUydohomPphAegq0bOUxOIkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TFLprTalJss0Zjsns9lZEnArmy9J7srkLZnscNnh1AvEErxr899+5hwY55jNnnlzO
-         SLPfMJEl5F80kdiOJ6v2cqmfmJo9wGPy6uzweRq3myah7BVoVnio5b7OOUrmfNZ3XY
-         586hd1w4J5/BsXkzmpkleY2HHpjpRrH8ZTFwISEg=
+        b=2HTwJ8MksfsaTrD0bJZc19+mlNtiQrdl3NSxiIJhqZ2CWT7hQba2ZJ4qC74d17SHv
+         ji75JzHx/QYi8Pj/3eU742WqAE/lIe7OrsQbZ7F1+LEf5K532BMg/LDCkTXr37teWo
+         B6/wiYMwmJM7aACXuuk0cI6TlTjdmxZJQc2a8rgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        Mark Brown <broonie@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 130/545] regulator: qcom_smd: Fix pm8916_pldo range
-Date:   Fri, 19 Aug 2022 17:38:20 +0200
-Message-Id: <20220819153835.154433309@linuxfoundation.org>
+Subject: [PATCH 5.10 126/545] ARM: dts: qcom: mdm9615: add missing PMIC GPIO reg
+Date:   Fri, 19 Aug 2022 17:38:16 +0200
+Message-Id: <20220819153834.950251859@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,53 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit e8977917e116d1571dacb8e9864474551c1c12bd ]
+[ Upstream commit dc590cdc31f636ea15658f1206c3e380a53fb78e ]
 
-The PM8916 device specification [1] documents a programmable range of
-1.75V to 3.337V with 12.5mV steps for the PMOS LDOs in PM8916. This
-range is also used when controlling the regulator directly using the
-qcom_spmi-regulator driver ("ult_pldo" there).
+'reg' property is required in SSBI children:
+  qcom-mdm9615-wp8548-mangoh-green.dtb: gpio@150: 'reg' is a required property
 
-However, for some reason the qcom_smd-regulator driver allows a much
-larger range for the same hardware component. This could be simply a
-typo, since the start of the range is essentially just missing a '1'.
-
-In practice this does not cause any major problems, since the driver
-just sends the actual voltage to the RPM firmware instead of making use
-of the incorrect voltage selector. Still, having the wrong range there
-is confusing and prevents the regulator core from validating requests
-correctly.
-
-[1]: https://developer.qualcomm.com/download/sd410/pm8916pm8916-1-power-management-ic-device-specification.pdf
-
-Fixes: 57d6567680ed ("regulator: qcom-smd: Add PM8916 support")
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Link: https://lore.kernel.org/r/20220623094614.1410180-2-stephan.gerhold@kernkonzept.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 2c5e596524e7 ("ARM: dts: Add MDM9615 dtsi")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220507194913.261121-11-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-mdm9615.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index 05d227f9d2f2..0295d7b160e5 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -313,10 +313,10 @@ static const struct regulator_desc pm8941_switch = {
+diff --git a/arch/arm/boot/dts/qcom-mdm9615.dtsi b/arch/arm/boot/dts/qcom-mdm9615.dtsi
+index dda2ceec6591..ad9b52d53ef9 100644
+--- a/arch/arm/boot/dts/qcom-mdm9615.dtsi
++++ b/arch/arm/boot/dts/qcom-mdm9615.dtsi
+@@ -324,6 +324,7 @@ rtc@11d {
  
- static const struct regulator_desc pm8916_pldo = {
- 	.linear_ranges = (struct linear_range[]) {
--		REGULATOR_LINEAR_RANGE(750000, 0, 208, 12500),
-+		REGULATOR_LINEAR_RANGE(1750000, 0, 127, 12500),
- 	},
- 	.n_linear_ranges = 1,
--	.n_voltages = 209,
-+	.n_voltages = 128,
- 	.ops = &rpm_smps_ldo_ops,
- };
- 
+ 				pmicgpio: gpio@150 {
+ 					compatible = "qcom,pm8018-gpio", "qcom,ssbi-gpio";
++					reg = <0x150>;
+ 					interrupt-controller;
+ 					#interrupt-cells = <2>;
+ 					gpio-controller;
 -- 
 2.35.1
 
