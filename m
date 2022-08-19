@@ -2,117 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42590C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D17C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348682AbiHSMGJ (ORCPT
+        id S1348884AbiHSMGd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        Fri, 19 Aug 2022 08:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348496AbiHSMGH (ORCPT
+        with ESMTP id S1348496AbiHSMG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:06:07 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514F8100963;
-        Fri, 19 Aug 2022 05:06:05 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 03DF42020E;
-        Fri, 19 Aug 2022 12:06:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1660910764;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=s8JuKXuquxAHWWI+QjuKLmXu6m/+exD+rUksSV7bL9U=;
-        b=pGr9BqV15xyOVLEeTm7Gc+cpOYlTyIDe0UvexnFuFVkegZ6kh6jvSu3pCQ35YMGxf+VenF
-        i6Y/STjbx5bjc9o2bm0rKfsK1oeVz38UfUsYKTdCj5xjbO3BEXGbpXILbc5CWYKDl91o9b
-        JJyrSRx+IoQbJGlzU5YT4H9wPGsYOEk=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D298B13AC1;
-        Fri, 19 Aug 2022 12:06:03 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id t8BqMqt8/2JpPQAAMHmgww
-        (envelope-from <dsterba@suse.com>); Fri, 19 Aug 2022 12:06:03 +0000
-Date:   Fri, 19 Aug 2022 14:00:51 +0200
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Btrfs fixes for 6.0-rc2
-Message-ID: <cover.1660908668.git.dsterba@suse.com>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, torvalds@linux-foundation.org,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+        Fri, 19 Aug 2022 08:06:28 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E93610096A
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:06:26 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id b38so3241917lfv.4
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:06:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=/Sb3w6Y1BeOgZMrIBk6x8kpTOxRss537p36tvRmvnAg=;
+        b=dH9RyMR3lKC/qZOXxXjEafcK7XBKChilHFvq0LsT4iA780RiPQKoXew3aujRndsSfM
+         9WHc33SEm49OFB78kb/hStFA6mKaEQmQlBw0XJ04mfvWdymVok5fsh1xOFJEHLgvgLPm
+         Yp3uOpwElmcoTR2sh6KeSZ/zf/HMZ3YG2IFsWbexZPGa4OtUlAXXQ2uLt+pJ5vFNB9zm
+         bbB9S8SzHl9EIDkvMetWJVwb4LexM/85N+ZGrEXtUv1PipNEw7aTnQEAwi6PSREWjHh6
+         w99N2AtiTCixlxSc8KvbnhCDiUEtlgSqXHjRkqz0qbINVJgGwrblkZwfXu/5VAqYwKFy
+         JmNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=/Sb3w6Y1BeOgZMrIBk6x8kpTOxRss537p36tvRmvnAg=;
+        b=1H8tWOrG0AudqeSBZMJ5M2XJmhoSjt4UNAyhWwmT5udV48mSGfvsc3cJoXWvoh7W33
+         vrEEu8uZXV70lAq1+hL2SzbY53DBv49RANbh/bClluPr8JESSMU9h3PeYuMUpt5XwFgo
+         B5Uf6QlcSavQQXLCvFPR8/k3XBu9jJz2mv8Cc4tbVKLb1z4ZAJx4UMnlRifAhq0NDYyv
+         /Q1nbrgPv4nMByqGMyiBquXNqr/FYsVk1EjSqOi9aB6gcqsBLNGlJOsRxSAzjnO5/gFn
+         mo9BD2zfjL1q0CK5JYUDXWZMENVt3f5GkbkLW0Z88BoamU3pwiIrhfc4NtcDzdyEhCfN
+         aWxw==
+X-Gm-Message-State: ACgBeo0v5fYNJW6bwwLePGSE2LdKOaMvpzaNnu2ewFYYEzprRcs/dc4O
+        3yEgBNdZd6GEqZHhh4SJ0E0yiQ==
+X-Google-Smtp-Source: AA6agR4UDDM3tfvRJzYG1IzCN1p3rR1zz78x4mZxht+ZjrTuTapl3U/WvyNHyNKsLsCkmdOM4E5jTg==
+X-Received: by 2002:a05:6512:358d:b0:48b:37f:dce2 with SMTP id m13-20020a056512358d00b0048b037fdce2mr2131532lfr.267.1660910784888;
+        Fri, 19 Aug 2022 05:06:24 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id u24-20020ac258d8000000b00492cebbeefbsm115021lfo.59.2022.08.19.05.06.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 05:06:24 -0700 (PDT)
+Message-ID: <0871f3af-cb37-e490-f0b3-88703652b089@linaro.org>
+Date:   Fri, 19 Aug 2022 15:06:22 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
+ json-schema
+Content-Language: en-US
+To:     Sergiu.Moga@microchip.com, lee@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        admin@hifiphile.com, Kavyasree.Kotagiri@microchip.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220817075517.49575-1-sergiu.moga@microchip.com>
+ <20220817075517.49575-3-sergiu.moga@microchip.com>
+ <c1a98a3e-609e-7783-b1b7-3bb39caa8c65@linaro.org>
+ <ddd8ca9a-1fc1-7d37-07e8-f6f7f4617eef@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <ddd8ca9a-1fc1-7d37-07e8-f6f7f4617eef@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 19/08/2022 12:25, Sergiu.Moga@microchip.com wrote:
+> On 18.08.2022 11:38, Krzysztof Kozlowski wrote:
+>> On 17/08/2022 10:55, Sergiu Moga wrote:
+>>> Convert at91 USART DT Binding for Atmel/Microchip SoCs to
+>>> json-schema format.
+>>>
+>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+>>> ---
+>>>   .../bindings/mfd/atmel,at91-usart.yaml        | 190 ++++++++++++++++++
+>>>   .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
+>>>   2 files changed, 190 insertions(+), 98 deletions(-)
+>>>   create mode 100644 Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+>>>   delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+>>> new file mode 100644
+>>> index 000000000000..cf15d73fa1e8
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+>>> @@ -0,0 +1,190 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>> +# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/mfd/atmel,at91-usart.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Atmel Universal Synchronous Asynchronous Receiver/Transmitter (USART)
+>>> +
+>>> +maintainers:
+>>> +  - Richard Genoud <richard.genoud@gmail.com>
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    oneOf:
+>> This looks quite different than bindings and you commit msg is saying it
+>> is only a conversion. Mention any changes against original bindings.
+>>
+>>> +      - const: atmel,at91rm9200-usart
+>>> +      - const: atmel,at91sam9260-usart
+>>> +      - const: microchip,sam9x60-usart
+>> That's an enum
+>>
+>>> +      - items:
+>>> +          - const: atmel,at91rm9200-dbgu
+>>> +          - const: atmel,at91rm9200-usart
+>>> +      - items:
+>>> +          - const: atmel,at91sam9260-dbgu
+>>> +          - const: atmel,at91sam9260-usart
+>>> +      - items:
+>>> +          - const: microchip,sam9x60-dbgu
+>>> +          - const: microchip,sam9x60-usart
+>>> +      - items:
+>>> +          - const: microchip,sam9x60-usart
+>>> +          - const: atmel,at91sam9260-usart
+>> This is not correct - contradicts earlier one.
+>>
+>>> +      - items:
+>>> +          - const: microchip,sam9x60-dbgu
+>>> +          - const: microchip,sam9x60-usart
+>>> +          - const: atmel,at91sam9260-dbgu
+>>> +          - const: atmel,at91sam9260-usart
+>> What? You wrote above that microchip,sam9x60-dbgu is compatible only
+>> with microchip,sam9x60-usart. Now you write it is also compatible with
+>> other ones?
+>>
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +  interrupts:
+>>> +    maxItems: 1
+>>> +
+>>> +  clock-names:
+>>> +    contains:
+>>> +      const: usart
+>> No, this has to be specific/fixed list.
+>>
+>>> +
+>>> +  clocks:
+>>> +    minItems: 1
+>>> +    maxItems: 2
+>> Not really - define the items. One item could be optional, though.
+>>
+>>> +
+>>> +  dmas:
+>>> +    items:
+>>> +      - description: TX DMA Channel
+>>> +      - description: RX DMA Channel
+>>> +
+>>> +  dma-names:
+>>> +    items:
+>>> +      - const: tx
+>>> +      - const: rx
+>>> +
+>>> +  atmel,usart-mode:
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>> +    description: |
+>> No need for |
+>>
+>>> +      Must be either 1 for SPI or 0 for USART.
+>> Mention the header.
+>>
+>>> +    enum: [ 0, 1 ]
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg
+>>> +  - interrupts
+>>> +  - clock-names
+>>> +  - clocks
+>>> +
+>>> +if:
+>> Put it under allOf.
+> 
+> 
+> I missed this in the first read, but what do you mean by under allOf? 
+> The only allOf's in this file are under the then:'s.
+> 
 
-a few short fixes and a lockdep warning fix (needs moving some code).
-Please pull, thanks.
+It means that "if:" is preferred to be under allOf, just like example
+schema is showing:
+https://elixir.bootlin.com/linux/v5.19/source/Documentation/devicetree/bindings/example-schema.yaml
 
-- tree-log replay fixes
-  - fix error handling when looking up extent refs
-  - fix warning when setting inode number of links
+Not some other allOf, which could be many in your bindings. The one
+allOf in top-level, just like example schema.
 
-- relocation fixes
-  - reset block group read-only status when relocation fails
-  - unset control structure if transaction fails when starting to
-    process a block group
-  - add lockdep annotations to fix a warning during relocation where
-    blocks temporarily belong to another tree and can lead to reversed
-    dependencies
 
-- tree-checker verifies if extent items don't overlap
-
-----------------------------------------------------------------
-The following changes since commit 0b078d9db8793b1bd911e97be854e3c964235c78:
-
-  btrfs: don't call btrfs_page_set_checked in finish_compressed_bio_read (2022-07-25 19:56:16 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-6.0-rc1-tag
-
-for you to fetch changes up to 899b7f69f244e539ea5df1b4d756046337de44a5:
-
-  btrfs: tree-checker: check for overlapping extent items (2022-08-17 16:20:25 +0200)
-
-----------------------------------------------------------------
-Filipe Manana (2):
-      btrfs: fix lost error handling when looking up extended ref on log replay
-      btrfs: fix warning during log replay when bumping inode link count
-
-Josef Bacik (4):
-      btrfs: reset RO counter on block group if we fail to relocate
-      btrfs: move lockdep class helpers to locking.c
-      btrfs: fix lockdep splat with reloc root extent buffers
-      btrfs: tree-checker: check for overlapping extent items
-
-Zixuan Fu (1):
-      btrfs: unset reloc control if transaction commit fails in prepare_to_relocate()
-
- fs/btrfs/block-group.c  |  4 ++-
- fs/btrfs/ctree.c        |  3 ++
- fs/btrfs/ctree.h        |  2 ++
- fs/btrfs/disk-io.c      | 82 --------------------------------------------
- fs/btrfs/disk-io.h      | 10 ------
- fs/btrfs/extent-tree.c  | 18 +++++++++-
- fs/btrfs/extent_io.c    | 11 +++++-
- fs/btrfs/locking.c      | 91 +++++++++++++++++++++++++++++++++++++++++++++++++
- fs/btrfs/locking.h      | 14 ++++++++
- fs/btrfs/relocation.c   |  9 ++++-
- fs/btrfs/tree-checker.c | 25 ++++++++++++--
- fs/btrfs/tree-log.c     |  8 +++--
- 12 files changed, 176 insertions(+), 101 deletions(-)
+Best regards,
+Krzysztof
