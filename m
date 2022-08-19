@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3935C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CFAC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354072AbiHSQsZ (ORCPT
+        id S1354076AbiHSQsa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        Fri, 19 Aug 2022 12:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354050AbiHSQpp (ORCPT
+        with ESMTP id S1354103AbiHSQpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027B31136A0;
-        Fri, 19 Aug 2022 09:11:47 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E6F12A558;
+        Fri, 19 Aug 2022 09:11:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B2F9618B4;
-        Fri, 19 Aug 2022 16:11:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B3F7C433C1;
-        Fri, 19 Aug 2022 16:11:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E644B8281C;
+        Fri, 19 Aug 2022 16:11:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE8E4C433C1;
+        Fri, 19 Aug 2022 16:11:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925506;
-        bh=msIr613ACoa8RNgncqcEUwmzFWLHI5HcZCYvS+6nmXQ=;
+        s=korg; t=1660925516;
+        bh=GMnZ7tRDjtB+T0jWJGzxZ1tR9+AlNiyqah4xgPle83g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fBaNxlv4OBLwYhQkpq6FeN/YEpWZ21t/KsP73Tws8bMxkYeu4ipota9TLmhOYxNU1
-         sdR1MRgJSIBmpYrzs+vo7TSVneLZVLJQBglYbjwwmoYrZqx8kgTGKmm26w6es9dRCG
-         7I2Q5NWmfYCOuZNFO+M0aJ+JJDPrqi1iO/nhedd0=
+        b=ctvcKVJHzUUV9rOzPge1oqrHoFNw8yO5juPBstZtS40fNvRvkS6i+oFXPizqaMAsD
+         s2epNZ2ysJnlk3zlQlaZmAdH9jZmheFiFCcbvs39ubnUcpe8Af7L5hB2RMcg2RHrrU
+         F+5IMUnkveHXWL25vlTpLMuUBlChxO9JAjw4OhXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.10 513/545] KEYS: asymmetric: enforce SM2 signature use pkey algo
-Date:   Fri, 19 Aug 2022 17:44:43 +0200
-Message-Id: <20220819153852.457218291@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 516/545] ext4: check if directory block is within i_size
+Date:   Fri, 19 Aug 2022 17:44:46 +0200
+Message-Id: <20220819153852.607421846@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,55 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+From: Lukas Czerner <lczerner@redhat.com>
 
-commit 0815291a8fd66cdcf7db1445d4d99b0d16065829 upstream.
+commit 65f8ea4cd57dbd46ea13b41dc8bac03176b04233 upstream.
 
-The signature verification of SM2 needs to add the Za value and
-recalculate sig->digest, which requires the detection of the pkey_algo
-in public_key_verify_signature(). As Eric Biggers said, the pkey_algo
-field in sig is attacker-controlled and should be use pkey->pkey_algo
-instead of sig->pkey_algo, and secondly, if sig->pkey_algo is NULL, it
-will also cause signature verification failure.
+Currently ext4 directory handling code implicitly assumes that the
+directory blocks are always within the i_size. In fact ext4_append()
+will attempt to allocate next directory block based solely on i_size and
+the i_size is then appropriately increased after a successful
+allocation.
 
-The software_key_determine_akcipher() already forces the algorithms
-are matched, so the SM3 algorithm is enforced in the SM2 signature,
-although this has been checked, we still avoid using any algorithm
-information in the signature as input.
+However, for this to work it requires i_size to be correct. If, for any
+reason, the directory inode i_size is corrupted in a way that the
+directory tree refers to a valid directory block past i_size, we could
+end up corrupting parts of the directory tree structure by overwriting
+already used directory blocks when modifying the directory.
 
-Fixes: 215525639631 ("X.509: support OSCCA SM2-with-SM3 certificate verification")
-Reported-by: Eric Biggers <ebiggers@google.com>
-Cc: stable@vger.kernel.org # v5.10+
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fix it by catching the corruption early in __ext4_read_dirblock().
+
+Addresses Red-Hat-Bugzilla: #2070205
+CVE: CVE-2022-1184
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220704142721.157985-1-lczerner@redhat.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/asymmetric_keys/public_key.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ fs/ext4/namei.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/crypto/asymmetric_keys/public_key.c
-+++ b/crypto/asymmetric_keys/public_key.c
-@@ -260,6 +260,10 @@ static int cert_sig_digest_update(const
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -109,6 +109,13 @@ static struct buffer_head *__ext4_read_d
+ 	struct ext4_dir_entry *dirent;
+ 	int is_dx_block = 0;
  
- 	BUG_ON(!sig->data);
- 
-+	/* SM2 signatures always use the SM3 hash algorithm */
-+	if (!sig->hash_algo || strcmp(sig->hash_algo, "sm3") != 0)
-+		return -EINVAL;
++	if (block >= inode->i_size) {
++		ext4_error_inode(inode, func, line, block,
++		       "Attempting to read directory block (%u) that is past i_size (%llu)",
++		       block, inode->i_size);
++		return ERR_PTR(-EFSCORRUPTED);
++	}
 +
- 	ret = sm2_compute_z_digest(tfm_pkey, SM2_DEFAULT_USERID,
- 					SM2_DEFAULT_USERID_LEN, dgst);
- 	if (ret)
-@@ -356,8 +360,7 @@ int public_key_verify_signature(const st
- 	if (ret)
- 		goto error_free_key;
- 
--	if (sig->pkey_algo && strcmp(sig->pkey_algo, "sm2") == 0 &&
--	    sig->data_size) {
-+	if (strcmp(pkey->pkey_algo, "sm2") == 0 && sig->data_size) {
- 		ret = cert_sig_digest_update(sig, tfm);
- 		if (ret)
- 			goto error_free_key;
+ 	if (ext4_simulate_fail(inode->i_sb, EXT4_SIM_DIRBLOCK_EIO))
+ 		bh = ERR_PTR(-EIO);
+ 	else
 
 
