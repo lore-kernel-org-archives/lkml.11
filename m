@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC40C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD79C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351373AbiHSQHG (ORCPT
+        id S1351393AbiHSQHK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
+        Fri, 19 Aug 2022 12:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351643AbiHSQCS (ORCPT
+        with ESMTP id S1351665AbiHSQCV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:02:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1FCD34FF;
-        Fri, 19 Aug 2022 08:54:07 -0700 (PDT)
+        Fri, 19 Aug 2022 12:02:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6D7D5DDA;
+        Fri, 19 Aug 2022 08:54:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B42D8B82816;
-        Fri, 19 Aug 2022 15:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FC43C433C1;
-        Fri, 19 Aug 2022 15:54:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78FDA6174E;
+        Fri, 19 Aug 2022 15:54:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82052C433D6;
+        Fri, 19 Aug 2022 15:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924441;
-        bh=23YCPuFIHeZ1p8ilG4guZVDo1C84SgFeajMVaE7FK1M=;
+        s=korg; t=1660924456;
+        bh=0KI5vd+6+LH5ocNJ+0VWyFQYkD7hG6+mjvTzDV8Zyvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KBK3gmv4Y424XILo4HEmvUJ3cSgR2G8lBmwIV5QMEUame6vixiahwSKqH9cNPUZOu
-         1XvUUBEgTQC/d/epMjd/BdGD5pi7lo/n1PweChCTGnFNTh96AsEsrpYTO7BJuNpM1n
-         rLqaxfHB+GT+YOXKCE7DqJumqqA8zPbUSK2p9DHE=
+        b=pZXRAbmgRqluOI/iyoAgY9668cO1qVp0fWfkuZ9slHnCGZ3or02vukV3tkwRrrmHL
+         4pAtD9tBOAPez90PitLuobkIrKXQjXtR+gHt+iR+MzpD914c0FYdsxafzgRtQ/b5nR
+         Im2Zpx6F0QG3SVcMhjquVzI9ya/geR4A6rCTSHq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 171/545] virtio-gpu: fix a missing check to avoid NULL dereference
-Date:   Fri, 19 Aug 2022 17:39:01 +0200
-Message-Id: <20220819153837.003735650@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 176/545] i2c: Fix a potential use after free
+Date:   Fri, 19 Aug 2022 17:39:06 +0200
+Message-Id: <20220819153837.224799533@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,44 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Xu Wang <vulab@iscas.ac.cn>
 
-[ Upstream commit bd63f11f4c3c46afec07d821f74736161ff6e526 ]
+[ Upstream commit e4c72c06c367758a14f227c847f9d623f1994ecf ]
 
-'cache_ent' could be set NULL inside virtio_gpu_cmd_get_capset()
-and it will lead to a NULL dereference by a lately use of it
-(i.e., ptr = cache_ent->caps_cache). Fix it with a NULL check.
+Free the adap structure only after we are done using it.
+This patch just moves the put_device() down a bit to avoid the
+use after free.
 
-Fixes: 62fb7a5e10962 ("virtio-gpu: add 3d/virgl support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
-Link: http://patchwork.freedesktop.org/patch/msgid/20220327050945.1614-1-xiam0nd.tong@gmail.com
-
-[ kraxel: minor codestyle fixup ]
-
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Fixes: 611e12ea0f12 ("i2c: core: manage i2c bus device refcount in i2c_[get|put]_adapter")
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+[wsa: added comment to the code, added Fixes tag]
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/virtio/virtgpu_ioctl.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/i2c/i2c-core-base.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-index c8da7adc6b30..33b8ebab178a 100644
---- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-@@ -470,8 +470,10 @@ static int virtio_gpu_get_caps_ioctl(struct drm_device *dev,
- 	spin_unlock(&vgdev->display_info_lock);
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index bdce6d3e5327..34fecf97a355 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -2405,8 +2405,9 @@ void i2c_put_adapter(struct i2c_adapter *adap)
+ 	if (!adap)
+ 		return;
  
- 	/* not in cache - need to talk to hw */
--	virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
--				  &cache_ent);
-+	ret = virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
-+					&cache_ent);
-+	if (ret)
-+		return ret;
- 	virtio_gpu_notify(vgdev);
+-	put_device(&adap->dev);
+ 	module_put(adap->owner);
++	/* Should be last, otherwise we risk use-after-free with 'adap' */
++	put_device(&adap->dev);
+ }
+ EXPORT_SYMBOL(i2c_put_adapter);
  
- copy_exit:
 -- 
 2.35.1
 
