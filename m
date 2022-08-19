@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99087C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 124B6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350476AbiHSPzN (ORCPT
+        id S1350662AbiHSPzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
+        Fri, 19 Aug 2022 11:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350571AbiHSPyV (ORCPT
+        with ESMTP id S1350606AbiHSPy2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:54:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FBB106FBA;
-        Fri, 19 Aug 2022 08:49:40 -0700 (PDT)
+        Fri, 19 Aug 2022 11:54:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEEC106531;
+        Fri, 19 Aug 2022 08:49:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4039161724;
-        Fri, 19 Aug 2022 15:49:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F54FC433D7;
-        Fri, 19 Aug 2022 15:49:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5EE761711;
+        Fri, 19 Aug 2022 15:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD404C433D7;
+        Fri, 19 Aug 2022 15:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924178;
-        bh=2mjJAQmsdN9zFTMGHiXbeqb7KdcpnHmUaKz7zq041e0=;
+        s=korg; t=1660924170;
+        bh=tRMypaLnigkjeLRUmrWAejT49vT0wyzqMWkQO2IPZGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s71VWx7695HR8+cn5swIoLZsHGy1hYZGOOa+Ek1lWt4r8mH295WEDRZOId6/7Nz3o
-         OTjDAZ6XUux5IP536QIPmW5W3AZET2uj6krhsnliU03pq3GM9myf6uuji6bdAGTMO5
-         v7Gc4q5J9EBqCsxisAMY4EUfGCLURQlHFZMonrzE=
+        b=MBre20RNS/peCzayasvICDkL1KODJ9OG20Z5Eto1GtANMOFxXNB+FpxWoUZro82sd
+         leVEH7JqKcF4SfbYC5hk7yM9y4iD/kAtoHvJR4rBu8MfteEyCY7vngTrDYS39R92hX
+         TSMmUn6jnOWg6CWHiR2bE1PtqlnlFsaKmOKFi7R8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.10 053/545] fuse: limit nsec
-Date:   Fri, 19 Aug 2022 17:37:03 +0200
-Message-Id: <20220819153831.603561318@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Francis Laniel <flaniel@linux.microsoft.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 078/545] arm64: Do not forget syscall when starting a new thread.
+Date:   Fri, 19 Aug 2022 17:37:28 +0200
+Message-Id: <20220819153832.760137236@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -48,34 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Francis Laniel <flaniel@linux.microsoft.com>
 
-commit 47912eaa061a6a81e4aa790591a1874c650733c0 upstream.
+[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
 
-Limit nanoseconds to 0..999999999.
+Enable tracing of the execve*() system calls with the
+syscalls:sys_exit_execve tracepoint by removing the call to
+forget_syscall() when starting a new thread and preserving the value of
+regs->syscallno across exec.
 
-Fixes: d8a5ba45457e ("[PATCH] FUSE - core")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/inode.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/include/asm/processor.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -182,6 +182,12 @@ void fuse_change_attributes_common(struc
- 	inode->i_uid     = make_kuid(fc->user_ns, attr->uid);
- 	inode->i_gid     = make_kgid(fc->user_ns, attr->gid);
- 	inode->i_blocks  = attr->blocks;
-+
-+	/* Sanitize nsecs */
-+	attr->atimensec = min_t(u32, attr->atimensec, NSEC_PER_SEC - 1);
-+	attr->mtimensec = min_t(u32, attr->mtimensec, NSEC_PER_SEC - 1);
-+	attr->ctimensec = min_t(u32, attr->ctimensec, NSEC_PER_SEC - 1);
-+
- 	inode->i_atime.tv_sec   = attr->atime;
- 	inode->i_atime.tv_nsec  = attr->atimensec;
- 	/* mtime from server may be stale due to local buffered write */
+diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+index fce8cbecd6bc..7c546c3487c9 100644
+--- a/arch/arm64/include/asm/processor.h
++++ b/arch/arm64/include/asm/processor.h
+@@ -194,8 +194,9 @@ void tls_preserve_current_state(void);
+ 
+ static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
+ {
++	s32 previous_syscall = regs->syscallno;
+ 	memset(regs, 0, sizeof(*regs));
+-	forget_syscall(regs);
++	regs->syscallno = previous_syscall;
+ 	regs->pc = pc;
+ 
+ 	if (system_uses_irq_prio_masking())
+-- 
+2.35.1
+
 
 
