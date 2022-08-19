@@ -2,115 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9828BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A506C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353017AbiHSRuD (ORCPT
+        id S1351203AbiHSRuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
+        Fri, 19 Aug 2022 13:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351958AbiHSRtR (ORCPT
+        with ESMTP id S1351301AbiHSRt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:49:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C2832D80;
-        Fri, 19 Aug 2022 10:19:37 -0700 (PDT)
+        Fri, 19 Aug 2022 13:49:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C557C32F;
+        Fri, 19 Aug 2022 10:20:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A90D761709;
-        Fri, 19 Aug 2022 17:19:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85184C433C1;
-        Fri, 19 Aug 2022 17:19:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C3AFB82852;
+        Fri, 19 Aug 2022 17:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6B2EC433D6;
+        Fri, 19 Aug 2022 17:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660929576;
-        bh=3Sdln9qJKHLzw3ch7twkCCMwF2dg/LGZE0fJeB2Pqds=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WDXGks4O7BdiqUE7X0ObnfF1Zyc1+QRtTDQWZKrcu/dYHW20fJbBaY5zTopwpzRcr
-         iT1CheRg5d9nG1nbiK+07tKfvbRrMPPAzYs5xdQS9G94QOx6JiQ+CZqnjz5bLfoTQM
-         8GizFsATxnYxbVf0njAQVdq4u3/+gJxXl8HMgOFRfzNYQuZFqeZm2bQA2iehreJcJr
-         MsgssHY7b9NDzkvL3zvPSqZdzev4Zl7VTNxdSDSPb4x7IYajtOS5mXMkGX9sEwD/g5
-         YzO+4CjEDdZnIOJknjJdGpijVe7LNFh8j3wLUZmLKeBi2YCJXcIkfdlNSLufGy6I/p
-         rjfnuFJRi3Ofg==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     sj@kernel.org, badari.pulavarty@intel.com, damon@lists.linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH v2] mm/damon/dbgfs: avoid duplicate context directory creation
-Date:   Fri, 19 Aug 2022 17:19:30 +0000
-Message-Id: <20220819171930.16166-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        s=k20201202; t=1660929618;
+        bh=pqfYAKcyggEoIGvq/LHNLs/YpU/JRraQ9n78keTDpNk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y2EltIagHroUZbMf+CyAqnokaZoI983lqcAJO3KuyWlHrGajVQ6J5saQ4e/VCY5Bw
+         Bd/3+gzN9heMk2mlUteyp49dHgxtUz0uhkRMJ1NFoYl7j4TfCY8WFZ/dCj7AGEpH6B
+         sLH2QTzOLx6D2xra3Pjrfe21Mxn1xNkAErjaIeTh9jrjcVUJoKc9Tc8AuEdSaA/nw1
+         6YS53b6vd2bpmwSgtbLKJhsKAgaR3tDEHq3iHP66ZNbGjreKktn090wsA5RXJKOFBa
+         KK2UkNmajG0qnFu03YyrmMTWjKmkN5QjjIGJvfFLXArpjZ1E3N/XSNxFjAh1nbLSBB
+         UYsaF+97i+qsg==
+Date:   Fri, 19 Aug 2022 18:30:52 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, lee@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lars@metafoo.de,
+        sboyd@kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v8 3/5] iio: adc: qcom-spmi-adc5: add ADC5_VREF_VADC to
+ rev2 ADC5
+Message-ID: <20220819183052.49cf14e9@jic23-huawei>
+In-Reply-To: <20220818221815.346233-3-robimarko@gmail.com>
+References: <20220818221815.346233-1-robimarko@gmail.com>
+        <20220818221815.346233-3-robimarko@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Badari Pulavarty <badari.pulavarty@intel.com>
+On Fri, 19 Aug 2022 00:18:13 +0200
+Robert Marko <robimarko@gmail.com> wrote:
 
-When user tries to create a DAMON context via the DAMON debugfs
-interface with a name of an already existing context, the context
-directory creation silently fails but the context is added in the
-internal data structure.  As a result, memory could leak and DAMON
-cannot be turned on.  An example test case is as below:
+> Add support for ADC5_VREF_VADC channel to rev2 ADC5 channel list.
+> This channel measures the VADC reference LDO output.
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-    # cd /sys/kernel/debug/damon/
-    # echo "off" >  monitor_on
-    # echo paddr > target_ids
-    # echo "abc" > mk_context
-    # echo "abc" > mk_context
-    # echo $$ > abc/target_ids
-    # echo "on" > monitor_on  <<< fails
+I've changed my mind on this, mostly because we've reached a new
+cycle and I'd rather not see a v9 series + Lee is (I think)
+keen to only take stuff through MFD if there is a build time
+dependency.
 
-This commit fixes the issue by checking if the name already exist and
-immediately returning '-EEXIST' in the case.
-
-Fixes: 75c1c2b53c78 ("mm/damon/dbgfs: support multiple contexts")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Signed-off-by: Badari Pulavarty <badari.pulavarty@intel.com>
-Signed-off-by: SeongJae Park <sj@kernel.org>
----
-Changes from v1
-(https://lore.kernel.org/damon/DM6PR11MB3978994F75A4104D714437379C679@DM6PR11MB3978.namprd11.prod.outlook.com/)
-- Manually check duplicate entry instead of checking
-  'debugfs_create_dir()' return value
-- Reword commit message and the test case
-
-Seems Badari have some email client issue, so I (SJ) am making this
-second version of the patch based on Badari's final proposal and repost
-on behalf of Badari.
-
- mm/damon/dbgfs.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
-index 51d67c8050dd..364b44063c2f 100644
---- a/mm/damon/dbgfs.c
-+++ b/mm/damon/dbgfs.c
-@@ -795,7 +795,7 @@ static void dbgfs_destroy_ctx(struct damon_ctx *ctx)
-  */
- static int dbgfs_mk_context(char *name)
- {
--	struct dentry *root, **new_dirs, *new_dir;
-+	struct dentry *root, **new_dirs, *new_dir, *dir;
- 	struct damon_ctx **new_ctxs, *new_ctx;
- 
- 	if (damon_nr_running_ctxs())
-@@ -817,6 +817,12 @@ static int dbgfs_mk_context(char *name)
- 	if (!root)
- 		return -ENOENT;
- 
-+	dir = debugfs_lookup(name, root);
-+	if (dir) {
-+		dput(dir);
-+		return -EEXIST;
-+	}
-+
- 	new_dir = debugfs_create_dir(name, root);
- 	dbgfs_dirs[dbgfs_nr_ctxs] = new_dir;
- 
--- 
-2.25.1
+Applied this patch directly to the togreg branch of iio.git
+and pushed that out as testing for 0-day to play with it.
+> ---
+>  drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> index e96da2ef1964..821fee60a765 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> @@ -597,6 +597,8 @@ static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
+>  					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
+>  					SCALE_HW_CALIB_DEFAULT)
+> +	[ADC5_VREF_VADC]	= ADC5_CHAN_VOLT("vref_vadc", 0,
+> +					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
+>  					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
 
