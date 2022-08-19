@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DC5C32773
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B845C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353417AbiHSQfo (ORCPT
+        id S1353360AbiHSQfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
+        Fri, 19 Aug 2022 12:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353560AbiHSQcA (ORCPT
+        with ESMTP id S1353545AbiHSQb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:32:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8E210D582;
-        Fri, 19 Aug 2022 09:06:09 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150B710C83D;
+        Fri, 19 Aug 2022 09:06:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87152B82813;
-        Fri, 19 Aug 2022 16:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5DD3C433D7;
-        Fri, 19 Aug 2022 16:05:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A220D614DA;
+        Fri, 19 Aug 2022 16:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBF8C433C1;
+        Fri, 19 Aug 2022 16:05:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925137;
-        bh=it9LlY5KIiK5pR0xaKG2CPrcsLQV2KG1vQRlq1NABUc=;
+        s=korg; t=1660925159;
+        bh=OljP5Wp7IRqp18z0rfBnNxL4uZJ/3GrwNncwpfW1U0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a0RCQ1jPNtUDtL6iKdGKBHUFOBONWtWE3w0bD4D6f2JCw4GWFrUW4h33Ap9AcISlB
-         07YJQEuULdkMShWM+2/Hc1x27q74QqqaxfPaLynXKgb8hg2Dvhq5qmhbe4Nm7GZyyi
-         1BxTPPMVIBj50ZeCE2hlGtJw7u+rUg50YHtmBuVU=
+        b=MGXJhtjytRYNo17uQ9HTz5qIVtpxIrb4DP8Youl0lqmKZukA4cE3ua3L4uizo0qrV
+         uQIWz/XsboZhnv0zR8GxHQalw3HakcPyzlT4cykkDUiOrQXmN4E4x0MhyIj440VgKV
+         AyXG56EkuOp2AHW5pUr3byxEnM730hBQV3KdDTJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 395/545] tty: n_gsm: fix DM command
-Date:   Fri, 19 Aug 2022 17:42:45 +0200
-Message-Id: <20220819153847.089036026@linuxfoundation.org>
+Subject: [PATCH 5.10 402/545] mfd: t7l66xb: Drop platform disable callback
+Date:   Fri, 19 Aug 2022 17:42:52 +0200
+Message-Id: <20220819153847.421379312@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,40 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 18a948c7d90995d127785e308fa7b701df4c499f ]
+[ Upstream commit 128ac294e1b437cb8a7f2ff8ede1cde9082bddbe ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.3.3 defines the DM response. There exists
-no DM command. However, the current implementation incorrectly sends DM as
-command in case of unexpected UIH frames in gsm_queue().
-Correct this behavior by always sending DM as response.
+None of the in-tree instantiations of struct t7l66xb_platform_data
+provides a disable callback. So better don't dereference this function
+pointer unconditionally. As there is no user, drop it completely instead
+of calling it conditional.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-2-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This is a preparation for making platform remove callbacks return void.
+
+Fixes: 1f192015ca5b ("mfd: driver for the T7L66XB TMIO SoC")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220530192430.2108217-3-u.kleine-koenig@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mfd/t7l66xb.c       | 6 +-----
+ include/linux/mfd/t7l66xb.h | 1 -
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 3f100f7abdb7..a6c0a1b76ddb 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1938,7 +1938,7 @@ static void gsm_queue(struct gsm_mux *gsm)
- 			goto invalid;
- #endif
- 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
--			gsm_command(gsm, address, DM|PF);
-+			gsm_response(gsm, address, DM|PF);
- 			return;
- 		}
- 		dlci->data(dlci, gsm->buf, gsm->len);
+diff --git a/drivers/mfd/t7l66xb.c b/drivers/mfd/t7l66xb.c
+index 70da0c4ae457..58811c5ab564 100644
+--- a/drivers/mfd/t7l66xb.c
++++ b/drivers/mfd/t7l66xb.c
+@@ -405,11 +405,8 @@ static int t7l66xb_probe(struct platform_device *dev)
+ 
+ static int t7l66xb_remove(struct platform_device *dev)
+ {
+-	struct t7l66xb_platform_data *pdata = dev_get_platdata(&dev->dev);
+ 	struct t7l66xb *t7l66xb = platform_get_drvdata(dev);
+-	int ret;
+ 
+-	ret = pdata->disable(dev);
+ 	clk_disable_unprepare(t7l66xb->clk48m);
+ 	clk_put(t7l66xb->clk48m);
+ 	clk_disable_unprepare(t7l66xb->clk32k);
+@@ -420,8 +417,7 @@ static int t7l66xb_remove(struct platform_device *dev)
+ 	mfd_remove_devices(&dev->dev);
+ 	kfree(t7l66xb);
+ 
+-	return ret;
+-
++	return 0;
+ }
+ 
+ static struct platform_driver t7l66xb_platform_driver = {
+diff --git a/include/linux/mfd/t7l66xb.h b/include/linux/mfd/t7l66xb.h
+index 69632c1b07bd..ae3e7a5c5219 100644
+--- a/include/linux/mfd/t7l66xb.h
++++ b/include/linux/mfd/t7l66xb.h
+@@ -12,7 +12,6 @@
+ 
+ struct t7l66xb_platform_data {
+ 	int (*enable)(struct platform_device *dev);
+-	int (*disable)(struct platform_device *dev);
+ 	int (*suspend)(struct platform_device *dev);
+ 	int (*resume)(struct platform_device *dev);
+ 
 -- 
 2.35.1
 
