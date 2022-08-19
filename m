@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4803C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BAA6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352727AbiHSQ2N (ORCPT
+        id S1352828AbiHSQ2U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
+        Fri, 19 Aug 2022 12:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352717AbiHSQZY (ORCPT
+        with ESMTP id S1352718AbiHSQZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:25:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C669FDD;
-        Fri, 19 Aug 2022 09:03:20 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927884DB41;
+        Fri, 19 Aug 2022 09:03:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D782EB82802;
-        Fri, 19 Aug 2022 16:03:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 280F6C433D6;
-        Fri, 19 Aug 2022 16:03:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47D4761698;
+        Fri, 19 Aug 2022 16:03:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44C8FC433C1;
+        Fri, 19 Aug 2022 16:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924995;
-        bh=Vi5nOn57Hq/yjy93n2CxGZ9yBwsNUVNFG9Sh/CociKg=;
+        s=korg; t=1660924998;
+        bh=njgtn/5vil/3SWQGkDVgSDn7wCT+1DXns7cLGzDpX1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqaHVLIKX/Zch4xP356lPUFfsM8OKREO4nwHFsHQGLPIhqhwll8LujUgIteTzFzP3
-         upH4rV6NDwCXwx3RrDMJ/fKmHvwvujWO/6taXrBD/+dGOMa90wgormX0qz8uj8Cgao
-         QIarSUi93EXRWb4E+hvQZ9TUl1BXh7sBXjZMRGFo=
+        b=gKJUuOHuy753EzjgGzx10A5Am9hf6GW2HFoJBYPuxgN0YbOtT1Z5zQdKz88zmGCVc
+         W9mMnPY/vCbetvxRaP3ukMlnndr4/cwjgOlIXZBqXKpRdqySiedn6FyjZ6sd0JJ0P0
+         3dGArlXGEjKMNG0yaLyume8en7szDuq3m8Cn7oMM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Robert Richter <rric@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 310/545] intel_th: msu-sink: Potential dereference of null pointer
-Date:   Fri, 19 Aug 2022 17:41:20 +0200
-Message-Id: <20220819153843.230782415@linuxfoundation.org>
+Subject: [PATCH 5.10 343/545] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
+Date:   Fri, 19 Aug 2022 17:41:53 +0200
+Message-Id: <20220819153844.746624238@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,39 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 82f76a4a720791d889de775b5f7541d601efc8bd ]
+[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
 
-The return value of dma_alloc_coherent() needs to be checked.
-To avoid use of null pointer in sg_set_buf() in case of the failure of
-alloc.
+In thunder_mmc_probe(), we should call of_node_put() when breaking
+out of for_each_child_of_node() which has increased and decreased
+the refcount during each iteration.
 
-Fixes: f220df66f676 ("intel_th: msu-sink: An example msu buffer "sink"")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-3-alexander.shishkin@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Robert Richter <rric@kernel.org>
+Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/msu-sink.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/mmc/host/cavium-thunderx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hwtracing/intel_th/msu-sink.c b/drivers/hwtracing/intel_th/msu-sink.c
-index 2c7f5116be12..891b28ea25fe 100644
---- a/drivers/hwtracing/intel_th/msu-sink.c
-+++ b/drivers/hwtracing/intel_th/msu-sink.c
-@@ -71,6 +71,9 @@ static int msu_sink_alloc_window(void *data, struct sg_table **sgt, size_t size)
- 		block = dma_alloc_coherent(priv->dev->parent->parent,
- 					   PAGE_SIZE, &sg_dma_address(sg_ptr),
- 					   GFP_KERNEL);
-+		if (!block)
-+			return -ENOMEM;
-+
- 		sg_set_buf(sg_ptr, block, PAGE_SIZE);
- 	}
+diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
+index 76013bbbcff3..202b1d6da678 100644
+--- a/drivers/mmc/host/cavium-thunderx.c
++++ b/drivers/mmc/host/cavium-thunderx.c
+@@ -142,8 +142,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
+ 				continue;
  
+ 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
+-			if (ret)
++			if (ret) {
++				of_node_put(child_node);
+ 				goto error;
++			}
+ 		}
+ 		i++;
+ 	}
 -- 
 2.35.1
 
