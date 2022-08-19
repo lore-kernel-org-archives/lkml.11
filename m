@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D730C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DCAC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354252AbiHSQwO (ORCPT
+        id S1354265AbiHSQwS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        Fri, 19 Aug 2022 12:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354349AbiHSQuh (ORCPT
+        with ESMTP id S1354390AbiHSQuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:50:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04F7786FC;
-        Fri, 19 Aug 2022 09:13:47 -0700 (PDT)
+        Fri, 19 Aug 2022 12:50:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E955463C3;
+        Fri, 19 Aug 2022 09:13:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 099ACB82804;
-        Fri, 19 Aug 2022 16:12:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4ACC433C1;
-        Fri, 19 Aug 2022 16:12:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA244B8281F;
+        Fri, 19 Aug 2022 16:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F79C433C1;
+        Fri, 19 Aug 2022 16:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925562;
-        bh=Y6aLuMHStJntLnGtllqYd3v+Xc5StRFPH8LeHpkXm20=;
+        s=korg; t=1660925590;
+        bh=Sc7BqZDk1f59iz6GdHTuaXWtnjTzvHo7f/8963wEQ2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AHM918rKI4k2cX6S4AoXYNaZ+SWMOo2SqtzMkEXdwgKylaRtAumQqeYTgZusluDX7
-         ZLw5/t49SmejdV6MNqj/yfZKtGAg1EGszxwiBxO5B+phJ7cez5xxAXyc2uvATxhXtJ
-         72xPGbpilDaACrhbLXRpjwofHGkWFV5Z+hqzBbhc=
+        b=t0608oLxydmcpMeiBlDQCvu/fbJmSvyz8o8O+5yu30UeD1ivYQuV0TXNqU8VTq/TM
+         ScHL1UL8yikg+w4e/Xyq6p3BHJdY4CCvrMTp/dRgWi5cK/dKJ/eNre8W0iVub0YxHO
+         TEy7FKVWM2PICGQj/XJWEINpt3SzR3M9rxm+xu1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Ghinea <stefan.ghinea@windriver.com>
-Subject: [PATCH 5.10 530/545] KVM: x86: Avoid theoretical NULL pointer dereference in kvm_irq_delivery_to_apic_fast()
-Date:   Fri, 19 Aug 2022 17:45:00 +0200
-Message-Id: <20220819153853.291315173@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Heyne <mheyne@amazon.de>,
+        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.10 510/545] xen-blkback: fix persistent grants negotiation
+Date:   Fri, 19 Aug 2022 17:44:40 +0200
+Message-Id: <20220819153852.307904743@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,36 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: SeongJae Park <sj@kernel.org>
 
-commit 00b5f37189d24ac3ed46cb7f11742094778c46ce upstream
+commit fc9be616bb8f3ed9cf560308f86904f5c06be205 upstream.
 
-When kvm_irq_delivery_to_apic_fast() is called with APIC_DEST_SELF
-shorthand, 'src' must not be NULL. Crash the VM with KVM_BUG_ON()
-instead of crashing the host.
+Persistent grants feature can be used only when both backend and the
+frontend supports the feature.  The feature was always supported by
+'blkback', but commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has introduced a parameter for
+disabling it runtime.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-3-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
+To avoid the parameter be updated while being used by 'blkback', the
+commit caches the parameter into 'vbd->feature_gnt_persistent' in
+'xen_vbd_create()', and then check if the guest also supports the
+feature and finally updates the field in 'connect_ring()'.
+
+However, 'connect_ring()' could be called before 'xen_vbd_create()', so
+later execution of 'xen_vbd_create()' can wrongly overwrite 'true' to
+'vbd->feature_gnt_persistent'.  As a result, 'blkback' could try to use
+'persistent grants' feature even if the guest doesn't support the
+feature.
+
+This commit fixes the issue by moving the parameter value caching to
+'xen_blkif_alloc()', which allocates the 'blkif'.  Because the struct
+embeds 'vbd' object, which will be used by 'connect_ring()' later, this
+should be called before 'connect_ring()' and therefore this should be
+the right and safe place to do the caching.
+
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220715225108.193398-2-sj@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/block/xen-blkback/xenbus.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -991,6 +991,10 @@ bool kvm_irq_delivery_to_apic_fast(struc
- 	*r = -1;
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -157,6 +157,11 @@ static int xen_blkif_alloc_rings(struct
+ 	return 0;
+ }
  
- 	if (irq->shorthand == APIC_DEST_SELF) {
-+		if (KVM_BUG_ON(!src, kvm)) {
-+			*r = 0;
-+			return true;
-+		}
- 		*r = kvm_apic_set_irq(src->vcpu, irq, dest_map);
- 		return true;
- 	}
++/* Enable the persistent grants feature. */
++static bool feature_persistent = true;
++module_param(feature_persistent, bool, 0644);
++MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
++
+ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
+ {
+ 	struct xen_blkif *blkif;
+@@ -181,6 +186,8 @@ static struct xen_blkif *xen_blkif_alloc
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
+ 
++	blkif->vbd.feature_gnt_persistent = feature_persistent;
++
+ 	return blkif;
+ }
+ 
+@@ -472,12 +479,6 @@ static void xen_vbd_free(struct xen_vbd
+ 	vbd->bdev = NULL;
+ }
+ 
+-/* Enable the persistent grants feature. */
+-static bool feature_persistent = true;
+-module_param(feature_persistent, bool, 0644);
+-MODULE_PARM_DESC(feature_persistent,
+-		"Enables the persistent grants feature");
+-
+ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
+ 			  unsigned major, unsigned minor, int readonly,
+ 			  int cdrom)
+@@ -523,8 +524,6 @@ static int xen_vbd_create(struct xen_blk
+ 	if (q && blk_queue_secure_erase(q))
+ 		vbd->discard_secure = true;
+ 
+-	vbd->feature_gnt_persistent = feature_persistent;
+-
+ 	pr_debug("Successful creation of handle=%04x (dom=%u)\n",
+ 		handle, blkif->domid);
+ 	return 0;
 
 
