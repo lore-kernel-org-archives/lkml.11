@@ -2,205 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FE7C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48995C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348887AbiHSMYE (ORCPT
+        id S1348610AbiHSM2L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        Fri, 19 Aug 2022 08:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348377AbiHSMYA (ORCPT
+        with ESMTP id S230513AbiHSM2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:24:00 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2046.outbound.protection.outlook.com [40.107.243.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BE130F4A;
-        Fri, 19 Aug 2022 05:23:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eVKke0qfwjVZ2WOPAbgvApFwmXbAT5UmctAVUIMLRPc7s9gMiKJLl2/f51oJIpwtYaTofp3FDCkv7gJpED4xnYzK4ToAqMTwjFpvPuiDqiJ/BEcoc7QJk4KPLqbtaseLkVE42Je9dHwvRa3pkoTCv+5hxTYEmZeL12dL8GH/ukis6yzV63rcbDb6YFmOsMEgaSLd6mJTV/ta8jyZBPtpRAT9P8DobhqIW9uZJ5PI/7FO8rXnR19zqVaV8NTjx5ww4hNjh2iP6V8iOO4faroi8tRZr5SADV4SffexqEtu/SD7RbALhH/0Yo+KnysSLLWJkaNa3P7Y7EPe2GfJOeeLIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XfuYLY2gnED6lo+Ow1QvINe/DPJNBA1M7YJ5VWl22nI=;
- b=MSAC92Z3BwMqDbfuH56XX1M2aujeRZaxXPUV4MLSrnpwiATT/QlQ5Q3zokqKP6PapbTYb4nLDdG49vCa8XbkVRu11TDRlQYHZxDHn/XHJOz7fQiqllh2/1aAjhMxAXgcZaspAm8glnq10DYKNKkkv6SlI7XpyBPq1TWFn6qFoHq1mAi22EbEiJ3yLFDtg5ZHbjNbw25qELq8ilt5mGfJtzCsy9iznHRYh+HzHqxuqtTRGh5fazwMCBZUfDEqLMm3oFEo6Bymz4rfsTjSgbfy8JZkru91N7YtqvhtDBFFbwEjDUeO0MoP6XEHKP+tw2R1NpohEX+n/I2AFGeOsrLgSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XfuYLY2gnED6lo+Ow1QvINe/DPJNBA1M7YJ5VWl22nI=;
- b=RygAXDr39ApGScJ1ubE0yMKSSUykJTkdpnfMrKJcVVuhfaJcM4gBjur2BXR7JTmcsFUni9OZwJBiwdwC1ISee0u++xWALcxiaDlF1ZR12dmJiBdmp8VSif6CvMVghjpZvLDEyeRYG34hueS0NTVTCPKtI/MO2qpjbXL4qGxqZFT+ICfIwVDAsZiEoMN4agd0FuOY8BJNTWXSt/DC4anhlHyx3WfKg/9/4vTOJsDUuRMOuCaeNAyinmwraDdugYsOH8sx5vxnWYO198zMQOHHytO1VTqQs2/URw7eGRHq1rHbQJ64omBf7OEWLTbbV/Q0UVn0wLAihuI3mh0+Qz06ew==
-Received: from MW4PR03CA0148.namprd03.prod.outlook.com (2603:10b6:303:8c::33)
- by DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Fri, 19 Aug
- 2022 12:23:57 +0000
-Received: from CO1NAM11FT097.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8c:cafe::c4) by MW4PR03CA0148.outlook.office365.com
- (2603:10b6:303:8c::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19 via Frontend
- Transport; Fri, 19 Aug 2022 12:23:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT097.mail.protection.outlook.com (10.13.175.185) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5546.7 via Frontend Transport; Fri, 19 Aug 2022 12:23:57 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 19 Aug
- 2022 12:23:56 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 19 Aug
- 2022 05:23:56 -0700
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Fri, 19 Aug 2022 05:23:52 -0700
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <christian.koenig@amd.com>, <digetx@gmail.com>,
-        <=jonathanh@nvidia.com>, <ldewangan@nvidia.com>,
-        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <sumit.semwal@linaro.org>,
-        <thierry.reding@gmail.com>, <wsa@kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH RESEND 2/2] arm64: tegra: Add GPCDMA support for Tegra234 I2C
-Date:   Fri, 19 Aug 2022 17:53:13 +0530
-Message-ID: <20220819122313.40445-3-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220819122313.40445-1-akhilrajeev@nvidia.com>
-References: <20220819122313.40445-1-akhilrajeev@nvidia.com>
-X-NVConfidentiality: public
+        Fri, 19 Aug 2022 08:28:09 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF4BE3945;
+        Fri, 19 Aug 2022 05:28:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660912088; x=1692448088;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OuppHraavVdcPp0ARLA7zsvgdMH5yWNmIVqS5fqgRKI=;
+  b=1Mk9Xf4Ast+avbeztI+O2FJqBhx9XNxq5B00trA936Zr+bQYOa8u5SU4
+   FCK3pg94ER2GY/H0Kjoh5vLxBzmIDw92Ia9LGoJxKIK0C9ZVbJNj/Pooo
+   moYRO6BZ5euUwTM+FBzL/kTq+7slwe6fMGTHgkeaj6x6ZnykxBOSSsF02
+   o5wNA9ZRA02MC9XHTvtFVK2DJgCLvwJslodVMS5qBnFhrE2cMlUTgeSdB
+   8ogfoLLVHUX9cMtYkdazJnqa+/2sIyy0+SxsCRo3dQFRQtZsOqGLLfP6B
+   8U+ub3y+5xAw0j17mLvURUWVGDy3YOjArryGJZGAKkJIO31fUBmbHrZse
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="173199554"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Aug 2022 05:28:07 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 19 Aug 2022 05:28:02 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Fri, 19 Aug 2022 05:27:59 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>
+Subject: [PATCH 0/6] Add PolarFire SoC Fabric Clock Conditioning Circuitry Support
+Date:   Fri, 19 Aug 2022 13:22:54 +0100
+Message-ID: <20220819122259.183600-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2d233c41-09fe-41f4-717e-08da81ddb05a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4202:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 988jLl7Owjk1fppV4SuW2jt3v6mCc6X0C+NSY9FITTtOa98rPhL5+nPLKoB4pjyo62Cj+v1da4d6vaRfkM9tMtJ25lX5Nu4Mc2XO3D8xDZHQALUKFrX9pYxE0KsPoXuoAp7OqT0lT9viSo3oVCr+gKR7pVXuvpnjag+FNxFy/TkRB5XVziQQZH6SyaD7hti5tHWi/iR8FS/JD/9ZNCvKhGBvF2j6ei3P59gcZh3QuLw+KD4r2LDJdcSHIDhbT9UkgpYI5I0M7+yCqFEakAj6YrnBAvWWkfP9QMbybuCpO6dGe+Pl3ov6sEUnQhmyRpN/DJLVU+v+DWxHzB6Fr/YJWV9rJYs/38GaDGGap6AM1cdGD4A0bJBxcXzm65ZvmhP76sKsGQxJjxWnZVEfK4G8TFEy1u3WnLp1qzGC+AsFqJ21J6HbBPCC+GctcWOouonJrWmnW+iuARBKp9GPb1Cs2tCwmjDcFQ90IXSyptuztRSH7JNSit5xN9ZVnwLGlMcmEtQz7UZNPq8OuHPz4LK6enoxBYJp5+xYBnRRCmTXEAG7q5frRRASK6OFQbia+USRqRvcPOPfynngpklFqWNdXeKPYp20BVf7XlwAjoVoU6bIxjkQxRsgRTac6ai8FH2IGU4RVtL3P3pJvgO/JaKO8vt48HY5wK3X+NZmbq23f2rummykQAV2Ra6e+rZ85XVnRq4e9zdlArWXd982wtqeJF/EmObKP/cajmeK1LHJk52/khYMhJ0vQbLDA7YwkJQwjFRt3wzipuqko539/MFjVsl7aIolrlaLj3TqZFAr1g6A3yzXD2VEe8QjjDcpTpGvV0axvqTc9fTZ+oEyBv6xPQoEOmOvanxxWM8lKMl4wtM=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(136003)(396003)(46966006)(36840700001)(40470700004)(426003)(336012)(47076005)(356005)(7696005)(921005)(26005)(2616005)(1076003)(186003)(81166007)(36860700001)(83380400001)(82740400003)(8936002)(5660300002)(7416002)(70586007)(70206006)(8676002)(4326008)(40480700001)(82310400005)(2906002)(107886003)(6666004)(478600001)(41300700001)(40460700003)(316002)(110136005)(36756003)(86362001)(2101003)(83996005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 12:23:57.1569
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2d233c41-09fe-41f4-717e-08da81ddb05a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT097.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4202
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dma properties to support GPCDMA in Tegra234 I2C
+Hey all,
 
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 32 ++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+PolarFire SoC has 4 clock source blocks, each with 2 PLLs and 2 DLLs,
+in the corners of the FPGA fabric. Add bindings, a driver supporting
+the PLLs and the requisite changes to the devicetrees for PolarFire
+SoC based boards. These clocks were already in use, but which clock
+specifically was chosen was decided by the synthesis tool. In our
+end-of-September release of our FPGA reference design, constraints will
+be added to force the synthesis tool to pick the "north west" CCC,
+making it possible to read the configuration from the CCC's registers.
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index 81a0f599685f..34026ca80b36 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -737,6 +737,10 @@
- 			clock-names = "div-clk", "parent";
- 			resets = <&bpmp TEGRA234_RESET_I2C1>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 21>, <&gpcdma 21>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		cam_i2c: i2c@3180000 {
-@@ -752,6 +756,10 @@
- 			clock-names = "div-clk", "parent";
- 			resets = <&bpmp TEGRA234_RESET_I2C3>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 23>, <&gpcdma 23>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		dp_aux_ch1_i2c: i2c@3190000 {
-@@ -767,6 +775,10 @@
- 			clock-names = "div-clk", "parent";
- 			resets = <&bpmp TEGRA234_RESET_I2C4>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 26>, <&gpcdma 26>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		dp_aux_ch0_i2c: i2c@31b0000 {
-@@ -782,6 +794,10 @@
- 			clock-names = "div-clk", "parent";
- 			resets = <&bpmp TEGRA234_RESET_I2C6>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 30>, <&gpcdma 30>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		dp_aux_ch2_i2c: i2c@31c0000 {
-@@ -797,6 +813,10 @@
- 			clock-names = "div-clk", "parent";
- 			resets = <&bpmp TEGRA234_RESET_I2C7>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 27>, <&gpcdma 27>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		dp_aux_ch3_i2c: i2c@31e0000 {
-@@ -812,6 +832,10 @@
- 			clock-names = "div-clk", "parent";
- 			resets = <&bpmp TEGRA234_RESET_I2C9>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 31>, <&gpcdma 31>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		spi@3270000 {
-@@ -1109,6 +1133,10 @@
- 			assigned-clock-parents = <&bpmp TEGRA234_CLK_PLLP_OUT0>;
- 			resets = <&bpmp TEGRA234_RESET_I2C2>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 22>, <&gpcdma 22>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		gen8_i2c: i2c@c250000 {
-@@ -1125,6 +1153,10 @@
- 			assigned-clock-parents = <&bpmp TEGRA234_CLK_PLLP_OUT0>;
- 			resets = <&bpmp TEGRA234_RESET_I2C8>;
- 			reset-names = "i2c";
-+			dmas = <&gpcdma 0>, <&gpcdma 0>;
-+			dma-names = "rx", "tx";
-+			iommus = <&smmu_niso0 TEGRA234_SID_GPCDMA>;
-+			dma-coherent;
- 		};
- 
- 		rtc@c2a0000 {
+I am mainly looking for feedback on the dt-bindings on this version,
+so that if something dt-abi related needs to change it can be done in
+advance.
+
+There are no maintainers changes in this series, but they are required
+due to the binding rename. I am waiting for some changes queued in the
+soc tree before rebasing on a later -rc before including that patch.
+
+Thanks,
+Conor.
+
+Conor Dooley (6):
+  dt-bindings: clk: rename mpfs-clkcfg binding
+  dt-bindings: clk: document PolarFire SoC fabric clocks
+  dt-bindings: clk: add PolarFire SoC fabric clock ids
+  clk: microchip: add PolarFire SoC fabric clock support
+  dt-bindings: riscv: microchip: document icicle reference design
+  riscv: dts: microchip: add the mpfs' fabric clock control
+
+ .../bindings/clock/microchip,mpfs-ccc.yaml    |  80 +++++
+ ...p,mpfs.yaml => microchip,mpfs-clkcfg.yaml} |   2 +-
+ .../devicetree/bindings/riscv/microchip.yaml  |   1 +
+ .../dts/microchip/mpfs-icicle-kit-fabric.dtsi |  27 +-
+ .../boot/dts/microchip/mpfs-icicle-kit.dts    |   4 +
+ .../dts/microchip/mpfs-polarberry-fabric.dtsi |   5 +
+ arch/riscv/boot/dts/microchip/mpfs.dtsi       |  34 +-
+ drivers/clk/microchip/Makefile                |   1 +
+ drivers/clk/microchip/clk-mpfs-ccc.c          | 294 ++++++++++++++++++
+ .../dt-bindings/clock/microchip,mpfs-clock.h  |  23 ++
+ 10 files changed, 458 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/microchip,mpfs-ccc.yaml
+ rename Documentation/devicetree/bindings/clock/{microchip,mpfs.yaml => microchip,mpfs-clkcfg.yaml} (96%)
+ create mode 100644 drivers/clk/microchip/clk-mpfs-ccc.c
+
+
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-2.17.1
+2.36.1
 
