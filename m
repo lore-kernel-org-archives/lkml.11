@@ -2,165 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B05FC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F45C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348751AbiHSLKZ (ORCPT
+        id S1348764AbiHSLLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
+        Fri, 19 Aug 2022 07:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348742AbiHSLKW (ORCPT
+        with ESMTP id S1348758AbiHSLLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:10:22 -0400
-Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCD6FC325;
-        Fri, 19 Aug 2022 04:10:21 -0700 (PDT)
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAtHpw016663;
-        Fri, 19 Aug 2022 04:07:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=PPS06212021;
- bh=PLaVbpp4hNo2EhMbAkEWZSGhegi5n9JUce2ULCMebHo=;
- b=Cm0BwIF5cGcB+Fld/7+IRHbHs1XABQd56EXQgOwn464h5CUOCY/Mqrnxe/F0f4dn0vts
- fW4TKq0MNZ145rR/NvI+/oU2xKydluoOJL+OyGAOQtDfbDDC+Ea+7lyq7QcXYtBhY/Ru
- bp9H0KR7h5nrFcjR2mEJoE1OxiWdic4rIuMqjh8u39gvAvjQ+10/9QZ05hYYyCJZSLa7
- Fvt+D+gm+Npf/YnTRwUafNq5ns5Ir8D9T3gbegcf/nOTDCfQmNZ9WIt3A13j9cthcRp+
- K+CkjReuSSDGl5Az7C1jbdb9TlUVNDCZYGQ/t8D9uSBhhr5bE0d61Yh9MwfL0fbp6tzO Iw== 
-Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hxbfjn0j5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 19 Aug 2022 04:07:36 -0700
-Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Fri, 19 Aug 2022 04:07:32 -0700
-From:   Dragos-Marian Panait <dragos.panait@windriver.com>
-To:     <stable@vger.kernel.org>
-CC:     Pavel Skripkin <paskripkin@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 5.4 1/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Fri, 19 Aug 2022 14:07:19 +0300
-Message-ID: <20220819110719.915478-2-dragos.panait@windriver.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220819110719.915478-1-dragos.panait@windriver.com>
-References: <20220819110719.915478-1-dragos.panait@windriver.com>
+        Fri, 19 Aug 2022 07:11:41 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1BEFEEBB
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 04:11:25 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9849329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9849:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5A83D1EC064F;
+        Fri, 19 Aug 2022 13:11:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660907471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=Bm39S14WA191KzPCf0Yr9KuPhFTIj82RCcIsltkgZfc=;
+        b=nuRL7ectlfB38NiCQJQ4m/S72SAEpqBri3Pr6Gj2ReecvDfsPW/LuJluPNrhWsDSsLtnIK
+        ieewcYiOFFGci93yW1KuYOf4oavUDZA1DXkFkALdmLlsMpRbZAqGiiaHqJJWrzRpwrpU1o
+        w5zpIVe1ZUBju7J8B6ISupBe3cfQCXA=
+Date:   Fri, 19 Aug 2022 13:11:07 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ashok Raj <ashok.raj@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        LKML Mailing List <linux-kernel@vger.kernel.org>,
+        X86-kernel <x86@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jacon Jun Pan <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v3 2/5] x86/microcode/intel: Allow a late-load only if a
+ min rev is specified
+Message-ID: <Yv9vy/GTh/QInBPM@zn.tnic>
+References: <20220817051127.3323755-1-ashok.raj@intel.com>
+ <20220817051127.3323755-3-ashok.raj@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [128.224.125.191]
-X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
- ala-exchng01.corp.ad.wrs.com (147.11.82.252)
-X-Proofpoint-GUID: YPVHyg48XGDGYuPRzs29gU6y8mQQU4nb
-X-Proofpoint-ORIG-GUID: YPVHyg48XGDGYuPRzs29gU6y8mQQU4nb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- mlxlogscore=977 clxscore=1015 phishscore=0 bulkscore=0 priorityscore=1501
- impostorscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208190043
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220817051127.3323755-3-ashok.raj@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+On Wed, Aug 17, 2022 at 05:11:24AM +0000, Ashok Raj wrote:
+> In general users don't have the necessary information to determine
+> whether a late-load of a new microcode version has removed any feature
+> (MSR, CPUID etc) between what is currently loaded and this new microcode.
+> To address this issue, Intel has added a "minimum required version" field to
+> a previously reserved field in the file header. Microcode updates
+> should only be applied if the current microcode version is equal
+> to, or greater than this minimum required version.
+> 
+> https://lore.kernel.org/linux-kernel/alpine.DEB.2.21.1909062237580.1902@nanos.tec.linutronix.de/
 
-commit 0ac4827f78c7ffe8eef074bc010e7e34bc22f533 upstream.
+That goes into a Link: tag.
 
-Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
-problem was in incorrect htc_handle->drv_priv initialization.
+> Thomas made some suggestions on how meta-data in the microcode file could
+> provide Linux with information to decide if the new microcode is suitable
+> candidate for late-load. But even the "simpler" option#1 requires a lot of
 
-Probable call trace which can trigger use-after-free:
+In all your text:
 
-ath9k_htc_probe_device()
-  /* htc_handle->drv_priv = priv; */
-  ath9k_htc_wait_for_target()      <--- Failed
-  ieee80211_free_hw()		   <--- priv pointer is freed
+s/late-load/late loading/g
 
-<IRQ>
-...
-ath9k_hif_usb_rx_cb()
-  ath9k_hif_usb_rx_stream()
-   RX_STAT_INC()		<--- htc_handle->drv_priv access
+It is called CONFIG_MICROCODE_LATE_LOADING - not CONFIG_MICROCODE_LATE_LOAD.
 
-In order to not add fancy protection for drv_priv we can move
-htc_handle->drv_priv initialization at the end of the
-ath9k_htc_probe_device() and add helper macro to make
-all *_STAT_* macros NULL safe, since syzbot has reported related NULL
-deref in that macros [1]
+People are confused enough already - no need for more.
 
-Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
-Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com
-Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
----
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+> metadata and corresponding kernel code to parse it.
+> 
+> The proposal here is an even simpler option. The criteria for a microcode to
+> be a viable late-load candidate is that no CPUID or OS visible MSR features
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 9f64e32381f9..81107100e368 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -325,11 +325,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
- }
- 
- #ifdef CONFIG_ATH9K_HTC_DEBUGFS
--
--#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
--#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
--#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
--#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-+#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-+#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-+#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-+#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-+#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
- #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
- 
- #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index 11054c17a9b5..eaaafa64a3ee 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -944,7 +944,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	priv->hw = hw;
- 	priv->htc = htc_handle;
- 	priv->dev = dev;
--	htc_handle->drv_priv = priv;
- 	SET_IEEE80211_DEV(hw, priv->dev);
- 
- 	ret = ath9k_htc_wait_for_target(priv);
-@@ -965,6 +964,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	if (ret)
- 		goto err_init;
- 
-+	htc_handle->drv_priv = priv;
-+
- 	return 0;
- 
- err_init:
+Simply "OS visible features" - CPUID and MSRs are only two examples. The
+microcode cannot change how the OS is supposed to interact with visible
+features because that causes problems.
+
+> are removed with respect to an earlier version of the microcode.
+> 
+> Pseudocode for late-load is as follows:
+
+Unknown word [Pseudocode] in commit message.
+Suggestions: ['Pseudo code',
+
+> if header.min_required_id == 0
+> 	This is old format microcode, block late-load
+> else if current_ucode_version < header.min_required_id
+> 	Current version is too old, block late-load of this microcode.
+> else
+> 	OK to proceed with late-load.
+> 
+> Any microcode that removes a feature will set the min_version to itself.
+
+"... that modifies the interface to a OS-visible feature..."
+
+> This will enforce this microcode is not suitable for late-loading.
+> 
+> The enforcement is not in hardware and limited to kernel loader enforcing
+> the requirement. It is not required for early loading of microcode to
+> enforce this requirement, since the new features are only
+> evaluated after early loading in the boot process.
+> 
+> 
+> Test cases covered:
+> 
+> 1. With new kernel, attempting to load an older format microcode with the
+>    min_rev=0 should be blocked by kernel.
+> 
+>    [  210.541802] microcode: Header MUST specify min version for late-load
+
+Make that more user-friendly:
+
+"microcode: Late loading denied: microcode header does not specify a required min version."
+
+> 2. New microcode with a non-zero min_rev in the header, but the specified
+>    min_rev is greater than what is currently loaded in the CPU should be
+>    blocked by kernel.
+> 
+>    245.139828] microcode: Current revision 0x8f685300 is too old to update,
+> must be at 0xaa000050 version or higher
+
+"microcode: Late loading denied: Current version ... or higher. Use early loading instead."
+
+> 3. New microcode with a min_rev < currently loaded should allow loading the
+>    microcode
+> 
+> 4. Build initrd with microcode that has min_rev=0, or min_rev > currently
+>    loaded should permit early loading microcode from initrd.
+> 
+> 
+> Tested-by: William Xie <william.xie@intel.com>
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> ---
+>  arch/x86/include/asm/microcode_intel.h |  4 +++-
+>  arch/x86/kernel/cpu/microcode/intel.c  | 20 ++++++++++++++++++++
+>  2 files changed, 23 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/include/asm/microcode_intel.h b/arch/x86/include/asm/microcode_intel.h
+> index 4c92cea7e4b5..16b8715e0984 100644
+> --- a/arch/x86/include/asm/microcode_intel.h
+> +++ b/arch/x86/include/asm/microcode_intel.h
+> @@ -14,7 +14,9 @@ struct microcode_header_intel {
+>  	unsigned int            pf;
+>  	unsigned int            datasize;
+>  	unsigned int            totalsize;
+> -	unsigned int            reserved[3];
+> +	unsigned int            reserved1;
+> +	unsigned int		min_req_id;
+> +	unsigned int            reserved3;
+>  };
+>  
+>  struct microcode_intel {
+> diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
+> index c4b11e2fbe33..1eb202ec2302 100644
+> --- a/arch/x86/kernel/cpu/microcode/intel.c
+> +++ b/arch/x86/kernel/cpu/microcode/intel.c
+> @@ -178,6 +178,7 @@ static int microcode_sanity_check(void *mc, int print_err)
+
+You can't do this in this function:
+
+load_ucode_intel_bsp -> __load_ucode_intel -> scan_microcode -> microcode_sanity_check
+
+which is the early path.
+
+So you'd have to pass down the fact that you're doing late loading from
+request_microcode_fw().
+
+Now, I'm staring at that ugly refresh_fw bool arg in that function and
+I *think* I did it 10 years ago because it shouldn't try to load from
+the fs when it is resuming because there might not be a fs yet... or
+something to that effect.
+
+tglx might have a better idea how to check we're in the ->starting notifier...
+
 -- 
-2.37.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
