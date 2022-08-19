@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBBBC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAD3C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353722AbiHSQnY (ORCPT
+        id S1353564AbiHSQnc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        Fri, 19 Aug 2022 12:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353793AbiHSQkz (ORCPT
+        with ESMTP id S1353817AbiHSQk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:40:55 -0400
+        Fri, 19 Aug 2022 12:40:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F9A12502E;
-        Fri, 19 Aug 2022 09:09:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA7E124F50;
+        Fri, 19 Aug 2022 09:09:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99212B8281C;
-        Fri, 19 Aug 2022 16:09:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A584FC433C1;
-        Fri, 19 Aug 2022 16:09:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 863C1B8281C;
+        Fri, 19 Aug 2022 16:09:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E767AC433C1;
+        Fri, 19 Aug 2022 16:09:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925359;
-        bh=ocZVZLMCrhl4jjlPjRd9yvQ4dTkVv5C12WDslHgyOBs=;
+        s=korg; t=1660925371;
+        bh=UWurHR/tn8KOY4jgnStiQvox7z6ri5AD3kxiiK11a1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cCjNoIwuv03atmyJLEKAg+4ubsMNFdLOoLfcjRXhUxL4jULqkyPtRLXB8E1pXG4XL
-         n1b0/Pkn1zPi3HqcNIOKYRLdvkXybbo1tdOUe2k+cjqcVmPqQBqgU/7fk9cQw780WP
-         60CjlZpacero+WO8QDMkn3K6OmPK4qKXXuy9r9aw=
+        b=LUJh/BKmtINfU/RC7hNs6kYuTii/X7y22p+PvPTMu3fL/IFQ5dQnkxq4WR3PdGvow
+         2bznQpxL5/MFzwWeKY+iQIFxJjDNI3k/0bxA7GHB1sWWOZoFvuL59PpUW8bVMtNAlZ
+         rfSPShA59wg8x13EsmvHLGNoQSgpNc1oYTB01Q8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
-        Jackie Liu <liuyun01@kylinos.cn>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable <stable@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 466/545] firmware: arm_scpi: Ensure scpi_info is not assigned if the probe fails
-Date:   Fri, 19 Aug 2022 17:43:56 +0200
-Message-Id: <20220819153850.251825254@linuxfoundation.org>
+Subject: [PATCH 5.10 469/545] intel_th: pci: Add Raptor Lake-S CPU support
+Date:   Fri, 19 Aug 2022 17:43:59 +0200
+Message-Id: <20220819153850.390784380@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,153 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-[ Upstream commit 689640efc0a2c4e07e6f88affe6d42cd40cc3f85 ]
+[ Upstream commit ff46a601afc5a66a81c3945b83d0a2caeb88e8bc ]
 
-When scpi probe fails, at any point, we need to ensure that the scpi_info
-is not set and will remain NULL until the probe succeeds. If it is not
-taken care, then it could result use-after-free as the value is exported
-via get_scpi_ops() and could refer to a memory allocated via devm_kzalloc()
-but freed when the probe fails.
+Add support for the Trace Hub in Raptor Lake-S CPU.
 
-Link: https://lore.kernel.org/r/20220701160310.148344-1-sudeep.holla@arm.com
-Cc: stable@vger.kernel.org # 4.19+
-Reported-by: huhai <huhai@kylinos.cn>
-Reviewed-by: Jackie Liu <liuyun01@kylinos.cn>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-7-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scpi.c | 61 +++++++++++++++++++++----------------
- 1 file changed, 35 insertions(+), 26 deletions(-)
+ drivers/hwtracing/intel_th/pci.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/firmware/arm_scpi.c b/drivers/firmware/arm_scpi.c
-index 4ceba5ef7895..36391cb5130e 100644
---- a/drivers/firmware/arm_scpi.c
-+++ b/drivers/firmware/arm_scpi.c
-@@ -815,7 +815,7 @@ static int scpi_init_versions(struct scpi_drvinfo *info)
- 		info->firmware_version = le32_to_cpu(caps.platform_version);
- 	}
- 	/* Ignore error if not implemented */
--	if (scpi_info->is_legacy && ret == -EOPNOTSUPP)
-+	if (info->is_legacy && ret == -EOPNOTSUPP)
- 		return 0;
- 
- 	return ret;
-@@ -905,13 +905,14 @@ static int scpi_probe(struct platform_device *pdev)
- 	struct resource res;
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
-+	struct scpi_drvinfo *scpi_drvinfo;
- 
--	scpi_info = devm_kzalloc(dev, sizeof(*scpi_info), GFP_KERNEL);
--	if (!scpi_info)
-+	scpi_drvinfo = devm_kzalloc(dev, sizeof(*scpi_drvinfo), GFP_KERNEL);
-+	if (!scpi_drvinfo)
- 		return -ENOMEM;
- 
- 	if (of_match_device(legacy_scpi_of_match, &pdev->dev))
--		scpi_info->is_legacy = true;
-+		scpi_drvinfo->is_legacy = true;
- 
- 	count = of_count_phandle_with_args(np, "mboxes", "#mbox-cells");
- 	if (count < 0) {
-@@ -919,19 +920,19 @@ static int scpi_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	scpi_info->channels = devm_kcalloc(dev, count, sizeof(struct scpi_chan),
--					   GFP_KERNEL);
--	if (!scpi_info->channels)
-+	scpi_drvinfo->channels =
-+		devm_kcalloc(dev, count, sizeof(struct scpi_chan), GFP_KERNEL);
-+	if (!scpi_drvinfo->channels)
- 		return -ENOMEM;
- 
--	ret = devm_add_action(dev, scpi_free_channels, scpi_info);
-+	ret = devm_add_action(dev, scpi_free_channels, scpi_drvinfo);
- 	if (ret)
- 		return ret;
- 
--	for (; scpi_info->num_chans < count; scpi_info->num_chans++) {
-+	for (; scpi_drvinfo->num_chans < count; scpi_drvinfo->num_chans++) {
- 		resource_size_t size;
--		int idx = scpi_info->num_chans;
--		struct scpi_chan *pchan = scpi_info->channels + idx;
-+		int idx = scpi_drvinfo->num_chans;
-+		struct scpi_chan *pchan = scpi_drvinfo->channels + idx;
- 		struct mbox_client *cl = &pchan->cl;
- 		struct device_node *shmem = of_parse_phandle(np, "shmem", idx);
- 
-@@ -975,45 +976,53 @@ static int scpi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	scpi_info->commands = scpi_std_commands;
-+	scpi_drvinfo->commands = scpi_std_commands;
- 
--	platform_set_drvdata(pdev, scpi_info);
-+	platform_set_drvdata(pdev, scpi_drvinfo);
- 
--	if (scpi_info->is_legacy) {
-+	if (scpi_drvinfo->is_legacy) {
- 		/* Replace with legacy variants */
- 		scpi_ops.clk_set_val = legacy_scpi_clk_set_val;
--		scpi_info->commands = scpi_legacy_commands;
-+		scpi_drvinfo->commands = scpi_legacy_commands;
- 
- 		/* Fill priority bitmap */
- 		for (idx = 0; idx < ARRAY_SIZE(legacy_hpriority_cmds); idx++)
- 			set_bit(legacy_hpriority_cmds[idx],
--				scpi_info->cmd_priority);
-+				scpi_drvinfo->cmd_priority);
- 	}
- 
--	ret = scpi_init_versions(scpi_info);
-+	scpi_info = scpi_drvinfo;
-+
-+	ret = scpi_init_versions(scpi_drvinfo);
- 	if (ret) {
- 		dev_err(dev, "incorrect or no SCP firmware found\n");
-+		scpi_info = NULL;
- 		return ret;
- 	}
- 
--	if (scpi_info->is_legacy && !scpi_info->protocol_version &&
--	    !scpi_info->firmware_version)
-+	if (scpi_drvinfo->is_legacy && !scpi_drvinfo->protocol_version &&
-+	    !scpi_drvinfo->firmware_version)
- 		dev_info(dev, "SCP Protocol legacy pre-1.0 firmware\n");
- 	else
- 		dev_info(dev, "SCP Protocol %lu.%lu Firmware %lu.%lu.%lu version\n",
- 			 FIELD_GET(PROTO_REV_MAJOR_MASK,
--				   scpi_info->protocol_version),
-+				   scpi_drvinfo->protocol_version),
- 			 FIELD_GET(PROTO_REV_MINOR_MASK,
--				   scpi_info->protocol_version),
-+				   scpi_drvinfo->protocol_version),
- 			 FIELD_GET(FW_REV_MAJOR_MASK,
--				   scpi_info->firmware_version),
-+				   scpi_drvinfo->firmware_version),
- 			 FIELD_GET(FW_REV_MINOR_MASK,
--				   scpi_info->firmware_version),
-+				   scpi_drvinfo->firmware_version),
- 			 FIELD_GET(FW_REV_PATCH_MASK,
--				   scpi_info->firmware_version));
--	scpi_info->scpi_ops = &scpi_ops;
-+				   scpi_drvinfo->firmware_version));
-+
-+	scpi_drvinfo->scpi_ops = &scpi_ops;
- 
--	return devm_of_platform_populate(dev);
-+	ret = devm_of_platform_populate(dev);
-+	if (ret)
-+		scpi_info = NULL;
-+
-+	return ret;
- }
- 
- static const struct of_device_id scpi_of_match[] = {
+diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
+index 1b9c294dd5fc..e25438025b9f 100644
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -294,6 +294,11 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+ 	},
++	{
++		/* Raptor Lake-S CPU */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa76f),
++		.driver_data = (kernel_ulong_t)&intel_th_2x,
++	},
+ 	{
+ 		/* Alder Lake CPU */
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x466f),
 -- 
 2.35.1
 
