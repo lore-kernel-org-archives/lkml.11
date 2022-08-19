@@ -2,130 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3842C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEABC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349276AbiHSOZp (ORCPT
+        id S1349265AbiHSOZw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
+        Fri, 19 Aug 2022 10:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349383AbiHSOZ2 (ORCPT
+        with ESMTP id S1349461AbiHSOZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:25:28 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2066.outbound.protection.outlook.com [40.107.92.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F10612741;
-        Fri, 19 Aug 2022 07:25:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YAIwJXNm8FbJBXZlJFthJKxvH9Dy4QDb8Dksq3LbyewCvRb+9/uyEeVkzPe79wiebNpwcCn+r8Jegek/uF3R0Mc7Febtjm+F0GXlfGrVKvDi6mHudj4z1w8VqhzOFqs4KXo/iJwKd6Sj5+umFUDeYWDqxcOk/6BVDfDQG/Nv3LCd3fyB4XMB1f1mJ1vQyjF704Fn7XhPIkrxWnm590Mgefxm2yhRVStEHhkllivfT+gV8cM1AbuHYCLN98T7h352r2kU9HVy3+ERgR9H7r/EABhIrmlXRz5zQR7Z8EXt76JC+7t6eF/CGMLG2P2pJnKMteBTZOXMciPHzf7gCFIQcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VL9xp/u1j+1Oa1cvAjmNrTWD33AIe6wH7O8RzyczIdg=;
- b=KWE/DALgeJOVKdTOdr2kxrkJ36IaCcJc5VMWEQwmUss1iumZbvsCqd+4HhAlfvtyp2ulT9UXp5UCAsABsSjYiJJc9VzQOBWXB8kuC/yFbudLXg0yzqB523PzAkU+iwgXrhBSFN4EqlR45XoEFQDHFHcbJYuQrpoMZ1QH5fBjhw6O/0lembe4EIPCgeahbGh07EAO6Zd7/rX2QvcC5I3npmDzdWV7lCUtnU5yk0FJkl+nbVT3L89KGdI9npxB93aHfjVknrq32/g5TVHej7ZFazFhsmPe3ik9xSEbzPn462fmRCsrdvvi+ruGmuuLjflbCm8eD/LHxAIhyHA6lh/o6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VL9xp/u1j+1Oa1cvAjmNrTWD33AIe6wH7O8RzyczIdg=;
- b=ylaNbLznK1iIIbu86FmRVPrxAXws6c8dJBio6rxvn3uvZX+7SeBluXSJXwizYcedivGA01XiW3MLn4WTf/iGNVfY5BCX6cdzGx1TjF8sPvKDkaEdmIHbJzR+afZt7JZ4G6gzB9SqgjVy62XVAssQD3tw5+NactiGO9oTeOssvP4=
-Received: from BN0PR04CA0202.namprd04.prod.outlook.com (2603:10b6:408:e9::27)
- by BY5PR12MB4855.namprd12.prod.outlook.com (2603:10b6:a03:1dd::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Fri, 19 Aug
- 2022 14:25:24 +0000
-Received: from BN8NAM11FT105.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e9:cafe::3f) by BN0PR04CA0202.outlook.office365.com
- (2603:10b6:408:e9::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16 via Frontend
- Transport; Fri, 19 Aug 2022 14:25:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT105.mail.protection.outlook.com (10.13.176.183) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5546.7 via Frontend Transport; Fri, 19 Aug 2022 14:25:24 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 19 Aug
- 2022 09:25:22 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <rafael@kernel.org>, Len Brown <lenb@kernel.org>
-CC:     <kherbst@redhat.com>, <nouveau@lists.freedesktop.org>,
-        <hdegoede@redhat.com>, <ddadap@nvidia.com>,
-        <kai.heng.feng@canonical.com>, <Dell.Client.Kernel@dell.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [RFC 1/2] ACPI: OSI: Remove Linux-Dell-Video _OSI string
-Date:   Fri, 19 Aug 2022 09:25:18 -0500
-Message-ID: <20220819142519.5684-2-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220819142519.5684-1-mario.limonciello@amd.com>
-References: <20220819142519.5684-1-mario.limonciello@amd.com>
+        Fri, 19 Aug 2022 10:25:32 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B275FA18A;
+        Fri, 19 Aug 2022 07:25:30 -0700 (PDT)
+Received: from notapiano (unknown [70.107.189.129])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 64F796601DC3;
+        Fri, 19 Aug 2022 15:25:26 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660919128;
+        bh=LVvo/H0yD5IHtK3BCe8kCRuEpXJ/0WbPUX2JGtIkvgQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BRORHC1ycbpuGPFg/CMbY1HXG9CbZw4mD7QI+HegRtsRqLIKpA/blhXZFcCxxTwSe
+         CFPxPAyaltAW76paK8ntAjomzoOPjkNOtVVBeAi2QyofZ2hjkE0B6ZFtIoL8KXYC5H
+         9Uwy6/Vbl5vdJpybntjkT4r/XtG+b10BHFnRmqYHar17voYPOQO+atkovGyYsHZTCQ
+         I/mrcDhrSCILIKryUZfcVvlp/9NgDGzRHqEtcXYzq9B1XoGhk/ugm6JiJ6a7L5fGo9
+         oLDayXKm/kpvfkJ10EN22YLo7a7r7rVTCnpSVRxwt+qj1PZ26gwehcF1fc0feVsogX
+         x24TsgoxwUDQw==
+Date:   Fri, 19 Aug 2022 10:25:22 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     "Nancy.Lin" <nancy.lin@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>, wim@linux-watchdog.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, linux@roeck-us.net,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
+        Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, llvm@lists.linux.dev,
+        singo.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v25 07/10] soc: mediatek: mmsys: add mmsys for support 64
+ reset bits
+Message-ID: <20220819142522.c4o3nrkxfj2r3zd7@notapiano>
+References: <20220711075245.10492-1-nancy.lin@mediatek.com>
+ <20220711075245.10492-8-nancy.lin@mediatek.com>
+ <20220818214715.spbyic34szubx3gi@notapiano>
+ <d7ccb3fb2630c1c0b6dda2990cff72169e5e5d0b.camel@mediatek.com>
+ <12062a2e2957113d40b4bf3c1c62d18418b51a12.camel@mediatek.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 36d5e61f-8b7a-439d-ff28-08da81eea802
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4855:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fvxX2Mt945Sb+79Paa4Y39tOpnT1lH5ECpi22B2IVipv2AnX/XkotHuJeaZBCRz9F4kVOmIbN9XOXB5Z9biMROyFjlqbTZoJxvVwEin7+IthrkCa3uPjbZWpZl2kMdrUISFb+tYxetvmq8PSSO4uk/Q8JlT7TLZNhzlQ6TShXQgDmO0RnqLnhg1AL0CFd9Dzfuk6/DcsU9bXYl8j6XB6WWKsYzCh56dOqXdFLnnODPYu130Vr2U66dfI3HowPTK3lZKTzzP3CUP7khCs0xHUXBXIAvtP7T599hjNbd7kNPEK194HZ5cMhkr5kplzcsHCQsA0oS2a/E5BZ/k6eCrgYG7NcvF4EIhOBuL4d3OCDhVGaUIk1srR2HaV/WNi3N+zqjGq0Pr3bWJVFIwKRpsKHs4XcXBk/DYLcfWBSPdyyY35ZWAt83RQIHtidgVttx+0I6MTq62K+fysilcuMdoHJhJ78+Fx2EyyEPvVjQvL4PaRUn57/opIc545uRBoqf17PoadLeMMBU7r2K4qLGcpkm6iP4+aAaXrEbs9yHRM/BSmW37yAwWlalUZMuB00FqtYiIfsUR3yF5upV1ccAM8B3I6nNY7ClvU0x4ROFK2N3C5SEufLESPY1oQYi6e4peZf+u5vLBrflDLGJ6E10WnvNZKBPY+WtsagqUgAMrRnTADU5u7nn/ohJgMJS5mB47rRdQZH/847vPvc48SdnFiKkeLlrZED/MV3LyTrbmvWww4kGy47d05pCH46mdG2V5P0SfT8PD5MdmMv6rFjqNbcbLSv2jOIG9Acv/4kRQX9AnBRYkN6ibHhjqiFWizWzQ4
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(136003)(396003)(46966006)(36840700001)(40470700004)(7416002)(36756003)(5660300002)(8936002)(82740400003)(82310400005)(41300700001)(6666004)(44832011)(4326008)(70586007)(110136005)(316002)(8676002)(70206006)(478600001)(54906003)(26005)(1076003)(47076005)(426003)(186003)(336012)(16526019)(2906002)(83380400001)(2616005)(7696005)(40480700001)(81166007)(356005)(40460700003)(86362001)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 14:25:24.6533
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36d5e61f-8b7a-439d-ff28-08da81eea802
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT105.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4855
+In-Reply-To: <12062a2e2957113d40b4bf3c1c62d18418b51a12.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This string was introduced because drivers for NVIDIA hardware
-didn't support RTD3 in the past.  This is no longer the case, and
-so vendors shouldn't be using this string to modify ASL anymore.
+On Fri, Aug 19, 2022 at 12:13:23PM +0800, Nancy.Lin wrote:
+> Hi Nicolas,
+> 
+> 
+> On Fri, 2022-08-19 at 10:09 +0800, Nancy.Lin wrote:
+> > Hi Nicolas,
+> > 
+> > Thanks for the review.
+> > 
+> > On Thu, 2022-08-18 at 17:47 -0400, Nícolas F. R. A. Prado wrote:
+> > > Hi Nancy,
+> > > 
+> > > On Mon, Jul 11, 2022 at 03:52:42PM +0800, Nancy.Lin wrote:
+> > > [..]
+> > > >  static const struct mtk_mmsys_driver_data
+> > > > mt2701_mmsys_driver_data
+> > > > = {
+> > > >  	.clk_driver = "clk-mt2701-mm",
+> > > >  	.routes = mmsys_default_routing_table,
+> > > > @@ -86,6 +88,7 @@ static const struct mtk_mmsys_driver_data
+> > > > mt8173_mmsys_driver_data = {
+> > > >  	.routes = mmsys_default_routing_table,
+> > > >  	.num_routes = ARRAY_SIZE(mmsys_default_routing_table),
+> > > >  	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
+> > > > +	.num_resets = 32,
+> > > >  };
+> > > >  
+> > > >  static const struct mtk_mmsys_match_data mt8173_mmsys_match_data
+> > > > =
+> > > > {
+> > > > @@ -100,6 +103,7 @@ static const struct mtk_mmsys_driver_data
+> > > > mt8183_mmsys_driver_data = {
+> > > >  	.routes = mmsys_mt8183_routing_table,
+> > > >  	.num_routes = ARRAY_SIZE(mmsys_mt8183_routing_table),
+> > > >  	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
+> > > > +	.num_resets = 32,
+> > > >  };
+> > > >  
+> > > >  static const struct mtk_mmsys_match_data mt8183_mmsys_match_data
+> > > > =
+> > > > {
+> > > > @@ -114,6 +118,7 @@ static const struct mtk_mmsys_driver_data
+> > > > mt8186_mmsys_driver_data = {
+> > > >  	.routes = mmsys_mt8186_routing_table,
+> > > >  	.num_routes = ARRAY_SIZE(mmsys_mt8186_routing_table),
+> > > >  	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
+> > > > +	.num_resets = 32,
+> > > >  };
+> > > 
+> > > [..]
+> > > > @@ -351,18 +362,6 @@ static int mtk_mmsys_probe(struct
+> > > > platform_device *pdev)
+> > > >  		return ret;
+> > > >  	}
+> > > >  
+> > > > -	spin_lock_init(&mmsys->lock);
+> > > > -
+> > > > -	mmsys->rcdev.owner = THIS_MODULE;
+> > > > -	mmsys->rcdev.nr_resets = 32;
+> > > 
+> > > The number of resets was previously always set to 32, and now
+> > > you're
+> > > instead
+> > > setting it based on num_resets from each machine. The issue is,
+> > > you're
+> > > forgetting a bunch of them.
+> > > 
+> > > mt8192 didn't get a num_reset, so this commit breaks the display on
+> > > mt8192 based
+> > > devices. But mt8192 isn't the only one, there are other platforms
+> > > missing this
+> > > property. Please set num_resets to 32 in every single one of them,
+> > > otherwise
+> > > there will be display regressions.
+> > > 
+> > > Thanks,
+> > > Nícolas
+> > 
+> > It's my mistake. I will set num_resets to 32 for every mmsys driver.
+> > 
+> > Thanks,
+> > Nancy
+> 
+> After review the code, I think only the mmsys driver with the
+> sw0_rst_offset setting should set num_resets to 32, otherwise it would
+> set wrong addr in the mtk_mmsys_reset_update() function. Those mmsys
+> without sw0_rst_offset set should not set num_resets to 32.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
- drivers/acpi/osi.c | 9 ---------
- 1 file changed, 9 deletions(-)
+I don't think that's the case. num_resets and sw0_rst_offset are completely
+unrelated in the code. sw0_rst_offset just gives the offset from the base
+mmsys memory to the register that manages resets; it can be 0 in which case the
+reset register would be right at the start of the mmsys iospace.
 
-diff --git a/drivers/acpi/osi.c b/drivers/acpi/osi.c
-index 9f6853809138..c2f6b2f553d9 100644
---- a/drivers/acpi/osi.c
-+++ b/drivers/acpi/osi.c
-@@ -44,15 +44,6 @@ osi_setup_entries[OSI_STRING_ENTRIES_MAX] __initdata = {
- 	{"Processor Device", true},
- 	{"3.0 _SCP Extensions", true},
- 	{"Processor Aggregator Device", true},
--	/*
--	 * Linux-Dell-Video is used by BIOS to disable RTD3 for NVidia graphics
--	 * cards as RTD3 is not supported by drivers now.  Systems with NVidia
--	 * cards will hang without RTD3 disabled.
--	 *
--	 * Once NVidia drivers officially support RTD3, this _OSI strings can
--	 * be removed if both new and old graphics cards are supported.
--	 */
--	{"Linux-Dell-Video", true},
- 	/*
- 	 * Linux-Lenovo-NV-HDMI-Audio is used by BIOS to power on NVidia's HDMI
- 	 * audio device which is turned off for power-saving in Windows OS.
--- 
-2.34.1
+nr_resets, which is set by num_resets, on the other hand, seems to be used in a
+single place: of_reset_simple_xlate() in drivers/reset/core.c. And the logic
+there is really simple: if you pass a reset id greater than nr_resets, you will
+get an error. So when you leave num_resets unset (0) for any of the platforms,
+you're making all reset registrations in the DT fail.
 
+So I'm really confident that we need num_resets = 32 on *all* platforms (except
+the ones that have 64 of course, we just can't leave them empty).
+
+Thanks,
+Nícolas
