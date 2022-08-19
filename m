@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88281C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4FFC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354202AbiHSQtH (ORCPT
+        id S1354208AbiHSQtN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
+        Fri, 19 Aug 2022 12:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353923AbiHSQp3 (ORCPT
+        with ESMTP id S1353922AbiHSQqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80CD112302;
-        Fri, 19 Aug 2022 09:11:31 -0700 (PDT)
+        Fri, 19 Aug 2022 12:46:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD38F12AD07;
+        Fri, 19 Aug 2022 09:12:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB846B82823;
-        Fri, 19 Aug 2022 16:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20824C433C1;
-        Fri, 19 Aug 2022 16:10:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E133C617A5;
+        Fri, 19 Aug 2022 16:12:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE75EC433C1;
+        Fri, 19 Aug 2022 16:12:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925443;
-        bh=v9YBIuWcbbX6Kq7dctppK9xPhA6DCGrsynSFKlqoyns=;
+        s=korg; t=1660925522;
+        bh=Ykp4P4ldMgeMoPT9SPUs2pOqGoxHg8uMxpZlcbUIuw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fn5Et/C1s1SvU0UDKTrk1NhvFdG4iM4dvsbTp3YagaxpTFCpajMUi4PZdQhf6QWl5
-         7dn4L7ax0rw2UbJ3JwmraRkWiiQCfJ6jGqIj5mDNQIP8X/GY6TCpg5dahXt+GfWAk1
-         VC/3N5a77NZ3StxXroefexxQbiZGGoefyPqVKyB4=
+        b=XVIldvKc7kQM58PfHwhKRZOIwQsh0nchoSn+yg2xhkqW7b/eYAJw3GXGGMpWnoFrC
+         fruq0+oP0hs+SJpFKjWaF5o1p59Yh0bXjqO4kcUDezJTH7CjtM88M57bEagw3Mea3X
+         S7K+6m6hAKl1u0A0y/7ligU5hqIOeFTvvJ88j0c4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 492/545] um: Allow PM with suspend-to-idle
-Date:   Fri, 19 Aug 2022 17:44:22 +0200
-Message-Id: <20220819153851.466721105@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.10 518/545] ext4: fix warning in ext4_iomap_begin as race between bmap and write
+Date:   Fri, 19 Aug 2022 17:44:48 +0200
+Message-Id: <20220819153852.709487696@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,139 +49,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 92dcd3d31843fbe1a95d880dc912e1f6beac6632 ]
+commit 51ae846cff568c8c29921b1b28eb2dfbcd4ac12d upstream.
 
-In order to be able to experiment with suspend in UML, add the
-minimal work to be able to suspend (s2idle) an instance of UML,
-and be able to wake it back up from that state with the USR1
-signal sent to the main UML process.
+We got issue as follows:
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
+RIP: 0010:ext4_iomap_begin+0x182/0x5d0
+RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
+RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
+R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
+R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
+FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ iomap_apply+0x119/0x570
+ iomap_bmap+0x124/0x150
+ ext4_bmap+0x14f/0x250
+ bmap+0x55/0x80
+ do_vfs_ioctl+0x952/0xbd0
+ __x64_sys_ioctl+0xc6/0x170
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Above issue may happen as follows:
+          bmap                    write
+bmap
+  ext4_bmap
+    iomap_bmap
+      ext4_iomap_begin
+                            ext4_file_write_iter
+			      ext4_buffered_write_iter
+			        generic_perform_write
+				  ext4_da_write_begin
+				    ext4_da_write_inline_data_begin
+				      ext4_prepare_inline_data
+				        ext4_create_inline_data
+					  ext4_set_inode_flag(inode,
+						EXT4_INODE_INLINE_DATA);
+      if (WARN_ON_ONCE(ext4_has_inline_data(inode))) ->trigger bug_on
+
+To solved above issue hold inode lock in ext4_bamp.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Link: https://lore.kernel.org/r/20220617013935.397596-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/Kconfig                    |  5 +++++
- arch/um/include/shared/kern_util.h |  2 ++
- arch/um/include/shared/os.h        |  1 +
- arch/um/kernel/um_arch.c           | 25 +++++++++++++++++++++++++
- arch/um/os-Linux/signal.c          | 14 +++++++++++++-
- 5 files changed, 46 insertions(+), 1 deletion(-)
+ fs/ext4/inode.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/arch/um/Kconfig b/arch/um/Kconfig
-index 4b799fad8b48..1c57599b82fa 100644
---- a/arch/um/Kconfig
-+++ b/arch/um/Kconfig
-@@ -192,3 +192,8 @@ config UML_TIME_TRAVEL_SUPPORT
- endmenu
- 
- source "arch/um/drivers/Kconfig"
-+
-+config ARCH_SUSPEND_POSSIBLE
-+	def_bool y
-+
-+source "kernel/power/Kconfig"
-diff --git a/arch/um/include/shared/kern_util.h b/arch/um/include/shared/kern_util.h
-index ccafb62e8cce..9c08e728a675 100644
---- a/arch/um/include/shared/kern_util.h
-+++ b/arch/um/include/shared/kern_util.h
-@@ -39,6 +39,8 @@ extern int is_syscall(unsigned long addr);
- 
- extern void timer_handler(int sig, struct siginfo *unused_si, struct uml_pt_regs *regs);
- 
-+extern void uml_pm_wake(void);
-+
- extern int start_uml(void);
- extern void paging_init(void);
- 
-diff --git a/arch/um/include/shared/os.h b/arch/um/include/shared/os.h
-index f467d28fc0b4..2f31d44d892e 100644
---- a/arch/um/include/shared/os.h
-+++ b/arch/um/include/shared/os.h
-@@ -241,6 +241,7 @@ extern int set_signals(int enable);
- extern int set_signals_trace(int enable);
- extern int os_is_signal_stack(void);
- extern void deliver_alarm(void);
-+extern void register_pm_wake_signal(void);
- 
- /* util.c */
- extern void stack_protections(unsigned long address);
-diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
-index 26af24b5d900..52e2e2a3e4ae 100644
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -13,6 +13,7 @@
- #include <linux/sched.h>
- #include <linux/sched/task.h>
- #include <linux/kmsg_dump.h>
-+#include <linux/suspend.h>
- 
- #include <asm/processor.h>
- #include <asm/sections.h>
-@@ -385,3 +386,27 @@ void *text_poke(void *addr, const void *opcode, size_t len)
- void text_poke_sync(void)
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3219,13 +3219,15 @@ static sector_t ext4_bmap(struct address
  {
- }
+ 	struct inode *inode = mapping->host;
+ 	journal_t *journal;
++	sector_t ret = 0;
+ 	int err;
+ 
++	inode_lock_shared(inode);
+ 	/*
+ 	 * We can get here for an inline file via the FIBMAP ioctl
+ 	 */
+ 	if (ext4_has_inline_data(inode))
+-		return 0;
++		goto out;
+ 
+ 	if (mapping_tagged(mapping, PAGECACHE_TAG_DIRTY) &&
+ 			test_opt(inode->i_sb, DELALLOC)) {
+@@ -3264,10 +3266,14 @@ static sector_t ext4_bmap(struct address
+ 		jbd2_journal_unlock_updates(journal);
+ 
+ 		if (err)
+-			return 0;
++			goto out;
+ 	}
+ 
+-	return iomap_bmap(mapping, block, &ext4_iomap_ops);
++	ret = iomap_bmap(mapping, block, &ext4_iomap_ops);
 +
-+#ifdef CONFIG_PM_SLEEP
-+void uml_pm_wake(void)
-+{
-+	pm_system_wakeup();
-+}
-+
-+static int init_pm_wake_signal(void)
-+{
-+	/*
-+	 * In external time-travel mode we can't use signals to wake up
-+	 * since that would mess with the scheduling. We'll have to do
-+	 * some additional work to support wakeup on virtio devices or
-+	 * similar, perhaps implementing a fake RTC controller that can
-+	 * trigger wakeup (and request the appropriate scheduling from
-+	 * the external scheduler when going to suspend.)
-+	 */
-+	if (time_travel_mode != TT_MODE_EXTERNAL)
-+		register_pm_wake_signal();
-+	return 0;
-+}
-+
-+late_initcall(init_pm_wake_signal);
-+#endif
-diff --git a/arch/um/os-Linux/signal.c b/arch/um/os-Linux/signal.c
-index b58bc68cbe64..0a2ea84033b4 100644
---- a/arch/um/os-Linux/signal.c
-+++ b/arch/um/os-Linux/signal.c
-@@ -136,6 +136,16 @@ void set_sigstack(void *sig_stack, int size)
- 		panic("enabling signal stack failed, errno = %d\n", errno);
++out:
++	inode_unlock_shared(inode);
++	return ret;
  }
  
-+static void sigusr1_handler(int sig, struct siginfo *unused_si, mcontext_t *mc)
-+{
-+	uml_pm_wake();
-+}
-+
-+void register_pm_wake_signal(void)
-+{
-+	set_handler(SIGUSR1);
-+}
-+
- static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
- 	[SIGSEGV] = sig_handler,
- 	[SIGBUS] = sig_handler,
-@@ -145,7 +155,9 @@ static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
- 
- 	[SIGIO] = sig_handler,
- 	[SIGWINCH] = sig_handler,
--	[SIGALRM] = timer_alarm_handler
-+	[SIGALRM] = timer_alarm_handler,
-+
-+	[SIGUSR1] = sigusr1_handler,
- };
- 
- static void hard_handler(int sig, siginfo_t *si, void *p)
--- 
-2.35.1
-
+ static int ext4_readpage(struct file *file, struct page *page)
 
 
