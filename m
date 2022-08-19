@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C1FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DC5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350923AbiHSP7E (ORCPT
+        id S1350930AbiHSP7H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
+        Fri, 19 Aug 2022 11:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351042AbiHSP4S (ORCPT
+        with ESMTP id S1351050AbiHSP4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:56:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E14B108129;
-        Fri, 19 Aug 2022 08:51:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CC59B827F8;
-        Fri, 19 Aug 2022 15:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D64C433C1;
-        Fri, 19 Aug 2022 15:51:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924272;
-        bh=lwen1EgOL0WIJxndcyGGj6vv0zvik1mBKliZtD3eSSU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M4DKH9xflKrUrbYdwgcqKUDb5DqNZKh9cRzLbBxy9nTv8U+N8YugJ8K9qLNHP6xyW
-         ginMcDDToW1Em09x2k3Kx+gT/1ylimkc24525hxbZ5TJcWcOaVgpQeQCZ8FZJeGeTd
-         P1c60xqV/ediVjvfvEWPFVlQgNFxNAWUlv9ry6/s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 113/545] ARM: dts: imx7d-colibri-emmc: add cpu1 supply
-Date:   Fri, 19 Aug 2022 17:38:03 +0200
-Message-Id: <20220819153834.347483067@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 19 Aug 2022 11:56:19 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA81104B20
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:51:17 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id bb16so5170936oib.11
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=xgwTvjMwaFjXHhe/IO+w6T7DhkiHCUWjRJpOUsdchd0=;
+        b=o9y70K1U/ZFzxXmKgJhnyH/S9odUAA6e++Ppu/HoYfGlet8DA1dkwSjRQH6yV+yZ7n
+         yX3TF9mv9X40MfU1n/G/iPTAJYhY5DfBmEXlm5Kk0eHVtfslgQFhzNy8MDQVwT+in96d
+         0QgmKJiJwl3JdNVnAcG6s4ydQhb5KxEh4ha+N7UZQr9fXN5Cnf6Qt52h2oNtamyyRekO
+         J3rlTjz3kq5h5mlDAVGVisi21fgEV54fLjq7mGNucxWRBS1q2/kMN4Co+BHooEIT979n
+         Pmm/GyWAEhbKElFesidIPmEEk8HS68Z/1qTGIHTa3rO86qZoNH4akiWwNwjZNHhq/qlR
+         IpWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=xgwTvjMwaFjXHhe/IO+w6T7DhkiHCUWjRJpOUsdchd0=;
+        b=rco+S27loD8q+iHm5pzwXAFQBJGqdG4U351zDE1prH7l0j2xWfcJ9RicTE6KdtzOWg
+         KK2cHIVZzF1OOS/KE5yTaJxjjsD6NldSZxFLmA7W/FYM8f1EahqorDXG57Y90QnylRxj
+         TxZQ44k8XBMVuVjyme4FL4ctEzHdCEHCAPON2FhT6g89UL8VL4Tx+pExEYNkXp0/Krs5
+         lXXsoaOMCz/WLMB/RJEGox5PxQCXUH0ERgVRzEe060ijaajulez43eFD1+I2RAkldmA8
+         ki/y71dXOKke8/H6xBVerRPkgWLaI+vbZNG1jwNUNz7Qw0cAhyfeebYxRPujjmstqv7N
+         pdCA==
+X-Gm-Message-State: ACgBeo3FY0y06pRzf1II66z/Q3WIJWFf+wmCcazQPHymw0H6aVJre4qr
+        leV+HWYZ3ioMS7cjQAaVqxVd7y47r7RwZL4bImE=
+X-Google-Smtp-Source: AA6agR7S0xUz50QPqMSnBBMcfiJgBBVAfan5W+tNffrGBgq8Lr/C6R5EhYRVOsOGMWIzKSB1eFOpWCVHozZt4n6o0Jg=
+X-Received: by 2002:a05:6808:1491:b0:343:7543:1a37 with SMTP id
+ e17-20020a056808149100b0034375431a37mr3653355oiw.106.1660924276437; Fri, 19
+ Aug 2022 08:51:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220818025912.87327-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20220818025912.87327-1-yang.lee@linux.alibaba.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri, 19 Aug 2022 11:51:05 -0400
+Message-ID: <CADnq5_OX48EnKN8eMaD9tNhiBSME=CYLzvr0-KVP2vXYGBHDaQ@mail.gmail.com>
+Subject: Re: [PATCH -next] drm/amd/display: remove unneeded semicolon
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     airlied@linux.ie, sunpeng.li@amd.com,
+        Abaci Robot <abaci@linux.alibaba.com>, Xinhui.Pan@amd.com,
+        Rodrigo.Siqueira@amd.com, linux-kernel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        alexander.deucher@amd.com, christian.koenig@amd.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Applied.  Thanks!
 
-[ Upstream commit ba28db60d34271e8a3cf4d7158d71607e8b1e57f ]
-
-Each cpu-core is supposed to list its supply separately, add supply for
-cpu1.
-
-Fixes: 2d7401f8632f ("ARM: dts: imx7d: Add cpu1 supply")
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/imx7d-colibri-emmc.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-index af39e5370fa1..045e4413d339 100644
---- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-@@ -13,6 +13,10 @@ memory@80000000 {
- 	};
- };
- 
-+&cpu1 {
-+	cpu-supply = <&reg_DCDC2>;
-+};
-+
- &gpio6 {
- 	gpio-line-names = "",
- 			  "",
--- 
-2.35.1
-
-
-
+On Wed, Aug 17, 2022 at 10:59 PM Yang Li <yang.lee@linux.alibaba.com> wrote:
+>
+> Semicolon is not required after curly braces.
+>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1918
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/gpu/drm/amd/display/dc/clk_mgr/dcn314/dcn314_clk_mgr.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn314/dcn314_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn314/dcn314_clk_mgr.c
+> index beb025cd3dc2..1995e1d708d9 100644
+> --- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn314/dcn314_clk_mgr.c
+> +++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn314/dcn314_clk_mgr.c
+> @@ -614,7 +614,7 @@ static void dcn314_clk_mgr_helper_populate_bw_params(struct clk_mgr_internal *cl
+>                 bw_params->clk_table.entries[i].dppclk_mhz = max_dppclk;
+>                 bw_params->clk_table.entries[i].wck_ratio = convert_wck_ratio(
+>                         clock_table->DfPstateTable[min_pstate].WckRatio);
+> -       };
+> +       }
+>
+>         /* Make sure to include at least one entry at highest pstate */
+>         if (max_pstate != min_pstate || i == 0) {
+> --
+> 2.20.1.7.g153144c
+>
