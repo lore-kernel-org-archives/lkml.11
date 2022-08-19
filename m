@@ -2,143 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40505C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3CCC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347430AbiHSIw4 (ORCPT
+        id S1347464AbiHSIxy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
+        Fri, 19 Aug 2022 04:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343696AbiHSIwy (ORCPT
+        with ESMTP id S244382AbiHSIxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:52:54 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF56EA8A0
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:52:53 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id h4so2861703qtj.11
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:52:53 -0700 (PDT)
+        Fri, 19 Aug 2022 04:53:52 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151EB66A4E
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:53:51 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id s11so4823822edd.13
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:53:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=jASm5F7IG0cL7Edz8ZOf/AbyNJZ6sd775ispaeESRb0=;
-        b=TRa8ABit0XQvSbDR2dM/OYiebLfodgmI9pv5uHw4sJ1x5pS2tAP3hILJXO22stjVWb
-         SsR5IN16WTY4P92/+DPl5Ow511nagAwV5YqxOlirPhX8SP7KStqpyD3Ig1kS8ontazEr
-         Hb5Uf67GcRPKsm25fBmfy6toELEBKSu0uUnNnLJsSe19J55ZEBSMEZxt06Jkwymx/b+g
-         tgt/bbCv1ZkYkPObpzne8bGuFL9Vf3tpTMXnM3NKXtmZEVGMVzU1XwBNwHnvovNly1XY
-         z3/26FYTFgLvsXsbzYoT7tJnnSJ5uISbUGpqQnE/+4SmVl1TLTodMyRp1xFvyEg0z5B6
-         5nyw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=hxfDpHx5aBjdPJ7ut0oRiSJJNqXdwJRmBzKw30DQFLU=;
+        b=C4W/cvGB1ZFq/B426WjT28e3uwBvSfedlvMqfuKLuIeg2YwKRMk8F84od51Du2DlN7
+         mAJI3/widzSOOfHXmjFrqyOkwQFH7xe9e6n93Em7+/l/Kc101oP9O/43FchQtYk3lVGF
+         nq/XvgoQjaAnGZxude1NKPPRgcsShhR1UG+NAmiE07Pmz1nmhyL6FjT7772ACNk3Ienu
+         nnu9vZfEO8sMoRTscvOlyT9H0TIJ/oRX2azumgVe22wblkZEBq3q+y2NvNmfvuuFQrYg
+         ckmIL6nycYulPISHnux/owkecdKI/XsahOA1MYpcYmlyzlfMYt/UOKRl/bTChMMCm46h
+         YGtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=jASm5F7IG0cL7Edz8ZOf/AbyNJZ6sd775ispaeESRb0=;
-        b=u8R8VwOmz7kzf8XooV9lDgL2xMkP5Q1NUvIfEIMzNaW3tLacyV2JZfQXVPky9Qg+aK
-         XbTJtxUAJ1fnlLta1BMy91FcIW0pSkRFaC9gTlbSKFLJTOwCBP1PWR33HltbqLwtKN4u
-         U9Sk0liNOQqPyYf7qcfbbG2N74hsl3ElhvZf8Os+Kwtvo1btcEp2HDy5VnklC3uKqxTm
-         KkDYiqthuqlDOqieFV0pSsYD+wm9W5EPFPWmSprky8M2N7RYfS2bgJ9WJz+kTyTtj6Lz
-         +g3WdH35J38kOa0i5vBjz6RSt6RW5ndHHrQLnkXyQD+wvs3rz3jWb1AHZkA4/d4/BOaL
-         hTGA==
-X-Gm-Message-State: ACgBeo1oQn9auxpQAvPNMBQKv1YoRG0si0nDBu/2LElvnxmVyRPqXmA9
-        q9wv97+BFKYi2Zd2GM4sHVE=
-X-Google-Smtp-Source: AA6agR4AYmNMNf30kl/3P5ZoHdVZkf0G2VyOjgLq3MTmBmirkaXdSrwX7sXzYxmDCuKFMrlu3u5GjQ==
-X-Received: by 2002:ac8:5d89:0:b0:344:7c2d:92ba with SMTP id d9-20020ac85d89000000b003447c2d92bamr5451296qtx.124.1660899172229;
-        Fri, 19 Aug 2022 01:52:52 -0700 (PDT)
-Received: from sophie ([89.46.62.64])
-        by smtp.gmail.com with ESMTPSA id q1-20020a05620a0d8100b006bb2661f3fasm3648840qkl.133.2022.08.19.01.52.51
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=hxfDpHx5aBjdPJ7ut0oRiSJJNqXdwJRmBzKw30DQFLU=;
+        b=OsRoGW9UG46b2VgZn7uWBDZ6KWPbaNI1ik5Qi06uudkqdNGJagysA6MQ9TulRUWlIp
+         J0UR4QQw9fUKVDRhHPtxUXTcaarhCVeFPd1O2JY+lcdFylEMBnQ0Um00Q7mmxyKjOBZa
+         VYBCrwUd0xK5E+n+qKGhriyXmwM8WU8QeHY5DhbOpxYPqqPIG4C+EBZ3sQ3h6Lc+6zCI
+         O8FYzoNCjp4eygh/CUtTIeVQJxSG3tN2IVgE+MVTsiq7H1ziGnAXA29u73NCAoWT8xv9
+         DoRJJi21tcI+zqFjSZw+tjR+swHEgm/MA1OpqGopur8tHOrPuoxVk7VpVBGuiNztvPqC
+         djZg==
+X-Gm-Message-State: ACgBeo3Rm6aV5Ocx0rVBl20WuUofPEXh7h5bZzUXfY0BMjN0/jBqzYbk
+        Vz8xqbOB5ZHwECxLTsKKUpw=
+X-Google-Smtp-Source: AA6agR5iCwqiQtFvUmlCA4t99JTfX4nJh7lNYQbLi5S34idYBiEekRZTHdrY15vGlnbr9QPbGyq2xQ==
+X-Received: by 2002:a05:6402:3323:b0:43d:65fc:8d29 with SMTP id e35-20020a056402332300b0043d65fc8d29mr5558051eda.251.1660899229576;
+        Fri, 19 Aug 2022 01:53:49 -0700 (PDT)
+Received: from nam-dell.ucebne.fiit.stuba.sk ([147.175.148.17])
+        by smtp.gmail.com with ESMTPSA id b9-20020a17090630c900b0073c9d68ca0dsm1084261ejb.133.2022.08.19.01.53.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 01:52:51 -0700 (PDT)
-From:   Rebecca Mckeever <remckee0@gmail.com>
-To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     David Hildenbrand <david@redhat.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Shaoqin Huang <shaoqin.huang@intel.com>
-Subject: [PATCH v2 7/8] memblock tests: add tests for memblock_*bottom_up functions
-Date:   Fri, 19 Aug 2022 01:34:55 -0700
-Message-Id: <dc0ab2f907e746ea8304ab0fb8e093192711e6f4.1660897732.git.remckee0@gmail.com>
+        Fri, 19 Aug 2022 01:53:49 -0700 (PDT)
+From:   Nam Cao <namcaov@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        namcaov@gmail.com, hdegoede@redhat.com, Larry.Finger@lwfinger.net
+Subject: [PATCH 0/7] staging: rtl8723bs: remove dead functions
+Date:   Fri, 19 Aug 2022 10:52:49 +0200
+Message-Id: <cover.1660898432.git.namcaov@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1660897732.git.remckee0@gmail.com>
-References: <cover.1660897732.git.remckee0@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add simple tests for memblock_set_bottom_up() and memblock_bottom_up().
+Remove some functions in this driver because they are not used anywhere.
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Shaoqin Huang <shaoqin.huang@intel.com>
-Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
----
- tools/testing/memblock/tests/basic_api.c | 45 ++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+Nam Cao (7):
+  staging: rtl8723bs: remove function rtw_odm_dbg_comp_msg
+  staging: rtl8723bs: remove function rtw_get_ch_setting_union
+  staging: rtl8723bs: remove function rtw_odm_ability_set
+  staging: rtl8723bs: remove function GetFractionValueFromString
+  staging: rtl8723bs: remove function IsCommentString
+  staging: rtl8723bs: remove function rtw_odm_adaptivity_parm_msg
+  staging: rtl8723bs: remove function rtw_odm_dbg_comp_set
 
-diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-index ea79396e4611..c7490291c485 100644
---- a/tools/testing/memblock/tests/basic_api.c
-+++ b/tools/testing/memblock/tests/basic_api.c
-@@ -1679,6 +1679,50 @@ static int memblock_free_checks(void)
- 	return 0;
- }
- 
-+static int memblock_set_bottom_up_check(void)
-+{
-+	prefix_push("memblock_set_bottom_up");
-+
-+	memblock_set_bottom_up(false);
-+	ASSERT_EQ(memblock.bottom_up, false);
-+	memblock_set_bottom_up(true);
-+	ASSERT_EQ(memblock.bottom_up, true);
-+
-+	reset_memblock_attributes();
-+	test_pass_pop();
-+
-+	return 0;
-+}
-+
-+static int memblock_bottom_up_check(void)
-+{
-+	prefix_push("memblock_bottom_up");
-+
-+	memblock_set_bottom_up(false);
-+	ASSERT_EQ(memblock_bottom_up(), memblock.bottom_up);
-+	ASSERT_EQ(memblock_bottom_up(), false);
-+	memblock_set_bottom_up(true);
-+	ASSERT_EQ(memblock_bottom_up(), memblock.bottom_up);
-+	ASSERT_EQ(memblock_bottom_up(), true);
-+
-+	reset_memblock_attributes();
-+	test_pass_pop();
-+
-+	return 0;
-+}
-+
-+static int memblock_bottom_up_checks(void)
-+{
-+	test_print("Running memblock_*bottom_up tests...\n");
-+
-+	prefix_reset();
-+	memblock_set_bottom_up_check();
-+	prefix_reset();
-+	memblock_bottom_up_check();
-+
-+	return 0;
-+}
-+
- int memblock_basic_checks(void)
- {
- 	memblock_initialization_check();
-@@ -1686,6 +1730,7 @@ int memblock_basic_checks(void)
- 	memblock_reserve_checks();
- 	memblock_remove_checks();
- 	memblock_free_checks();
-+	memblock_bottom_up_checks();
- 
- 	return 0;
- }
+ drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 21 -------
+ drivers/staging/rtl8723bs/core/rtw_odm.c      | 44 ---------------
+ drivers/staging/rtl8723bs/hal/hal_com.c       | 55 -------------------
+ drivers/staging/rtl8723bs/include/hal_com.h   |  5 --
+ .../staging/rtl8723bs/include/rtw_mlme_ext.h  |  1 -
+ drivers/staging/rtl8723bs/include/rtw_odm.h   |  4 --
+ 6 files changed, 130 deletions(-)
+
 -- 
 2.25.1
 
