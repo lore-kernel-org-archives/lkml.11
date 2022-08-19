@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB212C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B294C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354239AbiHSQti (ORCPT
+        id S1354246AbiHSQtn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
+        Fri, 19 Aug 2022 12:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353983AbiHSQr5 (ORCPT
+        with ESMTP id S1354110AbiHSQr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:47:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F00112F81;
-        Fri, 19 Aug 2022 09:13:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AD212C36B;
+        Fri, 19 Aug 2022 09:12:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 585C0612DF;
-        Fri, 19 Aug 2022 16:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F8E2C433D6;
-        Fri, 19 Aug 2022 16:12:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1572618BC;
+        Fri, 19 Aug 2022 16:12:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D54FAC433D6;
+        Fri, 19 Aug 2022 16:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925531;
-        bh=jA/mBvGai79bW7LGK0aSmDu1XO3csevvtOtZ7HQSAvQ=;
+        s=korg; t=1660925550;
+        bh=5lA1HArRxp2DQ+Sz9uGv4aPDu9GIfbZKVBSUtLiEdig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HvP2V+F73UGD1pMFZMTa5QGjkDXO1Q6MYgClSOqiamfARKtYRa3wmJg0Wjerq4mQ/
-         r5/0F6D8uJXcdQsQvqZdXmiMUDPtab9vPxZUP+spKOC2CWwhLxiMphRVMMPrYk3WPi
-         rUijT/2dRoXiPFhclyAEfK2PHo+0UgBTx3Ipq+B0=
+        b=o0NfroIKF2UxfFCxbXgM8rWY74y0xK08spzy61jWh6W3utPPM25FbMem2AnMfaB67
+         RUYKu/FxSLGkX5gyunjMAMxnHQuDsyS4DPnXwNaoOxTDA0DXbTvW2esJJFwu5I3lQ7
+         rj7Mdg8VU55ygUK/FUt29fcb8ApvBGI7hvrEhqHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>
-Subject: [PATCH 5.10 521/545] ext4: update s_overhead_clusters in the superblock during an on-line resize
-Date:   Fri, 19 Aug 2022 17:44:51 +0200
-Message-Id: <20220819153852.859330401@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.10 526/545] dm raid: fix address sanitizer warning in raid_status
+Date:   Fri, 19 Aug 2022 17:44:56 +0200
+Message-Id: <20220819153853.100177933@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,45 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit de394a86658ffe4e89e5328fd4993abfe41b7435 upstream.
+commit 1fbeea217d8f297fe0e0956a1516d14ba97d0396 upstream.
 
-When doing an online resize, the on-disk superblock on-disk wasn't
-updated.  This means that when the file system is unmounted and
-remounted, and the on-disk overhead value is non-zero, this would
-result in the results of statfs(2) to be incorrect.
+There is this warning when using a kernel with the address sanitizer
+and running this testsuite:
+https://gitlab.com/cki-project/kernel-tests/-/tree/main/storage/swraid/scsi_raid
 
-This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
-calculation to account for the reserved gdt blocks"), 85d825dbf489
-("ext4: force overhead calculation if the s_overhead_cluster makes no
-sense"), and eb7054212eac ("ext4: update the cached overhead value in
-the superblock").
+==================================================================
+BUG: KASAN: slab-out-of-bounds in raid_status+0x1747/0x2820 [dm_raid]
+Read of size 4 at addr ffff888079d2c7e8 by task lvcreate/13319
+CPU: 0 PID: 13319 Comm: lvcreate Not tainted 5.18.0-0.rc3.<snip> #1
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x6a/0x9c
+ print_address_description.constprop.0+0x1f/0x1e0
+ print_report.cold+0x55/0x244
+ kasan_report+0xc9/0x100
+ raid_status+0x1747/0x2820 [dm_raid]
+ dm_ima_measure_on_table_load+0x4b8/0xca0 [dm_mod]
+ table_load+0x35c/0x630 [dm_mod]
+ ctl_ioctl+0x411/0x630 [dm_mod]
+ dm_ctl_ioctl+0xa/0x10 [dm_mod]
+ __x64_sys_ioctl+0x12a/0x1a0
+ do_syscall_64+0x5b/0x80
 
-However, since it was too expensive to forcibly recalculate the
-overhead for bigalloc file systems at every mount, this didn't fix the
-problem for bigalloc file systems.  This commit should address the
-problem when resizing file systems with the bigalloc feature enabled.
+The warning is caused by reading conf->max_nr_stripes in raid_status. The
+code in raid_status reads mddev->private, casts it to struct r5conf and
+reads the entry max_nr_stripes.
 
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+However, if we have different raid type than 4/5/6, mddev->private
+doesn't point to struct r5conf; it may point to struct r0conf, struct
+r1conf, struct r10conf or struct mpconf. If we cast a pointer to one
+of these structs to struct r5conf, we will be reading invalid memory
+and KASAN warns about it.
+
+Fix this bug by reading struct r5conf only if raid type is 4, 5 or 6.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/resize.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm-raid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1461,6 +1461,7 @@ static void ext4_update_super(struct sup
- 	 * Update the fs overhead information
- 	 */
- 	ext4_calculate_overhead(sb);
-+	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
- 
- 	if (test_opt(sb, DEBUG))
- 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3514,7 +3514,7 @@ static void raid_status(struct dm_target
+ {
+ 	struct raid_set *rs = ti->private;
+ 	struct mddev *mddev = &rs->md;
+-	struct r5conf *conf = mddev->private;
++	struct r5conf *conf = rs_is_raid456(rs) ? mddev->private : NULL;
+ 	int i, max_nr_stripes = conf ? conf->max_nr_stripes : 0;
+ 	unsigned long recovery;
+ 	unsigned int raid_param_cnt = 1; /* at least 1 for chunksize */
 
 
