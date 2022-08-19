@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9DDC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D25C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351188AbiHSQDv (ORCPT
+        id S1351196AbiHSQD6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
+        Fri, 19 Aug 2022 12:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351291AbiHSQBO (ORCPT
+        with ESMTP id S1351318AbiHSQBS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CEF10A767;
-        Fri, 19 Aug 2022 08:53:08 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E68310A74B;
+        Fri, 19 Aug 2022 08:52:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 50607CE26B6;
-        Fri, 19 Aug 2022 15:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413C3C433C1;
-        Fri, 19 Aug 2022 15:52:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C6D5616B3;
+        Fri, 19 Aug 2022 15:52:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63DF8C433C1;
+        Fri, 19 Aug 2022 15:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924356;
-        bh=qVDrBSzVaPi+3Q9Qz4aFGHejuAGKOQ9q8ZjK5k3N9wk=;
+        s=korg; t=1660924344;
+        bh=sGSXDUXdTqKHgHCdAfBZV56DJ9OAdRWGh6IRIAjerCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZARfBAiogdq/xuOKigGxSIN5VdO9je8I1Z2rDV9wuPp0ZaOhkU4Mu0G07M9zUCcW4
-         Zto6mhv78g1e4Ud9a7T/cLCJ0Jyi4VWla1V4XmCCyskqxkNt5mslt/+gsFJecNK09u
-         KZYy/lkHm0gH15foppIkrVNvdpkOu0iU00x0GHGM=
+        b=dZvwIRl/pub0Qz9Z5IbyvjZV7fuPm6gXfwMqaNG4cv560kVsl0szrW9xVpU7fIsQ2
+         XP7y0RDLqKTPN7GNWpDxDlI94VdKv9rfF445bL0RVnVapFuuiJCSVD6XDaU+ZKtS1L
+         lHfQaME9cRWHFydhb6lKQegjD3hOeQtXmZh/e6Uc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 143/545] regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
-Date:   Fri, 19 Aug 2022 17:38:33 +0200
-Message-Id: <20220819153835.726466630@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
+        Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 139/545] blk-mq: dont create hctx debugfs dir until q->debugfs_dir is created
+Date:   Fri, 19 Aug 2022 17:38:29 +0200
+Message-Id: <20220819153835.557391749@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,40 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit 66efb665cd5ad69b27dca8571bf89fc6b9c628a4 ]
+[ Upstream commit f3ec5d11554778c24ac8915e847223ed71d104fc ]
 
-We should call the of_node_put() for the reference returned by
-of_get_child_by_name() which has increased the refcount.
+blk_mq_debugfs_register_hctx() can be called by blk_mq_update_nr_hw_queues
+when gendisk isn't added yet, such as nvme tcp.
 
-Fixes: 40e20d68bb3f ("regulator: of: Add support for parsing regulator_state for suspend state")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220715111027.391032-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes the warning of 'debugfs: Directory 'hctx0' with parent '/' already present!'
+which can be observed reliably when running blktests nvme/005.
+
+Fixes: 6cfc0081b046 ("blk-mq: no need to check return value of debugfs_create functions")
+Reported-by: Yi Zhang <yi.zhang@redhat.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Tested-by: Yi Zhang <yi.zhang@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220711090808.259682-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/of_regulator.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ block/blk-mq-debugfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
-index 06c0b15fe4c0..5d844697c7b6 100644
---- a/drivers/regulator/of_regulator.c
-+++ b/drivers/regulator/of_regulator.c
-@@ -206,8 +206,12 @@ static int of_get_regulation_constraints(struct device *dev,
- 		}
+diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
+index b5f26082b959..212e1e795469 100644
+--- a/block/blk-mq-debugfs.c
++++ b/block/blk-mq-debugfs.c
+@@ -881,6 +881,9 @@ void blk_mq_debugfs_register_hctx(struct request_queue *q,
+ 	char name[20];
+ 	int i;
  
- 		suspend_np = of_get_child_by_name(np, regulator_states[i]);
--		if (!suspend_np || !suspend_state)
-+		if (!suspend_np)
- 			continue;
-+		if (!suspend_state) {
-+			of_node_put(suspend_np);
-+			continue;
-+		}
++	if (!q->debugfs_dir)
++		return;
++
+ 	snprintf(name, sizeof(name), "hctx%u", hctx->queue_num);
+ 	hctx->debugfs_dir = debugfs_create_dir(name, q->debugfs_dir);
  
- 		if (!of_property_read_u32(suspend_np, "regulator-mode",
- 					  &pval)) {
 -- 
 2.35.1
 
