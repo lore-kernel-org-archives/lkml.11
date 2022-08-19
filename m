@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13A0EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 885B1C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350072AbiHSQFR (ORCPT
+        id S1351345AbiHSQFX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56452 "EHLO
+        Fri, 19 Aug 2022 12:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351492AbiHSQBw (ORCPT
+        with ESMTP id S1351491AbiHSQBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:01:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC380E085;
-        Fri, 19 Aug 2022 08:53:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2379A7F10E;
+        Fri, 19 Aug 2022 08:53:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D72BAB8280D;
-        Fri, 19 Aug 2022 15:53:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16567C433D7;
-        Fri, 19 Aug 2022 15:53:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2B8061746;
+        Fri, 19 Aug 2022 15:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB5DBC433D6;
+        Fri, 19 Aug 2022 15:53:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924391;
-        bh=RgsWbcE0RvmXnbB6B+pyTQLKK215UEHWm8koiGRdXLM=;
+        s=korg; t=1660924420;
+        bh=ul3jL39BOEv9QE8D8Jfo0xeUQBhtdzlGmsM16ZAb31o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vK2kExhU+6n8JqWLH+/dhBk1i6E8EsKXDlw5ybbZC2Y0/SjJXI2cOPAGs4FHoe6Ph
-         d2sDR0ffHH3fGlPR60DH1HggPzDrrDWvDx3pE9h/vVtgclcoNterXrwg41RCH4blon
-         1t6W+tjfWmMeCyvbzAwrQDpJQU4cSWFbWQv2QSD0=
+        b=QAondxF9dnMCFd2SU3e2tq5zOw2RIj6tWzpG8Qvzv4fU7V8lc7/1ZGo8rdFcsLrfF
+         lQe2AR9jjjgo16w33lGxvPlA9AJOIIIfoMXPYTjVkU/YU9pT9OWihlCrOrpjYUa0Qb
+         Li1jjSbu+/jHHUP9WU8naRnX0gUv5b5T3Mb4rtSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Phil Auld <pauld@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 148/545] nohz/full, sched/rt: Fix missed tick-reenabling bug in dequeue_task_rt()
-Date:   Fri, 19 Aug 2022 17:38:38 +0200
-Message-Id: <20220819153835.957660978@linuxfoundation.org>
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 165/545] drm/radeon: fix potential buffer overflow in ni_set_mc_special_registers()
+Date:   Fri, 19 Aug 2022 17:38:55 +0200
+Message-Id: <20220819153836.744077203@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,115 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
-[ Upstream commit 5c66d1b9b30f737fcef85a0b75bfe0590e16b62a ]
+[ Upstream commit 136f614931a2bb73616b292cf542da3a18daefd5 ]
 
-dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
-called sched_update_tick_dependency() preventing it from re-enabling the
-tick on systems that no longer have pending SCHED_RT tasks but have
-multiple runnable SCHED_OTHER tasks:
+The last case label can write two buffers 'mc_reg_address[j]' and
+'mc_data[j]' with 'j' offset equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE
+since there are no checks for this value in both case labels after the
+last 'j++'.
 
-  dequeue_task_rt()
-    dequeue_rt_entity()
-      dequeue_rt_stack()
-        dequeue_top_rt_rq()
-	  sub_nr_running()	// decrements rq->nr_running
-	    sched_update_tick_dependency()
-	      sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
-	      ...
-        __dequeue_rt_entity()
-          dec_rt_tasks()	// decrements rq->rt.rt_nr_running
-	  ...
+Instead of changing '>' to '>=' there, add the bounds check at the start
+of the second 'case' (the first one already has it).
 
-Every other scheduler class performs the operation in the opposite
-order, and sched_update_tick_dependency() expects the values to be
-updated as such. So avoid the misbehaviour by inverting the order in
-which the above operations are performed in the RT scheduler.
+Also, remove redundant last checks for 'j' index bigger than array size.
+The expression is always false. Moreover, before or after the patch
+'table->last' can be equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE and it
+seems it can be a valid value.
 
-Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
-Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Link: https://lore.kernel.org/r/20220628092259.330171-1-nsaenzju@redhat.com
+Detected using the static analysis tool - Svace.
+Fixes: 69e0b57a91ad ("drm/radeon/kms: add dpm support for cayman (v5)")
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/rt.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/radeon/ni_dpm.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 41b14d924203..e6f22836c600 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -437,7 +437,7 @@ static inline void rt_queue_push_tasks(struct rq *rq)
- #endif /* CONFIG_SMP */
- 
- static void enqueue_top_rt_rq(struct rt_rq *rt_rq);
--static void dequeue_top_rt_rq(struct rt_rq *rt_rq);
-+static void dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count);
- 
- static inline int on_rt_rq(struct sched_rt_entity *rt_se)
- {
-@@ -558,7 +558,7 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
- 	rt_se = rt_rq->tg->rt_se[cpu];
- 
- 	if (!rt_se) {
--		dequeue_top_rt_rq(rt_rq);
-+		dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
- 		/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
- 		cpufreq_update_util(rq_of_rt_rq(rt_rq), 0);
- 	}
-@@ -644,7 +644,7 @@ static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
- 
- static inline void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
- {
--	dequeue_top_rt_rq(rt_rq);
-+	dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
- }
- 
- static inline int rt_rq_throttled(struct rt_rq *rt_rq)
-@@ -1043,7 +1043,7 @@ static void update_curr_rt(struct rq *rq)
- }
- 
- static void
--dequeue_top_rt_rq(struct rt_rq *rt_rq)
-+dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count)
- {
- 	struct rq *rq = rq_of_rt_rq(rt_rq);
- 
-@@ -1054,7 +1054,7 @@ dequeue_top_rt_rq(struct rt_rq *rt_rq)
- 
- 	BUG_ON(!rq->nr_running);
- 
--	sub_nr_running(rq, rt_rq->rt_nr_running);
-+	sub_nr_running(rq, count);
- 	rt_rq->rt_queued = 0;
- 
- }
-@@ -1333,18 +1333,21 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
- static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
- {
- 	struct sched_rt_entity *back = NULL;
-+	unsigned int rt_nr_running;
- 
- 	for_each_sched_rt_entity(rt_se) {
- 		rt_se->back = back;
- 		back = rt_se;
- 	}
- 
--	dequeue_top_rt_rq(rt_rq_of_se(back));
-+	rt_nr_running = rt_rq_of_se(back)->rt_nr_running;
- 
- 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
- 		if (on_rt_rq(rt_se))
- 			__dequeue_rt_entity(rt_se, flags);
- 	}
-+
-+	dequeue_top_rt_rq(rt_rq_of_se(back), rt_nr_running);
- }
- 
- static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
+diff --git a/drivers/gpu/drm/radeon/ni_dpm.c b/drivers/gpu/drm/radeon/ni_dpm.c
+index 59cdadcece15..a5218747742b 100644
+--- a/drivers/gpu/drm/radeon/ni_dpm.c
++++ b/drivers/gpu/drm/radeon/ni_dpm.c
+@@ -2740,10 +2740,10 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
+ 					table->mc_reg_table_entry[k].mc_data[j] |= 0x100;
+ 			}
+ 			j++;
+-			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
+-				return -EINVAL;
+ 			break;
+ 		case MC_SEQ_RESERVE_M >> 2:
++			if (j >= SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
++				return -EINVAL;
+ 			temp_reg = RREG32(MC_PMG_CMD_MRS1);
+ 			table->mc_reg_address[j].s1 = MC_PMG_CMD_MRS1 >> 2;
+ 			table->mc_reg_address[j].s0 = MC_SEQ_PMG_CMD_MRS1_LP >> 2;
+@@ -2752,8 +2752,6 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
+ 					(temp_reg & 0xffff0000) |
+ 					(table->mc_reg_table_entry[k].mc_data[i] & 0x0000ffff);
+ 			j++;
+-			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
+-				return -EINVAL;
+ 			break;
+ 		default:
+ 			break;
 -- 
 2.35.1
 
