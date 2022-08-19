@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527D5C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8B9C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353635AbiHSQoG (ORCPT
+        id S1353784AbiHSQoJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
+        Fri, 19 Aug 2022 12:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353981AbiHSQl0 (ORCPT
+        with ESMTP id S1353979AbiHSQl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:41:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3B5127BE1;
-        Fri, 19 Aug 2022 09:10:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EF61272D9;
+        Fri, 19 Aug 2022 09:09:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 334FF61826;
-        Fri, 19 Aug 2022 16:08:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24962C433C1;
-        Fri, 19 Aug 2022 16:08:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 911EBB82802;
+        Fri, 19 Aug 2022 16:08:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9986C433D6;
+        Fri, 19 Aug 2022 16:08:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925319;
-        bh=3puHSXokcytXBi8/BS7xGw0gqdsNB8AaGMGI6JR8Myg=;
+        s=korg; t=1660925304;
+        bh=cdnhM6keGBCbekNFSqz0/UM3k8voCBSTZYS+WXXc1WE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/aBTmIzOBkbqRPrg8ACqwmh16dZm88fXPPAf4gHjSHmJSYEBqMjqUUxdeN42NtFK
-         W44DUyIlBca7mnzXDYHNtUcXP2BZ0EKZ807DjoGKEyRcUa2Rlvnsasia+FmvnL6i9W
-         qfqRHQR2bDsK72AkjP2iu9DRQlluT8dUzPNFWwOE=
+        b=gM7AzGws7cvOGLEj2bVU6ajlYgPYdb3cUrRSk62mfiObSPIQ8vjBNVGutpjeSECC4
+         uxZZ3GcORvWe4ZiliysaralceNSFltDDaDy//9BnIQUXIzB766FaeUAv18errsTkPO
+         0NH8Jut/6E1sE31zZWd6ffVGzLZ4qGETIT8LD2Jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 454/545] drm/mediatek: Keep dsi as LP00 before dcs cmds transfer
-Date:   Fri, 19 Aug 2022 17:43:44 +0200
-Message-Id: <20220819153849.716224298@linuxfoundation.org>
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        Xie Shaowen <studentxswpy@163.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.10 449/545] Input: gscps2 - check return value of ioremap() in gscps2_probe()
+Date:   Fri, 19 Aug 2022 17:43:39 +0200
+Message-Id: <20220819153849.514435427@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -54,116 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jitao Shi <jitao.shi@mediatek.com>
+From: Xie Shaowen <studentxswpy@163.com>
 
-[ Upstream commit 39e8d062b03c3dc257d880d82bd55cdd9e185a3b ]
+commit e61b3125a4f036b3c6b87ffd656fc1ab00440ae9 upstream.
 
-To comply with the panel sequence, hold the mipi signal to LP00 before
-the dcs cmds transmission, and pull the mipi signal high from LP00 to
-LP11 until the start of the dcs cmds transmission.
+The function ioremap() in gscps2_probe() can fail, so
+its return value should be checked.
 
-The normal panel timing is :
-(1) pp1800 DC pull up
-(2) avdd & avee AC pull high
-(3) lcm_reset pull high -> pull low -> pull high
-(4) Pull MIPI signal high (LP11) -> initial code -> send video data
-    (HS mode)
-
-The power-off sequence is reversed.
-If dsi is not in cmd mode, then dsi will pull the mipi signal high in
-the mtk_output_dsi_enable function. The delay in lane_ready func is
-the reaction time of dsi_rx after pulling up the mipi signal.
-
-Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
-
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-4-git-send-email-xinlei.lee@mediatek.com/
-Cc: <stable@vger.kernel.org> # 5.10.x: 7f6335c6a258: drm/mediatek: Modify dsi funcs to atomic operations
-Cc: <stable@vger.kernel.org> # 5.10.x: cde7e2e35c28: drm/mediatek: Separate poweron/poweroff from enable/disable and define new funcs
-Cc: <stable@vger.kernel.org> # 5.10.x
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
+Cc: <stable@vger.kernel.org> # v5.6+
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: Xie Shaowen <studentxswpy@163.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+ drivers/input/serio/gscps2.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 9d54bb6aec30..7d37d2a01e3c 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -202,6 +202,7 @@ struct mtk_dsi {
- 	struct mtk_phy_timing phy_timing;
- 	int refcount;
- 	bool enabled;
-+	bool lanes_ready;
- 	u32 irq_data;
- 	wait_queue_head_t irq_wait_queue;
- 	const struct mtk_dsi_driver_data *driver_data;
-@@ -644,18 +645,11 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_phy_timconfig(dsi);
- 
--	mtk_dsi_rxtx_control(dsi);
--	usleep_range(30, 100);
--	mtk_dsi_reset_dphy(dsi);
- 	mtk_dsi_ps_control_vact(dsi);
- 	mtk_dsi_set_vm_cmd(dsi);
- 	mtk_dsi_config_vdo_timing(dsi);
- 	mtk_dsi_set_interrupt_enable(dsi);
- 
--	mtk_dsi_clk_ulp_mode_leave(dsi);
--	mtk_dsi_lane0_ulp_mode_leave(dsi);
--	mtk_dsi_clk_hs_mode(dsi, 0);
--
- 	return 0;
- err_disable_engine_clk:
- 	clk_disable_unprepare(dsi->engine_clk);
-@@ -686,6 +680,23 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	clk_disable_unprepare(dsi->digital_clk);
- 
- 	phy_power_off(dsi->phy);
-+
-+	dsi->lanes_ready = false;
-+}
-+
-+static void mtk_dsi_lane_ready(struct mtk_dsi *dsi)
-+{
-+	if (!dsi->lanes_ready) {
-+		dsi->lanes_ready = true;
-+		mtk_dsi_rxtx_control(dsi);
-+		usleep_range(30, 100);
-+		mtk_dsi_reset_dphy(dsi);
-+		mtk_dsi_clk_ulp_mode_leave(dsi);
-+		mtk_dsi_lane0_ulp_mode_leave(dsi);
-+		mtk_dsi_clk_hs_mode(dsi, 0);
-+		msleep(20);
-+		/* The reaction time after pulling up the mipi signal for dsi_rx */
+--- a/drivers/input/serio/gscps2.c
++++ b/drivers/input/serio/gscps2.c
+@@ -350,6 +350,10 @@ static int __init gscps2_probe(struct pa
+ 	ps2port->port = serio;
+ 	ps2port->padev = dev;
+ 	ps2port->addr = ioremap(hpa, GSC_STATUS + 4);
++	if (!ps2port->addr) {
++		ret = -ENOMEM;
++		goto fail_nomem;
 +	}
- }
+ 	spin_lock_init(&ps2port->lock);
  
- static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
-@@ -693,6 +704,7 @@ static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
- 	if (dsi->enabled)
- 		return;
- 
-+	mtk_dsi_lane_ready(dsi);
- 	mtk_dsi_set_mode(dsi);
- 	mtk_dsi_clk_hs_mode(dsi, 1);
- 
-@@ -924,6 +936,8 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
- 	if (MTK_DSI_HOST_IS_READ(msg->type))
- 		irq_flag |= LPRX_RD_RDY_INT_FLAG;
- 
-+	mtk_dsi_lane_ready(dsi);
-+
- 	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
- 	if (ret)
- 		goto restore_dsi_mode;
--- 
-2.35.1
-
+ 	gscps2_reset(ps2port);
 
 
