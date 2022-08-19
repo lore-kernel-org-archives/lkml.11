@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 403A2C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19629C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350358AbiHSPuU (ORCPT
+        id S1350033AbiHSPvM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
+        Fri, 19 Aug 2022 11:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350140AbiHSPtg (ORCPT
+        with ESMTP id S1350164AbiHSPtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:49:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1BB104761;
-        Fri, 19 Aug 2022 08:47:48 -0700 (PDT)
+        Fri, 19 Aug 2022 11:49:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E34105207;
+        Fri, 19 Aug 2022 08:47:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACFF3B82814;
-        Fri, 19 Aug 2022 15:47:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B327C433D6;
-        Fri, 19 Aug 2022 15:47:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFC37615D5;
+        Fri, 19 Aug 2022 15:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDF2C433D6;
+        Fri, 19 Aug 2022 15:47:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924065;
-        bh=ec+WUlwlBNEQUkcBaoJZbAaGDOf3aSCfnbsL47325vQ=;
+        s=korg; t=1660924071;
+        bh=sZWZKw9XLfXJT73hnTnD18nh45+R4PEiZSLZ+K0q3WM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1IXq8nHJ+4LmnSYIMJnKKHdXka6K0vpj2m3ktn5uRlIICTz2xq/Ra9Hyjb6p+FXn
-         p3edIzvbXGiC6Y1k+ZNW+hxoZmGZBLmJGtsLLxoZxmCFmC4KhFC0em0f+84lULw34A
-         vChE1wUSFkx3IH1d3F/Q2G5HfB/u5QhWJWtb29P4=
+        b=TLZqT7lxJ9GuwuBc2QrdjErIioxnVA3xgkuB/Gmc57LEZWi0crOIlYXzzMeiNpx7B
+         PiKRoMSbGpSUZUI3UY6FtrRD1j/JFwtNresVBxpcuWqbMBab4Lvuou7WCCLv+ejJA8
+         3SxeTApInmE4b9gbcq25tzSLgyAYOk9Lg1prNqtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.10 043/545] drm/vc4: hdmi: Disable audio if dmas property is present but empty
-Date:   Fri, 19 Aug 2022 17:36:53 +0200
-Message-Id: <20220819153831.142217593@linuxfoundation.org>
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 018/545] KVM: nVMX: Let userspace set nVMX MSR to any _host_ supported value
+Date:   Fri, 19 Aug 2022 17:36:28 +0200
+Message-Id: <20220819153829.997710295@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,46 +50,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.org>
+From: Sean Christopherson <seanjc@google.com>
 
-commit db2b927f8668adf3ac765e0921cd2720f5c04172 upstream.
+commit f8ae08f9789ad59d318ea75b570caa454aceda81 upstream.
 
-The dmas property is used to hold the dmaengine channel used for audio
-output.
+Restrict the nVMX MSRs based on KVM's config, not based on the guest's
+current config.  Using the guest's config to audit the new config
+prevents userspace from restoring the original config (KVM's config) if
+at any point in the past the guest's config was restricted in any way.
 
-Older device trees were missing that property, so if it's not there we
-disable the audio output entirely.
-
-However, some overlays have set an empty value to that property, mostly
-to workaround the fact that overlays cannot remove a property. Let's add
-a test for that case and if it's empty, let's disable it as well.
-
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Phil Elwell <phil@raspberrypi.org>
-Link: https://lore.kernel.org/r/20220613144800.326124-18-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: 62cc6b9dc61e ("KVM: nVMX: support restore of VMX capability MSRs")
+Cc: stable@vger.kernel.org
+Cc: David Matlack <dmatlack@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220607213604.3346000-6-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/nested.c |   70 ++++++++++++++++++++++++----------------------
+ 1 file changed, 37 insertions(+), 33 deletions(-)
 
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1231,12 +1231,12 @@ static int vc4_hdmi_audio_init(struct vc
- 	struct snd_soc_card *card = &vc4_hdmi->audio.card;
- 	struct device *dev = &vc4_hdmi->pdev->dev;
- 	const __be32 *addr;
--	int index;
-+	int index, len;
- 	int ret;
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -1245,7 +1245,7 @@ static int vmx_restore_vmx_basic(struct
+ 		BIT_ULL(49) | BIT_ULL(54) | BIT_ULL(55) |
+ 		/* reserved */
+ 		BIT_ULL(31) | GENMASK_ULL(47, 45) | GENMASK_ULL(63, 56);
+-	u64 vmx_basic = vmx->nested.msrs.basic;
++	u64 vmx_basic = vmcs_config.nested.basic;
  
--	if (!of_find_property(dev->of_node, "dmas", NULL)) {
-+	if (!of_find_property(dev->of_node, "dmas", &len) || !len) {
- 		dev_warn(dev,
--			 "'dmas' DT property is missing, no HDMI audio\n");
-+			 "'dmas' DT property is missing or empty, no HDMI audio\n");
- 		return 0;
+ 	if (!is_bitwise_subset(vmx_basic, data, feature_and_reserved))
+ 		return -EINVAL;
+@@ -1268,36 +1268,42 @@ static int vmx_restore_vmx_basic(struct
+ 	return 0;
+ }
+ 
+-static int
+-vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
++static void vmx_get_control_msr(struct nested_vmx_msrs *msrs, u32 msr_index,
++				u32 **low, u32 **high)
+ {
+-	u64 supported;
+-	u32 *lowp, *highp;
+-
+ 	switch (msr_index) {
+ 	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
+-		lowp = &vmx->nested.msrs.pinbased_ctls_low;
+-		highp = &vmx->nested.msrs.pinbased_ctls_high;
++		*low = &msrs->pinbased_ctls_low;
++		*high = &msrs->pinbased_ctls_high;
+ 		break;
+ 	case MSR_IA32_VMX_TRUE_PROCBASED_CTLS:
+-		lowp = &vmx->nested.msrs.procbased_ctls_low;
+-		highp = &vmx->nested.msrs.procbased_ctls_high;
++		*low = &msrs->procbased_ctls_low;
++		*high = &msrs->procbased_ctls_high;
+ 		break;
+ 	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
+-		lowp = &vmx->nested.msrs.exit_ctls_low;
+-		highp = &vmx->nested.msrs.exit_ctls_high;
++		*low = &msrs->exit_ctls_low;
++		*high = &msrs->exit_ctls_high;
+ 		break;
+ 	case MSR_IA32_VMX_TRUE_ENTRY_CTLS:
+-		lowp = &vmx->nested.msrs.entry_ctls_low;
+-		highp = &vmx->nested.msrs.entry_ctls_high;
++		*low = &msrs->entry_ctls_low;
++		*high = &msrs->entry_ctls_high;
+ 		break;
+ 	case MSR_IA32_VMX_PROCBASED_CTLS2:
+-		lowp = &vmx->nested.msrs.secondary_ctls_low;
+-		highp = &vmx->nested.msrs.secondary_ctls_high;
++		*low = &msrs->secondary_ctls_low;
++		*high = &msrs->secondary_ctls_high;
+ 		break;
+ 	default:
+ 		BUG();
  	}
++}
++
++static int
++vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
++{
++	u32 *lowp, *highp;
++	u64 supported;
++
++	vmx_get_control_msr(&vmcs_config.nested, msr_index, &lowp, &highp);
  
+ 	supported = vmx_control_msr(*lowp, *highp);
+ 
+@@ -1309,6 +1315,7 @@ vmx_restore_control_msr(struct vcpu_vmx
+ 	if (!is_bitwise_subset(supported, data, GENMASK_ULL(63, 32)))
+ 		return -EINVAL;
+ 
++	vmx_get_control_msr(&vmx->nested.msrs, msr_index, &lowp, &highp);
+ 	*lowp = data;
+ 	*highp = data >> 32;
+ 	return 0;
+@@ -1322,10 +1329,8 @@ static int vmx_restore_vmx_misc(struct v
+ 		BIT_ULL(28) | BIT_ULL(29) | BIT_ULL(30) |
+ 		/* reserved */
+ 		GENMASK_ULL(13, 9) | BIT_ULL(31);
+-	u64 vmx_misc;
+-
+-	vmx_misc = vmx_control_msr(vmx->nested.msrs.misc_low,
+-				   vmx->nested.msrs.misc_high);
++	u64 vmx_misc = vmx_control_msr(vmcs_config.nested.misc_low,
++				       vmcs_config.nested.misc_high);
+ 
+ 	if (!is_bitwise_subset(vmx_misc, data, feature_and_reserved_bits))
+ 		return -EINVAL;
+@@ -1353,10 +1358,8 @@ static int vmx_restore_vmx_misc(struct v
+ 
+ static int vmx_restore_vmx_ept_vpid_cap(struct vcpu_vmx *vmx, u64 data)
+ {
+-	u64 vmx_ept_vpid_cap;
+-
+-	vmx_ept_vpid_cap = vmx_control_msr(vmx->nested.msrs.ept_caps,
+-					   vmx->nested.msrs.vpid_caps);
++	u64 vmx_ept_vpid_cap = vmx_control_msr(vmcs_config.nested.ept_caps,
++					       vmcs_config.nested.vpid_caps);
+ 
+ 	/* Every bit is either reserved or a feature bit. */
+ 	if (!is_bitwise_subset(vmx_ept_vpid_cap, data, -1ULL))
+@@ -1367,20 +1370,21 @@ static int vmx_restore_vmx_ept_vpid_cap(
+ 	return 0;
+ }
+ 
+-static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
++static u64 *vmx_get_fixed0_msr(struct nested_vmx_msrs *msrs, u32 msr_index)
+ {
+-	u64 *msr;
+-
+ 	switch (msr_index) {
+ 	case MSR_IA32_VMX_CR0_FIXED0:
+-		msr = &vmx->nested.msrs.cr0_fixed0;
+-		break;
++		return &msrs->cr0_fixed0;
+ 	case MSR_IA32_VMX_CR4_FIXED0:
+-		msr = &vmx->nested.msrs.cr4_fixed0;
+-		break;
++		return &msrs->cr4_fixed0;
+ 	default:
+ 		BUG();
+ 	}
++}
++
++static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
++{
++	const u64 *msr = vmx_get_fixed0_msr(&vmcs_config.nested, msr_index);
+ 
+ 	/*
+ 	 * 1 bits (which indicates bits which "must-be-1" during VMX operation)
+@@ -1389,7 +1393,7 @@ static int vmx_restore_fixed0_msr(struct
+ 	if (!is_bitwise_subset(data, *msr, -1ULL))
+ 		return -EINVAL;
+ 
+-	*msr = data;
++	*vmx_get_fixed0_msr(&vmx->nested.msrs, msr_index) = data;
+ 	return 0;
+ }
+ 
+@@ -1450,7 +1454,7 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcp
+ 		vmx->nested.msrs.vmcs_enum = data;
+ 		return 0;
+ 	case MSR_IA32_VMX_VMFUNC:
+-		if (data & ~vmx->nested.msrs.vmfunc_controls)
++		if (data & ~vmcs_config.nested.vmfunc_controls)
+ 			return -EINVAL;
+ 		vmx->nested.msrs.vmfunc_controls = data;
+ 		return 0;
 
 
