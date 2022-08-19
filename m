@@ -2,107 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A21CC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7F2C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347855AbiHSJlz (ORCPT
+        id S1348182AbiHSJm3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
+        Fri, 19 Aug 2022 05:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348182AbiHSJlx (ORCPT
+        with ESMTP id S1346456AbiHSJmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:41:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFC01D0C9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660902111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QK3tGbhgg9Wc4LaimALsSpNV614pnfrrnLDCexVqWss=;
-        b=Y+P3NC2C91KQyokc+CckqPwn6BoEdlI/vcZKxx5PP7OXtmJgbiE8omx/a+TMG+G0P1yFua
-        fBXFx0tDRvC66Sy0mAmIhsO+jAtzJiWNQBMU8M6RBbc9bPNnhPGl5+paJvh3R5VM38Muf8
-        WvOYYRilSFccOzRa84+1vSvE6jqKUQg=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-634-xDdaZXB-MzSh4V7iMPfhtQ-1; Fri, 19 Aug 2022 05:41:50 -0400
-X-MC-Unique: xDdaZXB-MzSh4V7iMPfhtQ-1
-Received: by mail-ed1-f71.google.com with SMTP id w17-20020a056402269100b0043da2189b71so2500033edd.6
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:41:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=QK3tGbhgg9Wc4LaimALsSpNV614pnfrrnLDCexVqWss=;
-        b=xE2sFg+9t/LTdaL1KKiKKST0vFS4ZMcBJaByMWd2rk3B1Uu4KeiT6J7SzWNAYBGgTh
-         JlDioo+di1X/PWjRtsroTfE/AgGGafGfn73cysEVQMUB9ytVtsgcbnoTVteM6kpg1ue8
-         hkU2ey//1b81ArJg7NcaawpjBPiWq+qdMGPvc2Egbd9sPub6/VSzKy6UleNMdHaBP9gB
-         TaOR470iTsGiSxbIacpURz9h4BE9QHwUaQel/I16E/yUM+LydmAxFxkg5HxyofI86al4
-         1lsj6iguEcswVZV4Q+4jMJ8KIIgwkHqwoNAeQsXinr/Y7IWaj9cmbmpnmrLQtjvjr2KQ
-         Lv6g==
-X-Gm-Message-State: ACgBeo26VpZB/rq/VCivYKuCkznznbEoS5fyam01e1uFrLNr7RB4cq+0
-        mlBmSr05IGvrfts7/SXcm/YwU+hUCKvspe9kmVCr78gDDm7H/+Ymtw/nK4hJZcj9EQ+J6ydoOpx
-        t9D514k6qLMTZHYxejpD/9yRU
-X-Received: by 2002:a05:6402:14c7:b0:445:bb86:3f15 with SMTP id f7-20020a05640214c700b00445bb863f15mr5546114edx.68.1660902109041;
-        Fri, 19 Aug 2022 02:41:49 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5pkXmoWgzYRI0p/MWqkQVQuvYeIE0y/URefg1UTLL6L6RUHk9durJLYXgAFLxmuXHJDELjSQ==
-X-Received: by 2002:a05:6402:14c7:b0:445:bb86:3f15 with SMTP id f7-20020a05640214c700b00445bb863f15mr5546101edx.68.1660902108849;
-        Fri, 19 Aug 2022 02:41:48 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id n22-20020a170906701600b007262a5e2204sm2050079ejj.153.2022.08.19.02.41.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 02:41:48 -0700 (PDT)
-Message-ID: <4f280f1f-7fa1-6e35-657d-6e68c41d9b1b@redhat.com>
-Date:   Fri, 19 Aug 2022 11:41:47 +0200
+        Fri, 19 Aug 2022 05:42:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0ED1D0C9
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:42:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A042615D5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502A6C433D6;
+        Fri, 19 Aug 2022 09:42:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660902142;
+        bh=pEN+et5gf6W626fbns6sKMRGFSpCUpImxJQGhoBbmn0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BCorilECWp86FSIJOu7M4oaEdM3MAsWX/zHqayk7i5SYDEBuY+2MjZl3DvWef19Vd
+         X8ciVRr/Kl/QZaKLkL9VIyrxwb8NlS+7whX2hTIczPU2XFfNm3bRYe0Ac1Qjo1+1a0
+         fD8g65kmdKHUr26PqfHgQN6h3oYbl/bH6VGHTipo=
+Date:   Fri, 19 Aug 2022 11:42:15 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org
+Subject: Re: [PATCH -next] driver core: switch to use dev_err_probe()
+Message-ID: <Yv9a9+iREzQWYecQ@kroah.com>
+References: <20220819094656.1945653-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 0/3] staging: rtl8723bs: remove useless files
-Content-Language: en-US
-To:     Nam Cao <namcaov@gmail.com>, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Larry.Finger@lwfinger.net
-References: <cover.1660901124.git.namcaov@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <cover.1660901124.git.namcaov@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819094656.1945653-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 8/19/22 11:35, Nam Cao wrote:
-> Delete odm_NoiseMonitor.c and odm_NoiseMonitor.h because they are
-> useless. The first 2 commits are preparation, and the final commit is
-> actual removal.
+On Fri, Aug 19, 2022 at 05:46:56PM +0800, Yang Yingliang wrote:
+> Use dev_err_probe() to simplify code and print error code.
 > 
-> Nam Cao (3):
->   staging: rtl8723bs: remove unused function ODM_InbandNoise_Monitor
->   staging: rtl8723bs: remove member noise_level from struct dm_odm_t
->   staging: rtl8723bs: remove odm_NoiseMonitor.h and odm_NoiseMonitor.c
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/base/core.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
->  drivers/staging/rtl8723bs/hal/odm.h           |   2 -
->  .../staging/rtl8723bs/hal/odm_NoiseMonitor.c  | 130 ------------------
->  .../staging/rtl8723bs/hal/odm_NoiseMonitor.h  |  39 ------
->  drivers/staging/rtl8723bs/hal/odm_precomp.h   |   1 -
->  4 files changed, 172 deletions(-)
->  delete mode 100644 drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.c
->  delete mode 100644 drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.h
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index 753e7cca0f40..e51a09f9d0ec 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -2507,11 +2507,9 @@ static ssize_t uevent_store(struct device *dev, struct device_attribute *attr,
+>  	int rc;
+>  
+>  	rc = kobject_synth_uevent(&dev->kobj, buf, count);
+> -
+> -	if (rc) {
+> -		dev_err(dev, "uevent: failed to send synthetic uevent\n");
+> -		return rc;
+> -	}
+> +	if (rc)
+> +		return dev_err_probe(dev, rc,
+> +				     "uevent: failed to send synthetic uevent\n");
 
-Thanks, the entire series looks good to me:
+I do not understand this at all, this is not on the probe path at all,
+so why is this function needed?
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Have you tested this?  What was the resulting output before and after
+this change?
 
-for the series.
+thanks,
 
-Regards,
-
-Hans
-
+greg k-h
