@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 191AFC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC00C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352872AbiHSQ2n (ORCPT
+        id S1352882AbiHSQ2u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53044 "EHLO
+        Fri, 19 Aug 2022 12:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352984AbiHSQZ6 (ORCPT
+        with ESMTP id S1352972AbiHSQZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:25:58 -0400
+        Fri, 19 Aug 2022 12:25:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B64610F687;
-        Fri, 19 Aug 2022 09:03:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F9AB6026;
+        Fri, 19 Aug 2022 09:03:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79C05617D8;
-        Fri, 19 Aug 2022 16:03:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E23C433C1;
-        Fri, 19 Aug 2022 16:03:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 724A4617A5;
+        Fri, 19 Aug 2022 16:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8184BC433C1;
+        Fri, 19 Aug 2022 16:03:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925028;
-        bh=qx0M3rUjsJJ/CqvF7ES/MrZlD1N6xU07JGtFeYok1ik=;
+        s=korg; t=1660925016;
+        bh=LLTeC4buUX1RpkGN4KskQVmxDsOfq3Ye4iclIgdlGK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C3eMhco+v4v/qtxkynEaS+cOQrww07fJQ1wo4JsTjEqpP2fu6B8/gJfG2a6RDK9Y7
-         Ia+Qd7NqoY5LP0FdZD0zTr/vrmtJe6mItF+6cEFOVVX9IjOyP5bsdfSP9qED2y9rJZ
-         L3yMrtf3m1GHv8Ho0O8AH7r27NCpKyLUD9NodZ0g=
+        b=QcJWZxeiXIZIR7ob+wHgmYE2XJELRX6B0rphmfbD//lp2+na4B2NwwubwghevxiUX
+         Y34F/EvuSRxefvSoqRpYtXCbW57ni8MySa8rc5Tieq/zrI2XHseEyin7qc4Lr+lcV5
+         Pi7xCQhGAQHnpBFeZGFDZS2zl8cPABGVM/epTODY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 361/545] jbd2: fix assertion jh->b_frozen_data == NULL failure when journal aborted
-Date:   Fri, 19 Aug 2022 17:42:11 +0200
-Message-Id: <20220819153845.535687272@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 357/545] null_blk: fix ida error handling in null_add_dev()
+Date:   Fri, 19 Aug 2022 17:42:07 +0200
+Message-Id: <20220819153845.358195814@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,107 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 4a734f0869f970b8a9b65062ea40b09a5da9dba8 ]
+[ Upstream commit ee452a8d984f94fa8e894f003a52e776e4572881 ]
 
-Following process will fail assertion 'jh->b_frozen_data == NULL' in
-jbd2_journal_dirty_metadata():
+There needs to be some error checking if ida_simple_get() fails.
+Also call ida_free() if there are errors later.
 
-                   jbd2_journal_commit_transaction
-unlink(dir/a)
- jh->b_transaction = trans1
- jh->b_jlist = BJ_Metadata
-                    journal->j_running_transaction = NULL
-                    trans1->t_state = T_COMMIT
-unlink(dir/b)
- handle->h_trans = trans2
- do_get_write_access
-  jh->b_modified = 0
-  jh->b_frozen_data = frozen_buffer
-  jh->b_next_transaction = trans2
- jbd2_journal_dirty_metadata
-  is_handle_aborted
-   is_journal_aborted // return false
-
-           --> jbd2 abort <--
-
-                     while (commit_transaction->t_buffers)
-                      if (is_journal_aborted)
-                       jbd2_journal_refile_buffer
-                        __jbd2_journal_refile_buffer
-                         WRITE_ONCE(jh->b_transaction,
-						jh->b_next_transaction)
-                         WRITE_ONCE(jh->b_next_transaction, NULL)
-                         __jbd2_journal_file_buffer(jh, BJ_Reserved)
-        J_ASSERT_JH(jh, jh->b_frozen_data == NULL) // assertion failure !
-
-The reproducer (See detail in [Link]) reports:
- ------------[ cut here ]------------
- kernel BUG at fs/jbd2/transaction.c:1629!
- invalid opcode: 0000 [#1] PREEMPT SMP
- CPU: 2 PID: 584 Comm: unlink Tainted: G        W
- 5.19.0-rc6-00115-g4a57a8400075-dirty #697
- RIP: 0010:jbd2_journal_dirty_metadata+0x3c5/0x470
- RSP: 0018:ffffc90000be7ce0 EFLAGS: 00010202
- Call Trace:
-  <TASK>
-  __ext4_handle_dirty_metadata+0xa0/0x290
-  ext4_handle_dirty_dirblock+0x10c/0x1d0
-  ext4_delete_entry+0x104/0x200
-  __ext4_unlink+0x22b/0x360
-  ext4_unlink+0x275/0x390
-  vfs_unlink+0x20b/0x4c0
-  do_unlinkat+0x42f/0x4c0
-  __x64_sys_unlink+0x37/0x50
-  do_syscall_64+0x35/0x80
-
-After journal aborting, __jbd2_journal_refile_buffer() is executed with
-holding @jh->b_state_lock, we can fix it by moving 'is_handle_aborted()'
-into the area protected by @jh->b_state_lock.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216251
-Fixes: 470decc613ab20 ("[PATCH] jbd2: initial copy of files from jbd")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Link: https://lore.kernel.org/r/20220715125152.4022726-1-chengzhihao1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 94bc02e30fb8 ("nullb: use ida to manage index")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YtEhXsr6vJeoiYhd@kili
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jbd2/transaction.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/block/null_blk_main.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
-index e8fc45fd751f..0f1cef90fa7d 100644
---- a/fs/jbd2/transaction.c
-+++ b/fs/jbd2/transaction.c
-@@ -1460,8 +1460,6 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
- 	struct journal_head *jh;
- 	int ret = 0;
+diff --git a/drivers/block/null_blk_main.c b/drivers/block/null_blk_main.c
+index bb3686c3869d..c6ba8f9f3f31 100644
+--- a/drivers/block/null_blk_main.c
++++ b/drivers/block/null_blk_main.c
+@@ -1876,8 +1876,13 @@ static int null_add_dev(struct nullb_device *dev)
+ 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, nullb->q);
  
--	if (is_handle_aborted(handle))
--		return -EROFS;
- 	if (!buffer_jbd(bh))
- 		return -EUCLEAN;
- 
-@@ -1508,6 +1506,18 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
- 	journal = transaction->t_journal;
- 	spin_lock(&jh->b_state_lock);
- 
-+	if (is_handle_aborted(handle)) {
-+		/*
-+		 * Check journal aborting with @jh->b_state_lock locked,
-+		 * since 'jh->b_transaction' could be replaced with
-+		 * 'jh->b_next_transaction' during old transaction
-+		 * committing if journal aborted, which may fail
-+		 * assertion on 'jh->b_frozen_data == NULL'.
-+		 */
-+		ret = -EROFS;
-+		goto out_unlock_bh;
+ 	mutex_lock(&lock);
+-	nullb->index = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
+-	dev->index = nullb->index;
++	rv = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
++	if (rv < 0) {
++		mutex_unlock(&lock);
++		goto out_cleanup_zone;
 +	}
++	nullb->index = rv;
++	dev->index = rv;
+ 	mutex_unlock(&lock);
+ 
+ 	blk_queue_logical_block_size(nullb->q, dev->blocksize);
+@@ -1889,13 +1894,16 @@ static int null_add_dev(struct nullb_device *dev)
+ 
+ 	rv = null_gendisk_register(nullb);
+ 	if (rv)
+-		goto out_cleanup_zone;
++		goto out_ida_free;
+ 
+ 	mutex_lock(&lock);
+ 	list_add_tail(&nullb->list, &nullb_list);
+ 	mutex_unlock(&lock);
+ 
+ 	return 0;
 +
- 	if (jh->b_modified == 0) {
- 		/*
- 		 * This buffer's got modified and becoming part
++out_ida_free:
++	ida_free(&nullb_indexes, nullb->index);
+ out_cleanup_zone:
+ 	null_free_zoned_dev(dev);
+ out_cleanup_blk_queue:
 -- 
 2.35.1
 
