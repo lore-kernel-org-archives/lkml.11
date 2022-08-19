@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF8CC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D59C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351185AbiHSTIq (ORCPT
+        id S1351159AbiHSTIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 15:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44202 "EHLO
+        Fri, 19 Aug 2022 15:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351089AbiHSTI2 (ORCPT
+        with ESMTP id S1351114AbiHSTIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 15:08:28 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EB532AA9;
-        Fri, 19 Aug 2022 12:08:25 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27JJ7ZR4090751;
-        Fri, 19 Aug 2022 14:07:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1660936055;
-        bh=u9P/5Oz+onGjKnverq4DWRIAD3ByWF1SyU5y0haCG5c=;
-        h=From:To:CC:Subject:Date;
-        b=OU120/eiD1tFkJStijVybhM3IjU8LE4xI31Dz7a1nKhKJI8C3ScfNp41BCV21tjHm
-         RS/iTeHk/aqCSLpGyCvyzTn4dcV9HPSQ6uh22Mg9tHeXV6gg2JH5sNra3eSZKrf8an
-         Bpj9i6KKbd++ir6hozvaxL4mDIRLnIOrCzlDiIsA=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27JJ7ZVP123338
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 19 Aug 2022 14:07:35 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 19
- Aug 2022 14:07:35 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Fri, 19 Aug 2022 14:07:35 -0500
-Received: from LT5CD112GSQZ.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27JJ7T2s051038;
-        Fri, 19 Aug 2022 14:07:30 -0500
-From:   Apurva Nandan <a-nandan@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>
-CC:     Apurva Nandan <a-nandan@ti.com>, Hari Nagalla <hnagalla@ti.com>
-Subject: [PATCH 0/3] Fix ti,sci-inta/intr and mmc dtbs_check warnings for TI K3 platforms
-Date:   Sat, 20 Aug 2022 00:37:26 +0530
-Message-ID: <20220819190729.32358-1-a-nandan@ti.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 15:08:30 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E414A48C80
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:08:28 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id y127so2138861pfy.5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:08:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=NY3og6uVOGIRfydWAoiK8DTzipQrxXXqtzrWPkrx8rE=;
+        b=VJQxFgKABXidqeK6PcYka/SLJnrMhsN5piLG5aBGrmKOX55QepEObQ88MWMkZXJH0H
+         MiYLtWEBXs8MGcNVMdwZMFOJBshSIXYwtMBZzDrFt9ptpY6CdufVoVXJu16TZ0tajZkv
+         YxXPq9YarjoNbmyvcRjmrlu7hctfeeWFP38yY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=NY3og6uVOGIRfydWAoiK8DTzipQrxXXqtzrWPkrx8rE=;
+        b=TFkIhEj++Mhbl6cVY8o/BtpMhpwBNOedrwEyJB7LiSTlErXlLIDb8Jgm8kt0PcrBl9
+         iFbQoHH/h+9JlpL//X0thEwZmXdS9e9wT/Rq0lDAqynWTPzpp6H3fRpekzpvW2CQ8ZfP
+         xnbchgMv3KOpY0IdBYL/6+wB0/t5BaLqewUNbbUZi+vMovJGNMO7VAOvYDWJZOHhKA3o
+         dq+N/d2ogUDPrMdU453pYZuxK3dw6gD8iVnsf++8Tx44WxHBmAQ0JYDJQjM08MDGn1vx
+         37M76NcIg/yet2KnOGDqGowoSd5EQoDMPl4SlB5X/6NMXQvpeeyjw5/q9iRGKX/g+dcX
+         HTrQ==
+X-Gm-Message-State: ACgBeo38yPdLTX+h94qBZPLT+17L0edSvib3MxacoD6qsN/9QJeDNvNU
+        M/ySamLtauYlHh89E8HkGXg+oThUMp4Xew==
+X-Google-Smtp-Source: AA6agR4hHW67M1U75F44AWEu1mn0JI3XHNB4+7SKR0ssNvQHD9p15ZaaWOD10jBLMG5e8LtgM67xsg==
+X-Received: by 2002:a63:6b02:0:b0:422:7cf8:4bf with SMTP id g2-20020a636b02000000b004227cf804bfmr7501437pgc.92.1660936108315;
+        Fri, 19 Aug 2022 12:08:28 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (137.22.168.34.bc.googleusercontent.com. [34.168.22.137])
+        by smtp.gmail.com with ESMTPSA id b14-20020a170903228e00b00172a567d910sm3499775plh.289.2022.08.19.12.08.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 12:08:28 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: [PATCH 2/4] platform/chrome: cros_ec_typec: Correct alt mode index
+Date:   Fri, 19 Aug 2022 19:08:03 +0000
+Message-Id: <20220819190807.1275937-3-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220819190807.1275937-1-pmalani@chromium.org>
+References: <20220819190807.1275937-1-pmalani@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series fixes the following warnings common across all TI K3
-platforms:
+Alt mode indices used by USB PD (Power Delivery) start with 1, not 0.
 
-k3-j721e-common-proc-board.dtb: interrupt-controller@33d00000: Unevaluated properties are not allowed ('#interrupt-cells' was unexpected)
-From schema: linux/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml
+Update the alt mdoe registration code to factor this in to the alt mode
+descriptor.
 
-k3-j721s2-common-proc-board.dtb: mmc@4f80000: Unevaluated properties are not allowed ('dma-coherent' was unexpected)
-From schema: linux/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
+Fixes: de0f49487db3 ("platform/chrome: cros_ec_typec: Register partner altmodes")
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
+ drivers/platform/chrome/cros_ec_typec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-k3-j721s2-common-proc-board.dtb: interrupt-controller@310e0000: Unevaluated properties are not allowed ('reg' was unexpected)
-From schema: linux/Documentation/devicetree/bindings/interrupt-controller/ti,sci-intr.yaml
-
-Apurva Nandan (3):
-  dt-bindings: irqchip: ti, sci-intr/inta: Fix warning
-    '#interrupt-cells' was unexpected
-  dt-bindings: mmc: Fix 'dma-coherent' was unexpected
-  dt-bindings: interrupt-controller: Fix 'reg' was unexpected
-
- .../devicetree/bindings/interrupt-controller/ti,sci-inta.yaml  | 3 +++
- .../devicetree/bindings/interrupt-controller/ti,sci-intr.yaml  | 3 +++
- Documentation/devicetree/bindings/mmc/sdhci-am654.yaml         | 3 +++
- 3 files changed, 9 insertions(+)
-
+diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
+index 4d81d8d45b73..dc5722db2066 100644
+--- a/drivers/platform/chrome/cros_ec_typec.c
++++ b/drivers/platform/chrome/cros_ec_typec.c
+@@ -698,7 +698,7 @@ static int cros_typec_register_altmodes(struct cros_typec_data *typec, int port_
+ 		for (j = 0; j < sop_disc->svids[i].mode_count; j++) {
+ 			memset(&desc, 0, sizeof(desc));
+ 			desc.svid = sop_disc->svids[i].svid;
+-			desc.mode = j;
++			desc.mode = j + 1;
+ 			desc.vdo = sop_disc->svids[i].mode_vdo[j];
+ 
+ 			if (is_partner)
 -- 
-2.17.1
+2.37.1.595.g718a3a8f04-goog
 
