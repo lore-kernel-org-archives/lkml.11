@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EB2C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 861B7C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350832AbiHSP6M (ORCPT
+        id S1350839AbiHSP6R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
+        Fri, 19 Aug 2022 11:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350928AbiHSP4D (ORCPT
+        with ESMTP id S1350926AbiHSP4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 11:56:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722261011;
-        Fri, 19 Aug 2022 08:50:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D5E10521D;
+        Fri, 19 Aug 2022 08:50:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 63B68CE26B5;
-        Fri, 19 Aug 2022 15:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 682E8C433C1;
-        Fri, 19 Aug 2022 15:50:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3B0A616F9;
+        Fri, 19 Aug 2022 15:50:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B31DFC433D6;
+        Fri, 19 Aug 2022 15:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924248;
-        bh=uJHMEQ/p9vxDrf88lSYBSMdt4WRsz6QhQJuyXjLLLfo=;
+        s=korg; t=1660924237;
+        bh=gVNJEFm1Q3F65zmNeU+fdgNngxG14eW9scGa3m0pN5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wobVQfwRDGFICCHC26ghBep6VqInF+3IxdeBGVVZdr32mCciaN9+aPOhMQQibNkxs
-         mTnMCkARDgB8gZCQGGM15AItPSgbushMjO1kdC8UWh25FnWWWPiKg46ls57Y/gsuSi
-         QdCUekXldwB2iJ+A3qpZWxxyDHsju/dcDNqCH3Gg=
+        b=2TArbcc9Hp94AC+5hfd3hCTkB3wr9VZZCeQkbCmR3EmQBy7qnwqfmBj4RgDguwAPe
+         0Xuc5/QKJWmBLL78ogWoiAkp7dYvpYFt6QDvp0Sr2vGjPlGwp4brj2ZD7XCpfnxx/n
+         Whfv8YJqYjwx5i4iBeF2O3oXnBRyqkvXXaUpYPiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 106/545] powerpc/64s: Disable stack variable initialisation for prom_init
-Date:   Fri, 19 Aug 2022 17:37:56 +0200
-Message-Id: <20220819153834.035056764@linuxfoundation.org>
+Subject: [PATCH 5.10 102/545] firmware: tegra: Fix error check return value of debugfs_create_file()
+Date:   Fri, 19 Aug 2022 17:37:52 +0200
+Message-Id: <20220819153833.841992911@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,53 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit be640317a1d0b9cf42fedb2debc2887a7cfa38de ]
+[ Upstream commit afcdb8e55c91c6ff0700ab272fd0f74e899ab884 ]
 
-With GCC 12 allmodconfig prom_init fails to build:
+If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
+so use IS_ERR() to check it.
 
-  Error: External symbol 'memset' referenced from prom_init.c
-  make[2]: *** [arch/powerpc/kernel/Makefile:204: arch/powerpc/kernel/prom_init_check] Error 1
-
-The allmodconfig build enables KASAN, so all calls to memset in
-prom_init should be converted to __memset by the #ifdefs in
-asm/string.h, because prom_init must use the non-KASAN instrumented
-versions.
-
-The build failure happens because there's a call to memset that hasn't
-been caught by the pre-processor and converted to __memset. Typically
-that's because it's a memset generated by the compiler itself, and that
-is the case here.
-
-With GCC 12, allmodconfig enables CONFIG_INIT_STACK_ALL_PATTERN, which
-causes the compiler to emit memset calls to initialise on-stack
-variables with a pattern.
-
-Because prom_init is non-user-facing boot-time only code, as a
-workaround just disable stack variable initialisation to unbreak the
-build.
-
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220718134418.354114-1-mpe@ellerman.id.au
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
-index 376104c166fc..db2bdc4cec64 100644
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -20,6 +20,7 @@ CFLAGS_prom.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += -fno-stack-protector
- CFLAGS_prom_init.o += -DDISABLE_BRANCH_PROFILING
- CFLAGS_prom_init.o += -ffreestanding
-+CFLAGS_prom_init.o += $(call cc-option, -ftrivial-auto-var-init=uninitialized)
+diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
+index 440d99c63638..fad97ec8e81f 100644
+--- a/drivers/firmware/tegra/bpmp-debugfs.c
++++ b/drivers/firmware/tegra/bpmp-debugfs.c
+@@ -429,7 +429,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
+ 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
+ 			dentry = debugfs_create_file(name, mode, parent, bpmp,
+ 						     &bpmp_debug_fops);
+-			if (!dentry) {
++			if (IS_ERR(dentry)) {
+ 				err = -ENOMEM;
+ 				goto out;
+ 			}
+@@ -680,7 +680,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
  
- ifdef CONFIG_FUNCTION_TRACER
- # Do not trace early boot code
+ 		if (t & DEBUGFS_S_ISDIR) {
+ 			dentry = debugfs_create_dir(name, parent);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
+ 			if (err < 0)
+@@ -693,7 +693,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+ 			dentry = debugfs_create_file(name, mode,
+ 						     parent, bpmp,
+ 						     &debugfs_fops);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 		}
+ 	}
+@@ -743,11 +743,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
+ 		return 0;
+ 
+ 	root = debugfs_create_dir("bpmp", NULL);
+-	if (!root)
++	if (IS_ERR(root))
+ 		return -ENOMEM;
+ 
+ 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
+-	if (!bpmp->debugfs_mirror) {
++	if (IS_ERR(bpmp->debugfs_mirror)) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
 -- 
 2.35.1
 
