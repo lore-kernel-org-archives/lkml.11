@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BFC4C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB688C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350499AbiHSPxm (ORCPT
+        id S1350578AbiHSPxs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
+        Fri, 19 Aug 2022 11:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350349AbiHSPwu (ORCPT
+        with ESMTP id S1350498AbiHSPww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:52:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C4A101D17;
-        Fri, 19 Aug 2022 08:49:03 -0700 (PDT)
+        Fri, 19 Aug 2022 11:52:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1FC26116;
+        Fri, 19 Aug 2022 08:49:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A661FB8277D;
-        Fri, 19 Aug 2022 15:49:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B75C433D6;
-        Fri, 19 Aug 2022 15:48:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E88C615D5;
+        Fri, 19 Aug 2022 15:49:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB21C433C1;
+        Fri, 19 Aug 2022 15:49:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924140;
-        bh=AmkQYuO17mh7nm7AbzGHZdh77pxfoigebwan4cQlFM0=;
+        s=korg; t=1660924146;
+        bh=T6OdgomtQF8h/Ev+PsIA3mkjZM1v1/X1TP2oNUof3OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dtirVH886UUBR/Dmg31GNbh6OFh+hhBJH3I2kHGJzsmNc9ctH0RbOIWlCu0V5QEZJ
-         Qpo7zraB4ITgkW+7ueW/9jzajc+1vfwX0Kc2WOd/u/nQRWO57JYCYaTcvyX19ggF9n
-         dhCzvYAwkJrByvfcDuj0e/ErhmK9Y6inVEs7BAmk=
+        b=s68qtpt8vhwM+DHuHzTJiIMBuuk9J/0+ZfnuoXnBFVRUJBgLvlyZ0F6WZZ4kbgW0m
+         60lciMwXNTx6/MHxYpfJSeOVECd0XgizVbvR4k/5Qzcl2msFkpfM8AsTzJX+Z/0C5+
+         R84DLJqeJ5qq5uOLDqnkUhTbs//zHBIGFdorMeBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH 5.10 069/545] usb: dwc3: gadget: refactor dwc3_repare_one_trb
-Date:   Fri, 19 Aug 2022 17:37:19 +0200
-Message-Id: <20220819153832.330830463@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH 5.10 071/545] lockdep: Allow tuning tracing capacity constants.
+Date:   Fri, 19 Aug 2022 17:37:21 +0200
+Message-Id: <20220819153832.433175501@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,145 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Grzeschik <m.grzeschik@pengutronix.de>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-commit 23385cec5f354794dadced7f28c31da7ae3eb54c upstream.
+commit 5dc33592e95534dc8455ce3e9baaaf3dae0fff82 upstream.
 
-The function __dwc3_prepare_one_trb has many parameters. Since it is
-only used in dwc3_prepare_one_trb there is no point in keeping the
-function. We merge both functions and get rid of the big list of
-parameters.
+Since syzkaller continues various test cases until the kernel crashes,
+syzkaller tends to examine more locking dependencies than normal systems.
+As a result, syzbot is reporting that the fuzz testing was terminated
+due to hitting upper limits lockdep can track [1] [2] [3]. Since analysis
+via /proc/lockdep* did not show any obvious culprit [4] [5], we have no
+choice but allow tuning tracing capacity constants.
 
-Fixes: 40d829fb2ec6 ("usb: dwc3: gadget: Correct ISOC DATA PIDs for short packets")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20220704141812.1532306-2-m.grzeschik@pengutronix.de
+[1] https://syzkaller.appspot.com/bug?id=3d97ba93fb3566000c1c59691ea427370d33ea1b
+[2] https://syzkaller.appspot.com/bug?id=381cb436fe60dc03d7fd2a092b46d7f09542a72a
+[3] https://syzkaller.appspot.com/bug?id=a588183ac34c1437fc0785e8f220e88282e5a29f
+[4] https://lkml.kernel.org/r/4b8f7a57-fa20-47bd-48a0-ae35d860f233@i-love.sakura.ne.jp
+[5] https://lkml.kernel.org/r/1c351187-253b-2d49-acaf-4563c63ae7d2@i-love.sakura.ne.jp
+
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Acked-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |   92 ++++++++++++++++++++--------------------------
- 1 file changed, 40 insertions(+), 52 deletions(-)
+ kernel/locking/lockdep.c           |    2 -
+ kernel/locking/lockdep_internals.h |    8 +++----
+ lib/Kconfig.debug                  |   40 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 45 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -970,17 +970,49 @@ static u32 dwc3_calc_trbs_left(struct dw
- 	return trbs_left;
- }
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -1397,7 +1397,7 @@ static int add_lock_to_list(struct lock_
+ /*
+  * For good efficiency of modular, we use power of 2
+  */
+-#define MAX_CIRCULAR_QUEUE_SIZE		4096UL
++#define MAX_CIRCULAR_QUEUE_SIZE		(1UL << CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS)
+ #define CQ_MASK				(MAX_CIRCULAR_QUEUE_SIZE-1)
  
--static void __dwc3_prepare_one_trb(struct dwc3_ep *dep, struct dwc3_trb *trb,
--		dma_addr_t dma, unsigned int length, unsigned int chain,
--		unsigned int node, unsigned int stream_id,
--		unsigned int short_not_ok, unsigned int no_interrupt,
--		unsigned int is_last, bool must_interrupt)
-+/**
-+ * dwc3_prepare_one_trb - setup one TRB from one request
-+ * @dep: endpoint for which this request is prepared
-+ * @req: dwc3_request pointer
-+ * @trb_length: buffer size of the TRB
-+ * @chain: should this TRB be chained to the next?
-+ * @node: only for isochronous endpoints. First TRB needs different type.
-+ * @use_bounce_buffer: set to use bounce buffer
-+ * @must_interrupt: set to interrupt on TRB completion
-+ */
-+static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
-+		struct dwc3_request *req, unsigned int trb_length,
-+		unsigned int chain, unsigned int node, bool use_bounce_buffer,
-+		bool must_interrupt)
- {
-+	struct dwc3_trb		*trb;
-+	dma_addr_t		dma;
-+	unsigned int		stream_id = req->request.stream_id;
-+	unsigned int		short_not_ok = req->request.short_not_ok;
-+	unsigned int		no_interrupt = req->request.no_interrupt;
-+	unsigned int		is_last = req->request.is_last;
- 	struct dwc3		*dwc = dep->dwc;
- 	struct usb_gadget	*gadget = dwc->gadget;
- 	enum usb_device_speed	speed = gadget->speed;
+ /*
+--- a/kernel/locking/lockdep_internals.h
++++ b/kernel/locking/lockdep_internals.h
+@@ -99,16 +99,16 @@ static const unsigned long LOCKF_USED_IN
+ #define MAX_STACK_TRACE_ENTRIES	262144UL
+ #define STACK_TRACE_HASH_SIZE	8192
+ #else
+-#define MAX_LOCKDEP_ENTRIES	32768UL
++#define MAX_LOCKDEP_ENTRIES	(1UL << CONFIG_LOCKDEP_BITS)
  
--	trb->size = DWC3_TRB_SIZE_LENGTH(length);
-+	if (use_bounce_buffer)
-+		dma = dep->dwc->bounce_addr;
-+	else if (req->request.num_sgs > 0)
-+		dma = sg_dma_address(req->start_sg);
-+	else
-+		dma = req->request.dma;
+-#define MAX_LOCKDEP_CHAINS_BITS	16
++#define MAX_LOCKDEP_CHAINS_BITS	CONFIG_LOCKDEP_CHAINS_BITS
+ 
+ /*
+  * Stack-trace: tightly packed array of stack backtrace
+  * addresses. Protected by the hash_lock.
+  */
+-#define MAX_STACK_TRACE_ENTRIES	524288UL
+-#define STACK_TRACE_HASH_SIZE	16384
++#define MAX_STACK_TRACE_ENTRIES	(1UL << CONFIG_LOCKDEP_STACK_TRACE_BITS)
++#define STACK_TRACE_HASH_SIZE	(1 << CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS)
+ #endif
+ 
+ /*
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -1307,6 +1307,46 @@ config LOCKDEP
+ config LOCKDEP_SMALL
+ 	bool
+ 
++config LOCKDEP_BITS
++	int "Bitsize for MAX_LOCKDEP_ENTRIES"
++	depends on LOCKDEP && !LOCKDEP_SMALL
++	range 10 30
++	default 15
++	help
++	  Try increasing this value if you hit "BUG: MAX_LOCKDEP_ENTRIES too low!" message.
 +
-+	trb = &dep->trb_pool[dep->trb_enqueue];
++config LOCKDEP_CHAINS_BITS
++	int "Bitsize for MAX_LOCKDEP_CHAINS"
++	depends on LOCKDEP && !LOCKDEP_SMALL
++	range 10 30
++	default 16
++	help
++	  Try increasing this value if you hit "BUG: MAX_LOCKDEP_CHAINS too low!" message.
 +
-+	if (!req->trb) {
-+		dwc3_gadget_move_started_request(req);
-+		req->trb = trb;
-+		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
-+	}
++config LOCKDEP_STACK_TRACE_BITS
++	int "Bitsize for MAX_STACK_TRACE_ENTRIES"
++	depends on LOCKDEP && !LOCKDEP_SMALL
++	range 10 30
++	default 19
++	help
++	  Try increasing this value if you hit "BUG: MAX_STACK_TRACE_ENTRIES too low!" message.
 +
-+	req->num_trbs++;
++config LOCKDEP_STACK_TRACE_HASH_BITS
++	int "Bitsize for STACK_TRACE_HASH_SIZE"
++	depends on LOCKDEP && !LOCKDEP_SMALL
++	range 10 30
++	default 14
++	help
++	  Try increasing this value if you need large MAX_STACK_TRACE_ENTRIES.
 +
-+	trb->size = DWC3_TRB_SIZE_LENGTH(trb_length);
- 	trb->bpl = lower_32_bits(dma);
- 	trb->bph = upper_32_bits(dma);
- 
-@@ -1020,10 +1052,10 @@ static void __dwc3_prepare_one_trb(struc
- 				unsigned int mult = 2;
- 				unsigned int maxp = usb_endpoint_maxp(ep->desc);
- 
--				if (length <= (2 * maxp))
-+				if (trb_length <= (2 * maxp))
- 					mult--;
- 
--				if (length <= maxp)
-+				if (trb_length <= maxp)
- 					mult--;
- 
- 				trb->size |= DWC3_TRB_SIZE_PCM1(mult);
-@@ -1092,50 +1124,6 @@ static void __dwc3_prepare_one_trb(struc
- 	trace_dwc3_prepare_trb(dep, trb);
- }
- 
--/**
-- * dwc3_prepare_one_trb - setup one TRB from one request
-- * @dep: endpoint for which this request is prepared
-- * @req: dwc3_request pointer
-- * @trb_length: buffer size of the TRB
-- * @chain: should this TRB be chained to the next?
-- * @node: only for isochronous endpoints. First TRB needs different type.
-- * @use_bounce_buffer: set to use bounce buffer
-- * @must_interrupt: set to interrupt on TRB completion
-- */
--static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
--		struct dwc3_request *req, unsigned int trb_length,
--		unsigned int chain, unsigned int node, bool use_bounce_buffer,
--		bool must_interrupt)
--{
--	struct dwc3_trb		*trb;
--	dma_addr_t		dma;
--	unsigned int		stream_id = req->request.stream_id;
--	unsigned int		short_not_ok = req->request.short_not_ok;
--	unsigned int		no_interrupt = req->request.no_interrupt;
--	unsigned int		is_last = req->request.is_last;
--
--	if (use_bounce_buffer)
--		dma = dep->dwc->bounce_addr;
--	else if (req->request.num_sgs > 0)
--		dma = sg_dma_address(req->start_sg);
--	else
--		dma = req->request.dma;
--
--	trb = &dep->trb_pool[dep->trb_enqueue];
--
--	if (!req->trb) {
--		dwc3_gadget_move_started_request(req);
--		req->trb = trb;
--		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
--	}
--
--	req->num_trbs++;
--
--	__dwc3_prepare_one_trb(dep, trb, dma, trb_length, chain, node,
--			stream_id, short_not_ok, no_interrupt, is_last,
--			must_interrupt);
--}
--
- static bool dwc3_needs_extra_trb(struct dwc3_ep *dep, struct dwc3_request *req)
- {
- 	unsigned int maxp = usb_endpoint_maxp(dep->endpoint.desc);
++config LOCKDEP_CIRCULAR_QUEUE_BITS
++	int "Bitsize for elements in circular_queue struct"
++	depends on LOCKDEP
++	range 10 30
++	default 12
++	help
++	  Try increasing this value if you hit "lockdep bfs error:-1" warning due to __cq_enqueue() failure.
++
+ config DEBUG_LOCKDEP
+ 	bool "Lock dependency engine debugging"
+ 	depends on DEBUG_KERNEL && LOCKDEP
 
 
