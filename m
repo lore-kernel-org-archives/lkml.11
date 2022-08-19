@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A90ADC32793
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B7EC38142
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352767AbiHSQcj (ORCPT
+        id S1352930AbiHSQcl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
+        Fri, 19 Aug 2022 12:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352789AbiHSQ3f (ORCPT
+        with ESMTP id S1352809AbiHSQ35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:29:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245C1119A6C;
-        Fri, 19 Aug 2022 09:04:30 -0700 (PDT)
+        Fri, 19 Aug 2022 12:29:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B5D11A2DB;
+        Fri, 19 Aug 2022 09:04:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFD5FB8281D;
-        Fri, 19 Aug 2022 16:04:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47FC0C433C1;
-        Fri, 19 Aug 2022 16:04:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9890DCE26AB;
+        Fri, 19 Aug 2022 16:04:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73DD7C433C1;
+        Fri, 19 Aug 2022 16:04:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925065;
-        bh=jxCpoJivwvu0FF76n53BjfJeP8PO5SuBKMbYAiIEf4w=;
+        s=korg; t=1660925068;
+        bh=STzebAMGS8YaWORs9LTZ5121krjgl6i4VyUyXVdzzak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n10v8X31SWvKLIUwPdPRQ12Rxi57l2Vg7CYb7QZM2NaztYNTAeTUrW/GmybP+jfRx
-         x34RUIrMgNOayHblOPfpsymLh1276N0C+LBfTD5mLurH6j5WEBawWNI5OzfGLGYUql
-         3Pq4Jsbfd44WdJVjMoXOo30Dx1/QLxs9sdFbnOFI=
+        b=e42PvxcWrCbHEuYKigKt4zpURJxL76S2oOJFOFcBpuvlpycoWzjVgbNs6YstyERYo
+         uaGR6zuaHQHUdcPtM0P4Q1jJ0SSN6i/VjDRQ5dKUG21dgSukeeqQJdIVjOp7saHt/n
+         Mjg2ZTc36K9KJMHf0/xhf68cDMhmpTZN70bsjq8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 345/545] PCI: tegra194: Fix Root Port interrupt handling
-Date:   Fri, 19 Aug 2022 17:41:55 +0200
-Message-Id: <20220819153844.833657110@linuxfoundation.org>
+Subject: [PATCH 5.10 372/545] ASoC: codecs: msm8916-wcd-digital: move gains from SX_TLV to S8_TLV
+Date:   Fri, 19 Aug 2022 17:42:22 +0200
+Message-Id: <20220819153846.063093176@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,113 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vidya Sagar <vidyas@nvidia.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 6646e99bcec627e866bc84365af37942c72b4b76 ]
+[ Upstream commit 5babb012c847beb6c8c7108fd78f650b7a2c6054 ]
 
-As part of Root Port interrupt handling, level-0 register is read first and
-based on the bits set in that, corresponding level-1 registers are read for
-further interrupt processing. Since both these values are currently read
-into the same 'val' variable, checking level-0 bits the second time around
-is happening on the 'val' variable value of level-1 register contents
-instead of freshly reading the level-0 value again.
+move all the digital gains form using SX_TLV to S8_TLV, these gains are
+actually 8 bit gains with 7th signed bit and ranges from -84dB to +40dB
 
-Fix by using different variables to store level-0 and level-1 registers
-contents.
+rest of the Qualcomm wcd codecs uses these properly.
 
-Link: https://lore.kernel.org/r/20220721142052.25971-11-vidyas@nvidia.com
-Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
-Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: ef8a4757a6db ("ASoC: msm8916-wcd-digital: Add sidetone support")
+Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220609111901.318047-2-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-tegra194.c | 46 +++++++++++-----------
- 1 file changed, 22 insertions(+), 24 deletions(-)
+ sound/soc/codecs/msm8916-wcd-digital.c | 46 +++++++++++++-------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 845f1e1de3ab..bcbd600116d7 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -370,15 +370,14 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 	struct tegra_pcie_dw *pcie = arg;
- 	struct dw_pcie *pci = &pcie->pci;
- 	struct pcie_port *pp = &pci->pp;
--	u32 val, tmp;
-+	u32 val, status_l0, status_l1;
- 	u16 val_w;
+diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
+index 20a07c92b2fc..098a58990f07 100644
+--- a/sound/soc/codecs/msm8916-wcd-digital.c
++++ b/sound/soc/codecs/msm8916-wcd-digital.c
+@@ -328,8 +328,8 @@ static const struct snd_kcontrol_new rx1_mix2_inp1_mux = SOC_DAPM_ENUM(
+ static const struct snd_kcontrol_new rx2_mix2_inp1_mux = SOC_DAPM_ENUM(
+ 				"RX2 MIX2 INP1 Mux", rx2_mix2_inp1_chain_enum);
  
--	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
--	if (val & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
--		if (val & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
--			appl_writel(pcie, val, APPL_INTR_STATUS_L1_0_0);
--
-+	status_l0 = appl_readl(pcie, APPL_INTR_STATUS_L0);
-+	if (status_l0 & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
-+		appl_writel(pcie, status_l1, APPL_INTR_STATUS_L1_0_0);
-+		if (status_l1 & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
- 			/* SBR & Surprise Link Down WAR */
- 			val = appl_readl(pcie, APPL_CAR_RESET_OVRD);
- 			val &= ~APPL_CAR_RESET_OVRD_CYA_OVERRIDE_CORE_RST_N;
-@@ -394,15 +393,15 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 		}
- 	}
+-/* Digital Gain control -38.4 dB to +38.4 dB in 0.3 dB steps */
+-static const DECLARE_TLV_DB_SCALE(digital_gain, -3840, 30, 0);
++/* Digital Gain control -84 dB to +40 dB in 1 dB steps */
++static const DECLARE_TLV_DB_SCALE(digital_gain, -8400, 100, -8400);
  
--	if (val & APPL_INTR_STATUS_L0_INT_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
--		if (val & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
-+	if (status_l0 & APPL_INTR_STATUS_L0_INT_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
-+		if (status_l1 & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
- 			appl_writel(pcie,
- 				    APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS,
- 				    APPL_INTR_STATUS_L1_8_0);
- 			apply_bad_link_workaround(pp);
- 		}
--		if (val & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
- 			appl_writel(pcie,
- 				    APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS,
- 				    APPL_INTR_STATUS_L1_8_0);
-@@ -414,25 +413,24 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 		}
- 	}
+ /* Cutoff Freq for High Pass Filter at -3dB */
+ static const char * const hpf_cutoff_text[] = {
+@@ -510,15 +510,15 @@ static int wcd_iir_filter_info(struct snd_kcontrol *kcontrol,
  
--	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
--	if (val & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
--		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
-+	if (status_l0 & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
- 			dev_info(pci->dev, "CDM check complete\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
- 		}
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
- 			dev_err(pci->dev, "CDM comparison mismatch\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
- 		}
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
- 			dev_err(pci->dev, "CDM Logic error\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
- 		}
--		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, tmp);
--		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
--		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", tmp);
-+		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
-+		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", val);
- 	}
+ static const struct snd_kcontrol_new msm8916_wcd_digital_snd_controls[] = {
+ 	SOC_SINGLE_S8_TLV("RX1 Digital Volume", LPASS_CDC_RX1_VOL_CTL_B2_CTL,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("RX2 Digital Volume", LPASS_CDC_RX2_VOL_CTL_B2_CTL,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("RX3 Digital Volume", LPASS_CDC_RX3_VOL_CTL_B2_CTL,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("TX1 Digital Volume", LPASS_CDC_TX1_VOL_CTL_GAIN,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("TX2 Digital Volume", LPASS_CDC_TX2_VOL_CTL_GAIN,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_ENUM("TX1 HPF Cutoff", tx1_hpf_cutoff_enum),
+ 	SOC_ENUM("TX2 HPF Cutoff", tx2_hpf_cutoff_enum),
+ 	SOC_SINGLE("TX1 HPF Switch", LPASS_CDC_TX1_MUX_CTL, 3, 1, 0),
+@@ -553,22 +553,22 @@ static const struct snd_kcontrol_new msm8916_wcd_digital_snd_controls[] = {
+ 	WCD_IIR_FILTER_CTL("IIR2 Band3", IIR2, BAND3),
+ 	WCD_IIR_FILTER_CTL("IIR2 Band4", IIR2, BAND4),
+ 	WCD_IIR_FILTER_CTL("IIR2 Band5", IIR2, BAND5),
+-	SOC_SINGLE_SX_TLV("IIR1 INP1 Volume", LPASS_CDC_IIR1_GAIN_B1_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR1 INP2 Volume", LPASS_CDC_IIR1_GAIN_B2_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR1 INP3 Volume", LPASS_CDC_IIR1_GAIN_B3_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR1 INP4 Volume", LPASS_CDC_IIR1_GAIN_B4_CTL,
+-			0,  -84,	40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP1 Volume", LPASS_CDC_IIR2_GAIN_B1_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP2 Volume", LPASS_CDC_IIR2_GAIN_B2_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP3 Volume", LPASS_CDC_IIR2_GAIN_B3_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP4 Volume", LPASS_CDC_IIR2_GAIN_B4_CTL,
+-			0,  -84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP1 Volume", LPASS_CDC_IIR1_GAIN_B1_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP2 Volume", LPASS_CDC_IIR1_GAIN_B2_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP3 Volume", LPASS_CDC_IIR1_GAIN_B3_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP4 Volume", LPASS_CDC_IIR1_GAIN_B4_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP1 Volume", LPASS_CDC_IIR2_GAIN_B1_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP2 Volume", LPASS_CDC_IIR2_GAIN_B2_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP3 Volume", LPASS_CDC_IIR2_GAIN_B3_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP4 Volume", LPASS_CDC_IIR2_GAIN_B4_CTL,
++			-84, 40, digital_gain),
  
- 	return IRQ_HANDLED;
+ };
+ 
 -- 
 2.35.1
 
