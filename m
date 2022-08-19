@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A96C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0325C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353512AbiHSQiJ (ORCPT
+        id S1353517AbiHSQiN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
+        Fri, 19 Aug 2022 12:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353403AbiHSQfm (ORCPT
+        with ESMTP id S1353553AbiHSQg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:35:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C0910445C;
-        Fri, 19 Aug 2022 09:07:19 -0700 (PDT)
+        Fri, 19 Aug 2022 12:36:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE9F122DA8;
+        Fri, 19 Aug 2022 09:07:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD16AB82812;
-        Fri, 19 Aug 2022 16:07:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2399BC43470;
-        Fri, 19 Aug 2022 16:07:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DE21617A5;
+        Fri, 19 Aug 2022 16:07:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2E5C43147;
+        Fri, 19 Aug 2022 16:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925227;
-        bh=11/Dr3LRJ6C8AUMn8I/rOmXtkk74gmNURapeKT1lers=;
+        s=korg; t=1660925239;
+        bh=Mt7AGGcZfiDtZCpqwjCJ+SIH9BMtPjFp1JhQA7qDVTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J8mkCf4kWeuWttQCz9xs/6vKhwOOP4rWvAlW/KnLsBU693IMKyu6vhC7ppqVBt6qR
-         2rl3+/hI/wJqj5T5pwxrAA4tqEyuZLNc4R5boIr2T/1eDF+j7hN7MVZEXaYeiqZRTE
-         nQa9ZVzYloerD3xm3ud+TJUnoRgVd/UHqzsRv+KY=
+        b=Yg7bQUMc5yInDwMRGuxNCQGIW8VJEOjbeqHUaXEE6uSkjAAVtGGJfrQtnQa+cgRGx
+         NtfCVWY3XUH+6DSZQXrs2y7qFXPPZlUKMRSg86jmLQ2L91ay68yXvsarGDRckl9/Wo
+         1LZs6wjGxHm2ke/+plVvjQnlB80HVIKfXP726OwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 425/545] kprobes: Forbid probing on trampoline and BPF code areas
-Date:   Fri, 19 Aug 2022 17:43:15 +0200
-Message-Id: <20220819153848.437327403@linuxfoundation.org>
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 428/545] scripts/faddr2line: Fix vmlinux detection on arm64
+Date:   Fri, 19 Aug 2022 17:43:18 +0200
+Message-Id: <20220819153848.562615132@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,50 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhongjin <chenzhongjin@huawei.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-[ Upstream commit 28f6c37a2910f565b4f5960df52b2eccae28c891 ]
+[ Upstream commit b6a5068854cfe372da7dee3224dcf023ed5b00cb ]
 
-kernel_text_address() treats ftrace_trampoline, kprobe_insn_slot
-and bpf_text_address as valid kprobe addresses - which is not ideal.
+Since commit dcea997beed6 ("faddr2line: Fix overlapping text section
+failures, the sequel"), faddr2line is completely broken on arm64.
 
-These text areas are removable and changeable without any notification
-to kprobes, and probing on them can trigger unexpected behavior:
+For some reason, on arm64, the vmlinux ELF object file type is ET_DYN
+rather than ET_EXEC.  Check for both when determining whether the object
+is vmlinux.
 
-  https://lkml.org/lkml/2022/7/26/1148
+Modules and vmlinux.o have type ET_REL on all arches.
 
-Considering that jump_label and static_call text are already
-forbiden to probe, kernel_text_address() should be replaced with
-core_kernel_text() and is_module_text_address() to check other text
-areas which are unsafe to kprobe.
-
-[ mingo: Rewrote the changelog. ]
-
-Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
-Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Fixes: dcea997beed6 ("faddr2line: Fix overlapping text section failures, the sequel")
+Reported-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Link: https://lore.kernel.org/r/20220801033719.228248-1-chenzhongjin@huawei.com
+Tested-by: John Garry <john.garry@huawei.com>
+Link: https://lore.kernel.org/r/dad1999737471b06d6188ce4cdb11329aa41682c.1658426357.git.jpoimboe@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/kprobes.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ scripts/faddr2line | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index cdea59acd66b..a397042e4660 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1640,7 +1640,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 	preempt_disable();
+diff --git a/scripts/faddr2line b/scripts/faddr2line
+index 94ed98dd899f..57099687e5e1 100755
+--- a/scripts/faddr2line
++++ b/scripts/faddr2line
+@@ -112,7 +112,9 @@ __faddr2line() {
+ 	# section offsets.
+ 	local file_type=$(${READELF} --file-header $objfile |
+ 		${AWK} '$1 == "Type:" { print $2; exit }')
+-	[[ $file_type = "EXEC" ]] && is_vmlinux=1
++	if [[ $file_type = "EXEC" ]] || [[ $file_type == "DYN" ]]; then
++		is_vmlinux=1
++	fi
  
- 	/* Ensure it is not in reserved area nor out of text */
--	if (!kernel_text_address((unsigned long) p->addr) ||
-+	if (!(core_kernel_text((unsigned long) p->addr) ||
-+	    is_module_text_address((unsigned long) p->addr)) ||
- 	    within_kprobe_blacklist((unsigned long) p->addr) ||
- 	    jump_label_text_reserved(p->addr, p->addr) ||
- 	    static_call_text_reserved(p->addr, p->addr) ||
+ 	# Go through each of the object's symbols which match the func name.
+ 	# In rare cases there might be duplicates, in which case we print all
 -- 
 2.35.1
 
