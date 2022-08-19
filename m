@@ -2,107 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD462C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC58C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349055AbiHSMpK (ORCPT
+        id S1349046AbiHSMpb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        Fri, 19 Aug 2022 08:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349051AbiHSMo6 (ORCPT
+        with ESMTP id S1349064AbiHSMpO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:44:58 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71199A942;
-        Fri, 19 Aug 2022 05:44:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=dSwJx5rR8Lt0DjDqYcDYjxzsWNyMCSlR3JILmPEc0Gs=; b=lXTSFuth2KRMYL1geYu4QyYr6W
-        koUidmk/224fozLt9ISXEiugAU65hj/NlvdmdfdtPKyVwavJL9eeGJOnho8SefRAJ7E/uMCkthGuu
-        CwYiAF7+OB/9yC3rB2KD1/IGhV/A4qYyJX+9hq+sdmieOZQpEboVrak90RxWs8DVjdCw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oP1Mg-00DufM-K7; Fri, 19 Aug 2022 14:44:42 +0200
-Date:   Fri, 19 Aug 2022 14:44:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Wei Fang <wei.fang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add
- nxp,refclk_in property
-Message-ID: <Yv+FuiUoTjpoUZ32@lunn.ch>
-References: <20220819074729.1496088-1-wei.fang@nxp.com>
- <20220819074729.1496088-2-wei.fang@nxp.com>
- <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
- <DB9PR04MB81064199835C0E44B997DE06886C9@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org>
+        Fri, 19 Aug 2022 08:45:14 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C633E3C2E
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:45:13 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id s1so3183531lfp.6
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:45:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=qqffeJ1cELkTvZi2yVxU+KEC+V9oMcB95umfP5C+/ms=;
+        b=C0gCvt6FGl2dkLGc++ML4O+KSqvWSCQnKOwA9F5j3zwkJOsDpb2jOMd2PfEsq/TyRW
+         lNxrVzNySX24r+5Vs1PXCzbOltRSDmMaCPqRv8vpqFqkDjqex2EgqF4zv5XAuO95nBDy
+         WiJcuwyKZCyjxBwDw3q8F6HTLNIPapWU63m6yXKuohaY0aD3oWRQ2svfuhijls0dSy+7
+         pZZ4t6quHgFo45JY9FIics9N+MpO670rTh/pTjPAjOP3SOAb7RYBZO4CglNALOVrhPJk
+         oQt5uxxhVE1lBLUu6tiD2WvUCkfWsqZm3zMjGOXm468VqMMUMvnFsvfKJi4ck5ZLHoK/
+         tkiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=qqffeJ1cELkTvZi2yVxU+KEC+V9oMcB95umfP5C+/ms=;
+        b=3Bi2qmU6Fs4g9eZlulG/n4HjuPoHSK1TrUJ8HN2Enr0Hxuty/Qt/zNMdPXNhi0XhXk
+         gZoFEqYDQUBtC67ZsWCA1KJXEJ2Vtan1jJuVqjusCZW1ixd35t+T1cX58Ly7xBwO5YhJ
+         p9tb0QaA4HUnPPW2dmvKvyDd9epKLXmqUVvj7QkYC0cWn9Vqquke4zFuzRkHc4jD8JLB
+         mGhNdVHkDY99NN9da84e8c8QyzknYGL+0eZ9ZPLSVERG9zfOTbhOCkFIDq4UBvgTnYdH
+         RmACGP/OzNN0tzGT5wIOZiEjzSUgIZSiDjdcf+EkAOgNpIrgocbO/6FsJHlAvd82xHV9
+         EA7w==
+X-Gm-Message-State: ACgBeo3gYYFHNkobxDt1+qLj80a9pLlFw+lfj3WU6zZ3dka2yQq9XzG4
+        Q81OKWa+2v8BoAGXIhgHrEA1RQ==
+X-Google-Smtp-Source: AA6agR7/PRkYQLtYE0l0kOSX2qoSLm7uckRWBd/nF3eYbhF9x+nTNIyBDipk1CoYBEgaYkztlr74kw==
+X-Received: by 2002:a05:6512:282c:b0:492:b415:6def with SMTP id cf44-20020a056512282c00b00492b4156defmr2503429lfb.615.1660913111394;
+        Fri, 19 Aug 2022 05:45:11 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id t5-20020a195f05000000b00491734dcb89sm624998lfb.196.2022.08.19.05.45.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 05:45:10 -0700 (PDT)
+Message-ID: <0976b1c1-a8e0-5a61-51ff-9b47f29569a5@linaro.org>
+Date:   Fri, 19 Aug 2022 15:45:09 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/6] dt-bindings: clk: document PolarFire SoC fabric
+ clocks
+Content-Language: en-US
+To:     Conor Dooley <conor.dooley@microchip.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+References: <20220819122259.183600-1-conor.dooley@microchip.com>
+ <20220819122259.183600-3-conor.dooley@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220819122259.183600-3-conor.dooley@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 02:37:36PM +0300, Krzysztof Kozlowski wrote:
-> On 19/08/2022 12:37, Wei Fang wrote:
-> >>
-> >>> +          in RMII mode. This clock signal is provided by the PHY and is
-> >>> +          typically derived from an external 25MHz crystal. Alternatively,
-> >>> +          a 50MHz clock signal generated by an external oscillator can be
-> >>> +          connected to pin REF_CLK. A third option is to connect a 25MHz
-> >>> +          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
-> >>> +          as input or output according to the actual circuit connection.
-> >>> +          If present, indicates that the REF_CLK will be configured as
-> >>> +          interface reference clock input when RMII mode enabled.
-> >>> +          If not present, the REF_CLK will be configured as interface
-> >>> +          reference clock output when RMII mode enabled.
-> >>> +          Only supported on TJA1100 and TJA1101.
-> >>
-> >> Then disallow it on other variants.
-> >>
-> >> Shouldn't this be just "clocks" property?
-> >>
-> >>
-> > This property is to configure the pin REF_CLK of PHY as a input pin through phy register,
-> > indicates that the REF_CLK signal is provided by an external oscillator. so I don't think it's a
-> > "clock" property.
+On 19/08/2022 15:22, Conor Dooley wrote:
+> On PolarFire SoC there are 4 PLL/DLL blocks, located in each of the
+> ordinal corners of the chip, which our documentation refers to as
+> "Clock Conditioning Circuitry". PolarFire SoC is an FPGA, these are
+> highly configurable & many of the input clocks are optional.
 > 
-> clocks, not clock.
-> 
-> You just repeated pieces of description as an counter-argument, so this
-> does not explain anything.
-> 
-> If it is external oscillator shouldn't it be represented in DTS and then
-> obtained by driver (clk_get + clk_prepare_enable)? Otherwise how are you
-> sure that clock is actually enabled? And the lack of presence of the
-> external clock means it is derived from PHY?
 
-Using the common clock framework has been discussed in the past. But
-no PHY actually does this. When the SoC provides the clock, a few PHYs
-do make use of the common clock framework as clock consumers to ensure
-the clock is ticking.
+Thank you for your patch. There is something to discuss/improve.
 
-Plus, as the description says, this pin can be either a clock producer
-or a consumer. I don't think the common clock code allows this. It is
-also not something you negotiate between the MAC and PHY. The hardware
-designer typically decides based on the MAC and PHY actually used. So
-this is a fixed hardware property.
+> +  '#clock-cells':
+> +    const: 1
+> +    description: |
+> +      The clock consumer should specify the desired clock by having the clock
+> +      ID in its "clocks" phandle cell.
+> +      See include/dt-bindings/clock/microchip,mpfs-clock.h for the full list of
+> +      PolarFire clock IDs.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - '#clock-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    ccc_nw: cccnwclk@38100000 {
 
-     Andrew
+Node names should be generic: clock-controller
+
+https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
+
+
+Best regards,
+Krzysztof
