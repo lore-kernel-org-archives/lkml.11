@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A3FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2F7C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351716AbiHSQKE (ORCPT
+        id S1351724AbiHSQKI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
+        Fri, 19 Aug 2022 12:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351816AbiHSQGh (ORCPT
+        with ESMTP id S1351844AbiHSQGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8794110E78F;
-        Fri, 19 Aug 2022 08:56:00 -0700 (PDT)
+        Fri, 19 Aug 2022 12:06:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CDD104758;
+        Fri, 19 Aug 2022 08:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EECCAB827F8;
-        Fri, 19 Aug 2022 15:55:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 405FFC433C1;
-        Fri, 19 Aug 2022 15:55:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74107614FE;
+        Fri, 19 Aug 2022 15:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80E99C433B5;
+        Fri, 19 Aug 2022 15:55:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924556;
-        bh=trQnr5ZakF/YKPwkG69HhIwdy3VsaxAgovN1ZJBb76c=;
+        s=korg; t=1660924538;
+        bh=Uou/vE3UmCNcEvFQuUMTDOkCNj2QMbdtUT/5O2mbpZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEqeKtngsOLdjvJyxngrxT2mHauTBvUykUfRSYHmi2RT0qPkYOB/z301i/yYAUNkm
-         P8QUvu4XZt+w79J77w4lEo/GFemduEp+K6//kyxyiDeRkjoB1DGLDMBqeMsD4sWBnb
-         xUB/kmMYlwwYS7IWcveZL6buRBRe7e94/8VCzgoE=
+        b=FY22a+9EwtfY5iT0PEMb7XiYuM9nUMcTNjsqFtp2av7HiVNA1iQe5Bs1U5DIdN0lV
+         YoA/X+VaXqOj+meApDkDxjGQe/RxW/IfamOCOMUglzBDK0zoz9Cf5jXs4cE5E/u8IO
+         xv4cZ4T+j+JtkPo8eV97SITLdqATjUGqB5lsWvP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 209/545] drm/mediatek: dpi: Remove output format of YUV
-Date:   Fri, 19 Aug 2022 17:39:39 +0200
-Message-Id: <20220819153838.731537765@linuxfoundation.org>
+Subject: [PATCH 5.10 203/545] drm/vc4: hdmi: Fix timings for interlaced modes
+Date:   Fri, 19 Aug 2022 17:39:33 +0200
+Message-Id: <20220819153838.464782682@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,73 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
 
-[ Upstream commit c9ed0713b3c35fc45677707ba47f432cad95da56 ]
+[ Upstream commit 0ee5a40152b15f200ed3a0d51e8aa782ea979c6a ]
 
-DPI is not support output format as YUV, but there is the setting of
-configuring output YUV. Therefore, remove them in this patch.
+Increase the number of post-sync blanking lines on odd fields instead of
+decreasing it on even fields. This makes the total number of lines
+properly match the modelines.
 
-Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-5-rex-bc.chen@mediatek.com/
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Additionally fix the value of PV_VCONTROL_ODD_DELAY, which did not take
+pixels_per_clock into account, causing some displays to invert the
+fields when driven by bcm2711.
+
+Fixes: 682e62c45406 ("drm/vc4: Fix support for interlaced modes on HDMI.")
+Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-31-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 31 ++++++------------------------
- 1 file changed, 6 insertions(+), 25 deletions(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c |    7 ++++---
+ drivers/gpu/drm/vc4/vc4_hdmi.c |   12 ++++++------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 52f11a63a330..554ad60af4e9 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -52,13 +52,7 @@ enum mtk_dpi_out_channel_swap {
- };
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -346,7 +346,8 @@ static void vc4_crtc_config_pv(struct dr
+ 				 PV_HORZB_HACTIVE));
  
- enum mtk_dpi_out_color_format {
--	MTK_DPI_COLOR_FORMAT_RGB,
--	MTK_DPI_COLOR_FORMAT_RGB_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422,
--	MTK_DPI_COLOR_FORMAT_XV_YCC,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
-+	MTK_DPI_COLOR_FORMAT_RGB
- };
+ 	CRTC_WRITE(PV_VERTA,
+-		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
++		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
++				 interlace,
+ 				 PV_VERTA_VBP) |
+ 		   VC4_SET_FIELD(mode->crtc_vsync_end - mode->crtc_vsync_start,
+ 				 PV_VERTA_VSYNC));
+@@ -358,7 +359,7 @@ static void vc4_crtc_config_pv(struct dr
+ 	if (interlace) {
+ 		CRTC_WRITE(PV_VERTA_EVEN,
+ 			   VC4_SET_FIELD(mode->crtc_vtotal -
+-					 mode->crtc_vsync_end - 1,
++					 mode->crtc_vsync_end,
+ 					 PV_VERTA_VBP) |
+ 			   VC4_SET_FIELD(mode->crtc_vsync_end -
+ 					 mode->crtc_vsync_start,
+@@ -378,7 +379,7 @@ static void vc4_crtc_config_pv(struct dr
+ 			   PV_VCONTROL_CONTINUOUS |
+ 			   (is_dsi ? PV_VCONTROL_DSI : 0) |
+ 			   PV_VCONTROL_INTERLACE |
+-			   VC4_SET_FIELD(mode->htotal * pixel_rep / 2,
++			   VC4_SET_FIELD(mode->htotal * pixel_rep / (2 * ppc),
+ 					 PV_VCONTROL_ODD_DELAY));
+ 		CRTC_WRITE(PV_VSYNCD_EVEN, 0);
+ 	} else {
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -522,12 +522,12 @@ static void vc4_hdmi_set_timings(struct
+ 				   VC4_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC4_HDMI_VERTA_VAL));
+ 	u32 vertb = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
++				   interlaced,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end -
+-					interlaced,
++					mode->crtc_vsync_end,
+ 					VC4_HDMI_VERTB_VBP));
  
- struct mtk_dpi {
-@@ -358,24 +352,11 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
- static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
- 					enum mtk_dpi_out_color_format format)
- {
--	if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_444) ||
--	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
--	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
--		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, true);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, true);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	} else {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, false);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	}
-+	/* only support RGB888 */
-+	mtk_dpi_config_yuv422_enable(dpi, false);
-+	mtk_dpi_config_csc_enable(dpi, false);
-+	mtk_dpi_config_swap_input(dpi, false);
-+	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
- }
+ 	HDMI_WRITE(HDMI_HORZA,
+@@ -566,12 +566,12 @@ static void vc5_hdmi_set_timings(struct
+ 				   VC5_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
+ 	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
++				   interlaced,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end -
+-					interlaced,
++					mode->crtc_vsync_end,
+ 					VC4_HDMI_VERTB_VBP));
  
- static void mtk_dpi_power_off(struct mtk_dpi *dpi)
--- 
-2.35.1
-
+ 	HDMI_WRITE(HDMI_VEC_INTERFACE_XBAR, 0x354021);
 
 
