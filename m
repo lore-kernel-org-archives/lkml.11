@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25F6C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15017C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351491AbiHSQJi (ORCPT
+        id S1351688AbiHSQJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48434 "EHLO
+        Fri, 19 Aug 2022 12:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351743AbiHSQG1 (ORCPT
+        with ESMTP id S1351758AbiHSQG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9087107F0C;
+        Fri, 19 Aug 2022 12:06:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB23D107F05;
         Fri, 19 Aug 2022 08:55:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5C439CE26B6;
-        Fri, 19 Aug 2022 15:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D144C433C1;
-        Fri, 19 Aug 2022 15:55:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78D87616B3;
+        Fri, 19 Aug 2022 15:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C805C433C1;
+        Fri, 19 Aug 2022 15:55:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924544;
-        bh=meiPX+XRYn9LPg+IPClYQZy9fcsxsBiGyAMRKHZrhtQ=;
+        s=korg; t=1660924532;
+        bh=UKa314WESJCjsyExFx48p4VTNyM/6qFWQEI7i2N5gms=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ySJlYViI0KinQX+uZVVD3eA1ezTfwapSV39xV7JJ+cahc5ASFk8dFH4OT9ywQi7E3
-         bBHGSSVXDbv96ryLGarQmtsZ2lJDvgJl14aHnSgNjVVM69zNa1NK6Jbs6KZYrLCUie
-         kl16JsF1OQxOcZAtYdGYnxDrm+fMV4hECazduNtI=
+        b=1gTGlnhuyttwDeqeGfFxGwbWpk4kI0o/xxcBMUyUsa2t68cP7RR0hRHRqk88aVIKk
+         oa4vW0/Ys2WvOTavqz+nTGidVHokLV1jFDgoB2I0qwbazSwvmtrMZ3xjSlOPk/tQGt
+         StL5M0ofSQLwtw3w3MuBADdekffKETtmpFWvG2T8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 205/545] crypto: arm64/gcm - Select AEAD for GHASH_ARM64_CE
-Date:   Fri, 19 Aug 2022 17:39:35 +0200
-Message-Id: <20220819153838.551230937@linuxfoundation.org>
+Subject: [PATCH 5.10 201/545] drm/vc4: hdmi: Dont access the connector state in reset if kmalloc fails
+Date:   Fri, 19 Aug 2022 17:39:31 +0200
+Message-Id: <20220819153838.387286468@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,37 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qian Cai <quic_qiancai@quicinc.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit fac76f2260893dde5aa05bb693b4c13e8ed0454b ]
+[ Upstream commit e55a07751146ef8ebc2c561564437b78f46405d3 ]
 
-Otherwise, we could fail to compile.
+drm_atomic_helper_connector_reset uses kmalloc which, from an API
+standpoint, can fail, and thus setting connector->state to NULL.
+However, our reset hook then calls drm_atomic_helper_connector_tv_reset
+that will access connector->state without checking if it's a valid
+pointer or not.
 
-ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_exit':
-ghash-ce-glue.c:(.exit.text+0x24): undefined reference to 'crypto_unregister_aead'
-ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_init':
-ghash-ce-glue.c:(.init.text+0x34): undefined reference to 'crypto_register_aead'
+Make sure we don't end up accessing a NULL pointer.
 
-Fixes: 537c1445ab0b ("crypto: arm64/gcm - implement native driver using v8 Crypto Extensions")
-Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Suggested-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20201215154243.540115-5-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/crypto/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/crypto/Kconfig b/arch/arm64/crypto/Kconfig
-index b8eb0453123d..6bd4e749a946 100644
---- a/arch/arm64/crypto/Kconfig
-+++ b/arch/arm64/crypto/Kconfig
-@@ -59,6 +59,7 @@ config CRYPTO_GHASH_ARM64_CE
- 	select CRYPTO_HASH
- 	select CRYPTO_GF128MUL
- 	select CRYPTO_LIB_AES
-+	select CRYPTO_AEAD
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 9a90f22df3d2..978afe706ee2 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -209,7 +209,9 @@ static int vc4_hdmi_connector_get_modes(struct drm_connector *connector)
+ static void vc4_hdmi_connector_reset(struct drm_connector *connector)
+ {
+ 	drm_atomic_helper_connector_reset(connector);
+-	drm_atomic_helper_connector_tv_reset(connector);
++
++	if (connector->state)
++		drm_atomic_helper_connector_tv_reset(connector);
+ }
  
- config CRYPTO_CRCT10DIF_ARM64_CE
- 	tristate "CRCT10DIF digest algorithm using PMULL instructions"
+ static const struct drm_connector_funcs vc4_hdmi_connector_funcs = {
 -- 
 2.35.1
 
