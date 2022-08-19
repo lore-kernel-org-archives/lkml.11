@@ -2,134 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6190CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CA0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354698AbiHSRml (ORCPT
+        id S1351072AbiHSRnN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
+        Fri, 19 Aug 2022 13:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350894AbiHSRmT (ORCPT
+        with ESMTP id S1354697AbiHSRml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:42:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C958C131A2A
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660928494;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hsc4yRhAhZ4DbPHQFkOZPha0cv9GZ3AkjwFlq+dmc4w=;
-        b=QBoDO7sKvFahY+oIP7USeWCVRKtLoRIgVnsWontc7SOVl94zvo8MwY27OUFfERmyQljMPe
-        lMTEds0jZglE43FylZwZxBVVmsLufK+mH/7lH7FotLy0JtOdmOZ3RUVDqzgCJh+u6B4ry7
-        OmxmgMYJoZfdRc1sbZc2STbjel5sDmo=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-232-vz29oyJdPXmtj3wY1RzSVw-1; Fri, 19 Aug 2022 13:01:31 -0400
-X-MC-Unique: vz29oyJdPXmtj3wY1RzSVw-1
-Received: by mail-qt1-f199.google.com with SMTP id fy12-20020a05622a5a0c00b00344569022f7so3822104qtb.17
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:01:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Hsc4yRhAhZ4DbPHQFkOZPha0cv9GZ3AkjwFlq+dmc4w=;
-        b=aS6T02+qBWa9fLiDhtTwkOe6mWQrGYska9NNtFKE/YtcgPx+aHHFz/swfoxIEVYp+Z
-         FgrLf7cCIX5sd3NUHgbW65KVM/I42Xl0HjCzBksIX4UQwNBiMDJRW5PxnKQZuF+sPfEh
-         nmHew4JS16Z5iZ2cHFv7y2MfjPEX1Giw1Yrb4zg8PMJD1f31Bm9dFW/BpT7yXQpGRU9y
-         hdVendvbaEo8sd1TiSPq1W5kqtbLtYw7GYf5zafMyiuJb9YgOZmF+1bLtQGk/pXaEvFO
-         gnQd0Q0z9NLA1+Z2v75JaBTD5YE4KbPutdYhj0JlSxD1iZcbRuQjrvreoQJp0AvbraF5
-         ugEQ==
-X-Gm-Message-State: ACgBeo0Y6beQmqdknbsSajbuYTr+V4CeVc7hoKC4VYwN/IccqQDgprjM
-        tlSJAC6o1VwEsM5u7XKQz5J5kdnqBNCBb5bIX293PORl0GjdCGn1uscI7qu761UwDUnQjnWHRcQ
-        /Qs1yWYexwpvk+pU4pFq/ohv8YK3TkC7F6RmdPW1n
-X-Received: by 2002:a05:6214:2588:b0:477:22bd:e1e6 with SMTP id fq8-20020a056214258800b0047722bde1e6mr6941503qvb.105.1660928490869;
-        Fri, 19 Aug 2022 10:01:30 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5adLa5ufq8xv5MSitmP52SMGWicDFV/f3YeImHZmgqosweVM0PWafCWIvK9R7y6580EaMkBmHeuxCslplaa6M=
-X-Received: by 2002:a05:6214:2588:b0:477:22bd:e1e6 with SMTP id
- fq8-20020a056214258800b0047722bde1e6mr6941464qvb.105.1660928490528; Fri, 19
- Aug 2022 10:01:30 -0700 (PDT)
+        Fri, 19 Aug 2022 13:42:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99891133A4C;
+        Fri, 19 Aug 2022 10:01:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0882F617C7;
+        Fri, 19 Aug 2022 17:01:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D991C433B5;
+        Fri, 19 Aug 2022 17:01:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660928509;
+        bh=O5aPB64MRuuVf6y9WVzczPShckhm/cZfEc0YAuq8dDs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JV4dbJxPPXjyoF+4bqMneL9I1M423zOu4WvyE3jhYcifaOCedSxsBTgyaTYgTOxjy
+         3SPO5kfdFp6nMRtSPppgzAUvUJ807J8Hd8GO3T0u4QBEpJ2fL0GiW2h442+ehtoufK
+         zp0wbi1+nfE5DmpGF7hIoF1XcvWBQK8FD2Ss2hSIZn7ot4fhNXqggtZ9BF+D+2UBFI
+         RI06wl/iOljj/B6v5ds8pmXnbi4ke9l8hs51DlSisnxSFnCVZHSDS6ua0UTJeGQKpg
+         Q7k9Vw8gtZ0XpH/RSt3lX14bwY5NCTXyF3m1z0krwx7ps2bbLwCiYxvS1bbPKDAUyS
+         WZfZEtEaet5QA==
+Date:   Fri, 19 Aug 2022 18:12:25 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: ad7292: Prevent regulator double disable
+Message-ID: <20220819181225.3f6851d1@jic23-huawei>
+In-Reply-To: <Yv9O+9sxU7gAv3vM@fedora>
+References: <Yv9O+9sxU7gAv3vM@fedora>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220816025217.618181-1-kai.heng.feng@canonical.com>
- <87leror4sl.fsf@intel.com> <20220818115338.GA26586@wunner.de>
-In-Reply-To: <20220818115338.GA26586@wunner.de>
-From:   Karol Herbst <kherbst@redhat.com>
-Date:   Fri, 19 Aug 2022 19:01:19 +0200
-Message-ID: <CACO55ts1T9x++gjbvb-4gxOhLfKTeVVEjpm4L4uav-qRBsxmZg@mail.gmail.com>
-Subject: Re: [PATCH] drm/i915: Switch TGL-H DP-IN to dGFX when it's supported
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        tvrtko.ursulin@linux.intel.com,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        rodrigo.vivi@intel.com, Zenghui Yu <yuzenghui@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 2:09 PM Lukas Wunner <lukas@wunner.de> wrote:
->
-> On Tue, Aug 16, 2022 at 11:06:18AM +0300, Jani Nikula wrote:
-> > On Tue, 16 Aug 2022, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
-> > > On mobile workstations like HP ZBook Fury G8, iGFX's DP-IN can switch to
-> > > dGFX so external monitors are routed to dGFX, and more monitors can be
-> > > supported as result.
-> > >
-> > > To switch the DP-IN to dGFX, the driver needs to invoke _DSM function 20
-> > > on intel_dsm_guid2. This method is described in Intel document 632107.
-> >
-> > Is this the policy decision that we want to unconditionally make,
-> > though?
->
-> In general, we handle switching of outputs between GPUs in vga_switcheroo.c
-> upon a request from user space via sysfs (well, debugfs currently).
-> It's up to users to decide which policy suits their needs best.
->
-> That said, we never grew support to allow different switching policies for
-> the built-in panel and external outputs.  Laptops supporting this are
-> rare.  Older MacBook Pros introduced between 2008 and 2010 are among them:
-> They have separate muxes for the panel and external DP port.  Our policy
-> is documented in a code comment in drivers/platform/x86/apple-gmux.c:
->
->  * The external DP port is only fully switchable on the first two unibody
->  * MacBook Pro generations, MBP5 2008/09 and MBP6 2010. This is done by an
->  * `NXP CBTL06141`_ which is controlled by gmux.
->  [...]
->  * Our switching policy for the external port is that on those generations
->  * which are able to switch it fully, the port is switched together with the
->  * panel when IGD / DIS commands are issued to vga_switcheroo. It is thus
->  * possible to drive e.g. a beamer on battery power with the integrated GPU.
->  * The user may manually switch to the discrete GPU if more performance is
->  * needed.
->  *
->  * On all newer generations, the external port can only be driven by the
->  * discrete GPU. If a display is plugged in while the panel is switched to
->  * the integrated GPU, *both* GPUs will be in use for maximum performance.
->  * To decrease power consumption, the user may manually switch to the
->  * discrete GPU, thereby suspending the integrated GPU.
->
-> In other words, on these older MacBook Pros, we switch the panel and
-> external DP port in unison, thus always allowing one of the two GPUs
-> to runtime suspend and save power.
->
-> Thanks,
->
-> Lukas
->
+On Fri, 19 Aug 2022 11:51:07 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-sure, but this is changing now. I do have a laptop with a muxable
-internal display. But this is considered to be a dynamic on demand
-switching thing not a boot time switch.
+> The ad7292 tries to add an devm_action for disabling a regulator at
+> device detach using devm_add_action_or_reset(). The
+> devm_add_action_or_reset() does call the release function should adding
+> action fail. The driver inspects the value returned by
+> devm_add_action_or_reset() and manually calls regulator_disable() if
+> adding the action has failed. This leads to double disable and messes
+> the enable count for regulator.
+> 
+> Do not manually call disable if devm_add_action_or_reset() fails.
+> 
+> Fixes: 506d2e317a0a ("iio: adc: Add driver support for AD7292")
+> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
+Good spot. Applied to the fixes-togreg branch of iio.git
+and marked for stable.
 
-Anyway, I am still not convinced that doing that unconditionally is
-what we want, especially as userspace has to support dynamic switching
-regardless.
+Jonathan
+
+> ---
+> 
+> The bug was found during browsing the code. I don't have the hardware to
+> test this so reviewing and testing is highly appreciated.
+> ---
+>  drivers/iio/adc/ad7292.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7292.c b/drivers/iio/adc/ad7292.c
+> index 92c68d467c50..a2f9fda25ff3 100644
+> --- a/drivers/iio/adc/ad7292.c
+> +++ b/drivers/iio/adc/ad7292.c
+> @@ -287,10 +287,8 @@ static int ad7292_probe(struct spi_device *spi)
+>  
+>  		ret = devm_add_action_or_reset(&spi->dev,
+>  					       ad7292_regulator_disable, st);
+> -		if (ret) {
+> -			regulator_disable(st->reg);
+> +		if (ret)
+>  			return ret;
+> -		}
+>  
+>  		ret = regulator_get_voltage(st->reg);
+>  		if (ret < 0)
 
