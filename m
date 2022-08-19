@@ -2,99 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EBFC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5AEC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349080AbiHSMwn (ORCPT
+        id S1349096AbiHSMwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
+        Fri, 19 Aug 2022 08:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348339AbiHSMwl (ORCPT
+        with ESMTP id S1349072AbiHSMwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:52:41 -0400
+        Fri, 19 Aug 2022 08:52:43 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA47C6CDE
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465A9DAB9D
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:42 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27J5QffN021184;
-        Fri, 19 Aug 2022 07:52:33 -0500
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBix0Q020060;
+        Fri, 19 Aug 2022 07:52:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=DEfJ9i42eqkoVYAgl9Ca7Dg0mjK9CUm+t95OA12w4tg=;
- b=IVC4b3HIaQPYpyssKEzkaeGiahh07vid5V7vc6MFSxKJkx3xqLkV3U4gsR+RDySRJhZj
- czm6wQNgE25yGQj4ETx5C8PY1vdQZ8tPu1JcBbruzwL0KA+Rbs9Fp6r+krOP4+RhC8c+
- IGscNVt3v8pWB5iq7bjYbzLsHD88F4G3URZ9IiLqdWcdqAtNVYyQ9JBlB2jA+1DOftJD
- 03g1lLDbPk8wUHf4D1gdy8zFIDM+Xi8+k64rSIlaR/DD/cZiRfXCzVbnURsesaRwcsUX
- dIM0HU2FgLyo9nUEaevhSgQnAR2D55cIUD+TvtClllEgkKRV78QESi8f8yIYzdNxpcCH Qg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hx8cpfuvk-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=nKtJZgoVT5msd6d2g2FF3eUTwfX6urlD3iU/MkRT4Ow=;
+ b=DIFGxJiK1LabfmgyE6ysA2LXVuQ6SFYPkvYOvc6XP0XOt3vXgCCIfOgYx8eeu7FKCytN
+ +SRg9IMu2MvwreA3vOffGlSEb4U6QGh+AztP6PjLYjITvF4420IUZ7bXhUKydLP03urT
+ ERkaOXndxklQYvBdxV/d8Ec1INJB3YBuMWChXDUej9H7jDORi4flNfMp4hKWzmpPdXsj
+ xvTa/07OhsaLvTL6YXxSBtlD52zctqI7M3KNel+hBUzy595TcPSfHRE5F3p2/JssgacX
+ FjuZ9dCcgOUC/T0Xpi+nE5k4Q4pluS2J2aKrd17qsruU7Rhzyv9cwZUxtExXYgYlgvuM yQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hx8cpfuvn-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 07:52:33 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 19 Aug 2022 07:52:36 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 19 Aug
- 2022 07:52:32 -0500
+ 2022 07:52:34 -0500
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
- Transport; Fri, 19 Aug 2022 07:52:32 -0500
+ Transport; Fri, 19 Aug 2022 07:52:34 -0500
 Received: from edi-sw-dsktp-006.ad.cirrus.com (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 19EFD7C;
-        Fri, 19 Aug 2022 12:52:30 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A4A43B0E;
+        Fri, 19 Aug 2022 12:52:34 +0000 (UTC)
 From:   Richard Fitzgerald <rf@opensource.cirrus.com>
 To:     <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
         <patches@opensource.cirrus.com>,
         Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH 00/12] ASoC: cs42l42: Add Soundwire support
-Date:   Fri, 19 Aug 2022 13:52:18 +0100
-Message-ID: <20220819125230.42731-1-rf@opensource.cirrus.com>
+Subject: [PATCH 04/12] ASoC: cs42l42: Separate ASP config from PLL config
+Date:   Fri, 19 Aug 2022 13:52:22 +0100
+Message-ID: <20220819125230.42731-5-rf@opensource.cirrus.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220819125230.42731-1-rf@opensource.cirrus.com>
+References: <20220819125230.42731-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: iq25F7LQ021Oc1jlEJEc4xq159PP-sYN
-X-Proofpoint-GUID: iq25F7LQ021Oc1jlEJEc4xq159PP-sYN
+X-Proofpoint-ORIG-GUID: nlssAeiSidrrLH-vAN240o8wIKYT_HaR
+X-Proofpoint-GUID: nlssAeiSidrrLH-vAN240o8wIKYT_HaR
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CS42L42 has a Soundwire interface for control and audio. This
-chain of patches adds support for this.
+Setup of the ASP (audio serial port) was being done as a side-effect of
+cs42l42_pll_config() and forces a restriction on the ratio of sample_rate
+to bit_clock that is invalid for Soundwire.
 
-Patches #1 .. #10 split out various changes to the existing code that
-are needed for adding Soundwire. These are mostly around clocking and
-supporting the separate probe and enumeration stages in Soundwire.
+Move the ASP setup into a dedicated function.
 
-Patches #11 and #12 actually add the Soundwire handling.
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+---
+ sound/soc/codecs/cs42l42.c | 81 +++++++++++++++++++++-----------------
+ sound/soc/codecs/cs42l42.h |  1 -
+ 2 files changed, 44 insertions(+), 38 deletions(-)
 
-Richard Fitzgerald (12):
-  ASoC: cs42l42: Add SOFT_RESET_REBOOT register
-  ASoC: cs42l42: Add bitclock frequency argument to cs42l42_pll_config()
-  ASoC: cs42l42: Ensure MCLKint is a multiple of the sample rate
-  ASoC: cs42l42: Separate ASP config from PLL config
-  ASoC: cs42l42: Use cs42l42->dev instead of &i2c_client->dev
-  ASoC: cs42l42: Split probe() and remove() into stages
-  ASoC: cs42l42: Split cs42l42_resume into two functions
-  ASoC: cs42l42: Pass component and dai defs into common probe
-  ASoC: cs42l42: Split I2C identity into separate module
-  ASoC: cs42l42: Export some functions for Soundwire
-  ASoC: cs42l42: Add Soundwire support
-  ASoC: cs42l42: Add support for Soundwire interrupts
-
- include/sound/cs42l42.h        |   5 +
- sound/soc/codecs/Kconfig       |  14 +-
- sound/soc/codecs/Makefile      |   6 +-
- sound/soc/codecs/cs42l42-i2c.c | 107 +++++
- sound/soc/codecs/cs42l42-sdw.c | 689 +++++++++++++++++++++++++++++++++
- sound/soc/codecs/cs42l42.c     | 359 +++++++++--------
- sound/soc/codecs/cs42l42.h     |  30 +-
- 7 files changed, 1049 insertions(+), 161 deletions(-)
- create mode 100644 sound/soc/codecs/cs42l42-i2c.c
- create mode 100644 sound/soc/codecs/cs42l42-sdw.c
-
+diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
+index 66c10d24169d..946b2a935256 100644
+--- a/sound/soc/codecs/cs42l42.c
++++ b/sound/soc/codecs/cs42l42.c
+@@ -654,7 +654,6 @@ static int cs42l42_pll_config(struct snd_soc_component *component, unsigned int
+ {
+ 	struct cs42l42_private *cs42l42 = snd_soc_component_get_drvdata(component);
+ 	int i;
+-	u32 fsync;
+ 
+ 	/* Don't reconfigure if there is an audio stream running */
+ 	if (cs42l42->stream_use) {
+@@ -680,40 +679,6 @@ static int cs42l42_pll_config(struct snd_soc_component *component, unsigned int
+ 					(pll_ratio_table[i].mclk_int !=
+ 					24000000)) <<
+ 					CS42L42_INTERNAL_FS_SHIFT);
+-
+-			/* Set up the LRCLK */
+-			fsync = clk / cs42l42->srate;
+-			if (((fsync * cs42l42->srate) != clk)
+-				|| ((fsync % 2) != 0)) {
+-				dev_err(component->dev,
+-					"Unsupported sclk %d/sample rate %d\n",
+-					clk,
+-					cs42l42->srate);
+-				return -EINVAL;
+-			}
+-			/* Set the LRCLK period */
+-			snd_soc_component_update_bits(component,
+-					CS42L42_FSYNC_P_LOWER,
+-					CS42L42_FSYNC_PERIOD_MASK,
+-					CS42L42_FRAC0_VAL(fsync - 1) <<
+-					CS42L42_FSYNC_PERIOD_SHIFT);
+-			snd_soc_component_update_bits(component,
+-					CS42L42_FSYNC_P_UPPER,
+-					CS42L42_FSYNC_PERIOD_MASK,
+-					CS42L42_FRAC1_VAL(fsync - 1) <<
+-					CS42L42_FSYNC_PERIOD_SHIFT);
+-			/* Set the LRCLK to 50% duty cycle */
+-			fsync = fsync / 2;
+-			snd_soc_component_update_bits(component,
+-					CS42L42_FSYNC_PW_LOWER,
+-					CS42L42_FSYNC_PULSE_WIDTH_MASK,
+-					CS42L42_FRAC0_VAL(fsync - 1) <<
+-					CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
+-			snd_soc_component_update_bits(component,
+-					CS42L42_FSYNC_PW_UPPER,
+-					CS42L42_FSYNC_PULSE_WIDTH_MASK,
+-					CS42L42_FRAC1_VAL(fsync - 1) <<
+-					CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
+ 			if (pll_ratio_table[i].mclk_src_sel == 0) {
+ 				/* Pass the clock straight through */
+ 				snd_soc_component_update_bits(component,
+@@ -805,6 +770,46 @@ static void cs42l42_src_config(struct snd_soc_component *component, unsigned int
+ 				      fs << CS42L42_CLK_OASRC_SEL_SHIFT);
+ }
+ 
++static int cs42l42_asp_config(struct snd_soc_component *component,
++			      unsigned int sclk, unsigned int sample_rate)
++{
++	u32 fsync = sclk / sample_rate;
++
++	/* Set up the LRCLK */
++	if (((fsync * sample_rate) != sclk) || ((fsync % 2) != 0)) {
++		dev_err(component->dev,
++			"Unsupported sclk %d/sample rate %d\n",
++			sclk,
++			sample_rate);
++		return -EINVAL;
++	}
++	/* Set the LRCLK period */
++	snd_soc_component_update_bits(component,
++				      CS42L42_FSYNC_P_LOWER,
++				      CS42L42_FSYNC_PERIOD_MASK,
++				      CS42L42_FRAC0_VAL(fsync - 1) <<
++				      CS42L42_FSYNC_PERIOD_SHIFT);
++	snd_soc_component_update_bits(component,
++				      CS42L42_FSYNC_P_UPPER,
++				      CS42L42_FSYNC_PERIOD_MASK,
++				      CS42L42_FRAC1_VAL(fsync - 1) <<
++				      CS42L42_FSYNC_PERIOD_SHIFT);
++	/* Set the LRCLK to 50% duty cycle */
++	fsync = fsync / 2;
++	snd_soc_component_update_bits(component,
++				      CS42L42_FSYNC_PW_LOWER,
++				      CS42L42_FSYNC_PULSE_WIDTH_MASK,
++				      CS42L42_FRAC0_VAL(fsync - 1) <<
++				      CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
++	snd_soc_component_update_bits(component,
++				      CS42L42_FSYNC_PW_UPPER,
++				      CS42L42_FSYNC_PULSE_WIDTH_MASK,
++				      CS42L42_FRAC1_VAL(fsync - 1) <<
++				      CS42L42_FSYNC_PULSE_WIDTH_SHIFT);
++
++	return 0;
++}
++
+ static int cs42l42_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
+ {
+ 	struct snd_soc_component *component = codec_dai->component;
+@@ -900,8 +905,6 @@ static int cs42l42_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	unsigned int bclk;
+ 	int ret;
+ 
+-	cs42l42->srate = params_rate(params);
+-
+ 	if (cs42l42->sclk) {
+ 		/* machine driver has set the SCLK */
+ 		bclk = cs42l42->sclk;
+@@ -959,6 +962,10 @@ static int cs42l42_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	if (ret)
+ 		return ret;
+ 
++	ret = cs42l42_asp_config(component, bclk, sample_rate);
++	if (ret)
++		return ret;
++
+ 	cs42l42_src_config(component, sample_rate);
+ 
+ 	return 0;
+diff --git a/sound/soc/codecs/cs42l42.h b/sound/soc/codecs/cs42l42.h
+index b4ba1467c558..2e4e01f9e389 100644
+--- a/sound/soc/codecs/cs42l42.h
++++ b/sound/soc/codecs/cs42l42.h
+@@ -31,7 +31,6 @@ struct  cs42l42_private {
+ 	struct mutex irq_lock;
+ 	int pll_config;
+ 	u32 sclk;
+-	u32 srate;
+ 	u8 plug_state;
+ 	u8 hs_type;
+ 	u8 ts_inv;
 -- 
 2.30.2
 
