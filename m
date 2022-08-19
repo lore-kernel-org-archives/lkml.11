@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB308C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F6EDC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348201AbiHSJzO (ORCPT
+        id S1348216AbiHSJzT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56530 "EHLO
+        Fri, 19 Aug 2022 05:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347985AbiHSJzG (ORCPT
+        with ESMTP id S1348069AbiHSJyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:55:06 -0400
+        Fri, 19 Aug 2022 05:54:54 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E166DCD50C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D50FBFAA9;
         Fri, 19 Aug 2022 02:54:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660902893; x=1692438893;
+  t=1660902891; x=1692438891;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+Af5JAEyadJZYsDa26MITcZUUd/oFSC8ZRLQM82MN5E=;
-  b=01Rvqf0jX/lz6HFhtlYKD38UA21+OZRAZQOTTTFxpEqkJWW496tIW+Vo
-   8Sx5RbaFO3JyaiIS8SiV++r6EcFTtR321pxsqmg79qH5e6R4pcz2SF1Sw
-   DttHZSc+n6JmXTYiXW0Sfunm5zNgovQGNRI4iqmS88CGIH/UTTpdayQmU
-   NCPNATkL1hc6AkoNkN9HsHl3v0STcS3LXX01k22nHcR7W8B7JjO4C+wKV
-   Vc2ih0j2vWidbmJQqI4skkRBfD+sxwxQ3yK9bWLFMWNxpXBRmwxHNE8iO
-   VgF6q0iCf6gdgoBnwuL8M+cBwFUtmlgXrDOb9srhvXatUv4S7tLysRHis
-   Q==;
+  bh=22sX6hdQWVNBlKUnAfqAl8ZrlZKUVg33klYFVGAaHB0=;
+  b=uw/+Hkd+3GD7fC5SScbbcOfiEJq3dVJFdtf91MAe9zSVV09w8+nCbc2a
+   890LGi3PPId/ya4Pzn/0V9SVUV9KMxMO3rpLDTXtwP/gl9/K1eWLegIHU
+   3tFG5ztyMmKpL7OeTKXf8hQybQHOPsaMmQmPqcoGrF9BFe8XKKAc6JHkC
+   9Y4dcSj5pK9LM0BFVJVlMXZahfosfZSC/hwF3GXRUJV2kxeBsbiI7Xosj
+   Fhf2oqOWyWIUt0g87ggy/00KgzReGnO/HlMQhgvz76hEPgcAqVfSVSXfF
+   8GWcKkqHUjYGsaez5rGTnr8wg9wVG159+1G2VuHjnI1v1UWlxDe9t+l+O
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="176906872"
+   d="scan'208";a="187175558"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Aug 2022 02:54:47 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Aug 2022 02:54:50 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 19 Aug 2022 02:54:44 -0700
+ 15.1.2507.12; Fri, 19 Aug 2022 02:54:49 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Fri, 19 Aug 2022 02:54:41 -0700
+ Transport; Fri, 19 Aug 2022 02:54:47 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -53,9 +53,9 @@ CC:     Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-riscv@lists.infradead.org>
-Subject: [PATCH v3 04/13] reset: add polarfire soc reset support
-Date:   Fri, 19 Aug 2022 10:53:12 +0100
-Message-ID: <20220819095320.40006-5-conor.dooley@microchip.com>
+Subject: [PATCH v3 06/13] riscv: dts: microchip: add mpfs specific macb reset support
+Date:   Fri, 19 Aug 2022 10:53:14 +0100
+Message-ID: <20220819095320.40006-7-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220819095320.40006-1-conor.dooley@microchip.com>
 References: <20220819095320.40006-1-conor.dooley@microchip.com>
@@ -66,220 +66,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the resets on Microchip's PolarFire SoC (MPFS).
-Reset control is a single register, wedged in between registers for
-clock control. To fit with existed DT etc, the reset controller is
-created using the aux device framework & set up in the clock driver.
+The macb on PolarFire SoC has reset support which the generic compatible
+does not use. Add the newly introduced MPFS specific compatible as the
+primary compatible to avail of this support & wire up the reset to the
+clock controllers devicetree entry.
 
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
 Reviewed-by: Daire McNamara <daire.mcnamara@microchip.com>
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- drivers/reset/Kconfig      |   7 ++
- drivers/reset/Makefile     |   2 +-
- drivers/reset/reset-mpfs.c | 157 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 165 insertions(+), 1 deletion(-)
- create mode 100644 drivers/reset/reset-mpfs.c
+ arch/riscv/boot/dts/microchip/mpfs.dtsi | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index 806773e88832..85f7abde3766 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -152,6 +152,13 @@ config RESET_PISTACHIO
- 	help
- 	  This enables the reset driver for ImgTec Pistachio SoCs.
+diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+index 499c2e63ad35..ae5839534d9c 100644
+--- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+@@ -234,6 +234,7 @@ clkcfg: clkcfg@20002000 {
+ 			reg = <0x0 0x20002000 0x0 0x1000>, <0x0 0x3E001000 0x0 0x1000>;
+ 			clocks = <&refclk>;
+ 			#clock-cells = <1>;
++			#reset-cells = <1>;
+ 		};
  
-+config RESET_POLARFIRE_SOC
-+	bool "Microchip PolarFire SoC (MPFS) Reset Driver"
-+	depends on AUXILIARY_BUS && MCHP_CLK_MPFS
-+	default MCHP_CLK_MPFS
-+	help
-+	  This driver supports peripheral reset for the Microchip PolarFire SoC
-+
- config RESET_QCOM_AOSS
- 	tristate "Qcom AOSS Reset Driver"
- 	depends on ARCH_QCOM || COMPILE_TEST
-diff --git a/drivers/reset/Makefile b/drivers/reset/Makefile
-index cd5cf8e7c6a7..3e7e5fd633a8 100644
---- a/drivers/reset/Makefile
-+++ b/drivers/reset/Makefile
-@@ -22,6 +22,7 @@ obj-$(CONFIG_RESET_MESON_AUDIO_ARB) += reset-meson-audio-arb.o
- obj-$(CONFIG_RESET_NPCM) += reset-npcm.o
- obj-$(CONFIG_RESET_OXNAS) += reset-oxnas.o
- obj-$(CONFIG_RESET_PISTACHIO) += reset-pistachio.o
-+obj-$(CONFIG_RESET_POLARFIRE_SOC) += reset-mpfs.o
- obj-$(CONFIG_RESET_QCOM_AOSS) += reset-qcom-aoss.o
- obj-$(CONFIG_RESET_QCOM_PDC) += reset-qcom-pdc.o
- obj-$(CONFIG_RESET_RASPBERRYPI) += reset-raspberrypi.o
-@@ -40,4 +41,3 @@ obj-$(CONFIG_RESET_UNIPHIER) += reset-uniphier.o
- obj-$(CONFIG_RESET_UNIPHIER_GLUE) += reset-uniphier-glue.o
- obj-$(CONFIG_RESET_ZYNQ) += reset-zynq.o
- obj-$(CONFIG_ARCH_ZYNQMP) += reset-zynqmp.o
--
-diff --git a/drivers/reset/reset-mpfs.c b/drivers/reset/reset-mpfs.c
-new file mode 100644
-index 000000000000..1580d1b68d61
---- /dev/null
-+++ b/drivers/reset/reset-mpfs.c
-@@ -0,0 +1,157 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * PolarFire SoC (MPFS) Peripheral Clock Reset Controller
-+ *
-+ * Author: Conor Dooley <conor.dooley@microchip.com>
-+ * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
-+ *
-+ */
-+#include <linux/auxiliary_bus.h>
-+#include <linux/delay.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/reset-controller.h>
-+#include <dt-bindings/clock/microchip,mpfs-clock.h>
-+#include <soc/microchip/mpfs.h>
-+
-+/*
-+ * The ENVM reset is the lowest bit in the register & I am using the CLK_FOO
-+ * defines in the dt to make things easier to configure - so this is accounting
-+ * for the offset of 3 there.
-+ */
-+#define MPFS_PERIPH_OFFSET	CLK_ENVM
-+#define MPFS_NUM_RESETS		30u
-+#define MPFS_SLEEP_MIN_US	100
-+#define MPFS_SLEEP_MAX_US	200
-+
-+/* block concurrent access to the soft reset register */
-+static DEFINE_SPINLOCK(mpfs_reset_lock);
-+
-+/*
-+ * Peripheral clock resets
-+ */
-+
-+static int mpfs_assert(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	unsigned long flags;
-+	u32 reg;
-+
-+	spin_lock_irqsave(&mpfs_reset_lock, flags);
-+
-+	reg = mpfs_reset_read(rcdev->dev);
-+	reg |= BIT(id);
-+	mpfs_reset_write(rcdev->dev, reg);
-+
-+	spin_unlock_irqrestore(&mpfs_reset_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int mpfs_deassert(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	unsigned long flags;
-+	u32 reg, val;
-+
-+	spin_lock_irqsave(&mpfs_reset_lock, flags);
-+
-+	reg = mpfs_reset_read(rcdev->dev);
-+	val = reg & ~BIT(id);
-+	mpfs_reset_write(rcdev->dev, val);
-+
-+	spin_unlock_irqrestore(&mpfs_reset_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int mpfs_status(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	u32 reg = mpfs_reset_read(rcdev->dev);
-+
-+	/*
-+	 * It is safe to return here as MPFS_NUM_RESETS makes sure the sign bit
-+	 * is never hit.
-+	 */
-+	return (reg & BIT(id));
-+}
-+
-+static int mpfs_reset(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	mpfs_assert(rcdev, id);
-+
-+	usleep_range(MPFS_SLEEP_MIN_US, MPFS_SLEEP_MAX_US);
-+
-+	mpfs_deassert(rcdev, id);
-+
-+	return 0;
-+}
-+
-+static const struct reset_control_ops mpfs_reset_ops = {
-+	.reset = mpfs_reset,
-+	.assert = mpfs_assert,
-+	.deassert = mpfs_deassert,
-+	.status = mpfs_status,
-+};
-+
-+static int mpfs_reset_xlate(struct reset_controller_dev *rcdev,
-+			    const struct of_phandle_args *reset_spec)
-+{
-+	unsigned int index = reset_spec->args[0];
-+
-+	/*
-+	 * CLK_RESERVED does not map to a clock, but it does map to a reset,
-+	 * so it has to be accounted for here. It is the reset for the fabric,
-+	 * so if this reset gets called - do not reset it.
-+	 */
-+	if (index == CLK_RESERVED) {
-+		dev_err(rcdev->dev, "Resetting the fabric is not supported\n");
-+		return -EINVAL;
-+	}
-+
-+	if (index < MPFS_PERIPH_OFFSET || index >= (MPFS_PERIPH_OFFSET + rcdev->nr_resets)) {
-+		dev_err(rcdev->dev, "Invalid reset index %u\n", index);
-+		return -EINVAL;
-+	}
-+
-+	return index - MPFS_PERIPH_OFFSET;
-+}
-+
-+static int mpfs_reset_probe(struct auxiliary_device *adev,
-+			    const struct auxiliary_device_id *id)
-+{
-+	struct device *dev = &adev->dev;
-+	struct reset_controller_dev *rcdev;
-+
-+	rcdev = devm_kzalloc(dev, sizeof(*rcdev), GFP_KERNEL);
-+	if (!rcdev)
-+		return -ENOMEM;
-+
-+	rcdev->dev = dev;
-+	rcdev->dev->parent = dev->parent;
-+	rcdev->ops = &mpfs_reset_ops;
-+	rcdev->of_node = dev->parent->of_node;
-+	rcdev->of_reset_n_cells = 1;
-+	rcdev->of_xlate = mpfs_reset_xlate;
-+	rcdev->nr_resets = MPFS_NUM_RESETS;
-+
-+	return devm_reset_controller_register(dev, rcdev);
-+}
-+
-+static const struct auxiliary_device_id mpfs_reset_ids[] = {
-+	{
-+		.name = "clk_mpfs.reset-mpfs",
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(auxiliary, mpfs_reset_ids);
-+
-+static struct auxiliary_driver mpfs_reset_driver = {
-+	.probe		= mpfs_reset_probe,
-+	.id_table	= mpfs_reset_ids,
-+};
-+
-+module_auxiliary_driver(mpfs_reset_driver);
-+
-+MODULE_DESCRIPTION("Microchip PolarFire SoC Reset Driver");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(MCHP_CLK_MPFS);
+ 		mmuart0: serial@20000000 {
+@@ -383,7 +384,7 @@ can1: can@2010d000 {
+ 		};
+ 
+ 		mac0: ethernet@20110000 {
+-			compatible = "cdns,macb";
++			compatible = "microchip,mpfs-macb", "cdns,macb";
+ 			reg = <0x0 0x20110000 0x0 0x2000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -392,11 +393,12 @@ mac0: ethernet@20110000 {
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC0>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
++			resets = <&clkcfg CLK_MAC0>;
+ 			status = "disabled";
+ 		};
+ 
+ 		mac1: ethernet@20112000 {
+-			compatible = "cdns,macb";
++			compatible = "microchip,mpfs-macb", "cdns,macb";
+ 			reg = <0x0 0x20112000 0x0 0x2000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -405,6 +407,7 @@ mac1: ethernet@20112000 {
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC1>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
++			resets = <&clkcfg CLK_MAC1>;
+ 			status = "disabled";
+ 		};
+ 
 -- 
 2.36.1
 
