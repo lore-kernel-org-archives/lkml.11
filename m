@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CBF9C3814E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E72E4C38142
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353657AbiHSQq0 (ORCPT
+        id S1353778AbiHSQq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
+        Fri, 19 Aug 2022 12:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353720AbiHSQnP (ORCPT
+        with ESMTP id S1353775AbiHSQoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:43:15 -0400
+        Fri, 19 Aug 2022 12:44:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329DD111C23;
-        Fri, 19 Aug 2022 09:11:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EE611231F;
+        Fri, 19 Aug 2022 09:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93690B8281A;
-        Fri, 19 Aug 2022 16:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB256C433C1;
-        Fri, 19 Aug 2022 16:11:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D774B8282A;
+        Fri, 19 Aug 2022 16:10:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7433FC433D6;
+        Fri, 19 Aug 2022 16:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925466;
-        bh=MeueB1VICeYwOx5V+NEyLArwKuISXywHXupW8fCtY8c=;
+        s=korg; t=1660925405;
+        bh=3+8jeA0wp8PJ0PEzbB8vnRQ2Naz3OJjw1F1s8NNDeWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lbXGT/kP41TFPA1fXHnT27O00xVJw4nx5kLSvD2uj6BstwISVzZ7ORG9egspt/Id4
-         jt/c8PMYAmsPGin2G1AmxbQA1eATc5pJUS824agFLoQsAIuyiLllwzhMg70jY2J+Bc
-         2dAcsQc+2KQxDcftUhkxRKqmDXmyBg1rn631Bu6k=
+        b=hC9qG3XgcOjS8D5Ok0KS+yTitVJF1sLixSNhcguUSQDXVNROzAjZsf1hlMD7tKUPD
+         F/JwKFcumc/BRhqZDG+z+721ipzlGHVOrFZqax2c+iVRfFvny8EJFUrdGBtqdx6HLK
+         oNkrlzMG+Y3XcEQng6BSdZpDe41MP15p4wMGxyog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stas Sergeev <stsp@users.sourceforge.net>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Meeta Saggi <msaggi@purestorage.com>,
+        Mohamed Khalfella <mkhalfella@purestorage.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Eric Badger <ebadger@purestorage.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 499/545] KVM: VMX: Drop guest CPUID check for VMXE in vmx_set_cr4()
-Date:   Fri, 19 Aug 2022 17:44:29 +0200
-Message-Id: <20220819153851.818824528@linuxfoundation.org>
+Subject: [PATCH 5.10 482/545] PCI/AER: Iterate over error counters instead of error strings
+Date:   Fri, 19 Aug 2022 17:44:12 +0200
+Message-Id: <20220819153851.001765437@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,43 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Mohamed Khalfella <mkhalfella@purestorage.com>
 
-[ Upstream commit d3a9e4146a6f79f19430bca3f2a4d6ebaaffe36b ]
+[ Upstream commit 5e6ae050955b566484f3cc6a66e3925eae87a0ed ]
 
-Drop vmx_set_cr4()'s somewhat hidden guest_cpuid_has() check on VMXE now
-that common x86 handles the check by incorporating VMXE into the CR4
-reserved bits, i.e. in cr4_guest_rsvd_bits.  This fixes a bug where KVM
-incorrectly rejects KVM_SET_SREGS with CR4.VMXE=1 if it's executed
-before KVM_SET_CPUID{,2}.
+Previously we iterated over AER stat *names*, e.g.,
+aer_correctable_error_string[32], but the actual stat *counters* may not be
+that large, e.g., pdev->aer_stats->dev_cor_errs[16], which means that we
+printed junk in the sysfs stats files.
 
-Fixes: 5e1746d6205d ("KVM: nVMX: Allow setting the VMXE bit in CR4")
-Reported-by: Stas Sergeev <stsp@users.sourceforge.net>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Message-Id: <20201007014417.29276-2-sean.j.christopherson@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Iterate over the stat counter arrays instead of the names to avoid this
+junk.
+
+Also, added a build time check to make sure all
+counters have entries in strings array.
+
+Fixes: 0678e3109a3c ("PCI/AER: Simplify __aer_print_error()")
+Link: https://lore.kernel.org/r/20220509181441.31884-1-mkhalfella@purestorage.com
+Reported-by: Meeta Saggi <msaggi@purestorage.com>
+Signed-off-by: Mohamed Khalfella <mkhalfella@purestorage.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Meeta Saggi <msaggi@purestorage.com>
+Reviewed-by: Eric Badger <ebadger@purestorage.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/vmx.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/pci/pcie/aer.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 9b520da3f748..1b75847d8a49 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -3217,9 +3217,10 @@ int vmx_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
- 		 * must first be able to turn on cr4.VMXE (see handle_vmon()).
- 		 * So basically the check on whether to allow nested VMX
- 		 * is here.  We operate under the default treatment of SMM,
--		 * so VMX cannot be enabled under SMM.
-+		 * so VMX cannot be enabled under SMM.  Note, guest CPUID is
-+		 * intentionally ignored, it's handled by cr4_guest_rsvd_bits.
- 		 */
--		if (!nested_vmx_allowed(vcpu) || is_smm(vcpu))
-+		if (!nested || is_smm(vcpu))
- 			return 1;
- 	}
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index 2ab708ab7218..9564b74003f0 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -538,7 +538,7 @@ static const char *aer_agent_string[] = {
+ 	struct pci_dev *pdev = to_pci_dev(dev);				\
+ 	u64 *stats = pdev->aer_stats->stats_array;			\
+ 									\
+-	for (i = 0; i < ARRAY_SIZE(strings_array); i++) {		\
++	for (i = 0; i < ARRAY_SIZE(pdev->aer_stats->stats_array); i++) {\
+ 		if (strings_array[i])					\
+ 			str += sprintf(str, "%s %llu\n",		\
+ 				       strings_array[i], stats[i]);	\
+@@ -1338,6 +1338,11 @@ static int aer_probe(struct pcie_device *dev)
+ 	struct device *device = &dev->device;
+ 	struct pci_dev *port = dev->port;
  
++	BUILD_BUG_ON(ARRAY_SIZE(aer_correctable_error_string) <
++		     AER_MAX_TYPEOF_COR_ERRS);
++	BUILD_BUG_ON(ARRAY_SIZE(aer_uncorrectable_error_string) <
++		     AER_MAX_TYPEOF_UNCOR_ERRS);
++
+ 	/* Limit to Root Ports or Root Complex Event Collectors */
+ 	if ((pci_pcie_type(port) != PCI_EXP_TYPE_RC_EC) &&
+ 	    (pci_pcie_type(port) != PCI_EXP_TYPE_ROOT_PORT))
 -- 
 2.35.1
 
