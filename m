@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B55C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 016ADC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354067AbiHSQv6 (ORCPT
+        id S1354148AbiHSQwD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        Fri, 19 Aug 2022 12:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354044AbiHSQuQ (ORCPT
+        with ESMTP id S1354283AbiHSQu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F21CD44;
-        Fri, 19 Aug 2022 09:13:23 -0700 (PDT)
+        Fri, 19 Aug 2022 12:50:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03AA2BB00;
+        Fri, 19 Aug 2022 09:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0CF0618BB;
-        Fri, 19 Aug 2022 16:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA62BC433D7;
-        Fri, 19 Aug 2022 16:12:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99915B825D3;
+        Fri, 19 Aug 2022 16:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF9C2C433C1;
+        Fri, 19 Aug 2022 16:12:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925547;
-        bh=ckohcA+yLadJmCHut3jj5GmAulVKJf3WkhvytL8MJkA=;
+        s=korg; t=1660925575;
+        bh=TaGVqnPMEkQffKhmRjy1brbL7Z23ysfYatVe3lgFh5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkbtsv97Elp5LRd5gjNBQLayVrrFgEhmASk4a1fYgpTSgrfhEpqRaCM8UYQyD+PtR
-         UgGXzVPZI1lGDlNj1Ym7Sy2xDkQzJNOxoXTjJ62qW1DM1CScuUuzu5v5qLSO3AVQNC
-         sd//j498jH8PFfGvh2gaWUDOPzluaOY7Ch8gusVo=
+        b=hZvAO9CG2ipyjgIc1rzkE9V6MAQaXjHSm1fv7EJOH+/GCb7Mm1HEFUZlAYQxSjmrj
+         s7OE9jWd1qKW6Ohc4tsaVAMH5zDXOaTBgCfhZ/UbM0ZxqfImVe50OTiGEaN1y4q02B
+         ETY5cAoGmak6Hvj8kzWpSii/CB3/GGmHejKVcwoE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.10 525/545] dm raid: fix address sanitizer warning in raid_resume
-Date:   Fri, 19 Aug 2022 17:44:55 +0200
-Message-Id: <20220819153853.049218454@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Brian Norris <briannorris@chromium.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH 5.10 533/545] Revert "mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv"
+Date:   Fri, 19 Aug 2022 17:45:03 +0200
+Message-Id: <20220819153853.435975225@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,33 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 7dad24db59d2d2803576f2e3645728866a056dab upstream.
+commit 5f8954e099b8ae96e7de1bb95950e00c85bedd40 upstream.
 
-There is a KASAN warning in raid_resume when running the lvm test
-lvconvert-raid.sh. The reason for the warning is that mddev->raid_disks
-is greater than rs->raid_disks, so the loop touches one entry beyond
-the allocated length.
+This reverts commit a52ed4866d2b90dd5e4ae9dabd453f3ed8fa3cbc as it
+causes build problems in linux-next.  It needs to be reintroduced in a
+way that can allow the api to evolve and not require a "flag day" to
+catch all users.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Link: https://lore.kernel.org/r/20220623160723.7a44b573@canb.auug.org.au
+Cc: Duoming Zhou <duoming@zju.edu.cn>
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-raid.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/marvell/mwifiex/init.c      |    9 ++++-----
+ drivers/net/wireless/marvell/mwifiex/main.h      |    3 +--
+ drivers/net/wireless/marvell/mwifiex/sta_event.c |    6 +++---
+ 3 files changed, 8 insertions(+), 10 deletions(-)
 
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -3794,7 +3794,7 @@ static void attempt_restore_of_faulty_de
+--- a/drivers/net/wireless/marvell/mwifiex/init.c
++++ b/drivers/net/wireless/marvell/mwifiex/init.c
+@@ -63,10 +63,9 @@ static void wakeup_timer_fn(struct timer
+ 		adapter->if_ops.card_reset(adapter);
+ }
  
- 	memset(cleared_failed_devices, 0, sizeof(cleared_failed_devices));
+-static void fw_dump_work(struct work_struct *work)
++static void fw_dump_timer_fn(struct timer_list *t)
+ {
+-	struct mwifiex_adapter *adapter =
+-		container_of(work, struct mwifiex_adapter, devdump_work.work);
++	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
  
--	for (i = 0; i < mddev->raid_disks; i++) {
-+	for (i = 0; i < rs->raid_disks; i++) {
- 		r = &rs->dev[i].rdev;
- 		/* HM FIXME: enhance journal device recovery processing */
- 		if (test_bit(Journal, &r->flags))
+ 	mwifiex_upload_device_dump(adapter);
+ }
+@@ -322,7 +321,7 @@ static void mwifiex_init_adapter(struct
+ 	adapter->active_scan_triggered = false;
+ 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
+ 	adapter->devdump_len = 0;
+-	INIT_DELAYED_WORK(&adapter->devdump_work, fw_dump_work);
++	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
+ }
+ 
+ /*
+@@ -401,7 +400,7 @@ static void
+ mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
+ {
+ 	del_timer(&adapter->wakeup_timer);
+-	cancel_delayed_work_sync(&adapter->devdump_work);
++	del_timer_sync(&adapter->devdump_timer);
+ 	mwifiex_cancel_all_pending_cmd(adapter);
+ 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
+ 	wake_up_interruptible(&adapter->hs_activate_wait_q);
+--- a/drivers/net/wireless/marvell/mwifiex/main.h
++++ b/drivers/net/wireless/marvell/mwifiex/main.h
+@@ -49,7 +49,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/of_irq.h>
+-#include <linux/workqueue.h>
+ 
+ #include "decl.h"
+ #include "ioctl.h"
+@@ -1054,7 +1053,7 @@ struct mwifiex_adapter {
+ 	/* Device dump data/length */
+ 	void *devdump_data;
+ 	int devdump_len;
+-	struct delayed_work devdump_work;
++	struct timer_list devdump_timer;
+ 
+ 	bool ignore_btcoex_events;
+ };
+--- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+@@ -622,8 +622,8 @@ mwifiex_fw_dump_info_event(struct mwifie
+ 		 * transmission event get lost, in this cornel case,
+ 		 * user would still get partial of the dump.
+ 		 */
+-		schedule_delayed_work(&adapter->devdump_work,
+-				      msecs_to_jiffies(MWIFIEX_TIMER_10S));
++		mod_timer(&adapter->devdump_timer,
++			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
+ 	}
+ 
+ 	/* Overflow check */
+@@ -642,7 +642,7 @@ mwifiex_fw_dump_info_event(struct mwifie
+ 	return;
+ 
+ upload_dump:
+-	cancel_delayed_work_sync(&adapter->devdump_work);
++	del_timer_sync(&adapter->devdump_timer);
+ 	mwifiex_upload_device_dump(adapter);
+ }
+ 
 
 
