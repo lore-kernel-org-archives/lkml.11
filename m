@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6B7C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD690C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351458AbiHSQLl (ORCPT
+        id S1351610AbiHSQLr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49430 "EHLO
+        Fri, 19 Aug 2022 12:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351590AbiHSQIo (ORCPT
+        with ESMTP id S1351620AbiHSQI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:08:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7843310EED4;
-        Fri, 19 Aug 2022 08:56:36 -0700 (PDT)
+        Fri, 19 Aug 2022 12:08:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CD12CE33;
+        Fri, 19 Aug 2022 08:56:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 21F29CE26B8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A875B8280C;
+        Fri, 19 Aug 2022 15:56:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C6B8C433D7;
         Fri, 19 Aug 2022 15:56:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE05C433D7;
-        Fri, 19 Aug 2022 15:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924592;
-        bh=X3+GaIgi2hxv+dYdrDOLquELRyvcUSojnkCEF+ZwEos=;
+        s=korg; t=1660924595;
+        bh=C+7qbxZDcsHmioA8hGAKIIf6AxtRN3IaVwqqKwIMSR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZRBlpEHjPJioqGVlm/RLwgLI0IKiPL0UieRoHI/F/qfqUtDieGK8wyN5gTpD8mVb9
-         JbWvnIQ6hB7rOW4++ikk6vvODa3HBy1dJ6FUsTAplA9NUUU4qSeSWZRuGnH7654pTT
-         U++z3sgaxuIga8mV2Pbqv8EruHuUzyTakzSCrBac=
+        b=AVgU59mM3PEXyMhgJe4+HWiGriZaz5cjnm0yV3iYCXuS13+mMjYNuJu8hFfLwdH/N
+         29/t9zxPY5gvTqaK/wRfshhCzVGh4q473/IKjbzF0XKJZNc7eTSSy8a7an94Lz7G9a
+         Um0yST6wK/TEJxEwos6tZRK/bN3d1mRx33liMfsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 189/545] drm/vc4: plane: Remove subpixel positioning check
-Date:   Fri, 19 Aug 2022 17:39:19 +0200
-Message-Id: <20220819153837.813529250@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 180/545] wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
+Date:   Fri, 19 Aug 2022 17:39:10 +0200
+Message-Id: <20220819153837.419379545@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,74 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dom Cobley <popcornmix@gmail.com>
+From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
-[ Upstream commit 517db1ab1566dba3093dbdb8de4263ba4aa66416 ]
+[ Upstream commit a8eb8e6f7159c7c20c0ddac428bde3d110890aa7 ]
 
-There is little harm in ignoring fractional coordinates
-(they just get truncated).
+As a result of the execution of the inner while loop, the value
+of 'idx' can be equal to LINK_QUAL_MAX_RETRY_NUM. However, this
+is not checked after the loop and 'idx' is used to write the
+LINK_QUAL_MAX_RETRY_NUM size array 'lq_cmd->rs_table[idx]' below
+in the outer loop.
 
-Without this:
-modetest -M vc4 -F tiles,gradient -s 32:1920x1080-60 -P89@74:1920x1080*.1.1@XR24
+The fix is to check the new value of 'idx' inside the nested loop,
+and break both loops if index equals the size. Checking it at the
+start is now pointless, so let's remove it.
 
-is rejected. We have the same issue in Kodi when trying to
-use zoom options on video.
+Detected using the static analysis tool - Svace.
 
-Note: even if all coordinates are fully integer. e.g.
-src:[0,0,1920,1080] dest:[-10,-10,1940,1100]
-
-it will still get rejected as drm_atomic_helper_check_plane_state
-uses drm_rect_clip_scaled which transforms this to fractional src coords
-
-Fixes: 21af94cf1a4c ("drm/vc4: Add support for scaling of display planes.")
-Signed-off-by: Dom Cobley <popcornmix@gmail.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-5-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220608171614.28891-1-aleksei.kodanev@bell-sw.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_plane.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ drivers/net/wireless/intel/iwlegacy/4965-rs.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
-index af4b8944a603..bdf16554cf68 100644
---- a/drivers/gpu/drm/vc4/vc4_plane.c
-+++ b/drivers/gpu/drm/vc4/vc4_plane.c
-@@ -332,7 +332,6 @@ static int vc4_plane_setup_clipping_and_scaling(struct drm_plane_state *state)
- 	struct vc4_plane_state *vc4_state = to_vc4_plane_state(state);
- 	struct drm_framebuffer *fb = state->fb;
- 	struct drm_gem_cma_object *bo = drm_fb_cma_get_gem_obj(fb, 0);
--	u32 subpixel_src_mask = (1 << 16) - 1;
- 	int num_planes = fb->format->num_planes;
- 	struct drm_crtc_state *crtc_state;
- 	u32 h_subsample = fb->format->hsub;
-@@ -354,18 +353,15 @@ static int vc4_plane_setup_clipping_and_scaling(struct drm_plane_state *state)
- 	for (i = 0; i < num_planes; i++)
- 		vc4_state->offsets[i] = bo->paddr + fb->offsets[i];
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+index 9a491e5db75b..532e3b91777d 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+@@ -2403,7 +2403,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 		/* Repeat initial/next rate.
+ 		 * For legacy IL_NUMBER_TRY == 1, this loop will not execute.
+ 		 * For HT IL_HT_NUMBER_TRY == 3, this executes twice. */
+-		while (repeat_rate > 0 && idx < LINK_QUAL_MAX_RETRY_NUM) {
++		while (repeat_rate > 0) {
+ 			if (is_legacy(tbl_type.lq_type)) {
+ 				if (ant_toggle_cnt < NUM_TRY_BEFORE_ANT_TOGGLE)
+ 					ant_toggle_cnt++;
+@@ -2422,6 +2422,8 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 			    cpu_to_le32(new_rate);
+ 			repeat_rate--;
+ 			idx++;
++			if (idx >= LINK_QUAL_MAX_RETRY_NUM)
++				goto out;
+ 		}
  
--	/* We don't support subpixel source positioning for scaling. */
--	if ((state->src.x1 & subpixel_src_mask) ||
--	    (state->src.x2 & subpixel_src_mask) ||
--	    (state->src.y1 & subpixel_src_mask) ||
--	    (state->src.y2 & subpixel_src_mask)) {
--		return -EINVAL;
--	}
--
--	vc4_state->src_x = state->src.x1 >> 16;
--	vc4_state->src_y = state->src.y1 >> 16;
--	vc4_state->src_w[0] = (state->src.x2 - state->src.x1) >> 16;
--	vc4_state->src_h[0] = (state->src.y2 - state->src.y1) >> 16;
-+	/*
-+	 * We don't support subpixel source positioning for scaling,
-+	 * but fractional coordinates can be generated by clipping
-+	 * so just round for now
-+	 */
-+	vc4_state->src_x = DIV_ROUND_CLOSEST(state->src.x1, 1 << 16);
-+	vc4_state->src_y = DIV_ROUND_CLOSEST(state->src.y1, 1 << 16);
-+	vc4_state->src_w[0] = DIV_ROUND_CLOSEST(state->src.x2, 1 << 16) - vc4_state->src_x;
-+	vc4_state->src_h[0] = DIV_ROUND_CLOSEST(state->src.y2, 1 << 16) - vc4_state->src_y;
+ 		il4965_rs_get_tbl_info_from_mcs(new_rate, lq_sta->band,
+@@ -2466,6 +2468,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 		repeat_rate--;
+ 	}
  
- 	vc4_state->crtc_x = state->dst.x1;
- 	vc4_state->crtc_y = state->dst.y1;
++out:
+ 	lq_cmd->agg_params.agg_frame_cnt_limit = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
+ 	lq_cmd->agg_params.agg_dis_start_th = LINK_QUAL_AGG_DISABLE_START_DEF;
+ 
 -- 
 2.35.1
 
