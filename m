@@ -2,219 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E94C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75634C32774
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348669AbiHSMVd (ORCPT
+        id S1348241AbiHSMXj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53612 "EHLO
+        Fri, 19 Aug 2022 08:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348542AbiHSMVb (ORCPT
+        with ESMTP id S1348040AbiHSMXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:21:31 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7308810158E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:21:29 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id a7so669968ljr.1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:21:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Nu3VLDUqU+jU9Ulv1RKGhBZJe/ApM+TsuNJuzdtSY+M=;
-        b=icCaSFYl9TTYDLZjSUnfxcI0YMgzci2BRFPyleEvRJdU+T1TBi3QED1EcIV+5EUEF7
-         ZzCByTkLldBb3PcS4W0m4bNFBRWfn++1kIijqJw/O6lJS/IHoam6Hv2LH+bozhv/REGN
-         kTX09folP9hdjbJ0yisTi54ebfxFgeqwgttCYqbkxj4jLdVFv3GYRX2Jzu6mbWdB5+GF
-         vVbZkVsDKDd2G1cslwfnFm17c7APLx6ufQWu+Ei8KHWOyp4mCoTWdV5pvmU5265GnTeX
-         f6wLGlQZQ8IeNOG3Qz86cyJ5WBeRBt3b1RuR2v8ZJ72wA+5FapAMVLBz+tyMN0zYKcRe
-         6XcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Nu3VLDUqU+jU9Ulv1RKGhBZJe/ApM+TsuNJuzdtSY+M=;
-        b=ZRc5dfXv7Wwra+SEc50CCk0aoNkXkli2xe8cb7/4BXtqedDsB2EToTJ3HjfpzXLk+Y
-         zh+DHqyHbs5uBHvtgDeWv8Teg1Q0VaD4FyXsQr4ccKcHK3kirioVcl4xuLb/dBMMs/SB
-         Th8GlRKbJdt4r5WC9ZJBRTXM7lBfUe11dHzbPdaZLCNP5jpaR0JqUoZ/eTYquabCEWE1
-         DRi/VWbY36hX8UYCEeRKJfUl4Y5qUkVWkxvrN94FtuBIGggxL+DMmv839LQ52+AlVPtS
-         WEhenEL30AUB7Yabqx8+PziBEoF8766c11wTqCMKkK5AcpC/S++CvrE4JN6Cg5WvAhki
-         II1w==
-X-Gm-Message-State: ACgBeo0OgOkWC9qX4cNCIzQnt5xT0GMWSGE+azUGIH6E3UIwIQLqeVhw
-        AdkDvUehy5LW2IKFD9mVL8468w==
-X-Google-Smtp-Source: AA6agR595KwMfyX0sVhhUEYlgdd7hbmxKDXxniItF7Yjp2Fh/BhRyNo1Zh0kLJkHkh4xFhiOIyc0zQ==
-X-Received: by 2002:a05:651c:516:b0:25f:f52b:3c86 with SMTP id o22-20020a05651c051600b0025ff52b3c86mr2111392ljp.523.1660911687788;
-        Fri, 19 Aug 2022 05:21:27 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id t20-20020a2e8e74000000b0025e1ec74e25sm595362ljk.43.2022.08.19.05.21.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 05:21:27 -0700 (PDT)
-Message-ID: <bccd3a79-faa2-e4c5-3783-25ffaea69d00@linaro.org>
-Date:   Fri, 19 Aug 2022 15:21:25 +0300
+        Fri, 19 Aug 2022 08:23:36 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6574E85F;
+        Fri, 19 Aug 2022 05:23:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fMwG4ksx1/nrfkQxvuEuFjoSb+oeEUnNt4Q0y0lq9ONaQ5jPq8ErqkYpbo62VZ7cI4VVNtMuFyNT+gB2aFopmqxihUGG8sNLkXtBB/3Bi0KQZxUsLRIArPq5XPAWWphZXaaI2oO46RskZIGoa7nXTs0a4qy4ti1mvlVhwRHngYGXfRhr/2cP4yKPZ6249EIxDgXek8waUydqmuQTXrRF2pRbl7tZwbqngQSYxtFmKfp6ru9v+EO7IT26G96bDMWA+3LMCpEhgblhylTJANAw1jBNeCrcQsYPPNsFUgU6cnswxRRdoLhuBCwxpUIFTlRXKJ69vlD+Wj2Nso1jfFfrqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tzXbu0RxavaQeiCi7WRCpTH4fptBFZ2M4m3FpWg3Xbk=;
+ b=exeVkWQz3YUemFfbf9/RZG89FlWRGHtMZPNOsbpB20pyICIc46Uege/p/j5tOf1mr24xH3F+LNw5A/2uZgPED8M3Ee92Oo9b749E1pUpzLSSBhsXhIKk8P+LPm/2Gx/TDsp5owm7agcwKRUN0Q54gs1H1N9i6+sH4CasAjNsWguf0IAeBXRAS9atKFZTD4ydPZfYGIlYadbSXVUcSXeTSeLov67nHP1glVu8tNEo2p0UuwkRk8z8hh/O1QdwupqbnnvCQpaBNG2J0V0xCLahdZbybnOX8IQMrSyNYtGAuKJ6evBrBL0/ZZ5tSb87i7XEZZwKaVWBc928s7iPu1p6sQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tzXbu0RxavaQeiCi7WRCpTH4fptBFZ2M4m3FpWg3Xbk=;
+ b=ngypGiwG3KnjvVzDSOAy5znMkUScxYcqou/cenyux3VYO2AdycTpsdyYtlaTLar4HUpokhRohBTzkPsY7j/hdEp8XCVYXc6QG8l+BFw3JY51APS5k3zDY+Y9CX69zYQRih9uYq9QCLH3bWDZ5d8MFde5gnnwNaGba95i42U3ZEZ9PdiRiRODtmur84fDzBc0MxwL6HMEtqlPqdBPAugH6oaGIZgEF8+rfuvv1EMhq2l7zmdjQgH2n+SWAfhCOLm3cGQH3cmfrQnzJW4Fv4n+zAtNmkMSiD4ZHMIF3/l9U2yluQu8Bwa33fhvssl/Q5A5ddBoVUaTkVnPTKWF+FDbqw==
+Received: from MW4PR04CA0112.namprd04.prod.outlook.com (2603:10b6:303:83::27)
+ by MW5PR12MB5652.namprd12.prod.outlook.com (2603:10b6:303:1a0::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Fri, 19 Aug
+ 2022 12:23:29 +0000
+Received: from CO1NAM11FT069.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::73) by MW4PR04CA0112.outlook.office365.com
+ (2603:10b6:303:83::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11 via Frontend
+ Transport; Fri, 19 Aug 2022 12:23:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT069.mail.protection.outlook.com (10.13.174.129) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5546.7 via Frontend Transport; Fri, 19 Aug 2022 12:23:29 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 19 Aug
+ 2022 12:23:29 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 19 Aug
+ 2022 05:23:28 -0700
+Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server id 15.2.986.29 via Frontend
+ Transport; Fri, 19 Aug 2022 05:23:24 -0700
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <christian.koenig@amd.com>, <digetx@gmail.com>,
+        <=jonathanh@nvidia.com>, <ldewangan@nvidia.com>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <sumit.semwal@linaro.org>,
+        <thierry.reding@gmail.com>, <wsa@kernel.org>
+CC:     <akhilrajeev@nvidia.com>
+Subject: [PATCH RESEND 0/2] Add GPCDMA support to Tegra234 I2C
+Date:   Fri, 19 Aug 2022 17:53:11 +0530
+Message-ID: <20220819122313.40445-1-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/2] dt-bindings: clock: add QCOM SM6115 display clock
- bindings
-Content-Language: en-US
-To:     Adam Skladowski <a39.skl@gmail.com>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220818151850.19917-1-a39.skl@gmail.com>
- <20220818151850.19917-2-a39.skl@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220818151850.19917-2-a39.skl@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d65bae6a-ceb1-47fc-de42-08da81dd9fe9
+X-MS-TrafficTypeDiagnostic: MW5PR12MB5652:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Wgx/ZKcFjy79mwV7krgigGxDLcW+87MZRhPA/f2DHNdDVPIYouKkylR0oC7jmvQuXoc0qP3OlFHT57Oy9GTbBxi2oxycoT3HysWPo0O7TntMUmfVwSOJsb0wQny0DRR1yH1hP2Qk32RhE4nwQM8+kO3pqplcmIYpg7yoEkuJdF0TDXJ8A8nz1aeY18027ANHq5HHF2/bFJkoFT6Uk9KdV9vGdbxFByFePWgBQJ9NQtNe7bAgvPMrfqZDH2/PcOz15pBtNukR7+V03lUfR8w7l+obBhEJsofiQD9gDF1cQJ1uFMTTumVETSsNfrU97k0Tqfc91dSYCUwd8bMTEGKj6fVqQznI1wA233+a/EAZofhfLXoIaAMXxBg4N1+N167AzGbgaplK3YYzhkbx9p3Q+1QCcXacJ5UkKfbmjjNaX6rAP51LqVLZ+ZQhY/af+uivrto3jdemshs3XPHdB3navXEqnITbpmsdAFRfjK/G7EvgAeTbZmuskO93VxKsLfXHpIXQd5QWmUef57jSN811lhVIFz13RuNrw4dMmOj0NsmAbmaDv9kcPS6VBy8CAhQvWMjFnmULJz3lHZV6WthFoYAm6S6VwMrgfvgDeyzXIBSpmCdIwlDmsH5IpS9urTP8iyrZBF0Eww4bEfIfoyfTSY+vD5n1jmO6R73Y+cx27eD/B0Hclj3n5CpFCXK5SsAK1k6hODPIlw01Dl7NdGBs2VfYjhvzwO/AeMxuJ1KQ4E4GISuQFnjJYxU3nzXdTRYCwjcalO/uMP1IUdL8bp2Ecit7Fq62Zaz9/YS1pzT0CHwAQB4w59PbvQQEd55ke1jNNMCtZDM8upigF0+4eeeOt3xIBzfz3qJQnzbwqaH26UE26ulJ/S7ek2+wdmgoeglh
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(346002)(396003)(40470700004)(36840700001)(46966006)(4326008)(70206006)(70586007)(36860700001)(426003)(47076005)(7416002)(36756003)(2906002)(8676002)(5660300002)(110136005)(8936002)(316002)(4744005)(478600001)(41300700001)(6666004)(107886003)(1076003)(2616005)(186003)(26005)(7696005)(336012)(82310400005)(86362001)(921005)(356005)(81166007)(40480700001)(83380400001)(40460700003)(82740400003)(2101003)(36900700001)(83996005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 12:23:29.5756
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d65bae6a-ceb1-47fc-de42-08da81dd9fe9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT069.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5652
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/2022 18:18, Adam Skladowski wrote:
-> Add device tree bindings for display clock controller for
-> Qualcomm Technology Inc's SM6115 SoC.
-> 
-> Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-> ---
->  .../bindings/clock/qcom,dispcc-sm6115.yaml    | 88 +++++++++++++++++++
->  .../dt-bindings/clock/qcom,dispcc-sm6115.h    | 36 ++++++++
->  2 files changed, 124 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,dispcc-sm6115.yaml
->  create mode 100644 include/dt-bindings/clock/qcom,dispcc-sm6115.h
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6115.yaml b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6115.yaml
-> new file mode 100644
-> index 000000000000..2b9671112934
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6115.yaml
-> @@ -0,0 +1,88 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/qcom,dispcc-sm6115.yaml#
+Updates in Tegra I2C driver and device tree to support GPCDMA in
+Tegra234
 
-Filename based on compatible, so:
-qcom,sm6115-dispcc.yaml
+Akhil R (2):
+  i2c: tegra: Add GPCDMA support
+  arm64: tegra: Add GPCDMA support for Tegra234 I2C
 
-I know it creates irregularity, but that's the naming convention for all.
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi | 32 +++++++++++++++++++
+ drivers/i2c/busses/i2c-tegra.c           | 39 +++++++++++-------------
+ 2 files changed, 50 insertions(+), 21 deletions(-)
 
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Display Clock Controller Binding for SM6115
-> +
-> +maintainers:
-> +  - Taniya Das <tdas@codeaurora.org>
+-- 
+2.17.1
 
-I don't think the email is correct. Please use Bjorn's (and optionally
-you can add yourself if you want to maintain this binding).
-
-> +
-> +description: |
-> +  Qualcomm display clock control module which supports the clocks and
-> +  power domains on SM6115.
-> +
-> +  See also:
-> +    dt-bindings/clock/qcom,dispcc-sm6115.h
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - qcom,sm6115-dispcc
-> +
-> +  clocks:
-> +    items:
-> +      - description: Board XO source
-> +      - description: Byte clock from DSI PHY0
-> +      - description: Pixel clock from DSI PHY0
-> +      - description: GPLL0 clock from GCC
-> +      - description: GPLL0 div clock from GCC
-> +      - description: Board sleep clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bi_tcxo
-> +      - const: dsi0_phy_pll_out_byteclk
-> +      - const: dsi0_phy_pll_out_dsiclk
-> +      - const: gcc_disp_gpll0_clk_src
-> +      - const: gcc_disp_gpll0_div_clk_src
-> +      - const: sleep_clk
-> +
-> +  '#clock-cells':
-> +    const: 1
-> +
-> +  '#reset-cells':
-> +    const: 1
-> +
-> +  '#power-domain-cells':
-> +    const: 1
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - '#clock-cells'
-> +  - '#reset-cells'
-> +  - '#power-domain-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/qcom,rpmcc.h>
-> +    #include <dt-bindings/clock/qcom,gcc-sm6115.h>
-> +    clock-controller@5f00000 {
-> +      compatible = "qcom,sm6115-dispcc";
-> +      reg = <0x5f00000 0x20000>;
-> +      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-> +               <&dsi0_phy 0>,
-> +               <&dsi0_phy 1>,
-> +               <&gcc GCC_DISP_GPLL0_CLK_SRC>,
-> +               <&gcc GCC_DISP_GPLL0_DIV_CLK_SRC>,
-> +               <&sleep_clk>;
-> +      clock-names = "bi_tcxo",
-> +                    "dsi0_phy_pll_out_byteclk",
-> +                    "dsi0_phy_pll_out_dsiclk",
-> +                    "gcc_disp_gpll0_clk_src",
-> +                    "gcc_disp_gpll0_div_clk_src",
-> +                    "sleep_clk";
-> +      #clock-cells = <1>;
-> +      #reset-cells = <1>;
-> +      #power-domain-cells = <1>;
-> +    };
-> +...
-> diff --git a/include/dt-bindings/clock/qcom,dispcc-sm6115.h b/include/dt-bindings/clock/qcom,dispcc-sm6115.h
-> new file mode 100644
-> index 000000000000..d1a6c45b5029
-> --- /dev/null
-> +++ b/include/dt-bindings/clock/qcom,dispcc-sm6115.h
-
-Filename based on compatible.
-
-> @@ -0,0 +1,36 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +/*
-> + * Copyright (c) 2022, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
-> +#define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
-> +
-
-
-Best regards,
-Krzysztof
