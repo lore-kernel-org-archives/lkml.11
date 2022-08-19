@@ -2,390 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CE8C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE738C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350075AbiHSSBu (ORCPT
+        id S1350172AbiHSSEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 14:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        Fri, 19 Aug 2022 14:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351529AbiHSSAo (ORCPT
+        with ESMTP id S1349807AbiHSSD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 14:00:44 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0399010AE0C
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:47:51 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id kb4-20020a17090ae7c400b001f783657496so5187288pjb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:47:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=PxVtU6+p3kWLeEs1td/aqyfvaiMfUwekByaLOvsmjdI=;
-        b=GxcY96k0edncpxD8CK+MfHYucHXbsAzy04n7ijQ8wdUVduEybdkgYmfnbO+bQKAcfl
-         15prnpY+ZH3MZA6XtCPnYZPe13bnZu+tYJMbJehrU7vFM1hyQpEO92FJ4AGj1UaubffN
-         ZHnCoWh0Y06a1rj9Cbf8NEy2qrAtUeyRrdLGTn4qOK2iu7WN/Zel9xhksgFk5J9gJE+B
-         ztygQInAJYZBLl2zbHnTYzW2cZtdTuyslAAz2yD0Pxkxo3SsuBkmSDeIceAKZARgNIde
-         HNJ3dxT4MgsAdiVu96A6DaGxHxSqATa7KMkugo78Xl0FDxRDwI/OCiXWEJIvia4Y5LHI
-         7kYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=PxVtU6+p3kWLeEs1td/aqyfvaiMfUwekByaLOvsmjdI=;
-        b=ZixGUPTPHWpafF44PHaZl1Ocjzl4T4LFPG0A5tS8DjMjysfYI2GaS2Jjd6dbf4kTM2
-         EmjY/ReExgpROpvaHpjlju3kIBXcPOb+qhGFxHO5J8kCZvd3T5d5BrM22uzYLWFs8koV
-         qvHjjgu7JOPcXFsvVju1cYp/5tzDqEpG3qq1+LwZmiPJCRKnYHb+cFQM8QQhXmFvYQII
-         x+GPDFy8rKmJ4Oh8h2rQyOK2X98Y8JDk6jZC+0QnGkbm7WXdaIyacUZzotzQeFD9Bx/D
-         g+NbdWJ37CKSxVCBg5RF4pjPioYa+0F4pAgRasz4EDFRcv3i62FnMhEWZBKm3f6jN9bZ
-         SbJw==
-X-Gm-Message-State: ACgBeo1XERgG5WenpzSx/dnSY/4269ySb3HYf7xXQCOKzHjlqBzzZ4aF
-        xjVisxt8OuY+gtslH8U43PmxMqtoQmpKHZag
-X-Google-Smtp-Source: AA6agR4HGS4N/yFbtWqVnVgo8ZXDiZjUD94j+FDzDmfN+hdPI0Lqgg3Jg+CN+fENgQXPBR9kyG4d1DjWSAuEJRME
-X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
- (user=vannapurve job=sendgmr) by 2002:a05:6a00:1aca:b0:52f:55f8:c3ec with
- SMTP id f10-20020a056a001aca00b0052f55f8c3ecmr8885306pfv.25.1660931271154;
- Fri, 19 Aug 2022 10:47:51 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 17:46:59 +0000
-In-Reply-To: <20220819174659.2427983-1-vannapurve@google.com>
-Message-Id: <20220819174659.2427983-7-vannapurve@google.com>
-Mime-Version: 1.0
-References: <20220819174659.2427983-1-vannapurve@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [RFC V3 PATCH 6/6] sefltests: kvm: x86: Add selftest for private memory
-From:   Vishal Annapurve <vannapurve@google.com>
-To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, shuah@kernel.org, yang.zhong@intel.com,
-        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
-        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
-        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
-        bfields@fieldses.org, akpm@linux-foundation.org,
-        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
-        jun.nakajima@intel.com, dave.hansen@intel.com,
-        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
-        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
-        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
-        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
-        diviness@google.com, maz@kernel.org, dmatlack@google.com,
-        axelrasmussen@google.com, maciej.szmigiero@oracle.com,
-        mizhang@google.com, bgardon@google.com,
-        Vishal Annapurve <vannapurve@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 19 Aug 2022 14:03:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A53F63F2E;
+        Fri, 19 Aug 2022 10:49:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA4876186D;
+        Fri, 19 Aug 2022 17:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C1EC433D6;
+        Fri, 19 Aug 2022 17:49:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660931392;
+        bh=XMlk3D/uGMkXZBaYH68xGUpyRvK9o5OVs002Yxl4T9I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YNIqkyrR2+wWSotUwuIYnIk4n45l9lpznKwr8ZqiJyDNHO/OcsQy6hx2H2o7XTNao
+         eJ+5fB6AgAxiRLRBfc8Co78SwJo7yEYSK166pzRK/crcVcQnbEJa7QZ92pFp0drhFF
+         6LxrgTpIwf1fAJGy6eyRvnGIoTykSm7gqb/4ABiUTibXIfwOLUNyeGWnD4S1SacmqH
+         pXM/yIHzGzykuL9cTqb5qKoZILio69MZIXNQy8oNyuxI3kaoemU9j1meqEYEWbkSfA
+         PCJgIBLYNiHMlxy1JIUVM95/elpq5lworGqlKLawK1oBlGBWWhbDGLvImOXu/KZ4Bk
+         vrHHbyczlLCUg==
+Date:   Fri, 19 Aug 2022 19:00:25 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "wsa@kernel.org" <wsa@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+        "jbhayana@google.com" <jbhayana@google.com>,
+        "lucas.demarchi@intel.com" <lucas.demarchi@intel.com>,
+        "jani.nikula@intel.com" <jani.nikula@intel.com>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 3/4] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Message-ID: <20220819190025.7702573b@jic23-huawei>
+In-Reply-To: <20220819125818.37qc66akgercd6zb@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220816191842.14020-1-ddrokosov@sberdevices.ru>
+        <20220816191842.14020-4-ddrokosov@sberdevices.ru>
+        <CAHp75VewJ1taLhsCb4_yEQHpw4VDXRhkxpL0jzdu-JsajfF6oA@mail.gmail.com>
+        <20220819125818.37qc66akgercd6zb@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a selftest to exercise implicit/explicit conversion functionality
-within KVM and verify:
-1) Shared memory is visible to host userspace after conversion
-2) Private memory is not visible to host userspace before/after conversion
-3) Host userspace and guest can communicate over shared memory
+On Fri, 19 Aug 2022 12:57:54 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-Signed-off-by: Vishal Annapurve <vannapurve@google.com>
----
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../selftests/kvm/x86_64/private_mem_test.c   | 262 ++++++++++++++++++
- 3 files changed, 264 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/x86_64/private_mem_test.c
+> On Fri, Aug 19, 2022 at 11:41:55AM +0300, Andy Shevchenko wrote:
+> 
+> [...]
+> 
+> > > Spec: https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf  
+> > 
+> > Have you ever seen such a tag?
+> > We have the Datasheet that is more or less established for this kind of links.  
+> 
+> As I mentioned before, if I use Datasheet tag, line length limit will be
+> exceeded. If it's okay, I don't mind.
+Fine to go long.  If someone can't see the remaining chars of a link on their 80
+character wide terminal - they can scroll sideways :)
 
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index ec084a61a819..095b67dc632e 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -31,6 +31,7 @@
- /x86_64/monitor_mwait_test
- /x86_64/nx_huge_pages_test
- /x86_64/platform_info_test
-+/x86_64/private_mem_test
- /x86_64/pmu_event_filter_test
- /x86_64/set_boot_cpu_id
- /x86_64/set_sregs_test
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 8fe72a60aef0..c5fc8ea2c843 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -94,6 +94,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/mmu_role_test
- TEST_GEN_PROGS_x86_64 += x86_64/monitor_mwait_test
- TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
- TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
-+TEST_GEN_PROGS_x86_64 += x86_64/private_mem_test
- TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
- TEST_GEN_PROGS_x86_64 += x86_64/set_sregs_test
- TEST_GEN_PROGS_x86_64 += x86_64/smm_test
-diff --git a/tools/testing/selftests/kvm/x86_64/private_mem_test.c b/tools/testing/selftests/kvm/x86_64/private_mem_test.c
-new file mode 100644
-index 000000000000..9f491e2a16bb
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/private_mem_test.c
-@@ -0,0 +1,262 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * tools/testing/selftests/kvm/lib/kvm_util.c
-+ *
-+ * Copyright (C) 2022, Google LLC.
-+ */
-+#define _GNU_SOURCE /* for program_invocation_short_name */
-+#include <fcntl.h>
-+#include <limits.h>
-+#include <sched.h>
-+#include <signal.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/ioctl.h>
-+
-+#include <linux/compiler.h>
-+#include <linux/kernel.h>
-+#include <linux/kvm_para.h>
-+#include <linux/memfd.h>
-+
-+#include <test_util.h>
-+#include <kvm_util.h>
-+#include <private_mem.h>
-+#include <processor.h>
-+
-+#define VM_MEMSLOT0_PAGES	(512 * 10)
-+
-+#define TEST_AREA_SLOT		10
-+#define TEST_AREA_GPA		0xC0000000
-+#define TEST_AREA_SIZE		(2 * 1024 * 1024)
-+#define GUEST_TEST_MEM_OFFSET	(1 * 1024 * 1024)
-+#define GUEST_TEST_MEM_SIZE	(10 * 4096)
-+
-+#define VM_STAGE_PROCESSED(x)	pr_info("Processed stage %s\n", #x)
-+
-+#define TEST_MEM_DATA_PAT1	0x66
-+#define TEST_MEM_DATA_PAT2	0x99
-+#define TEST_MEM_DATA_PAT3	0x33
-+#define TEST_MEM_DATA_PAT4	0xaa
-+#define TEST_MEM_DATA_PAT5	0x12
-+
-+static bool verify_mem_contents(void *mem, uint32_t size, uint8_t pat)
-+{
-+	uint8_t *buf = (uint8_t *)mem;
-+
-+	for (uint32_t i = 0; i < size; i++) {
-+		if (buf[i] != pat)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+/*
-+ * Add custom implementation for memset to avoid using standard/builtin memset
-+ * which may use features like SSE/GOT that don't work with guest vm execution
-+ * within selftests.
-+ */
-+void *memset(void *mem, int byte, size_t size)
-+{
-+	uint8_t *buf = (uint8_t *)mem;
-+
-+	for (uint32_t i = 0; i < size; i++)
-+		buf[i] = byte;
-+
-+	return buf;
-+}
-+
-+static void populate_test_area(void *test_area_base, uint64_t pat)
-+{
-+	memset(test_area_base, pat, TEST_AREA_SIZE);
-+}
-+
-+static void populate_guest_test_mem(void *guest_test_mem, uint64_t pat)
-+{
-+	memset(guest_test_mem, pat, GUEST_TEST_MEM_SIZE);
-+}
-+
-+static bool verify_test_area(void *test_area_base, uint64_t area_pat,
-+	uint64_t guest_pat)
-+{
-+	void *test_area1_base = test_area_base;
-+	uint64_t test_area1_size = GUEST_TEST_MEM_OFFSET;
-+	void *guest_test_mem = test_area_base + test_area1_size;
-+	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
-+	void *test_area2_base = guest_test_mem + guest_test_size;
-+	uint64_t test_area2_size = (TEST_AREA_SIZE - (GUEST_TEST_MEM_OFFSET +
-+			GUEST_TEST_MEM_SIZE));
-+
-+	return (verify_mem_contents(test_area1_base, test_area1_size, area_pat) &&
-+		verify_mem_contents(guest_test_mem, guest_test_size, guest_pat) &&
-+		verify_mem_contents(test_area2_base, test_area2_size, area_pat));
-+}
-+
-+#define GUEST_STARTED			0
-+#define GUEST_PRIVATE_MEM_POPULATED	1
-+#define GUEST_SHARED_MEM_POPULATED	2
-+#define GUEST_PRIVATE_MEM_POPULATED2	3
-+#define GUEST_IMPLICIT_MEM_CONV1	4
-+#define GUEST_IMPLICIT_MEM_CONV2	5
-+
-+/*
-+ * Run memory conversion tests supporting two types of conversion:
-+ * 1) Explicit: Execute KVM hypercall to map/unmap gpa range which will cause
-+ *   userspace exit to back/unback private memory. Subsequent accesses by guest
-+ *   to the gpa range will not cause exit to userspace.
-+ * 2) Implicit: Execute KVM hypercall to update memory access to a gpa range as
-+ *   private/shared without exiting to userspace. Subsequent accesses by guest
-+ *   to the gpa range will result in KVM EPT/NPT faults and then exit to
-+ *   userspace for each page.
-+ *
-+ * Test memory conversion scenarios with following steps:
-+ * 1) Access private memory using private access and verify that memory contents
-+ *   are not visible to userspace.
-+ * 2) Convert memory to shared using explicit/implicit conversions and ensure
-+ *   that userspace is able to access the shared regions.
-+ * 3) Convert memory back to private using explicit/implicit conversions and
-+ *   ensure that userspace is again not able to access converted private
-+ *   regions.
-+ */
-+static void guest_conv_test_fn(bool test_explicit_conv)
-+{
-+	void *test_area_base = (void *)TEST_AREA_GPA;
-+	void *guest_test_mem = (void *)(TEST_AREA_GPA + GUEST_TEST_MEM_OFFSET);
-+	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
-+
-+	guest_map_ucall_page_shared();
-+	GUEST_SYNC(GUEST_STARTED);
-+
-+	populate_test_area(test_area_base, TEST_MEM_DATA_PAT1);
-+	GUEST_SYNC(GUEST_PRIVATE_MEM_POPULATED);
-+	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
-+		TEST_MEM_DATA_PAT1));
-+
-+	if (test_explicit_conv)
-+		guest_update_mem_map(TO_SHARED, (uint64_t)guest_test_mem,
-+			guest_test_size);
-+	else {
-+		guest_update_mem_access(TO_SHARED, (uint64_t)guest_test_mem,
-+			guest_test_size);
-+		GUEST_SYNC(GUEST_IMPLICIT_MEM_CONV1);
-+	}
-+
-+	populate_guest_test_mem(guest_test_mem, TEST_MEM_DATA_PAT2);
-+
-+	GUEST_SYNC(GUEST_SHARED_MEM_POPULATED);
-+	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
-+		TEST_MEM_DATA_PAT5));
-+
-+	if (test_explicit_conv)
-+		guest_update_mem_map(TO_PRIVATE, (uint64_t)guest_test_mem,
-+			guest_test_size);
-+	else {
-+		guest_update_mem_access(TO_PRIVATE, (uint64_t)guest_test_mem,
-+			guest_test_size);
-+		GUEST_SYNC(GUEST_IMPLICIT_MEM_CONV2);
-+	}
-+
-+	populate_guest_test_mem(guest_test_mem, TEST_MEM_DATA_PAT3);
-+	GUEST_SYNC(GUEST_PRIVATE_MEM_POPULATED2);
-+
-+	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
-+		TEST_MEM_DATA_PAT3));
-+	GUEST_DONE();
-+}
-+
-+static void conv_test_ioexit_fn(struct kvm_vm *vm, uint32_t uc_arg1)
-+{
-+	void *test_area_hva = addr_gpa2hva(vm, TEST_AREA_GPA);
-+	void *guest_test_mem_hva = (test_area_hva + GUEST_TEST_MEM_OFFSET);
-+	uint64_t guest_mem_gpa = (TEST_AREA_GPA + GUEST_TEST_MEM_OFFSET);
-+	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
-+
-+	switch (uc_arg1) {
-+	case GUEST_STARTED:
-+		populate_test_area(test_area_hva, TEST_MEM_DATA_PAT4);
-+		VM_STAGE_PROCESSED(GUEST_STARTED);
-+		break;
-+	case GUEST_PRIVATE_MEM_POPULATED:
-+		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
-+				TEST_MEM_DATA_PAT4), "failed");
-+		VM_STAGE_PROCESSED(GUEST_PRIVATE_MEM_POPULATED);
-+		break;
-+	case GUEST_SHARED_MEM_POPULATED:
-+		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
-+				TEST_MEM_DATA_PAT2), "failed");
-+		populate_guest_test_mem(guest_test_mem_hva, TEST_MEM_DATA_PAT5);
-+		VM_STAGE_PROCESSED(GUEST_SHARED_MEM_POPULATED);
-+		break;
-+	case GUEST_PRIVATE_MEM_POPULATED2:
-+		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
-+				TEST_MEM_DATA_PAT5), "failed");
-+		VM_STAGE_PROCESSED(GUEST_PRIVATE_MEM_POPULATED2);
-+		break;
-+	case GUEST_IMPLICIT_MEM_CONV1:
-+		/*
-+		 * For first implicit conversion, memory is already private so
-+		 * mark it private again just to zap the pte entries for the gpa
-+		 * range, so that subsequent accesses from the guest will
-+		 * generate ept/npt fault and memory conversion path will be
-+		 * exercised by KVM.
-+		 */
-+		vm_update_private_mem(vm, guest_mem_gpa, guest_test_size,
-+				ALLOCATE_MEM);
-+		VM_STAGE_PROCESSED(GUEST_IMPLICIT_MEM_CONV1);
-+		break;
-+	case GUEST_IMPLICIT_MEM_CONV2:
-+		/*
-+		 * For second implicit conversion, memory is already shared so
-+		 * mark it shared again just to zap the pte entries for the gpa
-+		 * range, so that subsequent accesses from the guest will
-+		 * generate ept/npt fault and memory conversion path will be
-+		 * exercised by KVM.
-+		 */
-+		vm_update_private_mem(vm, guest_mem_gpa, guest_test_size,
-+				UNBACK_MEM);
-+		VM_STAGE_PROCESSED(GUEST_IMPLICIT_MEM_CONV2);
-+		break;
-+	default:
-+		TEST_FAIL("Unknown stage %d\n", uc_arg1);
-+		break;
-+	}
-+}
-+
-+static void guest_explicit_conv_test_fn(void)
-+{
-+	guest_conv_test_fn(true);
-+}
-+
-+static void guest_implicit_conv_test_fn(void)
-+{
-+	guest_conv_test_fn(false);
-+}
-+
-+static void execute_memory_conversion_test(void)
-+{
-+	struct vm_setup_info info;
-+	struct test_setup_info *test_info = &info.test_info;
-+
-+	info.vm_mem_src = VM_MEM_SRC_ANONYMOUS;
-+	info.memslot0_pages = VM_MEMSLOT0_PAGES;
-+	test_info->test_area_gpa = TEST_AREA_GPA;
-+	test_info->test_area_size = TEST_AREA_SIZE;
-+	test_info->test_area_slot = TEST_AREA_SLOT;
-+	info.ioexit_cb = conv_test_ioexit_fn;
-+
-+	info.guest_fn = guest_explicit_conv_test_fn;
-+	execute_vm_with_private_mem(&info);
-+
-+	info.guest_fn = guest_implicit_conv_test_fn;
-+	execute_vm_with_private_mem(&info);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	/* Tell stdout not to buffer its content */
-+	setbuf(stdout, NULL);
-+
-+	execute_memory_conversion_test();
-+	return 0;
-+}
--- 
-2.37.1.595.g718a3a8f04-goog
 
+
+> >   
+> > > +static inline int msa311_set_odr(struct msa311_priv *msa311, unsigned int odr)  
+> > 
+> > Why inline?
+> >   
+> 
+> Why not? :) It's short function which is good to be inline, I think.
+
+Let the compiler decide that. Generally in kernel code, inline is reserved for
+the few places it's necessary or where compilers have been shown to get it wrong.
+
+> 
+> > > +{
+> > > +       struct device *dev = msa311->dev;
+> > > +       unsigned int pwr_mode;  
+> >   
+> > > +       bool good_odr = false;  
+> > 
