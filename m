@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D787C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48912C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352952AbiHSQ3c (ORCPT
+        id S1352801AbiHSQ3i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        Fri, 19 Aug 2022 12:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353158AbiHSQ0U (ORCPT
+        with ESMTP id S1353165AbiHSQ0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:26:20 -0400
+        Fri, 19 Aug 2022 12:26:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC0810F698;
-        Fri, 19 Aug 2022 09:03:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659F8119130;
+        Fri, 19 Aug 2022 09:04:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8987C617A8;
-        Fri, 19 Aug 2022 16:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C9AC433C1;
-        Fri, 19 Aug 2022 16:03:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E83DB617A7;
+        Fri, 19 Aug 2022 16:04:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31A7C433D7;
+        Fri, 19 Aug 2022 16:04:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925023;
-        bh=hetWV8UaTx9nf9SJteaS+CRHYoqVCfrTSvqfCWuDS1A=;
+        s=korg; t=1660925041;
+        bh=qQHUtZWaWupbYZelFOYe4CltnFVzO3H9peKF0dVanHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMJVgTPLhYt8rcj3MYHZPsUu9xEzkT6Hg3etivpvtc7KfcsOgdKRltgjlNckI6KSc
-         EIYddLH7ytGsnoOOXnX+6yRIZIwu8H/N1F8gSr7A9dVkrZJgt2gkTzcEk9xNu7gidu
-         B22SRlILQyqL6qSo9EIHbDdbuWJym99HVtItfAAA=
+        b=V6TQ8yhpXCo15rDBuu+t6q1QssSSStrKXJZKyJeuj3RyyxGI2SZKfpnv1wnLY01ef
+         AgUGANcGgoOPrsE4s7dSZeji7k20x9lqeQwO1YdioU+8JUCRSzfSitzgpUpdFD8ZIT
+         pKh/8b3NkilVsb7Hy/KAPIFyyf9lfAI98s73AsbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 359/545] jbd2: fix outstanding credits assert in jbd2_journal_commit_transaction()
-Date:   Fri, 19 Aug 2022 17:42:09 +0200
-Message-Id: <20220819153845.451878736@linuxfoundation.org>
+Subject: [PATCH 5.10 364/545] ASoC: cros_ec_codec: Fix refcount leak in cros_ec_codec_platform_probe
+Date:   Fri, 19 Aug 2022 17:42:14 +0200
+Message-Id: <20220819153845.673909883@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,72 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a89573ce4ad32f19f43ec669771726817e185be0 ]
+[ Upstream commit 0a034d93ee929a9ea89f3fa5f1d8492435b9ee6e ]
 
-We catch an assert problem in jbd2_journal_commit_transaction() when
-doing fsstress and request falut injection tests. The problem is
-happened in a race condition between jbd2_journal_commit_transaction()
-and ext4_end_io_end(). Firstly, ext4_writepages() writeback dirty pages
-and start reserved handle, and then the journal was aborted due to some
-previous metadata IO error, jbd2_journal_abort() start to commit current
-running transaction, the committing procedure could be raced by
-ext4_end_io_end() and lead to subtract j_reserved_credits twice from
-commit_transaction->t_outstanding_credits, finally the
-t_outstanding_credits is mistakenly smaller than t_nr_buffers and
-trigger assert.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-kjournald2           kworker
-
-jbd2_journal_commit_transaction()
- write_unlock(&journal->j_state_lock);
- atomic_sub(j_reserved_credits, t_outstanding_credits); //sub once
-
-     	             jbd2_journal_start_reserved()
-     	              start_this_handle()  //detect aborted journal
-     	              jbd2_journal_free_reserved()  //get running transaction
-                       read_lock(&journal->j_state_lock)
-     	                __jbd2_journal_unreserve_handle()
-     	               atomic_sub(j_reserved_credits, t_outstanding_credits);
-                       //sub again
-                       read_unlock(&journal->j_state_lock);
-
- journal->j_running_transaction = NULL;
- J_ASSERT(t_nr_buffers <= t_outstanding_credits) //bomb!!!
-
-Fix this issue by using journal->j_state_lock to protect the subtraction
-in jbd2_journal_commit_transaction().
-
-Fixes: 96f1e0974575 ("jbd2: avoid long hold times of j_state_lock while committing a transaction")
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220611130426.2013258-1-yi.zhang@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: b6bc07d4360d ("ASoC: cros_ec_codec: support WoV")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Link: https://lore.kernel.org/r/20220603131043.38907-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jbd2/commit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/cros_ec_codec.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
-index 867362f45cf6..98cfa73cb165 100644
---- a/fs/jbd2/commit.c
-+++ b/fs/jbd2/commit.c
-@@ -564,13 +564,13 @@ void jbd2_journal_commit_transaction(journal_t *journal)
- 	 */
- 	jbd2_journal_switch_revoke_table(journal);
+diff --git a/sound/soc/codecs/cros_ec_codec.c b/sound/soc/codecs/cros_ec_codec.c
+index 5c3b7e5e55d2..dedbaba83792 100644
+--- a/sound/soc/codecs/cros_ec_codec.c
++++ b/sound/soc/codecs/cros_ec_codec.c
+@@ -994,6 +994,7 @@ static int cros_ec_codec_platform_probe(struct platform_device *pdev)
+ 			dev_dbg(dev, "ap_shm_phys_addr=%#llx len=%#x\n",
+ 				priv->ap_shm_phys_addr, priv->ap_shm_len);
+ 		}
++		of_node_put(node);
+ 	}
+ #endif
  
-+	write_lock(&journal->j_state_lock);
- 	/*
- 	 * Reserved credits cannot be claimed anymore, free them
- 	 */
- 	atomic_sub(atomic_read(&journal->j_reserved_credits),
- 		   &commit_transaction->t_outstanding_credits);
- 
--	write_lock(&journal->j_state_lock);
- 	trace_jbd2_commit_flushing(journal, commit_transaction);
- 	stats.run.rs_flushing = jiffies;
- 	stats.run.rs_locked = jbd2_time_diff(stats.run.rs_locked,
 -- 
 2.35.1
 
