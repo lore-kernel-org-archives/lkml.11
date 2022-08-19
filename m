@@ -2,142 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6777DC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE52C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349108AbiHSMwv (ORCPT
+        id S1349116AbiHSMwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36702 "EHLO
+        Fri, 19 Aug 2022 08:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349075AbiHSMwn (ORCPT
+        with ESMTP id S1348339AbiHSMwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:52:43 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C64BDAEEA
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:42 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id by6so4421271ljb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=mu4cs57so/hm5H36zlHi+oMf19bmDRm3sZ5zNgNtxQw=;
-        b=hNhliri7Zq4aZR+zeEMCZ3lQ5ZYBtWNy2tq1eX2FnOUex3MB2/WSBsLtkv/Z5TzQeY
-         zmY4neIXhtWCN5O8TJxlGZeZoO0EVY78CjIM1XKxHSKNcZSuwhcly4clBIh6BuJd1KBw
-         /ICBLHjVgOgsoiIinTgW6BtGwpPC8bqf6Z36kq5FGi048T2GQRGNxl8iqK9u7WYUqTwa
-         N7Xj2QJCQybpwQdQqpHze8XBJSRAGU6TPCy+3Lq4KZ4k8K9pYyrXWTA34Xx25dP9fmUz
-         mtStDwoNwY4y27TMTTQvgYMgcpT8k+gjdvfJegMD1z6IZBkfcm/YftwrsKU7UILwaSC3
-         PhHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=mu4cs57so/hm5H36zlHi+oMf19bmDRm3sZ5zNgNtxQw=;
-        b=wCyMcPOuryaCPxGDwARboy31GgWpVIxQbaNTOJj842bkvYYcX1NYu9k1MZubAMDz/e
-         c989KF/ZDHqVUbNRVh7Jx8w0/x1nduaWSlZGr955EWrKXtCGwIsaVY//r5DczyRyxw4c
-         Q6eHYqX1V1ohk3biioDISN204E0uUhtjAIs2/nSIDEydZfh4saS37nNkdmD/q9atuOe+
-         PVsCquvuDetZGhCJytcI7ApJVKju0YCgABJKA33Gkw51lD61Ejt/9wbF26hZqIlw4fw4
-         x77DatXXm/Xgt1DygllMMfaF1jISa/MHw5QyYiDgt9rVqcaWdKp89HA69wk6liP+o5Xq
-         kZoA==
-X-Gm-Message-State: ACgBeo1sNVgptoH3UBpmHamPK9SUJ71kC6bvFNVM2Wyrygf4EUNwwgZj
-        POnzoNmpaFt1YuI+/JQQn/7rgg==
-X-Google-Smtp-Source: AA6agR6E41JWNeYbhnyaHiir5IGmfC6Jpna2d622TenkdJ160D+d3YEw6fp21X0jdpUta0fOc4uQ3g==
-X-Received: by 2002:a05:651c:12c4:b0:25d:fe06:8658 with SMTP id 4-20020a05651c12c400b0025dfe068658mr2017908lje.301.1660913560695;
-        Fri, 19 Aug 2022 05:52:40 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id e16-20020ac24e10000000b00492ba56995asm630824lfr.101.2022.08.19.05.52.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 05:52:40 -0700 (PDT)
-Message-ID: <55c53ba1-8e13-599d-1b16-5dab417a3059@linaro.org>
-Date:   Fri, 19 Aug 2022 15:52:38 +0300
+        Fri, 19 Aug 2022 08:52:44 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1E3C6CDE
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:52:43 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBix0R020060;
+        Fri, 19 Aug 2022 07:52:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=lx4GAB9Um5dfe7Rhlz40yyU1J88HrCUqmJv6PhWbfXU=;
+ b=En1JpMJpH3HLLQKPGiD/l8+t5r2Y+PQwGq41J853g82pjHy7cdqgkgI72vcvBsukGfoi
+ PvDyouNqj+QWSHYyVLCqW+f6ExD0kYfzOL9bMrftPtuR7zbP0hT89eQX9M3vcHi1BDMp
+ kCxXJLS1TPiWsnI8lirI1zMnn/xQ0KBcBAIwO5hCJTWtyXjKfLv/E/NpVr3VLUwzgjcq
+ UONodQUIX7eK2Nyf/ETLmnudHmM/yLp4Bf0NnG1YORscVBS+pZqaFHcVeC4WJBiEqMUr
+ zYX4wlGKNJ/WpYR5r4I9zv+v//wzs49oiN8pZUrdAhyZc54PctChiXkGoUzplfmDsl+c RQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hx8cpfuvn-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 07:52:37 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 19 Aug
+ 2022 07:52:34 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
+ Transport; Fri, 19 Aug 2022 07:52:34 -0500
+Received: from edi-sw-dsktp-006.ad.cirrus.com (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id B2874476;
+        Fri, 19 Aug 2022 12:52:34 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH 05/12] ASoC: cs42l42: Use cs42l42->dev instead of &i2c_client->dev
+Date:   Fri, 19 Aug 2022 13:52:23 +0100
+Message-ID: <20220819125230.42731-6-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220819125230.42731-1-rf@opensource.cirrus.com>
+References: <20220819125230.42731-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add nxp,refclk_in
- property
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Wei Fang <wei.fang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220819074729.1496088-1-wei.fang@nxp.com>
- <20220819074729.1496088-2-wei.fang@nxp.com>
- <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
- <DB9PR04MB81064199835C0E44B997DE06886C9@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org> <Yv+FuiUoTjpoUZ32@lunn.ch>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <Yv+FuiUoTjpoUZ32@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: osanZQ1CaN8e6fU7t7wsdiq0TeoF9Ic9
+X-Proofpoint-GUID: osanZQ1CaN8e6fU7t7wsdiq0TeoF9Ic9
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 15:44, Andrew Lunn wrote:
-> On Fri, Aug 19, 2022 at 02:37:36PM +0300, Krzysztof Kozlowski wrote:
->> On 19/08/2022 12:37, Wei Fang wrote:
->>>>
->>>>> +          in RMII mode. This clock signal is provided by the PHY and is
->>>>> +          typically derived from an external 25MHz crystal. Alternatively,
->>>>> +          a 50MHz clock signal generated by an external oscillator can be
->>>>> +          connected to pin REF_CLK. A third option is to connect a 25MHz
->>>>> +          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
->>>>> +          as input or output according to the actual circuit connection.
->>>>> +          If present, indicates that the REF_CLK will be configured as
->>>>> +          interface reference clock input when RMII mode enabled.
->>>>> +          If not present, the REF_CLK will be configured as interface
->>>>> +          reference clock output when RMII mode enabled.
->>>>> +          Only supported on TJA1100 and TJA1101.
->>>>
->>>> Then disallow it on other variants.
->>>>
->>>> Shouldn't this be just "clocks" property?
->>>>
->>>>
->>> This property is to configure the pin REF_CLK of PHY as a input pin through phy register,
->>> indicates that the REF_CLK signal is provided by an external oscillator. so I don't think it's a
->>> "clock" property.
->>
->> clocks, not clock.
->>
->> You just repeated pieces of description as an counter-argument, so this
->> does not explain anything.
->>
->> If it is external oscillator shouldn't it be represented in DTS and then
->> obtained by driver (clk_get + clk_prepare_enable)? Otherwise how are you
->> sure that clock is actually enabled? And the lack of presence of the
->> external clock means it is derived from PHY?
-> 
-> Using the common clock framework has been discussed in the past. But
-> no PHY actually does this. When the SoC provides the clock, a few PHYs
-> do make use of the common clock framework as clock consumers to ensure
-> the clock is ticking.
+In preparation for splitting cs42l42_i2c_probe() into multiple functions
+replace use of &i2c_client->dev with cs42l42->dev. This reduces diff
+clutter in the patch that splits the function.
 
-IOW, all DTSes would have a fixed clock stub without any logic usable by
-Common CF (like enabling)?
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+---
+ sound/soc/codecs/cs42l42.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-> Plus, as the description says, this pin can be either a clock producer
-> or a consumer. I don't think the common clock code allows this. It is
-> also not something you negotiate between the MAC and PHY. The hardware
-> designer typically decides based on the MAC and PHY actually used. So
-> this is a fixed hardware property.
+diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
+index 946b2a935256..4c81bda6b593 100644
+--- a/sound/soc/codecs/cs42l42.c
++++ b/sound/soc/codecs/cs42l42.c
+@@ -2233,7 +2233,7 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 	cs42l42->regmap = devm_regmap_init_i2c(i2c_client, &cs42l42_regmap);
+ 	if (IS_ERR(cs42l42->regmap)) {
+ 		ret = PTR_ERR(cs42l42->regmap);
+-		dev_err(&i2c_client->dev, "regmap_init() failed: %d\n", ret);
++		dev_err(cs42l42->dev, "regmap_init() failed: %d\n", ret);
+ 		return ret;
+ 	}
+ 
+@@ -2241,11 +2241,11 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 	for (i = 0; i < ARRAY_SIZE(cs42l42->supplies); i++)
+ 		cs42l42->supplies[i].supply = cs42l42_supply_names[i];
+ 
+-	ret = devm_regulator_bulk_get(&i2c_client->dev,
++	ret = devm_regulator_bulk_get(cs42l42->dev,
+ 				      ARRAY_SIZE(cs42l42->supplies),
+ 				      cs42l42->supplies);
+ 	if (ret != 0) {
+-		dev_err(&i2c_client->dev,
++		dev_err(cs42l42->dev,
+ 			"Failed to request supplies: %d\n", ret);
+ 		return ret;
+ 	}
+@@ -2253,13 +2253,13 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(cs42l42->supplies),
+ 				    cs42l42->supplies);
+ 	if (ret != 0) {
+-		dev_err(&i2c_client->dev,
++		dev_err(cs42l42->dev,
+ 			"Failed to enable supplies: %d\n", ret);
+ 		return ret;
+ 	}
+ 
+ 	/* Reset the Device */
+-	cs42l42->reset_gpio = devm_gpiod_get_optional(&i2c_client->dev,
++	cs42l42->reset_gpio = devm_gpiod_get_optional(cs42l42->dev,
+ 		"reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(cs42l42->reset_gpio)) {
+ 		ret = PTR_ERR(cs42l42->reset_gpio);
+@@ -2267,7 +2267,7 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 	}
+ 
+ 	if (cs42l42->reset_gpio) {
+-		dev_dbg(&i2c_client->dev, "Found reset GPIO\n");
++		dev_dbg(cs42l42->dev, "Found reset GPIO\n");
+ 		gpiod_set_value_cansleep(cs42l42->reset_gpio, 1);
+ 	}
+ 	usleep_range(CS42L42_BOOT_TIME_US, CS42L42_BOOT_TIME_US * 2);
+@@ -2281,7 +2281,7 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 		if (ret == -EPROBE_DEFER) {
+ 			goto err_disable_noirq;
+ 		} else if (ret != 0) {
+-			dev_err(&i2c_client->dev,
++			dev_err(cs42l42->dev,
+ 				"Failed to request IRQ: %d\n", ret);
+ 			goto err_disable_noirq;
+ 		}
+@@ -2291,13 +2291,13 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 	devid = cirrus_read_device_id(cs42l42->regmap, CS42L42_DEVID_AB);
+ 	if (devid < 0) {
+ 		ret = devid;
+-		dev_err(&i2c_client->dev, "Failed to read device ID: %d\n", ret);
++		dev_err(cs42l42->dev, "Failed to read device ID: %d\n", ret);
+ 		goto err_disable;
+ 	}
+ 
+ 	if (devid != CS42L42_CHIP_ID) {
+ 		ret = -ENODEV;
+-		dev_err(&i2c_client->dev,
++		dev_err(cs42l42->dev,
+ 			"CS42L42 Device ID (%X). Expected %X\n",
+ 			devid, CS42L42_CHIP_ID);
+ 		goto err_disable;
+@@ -2305,11 +2305,11 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 
+ 	ret = regmap_read(cs42l42->regmap, CS42L42_REVID, &reg);
+ 	if (ret < 0) {
+-		dev_err(&i2c_client->dev, "Get Revision ID failed\n");
++		dev_err(cs42l42->dev, "Get Revision ID failed\n");
+ 		goto err_shutdown;
+ 	}
+ 
+-	dev_info(&i2c_client->dev,
++	dev_info(cs42l42->dev,
+ 		 "Cirrus Logic CS42L42, Revision: %02X\n", reg & 0xFF);
+ 
+ 	/* Power up the codec */
+@@ -2329,7 +2329,7 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 			(1 << CS42L42_ADC_PDN_SHIFT) |
+ 			(0 << CS42L42_PDN_ALL_SHIFT));
+ 
+-	ret = cs42l42_handle_device_data(&i2c_client->dev, cs42l42);
++	ret = cs42l42_handle_device_data(cs42l42->dev, cs42l42);
+ 	if (ret != 0)
+ 		goto err_shutdown;
+ 
+@@ -2340,7 +2340,7 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ 	cs42l42_set_interrupt_masks(cs42l42);
+ 
+ 	/* Register codec for machine driver */
+-	ret = devm_snd_soc_register_component(&i2c_client->dev,
++	ret = devm_snd_soc_register_component(cs42l42->dev,
+ 			&soc_component_dev_cs42l42, &cs42l42_dai, 1);
+ 	if (ret < 0)
+ 		goto err_shutdown;
+-- 
+2.30.2
 
-Indeed.
-
-Anyway the property name and typo need fixes.
-Best regards,
-Krzysztof
