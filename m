@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D3FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E19C6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351814AbiHSQMR (ORCPT
+        id S1351784AbiHSQMX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
+        Fri, 19 Aug 2022 12:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351833AbiHSQKm (ORCPT
+        with ESMTP id S1351858AbiHSQKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:10:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EAF111C1A;
-        Fri, 19 Aug 2022 08:56:53 -0700 (PDT)
+        Fri, 19 Aug 2022 12:10:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E971D11232B;
+        Fri, 19 Aug 2022 08:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BED2CB8280C;
-        Fri, 19 Aug 2022 15:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37430C433B5;
-        Fri, 19 Aug 2022 15:56:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83FDC614DA;
+        Fri, 19 Aug 2022 15:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C1BC433C1;
+        Fri, 19 Aug 2022 15:56:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924610;
-        bh=iOh6uWjcpXFkilIkw/nm7flW4RG2vftkNVAa2Y5AeJ8=;
+        s=korg; t=1660924619;
+        bh=OrNeTHxlYDIcYbDW02upfTtUi0ToYWNUAMpL14jUXmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IkIZZz9CK2LY1d28DK6e3nPdqJMUl7JG9pZF6deQPvDqQDV/23S0orJGnNHDfy2wW
-         ttyhzdsfq0fBVIlNYLLo5NlU3Oj9HlXRORWKOVDgeh0rWPaOV5SvmDQKyneBEmblXM
-         Pqnty1QDqvXQsifSAJFL9cC3YK7BYC4y5ajVigvE=
+        b=yJv23HXYzG/KJaCBssesTZEcGmvuWaLN7IUe0ZFBAnyd4j1SlzW8nqFqIgxicQK/b
+         Upl6IfjsoWbf14SaKoXO0K9aFBw3FlzlD1Vj9Tg58aWgDUEQYcTbvKUo+tz0HRu7vG
+         gGfDbo+DM+u3rC9Mulx4/v+xHuwNNNqw429MvUxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anquan Wu <leiqi96@hotmail.com>,
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 226/545] libbpf: Fix the name of a reused map
-Date:   Fri, 19 Aug 2022 17:39:56 +0200
-Message-Id: <20220819153839.492975465@linuxfoundation.org>
+Subject: [PATCH 5.10 229/545] bpf: Fix subprog names in stack traces.
+Date:   Fri, 19 Aug 2022 17:39:59 +0200
+Message-Id: <20220819153839.610541820@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,69 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anquan Wu <leiqi96@hotmail.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-[ Upstream commit bf3f00378524adae16628cbadbd11ba7211863bb ]
+[ Upstream commit 9c7c48d6a1e2eb5192ad5294c1c4dbd42a88e88b ]
 
-BPF map name is limited to BPF_OBJ_NAME_LEN.
-A map name is defined as being longer than BPF_OBJ_NAME_LEN,
-it will be truncated to BPF_OBJ_NAME_LEN when a userspace program
-calls libbpf to create the map. A pinned map also generates a path
-in the /sys. If the previous program wanted to reuse the map，
-it can not get bpf_map by name, because the name of the map is only
-partially the same as the name which get from pinned path.
+The commit 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
+accidently made bpf_prog_ksym_set_name() conservative for bpf subprograms.
+Fixed it so instead of "bpf_prog_tag_F" the stack traces print "bpf_prog_tag_full_subprog_name".
 
-The syscall information below show that map name "process_pinned_map"
-is truncated to "process_pinned_".
-
-    bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/process_pinned_map",
-    bpf_fd=0, file_flags=0}, 144) = -1 ENOENT (No such file or directory)
-
-    bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_HASH, key_size=4,
-    value_size=4,max_entries=1024, map_flags=0, inner_map_fd=0,
-    map_name="process_pinned_",map_ifindex=0, btf_fd=3, btf_key_type_id=6,
-    btf_value_type_id=10,btf_vmlinux_value_type_id=0}, 72) = 4
-
-This patch check that if the name of pinned map are the same as the
-actual name for the first (BPF_OBJ_NAME_LEN - 1),
-bpf map still uses the name which is included in bpf object.
-
-Fixes: 26736eb9a483 ("tools: libbpf: allow map reuse")
-Signed-off-by: Anquan Wu <leiqi96@hotmail.com>
+Fixes: 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
+Reported-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/OSZP286MB1725CEA1C95C5CB8E7CCC53FB8869@OSZP286MB1725.JPNP286.PROD.OUTLOOK.COM
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220714211637.17150-1-alexei.starovoitov@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ kernel/bpf/verifier.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8fada26529b7..66d7f8d494de 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3652,7 +3652,7 @@ static int bpf_get_map_info_from_fdinfo(int fd, struct bpf_map_info *info)
- int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- {
- 	struct bpf_map_info info = {};
--	__u32 len = sizeof(info);
-+	__u32 len = sizeof(info), name_len;
- 	int new_fd, err;
- 	char *new_name;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 15ddc4292bc0..de636b7445b1 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -11152,6 +11152,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 		/* Below members will be freed only at prog->aux */
+ 		func[i]->aux->btf = prog->aux->btf;
+ 		func[i]->aux->func_info = prog->aux->func_info;
++		func[i]->aux->func_info_cnt = prog->aux->func_info_cnt;
+ 		func[i]->aux->poke_tab = prog->aux->poke_tab;
+ 		func[i]->aux->size_poke_tab = prog->aux->size_poke_tab;
  
-@@ -3662,7 +3662,12 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- 	if (err)
- 		return err;
+@@ -11164,9 +11165,6 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 				poke->aux = func[i]->aux;
+ 		}
  
--	new_name = strdup(info.name);
-+	name_len = strlen(info.name);
-+	if (name_len == BPF_OBJ_NAME_LEN - 1 && strncmp(map->name, info.name, name_len) == 0)
-+		new_name = strdup(map->name);
-+	else
-+		new_name = strdup(info.name);
-+
- 	if (!new_name)
- 		return -errno;
- 
+-		/* Use bpf_prog_F_tag to indicate functions in stack traces.
+-		 * Long term would need debug info to populate names
+-		 */
+ 		func[i]->aux->name[0] = 'F';
+ 		func[i]->aux->stack_depth = env->subprog_info[i].stack_depth;
+ 		func[i]->jit_requested = 1;
 -- 
 2.35.1
 
