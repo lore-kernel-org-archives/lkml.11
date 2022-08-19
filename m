@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AD7C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBD2C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351984AbiHSQSl (ORCPT
+        id S1349874AbiHSQSr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
+        Fri, 19 Aug 2022 12:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352005AbiHSQPD (ORCPT
+        with ESMTP id S1352004AbiHSQPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:15:03 -0400
+        Fri, 19 Aug 2022 12:15:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E447D1F5;
-        Fri, 19 Aug 2022 08:58:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9732313F5E;
+        Fri, 19 Aug 2022 08:58:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD5C1B8281A;
-        Fri, 19 Aug 2022 15:58:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25912C433C1;
-        Fri, 19 Aug 2022 15:58:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC59B82814;
+        Fri, 19 Aug 2022 15:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA094C433C1;
+        Fri, 19 Aug 2022 15:58:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924692;
-        bh=nDvsOOKgXm6pVAIk6pb61ee3aQclJZHwOgFaeG1aU08=;
+        s=korg; t=1660924686;
+        bh=I1frAiw7vO52s8qpX+Z7pjO5lFTrxQS4vGB3cDkPfBM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BYAXjzq/ZA5oBzpHnTXcP8Vi6YPjohIIv+95VfZTTmwzskA2N2/RnEy2BBN0ovNCL
-         alGtAPcoAknRSRttUDQKhjF2O5q4sKniKYWL3DGcTSACexArTfXN7WTbBbSE2wCvd0
-         Go1BK5l7qtyGg6hJ0V/1XpKReX3WljFThmj5V1Cw=
+        b=rl6yiK5b8nMxyMJa1GOLtrFtRiYB52JzhgfxiVc3NlMuqEb8yN9gzHT+9kSJCf5zH
+         d3AQQ1Dc7/D1P2xXbs4M/g7bcDXsvcAYJejl3MAbCyTL3dMTKJdGRPbTYLGn8FPxbO
+         QCP5zGsJqOEMbTudzQ71hbPG8M5V+WbSb02laHHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gergo Koteles <soyer@irl.hu>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 222/545] mt76: mt76x02u: fix possible memory leak in __mt76x02u_mcu_send_msg
-Date:   Fri, 19 Aug 2022 17:39:52 +0200
-Message-Id: <20220819153839.294719482@linuxfoundation.org>
+        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 220/545] crypto: hisilicon - Kunpeng916 crypto driver dont sleep when in softirq
+Date:   Fri, 19 Aug 2022 17:39:50 +0200
+Message-Id: <20220819153839.197095119@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,35 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-[ Upstream commit cffd93411575afd987788e2ec3cb8eaff70f0215 ]
+[ Upstream commit 68740ab505431f268dc1ee26a54b871e75f0ddaa ]
 
-Free the skb if mt76u_bulk_msg fails in __mt76x02u_mcu_send_msg routine.
+When kunpeng916 encryption driver is used to deencrypt and decrypt
+packets during the softirq, it is not allowed to use mutex lock.
 
-Fixes: 4c89ff2c74e39 ("mt76: split __mt76u_mcu_send_msg and mt76u_mcu_send_msg routines")
-Co-developed-by: Gergo Koteles <soyer@irl.hu>
-Signed-off-by: Gergo Koteles <soyer@irl.hu>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 915e4e8413da ("crypto: hisilicon - SEC security accelerator driver")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/hisilicon/sec/sec_algs.c | 14 +++++++-------
+ drivers/crypto/hisilicon/sec/sec_drv.h  |  2 +-
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
-index e43d13d7c988..2dad61fd451f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
-@@ -108,7 +108,7 @@ __mt76x02u_mcu_send_msg(struct mt76_dev *dev, struct sk_buff *skb,
- 	ret = mt76u_bulk_msg(dev, skb->data, skb->len, NULL, 500,
- 			     MT_EP_OUT_INBAND_CMD);
- 	if (ret)
--		return ret;
-+		goto out;
+diff --git a/drivers/crypto/hisilicon/sec/sec_algs.c b/drivers/crypto/hisilicon/sec/sec_algs.c
+index 8ca945ac297e..2066f8d40c5a 100644
+--- a/drivers/crypto/hisilicon/sec/sec_algs.c
++++ b/drivers/crypto/hisilicon/sec/sec_algs.c
+@@ -449,7 +449,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 		 */
+ 	}
  
- 	if (wait_resp)
- 		ret = mt76x02u_mcu_wait_resp(dev, seq);
+-	mutex_lock(&ctx->queue->queuelock);
++	spin_lock_bh(&ctx->queue->queuelock);
+ 	/* Put the IV in place for chained cases */
+ 	switch (ctx->cipher_alg) {
+ 	case SEC_C_AES_CBC_128:
+@@ -509,7 +509,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 			list_del(&backlog_req->backlog_head);
+ 		}
+ 	}
+-	mutex_unlock(&ctx->queue->queuelock);
++	spin_unlock_bh(&ctx->queue->queuelock);
+ 
+ 	mutex_lock(&sec_req->lock);
+ 	list_del(&sec_req_el->head);
+@@ -798,7 +798,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 	 */
+ 
+ 	/* Grab a big lock for a long time to avoid concurrency issues */
+-	mutex_lock(&queue->queuelock);
++	spin_lock_bh(&queue->queuelock);
+ 
+ 	/*
+ 	 * Can go on to queue if we have space in either:
+@@ -814,15 +814,15 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 		ret = -EBUSY;
+ 		if ((skreq->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)) {
+ 			list_add_tail(&sec_req->backlog_head, &ctx->backlog);
+-			mutex_unlock(&queue->queuelock);
++			spin_unlock_bh(&queue->queuelock);
+ 			goto out;
+ 		}
+ 
+-		mutex_unlock(&queue->queuelock);
++		spin_unlock_bh(&queue->queuelock);
+ 		goto err_free_elements;
+ 	}
+ 	ret = sec_send_request(sec_req, queue);
+-	mutex_unlock(&queue->queuelock);
++	spin_unlock_bh(&queue->queuelock);
+ 	if (ret)
+ 		goto err_free_elements;
+ 
+@@ -881,7 +881,7 @@ static int sec_alg_skcipher_init(struct crypto_skcipher *tfm)
+ 	if (IS_ERR(ctx->queue))
+ 		return PTR_ERR(ctx->queue);
+ 
+-	mutex_init(&ctx->queue->queuelock);
++	spin_lock_init(&ctx->queue->queuelock);
+ 	ctx->queue->havesoftqueue = false;
+ 
+ 	return 0;
+diff --git a/drivers/crypto/hisilicon/sec/sec_drv.h b/drivers/crypto/hisilicon/sec/sec_drv.h
+index 4d9063a8b10b..0bf4d7c3856c 100644
+--- a/drivers/crypto/hisilicon/sec/sec_drv.h
++++ b/drivers/crypto/hisilicon/sec/sec_drv.h
+@@ -347,7 +347,7 @@ struct sec_queue {
+ 	DECLARE_BITMAP(unprocessed, SEC_QUEUE_LEN);
+ 	DECLARE_KFIFO_PTR(softqueue, typeof(struct sec_request_el *));
+ 	bool havesoftqueue;
+-	struct mutex queuelock;
++	spinlock_t queuelock;
+ 	void *shadow[SEC_QUEUE_LEN];
+ };
+ 
 -- 
 2.35.1
 
