@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7F0C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3C1C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350935AbiHSQCm (ORCPT
+        id S1350954AbiHSQCr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
+        Fri, 19 Aug 2022 12:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350881AbiHSP7l (ORCPT
+        with ESMTP id S1350743AbiHSP7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:59:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F4610958F;
-        Fri, 19 Aug 2022 08:52:12 -0700 (PDT)
+        Fri, 19 Aug 2022 11:59:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01A1647D9;
+        Fri, 19 Aug 2022 08:51:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8A07B82811;
-        Fri, 19 Aug 2022 15:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F5B6C433D7;
-        Fri, 19 Aug 2022 15:52:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27EE7B8281A;
+        Fri, 19 Aug 2022 15:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ECAFC433C1;
+        Fri, 19 Aug 2022 15:51:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924330;
-        bh=16N7gqoDhgtgU26/uFo+Xnm3wcLCzPvXEWtJM8/2n9s=;
+        s=korg; t=1660924298;
+        bh=W/ltPX1c32PbsqIxEAExA6ikOuFnxtc/3GF5aJ9ksmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mpMxrDbpi3tmPlau5cBsR5QJP8+rt4uhdkWzQWQ9fmxXNoHqhRwRfJMDVzltDE9P2
-         SR3biK1FXBPlDU9lvfAF3FAGXL1Q1byt5VVWaemRx7jWRodPfPJsn3dAQAJcX/bewd
-         YY7ydftqmEiIzxdMtuYNw9BW7+rfzGB/x+2Pp/n8=
+        b=I+hx3T16P6qektnaQOeek0gNNRTB2mhfFg+Pf9fnqVCNACPUpDbNh8KSAAJujpj2M
+         RLhF14TCJrAVjxvxcSCWslJsX5aThFAKSwUBNL169h9GphplXRX5OUdylY1u0E/veA
+         LJsHcC9Omz9rFXdDGFlEWYcYuRifsOLVcrqNxC3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 134/545] ARM: dts: qcom: pm8841: add required thermal-sensor-cells
-Date:   Fri, 19 Aug 2022 17:38:24 +0200
-Message-Id: <20220819153835.340843211@linuxfoundation.org>
+Subject: [PATCH 5.10 124/545] soc: fsl: guts: machine variable might be unset
+Date:   Fri, 19 Aug 2022 17:38:14 +0200
+Message-Id: <20220819153834.848255029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,33 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit e2759fa0676c9a32bbddb9aff955b54bb35066ad ]
+[ Upstream commit ab3f045774f704c4e7b6a878102f4e9d4ae7bc74 ]
 
-The PM8841 temperature sensor has to define thermal-sensor-cells.
+If both the model and the compatible properties are missing, then
+machine will not be set. Initialize it with NULL.
 
-Fixes: dab8134ca072 ("ARM: dts: qcom: Add PM8841 functions device nodes")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220608112702.80873-2-krzysztof.kozlowski@linaro.org
+Fixes: 34c1c21e94ac ("soc: fsl: fix section mismatch build warnings")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-pm8841.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/fsl/guts.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-pm8841.dtsi b/arch/arm/boot/dts/qcom-pm8841.dtsi
-index 2fd59c440903..c73e5b149ac5 100644
---- a/arch/arm/boot/dts/qcom-pm8841.dtsi
-+++ b/arch/arm/boot/dts/qcom-pm8841.dtsi
-@@ -25,6 +25,7 @@ temp-alarm@2400 {
- 			compatible = "qcom,spmi-temp-alarm";
- 			reg = <0x2400>;
- 			interrupts = <4 0x24 0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <0>;
- 		};
- 	};
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 091e94c04f30..6b0c433954bf 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -141,7 +141,7 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct resource *res;
+ 	const struct fsl_soc_die_attr *soc_die;
+-	const char *machine;
++	const char *machine = NULL;
+ 	u32 svr;
  
+ 	/* Initialize guts */
 -- 
 2.35.1
 
