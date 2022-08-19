@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 047ECC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CA3C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351703AbiHSQJ5 (ORCPT
+        id S1351511AbiHSQKA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
+        Fri, 19 Aug 2022 12:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351781AbiHSQGc (ORCPT
+        with ESMTP id S1350895AbiHSQEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0217F10DCF1;
-        Fri, 19 Aug 2022 08:55:57 -0700 (PDT)
+        Fri, 19 Aug 2022 12:04:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2774107AC0;
+        Fri, 19 Aug 2022 08:54:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2512B82818;
-        Fri, 19 Aug 2022 15:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36DB5C433C1;
-        Fri, 19 Aug 2022 15:55:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2907DB82818;
+        Fri, 19 Aug 2022 15:54:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FE8C433C1;
+        Fri, 19 Aug 2022 15:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924550;
-        bh=HkaKpZcW31mFuhnXBbDu4JiesKVa4johEAVgLMx2Dd8=;
+        s=korg; t=1660924484;
+        bh=Y4Yibj/UDq/0akFRHPSpnXeHwEZP/DTk5itBSChguik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jA/LZ9v95ZHLIBTFFi2bsDpdckoshemuhcpMaotGJ1fdCSfhqbiebG+41G/eRbSLH
-         t2xFSr2pTaWiD/cfBtIsl+e0eI5V4Kg6xgon9pw8TcbshDUkoTFgpAHdFcP7U14NDX
-         Xo28Xa7gkw4ulQgYWsPo3WPVj+2iy9mVFI/0UtJc=
+        b=fQMM7Mw9SK+cEqxU+hQkQzbOzcAeJ4Towwdypxveml4IRkZIbgkRnvzA1UaVPNC8y
+         rENXZ+DkV7eo9NxlZh15drg9jckKk8NvX4g0NZksIsH6ZPzmVhrmMGAoUJtsSF+ngO
+         wGpZhaYERKUzps+gkpyGdIoEE3nL0RxR/39NaE2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 207/545] drm/rockchip: vop: Dont crash for invalid duplicate_state()
-Date:   Fri, 19 Aug 2022 17:39:37 +0200
-Message-Id: <20220819153838.640931259@linuxfoundation.org>
+Subject: [PATCH 5.10 155/545] pwm: sifive: Shut down hardware only after pwmchip_remove() completed
+Date:   Fri, 19 Aug 2022 17:38:45 +0200
+Message-Id: <20220819153836.277721535@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,40 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 1449110b0dade8b638d2c17ab7c5b0ff696bfccb ]
+[ Upstream commit 2375e964d541bb09158cd2dff67b5d74e8de61cd ]
 
-It's possible for users to try to duplicate the CRTC state even when the
-state doesn't exist. drm_atomic_helper_crtc_duplicate_state() (and other
-users of __drm_atomic_helper_crtc_duplicate_state()) already guard this
-with a WARN_ON() instead of crashing, so let's do that here too.
+The PWMs are expected to be functional until pwmchip_remove() is called.
+So disable the clks only afterwards.
 
-Fixes: 4e257d9eee23 ("drm/rockchip: get rid of rockchip_drm_crtc_mode_config")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid
+Fixes: 9e37a53eb051 ("pwm: sifive: Add a driver for SiFive SoC PWM")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pwm/pwm-sifive.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 91568f166a8a..af98bfcde518 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -1530,6 +1530,9 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
- {
- 	struct rockchip_crtc_state *rockchip_state;
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index 1def1bc59240..9cc0612f0849 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -326,6 +326,9 @@ static int pwm_sifive_remove(struct platform_device *dev)
+ 	struct pwm_device *pwm;
+ 	int ch;
  
-+	if (WARN_ON(!crtc->state))
-+		return NULL;
++	pwmchip_remove(&ddata->chip);
++	clk_notifier_unregister(ddata->clk, &ddata->notifier);
 +
- 	rockchip_state = kzalloc(sizeof(*rockchip_state), GFP_KERNEL);
- 	if (!rockchip_state)
- 		return NULL;
+ 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+ 		pwm = &ddata->chip.pwms[ch];
+ 		if (pwm->state.enabled)
+@@ -333,8 +336,6 @@ static int pwm_sifive_remove(struct platform_device *dev)
+ 	}
+ 
+ 	clk_unprepare(ddata->clk);
+-	pwmchip_remove(&ddata->chip);
+-	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
