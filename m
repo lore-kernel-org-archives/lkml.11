@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B07C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88281C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354197AbiHSQtD (ORCPT
+        id S1354202AbiHSQtH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        Fri, 19 Aug 2022 12:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353895AbiHSQp0 (ORCPT
+        with ESMTP id S1353923AbiHSQp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FC712A1D0;
-        Fri, 19 Aug 2022 09:11:39 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80CD112302;
+        Fri, 19 Aug 2022 09:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C535617A5;
-        Fri, 19 Aug 2022 16:11:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3779FC433D7;
-        Fri, 19 Aug 2022 16:11:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB846B82823;
+        Fri, 19 Aug 2022 16:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20824C433C1;
+        Fri, 19 Aug 2022 16:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925475;
-        bh=eAffu8N50aZ802sur6aZXX3bo42whdSLVlky8njxA/Q=;
+        s=korg; t=1660925443;
+        bh=v9YBIuWcbbX6Kq7dctppK9xPhA6DCGrsynSFKlqoyns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gCqbwwu6hsHsyVUItzDJDqwtF5NOuOFFGAwE/vRjGip0fs7Q4DwwjMhB5cVBkHCS+
-         CE0DUWMLxaBkCwAdh/E4kX/jyE4td2+MoIrGb/dGkSN8DTDOXsckij9z0VxY53AD3q
-         5qbnftVpfCiJUhKPDt7Aw1neI90ZPCViLVftd6Bc=
+        b=Fn5Et/C1s1SvU0UDKTrk1NhvFdG4iM4dvsbTp3YagaxpTFCpajMUi4PZdQhf6QWl5
+         7dn4L7ax0rw2UbJ3JwmraRkWiiQCfJ6jGqIj5mDNQIP8X/GY6TCpg5dahXt+GfWAk1
+         VC/3N5a77NZ3StxXroefexxQbiZGGoefyPqVKyB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 501/545] KVM: SVM: Drop VMXE check from svm_set_cr4()
-Date:   Fri, 19 Aug 2022 17:44:31 +0200
-Message-Id: <20220819153851.904128084@linuxfoundation.org>
+Subject: [PATCH 5.10 492/545] um: Allow PM with suspend-to-idle
+Date:   Fri, 19 Aug 2022 17:44:22 +0200
+Message-Id: <20220819153851.466721105@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,38 +51,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 311a06593b9a3944a63ed176b95cb8d857f7c83b ]
+[ Upstream commit 92dcd3d31843fbe1a95d880dc912e1f6beac6632 ]
 
-Drop svm_set_cr4()'s explicit check CR4.VMXE now that common x86 handles
-the check by incorporating VMXE into the CR4 reserved bits, via
-kvm_cpu_caps.  SVM obviously does not set X86_FEATURE_VMX.
+In order to be able to experiment with suspend in UML, add the
+minimal work to be able to suspend (s2idle) an instance of UML,
+and be able to wake it back up from that state with the USR1
+signal sent to the main UML process.
 
-No functional change intended.
-
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Message-Id: <20201007014417.29276-4-sean.j.christopherson@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/um/Kconfig                    |  5 +++++
+ arch/um/include/shared/kern_util.h |  2 ++
+ arch/um/include/shared/os.h        |  1 +
+ arch/um/kernel/um_arch.c           | 25 +++++++++++++++++++++++++
+ arch/um/os-Linux/signal.c          | 14 +++++++++++++-
+ 5 files changed, 46 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 184e68e7eedf..9bc166a5d453 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1697,9 +1697,6 @@ int svm_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
- 	unsigned long host_cr4_mce = cr4_read_shadow() & X86_CR4_MCE;
- 	unsigned long old_cr4 = to_svm(vcpu)->vmcb->save.cr4;
+diff --git a/arch/um/Kconfig b/arch/um/Kconfig
+index 4b799fad8b48..1c57599b82fa 100644
+--- a/arch/um/Kconfig
++++ b/arch/um/Kconfig
+@@ -192,3 +192,8 @@ config UML_TIME_TRAVEL_SUPPORT
+ endmenu
  
--	if (cr4 & X86_CR4_VMXE)
--		return 1;
--
- 	if (npt_enabled && ((old_cr4 ^ cr4) & X86_CR4_PGE))
- 		svm_flush_tlb(vcpu);
+ source "arch/um/drivers/Kconfig"
++
++config ARCH_SUSPEND_POSSIBLE
++	def_bool y
++
++source "kernel/power/Kconfig"
+diff --git a/arch/um/include/shared/kern_util.h b/arch/um/include/shared/kern_util.h
+index ccafb62e8cce..9c08e728a675 100644
+--- a/arch/um/include/shared/kern_util.h
++++ b/arch/um/include/shared/kern_util.h
+@@ -39,6 +39,8 @@ extern int is_syscall(unsigned long addr);
  
+ extern void timer_handler(int sig, struct siginfo *unused_si, struct uml_pt_regs *regs);
+ 
++extern void uml_pm_wake(void);
++
+ extern int start_uml(void);
+ extern void paging_init(void);
+ 
+diff --git a/arch/um/include/shared/os.h b/arch/um/include/shared/os.h
+index f467d28fc0b4..2f31d44d892e 100644
+--- a/arch/um/include/shared/os.h
++++ b/arch/um/include/shared/os.h
+@@ -241,6 +241,7 @@ extern int set_signals(int enable);
+ extern int set_signals_trace(int enable);
+ extern int os_is_signal_stack(void);
+ extern void deliver_alarm(void);
++extern void register_pm_wake_signal(void);
+ 
+ /* util.c */
+ extern void stack_protections(unsigned long address);
+diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
+index 26af24b5d900..52e2e2a3e4ae 100644
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -13,6 +13,7 @@
+ #include <linux/sched.h>
+ #include <linux/sched/task.h>
+ #include <linux/kmsg_dump.h>
++#include <linux/suspend.h>
+ 
+ #include <asm/processor.h>
+ #include <asm/sections.h>
+@@ -385,3 +386,27 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+ void text_poke_sync(void)
+ {
+ }
++
++#ifdef CONFIG_PM_SLEEP
++void uml_pm_wake(void)
++{
++	pm_system_wakeup();
++}
++
++static int init_pm_wake_signal(void)
++{
++	/*
++	 * In external time-travel mode we can't use signals to wake up
++	 * since that would mess with the scheduling. We'll have to do
++	 * some additional work to support wakeup on virtio devices or
++	 * similar, perhaps implementing a fake RTC controller that can
++	 * trigger wakeup (and request the appropriate scheduling from
++	 * the external scheduler when going to suspend.)
++	 */
++	if (time_travel_mode != TT_MODE_EXTERNAL)
++		register_pm_wake_signal();
++	return 0;
++}
++
++late_initcall(init_pm_wake_signal);
++#endif
+diff --git a/arch/um/os-Linux/signal.c b/arch/um/os-Linux/signal.c
+index b58bc68cbe64..0a2ea84033b4 100644
+--- a/arch/um/os-Linux/signal.c
++++ b/arch/um/os-Linux/signal.c
+@@ -136,6 +136,16 @@ void set_sigstack(void *sig_stack, int size)
+ 		panic("enabling signal stack failed, errno = %d\n", errno);
+ }
+ 
++static void sigusr1_handler(int sig, struct siginfo *unused_si, mcontext_t *mc)
++{
++	uml_pm_wake();
++}
++
++void register_pm_wake_signal(void)
++{
++	set_handler(SIGUSR1);
++}
++
+ static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
+ 	[SIGSEGV] = sig_handler,
+ 	[SIGBUS] = sig_handler,
+@@ -145,7 +155,9 @@ static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
+ 
+ 	[SIGIO] = sig_handler,
+ 	[SIGWINCH] = sig_handler,
+-	[SIGALRM] = timer_alarm_handler
++	[SIGALRM] = timer_alarm_handler,
++
++	[SIGUSR1] = sigusr1_handler,
+ };
+ 
+ static void hard_handler(int sig, siginfo_t *si, void *p)
 -- 
 2.35.1
 
