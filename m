@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAD3C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC47DC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353564AbiHSQnc (ORCPT
+        id S1353572AbiHSQnj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
+        Fri, 19 Aug 2022 12:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353817AbiHSQk7 (ORCPT
+        with ESMTP id S1353848AbiHSQlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:40:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA7E124F50;
-        Fri, 19 Aug 2022 09:09:32 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026A9124229;
+        Fri, 19 Aug 2022 09:09:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 863C1B8281C;
-        Fri, 19 Aug 2022 16:09:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E767AC433C1;
-        Fri, 19 Aug 2022 16:09:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE996B82824;
+        Fri, 19 Aug 2022 16:08:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59EEDC433C1;
+        Fri, 19 Aug 2022 16:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925371;
-        bh=UWurHR/tn8KOY4jgnStiQvox7z6ri5AD3kxiiK11a1o=;
+        s=korg; t=1660925328;
+        bh=8kUpbkMwLPfjZaP/tQk/YlBKuvxAlceCaVIlCRD3mqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LUJh/BKmtINfU/RC7hNs6kYuTii/X7y22p+PvPTMu3fL/IFQ5dQnkxq4WR3PdGvow
-         2bznQpxL5/MFzwWeKY+iQIFxJjDNI3k/0bxA7GHB1sWWOZoFvuL59PpUW8bVMtNAlZ
-         rfSPShA59wg8x13EsmvHLGNoQSgpNc1oYTB01Q8g=
+        b=lpChL0SuU6jSSYERKfpNQExCm8Ss29uKB7Zp4Oh9ZG8VN9bEfxoNwDFNnstIr1wGR
+         i1Yj+OGogoVlbsJQ8mwmARqxemY15iISaUzB1DtHHdiNFdHhJFqqpcwesC9PMoyBck
+         v4nrRdY50BdswOju03xr9aEyWlcO/Pi0Hw0wtYAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        stable <stable@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 469/545] intel_th: pci: Add Raptor Lake-S CPU support
-Date:   Fri, 19 Aug 2022 17:43:59 +0200
-Message-Id: <20220819153850.390784380@linuxfoundation.org>
+Subject: [PATCH 5.10 457/545] drm/vc4: drv: Adopt the dma configuration from the HVS or V3D component
+Date:   Fri, 19 Aug 2022 17:43:47 +0200
+Message-Id: <20220819153849.836678563@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,38 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit ff46a601afc5a66a81c3945b83d0a2caeb88e8bc ]
+[ Upstream commit da8e393e23efb60eba8959856c7df88f9859f6eb ]
 
-Add support for the Trace Hub in Raptor Lake-S CPU.
+vc4_drv isn't necessarily under the /soc node in DT as it is a
+virtual device, but it is the one that does the allocations.
+The DMA addresses are consumed by primarily the HVS or V3D, and
+those require VideoCore cache alias address mapping, and so will be
+under /soc.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-7-alexander.shishkin@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+During probe find the a suitable device node for HVS or V3D,
+and adopt the DMA configuration of that node.
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-2-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/pci.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/vc4/vc4_drv.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
-index 1b9c294dd5fc..e25438025b9f 100644
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -294,6 +294,11 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
- 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
- 		.driver_data = (kernel_ulong_t)&intel_th_2x,
- 	},
-+	{
-+		/* Raptor Lake-S CPU */
-+		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa76f),
-+		.driver_data = (kernel_ulong_t)&intel_th_2x,
-+	},
- 	{
- 		/* Alder Lake CPU */
- 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x466f),
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+index 839610f8092a..4bed62916b64 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.c
++++ b/drivers/gpu/drm/vc4/vc4_drv.c
+@@ -246,6 +246,15 @@ static void vc4_match_add_drivers(struct device *dev,
+ 	}
+ }
+ 
++const struct of_device_id vc4_dma_range_matches[] = {
++	{ .compatible = "brcm,bcm2711-hvs" },
++	{ .compatible = "brcm,bcm2835-hvs" },
++	{ .compatible = "brcm,bcm2835-v3d" },
++	{ .compatible = "brcm,cygnus-v3d" },
++	{ .compatible = "brcm,vc4-v3d" },
++	{}
++};
++
+ static int vc4_drm_bind(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+@@ -263,6 +272,16 @@ static int vc4_drm_bind(struct device *dev)
+ 		vc4_drm_driver.driver_features &= ~DRIVER_RENDER;
+ 	of_node_put(node);
+ 
++	node = of_find_matching_node_and_match(NULL, vc4_dma_range_matches,
++					       NULL);
++	if (node) {
++		ret = of_dma_configure(dev, node, true);
++		of_node_put(node);
++
++		if (ret)
++			return ret;
++	}
++
+ 	vc4 = devm_drm_dev_alloc(dev, &vc4_drm_driver, struct vc4_dev, base);
+ 	if (IS_ERR(vc4))
+ 		return PTR_ERR(vc4);
 -- 
 2.35.1
 
