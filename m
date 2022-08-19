@@ -2,41 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9579C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B398CC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350264AbiHSRwC (ORCPT
+        id S1350355AbiHSRwI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
+        Fri, 19 Aug 2022 13:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354825AbiHSRvo (ORCPT
+        with ESMTP id S1354844AbiHSRvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:51:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E704B79;
-        Fri, 19 Aug 2022 10:24:59 -0700 (PDT)
+        Fri, 19 Aug 2022 13:51:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9F8DEA8;
+        Fri, 19 Aug 2022 10:25:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBF76170E;
-        Fri, 19 Aug 2022 17:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04697C433D6;
-        Fri, 19 Aug 2022 17:24:56 +0000 (UTC)
-Date:   Fri, 19 Aug 2022 13:25:09 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Qing Zhang <zhangqing@loongson.cn>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn
-Subject: Re: [PATCH 1/9] LoongArch/ftrace: Add basic support
-Message-ID: <20220819132509.127a1353@gandalf.local.home>
-In-Reply-To: <20220819081403.7143-2-zhangqing@loongson.cn>
-References: <20220819081403.7143-1-zhangqing@loongson.cn>
-        <20220819081403.7143-2-zhangqing@loongson.cn>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C8FE615F4;
+        Fri, 19 Aug 2022 17:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F3EC433C1;
+        Fri, 19 Aug 2022 17:25:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660929905;
+        bh=pJy89UL2aRemfC7jlH+uSwmGjw0ghtM9kl28iT97o9U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nMhMPwSvVk8CRDTKIdfKgz8CS89NYOOBn1cRIyeZMy2CzngagzW4mY53RYpFvQ+5T
+         3eMaq83HbMRdn7ONSA82hRNNoQtbmxnWOusqoRpMncYxsJSJZ2NTv4+eckkKmQ6pk/
+         9sZRNAeMjzkLKIptLPDuKAS+8E8NCLwYFRC/4qyooWFpIaZQF7BELmMZFKWmhZCkhR
+         T9wugX9d6C+hMZMxRhGg7EnzkkXn9fr1i3cKK2h5N0SVj6No3WkUPzjIQMuRNLAt1j
+         HOvsj6POtzjy4iNIVyi3zF9s+3UZeZGBKfDCvjAOKJnbN75foqVMgKz+IkJPERQTCE
+         /35JYlh//09kg==
+Date:   Fri, 19 Aug 2022 18:35:40 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Artur Rojek <contact@artur-rojek.eu>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>
+Subject: Re: [PATCH 2/4] iio: add iio_channel_cb_get_iio_buffer helper
+Message-ID: <20220819183540.5f043ab4@jic23-huawei>
+In-Reply-To: <CAHp75VcrM53+GW8qN4H-8kxuBRStAXjpt5F7YD5R2nHhh-Wiww@mail.gmail.com>
+References: <20220817105643.95710-1-contact@artur-rojek.eu>
+        <20220817105643.95710-3-contact@artur-rojek.eu>
+        <CAHp75VcrM53+GW8qN4H-8kxuBRStAXjpt5F7YD5R2nHhh-Wiww@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,82 +58,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 16:13:55 +0800
-Qing Zhang <zhangqing@loongson.cn> wrote:
+On Fri, 19 Aug 2022 11:14:04 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> +#define MCOUNT_STACK_SIZE	(2 * SZREG)
-> +#define MCOUNT_S0_OFFSET	(0)
-> +#define MCOUNT_RA_OFFSET	(SZREG)
-> +
-> +	.macro MCOUNT_SAVE_REGS
-> +	PTR_ADDI sp, sp, -MCOUNT_STACK_SIZE
-> +	PTR_S	s0, sp, MCOUNT_S0_OFFSET
-> +	PTR_S	ra, sp, MCOUNT_RA_OFFSET
-> +	move	s0, a0
-> +	.endm
-> +
-> +	.macro MCOUNT_RESTORE_REGS
-> +	move	a0, s0
-> +	PTR_L	ra, sp, MCOUNT_RA_OFFSET
-> +	PTR_L	s0, sp, MCOUNT_S0_OFFSET
-> +	PTR_ADDI sp, sp, MCOUNT_STACK_SIZE
-> +	.endm
-> +
-> +
-> +SYM_FUNC_START(_mcount)
-> +	la	t1, ftrace_stub
-> +	la	t2, ftrace_trace_function	/* Prepare t2 for (1) */
-> +	PTR_L	t2, t2, 0
-> +	beq	t1, t2, fgraph_trace
-> +
-> +	MCOUNT_SAVE_REGS
-> +
-> +	move	a0, ra				/* arg0: self return address */
-> +	move	a1, s0				/* arg1: parent's return address */
-> +	jirl	ra, t2, 0			/* (1) call *ftrace_trace_function */
-> +
-> +	MCOUNT_RESTORE_REGS
+> On Wed, Aug 17, 2022 at 1:58 PM Artur Rojek <contact@artur-rojek.eu> wrote:
+> >
+> > Introduce a helper function to retrieve an iio_buffer from
+> > iio_cb_buffer.
+> >
+> > This is useful for consumers that need to extract metadata about
+> > the buffer, e.g. get the channel offsets.  
+> 
+> I'm wondering if we should start using the IIO namespace for new
+> exported symbols.
+> 
 
-You know, if you can implement CONFIG_FTRACE_WITH_ARGS, where the default
-function callback gets a ftrace_regs pointer (that only holds what is
-needed for the arguments of the function as well as the stack pointer),
-then you could also implement function graph on top of that, and remove the
-need for the below "fgraph_trace" trampoline.
+I'd rather not jump ahead with that because I want to come up
+with a coherent set of IIO namespaces to separate core / drivers / consumers
+and platform type code (there's a bit of that left) plus maybe even trigger
+and buffer implementations.  We should probably get on with that though!
 
-I'd really would like all architectures to go that way. Also, the
-CONFIG_FTRACE_WITH_ARGS is all you need for live kernel patching.
+Jonathan
 
--- Steve
-
-
-> +
-> +fgraph_trace:
-> +#ifdef	CONFIG_FUNCTION_GRAPH_TRACER
-> +	la	t1, ftrace_stub
-> +	la	t3, ftrace_graph_return
-> +	PTR_L	t3, t3, 0
-> +	bne	t1, t3, ftrace_graph_caller
-> +	la	t1, ftrace_graph_entry_stub
-> +	la	t3, ftrace_graph_entry
-> +	PTR_L	t3, t3, 0
-> +	bne	t1, t3, ftrace_graph_caller
-> +#endif
-> +
-> +	.globl ftrace_stub
-> +ftrace_stub:
-> +	jirl	zero, ra, 0
-> +SYM_FUNC_END(_mcount)
-> +EXPORT_SYMBOL(_mcount)
-> +
-> +#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-> +SYM_FUNC_START(ftrace_graph_caller)
-> +	MCOUNT_SAVE_REGS
-> +
-> +	PTR_ADDI	a0, ra, -4			/* arg0: Callsite self return addr */
-> +	PTR_ADDI	a1, sp, MCOUNT_STACK_SIZE	/* arg1: Callsite sp */
-> +	move	a2, s0					/* arg2: Callsite parent ra */
-> +	bl	prepare_ftrace_return
-> +
-> +	MCOUNT_RESTORE_REGS
-> +	jirl	zero, ra, 0
-> +SYM_FUNC_END(ftrace_graph_caller)
