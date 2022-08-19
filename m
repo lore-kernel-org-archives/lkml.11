@@ -2,182 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F14C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F8EC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350216AbiHSSSV (ORCPT
+        id S1350497AbiHSSTz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 14:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
+        Fri, 19 Aug 2022 14:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350214AbiHSSSQ (ORCPT
+        with ESMTP id S1349919AbiHSSTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 14:18:16 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93122DEF0
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 11:18:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660933090; x=1692469090;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JQAOPktEPRsnqLPYYBE3d+Ey4OcbjKfZooDFCCpPMXM=;
-  b=GLpg6r+GkuKyX/h6M+VyuzWPQS+nLxxW4+JRxPJXcbmf/Vc3PcfiNCwP
-   ctUI0tcRT20dZ7je4eRZoFTn+Ekky3XISqLE4sVLJ6L9uDG1nxELyV6nm
-   eRT08Q8hp+8LkQq9pZpRHMqv2+L69T+iGIFBHDbj41tUJ7Ww/nqMq65KF
-   30h8doOY0iWt5iYjO0InIgwHaWIDL9gQBtpq6/m+oi/30mAKhYfOLuKdO
-   KPZMP0byjlGHifn1qOUXltrFKxPQDe3ZIscJjp4D6ZXuW3jByPaIIogf/
-   H1MMW7mbtbf+HW9NkdyEzQKAzxP8R7XMJWIzgcl9dWKoyuVYuHCOpwtK4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="276111947"
-X-IronPort-AV: E=Sophos;i="5.93,248,1654585200"; 
-   d="scan'208";a="276111947"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 11:18:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,248,1654585200"; 
-   d="scan'208";a="584747126"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 19 Aug 2022 11:18:06 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oP6ZK-0001hT-0n;
-        Fri, 19 Aug 2022 18:18:06 +0000
-Date:   Sat, 20 Aug 2022 02:17:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_devlink_locking 5/42]
- drivers/net/wwan/t7xx/t7xx_port_devlink.c:465:35: error: use of undeclared
- identifier 'DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT'; did you mean
- 'DEVLINK_ATTR_FLASH_UPDATE_COMPONENT'?
-Message-ID: <202208200242.iM0kVtBs-lkp@intel.com>
+        Fri, 19 Aug 2022 14:19:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327FABA9C2;
+        Fri, 19 Aug 2022 11:19:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C716BB82893;
+        Fri, 19 Aug 2022 18:19:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 127A0C433C1;
+        Fri, 19 Aug 2022 18:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660933189;
+        bh=VePZQAU6T+O5oGDYmuOeMWxlXbRse+vPgED/BSRqZoE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B5gBw/pxffa8qOxisneIHM0VsOGEmm55AAkTAQC8e49DBqWSF1EKhFL2vaLuYnyt2
+         kRZuAhYzjkqv7ptFJDgkR9a0+jvBImgEXBUHgPuA4cOAgROyGLWwDmmFba7m7A2vOc
+         Ico5tmXtclSq2GkgJ/1ga93tAFRj97aRohVn8QD3cHASn9JmvCxxE9XJI3W1HQYNsB
+         194g7ERMtszQx/JjZFeMq1ZrblhiJPW9mEEh6U/ZIaG0Q/XcAstStBKhtfpXNXgF57
+         2bVBV12REojkKOPp7fMJqvdNH0gPsjhABj1gCCVdHCfFpLYqovr+YtjVoQRLKRurPn
+         BdVyc6UoCRaEA==
+Date:   Fri, 19 Aug 2022 20:19:43 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Marcus Carlberg <marcus.carlberg@axis.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <kernel@axis.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: support RGMII cmode
+Message-ID: <20220819201943.5f6a4d09@thinkpad>
+In-Reply-To: <20220819135629.32590-1-marcus.carlberg@axis.com>
+References: <20220819135629.32590-1-marcus.carlberg@axis.com>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/net/netdevsim/dev.c
-include/net/devlink.h
-net/core/devlink.c
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_devlink_locking
-head:   e7096f2b22b32bd60568d91d12b562b3314bc8cc
-commit: d8cf683bc939bf07c19efa964a98f10829e30df4 [5/42] net: devlink: extend info_get() version put to indicate a flash component
-config: s390-randconfig-r044-20220819 (https://download.01.org/0day-ci/archive/20220820/202208200242.iM0kVtBs-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 0ac597f3cacf60479ffd36b03766fa7462dabd78)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/jpirko/linux_mlxsw/commit/d8cf683bc939bf07c19efa964a98f10829e30df4
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_devlink_locking
-        git checkout d8cf683bc939bf07c19efa964a98f10829e30df4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/net/ethernet/mellanox/mlx5/core/ drivers/net/wwan/t7xx/
+On Fri, 19 Aug 2022 15:56:29 +0200
+Marcus Carlberg <marcus.carlberg@axis.com> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Since the probe defaults all interfaces to the highest speed possible
+> (10GBASE-X in mv88e6393x) before the phy mode configuration from the
+> devicetree is considered it is currently impossible to use port 0 in
+> RGMII mode.
+> 
+> This change will allow RGMII modes to be configurable for port 0
+> enabling port 0 to be configured as RGMII as well as serial depending
+> on configuration.
+> 
+> Signed-off-by: Marcus Carlberg <marcus.carlberg@axis.com>
+> ---
+> 
+> Notes:
+>     v2: add phy mode input validation for SERDES only ports
+> 
+>  drivers/net/dsa/mv88e6xxx/port.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+> index 90c55f23b7c9..5c4195c635b0 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port.c
+> +++ b/drivers/net/dsa/mv88e6xxx/port.c
+> @@ -517,6 +517,12 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+>  	case PHY_INTERFACE_MODE_RMII:
+>  		cmode = MV88E6XXX_PORT_STS_CMODE_RMII;
+>  		break;
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		cmode = MV88E6XXX_PORT_STS_CMODE_RGMII;
+> +		break;
+>  	case PHY_INTERFACE_MODE_1000BASEX:
+>  		cmode = MV88E6XXX_PORT_STS_CMODE_1000BASEX;
+>  		break;
+> @@ -634,6 +640,19 @@ int mv88e6393x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+>  	if (port != 0 && port != 9 && port != 10)
+>  		return -EOPNOTSUPP;
+>  
+> +	if (port == 9 || port == 10) {
+> +		switch (mode) {
+> +		case PHY_INTERFACE_MODE_RMII:
+> +		case PHY_INTERFACE_MODE_RGMII:
+> +		case PHY_INTERFACE_MODE_RGMII_ID:
+> +		case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		case PHY_INTERFACE_MODE_RGMII_TXID:
+> +			return -EINVAL;
+> +		default:
+> +			break;
+> +		}
+> +	}
+> +
+>  	/* mv88e6393x errata 4.5: EEE should be disabled on SERDES ports */
+>  	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_MAC_CTL, &reg);
+>  	if (err)
 
-All errors (new ones prefixed by >>):
+You also need to change
+ mv88e6393x_phylink_get_caps in chip.c
+to add RGMII interface types to the supported bit field if port == 0,
+because the mv88e6xxx_translate_cmode() call does not fill RGMII as
+supported there if cmode isn't RGMII at the beginning.
 
-   In file included from drivers/net/wwan/t7xx/t7xx_port_devlink.c:10:
-   In file included from drivers/net/wwan/t7xx/t7xx_hif_cldma.h:23:
-   In file included from include/linux/dmapool.h:14:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:547:31: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:560:61: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/net/wwan/t7xx/t7xx_port_devlink.c:10:
-   In file included from drivers/net/wwan/t7xx/t7xx_hif_cldma.h:23:
-   In file included from include/linux/dmapool.h:14:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:573:61: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/net/wwan/t7xx/t7xx_port_devlink.c:10:
-   In file included from drivers/net/wwan/t7xx/t7xx_hif_cldma.h:23:
-   In file included from include/linux/dmapool.h:14:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:584:33: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:594:59: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:604:59: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:692:20: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:700:20: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:708:20: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:717:21: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:726:21: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:735:21: error: performing pointer arithmetic on a null pointer has undefined behavior [-Werror,-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/net/wwan/t7xx/t7xx_port_devlink.c:465:35: error: use of undeclared identifier 'DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT'; did you mean 'DEVLINK_ATTR_FLASH_UPDATE_COMPONENT'?
-           .supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
-                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                            DEVLINK_ATTR_FLASH_UPDATE_COMPONENT
-   include/uapi/linux/devlink.h:532:2: note: 'DEVLINK_ATTR_FLASH_UPDATE_COMPONENT' declared here
-           DEVLINK_ATTR_FLASH_UPDATE_COMPONENT,    /* string */
-           ^
-   13 errors generated.
+Also this should have Fixes tag?
 
-
-vim +465 drivers/net/wwan/t7xx/t7xx_port_devlink.c
-
-87dae9e70bf7be M Chetan Kumar 2022-08-16  462  
-87dae9e70bf7be M Chetan Kumar 2022-08-16  463  /* Call back function for devlink ops */
-87dae9e70bf7be M Chetan Kumar 2022-08-16  464  static const struct devlink_ops devlink_flash_ops = {
-87dae9e70bf7be M Chetan Kumar 2022-08-16 @465  	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
-87dae9e70bf7be M Chetan Kumar 2022-08-16  466  	.flash_update = t7xx_devlink_flash_update,
-87dae9e70bf7be M Chetan Kumar 2022-08-16  467  	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
-87dae9e70bf7be M Chetan Kumar 2022-08-16  468  			  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-87dae9e70bf7be M Chetan Kumar 2022-08-16  469  	.reload_down = t7xx_devlink_reload_down,
-87dae9e70bf7be M Chetan Kumar 2022-08-16  470  	.reload_up = t7xx_devlink_reload_up,
-87dae9e70bf7be M Chetan Kumar 2022-08-16  471  };
-87dae9e70bf7be M Chetan Kumar 2022-08-16  472  
-
-:::::: The code at line 465 was first introduced by commit
-:::::: 87dae9e70bf7be2bd8a3c561fe3ddf666eb8a7a4 net: wwan: t7xx: Enable devlink based fw flashing and coredump collection
-
-:::::: TO: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Marek
