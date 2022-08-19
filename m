@@ -2,140 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBAAC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FECC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350812AbiHSSa2 (ORCPT
+        id S1349865AbiHSSb2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 14:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
+        Fri, 19 Aug 2022 14:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350793AbiHSSaY (ORCPT
+        with ESMTP id S1349745AbiHSSb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 14:30:24 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AF1BB6B8
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 11:30:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id bf22so5382013pjb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 11:30:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=qAUR7Xfx1bdRlrncGd1cRbyx7ZwF1wAgDN52OFRP/pU=;
-        b=P3tIJszFK+1qv0er4ZOdUim5/T/IS03kr/WJs+z0OYZcdokyKRKsnH54dgLO19V7yr
-         IPWprnTve2r2W9AdPvMQzb1dskxWRDu5yfsMTFt8JMw3CYHOAaMnu0jEv1fK9XsaKeLm
-         SVrQTUYVnmoPY5tQg+YAggxFq2Y6OIpYdsFuV7WlvQ6LSxq+7+gMj7f+FfFijHWjvP9t
-         fwH4QuFcmMNCdDcHYfsgs5D7UYa93dfrmhekFARBuYRyGFYUL6yTpbMcvDb+Uu25BiUy
-         8uhTv/TsekUDvDtdL/pK4e4mh6wh3Lb7UphSrPfluHUNczET+3LAJHxhXHTi41r34N+R
-         BeUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=qAUR7Xfx1bdRlrncGd1cRbyx7ZwF1wAgDN52OFRP/pU=;
-        b=zdNAx0FlstvaJX1De5uWnuhNRrspmSWXgvu60ejfdZXEFJT7Zj7HjBM9p2fV++Q7id
-         4WKrZOSwZ7sjlNMEXFKtmJkK+tS7LkMnSnbW4tKGLMnZn3iSSw71FOdpzCAVHchVWYNN
-         kQx5+OR5QiIblUBBSj1sbxYn0WJQofNfc4G1ABDVSJM9fHkENK46G/fA3DPUtWwv4DYE
-         bO16Ell1rjghNS140J2JWPHhmfFNGFi6gGakDQ572XSj3m5J9bfGrrf2ZmxGoW+WlXoE
-         19dZMAAHfZGyBaU3wwViGsWNVNm0h/0+V3KhMa3lzCeBC6mgmlIDvCevwy71ayv9fTD7
-         MwDA==
-X-Gm-Message-State: ACgBeo0DCdD07yzVgrFA040N6g7ELfOQ5lKW9yOhyzB5YGmCM7+bBad8
-        sm77WCxVPIfEWojtThHqF2m0Hg==
-X-Google-Smtp-Source: AA6agR7UYsrj19zbIFeYD2jDVB8isYbhTm3h1c0fbJZBExhGx+VBiKnSnRIwqdwGn6OnQp7cOEd9Og==
-X-Received: by 2002:a17:90a:8984:b0:1fa:f77a:ed9b with SMTP id v4-20020a17090a898400b001faf77aed9bmr1186765pjn.118.1660933823309;
-        Fri, 19 Aug 2022 11:30:23 -0700 (PDT)
-Received: from google.com (33.5.83.34.bc.googleusercontent.com. [34.83.5.33])
-        by smtp.gmail.com with ESMTPSA id t11-20020a1709027fcb00b00172c7dee22fsm823283plb.236.2022.08.19.11.30.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 11:30:22 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 18:30:19 +0000
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Yan Zhao <yan.y.zhao@intel.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v3 3/8] KVM: x86/mmu: Rename NX huge pages
- fields/functions for consistency
-Message-ID: <Yv/Wu46A98nz57YQ@google.com>
-References: <20220805230513.148869-1-seanjc@google.com>
- <20220805230513.148869-4-seanjc@google.com>
- <YvhL6jKfKCj0+74w@google.com>
- <YvrAoyhgNzTcvzkU@google.com>
- <YvwHpjxS9CCEVER7@google.com>
- <Yv0Tk0WAdxymSyUt@google.com>
- <Yv65c/t23GqpLPg3@google.com>
- <Yv7PHx2qSB0PwkP/@google.com>
+        Fri, 19 Aug 2022 14:31:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6336C88AD;
+        Fri, 19 Aug 2022 11:31:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 613F760ED3;
+        Fri, 19 Aug 2022 18:31:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20ABDC433C1;
+        Fri, 19 Aug 2022 18:31:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660933883;
+        bh=QuVIEsO5UmTSs0WAutUfIo3fcQXR0O4vobQR36XYVSg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cSjeOqirADj4Mc3kI1ZuL8qZNGqPPgBJn9hY2YHPn3SQ1tTyxfIJNOdnsJsL/o5k/
+         Ua/O/sYZA5BSSACK4VYQnbdsrlVlJJvxXxZ8XSlTHSMNdSxueO5WoPN174PHR//gta
+         w3h1uVu45NCg0OMgIGLRaQcfI3XNRABlXxFaH1xehc/X7R9oj5b+n5q9HmX6ogPDgi
+         3zP60Z9aFLZICznzQrSfjkRd++M7wE8qhYd0RVvLPUkycIXDOB4vGU9vHYX1MpqJ87
+         Y/eUIERAJrU09SDuUX2pkBL4pa5ClmKufZeiVTDs1LSKzPMIgWeOmu2ML+0zYmHOqJ
+         9eiva/pJe+7sA==
+Date:   Fri, 19 Aug 2022 19:41:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stankus <lucas.p.stankus@gmail.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Patrick Vasseur <patrick.vasseur@c-s.fr>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        =?UTF-8?B?TcOlcnRlbg==?= Lindahl <martenli@axis.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Andrew Davis <afd@ti.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Phil Reid <preid@electromag.com.au>,
+        Michael Welling <mwelling@ieee.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Chris Coffey <cmc@babblebit.net>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Sankar Velliangiri <navin@linumiz.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v3 00/10] dt-bindings: iio: use
+ spi-peripheral-props.yaml
+Message-ID: <20220819194150.23f47751@jic23-huawei>
+In-Reply-To: <20220818145248.GD1829017-robh@kernel.org>
+References: <20220816124321.67817-1-krzysztof.kozlowski@linaro.org>
+        <20220818145248.GD1829017-robh@kernel.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yv7PHx2qSB0PwkP/@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022, Sean Christopherson wrote:
-> On Thu, Aug 18, 2022, Mingwei Zhang wrote:
-> > On Wed, Aug 17, 2022, Sean Christopherson wrote:
-> > > Yes, they are shadow pages that the NX recovery thread should zap, but the reason
-> > > they should be zapped is because (a) the shadow page has at least one execute child
-> > > SPTE, (b) zapping the shadow page will also zap its child SPTEs, and (c) eliminating
-> > > all executable child SPTEs means KVM _might_ be able to instantiate an NX huge page.
-> > > 
+On Thu, 18 Aug 2022 08:52:48 -0600
+Rob Herring <robh@kernel.org> wrote:
+
+> On Tue, Aug 16, 2022 at 03:43:11PM +0300, Krzysztof Kozlowski wrote:
+> > Hi,
 > > 
-> > oh, I scratched my head and finaly got your point. hmm. So the shadow
-> > pages are the 'blockers' to (re)create a NX huge page because of at
-> > least one present child executable spte. So, really, whether these
-> > shadow pages themselves are NX huge or not does not really matter. All
-> > we need to know is that they will be zapped in the future to help making
-> > recovery of an NX huge page possible.
+> > The patchset is independent of my other recent changes around SPI, so feel free
+> > to apply it for next release.
+> > 
+> > Changes since v2
+> > ================
+> > 1. Keep spi-3wire also in device bindings (not in spi-peripheral-props.yaml).
+> > 2. Add Rb tag.
+> > 
+> > Changes since v1
+> > ================
+> > 1. Continue the rework for entire IIO.
+> > v1: https://lore.kernel.org/all/20220715095302.214276-1-krzysztof.kozlowski@linaro.org/
+> > 
+> > Best regards,
+> > Krzysztof
+> > 
+> > Krzysztof Kozlowski (10):
+> >   dt-bindings: iio: adc: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: accel: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: amplifiers: adi,ada4250: use
+> >     spi-peripheral-props.yaml
+> >   dt-bindings: iio: dac: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: frequency: adf4371: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: health: ti,afe4403: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: imu: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: potentiometer: use spi-peripheral-props.yaml
+> >   dt-bindings: iio: samsung,sensorhub-rinato: use
+> >     spi-peripheral-props.yaml
+> >   dt-bindings: iio: temperature: use spi-peripheral-props.yaml  
 > 
-> More precisely, we want to zap shadow pages with executable children if and only
-> if they can _possibly_ be replaced with an NX huge page.  The "possibly" is saying
-> that zapping _may or may not_ result in an NX huge page.  And it also conveys that
-> pages that _cannot_ be replaced with an NX huge page are not on the list.
+> For the series,
 > 
-> If the guest is still using any of the huge page for execution, then KVM can't
-> create an NX huge page (or it may temporarily create one and then zap it when the
-> gets takes an executable fault), but KVM can't know that until it zaps and the
-> guest takes a fault.  Thus, possibly.
-> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Right, I think 'possible' is definitely a correct name for that. In
-general, using 'possible' can cover the complexity to ensure the
-description is correct. My only comment here is that 'possible_' might
-requires extra comments in the code to be more developer friendly.
+Series applied to the togreg branch of iio.git and pushed out as testing
 
-But overall, since I already remembered what was the problem. I no
-longer think this naming is an issue to me. But just that the name could
-be better.
+Thanks,
 
-> > With that, since you already mentioned the name:
-> > 'mmu_pages_that_can_possibly_be_replaced_by_nx_huge_pages',
-> > why can't we shorten it by using 'mmu_pages_to_recover_nx_huge' or
-> > 'pages_to_recover_nx_huge'? 'recover' is the word that immediately
-> > connects with the 'recovery thread', which I think makes more sense on
-> > readability.
-> 
-> mmu_pages_to_recover_nx_huge doesn't capture that recovery isn't guaranteed.
-> IMO it also does a poor job of capturing _why_ pages are on the list, i.e. a
-> reader knows they are pages that will be "recovered", but it doesn't clarify that
-> they'll be recovered/zapped because KVM might be able to be replace them with NX
-> huge pages.  In other words, it doesn't help the reader understand why some, but
-> not all, nx_huge_page_disallowed are on the recovery list.
-
-I think you are right that the name does not call out 'why' the pages
-are on the list. But on the other hand, I am not sure how much it could
-help clarifying the situations by just reading the list name. I would
-propose we add the conditions using the (flag, list).
-
-(nx_huge_page_disallowed, possible_nx_huge_pages)
-
-case (true,  in_list):     mitigation for multi-hit iTLB.
-case (true,  not_in_list): dirty logging disabled; address misalignment; guest did not turn on paging.
-case (false, in_list):     not possible.
-case (false, not_in_list): Any other situation where KVM manipulate SPTEs.
-
-Maybe this should be in the commit message of the previous patch.
+Jonathan
 
