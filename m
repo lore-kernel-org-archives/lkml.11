@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654FBC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 911C2C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351248AbiHSQGy (ORCPT
+        id S1351295AbiHSQG6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
+        Fri, 19 Aug 2022 12:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351383AbiHSQB0 (ORCPT
+        with ESMTP id S1351638AbiHSQCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3275106507;
-        Fri, 19 Aug 2022 08:53:17 -0700 (PDT)
+        Fri, 19 Aug 2022 12:02:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B81FD51E0;
+        Fri, 19 Aug 2022 08:54:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA051B82816;
-        Fri, 19 Aug 2022 15:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26628C433C1;
-        Fri, 19 Aug 2022 15:52:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8B5A4CE26B8;
+        Fri, 19 Aug 2022 15:54:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90BC2C433D6;
+        Fri, 19 Aug 2022 15:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924362;
-        bh=3tFU0RALqLW5JN6MV6N14f8LFsMgS4qHKoAsJEOW3Lo=;
+        s=korg; t=1660924450;
+        bh=KH+LbbLmVGf4w93XlXej3XCKb8SjTDmLrLAJpeWu4S8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SCpMQ0f15Ot30rQZ86gq3JarPwhP3HvOUluYiYUUrGLp49qIbgpe8evX411LT3/gP
-         WBxzPOabaCcC3Kz4fVMHDnXNavZmx54WzJ+7Y0mqyvh7LYYFDfWAC3UnJ2FSSCkWcx
-         g7eJkYYBh4LiNvcjxutaJfG1RxXpJsOmk4DtCLWk=
+        b=19n0/eQnZJUIZVRFo9DlqZoSkzcUSJfFSha0II5NdKgdwpVbeooVojzGC79mk+n4e
+         wJ4CPRBmvfU8nkt3iQzvsgNt4I8CU1jN18p+RgCVBoFzU5883h16aZaY6HckWH7RzK
+         6Nme2Iyo2NAi1lXrMoidt/doBRhrAqg93MM7M+GQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 144/545] soc: qcom: Make QCOM_RPMPD depend on PM
-Date:   Fri, 19 Aug 2022 17:38:34 +0200
-Message-Id: <20220819153835.773555839@linuxfoundation.org>
+Subject: [PATCH 5.10 174/545] crypto: sun8i-ss - fix error codes in allocate_flows()
+Date:   Fri, 19 Aug 2022 17:39:04 +0200
+Message-Id: <20220819153837.137864411@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,35 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit a6232f2aa99ce470799992e99e0012945bb5308f ]
+[ Upstream commit d2765e1b9ac4b2d5a5d5bf17f468c9b3566c3770 ]
 
-QCOM_RPMPD requires PM_GENERIC_DOMAINS/_OF, which in turns requires
-CONFIG_PM. I forgot about the latter in my earlier patch (it's still
-in -next as of the time of committing, hence no Fixes: tag). Fix it.
+These failure paths should return -ENOMEM.  Currently they return
+success.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220707212158.32684-1-konrad.dybcio@somainline.org
+Fixes: 359e893e8af4 ("crypto: sun8i-ss - rework handling of IV")
+Fixes: 8eec4563f152 ("crypto: sun8i-ss - do not allocate memory when handling hash requests")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ .../crypto/allwinner/sun8i-ss/sun8i-ss-core.c    | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
-index 6a3b69b43ad5..d0cf969a8fb5 100644
---- a/drivers/soc/qcom/Kconfig
-+++ b/drivers/soc/qcom/Kconfig
-@@ -128,6 +128,7 @@ config QCOM_RPMHPD
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+index 786b6f5cf300..47b5828e35c3 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+@@ -476,25 +476,33 @@ static int allocate_flows(struct sun8i_ss_dev *ss)
  
- config QCOM_RPMPD
- 	tristate "Qualcomm RPM Power domain driver"
-+	depends on PM
- 	depends on QCOM_SMD_RPM
- 	help
- 	  QCOM RPM Power domain driver to support power-domains with
+ 		ss->flows[i].biv = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].biv)
++		if (!ss->flows[i].biv) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 
+ 		for (j = 0; j < MAX_SG; j++) {
+ 			ss->flows[i].iv[j] = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
+ 							  GFP_KERNEL | GFP_DMA);
+-			if (!ss->flows[i].iv[j])
++			if (!ss->flows[i].iv[j]) {
++				err = -ENOMEM;
+ 				goto error_engine;
++			}
+ 		}
+ 
+ 		/* the padding could be up to two block. */
+ 		ss->flows[i].pad = devm_kmalloc(ss->dev, SHA256_BLOCK_SIZE * 2,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].pad)
++		if (!ss->flows[i].pad) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 		ss->flows[i].result = devm_kmalloc(ss->dev, SHA256_DIGEST_SIZE,
+ 						   GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].result)
++		if (!ss->flows[i].result) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 
+ 		ss->flows[i].engine = crypto_engine_alloc_init(ss->dev, true);
+ 		if (!ss->flows[i].engine) {
 -- 
 2.35.1
 
