@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70863C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DFB8C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353802AbiHSQoS (ORCPT
+        id S1350549AbiHSQoV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33032 "EHLO
+        Fri, 19 Aug 2022 12:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354029AbiHSQle (ORCPT
+        with ESMTP id S1354022AbiHSQlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44A5127BF5;
-        Fri, 19 Aug 2022 09:10:06 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB88D12844B;
+        Fri, 19 Aug 2022 09:10:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BDFF61811;
-        Fri, 19 Aug 2022 16:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C494C433C1;
-        Fri, 19 Aug 2022 16:08:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 456D9B82826;
+        Fri, 19 Aug 2022 16:08:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAC9C433C1;
+        Fri, 19 Aug 2022 16:08:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925325;
-        bh=/IHO+X0r4Qn00B9hE2XexPWPAAKPU+e4shWTcQfltQE=;
+        s=korg; t=1660925335;
+        bh=VZBqk/YBd786B+HpOYTIMwbhmJyz3N1sfksTkvq66aU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQT8vMJlFP2r4yxUrcHjasPG2FfJ46zx3iO/AFUxcBfkVkTdhchwp9JGNm8cRpnKZ
-         PgNjkTBxBxKcxcI05l+aLg1KmdHja25tMu3U+w5t2osQiSj/S3QmxIrGUVLF3dka2E
-         1J0udvf3hFsHgSrwNw8dYyeBxwwxC05yZQAjBzcQ=
+        b=W2FwpgEV4DIZEl8oshCMHD82ebxt4t6i+569fWh7PZR2vNjfkF9prnY5CMVrHw4Fk
+         ZMeohQ20RltaIxXUyGvw7til55MkhE/cLi9XLU2uBi5qUP9b0lfvnQsgRuE+3Vi031
+         veFZUJ+c3WHio6byYCD5JtmUX9a8G99omLRSl2nU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Zoltan Tamas Vajda <zoltan.tamas.vajda@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 456/545] HID: hid-input: add Surface Go battery quirk
-Date:   Fri, 19 Aug 2022 17:43:46 +0200
-Message-Id: <20220819153849.797077684@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 458/545] mtd: rawnand: Add a helper to clarify the interface configuration
+Date:   Fri, 19 Aug 2022 17:43:48 +0200
+Message-Id: <20220819153849.875336174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,50 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zoltan Tamas Vajda <zoltan.tamas.vajda@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit b5539722eb832441f309642fe5102cc3536f92b8 ]
+[ Upstream commit 961965c45c706175b24227868b1c12d72775e446 ]
 
-The Elantech touchscreen/digitizer in the Surface Go mistakenly reports
-having a battery. This results in a low battery message every time you
-try to use the pen.
+Name it nand_interface_is_sdr() which will make even more sense when
+nand_interface_is_nvddr() will be introduced.
 
-This patch adds a quirk to ignore the non-existent battery and
-gets rid of the false low battery messages.
+Use it when relevant.
 
-Signed-off-by: Zoltan Tamas Vajda <zoltan.tamas.vajda@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20210505213750.257417-2-miquel.raynal@bootlin.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-ids.h   | 1 +
- drivers/hid/hid-input.c | 2 ++
- 2 files changed, 3 insertions(+)
+ drivers/mtd/nand/raw/atmel/nand-controller.c |  2 +-
+ include/linux/mtd/rawnand.h                  | 11 ++++++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index cf69191b6693..bb096dfb7b36 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -391,6 +391,7 @@
- #define USB_DEVICE_ID_HP_X2_10_COVER	0x0755
- #define I2C_DEVICE_ID_HP_SPECTRE_X360_15	0x2817
- #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
-+#define I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN	0x261A
+diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
+index c048e826746a..2228c34f3dea 100644
+--- a/drivers/mtd/nand/raw/atmel/nand-controller.c
++++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
+@@ -1246,7 +1246,7 @@ static int atmel_smc_nand_prepare_smcconf(struct atmel_nand *nand,
+ 	nc = to_nand_controller(nand->base.controller);
  
- #define USB_VENDOR_ID_ELECOM		0x056e
- #define USB_DEVICE_ID_ELECOM_BM084	0x0061
-diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index 329b7ffb7e6a..75a4d8d6bb0f 100644
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -326,6 +326,8 @@ static const struct hid_device_id hid_battery_quirks[] = {
- 	  HID_BATTERY_QUIRK_IGNORE },
- 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_15),
- 	  HID_BATTERY_QUIRK_IGNORE },
-+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN),
-+	  HID_BATTERY_QUIRK_IGNORE },
- 	{}
+ 	/* DDR interface not supported. */
+-	if (conf->type != NAND_SDR_IFACE)
++	if (!nand_interface_is_sdr(conf))
+ 		return -ENOTSUPP;
+ 
+ 	/*
+diff --git a/include/linux/mtd/rawnand.h b/include/linux/mtd/rawnand.h
+index db2eaff77f41..75535036b126 100644
+--- a/include/linux/mtd/rawnand.h
++++ b/include/linux/mtd/rawnand.h
+@@ -499,6 +499,15 @@ struct nand_interface_config {
+ 	} timings;
  };
  
++/**
++ * nand_interface_is_sdr - get the interface type
++ * @conf:	The data interface
++ */
++static bool nand_interface_is_sdr(const struct nand_interface_config *conf)
++{
++	return conf->type == NAND_SDR_IFACE;
++}
++
+ /**
+  * nand_get_sdr_timings - get SDR timing from data interface
+  * @conf:	The data interface
+@@ -506,7 +515,7 @@ struct nand_interface_config {
+ static inline const struct nand_sdr_timings *
+ nand_get_sdr_timings(const struct nand_interface_config *conf)
+ {
+-	if (conf->type != NAND_SDR_IFACE)
++	if (!nand_interface_is_sdr(conf))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	return &conf->timings.sdr;
 -- 
 2.35.1
 
