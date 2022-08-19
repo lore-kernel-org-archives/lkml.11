@@ -2,68 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62513C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:22:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6240C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349671AbiHSPWU (ORCPT
+        id S1349691AbiHSPWx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
+        Fri, 19 Aug 2022 11:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349657AbiHSPWQ (ORCPT
+        with ESMTP id S1349672AbiHSPWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:22:16 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8408FF235
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:22:14 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id a4-20020a056e0208a400b002e4621942dfso3416483ilt.0
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:22:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=uRVtT8QpSN/EYjTquNnKl0o/Oh6F4fnkqC7Jmic6a3M=;
-        b=5EpI4bC0W1Jy6BMaHEtnSfTZlIfOmyL8DSFtOhe73P3+Asj7xOW/kOE8XhG6UPYE5k
-         ssJyhA4BkuUqiTRLDrJlp9fcBh09jIK67Z3758KX4Y7JvNebA4FQwAv7iI+MF/hZqp55
-         /X7L2q+enIhqwp4+BSXg803AZoWhAoEgd/E4nHY6mYT8pM3tatDy9z03TO5JF3EBCI8k
-         g63jAXN1HaL2tzSisatXVSUXZ12X1GuTsYLloAoFp2l1B/xS/G/gUnusL4dzFX7mS3Fw
-         qokdG/Bwc+7GsUOzC5FSNxtSFMNy/u01HIpsxL6wGA/aWdeHw8A2W3gUrjjudBWWjYub
-         3fgg==
-X-Gm-Message-State: ACgBeo22DvqcRfLhFJBf5RZn3fiO0oj1NpkikcYVYKFiP/6LLJJcdrzT
-        EcNFYv5y5QI/drIb7X41tMEjayRL66KYB0TBUY/YJRlYgqDJ
-X-Google-Smtp-Source: AA6agR60UOhUkqbcEHqXSuYVXBWYdvhrMtJdvvHvgEgDepURFjddGRHQoov6tgNCBYpUbprHspeiXRf6FVvktRo1K5BSlc8hQwVT
+        Fri, 19 Aug 2022 11:22:49 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5676AFF8F7
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:22:45 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id AE21A5FD04;
+        Fri, 19 Aug 2022 18:22:43 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660922563;
+        bh=EMBve9wbcn8yZMUeLom/7Ix55XMEtKZL/pTQ98Vj45o=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=NJVVmlsv/vKJF2Auaj8pzRaBQSnxJOdTw1TnAsQXOcxWUamA//d+18p/qULCEGeuW
+         GmB4IvBk0b5UHsuPUYy2T1WSF2GJdZzpd5j1oPzIIq49n9SW/9rp55KUGzVIbaaBKK
+         aCFqLj/DF6ThRjBMNX5sSx4/ZrL5/HoZNUwDipm8XsV9/PhwUQ3L0tVWwaREzk2jZA
+         TZNe7hMtvd50M4NDF8eKI/SS9GgUqHtnUJti0DIr1q+B3nHVLHdR9avsY/jUCwmW/r
+         S0X0Or7y7+PCJvBByV/MWgTsP6sIQoPZ9Tq9sYUJhd9qyFakIXS9SBLFmkorx6THsa
+         A34pokTXjXyEw==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri, 19 Aug 2022 18:22:42 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Mark Brown <broonie@kernel.org>
+CC:     Marc Zyngier <maz@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
+ operations
+Thread-Topic: [PATCH v1] regmap: introduce value tracing for regmap bulk
+ operations
+Thread-Index: AQHYsZwRTOzZdLxKvkqpBNcAgWIdzq20YtWAgAAaSQCAAB/4gIAAIcqAgAE0NICAABeIAIAAFDSAgAAKtoA=
+Date:   Fri, 19 Aug 2022 15:22:14 +0000
+Message-ID: <20220819152239.yofi3yu5oojgrsox@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
+ <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
+ <87mtc1wtjz.wl-maz@kernel.org> <Yv5eMcmNOmyLmd++@sirena.org.uk>
+ <20220818174441.arh7otvrkzg5uk3s@CAB-WSD-L081021.sigma.sbrf.ru>
+ <Yv99E0mrPI0qG66I@sirena.org.uk>
+ <20220819133200.xvpjzatkub4yxnsh@CAB-WSD-L081021.sigma.sbrf.ru>
+ <Yv+hwyrQtBjc69Yd@sirena.org.uk>
+In-Reply-To: <Yv+hwyrQtBjc69Yd@sirena.org.uk>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <6530040F10735747BB0C06A92324ABF9@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1402:b0:346:8903:f54 with SMTP id
- k2-20020a056638140200b0034689030f54mr3593467jad.243.1660922534003; Fri, 19
- Aug 2022 08:22:14 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 08:22:13 -0700
-In-Reply-To: <20220819105110.1412-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a38cca05e699a9e3@google.com>
-Subject: Re: [syzbot] general protection fault in release_udmabuf
-From:   syzbot <syzbot+c80e9ef5d8bb45894db0@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/19 07:02:00 #20132955
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Fri, Aug 19, 2022 at 03:44:19PM +0100, Mark Brown wrote:
+> > > I didn't realise that was even a question, but then there seems to be
+> > > some discussion I've not seen given the CCing going on.  The biggest
+> > > issue is do we even want the overhead but I'll need to find time to l=
+ook
+> > > at this properly.
+>=20
+> > No any additional discussion before. I've added your address to all ema=
+ils
+> > which I sent.
+>=20
+> I assume you copied in Thomas, Rasmus and Marc for some reason?
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+No reason, sorry for make misunderstanding here.
+I have listed other regmap discussions and added them to get more opinions.
 
-Reported-and-tested-by: syzbot+c80e9ef5d8bb45894db0@syzkaller.appspotmail.com
+>=20
+> > Why do you think it this patch will bring overhead to regmap? AFAK, whe=
+n
+> > tracepoint is disabled, tracepoint fast assign operation shouldn't be
+> > executed. In other words, memcpy will not be applied.
+>=20
+> To repeat I have not yet looked at your patch properly, one concern is
+> how we handle the marshalling which regmap does.
 
-Tested on:
+Okay, no problem
 
-commit:         7ebfc85e Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=15378a47080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
-dashboard link: https://syzkaller.appspot.com/bug?extid=c80e9ef5d8bb45894db0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=14e079e3080000
-
-Note: testing is done by a robot and is best-effort only.
+--=20
+Thank you,
+Dmitry=
