@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD7FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF50C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352500AbiHSQYR (ORCPT
+        id S1352527AbiHSQYX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52276 "EHLO
+        Fri, 19 Aug 2022 12:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352298AbiHSQUc (ORCPT
+        with ESMTP id S1352306AbiHSQUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:20:32 -0400
+        Fri, 19 Aug 2022 12:20:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F325A10A764;
-        Fri, 19 Aug 2022 09:01:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC343EC4EF;
+        Fri, 19 Aug 2022 09:01:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBE22612DF;
-        Fri, 19 Aug 2022 16:01:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBADBC433C1;
-        Fri, 19 Aug 2022 16:01:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8A0A617A5;
+        Fri, 19 Aug 2022 16:01:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D9EC433D6;
+        Fri, 19 Aug 2022 16:01:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924883;
-        bh=nm4OJZwJEZv1pIUYaeMBoUGeJreDgEESneK9E8E3b3k=;
+        s=korg; t=1660924877;
+        bh=Rb4IuH7qbdBC3csFboi8CTFe/x5QTqmzTvRnL83eiIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uhf7A9n+wNzi5jkb60mJLRYdnpIRU9ENfylqEZWQqv9GM7KD8wdQhvbQjyQn73CH/
-         2K4iM92s6yV9tFfX0rK0wQX8YnOBckMHd7AGQVbqHoMHc82+NejACLqrymxFNDTGaT
-         70YGDZEpUH8cun17TRKXg9t8/F6Gnv/GBFBIw6EI=
+        b=RIzjmkDd1kKcawH/fdwoi7kVX15aeGiPhUunPHE2RbE8+hBEPnv0N2HFyMWViOIz7
+         +uowJ2P0DPadbXo1H/1kCdw/C8WSL39wiQ7Kax3pFMbfUDx16w8X7FxvQxIV2SdXfS
+         cXgFFlS029QVGeE+di9HEIIG8UoCF6VS1sOjAhiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manoj Basapathi <manojbm@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 283/545] netfilter: xtables: Bring SPDX identifier back
-Date:   Fri, 19 Aug 2022 17:40:53 +0200
-Message-Id: <20220819153841.970605527@linuxfoundation.org>
+Subject: [PATCH 5.10 281/545] usb: gadget: tegra-xudc: Fix error check in tegra_xudc_powerdomain_init()
+Date:   Fri, 19 Aug 2022 17:40:51 +0200
+Message-Id: <20220819153841.886856141@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,65 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Tang Bin <tangbin@cmss.chinamobile.com>
 
-[ Upstream commit 20646f5b1e798bcc20044ae90ac3702f177bf254 ]
+[ Upstream commit f08aa7c80dac27ee00fa6827f447597d2fba5465 ]
 
-Commit e2be04c7f995 ("License cleanup: add SPDX license identifier to
-uapi header files with a license") added the correct SPDX identifier to
-include/uapi/linux/netfilter/xt_IDLETIMER.h.
+dev_pm_domain_attach_by_name() may return NULL in some cases,
+so IS_ERR() doesn't meet the requirements. Thus fix it.
 
-A subsequent commit removed it for no reason and reintroduced the UAPI
-license incorrectness as the file is now missing the UAPI exception
-again.
-
-Add it back and remove the GPLv2 boilerplate while at it.
-
-Fixes: 68983a354a65 ("netfilter: xtables: Add snapshot of hardidletimer target")
-Cc: Manoj Basapathi <manojbm@codeaurora.org>
-Cc: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Cc: netfilter-devel@vger.kernel.org
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Fixes: 49db427232fe ("usb: gadget: Add UDC driver for tegra XUSB device mode controller")
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+Link: https://lore.kernel.org/r/20220525135332.23144-1-tangbin@cmss.chinamobile.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/netfilter/xt_IDLETIMER.h | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+ drivers/usb/gadget/udc/tegra-xudc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/uapi/linux/netfilter/xt_IDLETIMER.h b/include/uapi/linux/netfilter/xt_IDLETIMER.h
-index 49ddcdc61c09..7bfb31a66fc9 100644
---- a/include/uapi/linux/netfilter/xt_IDLETIMER.h
-+++ b/include/uapi/linux/netfilter/xt_IDLETIMER.h
-@@ -1,6 +1,5 @@
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
- /*
-- * linux/include/linux/netfilter/xt_IDLETIMER.h
-- *
-  * Header file for Xtables timer target module.
-  *
-  * Copyright (C) 2004, 2010 Nokia Corporation
-@@ -10,20 +9,6 @@
-  * by Luciano Coelho <luciano.coelho@nokia.com>
-  *
-  * Contact: Luciano Coelho <luciano.coelho@nokia.com>
-- *
-- * This program is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU General Public License
-- * version 2 as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-- * 02110-1301 USA
-  */
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index de178bf264c2..3ebc8c5416e3 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -3693,15 +3693,15 @@ static int tegra_xudc_powerdomain_init(struct tegra_xudc *xudc)
+ 	int err;
  
- #ifndef _XT_IDLETIMER_H
+ 	xudc->genpd_dev_device = dev_pm_domain_attach_by_name(dev, "dev");
+-	if (IS_ERR(xudc->genpd_dev_device)) {
+-		err = PTR_ERR(xudc->genpd_dev_device);
++	if (IS_ERR_OR_NULL(xudc->genpd_dev_device)) {
++		err = PTR_ERR(xudc->genpd_dev_device) ? : -ENODATA;
+ 		dev_err(dev, "failed to get device power domain: %d\n", err);
+ 		return err;
+ 	}
+ 
+ 	xudc->genpd_dev_ss = dev_pm_domain_attach_by_name(dev, "ss");
+-	if (IS_ERR(xudc->genpd_dev_ss)) {
+-		err = PTR_ERR(xudc->genpd_dev_ss);
++	if (IS_ERR_OR_NULL(xudc->genpd_dev_ss)) {
++		err = PTR_ERR(xudc->genpd_dev_ss) ? : -ENODATA;
+ 		dev_err(dev, "failed to get SuperSpeed power domain: %d\n", err);
+ 		return err;
+ 	}
 -- 
 2.35.1
 
