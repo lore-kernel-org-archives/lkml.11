@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEB9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2A0C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350381AbiHSPvq (ORCPT
+        id S1350398AbiHSPvt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
+        Fri, 19 Aug 2022 11:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350435AbiHSPud (ORCPT
+        with ESMTP id S1350458AbiHSPuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:50:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BFA20BDD;
-        Fri, 19 Aug 2022 08:48:11 -0700 (PDT)
+        Fri, 19 Aug 2022 11:50:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF957E319;
+        Fri, 19 Aug 2022 08:48:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD3B9B827F8;
-        Fri, 19 Aug 2022 15:48:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AF0C433C1;
-        Fri, 19 Aug 2022 15:48:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5208616E8;
+        Fri, 19 Aug 2022 15:48:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1B31C433C1;
+        Fri, 19 Aug 2022 15:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924088;
-        bh=eiBYGI/GfKKQfsl7Kp3lm0urt+HgH2Yhm6H9UA64sHs=;
+        s=korg; t=1660924094;
+        bh=5dukMsRD07uxta7hAVW9LUcDVBnPXNhu7XZL/vzxyq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EO63s94M5IzBU9lWewIZY1yksxaYTCM6MYPsw4jiRJ0SQNwA+fG9q0DaYudlznQeY
-         Zl/KzOAneQD9slwjVVfGcBs89rCpcMZz8sJ2cSb4KnPR+iS7RWneMzMSlEFje9gJ4T
-         JtLXYb+X58WV1MB/4XFQXZwo4GH/ffuN/6QWC3m4=
+        b=gKj+gwGKaUOKyArGuy3aikt0MNWv4QBxbfUbYe4J4qsonvAe96ASZSjPnBsODVNtw
+         oTzFW8neFh0rtb+5a6NeQfJlz+mIXR/rxtHGUcoUsqtKR46i3bNWK3saWqgYYIHtQb
+         7+5H5trdwviq9FSoqg838TH3Er1hShE3mSBdKI24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kai Huang <kai.huang@intel.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 021/545] KVM: x86: Tag kvm_mmu_x86_module_init() with __init
-Date:   Fri, 19 Aug 2022 17:36:31 +0200
-Message-Id: <20220819153830.146714805@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 023/545] mm: Add kvrealloc()
+Date:   Fri, 19 Aug 2022 17:36:33 +0200
+Message-Id: <20220819153830.232332727@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,48 +51,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Dave Chinner <dchinner@redhat.com>
 
-commit 982bae43f11c37b51d2f1961bb25ef7cac3746fa upstream.
+commit de2860f4636256836450c6543be744a50118fc66 upstream.
 
-Mark kvm_mmu_x86_module_init() with __init, the entire reason it exists
-is to initialize variables when kvm.ko is loaded, i.e. it must never be
-called after module initialization.
+During log recovery of an XFS filesystem with 64kB directory
+buffers, rebuilding a buffer split across two log records results
+in a memory allocation warning from krealloc like this:
 
-Fixes: 1d0e84806047 ("KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded")
-Cc: stable@vger.kernel.org
-Reviewed-by: Kai Huang <kai.huang@intel.com>
-Tested-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220803224957.1285926-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+xfs filesystem being mounted at /mnt/scratch supports timestamps until 2038 (0x7fffffff)
+XFS (dm-0): Unmounting Filesystem
+XFS (dm-0): Mounting V5 Filesystem
+XFS (dm-0): Starting recovery (logdev: internal)
+------------[ cut here ]------------
+WARNING: CPU: 5 PID: 3435170 at mm/page_alloc.c:3539 get_page_from_freelist+0xdee/0xe40
+.....
+RIP: 0010:get_page_from_freelist+0xdee/0xe40
+Call Trace:
+ ? complete+0x3f/0x50
+ __alloc_pages+0x16f/0x300
+ alloc_pages+0x87/0x110
+ kmalloc_order+0x2c/0x90
+ kmalloc_order_trace+0x1d/0x90
+ __kmalloc_track_caller+0x215/0x270
+ ? xlog_recover_add_to_cont_trans+0x63/0x1f0
+ krealloc+0x54/0xb0
+ xlog_recover_add_to_cont_trans+0x63/0x1f0
+ xlog_recovery_process_trans+0xc1/0xd0
+ xlog_recover_process_ophdr+0x86/0x130
+ xlog_recover_process_data+0x9f/0x160
+ xlog_recover_process+0xa2/0x120
+ xlog_do_recovery_pass+0x40b/0x7d0
+ ? __irq_work_queue_local+0x4f/0x60
+ ? irq_work_queue+0x3a/0x50
+ xlog_do_log_recovery+0x70/0x150
+ xlog_do_recover+0x38/0x1d0
+ xlog_recover+0xd8/0x170
+ xfs_log_mount+0x181/0x300
+ xfs_mountfs+0x4a1/0x9b0
+ xfs_fs_fill_super+0x3c0/0x7b0
+ get_tree_bdev+0x171/0x270
+ ? suffix_kstrtoint.constprop.0+0xf0/0xf0
+ xfs_fs_get_tree+0x15/0x20
+ vfs_get_tree+0x24/0xc0
+ path_mount+0x2f5/0xaf0
+ __x64_sys_mount+0x108/0x140
+ do_syscall_64+0x3a/0x70
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Essentially, we are taking a multi-order allocation from kmem_alloc()
+(which has an open coded no fail, no warn loop) and then
+reallocating it out to 64kB using krealloc(__GFP_NOFAIL) and that is
+then triggering the above warning.
+
+This is a regression caused by converting this code from an open
+coded no fail/no warn reallocation loop to using __GFP_NOFAIL.
+
+What we actually need here is kvrealloc(), so that if contiguous
+page allocation fails we fall back to vmalloc() and we don't
+get nasty warnings happening in XFS.
+
+Fixes: 771915c4f688 ("xfs: remove kmem_realloc()")
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h |    2 +-
- arch/x86/kvm/mmu/mmu.c          |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/xfs/xfs_log_recover.c |    4 +++-
+ include/linux/mm.h       |    2 ++
+ mm/util.c                |   15 +++++++++++++++
+ 3 files changed, 20 insertions(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1340,7 +1340,7 @@ static inline int kvm_arch_flush_remote_
- 		return -ENOTSUPP;
+--- a/fs/xfs/xfs_log_recover.c
++++ b/fs/xfs/xfs_log_recover.c
+@@ -2061,7 +2061,9 @@ xlog_recover_add_to_cont_trans(
+ 	old_ptr = item->ri_buf[item->ri_cnt-1].i_addr;
+ 	old_len = item->ri_buf[item->ri_cnt-1].i_len;
+ 
+-	ptr = krealloc(old_ptr, len + old_len, GFP_KERNEL | __GFP_NOFAIL);
++	ptr = kvrealloc(old_ptr, old_len, len + old_len, GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
+ 	memcpy(&ptr[old_len], dp, len);
+ 	item->ri_buf[item->ri_cnt-1].i_len += len;
+ 	item->ri_buf[item->ri_cnt-1].i_addr = ptr;
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -788,6 +788,8 @@ static inline void *kvcalloc(size_t n, s
+ 	return kvmalloc_array(n, size, flags | __GFP_ZERO);
  }
  
--void kvm_mmu_x86_module_init(void);
-+void __init kvm_mmu_x86_module_init(void);
- int kvm_mmu_vendor_module_init(void);
- void kvm_mmu_vendor_module_exit(void);
++extern void *kvrealloc(const void *p, size_t oldsize, size_t newsize,
++		gfp_t flags);
+ extern void kvfree(const void *addr);
+ extern void kvfree_sensitive(const void *addr, size_t len);
  
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5886,7 +5886,7 @@ static int set_nx_huge_pages(const char
-  * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
-  * its default value of -1 is technically undefined behavior for a boolean.
-  */
--void kvm_mmu_x86_module_init(void)
-+void __init kvm_mmu_x86_module_init(void)
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -661,6 +661,21 @@ void kvfree_sensitive(const void *addr,
+ }
+ EXPORT_SYMBOL(kvfree_sensitive);
+ 
++void *kvrealloc(const void *p, size_t oldsize, size_t newsize, gfp_t flags)
++{
++	void *newp;
++
++	if (oldsize >= newsize)
++		return (void *)p;
++	newp = kvmalloc(newsize, flags);
++	if (!newp)
++		return NULL;
++	memcpy(newp, p, oldsize);
++	kvfree(p);
++	return newp;
++}
++EXPORT_SYMBOL(kvrealloc);
++
+ static inline void *__page_rmapping(struct page *page)
  {
- 	if (nx_huge_pages == -1)
- 		__set_nx_huge_pages(get_nx_auto_mode());
+ 	unsigned long mapping;
 
 
