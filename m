@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD20C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3CD2C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351281AbiHSQEq (ORCPT
+        id S1351100AbiHSQEu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
+        Fri, 19 Aug 2022 12:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351408AbiHSQBe (ORCPT
+        with ESMTP id S1351415AbiHSQBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:34 -0400
+        Fri, 19 Aug 2022 12:01:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB596F57C;
-        Fri, 19 Aug 2022 08:53:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C56647C8;
+        Fri, 19 Aug 2022 08:53:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B865461746;
-        Fri, 19 Aug 2022 15:53:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE599C433D6;
-        Fri, 19 Aug 2022 15:53:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12C4461767;
+        Fri, 19 Aug 2022 15:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A5B1C433D6;
+        Fri, 19 Aug 2022 15:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924401;
-        bh=7+YQK8QHGisPOG8DFcEQeNDEpOAfKa3JElgtrJwMqjU=;
+        s=korg; t=1660924382;
+        bh=kFCMjgGG9L4dx69d+8a8KmsN8u+ngZyXC7hm+vH0Gk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0Evaz9Nv1a4Uk61vx/DWhUZ7ikk1LvIp63IakNGbTkkEnHlsUV4uFsxdZEXv/HKd
-         Q0JT1n4jCNhFxiedMFcUmHQh+DsQCwW3WrwS0JIrQgbaOOiM3sR6MjAJvG+Ov1m2zL
-         XtFVltqSXZGdfLn8xHvXA06G5V0jfxVaUcCynSYw=
+        b=a8iMhUpXnVY2wbcGaOw9BhkZEoue0gF3Z8riKIbQjPZs65jGxrgtgSZKL//n2P/kp
+         VHhJSoKbstqHJnTdqJOq+cgYpULmCYaNDWqcxLsCU3wxJQr+rfVxsyjYAV6oZ9aqjO
+         fFAPRVB43dZz0C0OTxCV21UHwJkhVOjmlQv9ZP8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Steev Klimaszewski <steev@kali.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 159/545] ath10k: do not enforce interrupt trigger type
-Date:   Fri, 19 Aug 2022 17:38:49 +0200
-Message-Id: <20220819153836.472025369@linuxfoundation.org>
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 122/545] arm64: cpufeature: Allow different PMU versions in ID_DFR0_EL1
+Date:   Fri, 19 Aug 2022 17:38:12 +0200
+Message-Id: <20220819153834.755575719@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,56 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Alexandru Elisei <alexandru.elisei@arm.com>
 
-[ Upstream commit 1ee6c5abebd3cacf2ac4378d0ed4f57fd4850421 ]
+[ Upstream commit 506506cad3947b942425b119ffa2b06715d5d804 ]
 
-Interrupt line can be configured on different hardware in different way,
-even inverted.  Therefore driver should not enforce specific trigger
-type - edge rising - but instead rely on Devicetree to configure it.
+Commit b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in
+PMU implementations") made it possible to run Linux on a machine with PMUs
+with different versions without tainting the kernel. The patch relaxed the
+restriction only for the ID_AA64DFR0_EL1.PMUVer field, and missed doing the
+same for ID_DFR0_EL1.PerfMon , which also reports the PMU version, but for
+the AArch32 state.
 
-All Qualcomm DTSI with WCN3990 define the interrupt type as level high,
-so the mismatch between DTSI and driver causes rebind issues:
+For example, with Linux running on two clusters with different PMU
+versions, the kernel is tainted when bringing up secondaries with the
+following message:
 
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/unbind
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/bind
-  [   44.763114] irq: type mismatch, failed to map hwirq-446 for interrupt-controller@17a00000!
-  [   44.763130] ath10k_snoc 18800000.wifi: error -ENXIO: IRQ index 0 not found
-  [   44.763140] ath10k_snoc 18800000.wifi: failed to initialize resource: -6
+[    0.097027] smp: Bringing up secondary CPUs ...
+[..]
+[    0.142805] Detected PIPT I-cache on CPU4
+[    0.142805] CPU features: SANITY CHECK: Unexpected variation in SYS_ID_DFR0_EL1. Boot CPU: 0x00000004011088, CPU4: 0x00000005011088
+[    0.143555] CPU features: Unsupported CPU feature variation detected.
+[    0.143702] GICv3: CPU4: found redistributor 10000 region 0:0x000000002f180000
+[    0.143702] GICv3: CPU4: using allocated LPI pending table @0x00000008800d0000
+[    0.144888] CPU4: Booted secondary processor 0x0000010000 [0x410fd0f0]
 
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.0.c8-00009-QCAHLSWSC8180XMTPLZ-1
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.2.0-01387-QCAHLSWMTPLZ-1
+The boot CPU implements FEAT_PMUv3p1 (ID_DFR0_EL1.PerfMon, bits 27:24, is
+0b0100), but CPU4, part of the other cluster, implements FEAT_PMUv3p4
+(ID_DFR0_EL1.PerfMon = 0b0101).
 
-Fixes: c963a683e701 ("ath10k: add resource init and deinit for WCN3990")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Tested-by: Steev Klimaszewski <steev@kali.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220513151516.357549-1-krzysztof.kozlowski@linaro.org
+Treat the PerfMon field as FTR_NONSTRICT and FTR_EXACT to pass the sanity
+check and to match how PMUVer is treated for the 64bit ID register.
+
+Fixes: b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in PMU implementations")
+Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
+Link: https://lore.kernel.org/r/20220617111332.203061-1-alexandru.elisei@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/snoc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm64/kernel/cpufeature.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index e5a296039f71..4870a3dab0de 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1205,13 +1205,12 @@ static void ath10k_snoc_init_napi(struct ath10k *ar)
- static int ath10k_snoc_request_irq(struct ath10k *ar)
- {
- 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
--	int irqflags = IRQF_TRIGGER_RISING;
- 	int ret, id;
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index c9108ed40645..4087e2d1f39e 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -508,7 +508,7 @@ static const struct arm64_ftr_bits ftr_id_pfr2[] = {
  
- 	for (id = 0; id < CE_COUNT_MAX; id++) {
- 		ret = request_irq(ar_snoc->ce_irqs[id].irq_line,
--				  ath10k_snoc_per_engine_handler,
--				  irqflags, ce_name[id], ar);
-+				  ath10k_snoc_per_engine_handler, 0,
-+				  ce_name[id], ar);
- 		if (ret) {
- 			ath10k_err(ar,
- 				   "failed to register IRQ handler for CE %d: %d\n",
+ static const struct arm64_ftr_bits ftr_id_dfr0[] = {
+ 	/* [31:28] TraceFilt */
+-	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_PERFMON_SHIFT, 4, 0xf),
++	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_EXACT, ID_DFR0_PERFMON_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MPROFDBG_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MMAPTRC_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_COPTRC_SHIFT, 4, 0),
 -- 
 2.35.1
 
