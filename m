@@ -2,221 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FCFC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 314F0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350799AbiHSRHj (ORCPT
+        id S1350161AbiHSRHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44088 "EHLO
+        Fri, 19 Aug 2022 13:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350252AbiHSRGu (ORCPT
+        with ESMTP id S1350747AbiHSRGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:06:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DB813DEB1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:27:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660926318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ne7UigkvM+r2TMT0/AUSaNy0uAcn5/l6zd/bpV+I73g=;
-        b=XO99i2KIKgn6iyyWc9QA1gNHaKyOCni9w9vxtHJCp3Q/X6Ms/6cvrewxtm0cnJEY5F3VfS
-        6qxxAcxdS4Q8FV0dlRtcLTsZPcYwadmEgTxwI44TNrXNaCr/aL/8CZhvhbVLDE+v4UMg3c
-        jJ1MNdyYuf4p2KJQwpbi2hpSWqDgEJk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-Gf2e58d9Nben_sSwGEBFoA-1; Fri, 19 Aug 2022 12:25:15 -0400
-X-MC-Unique: Gf2e58d9Nben_sSwGEBFoA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 85F2C101A54E;
-        Fri, 19 Aug 2022 16:25:14 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.22.48.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0B0EB492C3B;
-        Fri, 19 Aug 2022 16:25:12 +0000 (UTC)
-Date:   Fri, 19 Aug 2022 12:25:10 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>, Jan Kara <jack@suse.cz>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: Re: [PATCH v4 2/4] fanotify: define struct members to hold response
- decision context
-Message-ID: <Yv+5ZkFxhR+JK/Rj@madcap2.tricolour.ca>
-References: <8767f3a0d43d6a994584b86c03eb659a662cc416.1659996830.git.rgb@redhat.com>
- <202208102231.qSUdYAdb-lkp@intel.com>
+        Fri, 19 Aug 2022 13:06:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D603113CFB3;
+        Fri, 19 Aug 2022 09:27:29 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A04991042;
+        Fri, 19 Aug 2022 09:26:25 -0700 (PDT)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A0B323F66F;
+        Fri, 19 Aug 2022 09:26:23 -0700 (PDT)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     linux-acpi@vger.kernel.org
+Cc:     rafael@kernel.org, lenb@kernel.org, viresh.kumar@linaro.org,
+        robert.moore@intel.com, punit.agrawal@bytedance.com,
+        lukasz.luba@arm.com, ionela.voinescu@arm.com,
+        pierre.gondois@arm.com, linux-kernel@vger.kernel.org,
+        devel@acpica.org, linux-pm@vger.kernel.org,
+        Jeremy Linton <jeremy.linton@arm.com>
+Subject: [PATCH v4 1/2] ACPI: CPPC: Disable FIE if registers in PCC regions
+Date:   Fri, 19 Aug 2022 11:25:46 -0500
+Message-Id: <20220819162547.141333-2-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220819162547.141333-1-jeremy.linton@arm.com>
+References: <20220819162547.141333-1-jeremy.linton@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <202208102231.qSUdYAdb-lkp@intel.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-10 22:28, kernel test robot wrote:
-> Hi Richard,
-> 
-> Thank you for the patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on jack-fs/fsnotify]
-> [also build test WARNING on pcmoore-audit/next linus/master v5.19 next-20220810]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Richard-Guy-Briggs/fanotify-Allow-user-space-to-pass-back-additional-audit-info/20220810-012825
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs.git fsnotify
-> config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220810/202208102231.qSUdYAdb-lkp@intel.com/config)
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/a943676abc023c094f05b45f4d61936c567507a2
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Richard-Guy-Briggs/fanotify-Allow-user-space-to-pass-back-additional-audit-info/20220810-012825
->         git checkout a943676abc023c094f05b45f4d61936c567507a2
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/notify/fanotify/
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
-> >> fs/notify/fanotify/fanotify_user.c:325:35: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
+PCC regions utilize a mailbox to set/retrieve register values used by
+the CPPC code. This is fine as long as the operations are
+infrequent. With the FIE code enabled though the overhead can range
+from 2-11% of system CPU overhead (ex: as measured by top) on Arm
+based machines.
 
-Interesting.  When I "fix" it, my compiler complains:
+So, before enabling FIE assure none of the registers used by
+cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
+enable a module parameter which can also disable it at boot or module
+reload.
 
-	fs/notify/fanotify/fanotify_user.c:324:11: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 8 has type ‘size_t’ {aka ‘long unsigned int’} [-Wformat=]
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+---
+ drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
+ drivers/cpufreq/cppc_cpufreq.c | 31 +++++++++++++++++++++----
+ include/acpi/cppc_acpi.h       |  5 +++++
+ 3 files changed, 73 insertions(+), 4 deletions(-)
 
->                     group, fd, response, info_buf, count);
->                                                    ^~~~~
->    include/linux/printk.h:594:38: note: expanded from macro 'pr_debug'
->            no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
->                                        ~~~     ^~~~~~~~~~~
->    include/linux/printk.h:131:17: note: expanded from macro 'no_printk'
->                    printk(fmt, ##__VA_ARGS__);             \
->                           ~~~    ^~~~~~~~~~~
->    include/linux/printk.h:464:60: note: expanded from macro 'printk'
->    #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
->                                                        ~~~    ^~~~~~~~~~~
->    include/linux/printk.h:436:19: note: expanded from macro 'printk_index_wrap'
->                    _p_func(_fmt, ##__VA_ARGS__);                           \
->                            ~~~~    ^~~~~~~~~~~
->    1 warning generated.
-> 
-> 
-> vim +325 fs/notify/fanotify/fanotify_user.c
-> 
->    312	
->    313	static int process_access_response(struct fsnotify_group *group,
->    314					   struct fanotify_response *response_struct,
->    315					   const char __user *buf,
->    316					   size_t count)
->    317	{
->    318		struct fanotify_perm_event *event;
->    319		int fd = response_struct->fd;
->    320		u32 response = response_struct->response;
->    321		struct fanotify_response_info_header info_hdr;
->    322		char *info_buf = NULL;
->    323	
->    324		pr_debug("%s: group=%p fd=%d response=%u buf=%p size=%lu\n", __func__,
->  > 325			 group, fd, response, info_buf, count);
->    326		/*
->    327		 * make sure the response is valid, if invalid we do nothing and either
->    328		 * userspace can send a valid response or we will clean it up after the
->    329		 * timeout
->    330		 */
->    331		if (response & ~FANOTIFY_RESPONSE_VALID_MASK)
->    332			return -EINVAL;
->    333		switch (response & FANOTIFY_RESPONSE_ACCESS) {
->    334		case FAN_ALLOW:
->    335		case FAN_DENY:
->    336			break;
->    337		default:
->    338			return -EINVAL;
->    339		}
->    340		if ((response & FAN_AUDIT) && !FAN_GROUP_FLAG(group, FAN_ENABLE_AUDIT))
->    341			return -EINVAL;
->    342		if (fd < 0)
->    343			return -EINVAL;
->    344		if (response & FAN_INFO) {
->    345			size_t c = count;
->    346			const char __user *ib = buf;
->    347	
->    348			if (c <= 0)
->    349				return -EINVAL;
->    350			while (c >= sizeof(info_hdr)) {
->    351				if (copy_from_user(&info_hdr, ib, sizeof(info_hdr)))
->    352					return -EFAULT;
->    353				if (info_hdr.pad != 0)
->    354					return -EINVAL;
->    355				if (c < info_hdr.len)
->    356					return -EINVAL;
->    357				switch (info_hdr.type) {
->    358				case FAN_RESPONSE_INFO_AUDIT_RULE:
->    359					break;
->    360				case FAN_RESPONSE_INFO_NONE:
->    361				default:
->    362					return -EINVAL;
->    363				}
->    364				c -= info_hdr.len;
->    365				ib += info_hdr.len;
->    366			}
->    367			if (c != 0)
->    368				return -EINVAL;
->    369			/* Simplistic check for now */
->    370			if (count != sizeof(struct fanotify_response_info_audit_rule))
->    371				return -EINVAL;
->    372			info_buf = kmalloc(sizeof(struct fanotify_response_info_audit_rule),
->    373					   GFP_KERNEL);
->    374			if (!info_buf)
->    375				return -ENOMEM;
->    376			if (copy_from_user(info_buf, buf, count))
->    377				return -EFAULT;
->    378		}
->    379		spin_lock(&group->notification_lock);
->    380		list_for_each_entry(event, &group->fanotify_data.access_list,
->    381				    fae.fse.list) {
->    382			if (event->fd != fd)
->    383				continue;
->    384	
->    385			list_del_init(&event->fae.fse.list);
->    386			/* finish_permission_event() eats info_buf */
->    387			finish_permission_event(group, event, response_struct,
->    388						count, info_buf);
->    389			wake_up(&group->fanotify_data.access_waitq);
->    390			return 0;
->    391		}
->    392		spin_unlock(&group->notification_lock);
->    393	
->    394		return -ENOENT;
->    395	}
->    396	
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
-> 
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
+index 1e15a9f25ae9..c840bf606b30 100644
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -1240,6 +1240,47 @@ int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
+ }
+ EXPORT_SYMBOL_GPL(cppc_get_perf_caps);
+ 
++/**
++ * cppc_perf_ctrs_in_pcc - Check if any perf counters are in a PCC region.
++ *
++ * CPPC has flexibility about how counters describing CPU perf are delivered.
++ * One of the choices is PCC regions, which can have a high access latency. This
++ * routine allows callers of cppc_get_perf_ctrs() to know this ahead of time.
++ *
++ * Return: true if any of the counters are in PCC regions, false otherwise
++ */
++bool cppc_perf_ctrs_in_pcc(void)
++{
++	int cpu;
++
++	for_each_present_cpu(cpu) {
++		struct cpc_register_resource *ref_perf_reg;
++		struct cpc_desc *cpc_desc;
++
++		cpc_desc = per_cpu(cpc_desc_ptr, cpu);
++
++		if (CPC_IN_PCC(&cpc_desc->cpc_regs[DELIVERED_CTR]) ||
++		    CPC_IN_PCC(&cpc_desc->cpc_regs[REFERENCE_CTR]) ||
++		    CPC_IN_PCC(&cpc_desc->cpc_regs[CTR_WRAP_TIME]))
++			return true;
++
++
++		ref_perf_reg = &cpc_desc->cpc_regs[REFERENCE_PERF];
++
++		/*
++		 * If reference perf register is not supported then we should
++		 * use the nominal perf value
++		 */
++		if (!CPC_SUPPORTED(ref_perf_reg))
++			ref_perf_reg = &cpc_desc->cpc_regs[NOMINAL_PERF];
++
++		if (CPC_IN_PCC(ref_perf_reg))
++			return true;
++	}
++	return false;
++}
++EXPORT_SYMBOL_GPL(cppc_perf_ctrs_in_pcc);
++
+ /**
+  * cppc_get_perf_ctrs - Read a CPU's performance feedback counters.
+  * @cpunum: CPU from which to read counters.
+diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+index 24eaf0ec344d..32fcb0bf74a4 100644
+--- a/drivers/cpufreq/cppc_cpufreq.c
++++ b/drivers/cpufreq/cppc_cpufreq.c
+@@ -63,7 +63,15 @@ static struct cppc_workaround_oem_info wa_info[] = {
+ 
+ static struct cpufreq_driver cppc_cpufreq_driver;
+ 
++static enum {
++	FIE_UNSET = -1,
++	FIE_ENABLED,
++	FIE_DISABLED
++} fie_disabled = FIE_UNSET;
++
+ #ifdef CONFIG_ACPI_CPPC_CPUFREQ_FIE
++module_param(fie_disabled, int, 0444);
++MODULE_PARM_DESC(fie_disabled, "Disable Frequency Invariance Engine (FIE)");
+ 
+ /* Frequency invariance support */
+ struct cppc_freq_invariance {
+@@ -158,7 +166,7 @@ static void cppc_cpufreq_cpu_fie_init(struct cpufreq_policy *policy)
+ 	struct cppc_freq_invariance *cppc_fi;
+ 	int cpu, ret;
+ 
+-	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
++	if (fie_disabled)
+ 		return;
+ 
+ 	for_each_cpu(cpu, policy->cpus) {
+@@ -199,7 +207,7 @@ static void cppc_cpufreq_cpu_fie_exit(struct cpufreq_policy *policy)
+ 	struct cppc_freq_invariance *cppc_fi;
+ 	int cpu;
+ 
+-	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
++	if (fie_disabled)
+ 		return;
+ 
+ 	/* policy->cpus will be empty here, use related_cpus instead */
+@@ -229,7 +237,21 @@ static void __init cppc_freq_invariance_init(void)
+ 	};
+ 	int ret;
+ 
+-	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
++	switch (fie_disabled) {
++	/* honor user request */
++	case FIE_DISABLED:
++	case FIE_ENABLED:
++		break;
++	case FIE_UNSET:
++	default:
++		fie_disabled = FIE_ENABLED;
++		if (cppc_perf_ctrs_in_pcc()) {
++			pr_info("FIE not enabled on systems with registers in PCC\n");
++			fie_disabled = FIE_DISABLED;
++		}
++		break;
++	}
++	if (fie_disabled)
+ 		return;
+ 
+ 	kworker_fie = kthread_create_worker(0, "cppc_fie");
+@@ -247,7 +269,7 @@ static void __init cppc_freq_invariance_init(void)
+ 
+ static void cppc_freq_invariance_exit(void)
+ {
+-	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
++	if (fie_disabled)
+ 		return;
+ 
+ 	kthread_destroy_worker(kworker_fie);
+@@ -936,6 +958,7 @@ static void cppc_check_hisi_workaround(void)
+ 		    wa_info[i].oem_revision == tbl->oem_revision) {
+ 			/* Overwrite the get() callback */
+ 			cppc_cpufreq_driver.get = hisi_cppc_cpufreq_get_rate;
++			fie_disabled = FIE_DISABLED;
+ 			break;
+ 		}
+ 	}
+diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
+index f73d357ecdf5..c5614444031f 100644
+--- a/include/acpi/cppc_acpi.h
++++ b/include/acpi/cppc_acpi.h
+@@ -140,6 +140,7 @@ extern int cppc_get_perf_ctrs(int cpu, struct cppc_perf_fb_ctrs *perf_fb_ctrs);
+ extern int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls);
+ extern int cppc_set_enable(int cpu, bool enable);
+ extern int cppc_get_perf_caps(int cpu, struct cppc_perf_caps *caps);
++extern bool cppc_perf_ctrs_in_pcc(void);
+ extern bool acpi_cpc_valid(void);
+ extern bool cppc_allow_fast_switch(void);
+ extern int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data);
+@@ -173,6 +174,10 @@ static inline int cppc_get_perf_caps(int cpu, struct cppc_perf_caps *caps)
+ {
+ 	return -ENOTSUPP;
+ }
++static inline bool cppc_perf_ctrs_in_pcc(void)
++{
++	return false;
++}
+ static inline bool acpi_cpc_valid(void)
+ {
+ 	return false;
+-- 
+2.37.1
 
