@@ -2,111 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04DEDC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 02:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CC0C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 02:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245308AbiHSCsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 22:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
+        id S245649AbiHSCsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 22:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240319AbiHSCsD (ORCPT
+        with ESMTP id S245256AbiHSCs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 22:48:03 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3E2CCE01
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 19:48:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VMe73D-_1660877278;
-Received: from 30.240.99.21(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VMe73D-_1660877278)
-          by smtp.aliyun-inc.com;
-          Fri, 19 Aug 2022 10:47:59 +0800
-Message-ID: <c0c5c013-9355-c394-afff-ed25b0c456b8@linux.alibaba.com>
-Date:   Fri, 19 Aug 2022 10:47:58 +0800
+        Thu, 18 Aug 2022 22:48:28 -0400
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2693ED59;
+        Thu, 18 Aug 2022 19:48:26 -0700 (PDT)
+Received: by mail-pj1-f44.google.com with SMTP id bf22so3392399pjb.4;
+        Thu, 18 Aug 2022 19:48:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=TFsMtRqG/TbJmGF6CHrOUDDBRGq4lB+/ETI2WErXxoU=;
+        b=nsxiwrPprxWmD2vOhGId7ykePw+j9uKhV5MNnF0OITx6NzCWxbsD4n072iyY0xMWXw
+         Zpr6um7jInwlRHV7rHxkBkl++cZ8PnHtQu8Fe6mD/RvYGeDi2nW27XxokM895q1I/Df9
+         7UGKGZ5pwJFMGjrBR35xn6XGncH8JgAgoyE/kWRfvmJs7JupTgMrND5bFBDQzwpIolDd
+         QnLgFvFewfd6ZIpzKFJSvELT3e5JGAIGiIg6bGMImM4nAolSe8BxolTpG5EzOdMEj9zC
+         Ji7EqLiTZsyVYUW0sycFGFbjL7AW0XhlSE/AkEJyUJKoohTUw/wggIKkielCVM98jOrZ
+         TcnA==
+X-Gm-Message-State: ACgBeo3qxR7FlnfTEVuSHltVV5yaucRHeQh41dgzXyVyv5NjSsL4rhJ2
+        2jKfyM5FnuyePV695b2oyCw=
+X-Google-Smtp-Source: AA6agR6nH+aI02CAs3v/v+DadbqfjnWgx1c9ghlbQDADl+OmcdjYwaLnAtOVZGr44+ZGDmy73jOJVg==
+X-Received: by 2002:a17:902:da8a:b0:16f:1aab:2226 with SMTP id j10-20020a170902da8a00b0016f1aab2226mr5323993plx.28.1660877305758;
+        Thu, 18 Aug 2022 19:48:25 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id ik23-20020a170902ab1700b00172a33c84a8sm2038593plb.251.2022.08.18.19.48.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 19:48:24 -0700 (PDT)
+Message-ID: <4ad8c00e-f752-dfb2-331e-8cdff02eaa05@acm.org>
+Date:   Thu, 18 Aug 2022 19:48:22 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.0
-Subject: Re: [PATCH V2 1/2] mm/damon/lru_sort: Move target memory region check
- to head of func
-To:     SeongJae Park <sj@kernel.org>
-Cc:     akpm@linux-foundation.org, damon@lists.linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220819022850.52236-1-sj@kernel.org>
-From:   haoxin <xhao@linux.alibaba.com>
-In-Reply-To: <20220819022850.52236-1-sj@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [RFC PATCH v2 2/2] scsi: ufs-qcom: Add MCQ support
+Content-Language: en-US
+To:     Can Guo <quic_cang@quicinc.com>, quic_asutoshd@quicinc.com,
+        quic_nguyenb@quicinc.com, quic_xiaosenh@quicinc.com,
+        stanley.chu@mediatek.com, adrian.hunter@intel.com,
+        beanhuo@micron.com, avri.altman@wdc.com, mani@kernel.org,
+        linux-scsi@vger.kernel.org, kernel-team@android.com
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "open list:ARM/QUALCOMM SUPPORT" <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1660213984-37793-1-git-send-email-quic_cang@quicinc.com>
+ <1660213984-37793-3-git-send-email-quic_cang@quicinc.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <1660213984-37793-3-git-send-email-quic_cang@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 8/11/22 03:33, Can Guo wrote:
+> +static int ufs_qcom_get_outstanding_cqs(struct ufs_hba *hba,
+> +					unsigned long *ocqs)
+> +{
+> +	return -EINVAL;
+> +}
 
-在 2022/8/19 上午10:28, SeongJae Park 写道:
-> Hi Xin,
->
->> 在 2022/8/19 上午1:11, SeongJae Park 写道:
->>> Hi Xin,
->>>
->>>
->>> On Thu, 18 Aug 2022 18:57:31 +0800 Xin Hao <xhao@linux.alibaba.com> wrote:
->>>
->>>> In damon_lru_sort_apply_parameters(), if "monitor_region_start"
->>>> and "monitor_region_end" is not a valid physical address range,
->>>> There no need to run the remainder codes in it.
->>> The function, 'damon_lru_sort_apply_parameters()', checks validity of
->>> parameters and construct the DAMON context one by one.  For example,
->>> 'damon_set_attrs()' returns an error if the parameters are invalid.  So the
->>> intended flow is,
->>>
->>> 1. check DAMON attributes parameters,
->>> 2. apply DAMON attributes parameters,
->>> 3. check scheme parameters,
->>> 4. apply scheme parameters,
->>> 5. check target region parameters, and
->>> 6. apply target region parameters.
->>>
->>> Therefore what this patch does is making the target regions validity check to
->>> be done earlier than validity checks of other parameters.  There is no special
->>> reason to check the region earlier than others.  Also, this change makes the
->>> flow of the function a little bit weird in my humble opinion, as the flow will
->>> be
->>>
->>> 1. check target region parameters,
->>> 2. check DAMON attributes parameters,
->>> 3. apply DAMON attributes parameters,
->>> 4. check scheme parameters,
->>> 5. apply scheme parameters, and
->>> 6. apply target region parameters.
->> Ok, understand what you mean,   my fix looks ugly,  buy any apply above
->> are not not necessary if one of them checks failed, why not check all
->> fisrt and then apply them, like this:
->>
->> 1. check target region parameters,
->>
->> 2. check DAMON attributes parameters,
->>
->> 3. check scheme parameters,
-> The parameter values could be changed by users after the check, so we should
-> cache those somewhere anyway.  In other words, we cache those in the DAMON
-> context.  Therefore I think the above works were not totally waste of the time.
-> Also, because the parameters applying functions like 'damon_set_attrs()' does
-> the check and applying of the parameters together, I feel like current flow is
-> natural.
+Why does the get_outstanding_cqs vop exist since the only implementation 
+of that vop returns EINVAL?
 
-Ok,  Thank you for your detailed  explain, just keep it. but there still 
-a problem in damon_lru_sort_apply_parameters
+> +static int ufs_qcom_config_mcq_rop(struct ufs_hba *hba)
+> +{
+> +	struct ufshcd_mcq_rop_info_t *rop;
+> +	struct ufshcd_res_info_t *mem_res, *sqdao_res;
+> +	int i;
+> +
+> +	mem_res = &hba->res[RES_MEM];
+> +	sqdao_res = &hba->res[RES_MCQ_SQD];
+> +
+> +	if (!mem_res->base || !sqdao_res->base)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < ROP_MAX; i++) {
+> +		rop = &hba->mcq_rop[i];
+> +		rop->offset = sqdao_res->resource->start -
+> +			      mem_res->resource->start + 0x40 * i;
+> +		rop->stride = 0x100;
+> +		rop->base = sqdao_res->base + 0x40 * i;
+> +	}
+> +
+> +	return 0;
+> +}
 
-if (!monitor_region_start && !monitor_region_end &&
-		!get_monitoring_region(&monitor_region_start,
-			&monitor_region_end))
+Is there anything in the above function that is specific to the Qualcomm 
+controller? If not, please move the above code into ufshcd.c.
 
-if (!monitor_region_start || !monitor_region_end ||
-		!get_monitoring_region(&monitor_region_start,
-			&monitor_region_end))
+> +static int ufs_qcom_get_hba_mac(struct ufs_hba *hba)
+> +{
+> +	return MAX_SUPP_MAC;
+> +}
 
-the '&&' should fix to '||',  anyone checks fail, it should return ?
+Since there is a register in the UFSHCI 4.0 specification from which the 
+maximum number of outstanding commands can be retrieved, why does the 
+get_hba_mac vop exist?
 
+Thanks,
 
-
-
-
-
->
+Bart.
