@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26475C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3367C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353295AbiHSQex (ORCPT
+        id S1353081AbiHSQe7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
+        Fri, 19 Aug 2022 12:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353429AbiHSQbk (ORCPT
+        with ESMTP id S1353452AbiHSQbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B6E11E90E;
-        Fri, 19 Aug 2022 09:05:51 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2334910C800;
+        Fri, 19 Aug 2022 09:05:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4AC7617A5;
-        Fri, 19 Aug 2022 16:05:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD9AEC433D7;
-        Fri, 19 Aug 2022 16:05:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00E06B82816;
+        Fri, 19 Aug 2022 16:05:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD77C433C1;
+        Fri, 19 Aug 2022 16:05:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925146;
-        bh=Md5RQ6iHQPX4e7LRHADrQoCMdtevRuFoWjv4ghAxn0k=;
+        s=korg; t=1660925112;
+        bh=3P594sQw1S5hklxJTFfzCA1Jk0Y55SgeCeQ+IobAdZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cFos/ZAqZ9oyVtpHQ1iukmNz/8AXB6yXE88LHwa27DTq+NRBKZL2rTsguUj5hXo2f
-         CE87zYcjcf1BOSzUtsaXMcv1WfE9rNuF302RpgUsMe+xuc4CC5UWV4EsWUpDV6kQ02
-         7kJKwl8NS9c4jV3Z/UjOqcUYsiu2UM9Wxn3Vw298=
+        b=y32mnCX6OtFN/iYbBZmZCTn3jBox+B7bIlpyf7WZe6kguvliktZydzsfo0DQxxA+n
+         D6Zn8WwpEHMLIEwd4LrHRFIV8ZPeGdMGEICqmMaVO0Zb6IpcSFuZJKlLSP/UhIKuil
+         KB0XSlsFfuiOp91lrjLS/HTBKGxA/YrruVAVCVtI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 398/545] rpmsg: qcom_smd: Fix refcount leak in qcom_smd_parse_edge
-Date:   Fri, 19 Aug 2022 17:42:48 +0200
-Message-Id: <20220819153847.231724894@linuxfoundation.org>
+Subject: [PATCH 5.10 388/545] remoteproc: qcom: wcnss: Fix handling of IRQs
+Date:   Fri, 19 Aug 2022 17:42:38 +0200
+Message-Id: <20220819153846.772250736@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,34 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-[ Upstream commit 65382585f067d4256ba087934f30f85c9b6984de ]
+[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+The wcnss_get_irq function is expected to return a value > 0 in the
+event that an IRQ is succssfully obtained, but it instead returns 0.
+This causes the stop and ready IRQs to never actually be used despite
+being defined in the device-tree. This patch fixes that.
 
-Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220511120737.57374-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/qcom_smd.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index a4db9f6100d2..0b1e853d8c91 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1364,6 +1364,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 		}
+diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
+index 67286a4505cd..572f7b8ba234 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -415,6 +415,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 			     irq_handler_t thread_fn)
+ {
+ 	int ret;
++	int irq_number;
  
- 		edge->ipc_regmap = syscon_node_to_regmap(syscon_np);
-+		of_node_put(syscon_np);
- 		if (IS_ERR(edge->ipc_regmap)) {
- 			ret = PTR_ERR(edge->ipc_regmap);
- 			goto put_node;
+ 	ret = platform_get_irq_byname(pdev, name);
+ 	if (ret < 0 && optional) {
+@@ -425,14 +426,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 		return ret;
+ 	}
+ 
++	irq_number = ret;
++
+ 	ret = devm_request_threaded_irq(&pdev->dev, ret,
+ 					NULL, thread_fn,
+ 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+ 					"wcnss", wcnss);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
++		return ret;
++	}
+ 
+-	return ret;
++	/* Return the IRQ number if the IRQ was successfully acquired */
++	return irq_number;
+ }
+ 
+ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
 -- 
 2.35.1
 
