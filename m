@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF56C28D13
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D66FDC28D13
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 23:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243812AbiHSXLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 19:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
+        id S243877AbiHSXLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 19:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243682AbiHSXL1 (ORCPT
+        with ESMTP id S243735AbiHSXL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 19:11:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23ECAD5DEB
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:11:21 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F66DB066
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:11:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660950680;
+        s=mimecast20190719; t=1660950683;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0y/a4pTSF6VtadOpwMNTC/mvZDJbVIcTrD8TXNTMH9w=;
-        b=e4sUl5rhbcDtgpuKtwGdwId8WiJHqNZEe3aWFrcnsBqI5QvP9XKWtSyUijHVnUfQwvA3ON
-        NlmAKv1+ynauy/ZXxp86DYWTGQYtbEkvu9pOvGVGGVNeTEmS9wTLtKdEOqBa8JuuJhvbwr
-        ohKkn4vW+A8RJgwcBcob4xWHZu5bucQ=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=AFFGKxt+Rynb6H3rLFquNUiuipOW4GaSN2+USkzDWw0=;
+        b=djyuI2kx3GJL3V+WioTbWxkfrJMauburDl4tEVw4/jG2LPuFiK12iPtOhDTXJWoJMCu2CB
+        CJOmXeH9OgLJreZMy63e/oZrjL2HfSu7HJuBOxwZ2hBPmbTrkuVGSORxpuwgeVvsnUHpDz
+        u4bYweeof3DhYvqxXqpj3CMccJJvgKc=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-360-b6xnA5ofMZWPN1goblxMEA-1; Fri, 19 Aug 2022 19:11:19 -0400
-X-MC-Unique: b6xnA5ofMZWPN1goblxMEA-1
-Received: by mail-ej1-f72.google.com with SMTP id hv19-20020a17090760d300b00730d0a018a6so1982635ejc.21
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:11:19 -0700 (PDT)
+ us-mta-251-Gif5761qMau8eh-agGmS2w-1; Fri, 19 Aug 2022 19:11:14 -0400
+X-MC-Unique: Gif5761qMau8eh-agGmS2w-1
+Received: by mail-ej1-f71.google.com with SMTP id qw34-20020a1709066a2200b00730ca5a94bfso1952435ejc.3
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 16:11:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=0y/a4pTSF6VtadOpwMNTC/mvZDJbVIcTrD8TXNTMH9w=;
-        b=4sLZhWBZ3dHhNZ3dCNaj907eD5UXWu04unHC8ZvkB/uZQMjyWPKY/e34LJX9YsyjMe
-         o+FCL8lpb3tDPktMzYsap+28NW9apMmpxXkebf2s7WBYX+De1BTf2eMDR9FjJsfOsTXV
-         n3oiLxSVLfiId5UxtXYHBbntJHEoN4ZgzyqKFpu0kyPidcftpjD03D41w6YIv/HrhwEN
-         nKBoQwAeU4PndcExlyGDFJl1oMNgKuyJEq+1MrKKgZlhgss9V00q0BeYOV/UVKQgV9J4
-         saogB4ARARaezGWe19mCKnsT1bbsAheNQ1SSIoavok3gTYlehgZVJInWHp/1Fx9drxVt
-         O0EQ==
-X-Gm-Message-State: ACgBeo13EA+YA9wz5DoH+MIjfm+dukRrzWpkdEscnJdGWbe8b6KdlhKN
-        Jph52beYHYFvwgMxTFW7yipX7EgD3OvIzfGHzw2XRWyh+IDpvGePJIc5HdkbbZKv6LQPCqUNAgW
-        dFdxumTCG8wKX1+HszKDw51Rd
-X-Received: by 2002:a05:6402:2714:b0:43d:ca4f:d2a2 with SMTP id y20-20020a056402271400b0043dca4fd2a2mr7764355edd.185.1660950678519;
-        Fri, 19 Aug 2022 16:11:18 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5t8ZWTVk4y4Y4BTXVKS9pOWxmu4s8KtL9YowyUh5bjRrc9ssHwXdvbPAqefLHaOgjt3XLApA==
-X-Received: by 2002:a05:6402:2714:b0:43d:ca4f:d2a2 with SMTP id y20-20020a056402271400b0043dca4fd2a2mr7764349edd.185.1660950678398;
-        Fri, 19 Aug 2022 16:11:18 -0700 (PDT)
+        bh=AFFGKxt+Rynb6H3rLFquNUiuipOW4GaSN2+USkzDWw0=;
+        b=r7zjmM0OJvzq5G+t7aNUAbUPTxDm4WIVtj4UXlR+JeGxtheM0j6NXtGVI+/mLyIQV3
+         HUyU59dH5LSeN/T7Zjh0OM6DvILO6gMy/jwewiorqqioFL349pw74nGCHd8YKmWBzxDp
+         f6rhy2KteSYaZGcSFX4ClXkyUoyHmNZUkJjdCiGkAC1jnkj7We+1ZygxNaaoqP8n/QLx
+         qgt9vdl+JevCukS2gysEPm9pvUXPwAQkxMHfBvBDH7ilCb/sWPdbQ1atr6HHHD3Qnw6z
+         t1EIry4BznD/RsZ9qgM2nRlIFiP3Q+oAMMIt3AwGpnrfwwx+a5QGPr5Pb/Y7ta90FgIg
+         79tg==
+X-Gm-Message-State: ACgBeo0TqqrMUZdH/l/KTY58SUdfCCXMKDLNa+4wpQCUvZYpm+9e/FQl
+        4ZoriR1Yf+IX0QzFvIIR/NsZ9ZZ7VOpw4uHiuTIbIuc+iwQTuaD10xDetPhrwiilDbrOlAgmhEe
+        aN2XOqbrwrlnOlN//XKwv5KGu
+X-Received: by 2002:a05:6402:b37:b0:446:79cb:8ed2 with SMTP id bo23-20020a0564020b3700b0044679cb8ed2mr22589edb.265.1660950673505;
+        Fri, 19 Aug 2022 16:11:13 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6I47xkeEdQdkJwg0IElCbZlxTvQ3PAI/2KK3WH2jBuBVpkk+QFYyUaoLDoZHy4tthJHuyR9g==
+X-Received: by 2002:a05:6402:b37:b0:446:79cb:8ed2 with SMTP id bo23-20020a0564020b3700b0044679cb8ed2mr22583edb.265.1660950673381;
+        Fri, 19 Aug 2022 16:11:13 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id d5-20020a17090694c500b00734bfab4d59sm2923078ejy.170.2022.08.19.16.11.17
+        by smtp.gmail.com with ESMTPSA id da7-20020a056402176700b0043a61f6c389sm3761651edb.4.2022.08.19.16.11.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 16:11:18 -0700 (PDT)
+        Fri, 19 Aug 2022 16:11:12 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     daniel@ffwll.ch, airlied@linux.ie, tzimmermann@suse.de,
         mripard@kernel.org, liviu.dudau@arm.com, brian.starkey@arm.com
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH drm-misc-next 7/7] drm/arm/hdlcd: debugfs: protect device resources after removal
-Date:   Sat, 20 Aug 2022 01:10:58 +0200
-Message-Id: <20220819231058.647658-8-dakr@redhat.com>
+Subject: [PATCH drm-misc-next 5/7] drm/arm/hdlcd: use drm_dev_unplug()
+Date:   Sat, 20 Aug 2022 01:10:56 +0200
+Message-Id: <20220819231058.647658-6-dakr@redhat.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819231058.647658-1-dakr@redhat.com>
 References: <20220819231058.647658-1-dakr@redhat.com>
@@ -72,46 +72,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(Hardware) resources which are bound to the driver and device lifecycle
-must not be accessed after the device and driver are unbound.
+When the driver is unbound, there might still be users in userspace
+having an open fd and are calling into the driver.
 
-However, the DRM device isn't freed as long as the last user didn't
-close it, hence userspace can still call into the driver.
+While this is fine for drm managed resources, it is not for resources
+bound to the device/driver lifecycle, e.g. clocks or MMIO mappings.
 
-Therefore protect the critical sections which are accessing those
-resources with drm_dev_enter() and drm_dev_exit().
+To prevent use-after-free issues we need to protect those resources with
+drm_dev_enter() and drm_dev_exit(). This does only work if we indicate
+that the drm device was unplugged, hence use drm_dev_unplug() instead of
+drm_dev_unregister().
+
+Protecting the particular resources with drm_dev_enter()/drm_dev_exit()
+is handled by subsequent patches.
 
 Signed-off-by: Danilo Krummrich <dakr@redhat.com>
 ---
- drivers/gpu/drm/arm/hdlcd_drv.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/arm/hdlcd_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/arm/hdlcd_drv.c b/drivers/gpu/drm/arm/hdlcd_drv.c
-index e41def6d47cc..020c7d0c70a5 100644
+index 120c87934a91..e41def6d47cc 100644
 --- a/drivers/gpu/drm/arm/hdlcd_drv.c
 +++ b/drivers/gpu/drm/arm/hdlcd_drv.c
-@@ -204,11 +204,19 @@ static int hdlcd_show_pxlclock(struct seq_file *m, void *arg)
- 	struct drm_info_node *node = (struct drm_info_node *)m->private;
- 	struct drm_device *drm = node->minor->dev;
+@@ -325,7 +325,7 @@ static void hdlcd_drm_unbind(struct device *dev)
+ 	struct drm_device *drm = dev_get_drvdata(dev);
  	struct hdlcd_drm_private *hdlcd = drm_to_hdlcd_priv(drm);
--	unsigned long clkrate = clk_get_rate(hdlcd->clk);
--	unsigned long mode_clock = hdlcd->crtc.mode.crtc_clock * 1000;
-+	unsigned long clkrate, mode_clock;
-+	int idx;
-+
-+	if (!drm_dev_enter(drm, &idx))
-+		return -ENODEV;
-+
-+	clkrate = clk_get_rate(hdlcd->clk);
-+	mode_clock = hdlcd->crtc.mode.crtc_clock * 1000;
  
- 	seq_printf(m, "hw  : %lu\n", clkrate);
- 	seq_printf(m, "mode: %lu\n", mode_clock);
-+
-+	drm_dev_exit(idx);
- 	return 0;
- }
- 
+-	drm_dev_unregister(drm);
++	drm_dev_unplug(drm);
+ 	drm_kms_helper_poll_fini(drm);
+ 	component_unbind_all(dev, drm);
+ 	of_node_put(hdlcd->crtc.port);
 -- 
 2.37.2
 
