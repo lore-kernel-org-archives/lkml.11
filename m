@@ -2,134 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD5EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA13C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347312AbiHSIEh (ORCPT
+        id S1347376AbiHSIFk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
+        Fri, 19 Aug 2022 04:05:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346161AbiHSIEd (ORCPT
+        with ESMTP id S1347367AbiHSIFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:04:33 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FFAAFAF7;
-        Fri, 19 Aug 2022 01:04:32 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id c20so2810368qtw.8;
-        Fri, 19 Aug 2022 01:04:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=DrIuhQC3A2KwNz8Y4pmGRMavw3daxroamLa7iGInSPo=;
-        b=qemQOo3qpWDc2/2U7dGJHtXXsHuE4vz7AuPeQfUUvkLNP+cb5eZH8eLYofOCE6GrRb
-         TXHUM3SECDu5n23DVF6Hu+jSD7gSiT3MbQux/Q8agrymMerZKzJszU3xYGcnXGKlTuAU
-         EavGkBN++GB8EeR6nOcWRf08t97yWHVP/ghV2mF0tC7T5kp4Lr26LWVIbQgk5J5vQJFd
-         MRZ1SXY/OZM7cR6nuvGKBr2u7N3N3LK9OVfJgt3bjdJNIZJBSSLyo7MjWV75swGbOjAZ
-         RkasGALuN109E6sM6kKPtLEmXDY95iGC4SXjA20rQM+F9ZhDg197d+GaMBE6VHSV3qwj
-         ZvWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=DrIuhQC3A2KwNz8Y4pmGRMavw3daxroamLa7iGInSPo=;
-        b=FPClr9hyP1vTTY+6hn32he3qkF1EEih5u4i8/ablfj5YJTM0ppjHJYvXYtxtwW9e29
-         Mx1pNOenYkje6VSxb3jLJ9crQqXofqB8L7Q3Pk1ORy1StNsWfyyD2Zzu09hNd2RKMAeo
-         qZeodQfw1YdpKKv8/bzjp1TV4UxWs2oCA/a5JSHFCgUL3LrkpsQxn6K6ZIiAACVUMC4N
-         GC3VeZoo4G5cuXxSjU94AgHPDXs3svyCQACxne4K0mRA00dUKylCfnsp7yx2w1NhnVgB
-         0oo3MxSEpsVzmNeBbTPmvvqnvrx2O0CydKI3aFf8C1CyIApHw+iNmnnUV0KuGFY6ToZs
-         LyMA==
-X-Gm-Message-State: ACgBeo02uBwdgbAxoUmdd0lpehLcjsFOJFGxwMiHD4BMomlMRLleiwue
-        mo87UVLAH8RjhehfAJsv574huK95a5HZZe8uqnYGg1vYJbNlwA==
-X-Google-Smtp-Source: AA6agR4oZhYX4KSfciJKft2mP+sOvh8rGLPCbHVIyZxmSLVOjFIDt4hwnrGDyZdK0jFcY+en5PoRT+FtrpXmsUUWF/g=
-X-Received: by 2002:a05:622a:14cf:b0:343:5b6:68ca with SMTP id
- u15-20020a05622a14cf00b0034305b668camr5399126qtx.195.1660896271093; Fri, 19
- Aug 2022 01:04:31 -0700 (PDT)
+        Fri, 19 Aug 2022 04:05:36 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80825DC0AE;
+        Fri, 19 Aug 2022 01:05:35 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M8DkR1m94z67bbZ;
+        Fri, 19 Aug 2022 16:02:23 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 10:05:33 +0200
+Received: from [10.195.34.98] (10.195.34.98) by lhrpeml500003.china.huawei.com
+ (7.191.162.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
+ 2022 09:05:32 +0100
+Message-ID: <366fd6dd-a37b-c7ec-fdf3-48f8a8024834@huawei.com>
+Date:   Fri, 19 Aug 2022 09:05:32 +0100
 MIME-Version: 1.0
-References: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
-In-Reply-To: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 19 Aug 2022 11:03:55 +0300
-Message-ID: <CAHp75VebQfdHrfYTmF0w9M556ZV8fG5jJ2rAN5a3mrB1mbvOQw@mail.gmail.com>
-Subject: Re: [PATCH] iio: buffer: Silence lock nesting splat
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, kernel@axis.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH PoC 1/3] ACPI / PNP: Don't add enumeration_by_parent
+ devices
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "ACPI Devel Maling List" <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linuxarm <linuxarm@huawei.com>
+References: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
+ <1660649244-146842-2-git-send-email-john.garry@huawei.com>
+ <CAHp75Vc4vT==hB=svhDBhSpNFCQXwzZ1RMxy4mQspFhmSjQ03g@mail.gmail.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <CAHp75Vc4vT==hB=svhDBhSpNFCQXwzZ1RMxy4mQspFhmSjQ03g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.34.98]
+X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 1:30 PM Vincent Whitchurch
-<vincent.whitchurch@axis.com> wrote:
->
-> If an IIO driver uses callbacks from another IIO driver and calls
-> iio_channel_start_all_cb() from one of its buffer setup ops, then
-> lockdep complains due to the lock nesting, as in the below example with
-> lmp91000.  Since the locks are being taken on different IIO devices,
-> there is no actual deadlock, so add lock nesting annotation to silence
-> the spurious warning.
->
->  ============================================
->  WARNING: possible recursive locking detected
->  6.0.0-rc1+ #10 Not tainted
->  --------------------------------------------
->  python3/23 is trying to acquire lock:
->  0000000064c944c0 (&indio_dev->mlock){+.+.}-{3:3}, at: iio_update_buffers+0x62/0x180
->
->  but task is already holding lock:
->  00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
->
->  other info that might help us debug this:
->   Possible unsafe locking scenario:
->
->         CPU0
->         ----
->    lock(&indio_dev->mlock);
->    lock(&indio_dev->mlock);
->
->   *** DEADLOCK ***
->
->   May be due to missing lock nesting notation
->
->  5 locks held by python3/23:
->   #0: 00000000636b5420 (sb_writers#5){.+.+}-{0:0}, at: ksys_write+0x67/0x100
->   #1: 0000000064c19280 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x13a/0x270
->   #2: 0000000064c3d9e0 (kn->active#14){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x149/0x270
->   #3: 00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
->   #4: 0000000064c945c8 (&iio_dev_opaque->info_exist_lock){+.+.}-{3:3}, at: iio_update_buffers+0x4f/0x180
->
->  stack backtrace:
->  CPU: 0 PID: 23 Comm: python3 Not tainted 6.0.0-rc1+ #10
->  Call Trace:
->   dump_stack+0x1a/0x1c
->   __lock_acquire.cold+0x407/0x42d
->   lock_acquire+0x1ed/0x310
->   __mutex_lock+0x72/0xde0
->   mutex_lock_nested+0x1d/0x20
->   iio_update_buffers+0x62/0x180
->   iio_channel_start_all_cb+0x1c/0x20 [industrialio_buffer_cb]
->   lmp91000_buffer_postenable+0x1b/0x20 [lmp91000]
->   __iio_update_buffers+0x50b/0xd80
->   enable_store+0x81/0x100
->   dev_attr_store+0xf/0x20
->   sysfs_kf_write+0x4c/0x70
->   kernfs_fop_write_iter+0x179/0x270
->   new_sync_write+0x99/0x120
->   vfs_write+0x2c1/0x470
->   ksys_write+0x67/0x100
->   sys_write+0x10/0x20
+On 18/08/2022 20:31, Andy Shevchenko wrote:
+>> For the  hisi_lpc driver, for the UART ACPI node we have a binding like:
+>>
+>>   Device (LPC0.CON0) {
+>>      Name (_HID, "HISI1031")
+>>      Name (_CID, "PNP0501")
+>>      Name (LORS, ResourceTemplate() {
+>>        QWordIO (
+>>
+>> We have the compat and hid string. The ACPI/PNP code matches the compat
+>> string first, and creates the PNP device. In doing so, the acpi_device
+>> created has physical_node_count member set in acpi_bind_one().
+>>
+>> The hisi_lpc driver also creates a platform device serial device for uart,
+>> which is the actual uart which we want to use - see
+>> hisi_lpc_acpi_add_child(). That function does not check
+>> physical_node_count value, but acpi_create_platform_device() does check it.
+>> So if we were to move hisi_lpc_acpi_add_child() across to use
+>> acpi_create_platform_device(), then the change in this patch is required to
+>> not create the PNP binding (so that physical_node_count is not set from
+>> PNP probe).
+> Hmm... The flag, as I interpret it, is equal to "the device in
+> question is a peripheral device to the non-discoverable bus, such as
+> SPI, I2C or UART". I.o.w. I do not see how PNP suits here. So, from my
+> point of view it seems like an abuse of the flag. Not sure the current
+> state of affairs in ACPI glue layer regarding this, though.
 
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-mesages
+Hi Andy,
 
-On top of that, Fixes tag?
+Sorry, but I'm not following you here. Which flag are you talking about?
 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-
-
---
-With Best Regards,
-Andy Shevchenko
+thanks,
+John
