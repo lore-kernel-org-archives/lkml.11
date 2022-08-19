@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4410C32793
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7F0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350790AbiHSQCj (ORCPT
+        id S1350935AbiHSQCm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
+        Fri, 19 Aug 2022 12:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350961AbiHSP71 (ORCPT
+        with ESMTP id S1350881AbiHSP7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:59:27 -0400
+        Fri, 19 Aug 2022 11:59:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000F8108FBC;
-        Fri, 19 Aug 2022 08:52:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F4610958F;
+        Fri, 19 Aug 2022 08:52:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F1A9B8280C;
-        Fri, 19 Aug 2022 15:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D893C433C1;
-        Fri, 19 Aug 2022 15:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8A07B82811;
+        Fri, 19 Aug 2022 15:52:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F5B6C433D7;
+        Fri, 19 Aug 2022 15:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924309;
-        bh=omZ20BVuFxL1W05Lz9Iqe5y6+N9MFAhSKFKp3+JoWnQ=;
+        s=korg; t=1660924330;
+        bh=16N7gqoDhgtgU26/uFo+Xnm3wcLCzPvXEWtJM8/2n9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UCOB7M8fNRshMjlZ7boe4gFhb51DYhXz+OljD4nnTTAC8zsEdFpaZic0SKq0oJZ7t
-         YN8XNLzBVBEIDdHSnuXGdx3i+Zsej/O6YdXIHGW1FGl+gaOw6hQQabi+ij/9fh8U+t
-         Tt/EMsMHiW84yWZBS5IQ7teURiFDhVXthfLPfhh8=
+        b=mpMxrDbpi3tmPlau5cBsR5QJP8+rt4uhdkWzQWQ9fmxXNoHqhRwRfJMDVzltDE9P2
+         SR3biK1FXBPlDU9lvfAF3FAGXL1Q1byt5VVWaemRx7jWRodPfPJsn3dAQAJcX/bewd
+         YY7ydftqmEiIzxdMtuYNw9BW7+rfzGB/x+2Pp/n8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 128/545] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
-Date:   Fri, 19 Aug 2022 17:38:18 +0200
-Message-Id: <20220819153835.048901655@linuxfoundation.org>
+Subject: [PATCH 5.10 134/545] ARM: dts: qcom: pm8841: add required thermal-sensor-cells
+Date:   Fri, 19 Aug 2022 17:38:24 +0200
+Message-Id: <20220819153835.340843211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,34 +51,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
+[ Upstream commit e2759fa0676c9a32bbddb9aff955b54bb35066ad ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The PM8841 temperature sensor has to define thermal-sensor-cells.
 
-Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: dab8134ca072 ("ARM: dts: qcom: Add PM8841 functions device nodes")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220608112702.80873-2-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/prm3xxx.c | 1 +
+ arch/arm/boot/dts/qcom-pm8841.dtsi | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
-index 1b442b128569..63e73e9b82bc 100644
---- a/arch/arm/mach-omap2/prm3xxx.c
-+++ b/arch/arm/mach-omap2/prm3xxx.c
-@@ -708,6 +708,7 @@ static int omap3xxx_prm_late_init(void)
- 	}
- 
- 	irq_num = of_irq_get(np, 0);
-+	of_node_put(np);
- 	if (irq_num == -EPROBE_DEFER)
- 		return irq_num;
+diff --git a/arch/arm/boot/dts/qcom-pm8841.dtsi b/arch/arm/boot/dts/qcom-pm8841.dtsi
+index 2fd59c440903..c73e5b149ac5 100644
+--- a/arch/arm/boot/dts/qcom-pm8841.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8841.dtsi
+@@ -25,6 +25,7 @@ temp-alarm@2400 {
+ 			compatible = "qcom,spmi-temp-alarm";
+ 			reg = <0x2400>;
+ 			interrupts = <4 0x24 0 IRQ_TYPE_EDGE_RISING>;
++			#thermal-sensor-cells = <0>;
+ 		};
+ 	};
  
 -- 
 2.35.1
