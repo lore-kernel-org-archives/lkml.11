@@ -2,116 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C04FFC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771D9C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347745AbiHSLJv (ORCPT
+        id S1348734AbiHSLKU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        Fri, 19 Aug 2022 07:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348499AbiHSLJs (ORCPT
+        with ESMTP id S1348704AbiHSLKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:09:48 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CFDEEF29;
-        Fri, 19 Aug 2022 04:09:47 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id m3-20020a05600c3b0300b003a5e0557150so3770294wms.0;
-        Fri, 19 Aug 2022 04:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
-        bh=N1+SQP9/NNEeMXRgIAtNMNNPsYesv58EgfwcQ2TqP80=;
-        b=S46/LPn6eUw1mXd3EnYZ/rw4+v9qEbEUjrviABS48ma7s69nVa0g+uQfs1Dq82slMH
-         ROPd5ydcib/qy3b+5W4ga3AWw6vybxp2vbyW87dPKcyCq/cOjsPzAXb0JpPX+YEj0ktj
-         0useeDJY5oMfkDLSNy86a+FO+YJrxYYB9moxcguERDTimV2ZpgyImwFjc0atukt9Ufnk
-         wlLuhdovNL9TnUl95MpEcLNuLYYOMMLSMKYou97uUBsRSks5ZQw0awRYnc2MfIWrrVLp
-         y4h6qdUbvKFsssLIuQfbxEb7RGPrd7czpQWA+YeKplkVYs06YBsL/vFvmg9OGKq1WXUa
-         mcmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=N1+SQP9/NNEeMXRgIAtNMNNPsYesv58EgfwcQ2TqP80=;
-        b=j86KbabbcVa+Q2Dy30OjUMcmVOvLdf1P0ZuTpL+8SvstPhcAjZEm5HPCQ+r2XHKM6e
-         13ZFjiW9Zo3ariLsIplz/yNZukE8q+O93tdgPpbrSmzkoxXci11lZIjyoqAu5gPluGRl
-         Rhl66WXp2alrsnFPj2JVOal9/VpZ6f7GBhrbt80CIqVW52PvsyhKkdgKhxK70JqBFEra
-         BtM1ydrgnhL7aXQebN1eihq72/Xl359WdQ/jD6itRwnNsUJBeRWLhy8LKCTxl2D0Qa60
-         Z2JC20RtRftp4cqdT3vsqR3svHdxERJ8DdWzSAbg+5SKsR+v+olClaPtqz1XjegtuiKG
-         2Vxg==
-X-Gm-Message-State: ACgBeo3lbjgwQz729DdP+2sicShiOE1iasDiI8PL+McO81e9y019IuGl
-        QcYwKyQT5/fie0FDrP3Z7qI=
-X-Google-Smtp-Source: AA6agR75FbIKZGPSpxBNj5h9oWPX52jL+AmyluIEK9LMg40HfqZM4n9G7Ou95KKB+qaSuE3srDGE6g==
-X-Received: by 2002:a05:600c:4f05:b0:3a5:ffec:b6b with SMTP id l5-20020a05600c4f0500b003a5ffec0b6bmr7525600wmq.199.1660907385752;
-        Fri, 19 Aug 2022 04:09:45 -0700 (PDT)
-Received: from DreamMachine2.lan (188.red-83-35-57.dynamicip.rima-tde.net. [83.35.57.188])
-        by smtp.gmail.com with ESMTPSA id a13-20020a05600c348d00b003a5dfd7e9eesm5127117wmq.44.2022.08.19.04.09.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 04:09:45 -0700 (PDT)
-Message-ID: <269bf90a6cccb16e59f063b58f088ca6cd39c4b3.camel@gmail.com>
-Subject: Re: [PATCH] iio: pressure: bmp280: fix datasheet links
-From:   Angel Iglesias <ang.iglesiasg@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Fri, 19 Aug 2022 13:09:44 +0200
-In-Reply-To: <CAHp75VeSsVD8rMz-Cj6kFovqdQQPjbH7rUXWS6paRtsBaB-Kww@mail.gmail.com>
-References: <6e908cc827c70b95dae683717592aff0b003e7c9.1660606478.git.ang.iglesiasg@gmail.com>
-         <CAHp75VdTZ_JYB2aYVdQTOx9QW1HPKhwYyQH-0tVCtpjHV=VcaQ@mail.gmail.com>
-         <8a1f372f34be71895268e874bb3fbbf105dfabdb.camel@gmail.com>
-         <CAHp75VeSsVD8rMz-Cj6kFovqdQQPjbH7rUXWS6paRtsBaB-Kww@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (by Flathub.org) 
+        Fri, 19 Aug 2022 07:10:18 -0400
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0266F4936;
+        Fri, 19 Aug 2022 04:10:17 -0700 (PDT)
+Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAovmx007348;
+        Fri, 19 Aug 2022 04:07:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=PPS06212021;
+ bh=+xpItXt+HbP/PTzbqUy6/Ew9gXqfYLiFNtFjEYDxdK8=;
+ b=cdC+mml+3lMcwt2DJKKc4IQQByaxAPTcV7u4qRRh4Kxb/x9eTDUFZslcj/pdawMBCJOj
+ puQrwhbZnwX2lmCTrG5S0tMz5BWnwlWrOU4nDm+/1BlKIBM61gkiapCxkeKvm5I5G1md
+ ZUFqH371nCBdI2GeCXgIrezFivST/7nstUJDo0TVCq6kxFwi99gf1JYsaM+PI44TRZ/L
+ bXlrG/M7US9fvfdAs1d1oMqLWKuPvqwhKWcgzRc74y2ZZHEz74CKWm1o1gGrgd6GRzBt
+ xNIPwQe+3cnCydQ379IW8F/m0G/ifegLbWYAZD5SyeNVno9INIFYKEHULVK4DdafXgJb FA== 
+Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hxbfjn0j1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 19 Aug 2022 04:07:32 -0700
+Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Fri, 19 Aug 2022 04:07:28 -0700
+From:   Dragos-Marian Panait <dragos.panait@windriver.com>
+To:     <stable@vger.kernel.org>
+CC:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 5.4 0/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Fri, 19 Aug 2022 14:07:18 +0300
+Message-ID: <20220819110719.915478-1-dragos.panait@windriver.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [128.224.125.191]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
+X-Proofpoint-GUID: FjGF5FM6SlIzvYmFTN3t0l51Ie4CMrey
+X-Proofpoint-ORIG-GUID: FjGF5FM6SlIzvYmFTN3t0l51Ie4CMrey
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ mlxlogscore=307 clxscore=1015 phishscore=0 bulkscore=0 priorityscore=1501
+ impostorscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208190043
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-08-19 at 13:33 +0300, Andy Shevchenko wrote:
-> On Fri, Aug 19, 2022 at 1:31 PM Angel Iglesias <ang.iglesiasg@gmail.com>
-> wrote:
-> > On Fri, 2022-08-19 at 12:37 +0300, Andy Shevchenko wrote:
-> > > On Tue, Aug 16, 2022 at 2:39 AM Angel Iglesias <ang.iglesiasg@gmail.c=
-om>
-> > > wrote:
-> > > >=20
-> > > > Updated links for BMP280 and BME280 datasheets on Bosch website.
-> > >=20
-> > > > Datasheet of BMP180 is no longer available on the manufacturer's
-> > > > website,
-> > > > changed the link to a copy hosted by a third party.
-> > >=20
-> > > Note, that the version is downgraded (from 12.1 to 9).
-> >=20
-> > Apologies, I forgot to add a note about this. Changelog on datasheet 12=
-.1
-> > listed
-> > these three changes from version 9:
-> > * Page 26: Changed document referral from ANP015 to BST-MPS-AN004-00
-> > * Chapter 3.5: New equation for B3 (adds a long cast to AC1)
-> > * Page 26: Updated RoHS directive to 2011/65/EU effective 8 June 2011
->=20
-> Perhaps you may add this to the comment below into the code.
+The following commit is needed to fix CVE-2022-1679:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ac4827f78c7ffe8eef074bc010e7e34bc22f533
 
-Will do, thanks
+Pavel Skripkin (1):
+  ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
 
->=20
-> > Unfortunately, I couldn't find the most updated version in good quality
-> > hosted
-> > in a trustworthy place.
->=20
-> Me neither.
->=20
-> > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->=20
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-Kind regards,
-Angel
+
+base-commit: de0cd3ea700d1e8ed76705d02e33b524cbb84cf3
+-- 
+2.37.1
+
