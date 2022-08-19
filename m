@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E304C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF469C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351111AbiHSQDI (ORCPT
+        id S1351126AbiHSQDP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
+        Fri, 19 Aug 2022 12:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351068AbiHSQAg (ORCPT
+        with ESMTP id S1351094AbiHSQAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:00:36 -0400
+        Fri, 19 Aug 2022 12:00:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FC713D16;
-        Fri, 19 Aug 2022 08:52:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEA3109753;
+        Fri, 19 Aug 2022 08:52:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7760B8280C;
-        Fri, 19 Aug 2022 15:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BA6BC433D6;
-        Fri, 19 Aug 2022 15:52:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA334B827F8;
+        Fri, 19 Aug 2022 15:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34213C433C1;
+        Fri, 19 Aug 2022 15:52:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924347;
-        bh=2lKlvV7mdGk6XW3t9NaS89p7SXa7QHfF3L/ripmSsOc=;
+        s=korg; t=1660924353;
+        bh=2P86ZKNFEU5wzeVoOvbD8JQFIyb0ga6RcvV8rBd+ApA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f/zWuOuuU8GINlJ6F/+MeIabUgHY4JlRYs6BwuwhmlXlQR73F3vCQTn51PtVd5A7p
-         c8VzBt5a7amJR9Zkik/WVTPIxG0ZEQGI2vv6Mkao0xoMeuSdDb/oNRGl3enT72gA4B
-         349/fKWS8AD+Zib+kDjLHtyu28ptIYxlzVIdfAxY=
+        b=OgkuIGHkAKjP6dJ76AJGzhaf1HghFqW15u7XefNHvAtgkJ/ms3WblJhZPNzQtMPZF
+         r6sDWg3u4DT3U+f2P/OlrKvwuDYQqEYAW1ZL2JjUbQJFfVa884UhTnRMfReiXmqDHO
+         3nZACIe0r+5V9nyOYu2bYXrRXKJIuNZzRBqcSW8c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 140/545] hwmon: (drivetemp) Add module alias
-Date:   Fri, 19 Aug 2022 17:38:30 +0200
-Message-Id: <20220819153835.607720674@linuxfoundation.org>
+        stable@vger.kernel.org, Junichi Nomura <junichi.nomura@nec.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Mike Christie <michael.christie@oracle.com>,
+        Li Zefan <lizf@cn.fujitsu.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 142/545] blktrace: Trace remapped requests correctly
+Date:   Fri, 19 Aug 2022 17:38:32 +0200
+Message-Id: <20220819153835.687614029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,31 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 5918036cfa8ded7aa8094db70295011ce2275447 ]
+[ Upstream commit 22c80aac882f712897b88b7ea8f5a74ea19019df ]
 
-Adding a MODULE_ALIAS() to drivetemp will make the driver easier
-for modprobe to autoprobe.
+Trace the remapped operation and its flags instead of only the data
+direction of remapped operations. This issue was detected by analyzing
+the warnings reported by sparse related to the new blk_opf_t type.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220712214624.1845158-1-linus.walleij@linaro.org
-Fixes: 5b46903d8bf3 ("hwmon: Driver for disk and solid state drives with temperature sensors")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Jun'ichi Nomura <junichi.nomura@nec.com>
+Cc: Mike Snitzer <snitzer@kernel.org>
+Cc: Mike Christie <michael.christie@oracle.com>
+Cc: Li Zefan <lizf@cn.fujitsu.com>
+Cc: Chaitanya Kulkarni <kch@nvidia.com>
+Fixes: 1b9a9ab78b0a ("blktrace: use op accessors")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Link: https://lore.kernel.org/r/20220714180729.1065367-11-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/drivetemp.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/blktrace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/drivetemp.c b/drivers/hwmon/drivetemp.c
-index 72c760373957..00303af82a77 100644
---- a/drivers/hwmon/drivetemp.c
-+++ b/drivers/hwmon/drivetemp.c
-@@ -621,3 +621,4 @@ module_exit(drivetemp_exit);
- MODULE_AUTHOR("Guenter Roeck <linus@roeck-us.net>");
- MODULE_DESCRIPTION("Hard drive temperature monitor");
- MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:drivetemp");
+diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
+index 7f625400763b..15a376f85e09 100644
+--- a/kernel/trace/blktrace.c
++++ b/kernel/trace/blktrace.c
+@@ -1100,7 +1100,7 @@ static void blk_add_trace_rq_remap(void *ignore, struct request *rq, dev_t dev,
+ 	r.sector_from = cpu_to_be64(from);
+ 
+ 	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
+-			rq_data_dir(rq), 0, BLK_TA_REMAP, 0,
++			req_op(rq), rq->cmd_flags, BLK_TA_REMAP, 0,
+ 			sizeof(r), &r, blk_trace_request_get_cgid(rq));
+ 	rcu_read_unlock();
+ }
 -- 
 2.35.1
 
