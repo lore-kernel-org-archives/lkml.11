@@ -2,139 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A07B9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD462C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349039AbiHSMoZ (ORCPT
+        id S1349055AbiHSMpK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
+        Fri, 19 Aug 2022 08:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349031AbiHSMoU (ORCPT
+        with ESMTP id S1349051AbiHSMo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:44:20 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C0350066;
-        Fri, 19 Aug 2022 05:44:19 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id u9so4618332oiv.12;
-        Fri, 19 Aug 2022 05:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=olgvWTHr9jS7KCb0QPjN0Q5SDmG5cWSWO8bFNkf78GM=;
-        b=YsEC8qSbFJb+2pn0c5tUK5CAeG6y1dHvZfZ0NSfgRIZX6FQjGTInPfh0y8S3WMXZLp
-         Oji1fcGeAtKlnm0L5NggYNQp33wLRhJvq57bUNeKen1apEwup1vV9F75qlXu3lx0W0d1
-         YX1oOwGOyQXThIb+oSdBseJTDlytEG2g2QstwFs4eCu5EMOIjSs/+G54gEV9ZQ7cKP3l
-         AeKgvsvxgwHz2lV7s8iRnmxO6EGkQoO/0Hl9rPB9BKiNCLxc2YzbNvZMV/2rl0wI9iJU
-         7RhFaCsZemxwLrxzU4gt3YFOfmlvaMuLdkBYPmVNjldvtupG13/N+gjEbJvU4EVYldOj
-         Z1tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=olgvWTHr9jS7KCb0QPjN0Q5SDmG5cWSWO8bFNkf78GM=;
-        b=TE3QQ7Dbg8WYDmvDdMCPnw4HUpZu7PdCiMgdRQPy/w5qBuakAi3L3N/jz3uM6sviWG
-         baaAf+whSaPTXOJBxlEUauhEYDgKu/m6bfTrQtUszu1OHOUAk661yU/DvVNgNTr6brxU
-         LxzOXuiZZMwHgbKHx4ADp19V490IPEHiLAIts0FtIEIS8liSY9MPRxfmoUDbeuI6Q9sa
-         wfFXLDDqpowHYoUiaGB+WdXcb2HoU1k+1EEwPUuXC6MeKPygN6NLx2tPN2odJMh3DpGL
-         JMU/mDBNyjcEU3BbrgA3cCLEiEESuNMee9ayJDSVH53LZTbZ7//yFyZxnWEnTFoM6NFE
-         4eLg==
-X-Gm-Message-State: ACgBeo35Ru9DHUMryYq8tL/QOJz2FUHFRR0q/mpI2Ez90LbvWlYXFlBU
-        P5WLkYmt/1kUtSlJh2eicgY=
-X-Google-Smtp-Source: AA6agR4TeLAlljlgzU9GM+oiS5UvkUK/mHzEuw8SpgXWqvvKguFcp7gVBgRwHKduQPnsh/7xlsfRmg==
-X-Received: by 2002:a05:6808:14cb:b0:344:cc0b:a567 with SMTP id f11-20020a05680814cb00b00344cc0ba567mr5730686oiw.204.1660913058552;
-        Fri, 19 Aug 2022 05:44:18 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id x37-20020a056870332500b00101bd4914f9sm1220409oae.43.2022.08.19.05.44.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 05:44:18 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 05:42:06 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:HFI1 DRIVER" <linux-rdma@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH v2 1/5] bitops: Introduce find_next_andnot_bit()
-Message-ID: <Yv+FHpyZ6gpIAXMw@yury-laptop>
-References: <20220817175812.671843-1-vschneid@redhat.com>
- <20220817175812.671843-2-vschneid@redhat.com>
- <20220818100820.3b45808b@gandalf.local.home>
- <xhsmh35dtbjr0.mognet@vschneid.remote.csb>
- <20220818130041.5b7c955f@gandalf.local.home>
- <CAHp75VcaSwfy7kOm_d28-87QKQ5KPB69=X=Z9OYUzJJKwRCSmQ@mail.gmail.com>
- <xhsmhk074a5eu.mognet@vschneid.remote.csb>
+        Fri, 19 Aug 2022 08:44:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71199A942;
+        Fri, 19 Aug 2022 05:44:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=dSwJx5rR8Lt0DjDqYcDYjxzsWNyMCSlR3JILmPEc0Gs=; b=lXTSFuth2KRMYL1geYu4QyYr6W
+        koUidmk/224fozLt9ISXEiugAU65hj/NlvdmdfdtPKyVwavJL9eeGJOnho8SefRAJ7E/uMCkthGuu
+        CwYiAF7+OB/9yC3rB2KD1/IGhV/A4qYyJX+9hq+sdmieOZQpEboVrak90RxWs8DVjdCw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oP1Mg-00DufM-K7; Fri, 19 Aug 2022 14:44:42 +0200
+Date:   Fri, 19 Aug 2022 14:44:42 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Wei Fang <wei.fang@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add
+ nxp,refclk_in property
+Message-ID: <Yv+FuiUoTjpoUZ32@lunn.ch>
+References: <20220819074729.1496088-1-wei.fang@nxp.com>
+ <20220819074729.1496088-2-wei.fang@nxp.com>
+ <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
+ <DB9PR04MB81064199835C0E44B997DE06886C9@DB9PR04MB8106.eurprd04.prod.outlook.com>
+ <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <xhsmhk074a5eu.mognet@vschneid.remote.csb>
+In-Reply-To: <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 11:34:01AM +0100, Valentin Schneider wrote:
-> On 18/08/22 22:04, Andy Shevchenko wrote:
-> > On Thu, Aug 18, 2022 at 8:18 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >> On Thu, 18 Aug 2022 17:26:43 +0100
-> >> Valentin Schneider <vschneid@redhat.com> wrote:
+On Fri, Aug 19, 2022 at 02:37:36PM +0300, Krzysztof Kozlowski wrote:
+> On 19/08/2022 12:37, Wei Fang wrote:
 > >>
-> >> > How about:
+> >>> +          in RMII mode. This clock signal is provided by the PHY and is
+> >>> +          typically derived from an external 25MHz crystal. Alternatively,
+> >>> +          a 50MHz clock signal generated by an external oscillator can be
+> >>> +          connected to pin REF_CLK. A third option is to connect a 25MHz
+> >>> +          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
+> >>> +          as input or output according to the actual circuit connection.
+> >>> +          If present, indicates that the REF_CLK will be configured as
+> >>> +          interface reference clock input when RMII mode enabled.
+> >>> +          If not present, the REF_CLK will be configured as interface
+> >>> +          reference clock output when RMII mode enabled.
+> >>> +          Only supported on TJA1100 and TJA1101.
 > >>
-> >> >
-> >> >   find the next set bit in (*addr1 & ~*addr2)
+> >> Then disallow it on other variants.
 > >>
-> >> I understand the above better. But to convert that into English, we could
-> >> say:
+> >> Shouldn't this be just "clocks" property?
 > >>
 > >>
-> >>   Find the next bit in *addr1 excluding all the bits in *addr2.
-> >>
-> >> or
-> >>
-> >>   Find the next bit in *addr1 that is not set in *addr2.
-> >
-> > With this explanation I'm wondering how different this is to
-> > bitmap_bitremap(), with adjusting to using an inverted mask. If they
-> > have something in common, perhaps make them in the same namespace with
-> > similar naming convention?
-> >
+> > This property is to configure the pin REF_CLK of PHY as a input pin through phy register,
+> > indicates that the REF_CLK signal is provided by an external oscillator. so I don't think it's a
+> > "clock" property.
 > 
-> I'm trying to wrap my head around the whole remap thing, IIUC we could have
-> something like remap *addr1 to ~*addr2 and stop rather than continue with a
-> wraparound, but that really feels like shoehorning.
+> clocks, not clock.
+> 
+> You just repeated pieces of description as an counter-argument, so this
+> does not explain anything.
+> 
+> If it is external oscillator shouldn't it be represented in DTS and then
+> obtained by driver (clk_get + clk_prepare_enable)? Otherwise how are you
+> sure that clock is actually enabled? And the lack of presence of the
+> external clock means it is derived from PHY?
 
-Old and new maps create a simple forward-looking mapping, like this:
-    #0   #4
-old: 0111 0 ...
-     | \\\|
-New: 00 111 ...
+Using the common clock framework has been discussed in the past. But
+no PHY actually does this. When the SoC provides the clock, a few PHYs
+do make use of the common clock framework as clock consumers to ensure
+the clock is ticking.
 
-So if you pass #0, it's wired to 0; but #1 will skip 1 bit and would be
-wired to 2; and so on. There is some puzzling when wraparound comes in
-play, but the general idea is like that.
+Plus, as the description says, this pin can be either a clock producer
+or a consumer. I don't think the common clock code allows this. It is
+also not something you negotiate between the MAC and PHY. The hardware
+designer typically decides based on the MAC and PHY actually used. So
+this is a fixed hardware property.
 
-I think there's nothing common with bitmap_and{,_not}.
-
-Thanks,
-Yury
+     Andrew
