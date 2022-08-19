@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54898C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4249C32773
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351360AbiHSQFd (ORCPT
+        id S1351473AbiHSQFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
+        Fri, 19 Aug 2022 12:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351520AbiHSQBz (ORCPT
+        with ESMTP id S1351524AbiHSQBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:01:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234AF7E821;
-        Fri, 19 Aug 2022 08:53:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A263915C0;
+        Fri, 19 Aug 2022 08:53:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DCB6ECE26B5;
-        Fri, 19 Aug 2022 15:53:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03FDC433D6;
-        Fri, 19 Aug 2022 15:53:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3A58615E9;
+        Fri, 19 Aug 2022 15:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC0C8C433C1;
+        Fri, 19 Aug 2022 15:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924417;
-        bh=LRYanTTuM7Fr/DtH9Gv9pC3t6OmIF336n5aBC7aLuoI=;
+        s=korg; t=1660924423;
+        bh=wjg8IgdqXZIvEgmxD5+Wav+VSbMaBc1RbZdg1MMCd8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PvvdyVT4S/8a+gU8rT7hO8kiu4Z146EvFsy7k4Y2qgLFD5o2tVctCi0zO96rijayc
-         mmnodvP+GgnYXFj80U4ZtNgTgN54oL6g2pEamWuBelkZTNJ9vd30Mdk2YGgYxhGtdl
-         ql8PcQCSKfqtGiVBiAoPnbFT94SJcpYemjyWO91E=
+        b=qa7DapR2qsmyVU/2cGULExJWgprf+xzEQdfNq++6QEiCVFxcuicro8f37sWqxJZWn
+         q9hmx0b8p6aal/g4xBVWdXFaYqs2jB4/lyBeOFF43odTBiCp6VRINKmcPAtBpFMM1V
+         vSGA7D/8Rtzt8gtorswxrJocIBlvNxCPRW3MXXSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 164/545] ath11k: Fix incorrect debug_mask mappings
-Date:   Fri, 19 Aug 2022 17:38:54 +0200
-Message-Id: <20220819153836.704634117@linuxfoundation.org>
+Subject: [PATCH 5.10 166/545] drm/mediatek: Modify dsi funcs to atomic operations
+Date:   Fri, 19 Aug 2022 17:38:56 +0200
+Message-Id: <20220819153836.790161280@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,41 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-[ Upstream commit 9331f7d3c54a263bede5055e106e40b28d0bd937 ]
+[ Upstream commit 7f6335c6a258edf4d5ff1b904bc033188dc7b48b ]
 
-Currently a couple of debug_mask entries are mapped to the same value,
-this could enable unintended driver logging. If enabling DP_TX logs was
-the intention, then this could also enable PCI logs flooding the dmesg
-buffer or vice versa. Fix this by correctly assigning the debug masks.
+Because .enable & .disable are deprecated.
+Use .atomic_enable & .atomic_disable instead.
 
-Found during code review.
-
-Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
-
-Fixes: aa2092a9bab3f ("ath11k: add raw mode and software crypto support")
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220602115621.15339-1-quic_mpubbise@quicinc.com
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-2-git-send-email-xinlei.lee@mediatek.com/
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/debug.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debug.h b/drivers/net/wireless/ath/ath11k/debug.h
-index 659a275e2eb3..694ebba17fad 100644
---- a/drivers/net/wireless/ath/ath11k/debug.h
-+++ b/drivers/net/wireless/ath/ath11k/debug.h
-@@ -23,8 +23,8 @@ enum ath11k_debug_mask {
- 	ATH11K_DBG_TESTMODE	= 0x00000400,
- 	ATH11k_DBG_HAL		= 0x00000800,
- 	ATH11K_DBG_PCI		= 0x00001000,
--	ATH11K_DBG_DP_TX	= 0x00001000,
--	ATH11K_DBG_DP_RX	= 0x00002000,
-+	ATH11K_DBG_DP_TX	= 0x00002000,
-+	ATH11K_DBG_DP_RX	= 0x00004000,
- 	ATH11K_DBG_ANY		= 0xffffffff,
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 65fd99c528af..2c09b43705ef 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -746,14 +746,16 @@ static void mtk_dsi_bridge_mode_set(struct drm_bridge *bridge,
+ 	drm_display_mode_to_videomode(adjusted, &dsi->vm);
+ }
+ 
+-static void mtk_dsi_bridge_disable(struct drm_bridge *bridge)
++static void mtk_dsi_bridge_atomic_disable(struct drm_bridge *bridge,
++					  struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+ 
+ 	mtk_output_dsi_disable(dsi);
+ }
+ 
+-static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
++static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
++					 struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+ 
+@@ -762,8 +764,8 @@ static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
+ 
+ static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
+ 	.attach = mtk_dsi_bridge_attach,
+-	.disable = mtk_dsi_bridge_disable,
+-	.enable = mtk_dsi_bridge_enable,
++	.atomic_disable = mtk_dsi_bridge_atomic_disable,
++	.atomic_enable = mtk_dsi_bridge_atomic_enable,
+ 	.mode_set = mtk_dsi_bridge_mode_set,
  };
  
 -- 
