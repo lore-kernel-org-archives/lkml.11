@@ -2,106 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 515C4C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 500E1C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348076AbiHSJmn (ORCPT
+        id S1348079AbiHSJnr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
+        Fri, 19 Aug 2022 05:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348205AbiHSJmi (ORCPT
+        with ESMTP id S1348003AbiHSJnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:42:38 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72EB79A61;
-        Fri, 19 Aug 2022 02:42:37 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id g16so2891967qkl.11;
-        Fri, 19 Aug 2022 02:42:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Xra5wOcQVG12+wejDaPgCNN7Ex8BBmCGGrUkA59x0/w=;
-        b=dyjHy/dUBiUpNDsh5agSwMcEFKBaGt0DbaWswj2y5LuThuLI4ctgD8UpWiEOoaziYL
-         0hFauWnW0UQ0fkj6rRhBPM0QeyqCXrykAQ/u8Tagcy69jfOZkwvpArsH28W7MzHSvxOp
-         6C95gnqXqgDBsEpMPh0MGlwSdayCKyXvkooRjkKjVIm91wVdEin+62VCCR0sJEjNjVdf
-         H64CAzxtwBZurny/cWzvdcQutvJubaL0bwdMtVreLBia2WHddYh2/kkXn0StBxBvAhfM
-         gUzVVprAONXpaClFr6gF7s15Tp4ErtU2E8j8BhohcQaGc1kVKYlAAQY5AV0VVDqMH9Cf
-         cdVg==
+        Fri, 19 Aug 2022 05:43:37 -0400
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D80022B25;
+        Fri, 19 Aug 2022 02:43:32 -0700 (PDT)
+Received: by mail-qk1-f178.google.com with SMTP id m5so2913368qkk.1;
+        Fri, 19 Aug 2022 02:43:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=Xra5wOcQVG12+wejDaPgCNN7Ex8BBmCGGrUkA59x0/w=;
-        b=PpwIkk+Xzt4VmqOM+3Z3pIm3n8SZLUdXg+ehvWAZ4J1sB0DGQ8yxgTXi91F75vTdsY
-         FbE6zkk4bgB1FDsopfgfFu0dD+AX8iBxHe1+YhigqzRBlNx5wVd/bkAo7NddqnafNJH/
-         uw3Cv432wCcSVcW0aQ2FRpW+CqNVMBn8+Jy4bZ86xM58WjqwGSl0T1ENKwnCoU0DKZ+5
-         RxZm2bujBmmpExH6H2N9l51YFhWebyODmOHdnzSPK91TGHNSwUHCPV4g33XMaIYArxL0
-         I1xwqATxVKh9yG+OaveE+fwZ8nk8f1aUPUOGJpheh1rPfyoXpUdnidE7i80SuTwodvdX
-         doNg==
-X-Gm-Message-State: ACgBeo0Dib3a1jFRfkD7zDHFw/g4mB9aip8jqHg+oy2lDIqZ/p6JWkxf
-        AmQbTctrSKIK5OJstKtabdcMORKKlnxw0BpDd9s=
-X-Google-Smtp-Source: AA6agR4Z6wmjzS7ZzrDPS1R46n9TWvkPbnPGmGbxIKGId+2Mk9AjHiMyDcwH3/GlgzPyz3ryNW8/HRYHg49pqGVHr3s=
-X-Received: by 2002:a05:620a:2809:b0:6b6:5908:316e with SMTP id
- f9-20020a05620a280900b006b65908316emr4716136qkp.734.1660902156806; Fri, 19
- Aug 2022 02:42:36 -0700 (PDT)
+        bh=0aOTc6/F1cVYRw4ls0mMkgT35B7fcZqhymVjE9ZCfDA=;
+        b=8LFHo3w1xEsIvFeeyNruJ5LmpIrE8TKhX4SJLTXUeRnLoEEg4B8p5MZFLj1UiSuWgA
+         3uOXrvg656xXbLtm2Nf3rQQ7zF1zkmJ1ZHKTuZlvcUEnb7X1YOpoMv+FW63kWPfHXZFe
+         WnAA56Jn5Makbr9Fe25xyl2JUzmvIPQ4FStqb0IcSpZkdOSfJ6I/C2ZQVb4Wx2W9oNGf
+         Xf9BIWKGV6rSNn7QRJjcFVjRjXIUFlPLAFHT3dD1dprfPhhdY8VFzwWR9jFJE6UEjpQC
+         p4/3XahwoygpYGk6Rp/xYd+Uqh6esqa52lff+d0mSv/VhLzFEAO2bVB7C0qlZvuuJY/y
+         vgnQ==
+X-Gm-Message-State: ACgBeo1ydMAs8mXE9xpA7RgVbPw/RnUlHB63QyK8mkqqJsDPxk2CIDJE
+        jsnZVuGae5aWtCUtgORFGuuZToxJKnuMpA==
+X-Google-Smtp-Source: AA6agR4n4wCUw7PcmY1GasJJeXpogIvNG5dWy38k9UKEr665prlDroKQSv05Hm2a3noCoFzrwq1ubw==
+X-Received: by 2002:a37:27c6:0:b0:6bb:e4fa:18f9 with SMTP id n189-20020a3727c6000000b006bbe4fa18f9mr184654qkn.402.1660902211747;
+        Fri, 19 Aug 2022 02:43:31 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id y2-20020ac85242000000b0031f36cd1958sm2674808qtn.81.2022.08.19.02.43.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 02:43:31 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-324ec5a9e97so107374877b3.7;
+        Fri, 19 Aug 2022 02:43:31 -0700 (PDT)
+X-Received: by 2002:a81:b812:0:b0:328:68e4:c886 with SMTP id
+ v18-20020a81b812000000b0032868e4c886mr6415346ywe.502.1660902210835; Fri, 19
+ Aug 2022 02:43:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220809211246.251006-1-eajames@linux.ibm.com>
- <20220809211246.251006-2-eajames@linux.ibm.com> <CAHp75Vf5wcabm_-oKGN2m7z=L2xu1D6wtzKLhu6n19Uhq8yijQ@mail.gmail.com>
- <e35b595f-572e-a539-c550-831cdd02dbd3@linux.ibm.com>
-In-Reply-To: <e35b595f-572e-a539-c550-831cdd02dbd3@linux.ibm.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 19 Aug 2022 12:42:00 +0300
-Message-ID: <CAHp75VfU26QZ7Z1ApzRcFPudgsQc7zWF5g0kwn7Jzk1htXaWng@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] iio: pressure: dps310: Refactor startup procedure
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>
+References: <20220818205949.6384-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220818205949.6384-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 19 Aug 2022 11:43:19 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVNchTUCJgGjbZcDtMgwXadFbgtQ+2Uw52hpnwiYxZJNg@mail.gmail.com>
+Message-ID: <CAMuHMdVNchTUCJgGjbZcDtMgwXadFbgtQ+2Uw52hpnwiYxZJNg@mail.gmail.com>
+Subject: Re: [PATCH] sh: move from strlcpy with unused retval to strscpy
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 4:42 PM Eddie James <eajames@linux.ibm.com> wrote:
-> On 8/12/22 17:03, Andy Shevchenko wrote:
-> > On Wed, Aug 10, 2022 at 12:12 AM Eddie James <eajames@linux.ibm.com> wrote:
-
-...
-
-> >> +       rc = regmap_write(data->regmap, 0x0e, 0xA5);
-> >> +       if (rc)
-> >> +               return rc;
-> >> +
-> >> +       rc = regmap_write(data->regmap, 0x0f, 0x96);
-> >> +       if (rc)
-> >> +               return rc;
-> > This code already exists, but still want to ask, is it really
-> > byte-registers here and not be16/le16 one? In such a case perhaps bulk
-> > write can be used to reflect it better?
+On Thu, Aug 18, 2022 at 11:00 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
 >
-> The temperature and pressure regs are 24 bits big endian, and all the
-> rest are 8 bits. I think the existing approach is best.
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-It doesn't look like you got what I was meaning... Or I misunderstood
-what you said.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-The code above writes two byte values to two sequential registers
-which make me think that they are 16-bit registers at offset 0x0e.
+Gr{oetje,eeting}s,
 
-...
+                        Geert
 
-> >> +       rc = regmap_write(data->regmap, 0x0e, 0x00);
-> >> +       if (rc)
-> >> +               return rc;
-> >> +
-> >> +       return regmap_write(data->regmap, 0x0f, 0x00);
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Ditto.
-
--- 
-With Best Regards,
-Andy Shevchenko
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
