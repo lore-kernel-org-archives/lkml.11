@@ -2,229 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBA5C32774
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F15C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348978AbiHSM2m (ORCPT
+        id S1348986AbiHSMaE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
+        Fri, 19 Aug 2022 08:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348970AbiHSM2d (ORCPT
+        with ESMTP id S1348983AbiHSMaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:28:33 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4577572B5F;
-        Fri, 19 Aug 2022 05:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660912112; x=1692448112;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2Nm7jyxD/fyaId3huaPt8VqEfpZF+UJyBdpgKFruHqQ=;
-  b=loX+dJESavnViRL0Bx4NFslIsfo2A+B18Q3wHhF3cIZdt6H9rtUzvs5z
-   pVL6EfjaJVOYlIrd7y0UwVbSGxrWyaWkWBBpjxINbqa0nHgBNzlxdiiag
-   vYSjw+UMikmWF6JeyhUovrYN/GRdbsBtF6ZEmoAFrasfx5WQZb3W2K1+4
-   bYGieZUBMeFagjXoUkFg1w+9NQIIjBLi4RTUix/uNckLDUip7obKdztM8
-   Mahz31JcVWPyemZvHkWRAIswhtLSBny/jK2BftIIOPdmRn2l42MWdjbUp
-   dXkTEGyLDxw32EYfJINKOYqVKPgilhfg3MNH/Q6GDoC58QP7P6O+OHxHu
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="109780604"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Aug 2022 05:28:31 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 19 Aug 2022 05:28:22 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Fri, 19 Aug 2022 05:28:20 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: [PATCH 6/6] riscv: dts: microchip: add the mpfs' fabric clock control
-Date:   Fri, 19 Aug 2022 13:23:00 +0100
-Message-ID: <20220819122259.183600-7-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220819122259.183600-1-conor.dooley@microchip.com>
-References: <20220819122259.183600-1-conor.dooley@microchip.com>
+        Fri, 19 Aug 2022 08:30:01 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541C6100F08;
+        Fri, 19 Aug 2022 05:30:00 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBfsCV016808;
+        Fri, 19 Aug 2022 12:29:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=6d5xYz3i348rkn2bGaqNtfW82ghg3p8FmBpjICbEdXA=;
+ b=aZapU+t4Mi4RagJWI4Exjx/MUb2jqp6WiuO0ra4VttYlg9B6bh11413jMcrgmJIGVVar
+ W8pzijOxW8eKlUzs+W6EO0q7hFZ7hSy0ia/tfeTwkI1S0iRdcTYRmojfjb8Bf48KHwUF
+ wNRu1ok1+c847XPi9sQWC42I46ygzCGJwu+H3+AWrVASzGu5HT7HsQeuxXxTer4/cJKv
+ fKX6v73RzdjyOLB9i0H0TUIyULf91E2bP4uxSPHGe7G+0uNxblE34KuB+4R7dx5FzP5O
+ tfX4zd3QCGW6Ry/itzx2351gkYwgsPwDb5VGAX0wlBhUdiyq2j/94oeUUvGAtjZYSSzj Xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j29vc17hc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 12:29:57 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27JBlGDn005801;
+        Fri, 19 Aug 2022 12:29:56 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j29vc17gb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 12:29:56 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27JCKp0L023998;
+        Fri, 19 Aug 2022 12:29:54 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3hx37jf84p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 12:29:54 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27JCToKb29884804
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Aug 2022 12:29:50 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 962B7A405B;
+        Fri, 19 Aug 2022 12:29:50 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4E00DA4054;
+        Fri, 19 Aug 2022 12:29:48 +0000 (GMT)
+Received: from li-c6ac47cc-293c-11b2-a85c-d421c8e4747b.ibm.com.com (unknown [9.171.40.114])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 19 Aug 2022 12:29:48 +0000 (GMT)
+From:   Pierre Morel <pmorel@linux.ibm.com>
+To:     mjrosato@linux.ibm.com
+Cc:     rdunlap@infradead.org, linux-kernel@vger.kernel.org, lkp@intel.com,
+        borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        linux-s390@vger.kernel.org, kvm@vger.kernel.org, gor@linux.ibm.com,
+        hca@linux.ibm.com, schnelle@linux.ibm.com, frankja@linux.ibm.com,
+        alex.williamson@redhat.com, cohuck@redhat.com
+Subject: [PATCH v2] KVM: s390: pci: Hook to access KVM lowlevel from VFIO
+Date:   Fri, 19 Aug 2022 14:29:45 +0200
+Message-Id: <20220819122945.9309-1-pmorel@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: gTrCtLvoPBEtCO3MN1Iy94peFugVxJy2
+X-Proofpoint-GUID: pTKi6qLsfQA1GRVqUXgg4EIkBHBpht8D
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxlogscore=915 suspectscore=0
+ malwarescore=0 impostorscore=0 clxscore=1015 mlxscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208190047
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "fabric clocks" in current PolarFire SoC device trees are not
-really fixed clocks. Their frequency is set by the bitstream, so having
-them located in -fabric.dtsi is not a problem - they're just as "fixed"
-as the IP blocks etc used in the FPGA fabric.
-However, their configuration can be read at runtime (and to an extent
-they can be controlled, although the intended usage is static
-configurations set by the bitstream) through the system controller bus.
+We have a cross dependency between KVM and VFIO when using
+s390 vfio_pci_zdev extensions for PCI passthrough
+To be able to keep both subsystem modular we add a registering
+hook inside the S390 core code.
 
-In the v2209 reference design a single CCC (north-west corner) is
-enabled, using a 50 MHz off-chip oscillator as its reference.
+This fixes a build problem when VFIO is built-in and KVM is built
+as a module.
 
-Updating to the v2209 reference design is required.
-
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+Fixes: 09340b2fca007 ("KVM: s390: pci: add routines to start/stop interpretive execution")
+Cc: <stable@vger.kernel.org>
 ---
- .../dts/microchip/mpfs-icicle-kit-fabric.dtsi | 27 +++++++++------
- .../boot/dts/microchip/mpfs-icicle-kit.dts    |  4 +++
- .../dts/microchip/mpfs-polarberry-fabric.dtsi |  5 +++
- arch/riscv/boot/dts/microchip/mpfs.dtsi       | 34 +++++++++++++++++--
- 4 files changed, 58 insertions(+), 12 deletions(-)
+ arch/s390/include/asm/kvm_host.h | 17 ++++++-----------
+ arch/s390/kvm/pci.c              | 12 ++++++++----
+ arch/s390/pci/Makefile           |  2 +-
+ arch/s390/pci/pci_kvm_hook.c     | 11 +++++++++++
+ drivers/vfio/pci/vfio_pci_zdev.c |  8 ++++++--
+ 5 files changed, 32 insertions(+), 18 deletions(-)
+ create mode 100644 arch/s390/pci/pci_kvm_hook.c
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-index 0d28858b83f2..f17cb00df467 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-@@ -2,14 +2,14 @@
- /* Copyright (c) 2020-2021 Microchip Technology Inc */
+diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+index f39092e0ceaa..b1e98a9ed152 100644
+--- a/arch/s390/include/asm/kvm_host.h
++++ b/arch/s390/include/asm/kvm_host.h
+@@ -1038,16 +1038,11 @@ static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
+ #define __KVM_HAVE_ARCH_VM_FREE
+ void kvm_arch_free_vm(struct kvm *kvm);
  
- / {
--	compatible = "microchip,mpfs-icicle-reference-rtlv2203", "microchip,mpfs";
-+	compatible = "microchip,mpfs-icicle-reference-rtlv2209", "microchip,mpfs";
- 
- 	core_pwm0: pwm@41000000 {
- 		compatible = "microchip,corepwm-rtl-v4";
- 		reg = <0x0 0x41000000 0x0 0xF0>;
- 		microchip,sync-update-mask = /bits/ 32 <0>;
- 		#pwm-cells = <2>;
--		clocks = <&fabric_clk3>;
-+		clocks = <&ccc_nw CLK_CCC_PLL0_OUT0>;
- 		status = "disabled";
- 	};
- 
-@@ -18,22 +18,29 @@ i2c2: i2c@44000000 {
- 		reg = <0x0 0x44000000 0x0 0x1000>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
--		clocks = <&fabric_clk3>;
-+		clocks = <&ccc_nw CLK_CCC_PLL0_OUT3>;
- 		interrupt-parent = <&plic>;
- 		interrupts = <122>;
- 		clock-frequency = <100000>;
- 		status = "disabled";
- 	};
- 
--	fabric_clk3: fabric-clk3 {
-+	refclk_ccc: cccrefclk {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
--		clock-frequency = <62500000>;
- 	};
-+};
- 
--	fabric_clk1: fabric-clk1 {
--		compatible = "fixed-clock";
--		#clock-cells = <0>;
--		clock-frequency = <125000000>;
--	};
-+&ccc_nw {
-+	clocks = <&refclk_ccc>, <&refclk_ccc>, <&refclk_ccc>, <&refclk_ccc>,
-+		 <&refclk_ccc>, <&refclk_ccc>;
-+	clock-names = "pll0_ref0", "pll0_ref1", "pll1_ref0", "pll1_ref1",
-+		      "dll0_ref", "dll1_ref";
-+	status = "okay";
+-#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
+-int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm);
+-void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev);
+-#else
+-static inline int kvm_s390_pci_register_kvm(struct zpci_dev *dev,
+-					    struct kvm *kvm)
+-{
+-	return -EPERM;
+-}
+-static inline void kvm_s390_pci_unregister_kvm(struct zpci_dev *dev) {}
+-#endif
++struct zpci_kvm_hook {
++	int (*kvm_register)(void *opaque, struct kvm *kvm);
++	void (*kvm_unregister)(void *opaque);
 +};
 +
-+&pcie {
-+	clocks = <&ccc_nw CLK_CCC_PLL0_OUT0>, <&ccc_nw CLK_CCC_PLL0_OUT1>,
-+		 <&ccc_nw CLK_CCC_PLL0_OUT3>;
-+	clock-names = "fic0", "fic1", "fic3";
- };
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-index 044982a11df5..d361d1e38b16 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-@@ -140,6 +140,10 @@ &refclk {
- 	clock-frequency = <125000000>;
- };
++extern struct zpci_kvm_hook zpci_kvm_hook;
  
-+&refclk_ccc {
-+	clock-frequency = <50000000>;
-+};
-+
- &rtc {
- 	status = "okay";
- };
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-index 49380c428ec9..3beb450b4259 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-@@ -14,3 +14,8 @@ fabric_clk1: fabric-clk1 {
- 		clock-frequency = <125000000>;
- 	};
- };
-+
-+&pcie {
-+	clocks = <&fabric_clk1>, <&fabric_clk1>, <&fabric_clk3>;
-+	clock-names = "fic0", "fic1", "fic3";
-+};
-diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-index 499c2e63ad35..dd15b6d1a3c9 100644
---- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-@@ -236,6 +236,38 @@ clkcfg: clkcfg@20002000 {
- 			#clock-cells = <1>;
- 		};
+ #endif
+diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+index 4946fb7757d6..bb8c335d17b9 100644
+--- a/arch/s390/kvm/pci.c
++++ b/arch/s390/kvm/pci.c
+@@ -431,8 +431,9 @@ static void kvm_s390_pci_dev_release(struct zpci_dev *zdev)
+  * available, enable them and let userspace indicate whether or not they will
+  * be used (specify SHM bit to disable).
+  */
+-int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm)
++static int kvm_s390_pci_register_kvm(void *opaque, struct kvm *kvm)
+ {
++	struct zpci_dev *zdev = opaque;
+ 	int rc;
  
-+		ccc_se: cccseclk@38010000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38010000 0x0 0x1000>, <0x0 0x38020000 0x0 0x1000>,
-+			      <0x0 0x39010000 0x0 0x1000>, <0x0 0x39020000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
+ 	if (!zdev)
+@@ -510,10 +511,10 @@ int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm)
+ 	kvm_put_kvm(kvm);
+ 	return rc;
+ }
+-EXPORT_SYMBOL_GPL(kvm_s390_pci_register_kvm);
+ 
+-void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev)
++static void kvm_s390_pci_unregister_kvm(void *opaque)
+ {
++	struct zpci_dev *zdev = opaque;
+ 	struct kvm *kvm;
+ 
+ 	if (!zdev)
+@@ -566,7 +567,6 @@ void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev)
+ 
+ 	kvm_put_kvm(kvm);
+ }
+-EXPORT_SYMBOL_GPL(kvm_s390_pci_unregister_kvm);
+ 
+ void kvm_s390_pci_init_list(struct kvm *kvm)
+ {
+@@ -678,6 +678,8 @@ int kvm_s390_pci_init(void)
+ 
+ 	spin_lock_init(&aift->gait_lock);
+ 	mutex_init(&aift->aift_lock);
++	zpci_kvm_hook.kvm_register = kvm_s390_pci_register_kvm;
++	zpci_kvm_hook.kvm_unregister = kvm_s390_pci_unregister_kvm;
+ 
+ 	return 0;
+ }
+@@ -685,6 +687,8 @@ int kvm_s390_pci_init(void)
+ void kvm_s390_pci_exit(void)
+ {
+ 	mutex_destroy(&aift->aift_lock);
++	zpci_kvm_hook.kvm_register = NULL;
++	zpci_kvm_hook.kvm_unregister = NULL;
+ 
+ 	kfree(aift);
+ }
+diff --git a/arch/s390/pci/Makefile b/arch/s390/pci/Makefile
+index bf557a1b789c..5ae31ca9dd44 100644
+--- a/arch/s390/pci/Makefile
++++ b/arch/s390/pci/Makefile
+@@ -5,5 +5,5 @@
+ 
+ obj-$(CONFIG_PCI)	+= pci.o pci_irq.o pci_dma.o pci_clp.o pci_sysfs.o \
+ 			   pci_event.o pci_debug.o pci_insn.o pci_mmio.o \
+-			   pci_bus.o
++			   pci_bus.o pci_kvm_hook.o
+ obj-$(CONFIG_PCI_IOV)	+= pci_iov.o
+diff --git a/arch/s390/pci/pci_kvm_hook.c b/arch/s390/pci/pci_kvm_hook.c
+new file mode 100644
+index 000000000000..ff34baf50a3e
+--- /dev/null
++++ b/arch/s390/pci/pci_kvm_hook.c
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * VFIO ZPCI devices support
++ *
++ * Copyright (C) IBM Corp. 2022.  All rights reserved.
++ *	Author(s): Pierre Morel <pmorel@linux.ibm.com>
++ */
++#include <linux/kvm_host.h>
 +
-+		ccc_ne: cccneclk@38040000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38040000 0x0 0x1000>, <0x0 0x38080000 0x0 0x1000>,
-+			      <0x0 0x39040000 0x0 0x1000>, <0x0 0x39080000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
++struct zpci_kvm_hook zpci_kvm_hook;
++EXPORT_SYMBOL_GPL(zpci_kvm_hook);
+diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
+index e163aa9f6144..0cbdcd14f1c8 100644
+--- a/drivers/vfio/pci/vfio_pci_zdev.c
++++ b/drivers/vfio/pci/vfio_pci_zdev.c
+@@ -151,7 +151,10 @@ int vfio_pci_zdev_open_device(struct vfio_pci_core_device *vdev)
+ 	if (!vdev->vdev.kvm)
+ 		return 0;
+ 
+-	return kvm_s390_pci_register_kvm(zdev, vdev->vdev.kvm);
++	if (zpci_kvm_hook.kvm_register)
++		return zpci_kvm_hook.kvm_register(zdev, vdev->vdev.kvm);
 +
-+		ccc_nw: cccnwclk@38100000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38100000 0x0 0x1000>, <0x0 0x38200000 0x0 0x1000>,
-+			      <0x0 0x39100000 0x0 0x1000>, <0x0 0x39200000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ccc_sw: cccswclk@38400000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38400000 0x0 0x1000>, <0x0 0x38800000 0x0 0x1000>,
-+			      <0x0 0x39400000 0x0 0x1000>, <0x0 0x39800000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
-+
- 		mmuart0: serial@20000000 {
- 			compatible = "ns16550a";
- 			reg = <0x0 0x20000000 0x0 0x400>;
-@@ -480,8 +512,6 @@ pcie: pcie@2000000000 {
- 					<0 0 0 3 &pcie_intc 2>,
- 					<0 0 0 4 &pcie_intc 3>;
- 			interrupt-map-mask = <0 0 0 7>;
--			clocks = <&fabric_clk1>, <&fabric_clk1>, <&fabric_clk3>;
--			clock-names = "fic0", "fic1", "fic3";
- 			ranges = <0x3000000 0x0 0x8000000 0x20 0x8000000 0x0 0x80000000>;
- 			msi-parent = <&pcie>;
- 			msi-controller;
++	return -ENOENT;
+ }
+ 
+ void vfio_pci_zdev_close_device(struct vfio_pci_core_device *vdev)
+@@ -161,5 +164,6 @@ void vfio_pci_zdev_close_device(struct vfio_pci_core_device *vdev)
+ 	if (!zdev || !vdev->vdev.kvm)
+ 		return;
+ 
+-	kvm_s390_pci_unregister_kvm(zdev);
++	if (zpci_kvm_hook.kvm_unregister)
++		zpci_kvm_hook.kvm_unregister(zdev);
+ }
 -- 
-2.36.1
+2.31.1
 
