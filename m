@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2589C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6EEC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352845AbiHSQ22 (ORCPT
+        id S1352855AbiHSQ2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
+        Fri, 19 Aug 2022 12:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352825AbiHSQZh (ORCPT
+        with ESMTP id S1352896AbiHSQZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:25:37 -0400
+        Fri, 19 Aug 2022 12:25:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC9060522;
-        Fri, 19 Aug 2022 09:03:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF82B6D75;
+        Fri, 19 Aug 2022 09:03:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C320B82804;
-        Fri, 19 Aug 2022 16:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8230DC433D6;
-        Fri, 19 Aug 2022 16:03:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30229B82802;
+        Fri, 19 Aug 2022 16:03:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E966C433C1;
+        Fri, 19 Aug 2022 16:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925004;
-        bh=gkqRS+TbmjeplEzOWCMiTsyo8jJqDRvczpG0XMFK4mA=;
+        s=korg; t=1660925014;
+        bh=rH4/5QZYBSyBtSC5tRu7KwpcfHv88JeoQnMUlVOMGM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CdfLAJVQr7w0prB/QJLu1tAGTyrzQFlb9nyY/xU1IEtN0z0Afa6zIBdnS2HRc93tF
-         FWHJiHseIflMHcpiPkiCTotjNiCsnVUz6CP9Oa9JG+ULezgV5oZnTyCeoq/7sv24IA
-         Qh5AD4DAufBv5X7DocoFYH9DUGWxOsLKUZ8a3sgQ=
+        b=CeLq+KJCuar0FkKe23JGhIFv9G3CyrnsynRsRsy3vgFVBSDXCZQok6b6uB6vOa/ty
+         xojpCMxCoR7NEgy3o9tJWBWtSV+L0/AIZzjMcLBJ5rKhwKcqyCZKFXo7xK+UOM5+ug
+         Pb80ZjYAwXg1WVN1rG/fSKnmdsR0NUUS5B4IIcu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com,
+        Zhu Yanjun <yanjun.zhu@linux.dev>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 353/545] mm/mmap.c: fix missing call to vm_unacct_memory in mmap_region
-Date:   Fri, 19 Aug 2022 17:42:03 +0200
-Message-Id: <20220819153845.182316973@linuxfoundation.org>
+Subject: [PATCH 5.10 356/545] RDMA/rxe: Fix error unwind in rxe_create_qp()
+Date:   Fri, 19 Aug 2022 17:42:06 +0200
+Message-Id: <20220819153845.318534120@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,38 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
 
-[ Upstream commit 7f82f922319ede486540e8746769865b9508d2c2 ]
+[ Upstream commit fd5382c5805c4bcb50fd25b7246247d3f7114733 ]
 
-Since the beginning, charged is set to 0 to avoid calling vm_unacct_memory
-twice because vm_unacct_memory will be called by above unmap_region.  But
-since commit 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from
-the unmap_vmas() interfaces"), unmap_region doesn't call vm_unacct_memory
-anymore.  So charged shouldn't be set to 0 now otherwise the calling to
-paired vm_unacct_memory will be missed and leads to imbalanced account.
+In the function rxe_create_qp(), rxe_qp_from_init() is called to
+initialize qp, internally things like the spin locks are not setup until
+rxe_qp_init_req().
 
-Link: https://lkml.kernel.org/r/20220618082027.43391-1-linmiaohe@huawei.com
-Fixes: 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from the unmap_vmas() interfaces")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+If an error occures before this point then the unwind will call
+rxe_cleanup() and eventually to rxe_qp_do_cleanup()/rxe_cleanup_task()
+which will oops when trying to access the uninitialized spinlock.
+
+Move the spinlock initializations earlier before any failures.
+
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220731063621.298405-1-yanjun.zhu@linux.dev
+Reported-by: syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/mmap.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/infiniband/sw/rxe/rxe_qp.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 102f73ed4b1b..a50042918cc7 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1902,7 +1902,6 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
+index a1b79015e6f2..2847ab4d9a5f 100644
+--- a/drivers/infiniband/sw/rxe/rxe_qp.c
++++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+@@ -184,6 +184,14 @@ static void rxe_qp_init_misc(struct rxe_dev *rxe, struct rxe_qp *qp,
+ 	spin_lock_init(&qp->grp_lock);
+ 	spin_lock_init(&qp->state_lock);
  
- 	/* Undo any partial mapping done by a device driver. */
- 	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
--	charged = 0;
- 	if (vm_flags & VM_SHARED)
- 		mapping_unmap_writable(file->f_mapping);
- allow_write_and_free_vma:
++	spin_lock_init(&qp->req.task.state_lock);
++	spin_lock_init(&qp->resp.task.state_lock);
++	spin_lock_init(&qp->comp.task.state_lock);
++
++	spin_lock_init(&qp->sq.sq_lock);
++	spin_lock_init(&qp->rq.producer_lock);
++	spin_lock_init(&qp->rq.consumer_lock);
++
+ 	atomic_set(&qp->ssn, 0);
+ 	atomic_set(&qp->skb_out, 0);
+ }
+@@ -239,7 +247,6 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
+ 	qp->req.opcode		= -1;
+ 	qp->comp.opcode		= -1;
+ 
+-	spin_lock_init(&qp->sq.sq_lock);
+ 	skb_queue_head_init(&qp->req_pkts);
+ 
+ 	rxe_init_task(rxe, &qp->req.task, qp,
+@@ -289,9 +296,6 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
+ 		}
+ 	}
+ 
+-	spin_lock_init(&qp->rq.producer_lock);
+-	spin_lock_init(&qp->rq.consumer_lock);
+-
+ 	skb_queue_head_init(&qp->resp_pkts);
+ 
+ 	rxe_init_task(rxe, &qp->resp.task, qp,
 -- 
 2.35.1
 
