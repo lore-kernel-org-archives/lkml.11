@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D380C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C75C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351670AbiHSQLt (ORCPT
+        id S1351710AbiHSQLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
+        Fri, 19 Aug 2022 12:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351635AbiHSQJC (ORCPT
+        with ESMTP id S1351661AbiHSQJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:09:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4014CA2E;
-        Fri, 19 Aug 2022 08:56:41 -0700 (PDT)
+        Fri, 19 Aug 2022 12:09:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D075910F69B;
+        Fri, 19 Aug 2022 08:56:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB4ECB82818;
-        Fri, 19 Aug 2022 15:56:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1E17C433B5;
-        Fri, 19 Aug 2022 15:56:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34C8E616FC;
+        Fri, 19 Aug 2022 15:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C104C433B5;
+        Fri, 19 Aug 2022 15:56:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924598;
-        bh=dK9jhqwjJ76X4pHQCcYFQk/buytrnpJSftykc1vErfc=;
+        s=korg; t=1660924601;
+        bh=w4UVl0CIeJAj5h6BchLx1YNMb9CjnlmFsqhT+SC8Ywc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dcIIVfpN8pIwMqJCyJjtaVvopthc3CwTl1dpKRT8Ja10YPMzbbYnGeH+TETFze/+A
-         FYMIKAR8MNWgu0sszloFXnDKp8Ch6ipj4U0BhJ/gyvG+uKAr1w35DziAW2+682oZEG
-         SQMOnKr6l32FNYrzOt6j9gCKr+ZGJCusoe2syGdY=
+        b=mXaaG0YDUSYAYo72vQOUlU/BnWf9Uz6jf89KeWeNmBtR+N2wKayfUK8QGK+ylkSE8
+         LHkOWu73rkAypGJ3k5I3OoKyH/VI0fn3rX8ZPgKFQTlVUFDuLAx8w+gHza7E7IYYJ6
+         CgRd03aXI0WIc50uANFHMBjqa7BobhAHXRZOKywo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 214/545] hinic: Use the bitmap API when applicable
-Date:   Fri, 19 Aug 2022 17:39:44 +0200
-Message-Id: <20220819153838.943962413@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 223/545] mediatek: mt76: mac80211: Fix missing of_node_put() in mt76_led_init()
+Date:   Fri, 19 Aug 2022 17:39:53 +0200
+Message-Id: <20220819153839.343902805@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,54 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 7c2c57263af41cfd8b5022274e6801542831bb69 ]
+[ Upstream commit 0a14c1d0113f121151edf34333cdf212dd209190 ]
 
-'vlan_bitmap' is a bitmap and is used as such. So allocate it with
-devm_bitmap_zalloc() and its explicit bit size (i.e. VLAN_N_VID).
+We should use of_node_put() for the reference 'np' returned by
+of_get_child_by_name() which will increase the refcount.
 
-This avoids the need of the VLAN_BITMAP_SIZE macro which:
-   - needlessly has a 'nic_dev' parameter
-   - should be "long" (and not byte) aligned, so that the bitmap semantic
-     is respected
-
-This is in fact not an issue because VLAN_N_VID is 4096 at the time
-being, but devm_bitmap_zalloc() is less verbose and easier to understand.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/6ff7b7d21414240794a77dc2456914412718a145.1656260842.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chipsets")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_main.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mac80211.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index ace949fe6233..2376edf6c263 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -62,8 +62,6 @@ MODULE_PARM_DESC(rx_weight, "Number Rx packets for NAPI budget (default=64)");
+diff --git a/drivers/net/wireless/mediatek/mt76/mac80211.c b/drivers/net/wireless/mediatek/mt76/mac80211.c
+index 466447a5184f..81ff3b4c6c1b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mac80211.c
++++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
+@@ -107,6 +107,7 @@ static int mt76_led_init(struct mt76_dev *dev)
+ 		if (!of_property_read_u32(np, "led-sources", &led_pin))
+ 			dev->led_pin = led_pin;
+ 		dev->led_al = of_property_read_bool(np, "led-active-low");
++		of_node_put(np);
+ 	}
  
- #define HINIC_LRO_RX_TIMER_DEFAULT	16
- 
--#define VLAN_BITMAP_SIZE(nic_dev)       (ALIGN(VLAN_N_VID, 8) / 8)
--
- #define work_to_rx_mode_work(work)      \
- 		container_of(work, struct hinic_rx_mode_work, work)
- 
-@@ -1248,9 +1246,8 @@ static int nic_dev_init(struct pci_dev *pdev)
- 	u64_stats_init(&tx_stats->syncp);
- 	u64_stats_init(&rx_stats->syncp);
- 
--	nic_dev->vlan_bitmap = devm_kzalloc(&pdev->dev,
--					    VLAN_BITMAP_SIZE(nic_dev),
--					    GFP_KERNEL);
-+	nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
-+						  GFP_KERNEL);
- 	if (!nic_dev->vlan_bitmap) {
- 		err = -ENOMEM;
- 		goto err_vlan_bitmap;
+ 	return led_classdev_register(dev->dev, &dev->led_cdev);
 -- 
 2.35.1
 
