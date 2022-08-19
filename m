@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2895C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C477FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352664AbiHSQYy (ORCPT
+        id S1352275AbiHSQY7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
+        Fri, 19 Aug 2022 12:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352389AbiHSQUp (ORCPT
+        with ESMTP id S1352388AbiHSQUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:20:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F0E248;
-        Fri, 19 Aug 2022 09:01:42 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C59310A76A;
+        Fri, 19 Aug 2022 09:01:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2180D617A5;
-        Fri, 19 Aug 2022 16:01:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1489BC433D6;
-        Fri, 19 Aug 2022 16:01:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05E1FB8280C;
+        Fri, 19 Aug 2022 16:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFA27C433D6;
+        Fri, 19 Aug 2022 16:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924901;
-        bh=K2CM2tFdnxFMHQXII/3DaGSfjgDDyPL/dtPysxPT0IE=;
+        s=korg; t=1660924895;
+        bh=fDMiJkUJXq/6ql0CIBkC7iDv1sl3hWmBD+OxG2A8bEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3lS0rh1EvF6RUta+/iPCuGo2WSKEP/peBux69c8eiFDDTNxRqP3Qnbx54WkFzYLE
-         6ok+NShCGdAnKQDWUhT2PMv0kVtp5kI9bo3EE/zYMAifjUaCiIpBRyzDxjpb+arkKU
-         +MLjRheVGpXDpvPTKtdULQjs3JyC5jVrb1/vW1qo=
+        b=ylGYYiUnlY+L3T2kFBWtwGIjq8Alq6SVGIWRkXqDZszQamL4msPmWQCLxkPC9GGET
+         z1ijpY5QZ7px+6+rdtvWmzH+Y41KsQ5dl5ztaqBgqMQXt9CPgjQcsn3+B9EPr7ZG1C
+         yztbUtcOWSYGnYKx0mP7+Ha4Ph25Xh8bazxXUawY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Marangi <ansuelsmth@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 320/545] PCI: qcom: Set up rev 2.1.0 PARF_PHY before enabling clocks
-Date:   Fri, 19 Aug 2022 17:41:30 +0200
-Message-Id: <20220819153843.670897718@linuxfoundation.org>
+Subject: [PATCH 5.10 277/545] mtd: st_spi_fsm: Add a clk_disable_unprepare() in .probe()s error path
+Date:   Fri, 19 Aug 2022 17:40:47 +0200
+Message-Id: <20220819153841.719713866@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,66 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Marangi <ansuelsmth@gmail.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 38f897ae3d44900f627cad708a15db498ce2ca31 ]
+[ Upstream commit 28607b426c3d050714f250d0faeb99d2e9106e90 ]
 
-We currently enable clocks BEFORE we write to PARF_PHY_CTRL reg to enable
-clocks and resets. This causes the driver to never set to a ready state
-with the error 'Phy link never came up'.
+For all but one error path clk_disable_unprepare() is already there. Add
+it to the one location where it's missing.
 
-This is caused by the PHY clock getting enabled before setting the required
-bits in the PARF regs.
-
-A workaround for this was set but with this new discovery we can drop
-the workaround and use a proper solution to the problem by just enabling
-the clock only AFTER the PARF_PHY_CTRL bit is set.
-
-This correctly sets up the PCIe link and makes it usable even when a
-bootloader leaves the PCIe link in an undefined state.
-
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Link: https://lore.kernel.org/r/20220708222743.27019-1-ansuelsmth@gmail.com
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 481815a6193b ("mtd: st_spi_fsm: Handle clk_prepare_enable/clk_disable_unprepare.")
+Fixes: 69d5af8d016c ("mtd: st_spi_fsm: Obtain and use EMI clock")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220607152458.232847-2-u.kleine-koenig@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/mtd/devices/st_spi_fsm.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index 1b8b3c12eece..5fbd80908a99 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -320,8 +320,6 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
- 	reset_control_assert(res->ext_reset);
- 	reset_control_assert(res->phy_reset);
+diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
+index 1888523d9745..9bee99f07af0 100644
+--- a/drivers/mtd/devices/st_spi_fsm.c
++++ b/drivers/mtd/devices/st_spi_fsm.c
+@@ -2115,10 +2115,12 @@ static int stfsm_probe(struct platform_device *pdev)
+ 		(long long)fsm->mtd.size, (long long)(fsm->mtd.size >> 20),
+ 		fsm->mtd.erasesize, (fsm->mtd.erasesize >> 10));
  
--	writel(1, pcie->parf + PCIE20_PARF_PHY_CTRL);
+-	return mtd_device_register(&fsm->mtd, NULL, 0);
 -
- 	ret = regulator_bulk_enable(ARRAY_SIZE(res->supplies), res->supplies);
- 	if (ret < 0) {
- 		dev_err(dev, "cannot enable regulators\n");
-@@ -364,15 +362,15 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
- 		goto err_deassert_axi;
- 	}
- 
--	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
--	if (ret)
--		goto err_clks;
--
- 	/* enable PCIe clocks and resets */
- 	val = readl(pcie->parf + PCIE20_PARF_PHY_CTRL);
- 	val &= ~BIT(0);
- 	writel(val, pcie->parf + PCIE20_PARF_PHY_CTRL);
- 
-+	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
-+	if (ret)
-+		goto err_clks;
++	ret = mtd_device_register(&fsm->mtd, NULL, 0);
++	if (ret) {
+ err_clk_unprepare:
+-	clk_disable_unprepare(fsm->clk);
++		clk_disable_unprepare(fsm->clk);
++	}
 +
- 	if (of_device_is_compatible(node, "qcom,pcie-ipq8064") ||
- 	    of_device_is_compatible(node, "qcom,pcie-ipq8064-v2")) {
- 		writel(PCS_DEEMPH_TX_DEEMPH_GEN1(24) |
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
