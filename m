@@ -2,68 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B265FC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 21:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F71C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 21:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352477AbiHSVZA (ORCPT
+        id S1352478AbiHSVZG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 17:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48838 "EHLO
+        Fri, 19 Aug 2022 17:25:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352444AbiHSVYx (ORCPT
+        with ESMTP id S1352452AbiHSVY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 17:24:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FE0D2E8E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:24:52 -0700 (PDT)
+        Fri, 19 Aug 2022 17:24:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F918E2C67
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:24:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660944292;
+        s=mimecast20190719; t=1660944294;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qabemuj06WeoMtZf9HrAveZ66zZ44DWBaH/ByyW71MM=;
-        b=T9dzB60bVFvUBnKxcBQZaFD5HOPpwslEQE4cS+fSmrnoUhM9O1zKHIqzRt8kHKGJ6pHH55
-        ngMl3D/vg3vPSN7MMDzihflmQISjlHNgdZyGGygvhIFL/8v8x11QGnXjnp2QnJ6Oi/8/5G
-        XoFL0+pgk3JzdiuTBqVZB9Hvw0SkxXc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ZNisDhpi4BOnPBk5Q4gtZJ5EEe/qIg6dIjsLwDYtTko=;
+        b=VUjI9ajBhinWVDcJ4FDZfm3la+NYyQZdypNEIdpNp8xaaFviHV08kKUUhSZ8qo92JGWSNN
+        nFMp6sKACIsYgi1w2UUc5oTfYplC0EcRK7h44J+ppCzih57XXpGKhg1oeXr7mUv6CSObKM
+        +cXg4H4X3/d6v7tdPNkKtNRSsPy98q0=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-586-bBFjS5fDPNunh1vOWumKiQ-1; Fri, 19 Aug 2022 17:24:49 -0400
-X-MC-Unique: bBFjS5fDPNunh1vOWumKiQ-1
-Received: by mail-ed1-f72.google.com with SMTP id o2-20020a056402438200b0043d552deb2aso3340891edc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:24:49 -0700 (PDT)
+ us-mta-193-L087EfdmNSKkIVX_zNaOpw-1; Fri, 19 Aug 2022 17:24:52 -0400
+X-MC-Unique: L087EfdmNSKkIVX_zNaOpw-1
+Received: by mail-ej1-f72.google.com with SMTP id qk37-20020a1709077fa500b00730c2d975a0so1908042ejc.13
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:24:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=qabemuj06WeoMtZf9HrAveZ66zZ44DWBaH/ByyW71MM=;
-        b=OdzZGdLaX0Uar1uC0FCyQNDiW21QmHx1RvqDwuDBXIjEIl9ng7ekhM97lc8pYiYVZk
-         8Ia8imwjzU6/TxjKC2CEWr/f+B01oEN+0m+9RXPQHx/nKgvkX0KfRkjLWcL/hCT/A17Y
-         Eh4/gKyVduKIvy2kqPMI9Sa43WWfLJ2uMwi3tg/1KccMwBPQ2bgG/77YJtSI08L9oXA9
-         YXyByDW3QZaahv9418rAREla1yNV9X7H+JA4nIHqRY5sPvBdts+RsdypwUZtP0dWMKQ+
-         JkVRpa5/gXhOmGuJL+8+30MsxtLa+wG9v5Mf82+adC+N0+zhh7Hftp+lY7t31Bq77nf1
-         U13Q==
-X-Gm-Message-State: ACgBeo3/WJjBZDcsfP2hIfyjQjN6OOCppdFtv1VLytLlvsgcrvT+l7un
-        jQSAX0hLVM+nQb4Gy3EQsvIFh1ptR7hj4cipDlApqWLOahOj+XVvQLZq7DT96WTmJ4hcGtozCJq
-        rT45uvJPNti5324O4J4kZ9sEE
-X-Received: by 2002:a17:907:72d1:b0:730:a0c4:2aaa with SMTP id du17-20020a17090772d100b00730a0c42aaamr5757438ejc.560.1660944288436;
-        Fri, 19 Aug 2022 14:24:48 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5+OgT12yPU20ztpomqJKCst6cahhGUss/gNkPlFCza36i5yJPP9m5o6KfAuZAYV46c1N0Q1A==
-X-Received: by 2002:a17:907:72d1:b0:730:a0c4:2aaa with SMTP id du17-20020a17090772d100b00730a0c42aaamr5757428ejc.560.1660944288245;
-        Fri, 19 Aug 2022 14:24:48 -0700 (PDT)
+        bh=ZNisDhpi4BOnPBk5Q4gtZJ5EEe/qIg6dIjsLwDYtTko=;
+        b=Fp02hnGRseZ478mMiVGEIu9+Mp16IBp6Nrr3lMByrKjZmKHpcm/JffPn7f34Q7rKQm
+         +N+rsiLZS51Y8mg7vGIjJIdBmPG5eqwQ7ue/cET1ONGpZmTlZy9Y+DLPaHJ21Y85+SS7
+         ePFyTvov/+7hBFlS/51zP7QmKMIlQh6WZCRYiInjGF6ZsiNj2rEDtGeyjzOiFd3hZBnm
+         x01pubGDIA0CglIKHMLtgXa4RP9C1deUcNfdhEFxB9EJ2M6BOJVQksCCs3bJFW5t+JkO
+         tnxI7v8d8erCssRtvoCIo4N3Quv46SiKpEeRm0arc8tjNgvxztKvTOVwT9nOcBiZq1Le
+         c1Ww==
+X-Gm-Message-State: ACgBeo0KTsUZ7wzgsjxnyA4AMtjf4lk25mwyT8IwXfHVVB+dn/NwbgLR
+        UuUX06IYmQ/+RncNE+4I6+03w//oxW78Yv4dyhpAkpVRDwlMHwOqx17yXdB62Tejky8wAKlStXN
+        n8942i+tN5ZHyU4gmDVAkeb/H
+X-Received: by 2002:a05:6402:c45:b0:442:c549:8e6b with SMTP id cs5-20020a0564020c4500b00442c5498e6bmr7454923edb.123.1660944291636;
+        Fri, 19 Aug 2022 14:24:51 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR49IKZ4pGTeuQlGM57eBuT/of7Y2qxJpRK+S8Nj2BgkCRrujKKcPSdvM66LTG6G1UhdU+EVxA==
+X-Received: by 2002:a05:6402:c45:b0:442:c549:8e6b with SMTP id cs5-20020a0564020c4500b00442c5498e6bmr7454914edb.123.1660944291440;
+        Fri, 19 Aug 2022 14:24:51 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id k21-20020a170906579500b0072fa24c2ecbsm2842999ejq.94.2022.08.19.14.24.47
+        by smtp.gmail.com with ESMTPSA id k21-20020a170906579500b0072fa24c2ecbsm2842999ejq.94.2022.08.19.14.24.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 14:24:47 -0700 (PDT)
+        Fri, 19 Aug 2022 14:24:50 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     daniel@ffwll.ch, airlied@linux.ie, tzimmermann@suse.de,
         mripard@kernel.org, liviu.dudau@arm.com, brian.starkey@arm.com
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH drm-misc-next 3/8] drm/arm/malidp: crtc: use drmm_crtc_init_with_planes()
-Date:   Fri, 19 Aug 2022 23:24:40 +0200
-Message-Id: <20220819212445.559790-1-dakr@redhat.com>
+Subject: [PATCH drm-misc-next 5/8] drm/arm/malidp: use drm_dev_unplug()
+Date:   Fri, 19 Aug 2022 23:24:42 +0200
+Message-Id: <20220819212445.559790-3-dakr@redhat.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819212015.556220-1-dakr@redhat.com>
 References: <20220819212015.556220-1-dakr@redhat.com>
@@ -73,37 +73,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use drmm_crtc_init_with_planes() instead of drm_crtc_init_with_planes()
-to get rid of the explicit destroy hook in struct drm_plane_funcs.
+When the driver is unbound, there might still be users in userspace
+having an open fd and are calling into the driver.
+
+While this is fine for drm managed resources, it is not for resources
+bound to the device/driver lifecycle, e.g. clocks or MMIO mappings.
+
+To prevent use-after-free issues we need to protect those resources with
+drm_dev_enter() and drm_dev_exit(). This does only work if we indicate
+that the drm device was unplugged, hence use drm_dev_unplug() instead of
+drm_dev_unregister().
+
+Protecting the particular resources with drm_dev_enter()/drm_dev_exit()
+is handled by subsequent patches.
 
 Signed-off-by: Danilo Krummrich <dakr@redhat.com>
 ---
- drivers/gpu/drm/arm/malidp_crtc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/arm/malidp_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/arm/malidp_crtc.c b/drivers/gpu/drm/arm/malidp_crtc.c
-index 34ad7e1cd2b8..dc01c43f6193 100644
---- a/drivers/gpu/drm/arm/malidp_crtc.c
-+++ b/drivers/gpu/drm/arm/malidp_crtc.c
-@@ -514,7 +514,6 @@ static void malidp_crtc_disable_vblank(struct drm_crtc *crtc)
- }
+diff --git a/drivers/gpu/drm/arm/malidp_drv.c b/drivers/gpu/drm/arm/malidp_drv.c
+index 678c5b0d8014..aedd30f5f451 100644
+--- a/drivers/gpu/drm/arm/malidp_drv.c
++++ b/drivers/gpu/drm/arm/malidp_drv.c
+@@ -893,7 +893,7 @@ static void malidp_unbind(struct device *dev)
+ 	struct malidp_drm *malidp = drm_to_malidp(drm);
+ 	struct malidp_hw_device *hwdev = malidp->dev;
  
- static const struct drm_crtc_funcs malidp_crtc_funcs = {
--	.destroy = drm_crtc_cleanup,
- 	.set_config = drm_atomic_helper_set_config,
- 	.page_flip = drm_atomic_helper_page_flip,
- 	.reset = malidp_crtc_reset,
-@@ -548,8 +547,8 @@ int malidp_crtc_init(struct drm_device *drm)
- 		return -EINVAL;
- 	}
- 
--	ret = drm_crtc_init_with_planes(drm, &malidp->crtc, primary, NULL,
--					&malidp_crtc_funcs, NULL);
-+	ret = drmm_crtc_init_with_planes(drm, &malidp->crtc, primary, NULL,
-+					 &malidp_crtc_funcs, NULL);
- 	if (ret)
- 		return ret;
- 
+-	drm_dev_unregister(drm);
++	drm_dev_unplug(drm);
+ 	drm_kms_helper_poll_fini(drm);
+ 	pm_runtime_get_sync(dev);
+ 	drm_atomic_helper_shutdown(drm);
 -- 
 2.37.2
 
