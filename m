@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC320C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DBF0C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352383AbiHSQYF (ORCPT
+        id S1352617AbiHSQYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
+        Fri, 19 Aug 2022 12:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352273AbiHSQU1 (ORCPT
+        with ESMTP id S1352283AbiHSQUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:20:27 -0400
+        Fri, 19 Aug 2022 12:20:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8813F109A38;
-        Fri, 19 Aug 2022 09:01:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0770111892C;
+        Fri, 19 Aug 2022 09:01:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27A30B8280F;
-        Fri, 19 Aug 2022 16:01:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62639C433D6;
-        Fri, 19 Aug 2022 16:01:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 917B8B82812;
+        Fri, 19 Aug 2022 16:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF76C433D6;
+        Fri, 19 Aug 2022 16:01:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924873;
-        bh=WQmwcwkSAkbHRkR++9IsuWEB1OqnHSvSHLZ3n5R9+nI=;
+        s=korg; t=1660924886;
+        bh=ERRidEaSPf8YlJJ5Z2ddvXrwawPyaJ/IhkO6FODEPfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qdzY0FRIxDATtznd01d8Gi29CJGgnec2OwsOG5vKR19xZycEPYstvvZxvj1PfY4Mc
-         i1q7f2WgYCFV67jHZpk6rZkibpFZsojlrROxiUE6BbDRbnRLYdXGhUkqQkIAsYI2Ce
-         0coq/Vj5neGTaOVqIB2INfHkk8bloX7WTQbtJPtY=
+        b=oqVSKUzHoQWGWngp1JdsrKW9JIebigmKVDPN2Wnb71ozzkE4slW3RYKwHj46bAsJw
+         KyuMSUlp6wrXI7wwEN2Hh8RxW07Yzu2qk4hyOjDINx03iNPQchVSiEl37e0rvGAF90
+         ksj4++GSuTshLbTmtB+Paa3sggbvup1G1b7DcyS0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        stable@vger.kernel.org, Jagath Jog J <jagathjog1996@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 309/545] intel_th: Fix a resource leak in an error handling path
-Date:   Fri, 19 Aug 2022 17:41:19 +0200
-Message-Id: <20220819153843.183637595@linuxfoundation.org>
+Subject: [PATCH 5.10 284/545] iio: accel: bma400: Fix the scale min and max macro values
+Date:   Fri, 19 Aug 2022 17:40:54 +0200
+Message-Id: <20220819153842.020636845@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,53 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jagath Jog J <jagathjog1996@gmail.com>
 
-[ Upstream commit 086c28ab7c5699256aced0049aae9c42f1410313 ]
+[ Upstream commit 747c7cf1592e226d40543231b26502b332d0ea2f ]
 
-If an error occurs after calling 'pci_alloc_irq_vectors()',
-'pci_free_irq_vectors()' must be called as already done in the remove
-function.
+Changing the scale macro values to match the bma400 sensitivity
+for 1 LSB of all the available ranges.
 
-Fixes: 7b7036d47c35 ("intel_th: pci: Use MSI interrupt signalling")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-2-alexander.shishkin@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 465c811f1f20 ("iio: accel: Add driver for the BMA400")
+Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220505133021.22362-2-jagathjog1996@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/pci.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/iio/accel/bma400.h | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
-index 817cdb29bbd8..d032c4de9ce6 100644
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -100,8 +100,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 		}
+diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+index 5ad10db9819f..416090c6b1e8 100644
+--- a/drivers/iio/accel/bma400.h
++++ b/drivers/iio/accel/bma400.h
+@@ -83,8 +83,27 @@
+ #define BMA400_ACC_ODR_MIN_WHOLE_HZ 25
+ #define BMA400_ACC_ODR_MIN_HZ       12
  
- 	th = intel_th_alloc(&pdev->dev, drvdata, resource, r);
--	if (IS_ERR(th))
--		return PTR_ERR(th);
-+	if (IS_ERR(th)) {
-+		err = PTR_ERR(th);
-+		goto err_free_irq;
-+	}
+-#define BMA400_SCALE_MIN            38357
+-#define BMA400_SCALE_MAX            306864
++/*
++ * BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
++ * converting to micro values for +-2g range.
++ *
++ * For +-2g - 1 LSB = 0.976562 milli g = 0.009576 m/s^2
++ * For +-4g - 1 LSB = 1.953125 milli g = 0.019153 m/s^2
++ * For +-16g - 1 LSB = 7.8125 milli g = 0.076614 m/s^2
++ *
++ * The raw value which is used to select the different ranges is determined
++ * by the first bit set position from the scale value, so BMA400_SCALE_MIN
++ * should be odd.
++ *
++ * Scale values for +-2g, +-4g, +-8g and +-16g are populated into bma400_scales
++ * array by left shifting BMA400_SCALE_MIN.
++ * e.g.:
++ * To select +-2g = 9577 << 0 = raw value to write is 0.
++ * To select +-8g = 9577 << 2 = raw value to write is 2.
++ * To select +-16g = 9577 << 3 = raw value to write is 3.
++ */
++#define BMA400_SCALE_MIN            9577
++#define BMA400_SCALE_MAX            76617
  
- 	th->activate   = intel_th_pci_activate;
- 	th->deactivate = intel_th_pci_deactivate;
-@@ -109,6 +111,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 	pci_set_master(pdev);
- 
- 	return 0;
-+
-+err_free_irq:
-+	pci_free_irq_vectors(pdev);
-+	return err;
- }
- 
- static void intel_th_pci_remove(struct pci_dev *pdev)
+ #define BMA400_NUM_REGULATORS       2
+ #define BMA400_VDD_REGULATOR        0
 -- 
 2.35.1
 
