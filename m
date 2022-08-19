@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47771C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C25C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352202AbiHSQX2 (ORCPT
+        id S1352221AbiHSQXd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
+        Fri, 19 Aug 2022 12:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352884AbiHSQSB (ORCPT
+        with ESMTP id S1352887AbiHSQSC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:18:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8891184E5;
-        Fri, 19 Aug 2022 09:01:03 -0700 (PDT)
+        Fri, 19 Aug 2022 12:18:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026EC109A28;
+        Fri, 19 Aug 2022 09:01:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F86E617A7;
-        Fri, 19 Aug 2022 16:00:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612A4C433C1;
-        Fri, 19 Aug 2022 16:00:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AAEFB827F8;
+        Fri, 19 Aug 2022 16:00:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9030FC433C1;
+        Fri, 19 Aug 2022 16:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924843;
-        bh=eR0tZIvRvaH/L5ucyop9lSP+vc7zcIFE4nTjR/Nsrr4=;
+        s=korg; t=1660924852;
+        bh=oHE8NdQs2C19dr7h8yVkyh2h8g6uL/b9qy2FrVV/yzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QoQwS19xQB1IUj5Sl81qovHvOi85lmKmHw0O5/aagQslZtpbtteKtSzbRVQPH8+0p
-         bl25AoJv0Kk75WZQLTt3neFVUWy8Nnu4KseEDnv1dqQKSAeEtkZPg0mnTzaYgREISK
-         eUzxpw0oHOii4EhC1nCxBZ3hY1RZO2tZ2L/j1mQw=
+        b=Vv0pPc+mUpQ5HC/c/4sGdMfmhJf7BPAxozlloVx3Ci+h44JM51GLgAkONnTtfRSKK
+         m/J2zmtwV3f6Mul/eXLZwg/KLM6wbOypyE2XbvZf/wzIb+mP+YZOpBnTxHsAHTs8ip
+         uAuUSl4iCtGxBFv0ywI0NNBP7N6tAr7tsb82AQFY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vidya Sagar <vidyas@nvidia.com>, Rob Herring <robh@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 300/545] clk: qcom: camcc-sdm845: Fix topology around titan_top power domain
-Date:   Fri, 19 Aug 2022 17:41:10 +0200
-Message-Id: <20220819153842.763464524@linuxfoundation.org>
+Subject: [PATCH 5.10 303/545] PCI: dwc: Always enable CDM check if "snps,enable-cdm-check" exists
+Date:   Fri, 19 Aug 2022 17:41:13 +0200
+Message-Id: <20220819153842.894243190@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,53 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 103dd2338bbff567bce7acd00fc5a09c806b38ec ]
+[ Upstream commit ec7b952f453ce7eabe7e1bea584626934d44f668 ]
 
-On SDM845 two found VFE GDSC power domains shall not be operated, if
-titan top is turned off, thus the former power domains will be set as
-subdomains by a GDSC registration routine.
+If the "snps,enable-cdm-check" property exists, we should enable the CDM
+check.  But previously dw_pcie_setup() could exit before doing so if the
+"num-lanes" property was absent or invalid.
 
-Fixes: 78412c262004 ("clk: qcom: Add camera clock controller driver for SDM845")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220519214133.1728979-2-vladimir.zapolskiy@linaro.org
+Move the CDM enable earlier so we do it regardless of whether "num-lanes"
+is present.
+
+[bhelgaas: commit log]
+Fixes: 07f123def73e ("PCI: dwc: Add support to enable CDM register check")
+Link: https://lore.kernel.org/r/20220624143428.8334-7-Sergey.Semin@baikalelectronics.ru
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/camcc-sdm845.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pci/controller/dwc/pcie-designware.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/clk/qcom/camcc-sdm845.c b/drivers/clk/qcom/camcc-sdm845.c
-index 1b2cefef7431..a8a2cfa83290 100644
---- a/drivers/clk/qcom/camcc-sdm845.c
-+++ b/drivers/clk/qcom/camcc-sdm845.c
-@@ -1521,6 +1521,8 @@ static struct clk_branch cam_cc_sys_tmr_clk = {
- 	},
- };
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index 69651c6ae6c6..2b74ff88c5c5 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -598,6 +598,13 @@ void dw_pcie_setup(struct dw_pcie *pci)
+ 	val |= PORT_LINK_DLL_LINK_EN;
+ 	dw_pcie_writel_dbi(pci, PCIE_PORT_LINK_CONTROL, val);
  
-+static struct gdsc titan_top_gdsc;
++	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
++		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
++		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
++		       PCIE_PL_CHK_REG_CHK_REG_START;
++		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
++	}
 +
- static struct gdsc bps_gdsc = {
- 	.gdscr = 0x6004,
- 	.pd = {
-@@ -1554,6 +1556,7 @@ static struct gdsc ife_0_gdsc = {
- 		.name = "ife_0_gdsc",
- 	},
- 	.flags = POLL_CFG_GDSCR,
-+	.parent = &titan_top_gdsc.pd,
- 	.pwrsts = PWRSTS_OFF_ON,
- };
- 
-@@ -1563,6 +1566,7 @@ static struct gdsc ife_1_gdsc = {
- 		.name = "ife_1_gdsc",
- 	},
- 	.flags = POLL_CFG_GDSCR,
-+	.parent = &titan_top_gdsc.pd,
- 	.pwrsts = PWRSTS_OFF_ON,
- };
- 
+ 	of_property_read_u32(np, "num-lanes", &pci->num_lanes);
+ 	if (!pci->num_lanes) {
+ 		dev_dbg(pci->dev, "Using h/w default number of lanes\n");
+@@ -644,11 +651,4 @@ void dw_pcie_setup(struct dw_pcie *pci)
+ 		break;
+ 	}
+ 	dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, val);
+-
+-	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
+-		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
+-		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
+-		       PCIE_PL_CHK_REG_CHK_REG_START;
+-		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
+-	}
+ }
 -- 
 2.35.1
 
