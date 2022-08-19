@@ -2,114 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17ACAC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B71B4C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349179AbiHSMzx (ORCPT
+        id S1348992AbiHSMz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
+        Fri, 19 Aug 2022 08:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349194AbiHSMy6 (ORCPT
+        with ESMTP id S1349139AbiHSMy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 08:54:58 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057DB8607E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:45 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id o22so5542766edc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:54:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=rXYLqyvUZrDN2atFN2rBSj6q0FVOWGSmJ64xIojR0jo=;
-        b=IyMU8Q0g1EDviaijWxU0HOP0rhogM+knpciweLZp3KyJeTUUfsKqpUcL45r4wJVS35
-         HgXshxSpXPW761SZneyuC7aaK32j/UT9vNl5e0QuSXbkH3lnOqUx/exE4szyybj3q+Lr
-         msmfs0kWzb4wZtTaVhOj3ZUDC6fQsiAxu2L9faFOWGRkU6tcspWigb139sBiioRTcjPD
-         KvRbWWB999vwFaRDYZSC5nbQAY6sbP8ipXbeElTmxk9neAUom5GPknco566HgfU2iEb2
-         QVVdMszSNR/dERKkypfiPVeC+c4nOQ6UgPpET9FmyXUifo6YiytjNM9bNmP9BSPpWOwe
-         na2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=rXYLqyvUZrDN2atFN2rBSj6q0FVOWGSmJ64xIojR0jo=;
-        b=hT+IkkWds2WDoYAygkoYB0l7aAaVNaAAxsNhZTrX+FyZrCYPHdUPRfOY1Lw5wuRjYX
-         05BaDKrfjxCtUEkTnpYUkFAG4yuUx/DQ/NQAWEP+aPT2mz3zjONAYD87vxqkpSesIWeS
-         WE8bVVtDxJPsOK5vh/AD7XgbfJ/YDyaiocTk5FzX3nBWC/ExX/xIZpXP1OnTCTClC0Gg
-         8clhehwmBAgpR1g2j21azccxgrTDGjcqVy6Nckj8p8I6jQOhSaYfmgCAm6wqZI6Chh/2
-         +qME+dRfQkleQhsjx35QUo8GJE44x6oMcAAGerTiYT6z04ZoWp2P1TytuUi2SBerBWSz
-         UqlQ==
-X-Gm-Message-State: ACgBeo3decYOnqBpSECXRwVA+DsA0delaKFxCpy7q0gRvWmOsEyRlfUw
-        OZgNYcehIpbiYNGzaDCvnxQ=
-X-Google-Smtp-Source: AA6agR6MxNlU186MP5egDDLOeR/KWwwZthJZ/YMEAcL+bp+EO/EOrwf/iSpBjapFlEJodROX5ynLog==
-X-Received: by 2002:a05:6402:448b:b0:43b:5ec6:8863 with SMTP id er11-20020a056402448b00b0043b5ec68863mr5923937edb.377.1660913683809;
-        Fri, 19 Aug 2022 05:54:43 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb77.dynamic.kabel-deutschland.de. [95.90.187.119])
-        by smtp.gmail.com with ESMTPSA id b12-20020a056402138c00b0043d6ece495asm3000955edv.55.2022.08.19.05.54.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 05:54:43 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 08/11] staging: r8188eu: merge rtw_{os,}_indicate_disconnect()
-Date:   Fri, 19 Aug 2022 14:54:25 +0200
-Message-Id: <20220819125428.8412-9-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220819125428.8412-1-straube.linux@gmail.com>
-References: <20220819125428.8412-1-straube.linux@gmail.com>
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF4579A46;
+        Fri, 19 Aug 2022 05:54:42 -0700 (PDT)
+From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1660913679; bh=rMqv5XG7HZonB1qblYJ+ygvYMKuUQ1pTBISJ/bCgBe8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=tzt+8+zyCxT0Ck7k5+el1rA3Ecr8ze12ezmsLN+7LrgYy7Bx8hxAE9wY+BDb3yQb4
+         KPQbM3IgqW+7b4XwU1Ej5FnKQxN5OSTMf16xWea9CINja/e/pSvFGAkbPFTvWMUAah
+         mLM20oVhyAAXrKV9MoOYQ+2XfibYr7obBInOReRE=
+To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/4] arm64: dts: apple: t8103: Add MCA and its support
+Date:   Fri, 19 Aug 2022 14:54:28 +0200
+Message-Id: <20220819125430.4920-3-povik+lin@cutebit.org>
+In-Reply-To: <20220819125430.4920-1-povik+lin@cutebit.org>
+References: <20220819125430.4920-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Merge rtw_os_indicate_disconnect() into rtw_indicate_disconnect().
-The function rtw_os_indicate_disconnect() was moved from the os_dep
-directory. It looks like the driver was originaly written to support
-different operating systems. We do not need this wrapping into an
-extra _os_ function obviously.
+Add the MCA I2S transceiver node and its supporting NCO, ADMAC nodes.
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
 ---
- drivers/staging/r8188eu/core/rtw_mlme.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ arch/arm64/boot/dts/apple/t8103.dtsi | 70 ++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index 6e51d735b2bb..3050c85dec2c 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -837,15 +837,6 @@ static void rtw_reset_securitypriv(struct adapter *adapter)
- 	}
- }
- 
--static void rtw_os_indicate_disconnect(struct adapter *adapter)
--{
--	/*  Do it first for tx broadcast pkt after disconnection issue! */
--	netif_carrier_off(adapter->pnetdev);
--
--	rtw_indicate_wx_disassoc_event(adapter);
--	rtw_reset_securitypriv(adapter);
--}
--
- /*
- *rtw_indicate_connect: the caller has to lock pmlmepriv->lock
- */
-@@ -882,7 +873,11 @@ void rtw_indicate_disconnect(struct adapter *padapter)
- 
- 	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED) ||
- 	    (pmlmepriv->to_roaming <= 0)) {
--		rtw_os_indicate_disconnect(padapter);
-+		/*  Do it first for tx broadcast pkt after disconnection issue! */
-+		netif_carrier_off(padapter->pnetdev);
+diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
+index 51a63b29d404..2dc3125aca5b 100644
+--- a/arch/arm64/boot/dts/apple/t8103.dtsi
++++ b/arch/arm64/boot/dts/apple/t8103.dtsi
+@@ -532,6 +532,76 @@ port02: pci@2,0 {
+ 						<0 0 0 4 &port02 0 0 0 3>;
+ 			};
+ 		};
 +
-+		rtw_indicate_wx_disassoc_event(padapter);
-+		rtw_reset_securitypriv(padapter);
++		dart_sio: iommu@235004000 {
++			compatible = "apple,t8103-dart", "apple,dart";
++			reg = <0x2 0x35004000 0x0 0x4000>;
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 635 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			power-domains = <&ps_sio_cpu>;
++		};
++
++		nco_clkref: clock-ref {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <900000000>;
++			clock-output-names = "nco_ref";
++		};
++
++		nco: nco@23b044000 {
++			compatible = "apple,t8103-nco", "apple,nco";
++			reg = <0x2 0x3b044000 0x0 0x14000>;
++			clocks = <&nco_clkref>;
++			#clock-cells = <1>;
++		};
++
++		admac: dma-controller@238200000 {
++			compatible = "apple,t8103-admac", "apple,admac";
++			reg = <0x2 0x38200000 0x0 0x34000>;
++			dma-channels = <24>;
++			interrupts-extended = <0>,
++					      <&aic AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>,
++					      <0>,
++					      <0>;
++			#dma-cells = <1>;
++			iommus = <&dart_sio 2>;
++			power-domains = <&ps_sio_adma>;
++		};
++
++		mca: mca@38400000 {
++			compatible = "apple,t8103-mca", "apple,mca";
++			reg = <0x2 0x38400000 0x0 0x18000>,
++			      <0x2 0x38300000 0x0 0x30000>;
++
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 619 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 620 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 621 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 622 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 623 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 624 IRQ_TYPE_LEVEL_HIGH>;
++
++			resets = <&ps_audio_p>;
++			clocks = <&nco 0>, <&nco 1>, <&nco 2>,
++				 <&nco 3>, <&nco 4>, <&nco 4>;
++			power-domains = <&ps_audio_p>, <&ps_mca0>, <&ps_mca1>,
++					<&ps_mca2>, <&ps_mca3>, <&ps_mca4>, <&ps_mca5>;
++			dmas = <&admac 0>, <&admac 1>, <&admac 2>, <&admac 3>,
++			       <&admac 4>, <&admac 5>, <&admac 6>, <&admac 7>,
++			       <&admac 8>, <&admac 9>, <&admac 10>, <&admac 11>,
++			       <&admac 12>, <&admac 13>, <&admac 14>, <&admac 15>,
++			       <&admac 16>, <&admac 17>, <&admac 18>, <&admac 19>,
++			       <&admac 20>, <&admac 21>, <&admac 22>, <&admac 23>;
++			dma-names = "tx0a", "rx0a", "tx0b", "rx0b",
++				"tx1a", "rx1a", "tx1b", "rx1b",
++				"tx2a", "rx2a", "tx2b", "rx2b",
++				"tx3a", "rx3a", "tx3b", "rx3b",
++				"tx4a", "rx4a", "tx4b", "rx4b",
++				"tx5a", "rx5a", "tx5b", "rx5b";
++
++			#sound-dai-cells = <1>;
++		};
+ 	};
+ };
  
- 		_clr_fwstate_(pmlmepriv, _FW_LINKED);
- 		rtw_led_control(padapter, LED_CTL_NO_LINK);
 -- 
-2.37.1
+2.33.0
 
