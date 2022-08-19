@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F12AC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E609C32773
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352370AbiHSQUn (ORCPT
+        id S1352411AbiHSQUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
+        Fri, 19 Aug 2022 12:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352313AbiHSQQR (ORCPT
+        with ESMTP id S1352352AbiHSQQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562A4115202;
-        Fri, 19 Aug 2022 08:59:26 -0700 (PDT)
+        Fri, 19 Aug 2022 12:16:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877C3100F3B;
+        Fri, 19 Aug 2022 08:59:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C52D7616F8;
-        Fri, 19 Aug 2022 15:59:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB68FC433C1;
-        Fri, 19 Aug 2022 15:59:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2EEC6177D;
+        Fri, 19 Aug 2022 15:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3682C433C1;
+        Fri, 19 Aug 2022 15:59:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924766;
-        bh=7xBqaD+HrDQJBUfWG4VqvMRucU4PAwrrna9WkfTRE7M=;
+        s=korg; t=1660924769;
+        bh=plkBKwiOcI2hGfmIj8K2S+MNH4ueJp+UZYExWInq59s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NmypBnrDcoLEBJhXj6J/oX8HY/2zki8bUa8XafpfWjjnhvI1WDnXDYQ551EhF43XE
-         3LQNw5Syrxt07F8uoq42hJ2YjCu7Z+szi28G0DRb3sdRbyMgzym8s3a+gcT3k9Hz5f
-         qCiIamIraRnc24YR+3PWZUD9ca40EbJMj9BWj7XM=
+        b=ihrjKw5BXmZasCMpjGGgqHk5BI5DeIDmNZeYgYi9DUcVDfD+oqA6lkkyLVseAUC/h
+         9eCBI2sEMIlBIS/n/udHtpb8c1tfPISDRlYVKezeFTk+r6vardfRmCAFp+zbqzFfSO
+         /mjr7GqrvZwNapo6RgrGUuTAzqHab63WRr6m7J1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        kernel test robot <lkp@intel.com>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 248/545] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
-Date:   Fri, 19 Aug 2022 17:40:18 +0200
-Message-Id: <20220819153840.452845899@linuxfoundation.org>
+Subject: [PATCH 5.10 275/545] mtd: sm_ftl: Fix deadlock caused by cancel_work_sync in sm_release
+Date:   Fri, 19 Aug 2022 17:40:45 +0200
+Message-Id: <20220819153841.641794646@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,56 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit d578e0af3a003736f6c440188b156483d451b329 ]
+[ Upstream commit a61528d997619a518ee8c51cf0ef0513021afaff ]
 
-Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
-but it forgets to change the value to be returned that came from
-simple_write_to_buffer() call. It results in the following warning:
+There is a deadlock between sm_release and sm_cache_flush_work
+which is a work item. The cancel_work_sync in sm_release will
+not return until sm_cache_flush_work is finished. If we hold
+mutex_lock and use cancel_work_sync to wait the work item to
+finish, the work item also requires mutex_lock. As a result,
+the sm_release will be blocked forever. The race condition is
+shown below:
 
-  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
-           return rc;
-                  ^~
+    (Thread 1)             |   (Thread 2)
+sm_release                 |
+  mutex_lock(&ftl->mutex)  | sm_cache_flush_work
+                           |   mutex_lock(&ftl->mutex)
+  cancel_work_sync         |   ...
 
-Remove rc variable and just return the passed in length if the
-memdup_user() succeeds.
+This patch moves del_timer_sync and cancel_work_sync out of
+mutex_lock in order to mitigate deadlock.
 
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
-Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220724202452.61846-1-ammar.faizi@intel.com
+Fixes: 7d17c02a01a1 ("mtd: Add new SmartMedia/xD FTL")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220524044841.10517-1-duoming@zju.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/sm_ftl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
-index 58c98e58bccb..cb40162bae99 100644
---- a/drivers/net/wireless/ath/wil6210/debugfs.c
-+++ b/drivers/net/wireless/ath/wil6210/debugfs.c
-@@ -1010,7 +1010,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
- 	void *cmd;
- 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
- 	u16 cmdid;
--	int rc, rc1;
-+	int rc1;
+diff --git a/drivers/mtd/sm_ftl.c b/drivers/mtd/sm_ftl.c
+index b9f272408c4d..2fedae67c07c 100644
+--- a/drivers/mtd/sm_ftl.c
++++ b/drivers/mtd/sm_ftl.c
+@@ -1098,9 +1098,9 @@ static void sm_release(struct mtd_blktrans_dev *dev)
+ {
+ 	struct sm_ftl *ftl = dev->priv;
  
- 	if (cmdlen < 0 || *ppos != 0)
- 		return -EINVAL;
-@@ -1027,7 +1027,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
- 
- 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
- 
--	return rc;
-+	return len;
+-	mutex_lock(&ftl->mutex);
+ 	del_timer_sync(&ftl->timer);
+ 	cancel_work_sync(&ftl->flush_work);
++	mutex_lock(&ftl->mutex);
+ 	sm_cache_flush(ftl);
+ 	mutex_unlock(&ftl->mutex);
  }
- 
- static const struct file_operations fops_wmi = {
 -- 
 2.35.1
 
