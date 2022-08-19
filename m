@@ -2,175 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26DEC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7D9C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349687AbiHSPqH (ORCPT
+        id S1350071AbiHSPqL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
+        Fri, 19 Aug 2022 11:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349799AbiHSPp7 (ORCPT
+        with ESMTP id S1349903AbiHSPqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:45:59 -0400
+        Fri, 19 Aug 2022 11:46:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B835A13D7F;
-        Fri, 19 Aug 2022 08:45:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF073E23;
+        Fri, 19 Aug 2022 08:46:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CE0EB8280D;
-        Fri, 19 Aug 2022 15:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72441C433D6;
-        Fri, 19 Aug 2022 15:45:54 +0000 (UTC)
-Date:   Fri, 19 Aug 2022 17:44:24 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the char-misc.current tree with the
- mm-hotfixes tree
-Message-ID: <Yv+v2GlKbT9iutr3@kroah.com>
-References: <20220819082714.5313827d@canb.auug.org.au>
- <Yv8vZQB25NE0r/uN@kroah.com>
- <20220819184027.7b3fda3e@canb.auug.org.au>
- <Yv9QArukYhIgg3R7@kroah.com>
- <20220819133458.eqshbr5xp4yr3xws@revolver>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E4BCB827F8;
+        Fri, 19 Aug 2022 15:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84C4C433C1;
+        Fri, 19 Aug 2022 15:45:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660923958;
+        bh=BskiOcygZDnKCjEtWX7rGX+jjb5kSQVz2n/d/kxc8x0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CrYROKtdxZSkkJrjp4bmx2DjUaQjzZODxyQLy2VgNyl0GV70fCkP8u0IC8OiPu1KI
+         uR/eilOHvgS7KoEif6r9N8XZBpY6mPa3yI5WR6tToNz1IYlDtpBesuD4XY6RuSNC32
+         X7b7Cxi1/b4bjSkGS86ikJt+6l0yD5MTm6mii+u4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 001/545] Makefile: link with -z noexecstack --no-warn-rwx-segments
+Date:   Fri, 19 Aug 2022 17:36:11 +0200
+Message-Id: <20220819153829.220984987@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220819133458.eqshbr5xp4yr3xws@revolver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 01:35:04PM +0000, Liam Howlett wrote:
-> * Greg KH <greg@kroah.com> [220819 04:55]:
-> > On Fri, Aug 19, 2022 at 06:40:27PM +1000, Stephen Rothwell wrote:
-> > > Hi Greg,
-> > > 
-> > > On Fri, 19 Aug 2022 08:36:21 +0200 Greg KH <greg@kroah.com> wrote:
-> > > >
-> > > > On Fri, Aug 19, 2022 at 08:28:18AM +1000, Stephen Rothwell wrote:
-> > > > > 
-> > > > > Today's linux-next merge of the char-misc.current tree got a conflict in:
-> > > > > 
-> > > > >   drivers/android/binder_alloc.c
-> > > > > 
-> > > > > between commit:
-> > > > > 
-> > > > >   b3bb668f3dc6 ("binder_alloc: add missing mmap_lock calls when using the VMA")
-> > > > > 
-> > > > > from the mm-hotfixes tree and commit:
-> > > > > 
-> > > > >   d6f35446d076 ("binder_alloc: Add missing mmap_lock calls when using the VMA")
-> > > > > 
-> > > > > from the char-misc.current tree.
-> > > > > 
-> > > > > I fixed it up (I used the latter as it was committed later even though
-> > > > > the author times were the same) and can carry the fix as necessary. This
-> > > > > is now fixed as far as linux-next is concerned, but any non trivial
-> > > > > conflicts should be mentioned to your upstream maintainer when your tree
-> > > > > is submitted for merging.  You may also want to consider cooperating
-> > > > > with the maintainer of the conflicting tree to minimise any particularly
-> > > > > complex conflicts.  
-> > > > 
-> > > > These should be identical, if not, something went wrong :(
-> > > 
-> > > Something went wrong :-)
-> > > 
-> > > $ git range-diff b3bb668f3dc6^..b3bb668f3dc6 d6f35446d076^..d6f35446d076
-> > > 1:  b3bb668f3dc6 ! 1:  d6f35446d076 binder_alloc: add missing mmap_lock calls when using the VMA
-> > >     @@ Metadata
-> > >      Author: Liam Howlett <liam.howlett@oracle.com>
-> > >      
-> > >       ## Commit message ##
-> > >     -    binder_alloc: add missing mmap_lock calls when using the VMA
-> > >     +    binder_alloc: Add missing mmap_lock calls when using the VMA
-> > >      
-> > >     -    Take the mmap_read_lock() when using the VMA in binder_alloc_print_pages()
-> > >     -    and when checking for a VMA in binder_alloc_new_buf_locked().
-> > >     +    Take the mmap_read_lock() when using the VMA in
-> > >     +    binder_alloc_print_pages() and when checking for a VMA in
-> > >     +    binder_alloc_new_buf_locked().
-> > >      
-> > >          It is worth noting binder_alloc_new_buf_locked() drops the VMA read lock
-> > >     -    after it verifies a VMA exists, but may be taken again deeper in the call
-> > >     -    stack, if necessary.
-> > >     +    after it verifies a VMA exists, but may be taken again deeper in the
-> > >     +    call stack, if necessary.
-> > >      
-> > >     -    Link: https://lkml.kernel.org/r/20220810160209.1630707-1-Liam.Howlett@oracle.com
-> > >     -    Fixes: a43cfc87caaf ("android: binder: stop saving a pointer to the VMA")
-> > >     -    Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-> > >     +    Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the VMA)
-> > >     +    Cc: stable <stable@kernel.org>
-> > >          Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > >     -    Reported-by: <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com>
-> > >     -    Acked-by: Carlos Llamas <cmllamas@google.com>
-> > >     +    Reported-by: syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com
-> > >          Tested-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > >     -    Cc: Minchan Kim <minchan@kernel.org>
-> > >     -    Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
-> > >     -    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > >     -    Cc: Hridya Valsaraju <hridya@google.com>
-> > >     -    Cc: Joel Fernandes <joel@joelfernandes.org>
-> > >     -    Cc: Martijn Coenen <maco@android.com>
-> > >     -    Cc: Suren Baghdasaryan <surenb@google.com>
-> > >     -    Cc: Todd Kjos <tkjos@android.com>
-> > >     -    Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > >     -    Cc: "Arve Hjønnevåg" <arve@android.com>
-> > >     -    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> > >     +    Acked-by: Carlos Llamas <cmllamas@google.com>
-> > >     +    Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-> > >     +    Link: https://lore.kernel.org/r/20220810160209.1630707-1-Liam.Howlett@oracle.com
-> > >     +    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > >      
-> > >       ## drivers/android/binder_alloc.c ##
-> > >      @@ drivers/android/binder_alloc.c: static struct binder_buffer *binder_alloc_new_buf_locked(
-> > >     @@ drivers/android/binder_alloc.c: void binder_alloc_print_pages(struct seq_file *m
-> > >      -		}
-> > >      +
-> > >      +	mmap_read_lock(alloc->vma_vm_mm);
-> > >     -+	if (binder_alloc_get_vma(alloc) == NULL)
-> > >     ++	if (binder_alloc_get_vma(alloc) == NULL) {
-> > >     ++		mmap_read_unlock(alloc->vma_vm_mm);
-> > >      +		goto uninitialized;
-> > >     + 	}
-> > >      +
-> > >     ++	mmap_read_unlock(alloc->vma_vm_mm);
-> > >      +	for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
-> > >      +		page = &alloc->pages[i];
-> > >      +		if (!page->page_ptr)
-> > >     @@ drivers/android/binder_alloc.c: void binder_alloc_print_pages(struct seq_file *m
-> > >      +			active++;
-> > >      +		else
-> > >      +			lru++;
-> > >     - 	}
-> > >     ++	}
-> > >      +
-> > >      +uninitialized:
-> > >     -+	mmap_read_unlock(alloc->vma_vm_mm);
-> > >       	mutex_unlock(&alloc->mutex);
-> > >       	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
-> > >       	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
-> > > 
-> > 
-> > Oh wow, ok, I'll go drop my version and assume that Andrew's is the more
-> > correct one and let it come through his tree.
-> > 
-> 
-> b3bb668f3dc6 is the older v1 of the patch [1]. d6f35446d076 from
-> mm-hotfixes is the correct v2 version [2], although I don't think that's
-> currently in mm-hotfixes-unstable.  It looks like version 1 is now in
-> mm-hotfixes-unstable as well.
-> 
-> 1: https://lore.kernel.org/linux-mm/20220809160618.1052539-1-Liam.Howlett@oracle.com/
-> 2: https://lore.kernel.org/linux-mm/20220810160209.1630707-1-Liam.Howlett@oracle.com/
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-I'll let you and Andrew fight this one out :)
+commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
+
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
+
+  ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: vmlinux has a LOAD segment with RWX permissions
+
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
+
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
+
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
+
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Makefile |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/Makefile
++++ b/Makefile
+@@ -983,6 +983,11 @@ KBUILD_CFLAGS   += $(KCFLAGS)
+ KBUILD_LDFLAGS_MODULE += --build-id=sha1
+ LDFLAGS_vmlinux += --build-id=sha1
+ 
++KBUILD_LDFLAGS	+= -z noexecstack
++ifeq ($(CONFIG_LD_IS_BFD),y)
++KBUILD_LDFLAGS	+= $(call ld-option,--no-warn-rwx-segments)
++endif
++
+ ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
+ LDFLAGS_vmlinux	+= $(call ld-option, -X,)
+ endif
+
 
