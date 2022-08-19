@@ -2,86 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 243C4C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66DE5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353861AbiHSQpD (ORCPT
+        id S1353869AbiHSQpK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
+        Fri, 19 Aug 2022 12:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354122AbiHSQlw (ORCPT
+        with ESMTP id S1354155AbiHSQl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4B21296E1;
-        Fri, 19 Aug 2022 09:10:37 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C211296D1;
+        Fri, 19 Aug 2022 09:10:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBE99B82822;
-        Fri, 19 Aug 2022 16:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A702FC433D6;
-        Fri, 19 Aug 2022 16:09:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660925356;
-        bh=4Qe5bnMK7e8Vdu1dOTSY/frhtjwhHd6k+3/lBQwHc18=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cOBQl1LU96kx800WoiXna18ama0ZZh7LmAxs/US+MaNABdfaawbENZ/FLRBbNwRfw
-         IHmh6x8+DK59rMZqFx8FE57uNfSoGtm+rpkl89KfnmQ/oAzDyWWX/TW5tQvgxRy+2H
-         P8Bf95Ota2+1Hg5DzVnh5/WJL2Ye0uFJwIuJPE8FjjyD2z7qs8HwYt9FVF+SPRLF/Y
-         BJCh5QublDGpsA4dqcGAIMx1AJC5boXCj1Z5op2KVD9NYzCItaYpbq5OfE6B4A8yOH
-         Dkn3UGrRTG+12EPjm7/tJtFN2n4kc85MYBhzzDKgCQK5PsFDX6Ij5LW2HwgDCyNfvG
-         WH9pxh6FhqYOA==
-Received: by mail-ua1-f52.google.com with SMTP id e3so1955013uax.4;
-        Fri, 19 Aug 2022 09:09:16 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3kqTzeyHmgmtj8tYSbgO8gOvjEpPRLp9EIVX4uTBKVHJlfO0ll
-        8XqCrsmnQPpcVuclT+TrBcHWZO4/ap5DTGx18A==
-X-Google-Smtp-Source: AA6agR4hVMZMGFZWoej1ekKhG9RcXxu/9rbogNBLoJnqbvFaaQCfUcXi+i0wkukb0+iHaKryynQ6hedqvzUCuuYfcVk=
-X-Received: by 2002:ab0:4565:0:b0:395:b672:508 with SMTP id
- r92-20020ab04565000000b00395b6720508mr3119861uar.63.1660925355671; Fri, 19
- Aug 2022 09:09:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220819153829.135562864@linuxfoundation.org> <20220819153835.859060503@linuxfoundation.org>
-In-Reply-To: <20220819153835.859060503@linuxfoundation.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 19 Aug 2022 11:09:04 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKY_Bq_-hd6xS-XSA9KZdDLUyj8PevD-_HniPyg9JqjRA@mail.gmail.com>
-Message-ID: <CAL_JsqKY_Bq_-hd6xS-XSA9KZdDLUyj8PevD-_HniPyg9JqjRA@mail.gmail.com>
-Subject: Re: [PATCH 5.10 146/545] dt-bindings: Update QCOM USB subsystem
- maintainer information
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1AA7FCE26AA;
+        Fri, 19 Aug 2022 16:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E956FC433C1;
+        Fri, 19 Aug 2022 16:09:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660925362;
+        bh=LBg/8jmxTEw+mpjzQup8KCiWVDwLLMY72DOk+qiJKU8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=J64oiIqyVJIO8iJNhwh0RrMMWcW7wjm8QPwUJF0Lf++12fK9iN77b4JCngNS+/Ut6
+         AXnOlmaXUkOtQDXBnNM8v22DOz4Tq2sDn+9NMbUpcYYeC4hMgSY/v09X2RxO9eZStn
+         ljJ5iGV8UcAGT0/KMZySd0j4W3WCF99+KvHbIDPs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable <stable@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH 5.10 467/545] intel_th: pci: Add Meteor Lake-P support
+Date:   Fri, 19 Aug 2022 17:43:57 +0200
+Message-Id: <20220819153850.298789782@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 10:52 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> From: Wesley Cheng <quic_wcheng@quicinc.com>
->
-> [ Upstream commit e059da384ffdc93778e69a5f212c2ac7357ec09a ]
->
-> Update devicetree binding files with the proper maintainer, and updated
-> contact email.
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-I don't think this needs to go to stable.
+[ Upstream commit 802a9a0b1d91274ef10d9fe429b4cc1e8c200aef ]
 
-> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> Link: https://lore.kernel.org/r/20220603021432.13365-1-quic_wcheng@quicinc.com
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml | 2 +-
->  Documentation/devicetree/bindings/phy/qcom,qusb2-phy.yaml       | 2 +-
->  .../devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml         | 2 +-
->  .../devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml  | 2 +-
->  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml            | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
+Add support for the Trace Hub in Meteor Lake-P.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-5-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/hwtracing/intel_th/pci.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
+index d032c4de9ce6..f9b742c42c35 100644
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -284,6 +284,11 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x54a6),
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+ 	},
++	{
++		/* Meteor Lake-P */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7e24),
++		.driver_data = (kernel_ulong_t)&intel_th_2x,
++	},
+ 	{
+ 		/* Alder Lake CPU */
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x466f),
+-- 
+2.35.1
+
+
+
