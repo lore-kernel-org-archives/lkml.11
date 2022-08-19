@@ -2,256 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BD9C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE10C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351669AbiHST6j (ORCPT
+        id S1351480AbiHSUBj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 15:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35796 "EHLO
+        Fri, 19 Aug 2022 16:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbiHST6g (ORCPT
+        with ESMTP id S231364AbiHSUBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 15:58:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7613048C84;
-        Fri, 19 Aug 2022 12:58:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0EA1EB828FA;
-        Fri, 19 Aug 2022 19:58:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BCAC433D7;
-        Fri, 19 Aug 2022 19:58:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660939111;
-        bh=C1JXIdnVb41TYPer8h1wl9nVSvCgk1eQOMlT0zf3q+Y=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=qnoRwB+boyyeOBhhtQg6yoVwUDOK7b0Ix9ZrUCqVx8jQkEUIJ3PZ0gPMC4NwUEI6u
-         z11nEUBXOO3iTIlK2XN6A1SH4HBSmZpNc8pDgbdjaF01Y4SjT7YBKrR2KOk7v81uce
-         +gi4/dvXn+R9/82q8ovrRiEVUecBXtDO5rLxlIo1q2Rv5AFbwVoO/15FqXbxexsk2x
-         L5AEu4sMFk/o/G1CJuhWtM+8/3kcVINhEBlIk0lK+Tw3mhNKX3nsqTj0y1WboyzY7v
-         sorv0xWGNxcwY3TpIivJ52e31q7zv2gd1tOuSoO2jKvJRdwQW5fRclc9BHONisD70V
-         RPOwocckAcFMg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 2CCF05C0863; Fri, 19 Aug 2022 12:58:31 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 12:58:31 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, rcu <rcu@vger.kernel.org>
-Subject: Re: [PATCH v3 resend 4/6] fs: Move call_rcu() to call_rcu_lazy() in
- some paths
-Message-ID: <20220819195831.GR2125313@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220809034517.3867176-5-joel@joelfernandes.org>
- <CAEXW_YQuGga9Eivq4G6o1XjvPn-nMMDiM8FOY6HXJTMzwv1Emg@mail.gmail.com>
- <CAEXW_YQOXBRwCLZXjspXttGkNhbJK3HGVDuYj5TcYD=Xj1cK0A@mail.gmail.com>
- <CAEXW_YT3VnK5KJTbyXdCzs8j4jw9XFTSCF4Dt9QwLPtkPSb1tA@mail.gmail.com>
- <20220819023550.GN2125313@paulmck-ThinkPad-P17-Gen-1>
- <4deb7354-bac7-b530-47ba-54cf50cfce58@joelfernandes.org>
- <2d56e4ad-7d6e-2abb-461f-15f20128d42b@joelfernandes.org>
- <20220819171249.GP2125313@paulmck-ThinkPad-P17-Gen-1>
- <fa8b7857-b9fd-72ad-36a7-8b09e4472816@joelfernandes.org>
- <b2a2742c-8e4e-152d-812f-987c8a941ddf@joelfernandes.org>
+        Fri, 19 Aug 2022 16:01:34 -0400
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DC2C2E91
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:01:33 -0700 (PDT)
+Received: by mail-pj1-f41.google.com with SMTP id t11-20020a17090a510b00b001fac77e9d1fso5798056pjh.5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:01:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=18pRZIOLjEtmIICsoeTLcQwS7bT2ZifIcBeO5f96LPw=;
+        b=NPi+L9heFp2rFXdmIib+qp0r0vKXTQ/CcjGJlmA5zFnHGU9DfLGm4ON0XpRYjoslrS
+         wUWS11xJsT9EUujYGDjXSMYj2rSf/4prAgkRdq6ugPio3tWmyul+sbSNi30mI0DvSF9f
+         0xCWEQnSF/ndP/jAFOirMriTatMd5Xlxld7Mj+YbXXPxbKs7tDZbXwzzrcrK9njqeQvw
+         8t1V5i/naMU3ZtlHUx2B3K4uuxkGrge0h3HLT3TFcrUZNeXQY7AbGKasj1V4R4BCc9fR
+         2/mXs4/XdhAe6hjvhmkVY1tC7V6fH3IfLb/PIw4ewuGn37XQ9T+Oa+8O/ZlRFZmjTjW8
+         G1Jg==
+X-Gm-Message-State: ACgBeo3gNKd95ngzs3LxXnfKAb7oCQ2HUec/BaQyFq+J/jDhbVvCKt53
+        JyKp5Ss8zdMbmafggCTzZKU=
+X-Google-Smtp-Source: AA6agR7PeS2DulNjzrDsgVaR0KUqFHGZlgZV13SYQNgdq+QN4kAFTk8GGG6EHClSZS9iei94E+wx0w==
+X-Received: by 2002:a17:902:8f8a:b0:16f:975e:7c6e with SMTP id z10-20020a1709028f8a00b0016f975e7c6emr8951219plo.136.1660939292385;
+        Fri, 19 Aug 2022 13:01:32 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id u6-20020a170902e5c600b0016d88dc7745sm3540099plf.259.2022.08.19.13.01.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 13:01:31 -0700 (PDT)
+Message-ID: <baa1f65a-d983-0518-3979-7099679995f2@acm.org>
+Date:   Fri, 19 Aug 2022 13:01:29 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b2a2742c-8e4e-152d-812f-987c8a941ddf@joelfernandes.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
+Content-Language: en-US
+To:     Isaac Manjarres <isaacmanjarres@google.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+References: <20220815211919.2028890-1-isaacmanjarres@google.com>
+ <20220816042507.GB1108868@roeck-us.net> <YvsoYzIhOtX9DOi2@google.com>
+ <20220816111311.GC1108868@roeck-us.net> <YvvQOBk9T3J1uX8k@google.com>
+ <20220817010559.GA1880847@roeck-us.net> <YvxAfiSOrzy7/c1J@google.com>
+ <20220818225932.GA3433999@roeck-us.net> <Yv7bd6Yl8+thp2CY@google.com>
+ <20220819112832.GA3106213@roeck-us.net> <Yv/MKymRC9O04Nqu@google.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <Yv/MKymRC9O04Nqu@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 03:40:00PM -0400, Joel Fernandes wrote:
-> On 8/19/2022 2:14 PM, Joel Fernandes wrote:
-> > On 8/19/2022 1:12 PM, Paul E. McKenney wrote:
-> >> On Fri, Aug 19, 2022 at 12:30:49PM -0400, Joel Fernandes wrote:
-> >>> On 8/18/2022 10:45 PM, Joel Fernandes wrote:
-> >>>> On 8/18/2022 10:35 PM, Paul E. McKenney wrote:
-> >>>>> On Thu, Aug 18, 2022 at 09:21:56PM -0400, Joel Fernandes wrote:
-> >>>>>> On Thu, Aug 18, 2022 at 7:05 PM Joel Fernandes <joel@joelfernandes.org> wrote:
-> >>>>>>>
-> >>>>>>> On Thu, Aug 18, 2022 at 1:23 PM Joel Fernandes <joel@joelfernandes.org> wrote:
-> >>>>>>>>
-> >>>>>>>> [Sorry, adding back the CC list]
-> >>>>>>>>
-> >>>>>>>> On Mon, Aug 8, 2022 at 11:45 PM Joel Fernandes (Google)
-> >>>>>>>> <joel@joelfernandes.org> wrote:
-> >>>>>>>>>
-> >>>>>>>>> This is required to prevent callbacks triggering RCU machinery too
-> >>>>>>>>> quickly and too often, which adds more power to the system.
-> >>>>>>>>>
-> >>>>>>>>> When testing, we found that these paths were invoked often when the
-> >>>>>>>>> system is not doing anything (screen is ON but otherwise idle).
-> >>>>>>>>
-> >>>>>>>> Unfortunately, I am seeing a slow down in ChromeOS boot performance
-> >>>>>>>> after applying this particular patch. It is the first time I could
-> >>>>>>>> test ChromeOS boot times with the series since it was hard to find a
-> >>>>>>>> ChromeOS device that runs the upstream kernel.
-> >>>>>>>>
-> >>>>>>>> Anyway, Vlad, Neeraj, do you guys also see slower boot times with this
-> >>>>>>>> patch? I wonder if the issue is with wake up interaction with the nocb
-> >>>>>>>> GP threads.
-> >>>>>>>>
-> >>>>>>>> We ought to disable lazy RCU during boot since it would have little
-> >>>>>>>> benefit anyway. But I am also concerned about some deeper problem I
-> >>>>>>>> did not catch before.
-> >>>>>>>>
-> >>>>>>>> I'll look into tracing the fs paths to see if I can narrow down what's
-> >>>>>>>> causing it. Will also try a newer kernel, I am currently testing on
-> >>>>>>>> 5.19-rc4.
-> >>>>>>>
-> >>>>>>> I got somewhere with this. It looks like queuing CBs as lazy CBs
-> >>>>>>> instead of normal CBs, are triggering expedited stalls during the boot
-> >>>>>>> process:
-> >>>>>>>
-> >>>>>>>   39.949198] rcu: INFO: rcu_preempt detected expedited stalls on
-> >>>>>>> CPUs/tasks: { } 28 jiffies s: 69 root: 0x0/.
-> >>>>>>>
-> >>>>>>> No idea how/why lazy RCU CBs would be related to expedited GP issues,
-> >>>>>>> but maybe something hangs and causes that side-effect.
-> >>>>>>>
-> >>>>>>> initcall_debug did not help, as it seems initcalls all work fine, and
-> >>>>>>> then 8 seconds after the boot, it starts slowing down a lot, followed
-> >>>>>>> by the RCU stall messages. As a next step I'll enable ftrace during
-> >>>>>>> the boot to see if I can get more insight. But I believe, its not the
-> >>>>>>> FS layer, the FS layer just triggers lazy CBs, but there is something
-> >>>>>>> wrong with the core lazy-RCU work itself.
-> >>>>>>>
-> >>>>>>> This kernel is 5.19-rc4. I'll also try to rebase ChromeOS on more
-> >>>>>>> recent kernels and debug.
-> >>>>>>
-> >>>>>> More digging, thanks to trace_event= boot option , I find that the
-> >>>>>> boot process does have some synchronous waits, and though these are
-> >>>>>> "non-lazy", for some reason the lazy CBs that were previously queued
-> >>>>>> are making them wait for the *full* lazy duration. Which points to a
-> >>>>>> likely bug in the lazy RCU logic. These synchronous CBs should never
-> >>>>>> be waiting like the lazy ones:
-> >>>>>>
-> >>>>>> [   17.715904]  => trace_dump_stack
-> >>>>>> [   17.715904]  => __wait_rcu_gp
-> >>>>>> [   17.715904]  => synchronize_rcu
-> >>>>>> [   17.715904]  => selinux_netcache_avc_callback
-> >>>>>> [   17.715904]  => avc_ss_reset
-> >>>>>> [   17.715904]  => sel_write_enforce
-> >>>>>> [   17.715904]  => vfs_write
-> >>>>>> [   17.715904]  => ksys_write
-> >>>>>> [   17.715904]  => do_syscall_64
-> >>>>>> [   17.715904]  => entry_SYSCALL_64_after_hwframe
-> >>>>>>
-> >>>>>> I'm tired so I'll resume the debug later.
-> >>>>>
-> >>>>> At times like this, I often pull the suspect code into userspace and
-> >>>>> run it through its paces.  In this case, a bunch of call_rcu_lazy()
-> >>>>> invocations into an empty bypass list, followed by a call_rcu()
-> >>>>> invocation, then a check to make sure that the bypass list is no longer
-> >>>>> lazy.
-> >>>>
-> >>>> Thanks a lot for this great debug idea, I will look into it.
-> >>>
-> >>> It seems to be a subtle issue when a large number of callbacks are
-> >>> queued trigging the lock-contention code, which happens at boot. It
-> >>> appears the non-lazy ones and lazy ones collide, so you have the lazy
-> >>> timer which wins, and then the regular bypass lock-contention timer is
-> >>> not allowed to do its thing. Due to this, the rcuog thread wakes up much
-> >>> later than a jiffie.
-> >>
-> >> Good show, and glad you found it!
-> > 
-> > Thanks!
-> > 
-> >>> Things are much better with the following change. However, this brings
-> >>> me to a question about lock-contention based or any deferring and boot time.
-> >>>
-> >>> If you have a path like selinux doing a synchronize_rcu(), shouldn't we
-> >>> skip the jiffie waiting for the bypass timer? Otherwise things
-> >>> synchronously waiting will slow down more than usual. Maybe bypassing
-> >>> should not be done for any case until boot up is done. I'm curious to
-> >>> see if that improves boot time.
-> >>
-> >> Why not simply disable laziness at boot time and enable it only after
-> >> booting is complete?  The exiting rcupdate.rcu_normal_after_boot kernel
-> >> boot parameter uses a similar scheme.
-> > 
-> > That sounds like the right thing to good, but unfortunately it wont help
-> > this problem. The boot time issue happens after init has started. So the
-> > OS is still "booting" even though the kernel has.
-> > 
-> > Also the problem can happen after boot as well, like if RCU
-> > lazy/non-lazy callbacks come back to back quickly, or so.
-> > 
-> > But yes nonetheless, I can see the value of disabling it till the
-> > in-kernel boot completets.
-> > 
-> >>> @@ -580,7 +585,11 @@ static void __call_rcu_nocb_wake(struct rcu_data
-> >>> *rdp, bool was_alldone,
-> >>>         len = rcu_segcblist_n_cbs(&rdp->cblist);
-> >>>         bypass_len = rcu_cblist_n_cbs(&rdp->nocb_bypass);
-> >>>         lazy_len = rcu_cblist_n_lazy_cbs(&rdp->nocb_bypass);
-> >>> -       if (was_alldone) {
-> >>> +
-> >>> +       // If we are in lazy-mode, we still need to do a wake up even if
-> >>> +       // all CBs were previously done. Otherwise the GP thread will
-> >>> +       // wait for the full lazy duration.
-> >>> +       if (was_alldone || (READ_ONCE(rdp->nocb_defer_wakeup) ==
-> >>> RCU_NOCB_WAKE_LAZY)) {
-> >>>                 rdp->qlen_last_fqs_check = len;
-> >>>                 // Only lazy CBs in bypass list
-> >>>                 if (lazy_len && bypass_len == lazy_len) {
-> >>
-> >> And this change looks plausible, though as always, the system's opinion
-> >> carries much more weight than does mine.
-> > 
-> > Sounds good, thanks, I am testing it more. Will update it for v4.
-> 
-> We could also do the following, I tested it and it fixes it. It seems more maintainable
-> and less fragile, but it comes at a slightly higher (but likely negligible) cost. If there
-> are lazy CBs queued, and any non-lazy one comes, then the first non-lazy one is not
-> considered to be added to the bypass list but hopefully that's Ok with you. Later non-lazy
-> ones will be added to the bypass.
+On 8/19/22 10:45, Isaac Manjarres wrote:
+> It seems that the patches mentioned in [1] are causing a hang during
+> reboot for various ARM emulations when booting from USB. Can you please
+> take a look? There's more information about what defconfig, rootfs, and
+> qemu commandline to use at [2].
 
-At first I was concerned that you intended to reorder the callbacks,
-but fortunately that is not what the patch below does.  ;-)
+Unfortunately I can't reproduce this hang in an x86 VM with kernel 
+v6.0-rc1 and a USB disk attached via virt-manager. The lsscsi -v output 
+shows that a USB disk has been attached:
 
-But don't you also need to clear the "lazy" flag at some point in this
-execution path?  After all, once a non-lazy callback arrives, all the
-callbacks are treated as if they are non-lazy, correct?
+[9:0:0:0]    disk    QEMU     QEMU HARDDISK    2.5+  /dev/sdd
+   dir: /sys/bus/scsi/devices/9:0:0:0 
+[/sys/devices/pci0000:00/0000:00:07.0/usb2/2-2/2-2:1.0/host9/target9:0:0/9:0:0:0]
 
-							Thanx, Paul
+Rebooting that VM happens in the expected time and without triggering 
+any kernel warnings.
 
-> @@ -484,9 +490,17 @@ static bool rcu_nocb_try_bypass(struct rcu_data *rdp, struct rcu_head
-> *rhp,
->         // since we are kick-starting RCU GP processing anyway for the non-lazy
->         // one, we can just reuse that GP for the already queued-up lazy ones.
->         if ((rdp->nocb_nobypass_count < nocb_nobypass_lim_per_jiffy && !lazy) ||
-> -           (lazy && n_lazy_cbs >= qhimark)) {
-> +           (!lazy && n_lazy_cbs) ||
-> +           (lazy  && n_lazy_cbs >= qhimark)) {
->                 rcu_nocb_lock(rdp);
-> -               *was_alldone = !rcu_segcblist_pend_cbs(&rdp->cblist);
-> +
-> +               // This variable helps decide if a wakeup of the rcuog thread
-> +               // is needed. It is passed to __call_rcu_nocb_wake() by the
-> +               // caller.  If only lazy CBs were previously queued and this one
-> +               // is non-lazy, make sure the caller does a wake up.
-> +               *was_alldone = !rcu_segcblist_pend_cbs(&rdp->cblist) ||
-> +                               (!lazy && n_lazy_cbs);
-> +
->                 if (*was_alldone)
->                         trace_rcu_nocb_wake(rcu_state.name, rdp->cpu,
->                                             lazy ? TPS("FirstLazyQ") : TPS("FirstQ"));
-> @@ -500,7 +514,8 @@ static bool rcu_nocb_try_bypass(struct rcu_data *rdp, struct rcu_head
-> *rhp,
->         if ((ncbs && j != READ_ONCE(rdp->nocb_bypass_first)) || ncbs >= qhimark) {
->                 rcu_nocb_lock(rdp);
->                 if (!rcu_nocb_flush_bypass(rdp, rhp, j, lazy, false)) {
-> -                       *was_alldone = !rcu_segcblist_pend_cbs(&rdp->cblist);
-> +                       *was_alldone = !rcu_segcblist_pend_cbs(&rdp->cblist) ||
-> +                               (!lazy && n_lazy_cbs);
->                         if (*was_alldone)
->                                 trace_rcu_nocb_wake(rcu_state.name, rdp->cpu,
->                                                     lazy ? TPS("FirstLazyQ") : TPS("FirstQ"));
+Since the issue has been observed in qemu, how about sharing the sysrq-t 
+output? I recommend to collect that output as follows:
+* Send the serial console output to a file. This involves adding 
+console=ttyS0,115200n8 to the kernel command line and using the proper 
+qemu options to save the serial console output into a file.
+* Reproduce the hang and send the sysrq-t key sequence to qemu, e.g. as 
+follows: virsh send-key ${vm_name} KEY_LEFTALT KEY_SYSRQ KEY_T
+
+Thanks,
+
+Bart.
