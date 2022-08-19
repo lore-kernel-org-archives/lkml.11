@@ -2,68 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4E5C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC559C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349280AbiHSOne (ORCPT
+        id S1349417AbiHSOob (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        Fri, 19 Aug 2022 10:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349038AbiHSOn2 (ORCPT
+        with ESMTP id S1348671AbiHSOo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:43:28 -0400
-X-Greylist: delayed 523 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 19 Aug 2022 07:43:27 PDT
-Received: from relay.agrotis.com.ua (relay.agrotis.com.ua [62.149.18.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7684A116
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:43:27 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by relay.agrotis.com.ua (Postfix) with ESMTP id EE5859F6599
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:34:16 +0300 (EEST)
-Received: from relay.agrotis.com.ua ([127.0.0.1])
-        by localhost (relay.agrotis.com.ua [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id z25vBjBGk29E for <linux-kernel@vger.kernel.org>;
-        Fri, 19 Aug 2022 17:34:16 +0300 (EEST)
-Received: from localhost (localhost [127.0.0.1])
-        by relay.agrotis.com.ua (Postfix) with ESMTP id 2C8739F6602
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:32:42 +0300 (EEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 relay.agrotis.com.ua 2C8739F6602
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=agrotis.com.ua;
-        s=D5B2AEA4-8E74-11E8-B208-83899F929C4F; t=1660919562;
-        bh=Nkl32Qmze6O9kxkLbYz0wAZsZN/2Han+n63K0lrKcIA=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=rvTwQYd3ciFzo0ycE3DSkVI0G9b6v74BqtPCsrZKug8+V94v3atsrP0vFT2IVRNKK
-         Lof/pnVqnr2n+2AA3ViajmvqA6SSMReuQqPxLOzOsB/N2Jy9Jzz19Rss5MJVUmYsCB
-         boO7fYyvMEZ7rdSGFxm969Y+cNWdHRorx81leUs8=
-X-Virus-Scanned: amavisd-new at agrotis.com.ua
-Received: from relay.agrotis.com.ua ([127.0.0.1])
-        by localhost (relay.agrotis.com.ua [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id d9TOw7EeHOAb for <linux-kernel@vger.kernel.org>;
-        Fri, 19 Aug 2022 17:32:42 +0300 (EEST)
-Received: from [192.168.0.105] (unknown [36.37.199.109])
-        by relay.agrotis.com.ua (Postfix) with ESMTPSA id 9648B9F67DD
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:30:38 +0300 (EEST)
-Content-Type: text/plain; charset="iso-8859-1"
+        Fri, 19 Aug 2022 10:44:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0577A7968B
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:44:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABD89B827DF
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:44:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC93C433D6;
+        Fri, 19 Aug 2022 14:44:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660920264;
+        bh=SR5PrwSUNeFzrA5RDIw69x1o+dFz9ygEbvlaWHCGNQ0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RNMDzlofT9Do1qtO0Evz7KNkRv+ZdvLW3fBZlD7deBiDkiEkJdnhibCTwuWfPH2Jv
+         Wi1ES+bT+zVEnj5vqLu6zJerZapPimoZLYndb+1B0NTLbB1s/Use0mLOFoEwmTr4wz
+         dl9BR1lEQoD+20FJAuHs+VmrOZZCdmO/a/TA2nJ+b5mQa3wj1c2rMfTj9uoOJFJcmq
+         9K2iymNLshFFva/qqFQujb9ABgvR8S149BDlLifatYo9vaHdemFr2wPui7M3CMqQJ2
+         i0eufKGMyk1WJVYWno6ghQ/JE8Kfj3DKcpDuLi1MgIEny0OaPF73j254/qBTuKHf4O
+         kMeMGq3AFZj+g==
+Date:   Fri, 19 Aug 2022 15:44:19 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
+ operations
+Message-ID: <Yv+hwyrQtBjc69Yd@sirena.org.uk>
+References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
+ <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
+ <87mtc1wtjz.wl-maz@kernel.org>
+ <Yv5eMcmNOmyLmd++@sirena.org.uk>
+ <20220818174441.arh7otvrkzg5uk3s@CAB-WSD-L081021.sigma.sbrf.ru>
+ <Yv99E0mrPI0qG66I@sirena.org.uk>
+ <20220819133200.xvpjzatkub4yxnsh@CAB-WSD-L081021.sigma.sbrf.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Representative
-To:     linux-kernel@vger.kernel.org
-From:   "visokos" <visokos@agrotis.com.ua>
-Date:   Fri, 19 Aug 2022 22:30:35 +0800
-Reply-To: f.liwei@outlook.com
-Message-Id: <20220819143038.9648B9F67DD@relay.agrotis.com.ua>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VGKnxctTzrqGZVQ/"
+Content-Disposition: inline
+In-Reply-To: <20220819133200.xvpjzatkub4yxnsh@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Cookie: Price does not include taxes.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello
 
-We would like to request your services as an Account receivable Representat=
-ive in your region on a part time basis.Let me know if you are interested i=
-n job description and commission.
+--VGKnxctTzrqGZVQ/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Kind Regards
-Liwei Fu
-Managing Executive Officer
-Nidec Copal Corporation
+On Fri, Aug 19, 2022 at 01:31:35PM +0000, Dmitry Rokosov wrote:
+> On Fri, Aug 19, 2022 at 01:07:47PM +0100, Mark Brown wrote:
+
+> > I didn't realise that was even a question, but then there seems to be
+> > some discussion I've not seen given the CCing going on.  The biggest
+> > issue is do we even want the overhead but I'll need to find time to look
+> > at this properly.
+
+> No any additional discussion before. I've added your address to all emails
+> which I sent.
+
+I assume you copied in Thomas, Rasmus and Marc for some reason?
+
+> Why do you think it this patch will bring overhead to regmap? AFAK, when
+> tracepoint is disabled, tracepoint fast assign operation shouldn't be
+> executed. In other words, memcpy will not be applied.
+
+To repeat I have not yet looked at your patch properly, one concern is
+how we handle the marshalling which regmap does.
+
+--VGKnxctTzrqGZVQ/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL/ocIACgkQJNaLcl1U
+h9ASKQf/cUZ2kReo5KKxCBpmKiXgMUqaHSmcdqLJjMdL7VGq0GmjAfYsEYnYFKK6
+DDAAPQ0ZFap5BNMXGQYVg8EwkTC7yj1nKXalzfGVcxiAf7RZCBOgfFDvbjNl/osb
+vYcEKFugG9fTd1v9Pjk6MHBG4FK1zOkQSswXdpQKRivdWtmoujm1CKNGoXgfzQb7
+fAMAPZcjNOS4HaPA9Iq0LnoF2TtAL/lUpfcL79yyqaW7qCgBB5ZLJJ7EgF/i0mvm
+YLI1FEcKMQRytDZDPv5y+Oyeqn9z1RqZKsKYC3k8w1lCAQBIQeT5mpI5B23YSu8z
+SJCQ/aIAmbnla8Ie+oN9Pt5H9d9iVA==
+=Sc9H
+-----END PGP SIGNATURE-----
+
+--VGKnxctTzrqGZVQ/--
