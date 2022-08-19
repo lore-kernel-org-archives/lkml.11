@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB70BC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A56A7C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353321AbiHSQfS (ORCPT
+        id S1353182AbiHSQfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36818 "EHLO
+        Fri, 19 Aug 2022 12:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353480AbiHSQbq (ORCPT
+        with ESMTP id S1353499AbiHSQbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:46 -0400
+        Fri, 19 Aug 2022 12:31:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C886911E915;
-        Fri, 19 Aug 2022 09:06:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C9010C818;
+        Fri, 19 Aug 2022 09:05:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2C08B82804;
-        Fri, 19 Aug 2022 16:06:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB6E8C433C1;
-        Fri, 19 Aug 2022 16:06:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA96FB8281A;
+        Fri, 19 Aug 2022 16:05:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C83C433C1;
+        Fri, 19 Aug 2022 16:05:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925162;
-        bh=9aFWhDb0sLjSYCbmI8Iu1nyBKM24DyHPC+Y0uMpBoEI=;
+        s=korg; t=1660925152;
+        bh=dJ4gpbam+XmG3kQqJjRjup7wnD2kSrhGt7KyInmx5Qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YkwE/jvJlz/xvPdGYjduTJP0vi1CcTjL+8j0be4X5cW29HaEjY5EfQCU7RLVxeiNo
-         PscwnutkEy4dNMWVn8Gd/hB6mra8/kvlWADGlTn7s87L+ifFZjvIbxqOueTWefZj2s
-         v27xCWc+FR5qErfzooFGhV5qjKku4HmbTkN/ZblQ=
+        b=i5ovZsFT7mQ4OoiXPz6CcAt9niAfYhASF2xA4bDBeVY4JIpPB3QJw/BSWQDOW3noW
+         ysQdenEM8rkkuR3k7ECB+iZsRZWfjXsfTcHopo7RTsahLCaNqv+hQDKn0SHUAIlpCN
+         4aUCXwwToxtTurpWQ6ydIXE21EbpAVJcdI0Jvszo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        stable@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 403/545] mfd: max77620: Fix refcount leak in max77620_initialise_fps
-Date:   Fri, 19 Aug 2022 17:42:53 +0200
-Message-Id: <20220819153847.468618053@linuxfoundation.org>
+Subject: [PATCH 5.10 400/545] lib/smp_processor_id: fix imbalanced instrumentation_end() call
+Date:   Fri, 19 Aug 2022 17:42:50 +0200
+Message-Id: <20220819153847.326395667@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,40 +54,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-[ Upstream commit 1520669c8255bd637c6b248b2be910e2688d38dd ]
+[ Upstream commit bd27acaac24e4b252ee28dddcabaee80456d0faf ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Currently instrumentation_end() won't be called if printk_ratelimit()
+returned false.
 
-Fixes: 327156c59360 ("mfd: max77620: Add core driver for MAX77620/MAX20024")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220601043222.64441-1-linmq006@gmail.com
+Link: https://lkml.kernel.org/r/a636d8e0-ad32-5888-acac-671f7f553bb3@I-love.SAKURA.ne.jp
+Fixes: 126f21f0e8d46e2c ("lib/smp_processor_id: Move it into noinstr section")
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Alexandre Chartre <alexandre.chartre@oracle.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/max77620.c | 2 ++
- 1 file changed, 2 insertions(+)
+ lib/smp_processor_id.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/max77620.c b/drivers/mfd/max77620.c
-index fec2096474ad..a6661e07035b 100644
---- a/drivers/mfd/max77620.c
-+++ b/drivers/mfd/max77620.c
-@@ -419,9 +419,11 @@ static int max77620_initialise_fps(struct max77620_chip *chip)
- 		ret = max77620_config_fps(chip, fps_child);
- 		if (ret < 0) {
- 			of_node_put(fps_child);
-+			of_node_put(fps_np);
- 			return ret;
- 		}
- 	}
-+	of_node_put(fps_np);
+diff --git a/lib/smp_processor_id.c b/lib/smp_processor_id.c
+index 525222e4f409..2916606a9333 100644
+--- a/lib/smp_processor_id.c
++++ b/lib/smp_processor_id.c
+@@ -46,9 +46,9 @@ unsigned int check_preemption_disabled(const char *what1, const char *what2)
  
- 	config = chip->enable_global_lpm ? MAX77620_ONOFFCNFG2_SLP_LPM_MSK : 0;
- 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
+ 	printk("caller is %pS\n", __builtin_return_address(0));
+ 	dump_stack();
+-	instrumentation_end();
+ 
+ out_enable:
++	instrumentation_end();
+ 	preempt_enable_no_resched_notrace();
+ out:
+ 	return this_cpu;
 -- 
 2.35.1
 
