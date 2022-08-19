@@ -2,106 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2111BC32789
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26DEC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348395AbiHSPqC (ORCPT
+        id S1349687AbiHSPqH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        Fri, 19 Aug 2022 11:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350257AbiHSPpn (ORCPT
+        with ESMTP id S1349799AbiHSPp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:45:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E776E102F2C
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:45:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660923902;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5fwWxYPKfIyLb1AtYH/Z3aEi33LuJRO9uvJrZeR5HOo=;
-        b=XFMouuas7xa589P/4TLr8rF6rEduy0o9TiAUuhSBr1PtxA7HSalgZMKdHGJQOKcdLmVHTH
-        F/9GmAA2EeQfHEkvYp9hQeNiYl3+TOF8C2OckGAETiSpfXX53kU9TVl1HxEe4dYUltPF8A
-        3xpXG8yow8L7US9VtnKZDfZjmAAGOj0=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-562-S62A88LmOtyYCoOovI4-Xw-1; Fri, 19 Aug 2022 11:44:59 -0400
-X-MC-Unique: S62A88LmOtyYCoOovI4-Xw-1
-Received: by mail-qt1-f200.google.com with SMTP id fy12-20020a05622a5a0c00b00344569022f7so3677389qtb.17
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:44:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=5fwWxYPKfIyLb1AtYH/Z3aEi33LuJRO9uvJrZeR5HOo=;
-        b=DKwHiaw1XerE4xPJkTC+IcTBNYjxI4H+jwQ20QWw0N6tGwz9/jDgfibpL9K0mGhxwL
-         DmrSp/fjYhPWr49KLgvbUl5pqMHSVmAPoK5LqUgB8jWr5Wa2hemWWpK5CVpNyY+66mqQ
-         Vr5X6VxUv1wy129wZ3Dkz5IhvTFrjl6MQOhrzFee/rtK+8NX5WU6ENANAyITtyI04YhE
-         hjtZbhY6JgumVN7P5EFggMWGhZoMe+RVKPRWY7/iW09ga4lcNK82OCXJiWLU2fEzOxH+
-         XtEHQiRU50Dk499sIq/7YN/FSExUVnUy33PSgxyKHRkWxuLOMPBtOlttrut7gMVotWTH
-         uAiw==
-X-Gm-Message-State: ACgBeo3pOlvlXOHx1Zqg4UvGvPdg4N8rAQYsHcyLG35efzDfEiNnS0li
-        Ip6I+ikScLIzbRT79Fxt0xL93xXJdLPyZgzWC+qy2y6QxLW6S5KxQqjQSGITCyX/hQelI7ypfnY
-        DnQn9d9LMZe9d+44NxnXv9taYQzVfKpi+yYcY/1S0
-X-Received: by 2002:a0c:b309:0:b0:496:6277:953e with SMTP id s9-20020a0cb309000000b004966277953emr6978205qve.77.1660923899232;
-        Fri, 19 Aug 2022 08:44:59 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5Hc2ZOCME0gpn+lc9a9OvgTyIXKsg/yLvVyJ8pQTmNOIEsbnWTS8GP9R4XmCi9QIDfpVs6VLTm+SlaDkSJT4M=
-X-Received: by 2002:a0c:b309:0:b0:496:6277:953e with SMTP id
- s9-20020a0cb309000000b004966277953emr6978190qve.77.1660923899005; Fri, 19 Aug
- 2022 08:44:59 -0700 (PDT)
+        Fri, 19 Aug 2022 11:45:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B835A13D7F;
+        Fri, 19 Aug 2022 08:45:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CE0EB8280D;
+        Fri, 19 Aug 2022 15:45:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72441C433D6;
+        Fri, 19 Aug 2022 15:45:54 +0000 (UTC)
+Date:   Fri, 19 Aug 2022 17:44:24 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the char-misc.current tree with the
+ mm-hotfixes tree
+Message-ID: <Yv+v2GlKbT9iutr3@kroah.com>
+References: <20220819082714.5313827d@canb.auug.org.au>
+ <Yv8vZQB25NE0r/uN@kroah.com>
+ <20220819184027.7b3fda3e@canb.auug.org.au>
+ <Yv9QArukYhIgg3R7@kroah.com>
+ <20220819133458.eqshbr5xp4yr3xws@revolver>
 MIME-Version: 1.0
-References: <20220819142519.5684-1-mario.limonciello@amd.com>
-In-Reply-To: <20220819142519.5684-1-mario.limonciello@amd.com>
-From:   Karol Herbst <kherbst@redhat.com>
-Date:   Fri, 19 Aug 2022 17:44:48 +0200
-Message-ID: <CACO55tuw_2QWFMr0t6-JfUiQ4M7V3ZMKC7jHYTyERypaU3TekQ@mail.gmail.com>
-Subject: Re: [RFC 0/2] Stop the abuse of Linux-* _OSI strings
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Lyude Paul <lyude@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        rafael@kernel.org, Len Brown <lenb@kernel.org>,
-        nouveau@lists.freedesktop.org, hdegoede@redhat.com,
-        ddadap@nvidia.com, kai.heng.feng@canonical.com,
-        Dell.Client.Kernel@dell.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220819133458.eqshbr5xp4yr3xws@revolver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 4:25 PM Mario Limonciello
-<mario.limonciello@amd.com> wrote:
->
-> 3 _OSI strings were introduced in recent years that were intended
-> to workaround very specific problems found on specific systems.
->
-> The idea was supposed to be that these quirks were only used on
-> those systems, but this proved to be a bad assumption.  I've found
-> at least one system in the wild where the vendor using the _OSI
-> string doesn't match the _OSI string and the neither does the use.
->
-> So this brings a good time to review keeping those strings in the kernel.
-> There are 3 strings that were introduced:
->
-> Linux-Dell-Video
-> -> Intended for systems with NVIDIA cards that didn't support RTD3
-> Linux-Lenovo-NV-HDMI-Audio
-> -> Intended for powering on NVIDIA HDMI device
-> Linux-HPI-Hybrid-Graphics
-> -> Intended for changing dGPU output
->
-> AFAIK the first string is no longer relevant as nouveau now supports
-> RTD3.  If that's wrong, this can be changed for the series.
->
+On Fri, Aug 19, 2022 at 01:35:04PM +0000, Liam Howlett wrote:
+> * Greg KH <greg@kroah.com> [220819 04:55]:
+> > On Fri, Aug 19, 2022 at 06:40:27PM +1000, Stephen Rothwell wrote:
+> > > Hi Greg,
+> > > 
+> > > On Fri, 19 Aug 2022 08:36:21 +0200 Greg KH <greg@kroah.com> wrote:
+> > > >
+> > > > On Fri, Aug 19, 2022 at 08:28:18AM +1000, Stephen Rothwell wrote:
+> > > > > 
+> > > > > Today's linux-next merge of the char-misc.current tree got a conflict in:
+> > > > > 
+> > > > >   drivers/android/binder_alloc.c
+> > > > > 
+> > > > > between commit:
+> > > > > 
+> > > > >   b3bb668f3dc6 ("binder_alloc: add missing mmap_lock calls when using the VMA")
+> > > > > 
+> > > > > from the mm-hotfixes tree and commit:
+> > > > > 
+> > > > >   d6f35446d076 ("binder_alloc: Add missing mmap_lock calls when using the VMA")
+> > > > > 
+> > > > > from the char-misc.current tree.
+> > > > > 
+> > > > > I fixed it up (I used the latter as it was committed later even though
+> > > > > the author times were the same) and can carry the fix as necessary. This
+> > > > > is now fixed as far as linux-next is concerned, but any non trivial
+> > > > > conflicts should be mentioned to your upstream maintainer when your tree
+> > > > > is submitted for merging.  You may also want to consider cooperating
+> > > > > with the maintainer of the conflicting tree to minimise any particularly
+> > > > > complex conflicts.  
+> > > > 
+> > > > These should be identical, if not, something went wrong :(
+> > > 
+> > > Something went wrong :-)
+> > > 
+> > > $ git range-diff b3bb668f3dc6^..b3bb668f3dc6 d6f35446d076^..d6f35446d076
+> > > 1:  b3bb668f3dc6 ! 1:  d6f35446d076 binder_alloc: add missing mmap_lock calls when using the VMA
+> > >     @@ Metadata
+> > >      Author: Liam Howlett <liam.howlett@oracle.com>
+> > >      
+> > >       ## Commit message ##
+> > >     -    binder_alloc: add missing mmap_lock calls when using the VMA
+> > >     +    binder_alloc: Add missing mmap_lock calls when using the VMA
+> > >      
+> > >     -    Take the mmap_read_lock() when using the VMA in binder_alloc_print_pages()
+> > >     -    and when checking for a VMA in binder_alloc_new_buf_locked().
+> > >     +    Take the mmap_read_lock() when using the VMA in
+> > >     +    binder_alloc_print_pages() and when checking for a VMA in
+> > >     +    binder_alloc_new_buf_locked().
+> > >      
+> > >          It is worth noting binder_alloc_new_buf_locked() drops the VMA read lock
+> > >     -    after it verifies a VMA exists, but may be taken again deeper in the call
+> > >     -    stack, if necessary.
+> > >     +    after it verifies a VMA exists, but may be taken again deeper in the
+> > >     +    call stack, if necessary.
+> > >      
+> > >     -    Link: https://lkml.kernel.org/r/20220810160209.1630707-1-Liam.Howlett@oracle.com
+> > >     -    Fixes: a43cfc87caaf ("android: binder: stop saving a pointer to the VMA")
+> > >     -    Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> > >     +    Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the VMA)
+> > >     +    Cc: stable <stable@kernel.org>
+> > >          Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > >     -    Reported-by: <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com>
+> > >     -    Acked-by: Carlos Llamas <cmllamas@google.com>
+> > >     +    Reported-by: syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com
+> > >          Tested-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > >     -    Cc: Minchan Kim <minchan@kernel.org>
+> > >     -    Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
+> > >     -    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > >     -    Cc: Hridya Valsaraju <hridya@google.com>
+> > >     -    Cc: Joel Fernandes <joel@joelfernandes.org>
+> > >     -    Cc: Martijn Coenen <maco@android.com>
+> > >     -    Cc: Suren Baghdasaryan <surenb@google.com>
+> > >     -    Cc: Todd Kjos <tkjos@android.com>
+> > >     -    Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+> > >     -    Cc: "Arve Hjønnevåg" <arve@android.com>
+> > >     -    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> > >     +    Acked-by: Carlos Llamas <cmllamas@google.com>
+> > >     +    Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> > >     +    Link: https://lore.kernel.org/r/20220810160209.1630707-1-Liam.Howlett@oracle.com
+> > >     +    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > >      
+> > >       ## drivers/android/binder_alloc.c ##
+> > >      @@ drivers/android/binder_alloc.c: static struct binder_buffer *binder_alloc_new_buf_locked(
+> > >     @@ drivers/android/binder_alloc.c: void binder_alloc_print_pages(struct seq_file *m
+> > >      -		}
+> > >      +
+> > >      +	mmap_read_lock(alloc->vma_vm_mm);
+> > >     -+	if (binder_alloc_get_vma(alloc) == NULL)
+> > >     ++	if (binder_alloc_get_vma(alloc) == NULL) {
+> > >     ++		mmap_read_unlock(alloc->vma_vm_mm);
+> > >      +		goto uninitialized;
+> > >     + 	}
+> > >      +
+> > >     ++	mmap_read_unlock(alloc->vma_vm_mm);
+> > >      +	for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
+> > >      +		page = &alloc->pages[i];
+> > >      +		if (!page->page_ptr)
+> > >     @@ drivers/android/binder_alloc.c: void binder_alloc_print_pages(struct seq_file *m
+> > >      +			active++;
+> > >      +		else
+> > >      +			lru++;
+> > >     - 	}
+> > >     ++	}
+> > >      +
+> > >      +uninitialized:
+> > >     -+	mmap_read_unlock(alloc->vma_vm_mm);
+> > >       	mutex_unlock(&alloc->mutex);
+> > >       	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
+> > >       	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
+> > > 
+> > 
+> > Oh wow, ok, I'll go drop my version and assume that Andrew's is the more
+> > correct one and let it come through his tree.
+> > 
+> 
+> b3bb668f3dc6 is the older v1 of the patch [1]. d6f35446d076 from
+> mm-hotfixes is the correct v2 version [2], although I don't think that's
+> currently in mm-hotfixes-unstable.  It looks like version 1 is now in
+> mm-hotfixes-unstable as well.
+> 
+> 1: https://lore.kernel.org/linux-mm/20220809160618.1052539-1-Liam.Howlett@oracle.com/
+> 2: https://lore.kernel.org/linux-mm/20220810160209.1630707-1-Liam.Howlett@oracle.com/
 
-Nouveau always supported RTD3, because that's mainly a kernel feature.
-When those were introduced we simply had a bug only hit on a few
-systems. And instead of helping us to debug this, this workaround was
-added :( We were not even asked about this.
-
-I am a bit curious about the other two though as I am not even sure
-they are needed at all as we put other work arounds in place. @Lyude
-Paul might know more about these.
+I'll let you and Andrew fight this one out :)
 
