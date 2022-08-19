@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F39FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E21BBC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354339AbiHSQwp (ORCPT
+        id S1354354AbiHSQwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        Fri, 19 Aug 2022 12:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354518AbiHSQvI (ORCPT
+        with ESMTP id S1354513AbiHSQvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:51:08 -0400
+        Fri, 19 Aug 2022 12:51:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CA6D8E24;
-        Fri, 19 Aug 2022 09:14:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5261D59A1;
+        Fri, 19 Aug 2022 09:14:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05A4FB82824;
-        Fri, 19 Aug 2022 16:13:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECD5C433C1;
-        Fri, 19 Aug 2022 16:13:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12289B8282B;
+        Fri, 19 Aug 2022 16:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B6AC433D6;
+        Fri, 19 Aug 2022 16:13:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925593;
-        bh=we86j3RT/2hs2MMR1fPjFUQ1s8lZ+1GT3C9CJeRZlN4=;
+        s=korg; t=1660925599;
+        bh=ZK4XsUzX22wfa6rcCGm1wxBymDkwuNezaRqvry0UXgY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b3dwE4+agcE5Y0BKyPxktSAoSfHLmEdzhBUGOZbOf2PVkvyVOdRPloIufrQlTAApC
-         cFT0tng4SP5cmYnRbS3BpEykDJMndlIMZMzpobV+b3RyF9pEkxK6BMKGrGgrdAzWW3
-         gHBKuMAtDWVmOIg+wSz8jEP2jTgmeX5eVQAHfMKE=
+        b=j2PuhC3JuK5bThWgbudSFBRU6XuHI6Orw0YdVUxo6i3jkQ6XJBBLU1XHL5LOfSTrf
+         8KumDMIQaVAEJEAW4/oFD7b/WjCaaMoZWSbxvy7WeOk2tqRbShIjdfVtHaUFh9d4qd
+         2zu7d3qWF2M6chq0xw1lmoHSuUCR8NZ1yZcxoBgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>,
-        Maximilian Heyne <mheyne@amazon.de>,
-        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.10 511/545] xen-blkback: Apply feature_persistent parameter when connect
-Date:   Fri, 19 Aug 2022 17:44:41 +0200
-Message-Id: <20220819153852.357084367@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 503/545] KVM: nVMX: Inject #UD if VMXON is attempted with incompatible CR0/CR4
+Date:   Fri, 19 Aug 2022 17:44:33 +0200
+Message-Id: <20220819153851.986665676@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,77 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maximilian Heyne <mheyne@amazon.de>
+From: Sean Christopherson <seanjc@google.com>
 
-commit e94c6101e151b019b8babc518ac2a6ada644a5a1 upstream.
+[ Upstream commit c7d855c2aff2d511fd60ee2e356134c4fb394799 ]
 
-In some use cases[1], the backend is created while the frontend doesn't
-support the persistent grants feature, but later the frontend can be
-changed to support the feature and reconnect.  In the past, 'blkback'
-enabled the persistent grants feature since it unconditionally checked
-if frontend supports the persistent grants feature for every connect
-('connect_ring()') and decided whether it should use persistent grans or
-not.
+Inject a #UD if L1 attempts VMXON with a CR0 or CR4 that is disallowed
+per the associated nested VMX MSRs' fixed0/1 settings.  KVM cannot rely
+on hardware to perform the checks, even for the few checks that have
+higher priority than VM-Exit, as (a) KVM may have forced CR0/CR4 bits in
+hardware while running the guest, (b) there may incompatible CR0/CR4 bits
+that have lower priority than VM-Exit, e.g. CR0.NE, and (c) userspace may
+have further restricted the allowed CR0/CR4 values by manipulating the
+guest's nested VMX MSRs.
 
-However, commit aac8a70db24b ("xen-blkback: add a parameter for
-disabling of persistent grants") has mistakenly changed the behavior.
-It made the frontend feature support check to not be repeated once it
-shown the 'feature_persistent' as 'false', or the frontend doesn't
-support persistent grants.
+Note, despite a very strong desire to throw shade at Jim, commit
+70f3aac964ae ("kvm: nVMX: Remove superfluous VMX instruction fault checks")
+is not to blame for the buggy behavior (though the comment...).  That
+commit only removed the CR0.PE, EFLAGS.VM, and COMPATIBILITY mode checks
+(though it did erroneously drop the CPL check, but that has already been
+remedied).  KVM may force CR0.PE=1, but will do so only when also
+forcing EFLAGS.VM=1 to emulate Real Mode, i.e. hardware will still #UD.
 
-This commit changes the behavior of the parameter to make effect for
-every connect, so that the previous workflow can work again as expected.
-
-[1] https://lore.kernel.org/xen-devel/CAJwUmVB6H3iTs-C+U=v-pwJB7-_ZRHPxHzKRJZ22xEPW7z8a=g@mail.gmail.com/
-
-Reported-by: Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>
-Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-Signed-off-by: SeongJae Park <sj@kernel.org>
-Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220715225108.193398-3-sj@kernel.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216033
+Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
+Reported-by: Eric Li <ercli@ucdavis.edu>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220607213604.3346000-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-driver-xen-blkback |    2 +-
- drivers/block/xen-blkback/xenbus.c                 |    9 +++------
- 2 files changed, 4 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
---- a/Documentation/ABI/testing/sysfs-driver-xen-blkback
-+++ b/Documentation/ABI/testing/sysfs-driver-xen-blkback
-@@ -42,5 +42,5 @@ KernelVersion:  5.10
- Contact:        SeongJae Park <sjpark@amazon.de>
- Description:
-                 Whether to enable the persistent grants feature or not.  Note
--                that this option only takes effect on newly created backends.
-+                that this option only takes effect on newly connected backends.
-                 The default is Y (enable).
---- a/drivers/block/xen-blkback/xenbus.c
-+++ b/drivers/block/xen-blkback/xenbus.c
-@@ -186,8 +186,6 @@ static struct xen_blkif *xen_blkif_alloc
- 	__module_get(THIS_MODULE);
- 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 3228db4db5df..6c4277e99d58 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4877,20 +4877,25 @@ static int handle_vmon(struct kvm_vcpu *vcpu)
+ 		| FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
  
--	blkif->vbd.feature_gnt_persistent = feature_persistent;
--
- 	return blkif;
- }
- 
-@@ -1090,10 +1088,9 @@ static int connect_ring(struct backend_i
- 		xenbus_dev_fatal(dev, err, "unknown fe protocol %s", protocol);
- 		return -ENOSYS;
+ 	/*
+-	 * The Intel VMX Instruction Reference lists a bunch of bits that are
+-	 * prerequisite to running VMXON, most notably cr4.VMXE must be set to
+-	 * 1 (see vmx_is_valid_cr4() for when we allow the guest to set this).
+-	 * Otherwise, we should fail with #UD.  But most faulting conditions
+-	 * have already been checked by hardware, prior to the VM-exit for
+-	 * VMXON.  We do test guest cr4.VMXE because processor CR4 always has
+-	 * that bit set to 1 in non-root mode.
++	 * Note, KVM cannot rely on hardware to perform the CR0/CR4 #UD checks
++	 * that have higher priority than VM-Exit (see Intel SDM's pseudocode
++	 * for VMXON), as KVM must load valid CR0/CR4 values into hardware while
++	 * running the guest, i.e. KVM needs to check the _guest_ values.
++	 *
++	 * Rely on hardware for the other two pre-VM-Exit checks, !VM86 and
++	 * !COMPATIBILITY modes.  KVM may run the guest in VM86 to emulate Real
++	 * Mode, but KVM will never take the guest out of those modes.
+ 	 */
+-	if (!kvm_read_cr4_bits(vcpu, X86_CR4_VMXE)) {
++	if (!nested_host_cr0_valid(vcpu, kvm_read_cr0(vcpu)) ||
++	    !nested_host_cr4_valid(vcpu, kvm_read_cr4(vcpu))) {
+ 		kvm_queue_exception(vcpu, UD_VECTOR);
+ 		return 1;
  	}
--	if (blkif->vbd.feature_gnt_persistent)
--		blkif->vbd.feature_gnt_persistent =
--			xenbus_read_unsigned(dev->otherend,
--					"feature-persistent", 0);
-+
-+	blkif->vbd.feature_gnt_persistent = feature_persistent &&
-+		xenbus_read_unsigned(dev->otherend, "feature-persistent", 0);
  
- 	blkif->vbd.overflow_max_grants = 0;
- 
+-	/* CPL=0 must be checked manually. */
++	/*
++	 * CPL=0 and all other checks that are lower priority than VM-Exit must
++	 * be checked manually.
++	 */
+ 	if (vmx_get_cpl(vcpu)) {
+ 		kvm_inject_gp(vcpu, 0);
+ 		return 1;
+-- 
+2.35.1
+
 
 
