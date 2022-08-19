@@ -2,92 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1F0C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42590C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348862AbiHSMFt (ORCPT
+        id S1348682AbiHSMGJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        Fri, 19 Aug 2022 08:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348540AbiHSMFp (ORCPT
+        with ESMTP id S1348496AbiHSMGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:05:45 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A384DEE694
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:05:43 -0700 (PDT)
+        Fri, 19 Aug 2022 08:06:07 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514F8100963;
+        Fri, 19 Aug 2022 05:06:05 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 58716352FF;
-        Fri, 19 Aug 2022 12:05:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1660910742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Da9ibTQcKE40AQfRCOZrvs+8F21E+Wv8031Z1+Wthkw=;
-        b=zYSPi4tvNYlRU9Ppl9GQL+BXOdgP34XYoAG2VBZHPymM7Nb+cWPUv1K+TwV1DZjRTKsqO0
-        k+1NMtxkT4hNu0dDeji8eEdOn7n92gv+dBEGZX2grVRh0i2Eyc/CXASNTqwuc411/tKQ/J
-        Zvh6PXw2Lfe8bnE7u3FVcVybjVAGdHk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1660910742;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Da9ibTQcKE40AQfRCOZrvs+8F21E+Wv8031Z1+Wthkw=;
-        b=ROP8sjPtS2ED69Uca3zrbuopCWdHyU+42owgAZnmznQaaJF1Z3Tqp0eh67VmKYZPYgtMgz
-        CdB+hPRi8cUCvcDg==
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 03DF42020E;
+        Fri, 19 Aug 2022 12:06:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660910764;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=s8JuKXuquxAHWWI+QjuKLmXu6m/+exD+rUksSV7bL9U=;
+        b=pGr9BqV15xyOVLEeTm7Gc+cpOYlTyIDe0UvexnFuFVkegZ6kh6jvSu3pCQ35YMGxf+VenF
+        i6Y/STjbx5bjc9o2bm0rKfsK1oeVz38UfUsYKTdCj5xjbO3BEXGbpXILbc5CWYKDl91o9b
+        JJyrSRx+IoQbJGlzU5YT4H9wPGsYOEk=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2ABD013AC1;
-        Fri, 19 Aug 2022 12:05:42 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D298B13AC1;
+        Fri, 19 Aug 2022 12:06:03 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id xRHJCZZ8/2JOPQAAMHmgww
-        (envelope-from <tiwai@suse.de>); Fri, 19 Aug 2022 12:05:42 +0000
-Date:   Fri, 19 Aug 2022 14:05:41 +0200
-Message-ID: <87ilmoo2ui.wl-tiwai@suse.de>
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Amadeusz =?ISO-8859-2?Q?S=B3awi=F1ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-Cc:     Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>
-Subject: Re: [PATCH v2 0/4] hda: Minor cleanups
-In-Reply-To: <20220818141517.109280-1-amadeuszx.slawinski@linux.intel.com>
-References: <20220818141517.109280-1-amadeuszx.slawinski@linux.intel.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: 8bit
+        id t8BqMqt8/2JpPQAAMHmgww
+        (envelope-from <dsterba@suse.com>); Fri, 19 Aug 2022 12:06:03 +0000
+Date:   Fri, 19 Aug 2022 14:00:51 +0200
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Btrfs fixes for 6.0-rc2
+Message-ID: <cover.1660908668.git.dsterba@suse.com>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, torvalds@linux-foundation.org,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 16:15:13 +0200,
-Amadeusz S³awiñski wrote:
-> 
-> First two patches are small refactoring of code to use poll macros
-> instead of open coding register checks.
-> Following two patches remove unused defines from code.
-> 
-> v2:
->  * Fix includes
-> 
-> Amadeusz S³awiñski (4):
->   ALSA: hda: Move stream-register polling macros
->   ALSA: hda: Rework snd_hdac_stream_reset() to use macros
->   ALSA: hda: Remove unused MAX_PIN_CONFIGS constant
->   ALSA: hda: Remove unused defines
+Hi,
 
-Thanks, applied now to for-next branch.
+a few short fixes and a lockdep warning fix (needs moving some code).
+Please pull, thanks.
 
+- tree-log replay fixes
+  - fix error handling when looking up extent refs
+  - fix warning when setting inode number of links
 
-Takashi
+- relocation fixes
+  - reset block group read-only status when relocation fails
+  - unset control structure if transaction fails when starting to
+    process a block group
+  - add lockdep annotations to fix a warning during relocation where
+    blocks temporarily belong to another tree and can lead to reversed
+    dependencies
+
+- tree-checker verifies if extent items don't overlap
+
+----------------------------------------------------------------
+The following changes since commit 0b078d9db8793b1bd911e97be854e3c964235c78:
+
+  btrfs: don't call btrfs_page_set_checked in finish_compressed_bio_read (2022-07-25 19:56:16 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-6.0-rc1-tag
+
+for you to fetch changes up to 899b7f69f244e539ea5df1b4d756046337de44a5:
+
+  btrfs: tree-checker: check for overlapping extent items (2022-08-17 16:20:25 +0200)
+
+----------------------------------------------------------------
+Filipe Manana (2):
+      btrfs: fix lost error handling when looking up extended ref on log replay
+      btrfs: fix warning during log replay when bumping inode link count
+
+Josef Bacik (4):
+      btrfs: reset RO counter on block group if we fail to relocate
+      btrfs: move lockdep class helpers to locking.c
+      btrfs: fix lockdep splat with reloc root extent buffers
+      btrfs: tree-checker: check for overlapping extent items
+
+Zixuan Fu (1):
+      btrfs: unset reloc control if transaction commit fails in prepare_to_relocate()
+
+ fs/btrfs/block-group.c  |  4 ++-
+ fs/btrfs/ctree.c        |  3 ++
+ fs/btrfs/ctree.h        |  2 ++
+ fs/btrfs/disk-io.c      | 82 --------------------------------------------
+ fs/btrfs/disk-io.h      | 10 ------
+ fs/btrfs/extent-tree.c  | 18 +++++++++-
+ fs/btrfs/extent_io.c    | 11 +++++-
+ fs/btrfs/locking.c      | 91 +++++++++++++++++++++++++++++++++++++++++++++++++
+ fs/btrfs/locking.h      | 14 ++++++++
+ fs/btrfs/relocation.c   |  9 ++++-
+ fs/btrfs/tree-checker.c | 25 ++++++++++++--
+ fs/btrfs/tree-log.c     |  8 +++--
+ 12 files changed, 176 insertions(+), 101 deletions(-)
