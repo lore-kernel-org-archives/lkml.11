@@ -2,88 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F263C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0F6C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351708AbiHSUGA (ORCPT
+        id S1351726AbiHSUGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 16:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45158 "EHLO
+        Fri, 19 Aug 2022 16:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351558AbiHSUF6 (ORCPT
+        with ESMTP id S1351558AbiHSUGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 16:05:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2FBEC4D3;
-        Fri, 19 Aug 2022 13:05:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BA6F61698;
-        Fri, 19 Aug 2022 20:05:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6320C433D7;
-        Fri, 19 Aug 2022 20:05:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660939556;
-        bh=1Yow+Fhn+rlSsjYHJEZ/n6C+LBI5GQMFX7tXobAvLT4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=KWBjuN3rDyoh/R6XF6YBGZoG/zBb9FuATBJj5sLwozDb2/1l4DeNOtETxLWlb+GHO
-         NqsUkHylhS9oDD0DKE7C9HTlZ2RuWtpuXRzPHkcQylyN6b+DrDlA7pok3R9wGG+f0r
-         LJRxr5PXfIz5Za/s2Y6ne2DPiIynLT/1Vah6h0edglIOeb0QYL35wSen3TrZGxshe4
-         zyg3jDYGSh5zOy6g4oCdG/tv9VHVtBiNO1jFm+Kurtin11XGNm9u2HTXQnnlX3cHyp
-         b6/AexOigq56McDJo7abLWjYiNpmDFxFPh386az0JN1jLzqGuHlw+ZGXspvJqVSJFT
-         Y08wbEoCz6sbw==
-Date:   Fri, 19 Aug 2022 15:05:55 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     bhelgaas@google.com, lpieralisi@kernel.org, kishon@ti.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kw@linux.com
-Subject: Re: [PATCH] MAINTAINERS: Add myself as the reviewer for PCI Endpoint
- Subsystem
-Message-ID: <20220819200555.GA2502055@bhelgaas>
+        Fri, 19 Aug 2022 16:06:06 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE57EC4CD;
+        Fri, 19 Aug 2022 13:06:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660939524; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=YmzNaWO54q/8fCTIN4jaIZ5Ndxwp9+YSr/ByeZ1N7fM3t9mAdvJ8y6JVwVmhL749gAw2Crf1yFMBP/hmDlyxgG/vh5Z+ClbSGKiIy3i2NJwXvskTK6FyVe5N4KEHj2guGG5g6uEOd1go6jtRcc5iu0jDV2Sp2RVUv6Q4zeceEyk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1660939524; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=ZbOmMhea6mo0GiKmo4Riv4/f27wDQaFeMZfT8F4TkaM=; 
+        b=OTX/jA3DUnqGI4oQNVaV6ZBR9X9H6EIAEQjLXa/wZaMOl2Z3TZz6wxSZaDXy6qqFp6N63Js0NPNTVCPXH/86DU53MrALzPgxdKM/rLiqEHfJ+Mwd1ibKenRYgvk9gbnU3Bpi+dALQyCOps/2DnjxwkyK+0mLveRSoXh3t9vdtSg=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660939524;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=ZbOmMhea6mo0GiKmo4Riv4/f27wDQaFeMZfT8F4TkaM=;
+        b=Neex3bMTcjTpaHR6LmwPqzEz9gmMywdSnuGnLC4/0PQxWQHeQgjvg/vIyndPhGIP
+        g5dCrqPdTnxpeuhMSYF1XsLA1i8oN+RIhwNXtxznyHNgESUSm8EUXMycuICmyI0cgU/
+        tX8mu62ADEKmBazZSC65bTiBd2o0Fmvhr3jTdaC0=
+Received: from localhost.localdomain (103.86.19.2 [103.86.19.2]) by mx.zoho.in
+        with SMTPS id 1660939523728629.6711836985853; Sat, 20 Aug 2022 01:35:23 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
+Message-ID: <20220819200340.34826-1-code@siddh.me>
+Subject: [PATCH v3] wifi: mac80211: Fix UAF in ieee80211_scan_rx()
+Date:   Sat, 20 Aug 2022 01:33:40 +0530
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220819020817.197844-1-manivannan.sadhasivam@linaro.org>
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 07:38:17AM +0530, Manivannan Sadhasivam wrote:
-> I've been reviewing the patches related to PCI Endpoint Subsystem for
-> some time. So I'd like to add myself as the reviewer to get immediate
-> attention to the patches.
-> 
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+ieee80211_scan_rx() tries to access scan_req->flags after a
+null check, but a UAF is observed when the scan is completed
+and __ieee80211_scan_completed() executes, which then calls
+cfg80211_scan_done() leading to the freeing of scan_req.
 
-Thanks, applied to for-linus for v6.0.
+Since scan_req is rcu_dereference()'d, prevent the racing in
+__ieee80211_scan_completed() by ensuring that from mac80211's
+POV it is no longer accessed from an RCU read critical section
+before we call cfg80211_scan_done().
 
-Updated subject line to:
+Bug report: https://syzkaller.appspot.com/bug?extid=3Df9acff9bf08a845f225d
+Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
+Suggested-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+---
+Changes in v3:
+Use Johannes Berg's suggestion as-it-is:
+https://lore.kernel.org/netdev/18fd9b89d45aedc1504d0cbd299ffb289ae96438.cam=
+el@sipsolutions.net/
 
-  MAINTAINERS: Add Manivannan Sadhasivam as PCI Endpoint reviewer
+v2 is now obsolete since it was an incorrect way to go about things.
 
-since "add myself" doesn't mean anything without reading the whole
-commit log.
+ net/mac80211/scan.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 21081f72776d..58a163c2e5dc 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -15682,6 +15682,7 @@ PCI ENDPOINT SUBSYSTEM
->  M:	Kishon Vijay Abraham I <kishon@ti.com>
->  M:	Lorenzo Pieralisi <lpieralisi@kernel.org>
->  R:	Krzysztof Wilczyński <kw@linux.com>
-> +R:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
->  L:	linux-pci@vger.kernel.org
->  S:	Supported
->  Q:	https://patchwork.kernel.org/project/linux-pci/list/
-> -- 
-> 2.25.1
-> 
+diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
+index fa8ddf576bc1..c4f2aeb31da3 100644
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -469,16 +469,19 @@ static void __ieee80211_scan_completed(struct ieee802=
+11_hw *hw, bool aborted)
+ =09scan_req =3D rcu_dereference_protected(local->scan_req,
+ =09=09=09=09=09     lockdep_is_held(&local->mtx));
+=20
+-=09if (scan_req !=3D local->int_scan_req) {
+-=09=09local->scan_info.aborted =3D aborted;
+-=09=09cfg80211_scan_done(scan_req, &local->scan_info);
+-=09}
+ =09RCU_INIT_POINTER(local->scan_req, NULL);
+ =09RCU_INIT_POINTER(local->scan_sdata, NULL);
+=20
+ =09local->scanning =3D 0;
+ =09local->scan_chandef.chan =3D NULL;
+=20
++=09synchronize_rcu();
++
++=09if (scan_req !=3D local->int_scan_req) {
++=09=09local->scan_info.aborted =3D aborted;
++=09=09cfg80211_scan_done(scan_req, &local->scan_info);
++=09}
++
+ =09/* Set power back to normal operating levels. */
+ =09ieee80211_hw_config(local, 0);
+=20
+--=20
+2.35.1
+
+
