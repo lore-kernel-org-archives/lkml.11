@@ -2,122 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0663CC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96493C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 10:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348188AbiHSKvw (ORCPT
+        id S1348235AbiHSKxH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 06:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
+        Fri, 19 Aug 2022 06:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346527AbiHSKvt (ORCPT
+        with ESMTP id S1346527AbiHSKxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:51:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6D012D27;
-        Fri, 19 Aug 2022 03:51:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660906307; x=1692442307;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Xg/Wu+E2dA7UBAkvJ0UOV8Vgqyso5h+bxyEw+kxytDA=;
-  b=evbgrOx7JRtVBTNd1166m8L/k2LQTrnr+WPYlwKZvVEnKUeDvg9eh/RO
-   1zLJXhy7nWPS8ODmI+SZrjxjG+pn2s8j6bmUDA7jtrKKCjVLnxGzG0rgP
-   HlBmm5KgxnnNzBT7D3FUw52DHAoK0rBvvgeCjcgg0IfqRI9TWJL9iBqQ8
-   x8XUCwRYf8/PpIxzw5a16WsleLYfQankLH31neVQ1XQU7LwlQFXogMXc5
-   UaBU28m7X0d4jmDV+TLhx6H2H0WmXRxm0ihgSKOA/dq1G699lzNEhuLAW
-   XaeCvMNRZyz066Iwu0+z6onJEb+/3vI5xmhSrFfRnffJsrl3uz0B3p4W2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="290555766"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="290555766"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 03:51:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="641215598"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 19 Aug 2022 03:51:42 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27JApf69026305;
-        Fri, 19 Aug 2022 11:51:41 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
-        lkp@intel.com, stable@vger.kernel.org
-Subject: Re: [RFC PATCH 3/3] kallsyms: add option to include relative filepaths into kallsyms
-Date:   Fri, 19 Aug 2022 12:50:01 +0200
-Message-Id: <20220819105001.1130876-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <Yv5IfiwqGumJwVGT@kroah.com>
-References: <20220818115306.1109642-1-alexandr.lobakin@intel.com> <20220818115306.1109642-4-alexandr.lobakin@intel.com> <Yv4vT6s6UHYvXOlX@kroah.com> <20220818135629.1113036-1-alexandr.lobakin@intel.com> <Yv5IfiwqGumJwVGT@kroah.com>
+        Fri, 19 Aug 2022 06:53:05 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D49E3984
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 03:53:04 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id s36-20020a17090a69a700b001faad0a7a34so7179578pjj.4
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 03:53:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=WTErJg7lyqkHsURYoeI0aP2aPTDnduHIB5TtvLZw7vA=;
+        b=pJNbtYDufWER/TjKeZgxwECNMDIJLonwYuhG55vVwMIXeQ4dNvLrwerLx6vvRdTeI7
+         WovCtd+/60qGyfNbX82ss+f6boa6xEDn7BkjHO6gttrjfJD5mkdgUbN93deaUD+DIA0b
+         A/hg5arw9A3UmbcsQHnhgRh5tZp53eY0zwCB+vB2JlI1Exy1riDBrwPW+5W9k040aBUr
+         4nJsP8x2uuTQiX/8XYMfM1BItUpjvGDu3APRDsQxzOcZ4ixMznqpmUOfxriIb1OTwW7/
+         oGJCVCq0hq6FA9lqLd/xqBEQst4ZCHMN76Op0XDMzL7QGZGJ28fWueKsFcU6Lr+M2AM5
+         Bx3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=WTErJg7lyqkHsURYoeI0aP2aPTDnduHIB5TtvLZw7vA=;
+        b=0+5CEWlWumTP4Y/rwV/DQF8E2XbW8MQPlMTVbzAcGDz/Ep+r2v/brqJjT9VY3IieDs
+         ndJM0wz0QOqsuq8dLgx5xcP6d6SHJlAbz7jhPWuYSQNiNi8+9L8X3tq6DXO1veotzBxI
+         5ftOmQF6oH3c8keKZIdQW8++92fpGWJ942pKYHGuNpKRJeYYLEsWTVB7P8jLqSz9VbqJ
+         Ks53MIzyWui0n2WvyoNxaxpah4hOBYsUMrtOPaMlbtq5Ncr2YHraS6jcDCNzsdS6QHa2
+         4UU70P1hB4lr1beaafU0MzOGgNRE0VKV7VwZmSQ5PVcEAYlyGrVFJFCUApDU6YZldAgf
+         h+2g==
+X-Gm-Message-State: ACgBeo3ulffV2xLrFFHX8RPW337be+8Lyq1WsEmsO9ruoUTdOfia2Cdq
+        YYZkV6scI3jIKy8DHzOyir+C
+X-Google-Smtp-Source: AA6agR6wD+fyfgDnsnqk9XR4dUDLCOji5KOR1eIymM9GXERJLNBOTPfksjom+UylKQNVPf61xMjihw==
+X-Received: by 2002:a17:902:ce84:b0:16f:1d69:ef7f with SMTP id f4-20020a170902ce8400b0016f1d69ef7fmr6770870plg.63.1660906383648;
+        Fri, 19 Aug 2022 03:53:03 -0700 (PDT)
+Received: from thinkpad ([117.217.188.127])
+        by smtp.gmail.com with ESMTPSA id c16-20020a056a00009000b0052dce4edceesm3222560pfj.169.2022.08.19.03.53.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 03:53:03 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 16:22:55 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Kishon Vijay Abraham I <kishon@ti.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Shunsuke Mie <mie@igel.co.jp>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] misc: pci_endpoint_test: Fix
+ pci_endpoint_test_{copy,write,read}() panic
+Message-ID: <20220819105255.GD215264@thinkpad>
+References: <20220816100617.90720-1-mie@igel.co.jp>
+ <YvtxAN7E4nmZmL/X@kroah.com>
+ <Yvuvpd9n59mp96p0@lpieralisi>
+ <695ab9b3-8385-e8bd-0095-14b07de66b15@ti.com>
+ <YvzNg5ROnxEApDgS@kroah.com>
+ <632f447c-fe1a-e6aa-2fda-73669964fc92@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <632f447c-fe1a-e6aa-2fda-73669964fc92@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg KH <gregkh@linuxfoundation.org>
-Date: Thu, 18 Aug 2022 16:11:10 +0200
-
-> On Thu, Aug 18, 2022 at 03:56:29PM +0200, Alexander Lobakin wrote:
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Date: Thu, 18 Aug 2022 14:23:43 +0200
+On Fri, Aug 19, 2022 at 04:08:13PM +0530, Kishon Vijay Abraham I wrote:
+> +Mani
+> 
+> On 17/08/22 16:44, Greg Kroah-Hartman wrote:
+> > On Wed, Aug 17, 2022 at 02:18:58PM +0530, Kishon Vijay Abraham I wrote:
+> >> Hi Lorenzo,
+> >>
+> >> On 16/08/22 20:24, Lorenzo Pieralisi wrote:
+> >>> On Tue, Aug 16, 2022 at 12:27:12PM +0200, Greg Kroah-Hartman wrote:
+> >>>> On Tue, Aug 16, 2022 at 07:06:17PM +0900, Shunsuke Mie wrote:
+> >>>>> Although dma_map_single() doesn't permit zero length mapping, the each
+> >>>>> test functions called the function without zero checking.
+> >>>>>
+> >>>>> A panic was reported on arm64:
+> >>>>>
+> >>>>> [   60.137988] ------------[ cut here ]------------
+> >>>>> [   60.142630] kernel BUG at kernel/dma/swiotlb.c:624!
+> >>>>> [   60.147508] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+> >>>>> [   60.152992] Modules linked in: dw_hdmi_cec crct10dif_ce simple_bridge rcar_fdp1 vsp1 rcar_vin videobuf2_vmalloc rcar_csi2 v4l
+> >>>>> 2_mem2mem videobuf2_dma_contig videobuf2_memops pci_endpoint_test videobuf2_v4l2 videobuf2_common rcar_fcp v4l2_fwnode v4l2_asyn
+> >>>>> c videodev mc gpio_bd9571mwv max9611 pwm_rcar ccree at24 authenc libdes phy_rcar_gen3_usb3 usb_dmac display_connector pwm_bl
+> >>>>> [   60.186252] CPU: 0 PID: 508 Comm: pcitest Not tainted 6.0.0-rc1rpci-dev+ #237
+> >>>>> [   60.193387] Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
+> >>>>> [   60.201302] pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> >>>>> [   60.208263] pc : swiotlb_tbl_map_single+0x2c0/0x590
+> >>>>> [   60.213149] lr : swiotlb_map+0x88/0x1f0
+> >>>>> [   60.216982] sp : ffff80000a883bc0
+> >>>>> [   60.220292] x29: ffff80000a883bc0 x28: 0000000000000000 x27: 0000000000000000
+> >>>>> [   60.227430] x26: 0000000000000000 x25: ffff0004c0da20d0 x24: ffff80000a1f77c0
+> >>>>> [   60.234567] x23: 0000000000000002 x22: 0001000040000010 x21: 000000007a000000
+> >>>>> [   60.241703] x20: 0000000000200000 x19: 0000000000000000 x18: 0000000000000000
+> >>>>> [   60.248840] x17: 0000000000000000 x16: 0000000000000000 x15: ffff0006ff7b9180
+> >>>>> [   60.255977] x14: ffff0006ff7b9180 x13: 0000000000000000 x12: 0000000000000000
+> >>>>> [   60.263113] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+> >>>>> [   60.270249] x8 : 0001000000000010 x7 : ffff0004c6754b20 x6 : 0000000000000000
+> >>>>> [   60.277385] x5 : ffff0004c0da2090 x4 : 0000000000000000 x3 : 0000000000000001
+> >>>>> [   60.284521] x2 : 0000000040000000 x1 : 0000000000000000 x0 : 0000000040000010
+> >>>>> [   60.291658] Call trace:
+> >>>>> [   60.294100]  swiotlb_tbl_map_single+0x2c0/0x590
+> >>>>> [   60.298629]  swiotlb_map+0x88/0x1f0
+> >>>>> [   60.302115]  dma_map_page_attrs+0x188/0x230
+> >>>>> [   60.306299]  pci_endpoint_test_ioctl+0x5e4/0xd90 [pci_endpoint_test]
+> >>>>> [   60.312660]  __arm64_sys_ioctl+0xa8/0xf0
+> >>>>> [   60.316583]  invoke_syscall+0x44/0x108
+> >>>>> [   60.320334]  el0_svc_common.constprop.0+0xcc/0xf0
+> >>>>> [   60.325038]  do_el0_svc+0x2c/0xb8
+> >>>>> [   60.328351]  el0_svc+0x2c/0x88
+> >>>>> [   60.331406]  el0t_64_sync_handler+0xb8/0xc0
+> >>>>> [   60.335587]  el0t_64_sync+0x18c/0x190
+> >>>>> [   60.339251] Code: 52800013 d2e00414 35fff45c d503201f (d4210000)
+> >>>>> [   60.345344] ---[ end trace 0000000000000000 ]---
+> >>>>>
+> >>>>> To fix it, this patch adds checkings the payload length if it is zero.
+> >>>>>
+> >>>>> Fixes: 343dc693f7b7 ("misc: pci_endpoint_test: Prevent some integer overflows")
+> >>>>> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+> >>>>> ---
+> >>>>>  drivers/misc/pci_endpoint_test.c | 6 +++---
+> >>>>>  1 file changed, 3 insertions(+), 3 deletions(-)
+> >>>>>
+> >>>>> diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
+> >>>>> index 8f786a225dcf..d45426a73396 100644
+> >>>>> --- a/drivers/misc/pci_endpoint_test.c
+> >>>>> +++ b/drivers/misc/pci_endpoint_test.c
+> >>>>> @@ -364,7 +364,7 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
+> >>>>>  	}
+> >>>>>  
+> >>>>>  	size = param.size;
+> >>>>> -	if (size > SIZE_MAX - alignment)
+> >>>>> +	if (size > SIZE_MAX - alignment || !size)
+> >>>>>  		goto err;
+> >>>>
+> >>>> Can we test size first?  And do it in the ioctl handler in one place so
+> >>>> you don't have to add it everywhere?
+> >>>>
+> >>>> Or have a "validate all parameters" function that you do it in one
+> >>>> place?
+> >>>>
+> >>>> Also, all of these ioctl handlers are wrong, they are returning "0" to
+> >>>> userspace if they fail, which is not correct at all.
+> >>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/pci/pcitest.c
+> >>> This is bad, thanks Greg for spotting it.
+> >>>
+> >>> @Kishon, we have to fix it asap, please let me know if you
+> >>> can post a patch promptly.
+> >>
+> >> The userspace tool (pcitest [1]) that calls these IOCTLS prints "NOT
+> >> OKAY" on 0 and "OKAY" for 1.
+> >>
+> >> I'll change to negative value for error and still keep '0' for data
+> >> mismatch error?
 > > 
-> > > On Thu, Aug 18, 2022 at 01:53:06PM +0200, Alexander Lobakin wrote:
-> > > > Currently, kallsyms kernel code copes with symbols with the same
-> > > > name by indexing them according to their position in vmlinux and
-> > > > requiring to provide an index of the desired symbol. This is not
-> > > > really quite reliable and is fragile to any features performing
-> > > > symbol or section manipulations such as FG-KASLR.
-> > > 
-> > > Ah, here's the reasoning, stuff like this should go into the 0/X message
-> > > too, right?
-> > > 
-> > > Anyway, what is currently broken that requires this?  What will this
-> > > make easier in the future?  What in the future will depend on this?
+> > No, 0 as a return value from a system call means "success".  You can not
+> > redefine it to mean something else for a tiny single kernel driver,
+> > otherwise so much for consistency.
 > > 
-> > 2) FG-KASLR will depend and probably some more crazy hardening
-> >    stuff. And/or perf-based function/symbol placement, which is
-> >    in the "discuss and dream sometimes" stage.
+> > 0 is success, -ERROR_NUMBER is an error, please read the ioctl man page.
 > 
-> I have no idea what "FG-KASLR" is.  Why not submit these changes when
-> whatever that is is ready for submission?
+> Thanks Greg!
+> 
+> Mani, Would you be able to post a patch fixing it? If not I'll post it
+> mid next week.
+> 
 
-It doesn't matter much, the main idea is that the current approach
-with relying on symbol positions in the vmlinux is broken when we
-reorder symbols during the kernel initialization.
-As I said, this is an early RFC do discuss the idea and the
-implementation. I could submit it along with FG-KASLR, but then if
-there would be major change requests, I'd need to redo lots of
-stuff, which is not very efficient. It's better to settle down the
-implementation details in advance.
-Plus this kallsyms feature goes standalone as it gets bigger. It
-will contain a pack of commits and touch several different
-subsystems. Mixing all of this with FG-KASLR in one series doesn't
-sound good to me.
-
-> 
-> thanks,
-> 
-> greg k-h
+Will do!
 
 Thanks,
-Olek
+Mani
+
+> Regards,
+> Kishon
+
+-- 
+மணிவண்ணன் சதாசிவம்
