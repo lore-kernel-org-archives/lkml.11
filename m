@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1808DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5836FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353703AbiHSQnI (ORCPT
+        id S1353707AbiHSQnL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
+        Fri, 19 Aug 2022 12:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353730AbiHSQkr (ORCPT
+        with ESMTP id S1353744AbiHSQkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:40:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C945124F7A;
-        Fri, 19 Aug 2022 09:09:15 -0700 (PDT)
+        Fri, 19 Aug 2022 12:40:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8025F124F45;
+        Fri, 19 Aug 2022 09:09:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA7E9614DA;
-        Fri, 19 Aug 2022 16:08:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DB6C433C1;
-        Fri, 19 Aug 2022 16:08:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C397B82804;
+        Fri, 19 Aug 2022 16:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C742C433C1;
+        Fri, 19 Aug 2022 16:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925313;
-        bh=OdsdjjtAm2+QWCcdhVZzboUF4nGAiGDh8SnobGJMTGA=;
+        s=korg; t=1660925280;
+        bh=wF1A5vtd8tvVocO+QjQ6jbB4zTb2fIRPK/24cR2VM5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ma4M2pjYQJzS7YYpzHGA4GnFHmc5jrl+SpIqCgYd8vgcGWKr2+g2lbFIMI3dQhvck
-         VIKZd6FHF6xLtxX7Dd/dLGSVHzyBMQE7q/hINi/SAJYZBzR1m3A88XpPZihQeYhuU/
-         8gohyHZ+5AFb6CqWw4VGUfWTxByNkhesD/QSUZG4=
+        b=cWnquK1vKBYNq2Xxf+ijmA4WJvfgqF1TByJV90qYSIKMhaMp5COBLEn2g2khRvGkZ
+         kVDk4vxpfKktRCBPCdqGkCGyDz97fzGMsX6Ab21awLBVCs3dd6/qEeyIrVrCOZx8yK
+         uScaFhWZtP/K1kKeOle6vg9owerYNkpJH3VeZ+BY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Roper <matthew.d.roper@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Chuansheng Liu <chuansheng.liu@intel.com>,
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
+        Marek Beh=C3=BAn <kabel@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 452/545] drm/i915/dg1: Update DMC_DEBUG3 register
-Date:   Fri, 19 Aug 2022 17:43:42 +0200
-Message-Id: <20220819153849.636088991@linuxfoundation.org>
+Subject: [PATCH 5.10 412/545] watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe()
+Date:   Fri, 19 Aug 2022 17:43:02 +0200
+Message-Id: <20220819153847.860606371@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,60 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuansheng Liu <chuansheng.liu@intel.com>
+From: William Dean <williamsukatube@gmail.com>
 
-[ Upstream commit b60668cb4c57a7cc451de781ae49f5e9cc375eaf ]
+[ Upstream commit 2d27e52841092e5831dd41f313028c668d816eb0 ]
 
-Current DMC_DEBUG3(_MMIO(0x101090)) address is for TGL,
-it is wrong for DG1. Just like commit 5bcc95ca382e
-("drm/i915/dg1: Update DMC_DEBUG register"), correct
-this issue for DG1 platform to avoid wrong register
-being read.
+The function devm_ioremap() in armada_37xx_wdt_probe() can fail, so
+its return value should be checked.
 
-BSpec: 49788
-
-v2: fix "not wrong" typo. (Jani)
-
-Reviewed-by: Matt Roper <matthew.d.roper@intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
-Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220211002933.84240-1-chuansheng.liu@intel.com
+Fixes: 54e3d9b518c8a ("watchdog: Add support for Armada 37xx CPU watchdog")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220722030938.2925156-1-williamsukatube@163.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_display_debugfs.c | 4 ++--
- drivers/gpu/drm/i915/i915_reg.h                      | 3 ++-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/watchdog/armada_37xx_wdt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_display_debugfs.c b/drivers/gpu/drm/i915/display/intel_display_debugfs.c
-index 0bf31f9a8af5..e6780fcc5006 100644
---- a/drivers/gpu/drm/i915/display/intel_display_debugfs.c
-+++ b/drivers/gpu/drm/i915/display/intel_display_debugfs.c
-@@ -526,8 +526,8 @@ static int i915_dmc_info(struct seq_file *m, void *unused)
- 		 * reg for DC3CO debugging and validation,
- 		 * but TGL DMC f/w is using DMC_DEBUG3 reg for DC3CO counter.
- 		 */
--		seq_printf(m, "DC3CO count: %d\n",
--			   intel_de_read(dev_priv, DMC_DEBUG3));
-+		seq_printf(m, "DC3CO count: %d\n", intel_de_read(dev_priv, IS_DGFX(dev_priv) ?
-+					DG1_DMC_DEBUG3 : TGL_DMC_DEBUG3));
- 	} else {
- 		dc5_reg = IS_BROXTON(dev_priv) ? BXT_CSR_DC3_DC5_COUNT :
- 						 SKL_CSR_DC3_DC5_COUNT;
-diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index f1ab26307db6..04157d8ced32 100644
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -7546,7 +7546,8 @@ enum {
- #define TGL_DMC_DEBUG_DC5_COUNT	_MMIO(0x101084)
- #define TGL_DMC_DEBUG_DC6_COUNT	_MMIO(0x101088)
+diff --git a/drivers/watchdog/armada_37xx_wdt.c b/drivers/watchdog/armada_37xx_wdt.c
+index e5dcb26d85f0..dcb3ffda3fad 100644
+--- a/drivers/watchdog/armada_37xx_wdt.c
++++ b/drivers/watchdog/armada_37xx_wdt.c
+@@ -274,6 +274,8 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
+ 	if (!res)
+ 		return -ENODEV;
+ 	dev->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	if (!dev->reg)
++		return -ENOMEM;
  
--#define DMC_DEBUG3		_MMIO(0x101090)
-+#define TGL_DMC_DEBUG3		_MMIO(0x101090)
-+#define DG1_DMC_DEBUG3		_MMIO(0x13415c)
- 
- /* Display Internal Timeout Register */
- #define RM_TIMEOUT		_MMIO(0x42060)
+ 	/* init clock */
+ 	dev->clk = devm_clk_get(&pdev->dev, NULL);
 -- 
 2.35.1
 
