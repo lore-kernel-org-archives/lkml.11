@@ -2,155 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88414C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9BEC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350279AbiHSR6k (ORCPT
+        id S1349870AbiHSR7o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        Fri, 19 Aug 2022 13:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350816AbiHSR5z (ORCPT
+        with ESMTP id S1350586AbiHSR7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:57:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30F631358;
-        Fri, 19 Aug 2022 10:43:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 28E3CCE26B5;
-        Fri, 19 Aug 2022 17:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDCBC433D6;
-        Fri, 19 Aug 2022 17:43:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660930983;
-        bh=CtN0bU1lCxBA2fo8mhjV2ip2dwYJ1d1FUVmor9iMIE8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eNPvGdQ/HZ3TrSyM9+mcrX5Ixzh7JeBIY71kH3qCq3XhdcIh+cj7SNkuW2qWOqSlm
-         KMU8VkmtknY5zH4Jt/Bwl/i2Fqd3XP9HvUzfpLJsfCOdOcnP5lBM6xZvHPwpepqC32
-         l7QvgFgsdBLLh6FdQHJ5JDWINV5YUWb2DmWq+ZeLi0b7Jq+bF3//cebXvNa5TetDIz
-         Yw9AkJyB9ohxI2FSWDmPmpVIj0gjvlmB2pcn3T08N+juDfmP01fHSL//PveRBViwy2
-         fKZEg2pFqi7Tx7+BtiRZ94tYGR8jqd4/D897mmTN2jDH3yqZfE0pDypYbtO0cng8s/
-         37N3gk1KRxa7g==
-Date:   Fri, 19 Aug 2022 18:53:39 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Artur Rojek <contact@artur-rojek.eu>
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 4/4] input: joystick: Fix buffer data parsing
-Message-ID: <20220819185339.7f488ad8@jic23-huawei>
-In-Reply-To: <20220817105643.95710-5-contact@artur-rojek.eu>
-References: <20220817105643.95710-1-contact@artur-rojek.eu>
-        <20220817105643.95710-5-contact@artur-rojek.eu>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 19 Aug 2022 13:59:19 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134721659A
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:45:22 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id z187so4900849pfb.12
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=cYKLxzS8mdsne4T9+LkqQmo+81QPljtfwRLC/rxss24=;
+        b=jIlWkwwxTb16NyF6jTA0qo6xr86HgbMzsUf1fsVarVZPWenkP1s+4XpVsoh/JzoPTD
+         3JRuR+9wVdGp70rMhiXDPyskvl9c1PG4hUClNAkDaU92XvbB9gEXyprseXHwLyHrM+Wu
+         xdPBwjni1qjJ1jPij5DFbzEWKNlpsY/KI10O7SsGhcd40NrS//EtU5rBhrwMIZIFxqa+
+         /KItM8RZsNM1G0T/o8l7cbEaI6fSzMJLdMh1qAIMTJaLD/PhQSVDqH6MEh8jRqjCVaBw
+         D9Jsl0yupjOU8XcUYUrN1vvb6rjabMCEYHH0X9aD2wek2wwCcwrrKxZVYm8FtQnC1YQz
+         Cb6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=cYKLxzS8mdsne4T9+LkqQmo+81QPljtfwRLC/rxss24=;
+        b=hox3Z8v4PRKJDKWW3DRvFmzZ2EWfZE1tbrYUNmQxI7Kn31Xbcc7pHvZ9HifG4CocqP
+         ESHyVepF3SqIKQaA96iW67ZJhqUHuV3Ytw63/VEARiSPQrlOVNFB0YMeMZ3CpRUOBH4G
+         qmpsMBl+CH92cX6gukbkS/bT4UDIlAHMZNabVsvZUsW8kZUOm6SgGUMEC8Pu/H2z+h9R
+         VIyjA51K8wRo9qVYWrBYCD/1uKp9pCkIvH91WpSxLQMUfgvtq0eaQUABuMugZ7rrnITK
+         IfXJd+CYuGs/ZZVERasAihKqPkwNjUD/xflshC5XopnsBec08qWfF/QpYfXxpborx0bp
+         uwEg==
+X-Gm-Message-State: ACgBeo1Cnr4UBu1kgnFh4hM2oQHsgZuo9qL78WIwon+1qOrknHf3Ix24
+        WvzqEs0nS1ipDtOuPmTXZXEOzg==
+X-Google-Smtp-Source: AA6agR4hTHDffXLin9WcvMM4cSaZZ6d075dMHXt+c3wV/gHSpK/yGIt+nNUqSc9rkTVP2d6S9QB6PQ==
+X-Received: by 2002:a63:1342:0:b0:422:5e7a:2a8f with SMTP id 2-20020a631342000000b004225e7a2a8fmr7006374pgt.425.1660931122343;
+        Fri, 19 Aug 2022 10:45:22 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:4a9e:3b14:a2f3:77cf])
+        by smtp.gmail.com with ESMTPSA id d5-20020a623605000000b0052b94e757ecsm3685154pfa.213.2022.08.19.10.45.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 10:45:21 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 10:45:15 -0700
+From:   Isaac Manjarres <isaacmanjarres@google.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Bart Van Assche <bvanassche@acm.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
+Message-ID: <Yv/MKymRC9O04Nqu@google.com>
+References: <20220815211919.2028890-1-isaacmanjarres@google.com>
+ <20220816042507.GB1108868@roeck-us.net>
+ <YvsoYzIhOtX9DOi2@google.com>
+ <20220816111311.GC1108868@roeck-us.net>
+ <YvvQOBk9T3J1uX8k@google.com>
+ <20220817010559.GA1880847@roeck-us.net>
+ <YvxAfiSOrzy7/c1J@google.com>
+ <20220818225932.GA3433999@roeck-us.net>
+ <Yv7bd6Yl8+thp2CY@google.com>
+ <20220819112832.GA3106213@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819112832.GA3106213@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 12:56:43 +0200
-Artur Rojek <contact@artur-rojek.eu> wrote:
-
-> Don't try to access buffer data of a channel by its scan index. Instead,
-> use the newly introduced `iio_find_channel_offset_in_buffer` to get the
-> correct data offset.
+On Fri, Aug 19, 2022 at 04:28:32AM -0700, Guenter Roeck wrote:
+> On Thu, Aug 18, 2022 at 05:38:15PM -0700, Isaac Manjarres wrote:
+> > On Thu, Aug 18, 2022 at 03:59:32PM -0700, Guenter Roeck wrote:
+> > > Requesting system reboot
+> > > sd 0:0:0:0: [sda] Synchronizing SCSI cache
+> > > ci_hdrc ci_hdrc.1: remove, state 4
+> > > usb usb2: USB disconnect, device number 1
+> > > ci_hdrc ci_hdrc.1: USB bus 2 deregistered
+> > > ci_hdrc ci_hdrc.0: remove, state 1
+> > > usb usb1: USB disconnect, device number 1
+> > > usb 1-1: USB disconnect, device number 2
+> > > sd 0:0:0:0: [sda] Synchronizing SCSI cache
+> > > sd 0:0:0:0: [sda] Synchronize Cache(10) failed: Result: hostbyte=0x01 driverbyte=DRIVER_OK
+> > > 
+> > > [ stuck here until qemu is killed ]
+> > > 
+> > Hi Guenter,
+> > 
+> > I'm actually observing the behavior described above even without my patch.
+> > The tip of my tree is currently at 573ae4f13f63 ("tee: add overflow check in
+> > register_shm_helper()"). I used git bisect to find what commit was
+> > causing the problem, and narrowed it down to this series[1].
+> > 
+> > I reverted all 4 patches in that series, and I no longer see this hang
+> > with my tree.
+> > 
+> > [1]: https://lore.kernel.org/all/20220712221936.1199196-1-bvanassche@acm.org/
+> > 
+> > Are these patches part of the tree you're using for testing and
+> > observing this hang in?
+> > 
 > 
-> The scan index of a channel does not represent its position in a buffer,
-> as the buffer will contain data for enabled channels only, affecting
-> data offsets and alignment.
+> Yes, you are correct. I also see the problem in the mainline kernel,
+> at SHA 3b06a2755758, and with a large number of boots from usb drive
+> in various arm emulations. Sorry for the confusion. Too many crashes :-(.
 > 
-> Fixes: 2c2b364fddd5 ("Input: joystick - add ADC attached joystick driver.")
-> Reported-by: Chris Morgan <macromorgan@hotmail.com>
-> Tested-by: Paul Cercueil <paul@crapouillou.net>
-> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-> ---
->  drivers/input/joystick/adc-joystick.c | 26 +++++++++++++++++---------
->  1 file changed, 17 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/input/joystick/adc-joystick.c b/drivers/input/joystick/adc-joystick.c
-> index c0deff5d4282..aed853ebe1d1 100644
-> --- a/drivers/input/joystick/adc-joystick.c
-> +++ b/drivers/input/joystick/adc-joystick.c
-> @@ -6,6 +6,7 @@
->  #include <linux/ctype.h>
->  #include <linux/input.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
->  #include <linux/iio/consumer.h>
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
-> @@ -46,36 +47,43 @@ static void adc_joystick_poll(struct input_dev *input)
->  static int adc_joystick_handle(const void *data, void *private)
->  {
->  	struct adc_joystick *joy = private;
-> +	struct iio_buffer *buffer;
->  	enum iio_endian endianness;
-> -	int bytes, msb, val, idx, i;
-> -	const u16 *data_u16;
-> +	int bytes, msb, val, off;
-> +	const u8 *chan_data;
-> +	unsigned int i;
->  	bool sign;
->  
->  	bytes = joy->chans[0].channel->scan_type.storagebits >> 3;
->  
->  	for (i = 0; i < joy->num_chans; ++i) {
-> -		idx = joy->chans[i].channel->scan_index;
->  		endianness = joy->chans[i].channel->scan_type.endianness;
->  		msb = joy->chans[i].channel->scan_type.realbits - 1;
->  		sign = tolower(joy->chans[i].channel->scan_type.sign) == 's';
-> +		buffer = iio_channel_cb_get_iio_buffer(joy->buffer);
-> +		off = iio_find_channel_offset_in_buffer(joy->chans[i].indio_dev,
-> +							joy->chans[i].channel,
-> +							buffer);
+> Guenter
 
-With this call replaced with one that instead uses
+No worries, thanks for confirming.
 
-		off = iio_find_channel_offset_in_buffer(joy->chans, i);
+Hi Bart,
 
-which I'm fairly sure is enough via the info in chans[x]->channel to establish this offset.
+It seems that the patches mentioned in [1] are causing a hang during
+reboot for various ARM emulations when booting from USB. Can you please
+take a look? There's more information about what defconfig, rootfs, and
+qemu commandline to use at [2].
 
-All is good, though you should probably cache it as doing that maths every
-time seems excessive.
+[1]: https://lore.kernel.org/all/20220712221936.1199196-1-bvanassche@acm.org/
+[2]: https://lore.kernel.org/all/20220818225932.GA3433999@roeck-us.net/
 
-
-> +		if (off < 0)
-> +			return off;
-> +
-> +		chan_data = (const u8 *)data + off;
->  
->  		switch (bytes) {
->  		case 1:
-> -			val = ((const u8 *)data)[idx];
-> +			val = *chan_data;
->  			break;
->  		case 2:
-> -			data_u16 = (const u16 *)data + idx;
-> -
->  			/*
->  			 * Data is aligned to the sample size by IIO core.
->  			 * Call `get_unaligned_xe16` to hide type casting.
->  			 */
->  			if (endianness == IIO_BE)
-> -				val = get_unaligned_be16(data_u16);
-> +				val = get_unaligned_be16(chan_data);
-
-I obviously missed this previously but these are aligned so we don't need the
-unaligned form.
-
->  			else if (endianness == IIO_LE)
-> -				val = get_unaligned_le16(data_u16);
-> +				val = get_unaligned_le16(chan_data);
->  			else /* IIO_CPU */
-> -				val = *data_u16;
-> +				val = *(const u16 *)chan_data;
->  			break;
->  		default:
->  			return -EINVAL;
-
+Thanks,
+Isaac
