@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB79C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9C5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351354AbiHSQIK (ORCPT
+        id S1351524AbiHSQIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
+        Fri, 19 Aug 2022 12:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351209AbiHSQFS (ORCPT
+        with ESMTP id S1351381AbiHSQFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:05:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29F910BE3E;
-        Fri, 19 Aug 2022 08:55:03 -0700 (PDT)
+        Fri, 19 Aug 2022 12:05:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0166D3882;
+        Fri, 19 Aug 2022 08:55:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEE1461746;
-        Fri, 19 Aug 2022 15:55:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3037C433C1;
-        Fri, 19 Aug 2022 15:54:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41538B8280D;
+        Fri, 19 Aug 2022 15:54:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AEFC433D7;
+        Fri, 19 Aug 2022 15:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924500;
-        bh=Ylk25W0Qvb7wD2w7cKz3Yfi9cpR3fwRFy1weBq2Dsdc=;
+        s=korg; t=1660924479;
+        bh=Dd1/kZE90y3ZLIWYyhjlSznE+IxnV0q0nBbqPMWqTnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXQiRGx86Fjq0jGVJik0AmyW4wf3YgXVgaDq8H4wqQBBpjW0nRTB89jSu73ulUOsG
-         RR9tkjtIaVnyntaAkisLpXWXxdpjS0Qpq1Nk6OfDyvrjgWuYcJ4BzhLvSmc9FzA+CR
-         cZPZAOsizBi+h4K9MfHS4yOF+qxd4hGnn4urG3VA=
+        b=ac86+leVXgM3uLA4FfQRx54WV5qV4pUGxZsb8rbb038+RTqSo7cHu4lVc0ODuV5jD
+         wea9eYiSjxbOrRMEHDh1Lju/gG0QjeRJ60iebK9KIJsg3PK6cl/F7k+7Wy/o+t6eic
+         J1bCRu4jEFb3FwK9hCO7h7g1JM9062WsiN7ubCDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 191/545] drm/vc4: dsi: Correct DSI divider calculations
-Date:   Fri, 19 Aug 2022 17:39:21 +0200
-Message-Id: <20220819153837.904227965@linuxfoundation.org>
+Subject: [PATCH 5.10 153/545] pwm: sifive: Simplify offset calculation for PWMCMP registers
+Date:   Fri, 19 Aug 2022 17:38:43 +0200
+Message-Id: <20220819153836.181913009@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,49 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 3b45eee87da171caa28f61240ddb5c21170cda53 ]
+[ Upstream commit 20550a61880fc55e68a0d290ad195b74729c0e7b ]
 
-The divider calculations tried to find the divider just faster than the
-clock requested. However if it required a divider of 7 then the for loop
-aborted without handling the "error" case, and could end up with a clock
-lower than requested.
+Instead of explicitly using PWM_SIFIVE_PWMCMP0 + pwm->hwpwm *
+PWM_SIFIVE_SIZE_PWMCMP for each access to one of the PWMCMP registers,
+introduce a macro that takes the hwpwm id as parameter.
 
-The integer divider from parent PLL to DSI clock is also capable of
-going up to /255, not just /7 that the driver was trying.  This allows
-for slower link frequencies on the DSI bus where the resolution permits.
+For the register definition using a plain 4 instead of the cpp constant
+PWM_SIFIVE_SIZE_PWMCMP is easier to read, so define the offset macro
+without the constant. The latter can then be dropped as there are no
+users left.
 
-Correct the loop so that we always have a clock greater than requested,
-and covering the whole range of dividers.
-
-Fixes: 86c1b9eff3f2 ("drm/vc4: Adjust modes in DSI to work around the integer PLL divider.")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-13-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-sifive.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index ad84b56f4091..153ad9048db5 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -794,11 +794,9 @@ static bool vc4_dsi_encoder_mode_fixup(struct drm_encoder *encoder,
- 	/* Find what divider gets us a faster clock than the requested
- 	 * pixel clock.
- 	 */
--	for (divider = 1; divider < 8; divider++) {
--		if (parent_rate / divider < pll_clock) {
--			divider--;
-+	for (divider = 1; divider < 255; divider++) {
-+		if (parent_rate / (divider + 1) < pll_clock)
- 			break;
--		}
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index 8c6de4f41076..cc32f7ce09a6 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -23,7 +23,7 @@
+ #define PWM_SIFIVE_PWMCFG		0x0
+ #define PWM_SIFIVE_PWMCOUNT		0x8
+ #define PWM_SIFIVE_PWMS			0x10
+-#define PWM_SIFIVE_PWMCMP0		0x20
++#define PWM_SIFIVE_PWMCMP(i)		(0x20 + 4 * (i))
+ 
+ /* PWMCFG fields */
+ #define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
+@@ -36,8 +36,6 @@
+ #define PWM_SIFIVE_PWMCFG_GANG		BIT(24)
+ #define PWM_SIFIVE_PWMCFG_IP		BIT(28)
+ 
+-/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX registers */
+-#define PWM_SIFIVE_SIZE_PWMCMP		4
+ #define PWM_SIFIVE_CMPWIDTH		16
+ #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
+ 
+@@ -112,8 +110,7 @@ static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
+ 	u32 duty, val;
+ 
+-	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP0 +
+-		     pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
++	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
+ 
+ 	state->enabled = duty > 0;
+ 
+@@ -194,8 +191,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		pwm_sifive_update_clock(ddata, clk_get_rate(ddata->clk));
  	}
  
- 	/* Now that we've picked a PLL divider, calculate back to its
+-	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP0 +
+-	       pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
++	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
+ 
+ 	if (state->enabled != enabled)
+ 		pwm_sifive_enable(chip, state->enabled);
 -- 
 2.35.1
 
