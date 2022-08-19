@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0CBC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB212C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354234AbiHSQtf (ORCPT
+        id S1354239AbiHSQti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        Fri, 19 Aug 2022 12:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353965AbiHSQrV (ORCPT
+        with ESMTP id S1353983AbiHSQr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:47:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30D612BFE8;
-        Fri, 19 Aug 2022 09:12:49 -0700 (PDT)
+        Fri, 19 Aug 2022 12:47:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F00112F81;
+        Fri, 19 Aug 2022 09:13:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CD7F3CE26AC;
-        Fri, 19 Aug 2022 16:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3B8C433D6;
-        Fri, 19 Aug 2022 16:12:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 585C0612DF;
+        Fri, 19 Aug 2022 16:12:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F8E2C433D6;
+        Fri, 19 Aug 2022 16:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925541;
-        bh=F2zdgkDF/XedTRQAuWZeDhYcXnbH11Mv0smvHCoCLAY=;
+        s=korg; t=1660925531;
+        bh=jA/mBvGai79bW7LGK0aSmDu1XO3csevvtOtZ7HQSAvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=scmjxiOfGetcNpT/L0fia+/vU7d+Qqs5V0jFUOwYa6WqEsFrYant0L/sR7Sgmb46h
-         vq+9J69WMOKFE2/g5nHRBR37mHiZOQ6Ck+m6omZk9LByoRvV+W1R3Fkg1D0DNCjyoh
-         wai6aaFM53qmQ8Ge4+inRRty1Gy7YxLsr/YwWuxk=
+        b=HvP2V+F73UGD1pMFZMTa5QGjkDXO1Q6MYgClSOqiamfARKtYRa3wmJg0Wjerq4mQ/
+         r5/0F6D8uJXcdQsQvqZdXmiMUDPtab9vPxZUP+spKOC2CWwhLxiMphRVMMPrYk3WPi
+         rUijT/2dRoXiPFhclyAEfK2PHo+0UgBTx3Ipq+B0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Baokun Li <libaokun1@huawei.com>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.10 523/545] ext4: correct max_inline_xattr_value_size computing
-Date:   Fri, 19 Aug 2022 17:44:53 +0200
-Message-Id: <20220819153852.952155817@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>
+Subject: [PATCH 5.10 521/545] ext4: update s_overhead_clusters in the superblock during an on-line resize
+Date:   Fri, 19 Aug 2022 17:44:51 +0200
+Message-Id: <20220819153852.859330401@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,36 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
+commit de394a86658ffe4e89e5328fd4993abfe41b7435 upstream.
 
-If the ext4 inode does not have xattr space, 0 is returned in the
-get_max_inline_xattr_value_size function. Otherwise, the function returns
-a negative value when the inode does not contain EXT4_STATE_XATTR.
+When doing an online resize, the on-disk superblock on-disk wasn't
+updated.  This means that when the file system is unmounted and
+remounted, and the on-disk overhead value is non-zero, this would
+result in the results of statfs(2) to be incorrect.
 
+This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
+calculation to account for the reserved gdt blocks"), 85d825dbf489
+("ext4: force overhead calculation if the s_overhead_cluster makes no
+sense"), and eb7054212eac ("ext4: update the cached overhead value in
+the superblock").
+
+However, since it was too expensive to forcibly recalculate the
+overhead for bigalloc file systems at every mount, this didn't fix the
+problem for bigalloc file systems.  This commit should address the
+problem when resizing file systems with the bigalloc feature enabled.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ext4/resize.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -34,6 +34,9 @@ static int get_max_inline_xattr_value_si
- 	struct ext4_inode *raw_inode;
- 	int free, min_offs;
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1461,6 +1461,7 @@ static void ext4_update_super(struct sup
+ 	 * Update the fs overhead information
+ 	 */
+ 	ext4_calculate_overhead(sb);
++	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
  
-+	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
-+		return 0;
-+
- 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
- 			EXT4_GOOD_OLD_INODE_SIZE -
- 			EXT4_I(inode)->i_extra_isize -
+ 	if (test_opt(sb, DEBUG))
+ 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
 
 
