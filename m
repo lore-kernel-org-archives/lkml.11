@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 349BCC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2784CC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354272AbiHSQw2 (ORCPT
+        id S1354297AbiHSQwd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        Fri, 19 Aug 2022 12:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354397AbiHSQuw (ORCPT
+        with ESMTP id S1354430AbiHSQu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:50:52 -0400
+        Fri, 19 Aug 2022 12:50:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42305F6D;
-        Fri, 19 Aug 2022 09:13:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293FC696FA;
+        Fri, 19 Aug 2022 09:13:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2782B8281D;
-        Fri, 19 Aug 2022 16:13:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 292EDC433D6;
-        Fri, 19 Aug 2022 16:13:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A76BCB8281A;
+        Fri, 19 Aug 2022 16:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDD7C433D6;
+        Fri, 19 Aug 2022 16:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925584;
-        bh=dOoWnsvMMVAssrMgIJ0fbTL79FfYAb3Cj9CXtb/C70U=;
+        s=korg; t=1660925559;
+        bh=bsaYtUcGmDTjhNLF5aRELB9kD+7bAmoe3gT8zgMqkyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LRzOQ3Tjv9v96M5n4WUEQWYQWqCsaVXTbbHGMsECOLs4jCSmNZ0mQs2UoBnzK+kfl
-         Zy/e4fZxckBrtpbIXpiP19Sqx+CxUIa9Bik+CchuXMqoIt//puznlSpKF1ZMp1stMn
-         qB1Xp6kMdhY8Rwclo3svgARXxoKXJZ2Q4Eijbw8E=
+        b=rFNMb1skJCXKU4okreEh7L3v1LZXcGWYCmgxvzWNv0enDJqrtXjJU64BB+bZaMPP4
+         ymSP/8ki13yniPh5byJP/yhv+RtrOMw+YtIBF8M6DjnQuZkPmRZCJH8dfzApb7Pa5A
+         ZwCwwd1PC+6D/32O8JFaBfnYmse8QMhZ0vyWG2qU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 508/545] KVM: VMX: Mark all PERF_GLOBAL_(OVF)_CTRL bits reserved if theres no vPMU
-Date:   Fri, 19 Aug 2022 17:44:38 +0200
-Message-Id: <20220819153852.218541464@linuxfoundation.org>
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 5.10 529/545] KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
+Date:   Fri, 19 Aug 2022 17:44:59 +0200
+Message-Id: <20220819153853.241301381@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,42 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 93255bf92939d948bc86d81c6bb70bb0fecc5db1 ]
+commit 7ec37d1cbe17d8189d9562178d8b29167fe1c31a upstream
 
-Mark all MSR_CORE_PERF_GLOBAL_CTRL and MSR_CORE_PERF_GLOBAL_OVF_CTRL bits
-as reserved if there is no guest vPMU.  The nVMX VM-Entry consistency
-checks do not check for a valid vPMU prior to consuming the masks via
-kvm_valid_perf_global_ctrl(), i.e. may incorrectly allow a non-zero mask
-to be loaded via VM-Enter or VM-Exit (well, attempted to be loaded, the
-actual MSR load will be rejected by intel_is_valid_msr()).
+When KVM_CAP_HYPERV_SYNIC{,2} is activated, KVM already checks for
+irqchip_in_kernel() so normally SynIC irqs should never be set. It is,
+however,  possible for a misbehaving VMM to write to SYNIC/STIMER MSRs
+causing erroneous behavior.
 
-Fixes: f5132b01386b ("KVM: Expose a version 2 architectural PMU to a guests")
+The immediate issue being fixed is that kvm_irq_delivery_to_apic()
+(kvm_irq_delivery_to_apic_fast()) crashes when called with
+'irq.shorthand = APIC_DEST_SELF' and 'src == NULL'.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-2-vkuznets@redhat.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220722224409.1336532-3-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/hyperv.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index ea5a7056fdfd..e73378b6f10c 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -335,6 +335,8 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	pmu->version = 0;
- 	pmu->reserved_bits = 0xffffffff00200000ull;
- 	pmu->raw_event_mask = X86_RAW_EVENT_MASK;
-+	pmu->global_ctrl_mask = ~0ull;
-+	pmu->global_ovf_ctrl_mask = ~0ull;
- 	pmu->fixed_ctr_ctrl_mask = ~0ull;
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -428,6 +428,9 @@ static int synic_set_irq(struct kvm_vcpu
+ 	struct kvm_lapic_irq irq;
+ 	int ret, vector;
  
- 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
--- 
-2.35.1
-
++	if (KVM_BUG_ON(!lapic_in_kernel(vcpu), vcpu->kvm))
++		return -EINVAL;
++
+ 	if (sint >= ARRAY_SIZE(synic->sint))
+ 		return -EINVAL;
+ 
 
 
