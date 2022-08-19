@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D05EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07DBEC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352915AbiHSQ3I (ORCPT
+        id S1352926AbiHSQ3Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
+        Fri, 19 Aug 2022 12:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353066AbiHSQ0H (ORCPT
+        with ESMTP id S1353078AbiHSQ0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:26:07 -0400
+        Fri, 19 Aug 2022 12:26:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4055D113DD3;
-        Fri, 19 Aug 2022 09:03:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E99118DDC;
+        Fri, 19 Aug 2022 09:03:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A77F6617DE;
-        Fri, 19 Aug 2022 16:03:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D58C433C1;
-        Fri, 19 Aug 2022 16:03:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E073C612DF;
+        Fri, 19 Aug 2022 16:03:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E00C3C433C1;
+        Fri, 19 Aug 2022 16:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925032;
-        bh=EPSIkQojvrxjvs5OueEv39DnDACAZ47UXsGKnIsQ4z0=;
+        s=korg; t=1660925038;
+        bh=4kBoXY0BZDoFI4KFDOmjwABTYguL/gf9UutjHbV1I2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yifmurz7q9ivYPfR244ai8HGoB/hHNP+CvTEydHa5pcrD9K5Qem5lcz6j4XEKxs0w
-         ueu/whkN367SyXyp5OLT9p5LEc2cnb6l21rWAVsnsBRkUu3W2ZLCwjPcjg/m7Er6NV
-         YxxIJKVF/udK/XWk93C4uWOuSbhhwmiBdWEESvuA=
+        b=pxV3vPGaQflxaon19vdEdAGOwFE8mKaeS0SK9F8ZjYTg/N+3Vmnno+3zHgNPSjxgh
+         1iJd/vOB+hkaQhFP6vNyWsRIh2I7+8PfTPXfRwlP3BvLqbuEgblN8T7xhTpqHpSbZD
+         VAnZK5+mugAQkk5VrT1eFMoZTkt5Jgk68ZOGzHCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Artem Borisov <dedsa2002@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 344/545] HID: alps: Declare U1_UNICORN_LEGACY support
-Date:   Fri, 19 Aug 2022 17:41:54 +0200
-Message-Id: <20220819153844.793922375@linuxfoundation.org>
+        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 363/545] opp: Fix error check in dev_pm_opp_attach_genpd()
+Date:   Fri, 19 Aug 2022 17:42:13 +0200
+Message-Id: <20220819153845.621941830@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,34 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Artem Borisov <dedsa2002@gmail.com>
+From: Tang Bin <tangbin@cmss.chinamobile.com>
 
-[ Upstream commit 1117d182c5d72abd7eb8b7d5e7b8c3373181c3ab ]
+[ Upstream commit 4ea9496cbc959eb5c78f3e379199aca9ef4e386b ]
 
-U1_UNICORN_LEGACY id was added to the driver, but was not declared
-in the device id table, making it impossible to use.
+dev_pm_domain_attach_by_name() may return NULL in some cases,
+so IS_ERR() doesn't meet the requirements. Thus fix it.
 
-Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
-Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: 6319aee10e53 ("opp: Attach genpds to devices from within OPP core")
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+[ Viresh: Replace ENODATA with ENODEV ]
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-alps.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/opp/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
-index 6b665931147d..ef73fef1b3e3 100644
---- a/drivers/hid/hid-alps.c
-+++ b/drivers/hid/hid-alps.c
-@@ -830,6 +830,8 @@ static const struct hid_device_id alps_id[] = {
- 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
- 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
-+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
-+		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
- 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
- 	{ }
+diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+index 903b465c8568..7ed605ffb717 100644
+--- a/drivers/opp/core.c
++++ b/drivers/opp/core.c
+@@ -2052,8 +2052,8 @@ struct opp_table *dev_pm_opp_attach_genpd(struct device *dev,
+ 		}
+ 
+ 		virt_dev = dev_pm_domain_attach_by_name(dev, *name);
+-		if (IS_ERR(virt_dev)) {
+-			ret = PTR_ERR(virt_dev);
++		if (IS_ERR_OR_NULL(virt_dev)) {
++			ret = PTR_ERR(virt_dev) ? : -ENODEV;
+ 			dev_err(dev, "Couldn't attach to pm_domain: %d\n", ret);
+ 			goto err;
+ 		}
 -- 
 2.35.1
 
