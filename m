@@ -2,125 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F1BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A87C3C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347485AbiHSIKh (ORCPT
+        id S1347502AbiHSIKj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
+        Fri, 19 Aug 2022 04:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347457AbiHSIKT (ORCPT
+        with ESMTP id S1347495AbiHSIKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:10:19 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EF6E5899;
-        Fri, 19 Aug 2022 01:10:18 -0700 (PDT)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M8Dnn0Ntsz67kgW;
-        Fri, 19 Aug 2022 16:05:17 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 10:10:03 +0200
-Received: from [10.195.34.98] (10.195.34.98) by lhrpeml500003.china.huawei.com
- (7.191.162.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
- 2022 09:10:03 +0100
-Message-ID: <dd41c5c3-ee16-821c-afd4-ddda4443bc78@huawei.com>
-Date:   Fri, 19 Aug 2022 09:10:03 +0100
+        Fri, 19 Aug 2022 04:10:31 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E27E58AE;
+        Fri, 19 Aug 2022 01:10:30 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id o184so4012255oif.13;
+        Fri, 19 Aug 2022 01:10:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=MAnXagYjiuWeDTJ+i5sfMrFcvpfp6NbedVvWmTP//ek=;
+        b=lCM/2BfDI9fMx9bZOIBXuGWgIhcks+/S/ZSRrLcGGPb1ftzGdgKdj5Cm1zXfEKLhZd
+         CzHgZtfb7cjhVo7Qf39sRwKtFcdtjLtRSmu4/k803LdQKRHGk0NqqqNqP8KKym7mmcEV
+         8XLz4J3uYeWoeeRxcYalYAq3NW4a8dr/WHJoL/Ks5ekqEbAygXJvbOihrsAVow1b9IyC
+         Vg64VWIRmCEGxzSLRSiPEK5yX1CLjBymaNU3tRg1dnnKrUDkTCYJUCSUnTguFSiODInU
+         7RpY2+Rvby5Jiayb+cYAEu8VX9GsXTIqB4SY8gl5ScOdnonm+LpZbd+nLITCullfOybx
+         Z2uw==
+X-Gm-Message-State: ACgBeo0pPqBkZGpiYH8WtbYPoDWwzy/RUl71pXKoiFVULnByIvU5aJ6y
+        tcBCfHM3e1uevvQ75Q7pbhMomWVrbEnutw==
+X-Google-Smtp-Source: AA6agR7A9WyMPeyvQMiwkFaveWR0vJd18jmBG3YEgXbPciriUywaUyjK7ZCf+tLFcrUAdAbIT1OJUA==
+X-Received: by 2002:a05:6808:220c:b0:343:7801:11b3 with SMTP id bd12-20020a056808220c00b00343780111b3mr4998967oib.64.1660896629845;
+        Fri, 19 Aug 2022 01:10:29 -0700 (PDT)
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
+        by smtp.gmail.com with ESMTPSA id o12-20020a056870910c00b0010bf07976c9sm1101687oae.41.2022.08.19.01.10.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 01:10:29 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id m21-20020a9d6ad5000000b00638df677850so2633244otq.5;
+        Fri, 19 Aug 2022 01:10:29 -0700 (PDT)
+X-Received: by 2002:a0d:eb45:0:b0:333:f813:6c79 with SMTP id
+ u66-20020a0deb45000000b00333f8136c79mr6390139ywe.384.1660896295663; Fri, 19
+ Aug 2022 01:04:55 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH PoC 2/3] ACPI: platform: Refactor
- acpi_create_platform_device()
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "ACPI Devel Maling List" <linux-acpi@vger.kernel.org>,
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220815151451.23293-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220815151451.23293-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 19 Aug 2022 10:04:43 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisGxHMBPUEa8nTMFpzw@mail.gmail.com>
+Message-ID: <CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisGxHMBPUEa8nTMFpzw@mail.gmail.com>
+Subject: Re: [PATCH v2 5/8] riscv: dts: renesas: Add initial devicetree for
+ Renesas RZ/Five SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>
-References: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
- <1660649244-146842-3-git-send-email-john.garry@huawei.com>
- <CAHp75VdhCovo1uT3oxQAymEO9X+29oDet7LjYkLvpmj+r15Tfg@mail.gmail.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <CAHp75VdhCovo1uT3oxQAymEO9X+29oDet7LjYkLvpmj+r15Tfg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.34.98]
-X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/2022 20:41, Andy Shevchenko wrote:
-> On Tue, Aug 16, 2022 at 2:33 PM John Garry <john.garry@huawei.com> wrote:
->>
->> There is commonality between acpi_create_platform_device() and
->> hisi_lpc_acpi_add_child(), in that it covers 2x main steps:
->> - Read resources for the acpi_device
->> - Create platform device
->>
->> Refactor acpi_create_platform_device() so that it may be reused by
->> hisi_lpc_acpi_add_child() to reduce duplication.
-> 
-> ...
-> 
->> + * acpi_create_platform_device_ops - Create platform device for ACPI device node
-> 
-> Not sure I understand why _ops is a suffix for the function. I would
-> expect _ops to be a data struct where the ->xlate() and perhaps other
-> callbacks may be collected. It may be that I have missed that portion
-> in the previous discussion.
+Hi Prabhalar,
 
-ok, maybe I can put all the members into a struct, but I don't think 
-that it improves the overall code too much.
+On Mon, Aug 15, 2022 at 5:17 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Add initial device tree for Renesas RZ/Five RISC-V CPU Core (AX45MP
+> Single).
+>
+> Below is the list of IP blocks added in the initial SoC DTSI which can be
+> used to boot via initramfs on RZ/Five SMARC EVK:
+> - AX45MP CPU
+> - CPG
+> - PINCTRL
+> - PLIC
+> - SCIF0
+> - SYSC
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-> 
-> ...
-> 
->> +       if (name)
->> +               pdevinfo.name = name;
->> +       else
->> +               pdevinfo.name = dev_name(&adev->dev);
-> 
->> +       pdevinfo.data = data;
->> +       pdevinfo.size_data = size_data;
-> 
-> It rather reminds me of platform device registration full with this
-> device info. May be what you need is
-> struct acpi_platfrom_device_info {
->    properties;
->    name;
->    id;
->    ->xlate();
->    ...
-> };
-> 
-> ?
-> 
-> ...
-> 
->> +struct platform_device *acpi_create_platform_device_ops(
->> +                               struct acpi_device *adev,
->> +                               const char *name,
->> +                               const struct property_entry *properties,
->> +                               void *data, size_t size_data,
->> +                               int (*xlat)(struct acpi_device *adev,
->> +                                           struct resource *res,
->> +                                           void *data, size_t size_data),
->> +                               int id);
-> 
-> ...because this looks  a bit too much from the amount of parameters
-> point of view.
-> 
+Thanks for your patch!
 
-ok, agreed.
+> --- /dev/null
+> +++ b/arch/riscv/boot/dts/renesas/r9a07g043.dtsi
+> @@ -0,0 +1,121 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Device Tree Source for the RZ/Five SoC
 
-But even if we improve this code, the hisi_lpc changes are quite large 
-and unwieldly.
+My first thought was:
 
-Thanks,
-John
+    This should be arch/riscv/boot/dts/renesas/r9a07g043f01.dtsi,
+     including the common r9a07g043.dtsi, shared by
+     arch/arm64/boot/dts/renesas/r9a07g043u11.dtsi.
+
+Then I realized this is harder than it sounds, due:
+
+> +       soc: soc {
+> +               compatible = "simple-bus";
+> +               interrupt-parent = <&plic>;
+
+vs. "interrupt-parent = <&plic>;" for r9a07g043u11, but mostly
+due to
+
+> +               #address-cells = <2>;
+> +               #size-cells = <2>;
+> +               ranges;
+> +
+> +               scif0: serial@1004b800 {
+> +                       compatible = "renesas,scif-r9a07g043",
+> +                                    "renesas,scif-r9a07g044";
+> +                       reg = <0 0x1004b800 0 0x400>;
+> +                       interrupts = <412 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <414 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <415 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <413 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <416 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <416 IRQ_TYPE_LEVEL_HIGH>;
+
+vs. "interrupts = <GIC_SPI 380 IRQ_TYPE_LEVEL_HIGH> ..." on
+r9a07g043u11.
+Interestingly, the actual hardware interrupt numbers are the same,
+but the GIC DT bindings abstracts the offset of 32 by using a second
+cell and GIC_SPI.  Unfortunately this cannot be handled by some CPP
+magic, as dtc does not support arithmetic operations yet.
+
+I expect this or similar issues to pop up everywhere, when more
+RISCV-V SoCs will appear that share the non-CPU parts with ARM SoCs.
+
+Ignoring this issue, which we probably can solve only later:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
