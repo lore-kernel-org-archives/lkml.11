@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22BDC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E584CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350638AbiHSPy7 (ORCPT
+        id S1350651AbiHSPzL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
+        Fri, 19 Aug 2022 11:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350598AbiHSPyJ (ORCPT
+        with ESMTP id S1350466AbiHSPyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:54:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749C680F48;
-        Fri, 19 Aug 2022 08:49:35 -0700 (PDT)
+        Fri, 19 Aug 2022 11:54:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5692B106FA2;
+        Fri, 19 Aug 2022 08:49:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D42D5B8277D;
-        Fri, 19 Aug 2022 15:49:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4114BC433C1;
-        Fri, 19 Aug 2022 15:49:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 751D661562;
+        Fri, 19 Aug 2022 15:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80864C433D6;
+        Fri, 19 Aug 2022 15:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924164;
-        bh=KVk0CHZx/pAaRKcwo899uhFfJT+WzqPT+Dh7CqWHa40=;
+        s=korg; t=1660924175;
+        bh=bL/GLTenQQxls5QrXxno6TI51AgnSrwsBJEaUBekFeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WMf+m1cVEhaba1VO044bOpzMkDjmK/WLx65vku/KO9D7RDm8X8DKwOE+IpKdDuIZH
-         85YP1QJiIUNs+9E4jk8GKeYSMVnFMwYoHFr2h4l9dluoQOsroOnUKObi0SEOAmcU7U
-         5f/4PQYBV4CX+r9u2RRMfQCN5QLr+o4yeupnyyoo=
+        b=wsUAoI3aA3NL+neASIHDwfhvU9Tx68nER+3VdBceZcyezU1W4i3f0ycrEBOWnt6/8
+         y7KGRasJnm29BqtNDYwkxMpOoczoDs6U3drNphPIe5LMDlthyvKdBgy55cSHHA9a82
+         Ho2lJ6Cx7JN0m32k1UOAD4/xaxkioSXWdI06/7UM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wyes Karny <wyes.karny@amd.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 077/545] x86: Handle idle=nomwait cmdline properly for x86_idle
-Date:   Fri, 19 Aug 2022 17:37:27 +0200
-Message-Id: <20220819153832.712089574@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Bikash Hazarika <bhazarika@marvell.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 052/545] scsi: qla2xxx: Zero undefined mailbox IN registers
+Date:   Fri, 19 Aug 2022 17:37:02 +0200
+Message-Id: <20220819153831.563404167@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,97 +53,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wyes Karny <wyes.karny@amd.com>
+From: Bikash Hazarika <bhazarika@marvell.com>
 
-[ Upstream commit 8bcedb4ce04750e1ccc9a6b6433387f6a9166a56 ]
+commit 6c96a3c7d49593ef15805f5e497601c87695abc9 upstream.
 
-When kernel is booted with idle=nomwait do not use MWAIT as the
-default idle state.
+While requesting a new mailbox command, driver does not write any data to
+unused registers.  Initialize the unused register value to zero while
+requesting a new mailbox command to prevent stale entry access by firmware.
 
-If the user boots the kernel with idle=nomwait, it is a clear
-direction to not use mwait as the default idle state.
-However, the current code does not take this into consideration
-while selecting the default idle state on x86.
-
-Fix it by checking for the idle=nomwait boot option in
-prefer_mwait_c1_over_halt().
-
-Also update the documentation around idle=nomwait appropriately.
-
-[ dhansen: tweak commit message ]
-
-Signed-off-by: Wyes Karny <wyes.karny@amd.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Tested-by: Zhang Rui <rui.zhang@intel.com>
-Link: https://lkml.kernel.org/r/fdc2dc2d0a1bc21c2f53d989ea2d2ee3ccbc0dbe.1654538381.git-series.wyes.karny@amd.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220713052045.10683-4-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Bikash Hazarika <bhazarika@marvell.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/pm/cpuidle.rst | 15 +++++++++------
- arch/x86/kernel/process.c                |  9 ++++++---
- 2 files changed, 15 insertions(+), 9 deletions(-)
+ drivers/scsi/qla2xxx/qla_mbx.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/admin-guide/pm/cpuidle.rst b/Documentation/admin-guide/pm/cpuidle.rst
-index 10fde58d0869..3596e3714ec1 100644
---- a/Documentation/admin-guide/pm/cpuidle.rst
-+++ b/Documentation/admin-guide/pm/cpuidle.rst
-@@ -685,8 +685,8 @@ the ``menu`` governor to be used on the systems that use the ``ladder`` governor
- by default this way, for example.
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -233,6 +233,8 @@ qla2x00_mailbox_command(scsi_qla_host_t
+ 			ql_dbg(ql_dbg_mbx, vha, 0x1112,
+ 			    "mbox[%d]<-0x%04x\n", cnt, *iptr);
+ 			wrt_reg_word(optr, *iptr);
++		} else {
++			wrt_reg_word(optr, 0);
+ 		}
  
- The other kernel command line parameters controlling CPU idle time management
--described below are only relevant for the *x86* architecture and some of
--them affect Intel processors only.
-+described below are only relevant for the *x86* architecture and references
-+to ``intel_idle`` affect Intel processors only.
- 
- The *x86* architecture support code recognizes three kernel command line
- options related to CPU idle time management: ``idle=poll``, ``idle=halt``,
-@@ -708,10 +708,13 @@ idle, so it very well may hurt single-thread computations performance as well as
- energy-efficiency.  Thus using it for performance reasons may not be a good idea
- at all.]
- 
--The ``idle=nomwait`` option disables the ``intel_idle`` driver and causes
--``acpi_idle`` to be used (as long as all of the information needed by it is
--there in the system's ACPI tables), but it is not allowed to use the
--``MWAIT`` instruction of the CPUs to ask the hardware to enter idle states.
-+The ``idle=nomwait`` option prevents the use of ``MWAIT`` instruction of
-+the CPU to enter idle states. When this option is used, the ``acpi_idle``
-+driver will use the ``HLT`` instruction instead of ``MWAIT``. On systems
-+running Intel processors, this option disables the ``intel_idle`` driver
-+and forces the use of the ``acpi_idle`` driver instead. Note that in either
-+case, ``acpi_idle`` driver will function only if all the information needed
-+by it is in the system's ACPI tables.
- 
- In addition to the architecture-level kernel command line options affecting CPU
- idle time management, there are parameters affecting individual ``CPUIdle``
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index a2823682d64e..4505d845daba 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -777,6 +777,10 @@ static void amd_e400_idle(void)
-  */
- static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
- {
-+	/* User has disallowed the use of MWAIT. Fallback to HALT */
-+	if (boot_option_idle_override == IDLE_NOMWAIT)
-+		return 0;
-+
- 	if (c->x86_vendor != X86_VENDOR_INTEL)
- 		return 0;
- 
-@@ -885,9 +889,8 @@ static int __init idle_setup(char *str)
- 	} else if (!strcmp(str, "nomwait")) {
- 		/*
- 		 * If the boot option of "idle=nomwait" is added,
--		 * it means that mwait will be disabled for CPU C2/C3
--		 * states. In such case it won't touch the variable
--		 * of boot_option_idle_override.
-+		 * it means that mwait will be disabled for CPU C1/C2/C3
-+		 * states.
- 		 */
- 		boot_option_idle_override = IDLE_NOMWAIT;
- 	} else
--- 
-2.35.1
-
+ 		mboxes >>= 1;
 
 
