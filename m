@@ -2,109 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA18C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E110C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348288AbiHSJ43 (ORCPT
+        id S1347948AbiHSJ5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56566 "EHLO
+        Fri, 19 Aug 2022 05:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348272AbiHSJzd (ORCPT
+        with ESMTP id S1348246AbiHSJ5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:55:33 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A835EF00B;
-        Fri, 19 Aug 2022 02:55:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660902914; x=1692438914;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AZY5MC50jGtE/QqRVA/CrE8FUo/vmaMJ6VgRdOdFWAs=;
-  b=N48BqhO4pN76WNJCV89rc6hLYuScA09EnBRUfCdgUGt1yCkVq9EyFmw8
-   LvNM9f1+evwzuNjWYJiJ+JHvVYVSCq+xvlpu4fTNKTfiqE0SI3INlRJAr
-   wAmk2mIrN7RcXQ/2c6w9juZHZIB7zOyEifEmDzjnscGOcFoPfjzxcUAsA
-   QlkiqfKJqMS92L6uiUMGOGNkJjfAcvNzBKJsjucZts9v1iBmXceynj9NC
-   fHYB6EISU2eUTEp3giEyqDz0NuHct1jrHrXzZsRoRzdJrPNOtzPLAfLPK
-   jRYAvtkSiCzeoK1HKfKnOa5+LrsiM64z6clbLg86bA2Fqflgc1+KhTr5x
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="177053985"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Aug 2022 02:55:12 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 19 Aug 2022 02:55:10 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Fri, 19 Aug 2022 02:55:07 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: [PATCH v3 13/13] clk: microchip: mpfs: update module authorship & licencing
-Date:   Fri, 19 Aug 2022 10:53:21 +0100
-Message-ID: <20220819095320.40006-14-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220819095320.40006-1-conor.dooley@microchip.com>
-References: <20220819095320.40006-1-conor.dooley@microchip.com>
+        Fri, 19 Aug 2022 05:57:05 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2794CF994D
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:56:00 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id z2so5033957edc.1
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:56:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=t6W9x+WyR9aEmeKvb5RR9lUuSahG1sgA3A2JFCHzAnw=;
+        b=vuKJeSl9JaPfAzsNJQ1aTpwqs71OASgH95FDetNyeGm+4UteAQukVux8PoDlviDBfZ
+         VdNlqmv0Ig9/AzO7NQ9JTXNjaJ5wNtodagQ6jqj+iZrG3J8KwJf3YEWUh/wmjW1OUgjw
+         yDlPsaLdE2KlVIpXAEamJcfjtdaO6HpVU7fEB0qdak/lOSLAwlO82fE7Tj6+3PqcxdeX
+         Np1aoXVZCw8WUm/FSdOuhwKo6PGAv6Zf9y3yLFvAqW3XOuOLVxNu661oxgKLn0Q3QpLn
+         DkOmldvHiNoUrcT4oDB+5QX1Vqwlje2G8LZBPR5O5VGQ46dC2YnD7ynFglYda+aRJFcb
+         4+1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=t6W9x+WyR9aEmeKvb5RR9lUuSahG1sgA3A2JFCHzAnw=;
+        b=w5mvpwSWD/ImGbt5mFtkVXVXpjxoAnk0/ahsrhqpyq+BiqYBwRh9LdaqH/kqXhLdSz
+         LwffAWWgqgs3TwmnM5Zyrj4rqTFmsIkMfjHH3KnjhlK1L4PrGsPH9KiP6rZNWB6Tm7fO
+         3PImRYqFs1DD/Ug6REhJeEfo31SJogxjd3TFptj4aUK2iUBAj04irdT1FZ3l0GoGhBc1
+         xdJcR4fUA+B6MtWcLp+nYSBl6f2mri8RiBUJKEFz8+VSZHqfEHUE3Z0lzSB+ZggxgIQa
+         l2Xvht7zr6IxbnOGH5olLqRnUsZh5d5rSl+X3E8QCYFdIFsb06ecWLIcBW19wWYfSFnC
+         IbRQ==
+X-Gm-Message-State: ACgBeo0nLTSa1k2F2JSBY61E1KAnpOHm2ubXH+dHVmmgTg+tXpNc2kpx
+        6uF1BH8XBgp9gjfvRmcc0d+Tnw==
+X-Google-Smtp-Source: AA6agR7wtKqyRGfnjcuvxsrl/dlt1fADSTrCDXQsKf/bE0fFyZzXgvCiscSIepGAJJArj7TFfEl6HA==
+X-Received: by 2002:a05:6402:369:b0:445:d379:d233 with SMTP id s9-20020a056402036900b00445d379d233mr5469265edw.395.1660902958421;
+        Fri, 19 Aug 2022 02:55:58 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id ss2-20020a170907c00200b007309f007d3asm2022802ejc.128.2022.08.19.02.55.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 02:55:57 -0700 (PDT)
+Message-ID: <4a6120dc-6a7a-a718-86a4-6fd8bd9a8ed4@blackwall.org>
+Date:   Fri, 19 Aug 2022 12:55:56 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] bridge: move from strlcpy with unused retval to strscpy
+Content-Language: en-US
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+References: <20220818210212.8347-1-wsa+renesas@sang-engineering.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220818210212.8347-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Padmarao wrote the driver in its original, pre upstream form.
-Daire & myself have been responsible for getting it upstreamable and
-subsequent development.
-Move Daire out of the blurb & into a MODULE_AUTHOR entry & add entries
-for myself and Padmarao.
+On 19/08/2022 00:02, Wolfram Sang wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
+> 
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  net/bridge/br_device.c          | 8 ++++----
+>  net/bridge/br_sysfs_if.c        | 4 ++--
+>  net/bridge/netfilter/ebtables.c | 2 +-
+>  3 files changed, 7 insertions(+), 7 deletions(-)
+> 
 
-While we are at it, convert the MODULE_LICENSE field to its preferred
-form of "GPL".
-
-Reviewed-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/clk/microchip/clk-mpfs.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/clk/microchip/clk-mpfs.c b/drivers/clk/microchip/clk-mpfs.c
-index 35a67d2b7845..dceae0c9b9d1 100644
---- a/drivers/clk/microchip/clk-mpfs.c
-+++ b/drivers/clk/microchip/clk-mpfs.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Daire McNamara,<daire.mcnamara@microchip.com>
-- * Copyright (C) 2020 Microchip Technology Inc.  All rights reserved.
-+ * PolarFire SoC MSS/core complex clock control
-+ *
-+ * Copyright (C) 2020-2022 Microchip Technology Inc. All rights reserved.
-  */
- #include <linux/auxiliary_bus.h>
- #include <linux/clk-provider.h>
-@@ -513,4 +514,7 @@ static void __exit clk_mpfs_exit(void)
- module_exit(clk_mpfs_exit);
- 
- MODULE_DESCRIPTION("Microchip PolarFire SoC Clock Driver");
--MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Padmarao Begari <padmarao.begari@microchip.com>");
-+MODULE_AUTHOR("Daire McNamara <daire.mcnamara@microchip.com>");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_LICENSE("GPL");
--- 
-2.36.1
+Looks good, but should be targeted at net-next.
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
