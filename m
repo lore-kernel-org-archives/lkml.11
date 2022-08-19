@@ -2,672 +2,513 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBD2C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E1EC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348877AbiHSMCE (ORCPT
+        id S1348886AbiHSMCl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        Fri, 19 Aug 2022 08:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348829AbiHSMBl (ORCPT
+        with ESMTP id S1347622AbiHSMCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:01:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F1FE42F6
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:01:39 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oP0ge-0007mq-NK; Fri, 19 Aug 2022 14:01:16 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oP0gc-000hbf-LC; Fri, 19 Aug 2022 14:01:14 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oP0ga-00GBaz-9P; Fri, 19 Aug 2022 14:01:12 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>
-Subject: [PATCH net-next v1 3/7] net: add framework to support Ethernet PSE and PDs devices
-Date:   Fri, 19 Aug 2022 14:01:05 +0200
-Message-Id: <20220819120109.3857571-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220819120109.3857571-1-o.rempel@pengutronix.de>
-References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+        Fri, 19 Aug 2022 08:02:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAD1100949
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:02:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660910524;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bs/RGqRU1P8HkB78nxVTIBhoGgYEyiHtrF13FSc69Hk=;
+        b=a7bjDp/FvqQxfpvo0H+8hd+Mj7MJI0P2RS+NmhQS3RohjEd8lz0ZKwGj+rpjZWy/YsIR7L
+        3AxeuXblhA7sK5OS9jcrrzH5FcMoHr9mGntPl5v2uU2xbPFJF+d1Kc36UtLP7aSnDdCTlD
+        zPZjxyPJouoRaWt2KMeP3ItJkWS+Q0A=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-658-JROjN_ykO1O58jIiC97YDA-1; Fri, 19 Aug 2022 08:02:03 -0400
+X-MC-Unique: JROjN_ykO1O58jIiC97YDA-1
+Received: by mail-ed1-f70.google.com with SMTP id q18-20020a056402519200b0043dd2ff50feso2693549edd.9
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:02:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc;
+        bh=bs/RGqRU1P8HkB78nxVTIBhoGgYEyiHtrF13FSc69Hk=;
+        b=NhW4R3S1yryoraUdZBnXQboTO9JVPDqPvgzKlId0+bjUuKsxy7dlWQfh00QIt4kRJO
+         NIFCx+Y8Ijq5vbJSWSKz5Qs8gf7GFrlo2E1KICv9bcpyxz3UFh8rvNvbVwJcCEIVMOET
+         2xMv2vykgNJziK8zsmNsaDXYSBSW10PfI5sO9mwCYTiSiGuECPjf9wUFcL9ueX6KSx5O
+         aXLAie9knU8hnA1RKGnGTw9J+eXpoxvbMKm4iPYMrPiO8GzzSYE7gpysoEEIYMjCYjMa
+         PZ0onq1H+KX43f/xyG7+9Ch3aJQrbPHxXfAyIEcpYwLThi27Bz9dTY2q8dOgLsuC3RMZ
+         6s3Q==
+X-Gm-Message-State: ACgBeo0OBQWo1C9WPw1pD0DZsDAO2MbtNlegHxIwt69kx3Wsc8vUvfnx
+        cKIMc1WvN9GPTZAIhD6jW5F5WxJYVJhE5zpbDUr9UqbG1r3ezvk/BDKgZDzFEmQ8MDcHncs3DbY
+        NWWGrvkN05MWIXOeGffA+Lu2ULkRIUqrY+oKEDOqaRR7uPKVYYm9sWZSkG4eGNv8ZmMivWSDmSM
+        dW
+X-Received: by 2002:a17:907:971e:b0:731:48b3:6fb7 with SMTP id jg30-20020a170907971e00b0073148b36fb7mr4765782ejc.267.1660910521374;
+        Fri, 19 Aug 2022 05:02:01 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6Pq8KNfXUN3mOCREv9GJPMPra98QkIxCNGeAc7ZItf05+a7IlqY0LV4NcjgNnV7YHGHMdRbg==
+X-Received: by 2002:a17:907:971e:b0:731:48b3:6fb7 with SMTP id jg30-20020a170907971e00b0073148b36fb7mr4765735ejc.267.1660910520400;
+        Fri, 19 Aug 2022 05:02:00 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id q19-20020a17090676d300b0072af930cf97sm2190734ejn.115.2022.08.19.05.01.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 05:01:59 -0700 (PDT)
+Message-ID: <dd6844e7-f338-a4e9-2dad-0960e25b2ca1@redhat.com>
+Date:   Fri, 19 Aug 2022 14:01:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Jens Axboe <axboe@kernel.dk>
+From:   Hans de Goede <hdegoede@redhat.com>
+Subject: 6.0-rc1 regression block (blk_mq) / RCU task stuck errors + block-io
+ hang
+Cc:     linux-block@vger.kernel.org, rcu@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This framework was create with intention to provide support for Ethernet PSE
-(Power Sourcing Equipment) and PDs (Powered Device).
+Hi All,
 
-At current step this patch implements generic PSE support for PoDL (Power over
-Data Lines 802.3bu) specification with reserving name space for PD devices as
-well.
+I've been dogfooding 6.0-rc1 on my main workstation and I have hit
+this pretty serious bug, serious enough for me to go back to 5.19
 
-This framework can be extended to support 802.3af and 802.3at "Power via the
-Media Dependent Interface" (or PoE/Power over Ethernet)
+My dmesg is showing various blk_mq (RCU?) related lockdep splats
+followed by some tasks getting stuck on disk-IO. E.g. "sync"
+is guaranteed to hang, but other tasks too.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/Kconfig           |   2 +
- drivers/net/Makefile          |   1 +
- drivers/net/pse-pd/Kconfig    |  11 +
- drivers/net/pse-pd/Makefile   |   4 +
- drivers/net/pse-pd/pse-core.c | 387 ++++++++++++++++++++++++++++++++++
- include/linux/pse-pd/pse.h    | 134 ++++++++++++
- 6 files changed, 539 insertions(+)
- create mode 100644 drivers/net/pse-pd/Kconfig
- create mode 100644 drivers/net/pse-pd/Makefile
- create mode 100644 drivers/net/pse-pd/pse-core.c
- create mode 100644 include/linux/pse-pd/pse.h
+This seems to be mainly the case on "sd" disks (both sata
+and USB) where as my main nvme drive seems fine, which has
+probably saved me from worse issues...
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 94c889802566a..15d4a38b1351d 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -500,6 +500,8 @@ config NET_SB1000
- 
- source "drivers/net/phy/Kconfig"
- 
-+source "drivers/net/pse-pd/Kconfig"
-+
- source "drivers/net/can/Kconfig"
- 
- source "drivers/net/mctp/Kconfig"
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 3f1192d3c52d3..6ce076462dbfd 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -23,6 +23,7 @@ obj-$(CONFIG_NET) += loopback.o
- obj-$(CONFIG_NETDEV_LEGACY_INIT) += Space.o
- obj-$(CONFIG_NETCONSOLE) += netconsole.o
- obj-y += phy/
-+obj-y += pse-pd/
- obj-y += mdio/
- obj-y += pcs/
- obj-$(CONFIG_RIONET) += rionet.o
-diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-new file mode 100644
-index 0000000000000..49c7f0bcff526
---- /dev/null
-+++ b/drivers/net/pse-pd/Kconfig
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Ethernet Power Sourcing Equipment drivers
-+#
-+
-+menuconfig PSE_CONTROLLER
-+	bool "Ethernet Power Sourcing Equipment Support"
-+	help
-+	  Generic Power Sourcing Equipment Controller support.
-+
-+	  If unsure, say no.
-diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
-new file mode 100644
-index 0000000000000..cbb79fc2e2706
---- /dev/null
-+++ b/drivers/net/pse-pd/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Makefile for Linux PSE drivers
-+
-+obj-$(CONFIG_PSE_CONTROLLER) += pse-core.o
-diff --git a/drivers/net/pse-pd/pse-core.c b/drivers/net/pse-pd/pse-core.c
-new file mode 100644
-index 0000000000000..a0b42dc46d029
---- /dev/null
-+++ b/drivers/net/pse-pd/pse-core.c
-@@ -0,0 +1,387 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Framework for Ethernet Power Sourcing Equipment
-+//
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+//
-+
-+#include <linux/device.h>
-+#include <linux/of.h>
-+#include <linux/pse-pd/pse.h>
-+
-+static DEFINE_MUTEX(pse_list_mutex);
-+static LIST_HEAD(pse_controller_list);
-+
-+/**
-+ * struct pse_control - a PSE control
-+ * @pcdev: a pointer to the PSE controller device
-+ *         this PSE control belongs to
-+ * @list: list entry for the pcdev's PSE controller list
-+ * @id: ID of the PSE line in the PSE controller device
-+ * @refcnt: Number of gets of this pse_control
-+ */
-+struct pse_control {
-+	struct pse_controller_dev *pcdev;
-+	struct list_head list;
-+	unsigned int id;
-+	struct kref refcnt;
-+};
-+
-+/**
-+ * of_pse_zero_xlate - dummy function for controllers with one only control
-+ * @pcdev: a pointer to the PSE controller device
-+ * @pse_spec: PSE line specifier as found in the device tree
-+ *
-+ * This static translation function is used by default if of_xlate in
-+ * :c:type:`pse_controller_dev` is not set. It is useful for all PSE
-+ * controllers with #pse-cells = <0>.
-+ */
-+static int of_pse_zero_xlate(struct pse_controller_dev *pcdev,
-+			     const struct of_phandle_args *pse_spec)
-+{
-+	return 0;
-+}
-+
-+/**
-+ * of_pse_simple_xlate - translate pse_spec to the PSE line number
-+ * @pcdev: a pointer to the PSE controller device
-+ * @pse_spec: PSE line specifier as found in the device tree
-+ *
-+ * This static translation function is used by default if of_xlate in
-+ * :c:type:`pse_controller_dev` is not set. It is useful for all PSE
-+ * controllers with 1:1 mapping, where PSE lines can be indexed by number
-+ * without gaps.
-+ */
-+static int of_pse_simple_xlate(struct pse_controller_dev *pcdev,
-+			       const struct of_phandle_args *pse_spec)
-+{
-+	if (pse_spec->args[0] >= pcdev->nr_lines)
-+		return -EINVAL;
-+
-+	return pse_spec->args[0];
-+}
-+
-+/**
-+ * pse_controller_register - register a PSE controller device
-+ * @pcdev: a pointer to the initialized PSE controller device
-+ */
-+int pse_controller_register(struct pse_controller_dev *pcdev)
-+{
-+	if (!pcdev->of_xlate) {
-+		if (pcdev->of_pse_n_cells == 0)
-+			pcdev->of_xlate = of_pse_zero_xlate;
-+		else if (pcdev->of_pse_n_cells == 1)
-+			pcdev->of_xlate = of_pse_simple_xlate;
-+	}
-+
-+	INIT_LIST_HEAD(&pcdev->pse_control_head);
-+
-+	mutex_lock(&pse_list_mutex);
-+	list_add(&pcdev->list, &pse_controller_list);
-+	mutex_unlock(&pse_list_mutex);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pse_controller_register);
-+
-+/**
-+ * pse_controller_unregister - unregister a PSE controller device
-+ * @pcdev: a pointer to the PSE controller device
-+ */
-+void pse_controller_unregister(struct pse_controller_dev *pcdev)
-+{
-+	mutex_lock(&pse_list_mutex);
-+	list_del(&pcdev->list);
-+	mutex_unlock(&pse_list_mutex);
-+}
-+EXPORT_SYMBOL_GPL(pse_controller_unregister);
-+
-+static void devm_pse_controller_release(struct device *dev, void *res)
-+{
-+	pse_controller_unregister(*(struct pse_controller_dev **)res);
-+}
-+
-+/**
-+ * devm_pse_controller_register - resource managed pse_controller_register()
-+ * @dev: device that is registering this PSE controller
-+ * @pcdev: a pointer to the initialized PSE controller device
-+ *
-+ * Managed pse_controller_register(). For PSE controllers registered by
-+ * this function, pse_controller_unregister() is automatically called on
-+ * driver detach. See pse_controller_register() for more information.
-+ */
-+int devm_pse_controller_register(struct device *dev,
-+				 struct pse_controller_dev *pcdev)
-+{
-+	struct pse_controller_dev **pcdevp;
-+	int ret;
-+
-+	pcdevp = devres_alloc(devm_pse_controller_release, sizeof(*pcdevp),
-+			      GFP_KERNEL);
-+	if (!pcdevp)
-+		return -ENOMEM;
-+
-+	ret = pse_controller_register(pcdev);
-+	if (ret) {
-+		devres_free(pcdevp);
-+		return ret;
-+	}
-+
-+	*pcdevp = pcdev;
-+	devres_add(dev, pcdevp);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(devm_pse_controller_register);
-+
-+/* PSE control section */
-+
-+static void __pse_control_release(struct kref *kref)
-+{
-+	struct pse_control *psec = container_of(kref, struct pse_control,
-+						  refcnt);
-+
-+	lockdep_assert_held(&pse_list_mutex);
-+
-+	module_put(psec->pcdev->owner);
-+
-+	list_del(&psec->list);
-+	kfree(psec);
-+}
-+
-+static void __pse_control_put_internal(struct pse_control *psec)
-+{
-+	lockdep_assert_held(&pse_list_mutex);
-+
-+	kref_put(&psec->refcnt, __pse_control_release);
-+}
-+
-+/**
-+ * pse_control_put - free the PSE control
-+ * @psec: PSE control pointer
-+ */
-+void pse_control_put(struct pse_control *psec)
-+{
-+	if (IS_ERR_OR_NULL(psec))
-+		return;
-+
-+	mutex_lock(&pse_list_mutex);
-+	__pse_control_put_internal(psec);
-+	mutex_unlock(&pse_list_mutex);
-+}
-+EXPORT_SYMBOL_GPL(pse_control_put);
-+
-+static struct pse_control *
-+pse_control_get_internal(struct pse_controller_dev *pcdev, unsigned int index)
-+{
-+	struct pse_control *psec;
-+
-+	lockdep_assert_held(&pse_list_mutex);
-+
-+	list_for_each_entry(psec, &pcdev->pse_control_head, list) {
-+		if (psec->id == index) {
-+			kref_get(&psec->refcnt);
-+			return psec;
-+		}
-+	}
-+
-+	psec = kzalloc(sizeof(*psec), GFP_KERNEL);
-+	if (!psec)
-+		return ERR_PTR(-ENOMEM);
-+
-+	if (!try_module_get(pcdev->owner)) {
-+		kfree(psec);
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	psec->pcdev = pcdev;
-+	list_add(&psec->list, &pcdev->pse_control_head);
-+	psec->id = index;
-+	kref_init(&psec->refcnt);
-+
-+	return psec;
-+}
-+
-+struct pse_control *
-+of_pse_control_get(struct device_node *node)
-+{
-+	struct pse_controller_dev *r, *pcdev;
-+	struct of_phandle_args args;
-+	struct pse_control *psec;
-+	int psec_id;
-+	int ret;
-+
-+	if (!node)
-+		return ERR_PTR(-EINVAL);
-+
-+	ret = of_parse_phandle_with_args(node, "ieee802.3-podl-pse",
-+					 "#pse-cells", 0, &args);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	mutex_lock(&pse_list_mutex);
-+	pcdev = NULL;
-+	list_for_each_entry(r, &pse_controller_list, list) {
-+		if (args.np == r->dev->of_node) {
-+			pcdev = r;
-+			break;
-+		}
-+	}
-+
-+	if (!pcdev) {
-+		psec = ERR_PTR(-EPROBE_DEFER);
-+		goto out;
-+	}
-+
-+	if (WARN_ON(args.args_count != pcdev->of_pse_n_cells)) {
-+		psec = ERR_PTR(-EINVAL);
-+		goto out;
-+	}
-+
-+	psec_id = pcdev->of_xlate(pcdev, &args);
-+	if (psec_id < 0) {
-+		psec = ERR_PTR(psec_id);
-+		goto out;
-+	}
-+
-+	/* pse_list_mutex also protects the pcdev's pse_control list */
-+	psec = pse_control_get_internal(pcdev, psec_id);
-+
-+out:
-+	mutex_unlock(&pse_list_mutex);
-+	of_node_put(args.np);
-+
-+	return psec;
-+}
-+EXPORT_SYMBOL_GPL(of_pse_control_get);
-+
-+struct pse_control *pse_control_get(struct device *dev)
-+{
-+	if (!dev->of_node)
-+		return ERR_PTR(-ENODEV);
-+
-+	return of_pse_control_get(dev->of_node);
-+}
-+EXPORT_SYMBOL_GPL(pse_control_get);
-+
-+static void devm_pse_control_release(struct device *dev, void *res)
-+{
-+	pse_control_put(*(struct pse_control **)res);
-+}
-+
-+struct pse_control *
-+devm_pse_control_get(struct device *dev)
-+{
-+	struct pse_control **ptr, *psec;
-+
-+	ptr = devres_alloc(devm_pse_control_release, sizeof(*ptr),
-+			   GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	psec = pse_control_get(dev);
-+	if (IS_ERR_OR_NULL(psec)) {
-+		devres_free(ptr);
-+		return psec;
-+	}
-+
-+	*ptr = psec;
-+	devres_add(dev, ptr);
-+
-+	return psec;
-+}
-+EXPORT_SYMBOL_GPL(devm_pse_control_get);
-+
-+/**
-+ * pse_podl_get_admin_sate - get operational state of the PoDL PSE functions.
-+ * @pcdev: a pointer to the PSE controller device
-+ *
-+ * IEEE 802.3-2018 30.15.1.1.2 aPoDLPSEAdminState:
-+ * A read-only value that identifies the operational state of the PoDL PSE
-+ * functions.
-+ *
-+ * Return values:
-+ * see enum ethtool_podl_pse_admin_state
-+ * Negative value is an error.
-+ */
-+int pse_podl_get_admin_sate(struct pse_control *psec)
-+{
-+	const struct pse_control_ops *ops;
-+
-+	if (!psec)
-+		return 0;
-+
-+	if (WARN_ON(IS_ERR(psec)))
-+		return -EINVAL;
-+
-+	ops = psec->pcdev->ops;
-+
-+	if (!ops->get_podl_pse_admin_sate)
-+		return -ENOTSUPP;
-+
-+	return ops->get_podl_pse_admin_sate(psec->pcdev, psec->id);
-+}
-+EXPORT_SYMBOL_GPL(pse_podl_get_admin_sate);
-+
-+/**
-+ * pse_podl_set_admin_control - set operational state of the PoDL PSE functions.
-+ * @pcdev: a pointer to the PSE controller device
-+ *
-+ * IEEE 802.3-2018 30.15.1.2.1 acPoDLPSEAdminControl
-+ * This action provides a means to alter aPoDLPSEAdminState.
-+ *
-+ * Return values:
-+ * Negative value is an error.
-+ */
-+int pse_podl_set_admin_control(struct pse_control *psec,
-+			       enum ethtool_podl_pse_admin_state state)
-+{
-+	const struct pse_control_ops *ops;
-+
-+	if (!psec)
-+		return 0;
-+
-+	if (WARN_ON(IS_ERR(psec)))
-+		return -EINVAL;
-+
-+	ops = psec->pcdev->ops;
-+
-+	if (!ops->set_podl_pse_admin_control)
-+		return -ENOTSUPP;
-+
-+	if (state >= ETHTOOL_PODL_PSE_ADMIN_STATE_COUNT)
-+		return -ENOTSUPP;
-+
-+	return ops->set_podl_pse_admin_control(psec->pcdev, psec->id, state);
-+}
-+EXPORT_SYMBOL_GPL(pse_podl_set_admin_control);
-+
-+/**
-+ * pse_podl_get_pw_d_status - get a PoDL PSE power detection status
-+ * @pcdev: a pointer to the PSE controller device
-+ *
-+ * IEEE 802.3-2018 30.15.1.1.3 aPoDLPSEPowerDetectionStatus:
-+ * A read-only value that indicates the current status of the PoDL PSE.
-+ *
-+ * Return values:
-+ * see enum ethtool_podl_pse_pw_d_status
-+ * Negative value is an error.
-+ */
-+int pse_podl_get_pw_d_status(struct pse_control *psec)
-+{
-+	const struct pse_control_ops *ops;
-+
-+	if (!psec)
-+		return 0;
-+
-+	if (WARN_ON(IS_ERR(psec)))
-+		return -EINVAL;
-+
-+	ops = psec->pcdev->ops;
-+
-+	if (!ops->get_podl_pse_pw_d_status)
-+		return -ENOTSUPP;
-+
-+	return ops->get_podl_pse_pw_d_status(psec->pcdev, psec->id);
-+}
-+EXPORT_SYMBOL_GPL(pse_podl_get_pw_d_status);
-diff --git a/include/linux/pse-pd/pse.h b/include/linux/pse-pd/pse.h
-new file mode 100644
-index 0000000000000..77d1d64f3e831
---- /dev/null
-+++ b/include/linux/pse-pd/pse.h
-@@ -0,0 +1,134 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+ */
-+#ifndef _LINUX_PSE_CONTROLLER_H
-+#define _LINUX_PSE_CONTROLLER_H
-+
-+#include <linux/list.h>
-+#include <uapi/linux/ethtool.h>
-+
-+struct phy_device;
-+struct pse_controller_dev;
-+
-+/**
-+ * struct pse_control_ops - PSE controller driver callbacks
-+ *
-+ * @get_podl_pse_admin_sate: return a PoDL PSE admin state as described in
-+ *	IEEE 802.3-2018 30.15.1.1.2 aPoDLPSEAdminState
-+ * @set_podl_pse_admin_control: set PoDL PSE admin control as described in
-+ *	IEEE 802.3-2018 30.15.1.2.1 acPoDLPSEAdminControl
-+ * @get_podl_pse_pw_d_status: return a PoDL PSE power detection status as
-+ *	described in: IEEE 802.3-2018 30.15.1.1.3 aPoDLPSEPowerDetectionStatus
-+ */
-+struct pse_control_ops {
-+	int (*get_podl_pse_admin_sate)(struct pse_controller_dev *pcdev,
-+		unsigned long id);
-+	int (*set_podl_pse_admin_control)(struct pse_controller_dev *pcdev,
-+		unsigned long id, enum ethtool_podl_pse_admin_state state);
-+	int (*get_podl_pse_pw_d_status)(struct pse_controller_dev *pcdev,
-+		unsigned long id);
-+};
-+
-+struct module;
-+struct device_node;
-+struct of_phandle_args;
-+struct pse_control;
-+
-+/**
-+ * struct pse_controller_dev - PSE controller entity that might
-+ *                             provide multiple PSE controls
-+ * @ops: a pointer to device specific struct pse_control_ops
-+ * @owner: kernel module of the PSE controller driver
-+ * @list: internal list of PSE controller devices
-+ * @pse_control_head: head of internal list of requested PSE controls
-+ * @dev: corresponding driver model device struct
-+ * @of_pse_n_cells: number of cells in PSE line specifiers
-+ * @of_xlate: translation function to translate from specifier as found in the
-+ *            device tree to id as given to the PSE control ops
-+ * @nr_lines: number of PSE controls in this controller device
-+ */
-+struct pse_controller_dev {
-+	const struct pse_control_ops *ops;
-+	struct module *owner;
-+	struct list_head list;
-+	struct list_head pse_control_head;
-+	struct device *dev;
-+	int of_pse_n_cells;
-+	int (*of_xlate)(struct pse_controller_dev *pcdev,
-+			const struct of_phandle_args *pse_spec);
-+	unsigned int nr_lines;
-+};
-+
-+#if IS_ENABLED(CONFIG_PSE_CONTROLLER)
-+int pse_controller_register(struct pse_controller_dev *pcdev);
-+void pse_controller_unregister(struct pse_controller_dev *pcdev);
-+struct device;
-+int devm_pse_controller_register(struct device *dev,
-+				 struct pse_controller_dev *pcdev);
-+
-+struct pse_control *pse_control_get(struct device *dev);
-+struct pse_control *devm_pse_control_get( struct device *dev);
-+struct pse_control *of_pse_control_get(struct device_node *node);
-+void pse_control_put(struct pse_control *psec);
-+int pse_podl_get_admin_sate(struct pse_control *psec);
-+int pse_podl_set_admin_control(struct pse_control *psec,
-+			       enum ethtool_podl_pse_admin_state state);
-+int pse_podl_get_pw_d_status(struct pse_control *psec);
-+
-+#else
-+
-+static inline int pse_controller_register(struct pse_controller_dev *pcdev)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline void pse_controller_unregister(struct pse_controller_dev *pcdev)
-+{
-+}
-+
-+static inline int devm_pse_controller_register(struct device *dev,
-+						 struct pse_controller_dev *pcdev)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline struct pse_control *pse_control_get(struct device *dev)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+static inline struct pse_control *devm_pse_control_get( struct device *dev)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+static inline struct pse_control *of_pse_control_get(struct device_node *node)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+static inline void pse_control_put(struct pse_control *psec)
-+{
-+}
-+
-+static inline int pse_podl_get_admin_sate(struct pse_control *psec)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline int
-+pse_podl_set_admin_control(struct pse_control *psec,
-+			   enum ethtool_podl_pse_admin_state state)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline int pse_podl_get_pw_d_status(struct pse_control *psec)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+#endif
-+
-+#endif
--- 
-2.30.2
+Here are 4 task stuck reports from my last boot, where
+I had to turn off the machine by keeping the power button
+pressed for 4 seconds.
+
+Aug 19 12:25:46 shalem kernel: INFO: task kworker/0:3:305 blocked for more than 122 seconds.
+Aug 19 12:25:46 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:25:46 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:25:46 shalem kernel: task:kworker/0:3     state:D stack:13008 pid:  305 ppid:     2 flags:0x00004000
+Aug 19 12:25:46 shalem kernel: Workqueue: events ata_scsi_dev_rescan
+Aug 19 12:25:46 shalem kernel: Call Trace:
+Aug 19 12:25:46 shalem kernel:  <TASK>
+Aug 19 12:25:46 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:25:46 shalem kernel:  ? mark_held_locks+0x50/0x80
+Aug 19 12:25:46 shalem kernel:  ? _raw_spin_unlock_irq+0x24/0x50
+Aug 19 12:25:46 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:25:46 shalem kernel:  blk_mq_freeze_queue_wait+0x57/0x90
+Aug 19 12:25:46 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:25:46 shalem kernel:  disk_clear_zone_settings+0x19/0xa0
+Aug 19 12:25:46 shalem kernel:  sd_revalidate_disk.isra.0+0x1660/0x2c60
+Aug 19 12:25:46 shalem kernel:  ? slab_free_freelist_hook.constprop.0+0x11b/0x160
+Aug 19 12:25:46 shalem kernel:  ? scsi_rescan_device+0x2c/0x90
+Aug 19 12:25:46 shalem kernel:  scsi_rescan_device+0x77/0x90
+Aug 19 12:25:46 shalem kernel:  ata_scsi_dev_rescan+0x9d/0x110
+Aug 19 12:25:46 shalem kernel:  process_one_work+0x2a0/0x600
+Aug 19 12:25:46 shalem kernel:  worker_thread+0x4f/0x3a0
+Aug 19 12:25:46 shalem kernel:  ? process_one_work+0x600/0x600
+Aug 19 12:25:46 shalem kernel:  kthread+0xf5/0x120
+Aug 19 12:25:46 shalem kernel:  ? kthread_complete_and_exit+0x20/0x20
+Aug 19 12:25:46 shalem kernel:  ret_from_fork+0x22/0x30
+Aug 19 12:25:46 shalem kernel:  </TASK>
+Aug 19 12:25:46 shalem kernel: INFO: task smartd:2557 blocked for more than 122 seconds.
+Aug 19 12:25:46 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:25:46 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:25:46 shalem kernel: task:smartd          state:D stack:13000 pid: 2557 ppid:     1 flags:0x00000002
+Aug 19 12:25:46 shalem kernel: Call Trace:
+Aug 19 12:25:46 shalem kernel:  <TASK>
+Aug 19 12:25:46 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:25:46 shalem kernel:  ? lock_release+0x14f/0x460
+Aug 19 12:25:46 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x30/0x60
+Aug 19 12:25:46 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x40/0x60
+Aug 19 12:25:46 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:25:46 shalem kernel:  blk_queue_enter+0xe5/0x190
+Aug 19 12:25:46 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:25:46 shalem kernel:  blk_mq_alloc_request+0x50/0xb0
+Aug 19 12:25:46 shalem kernel:  scsi_alloc_request+0xb/0x30
+Aug 19 12:25:46 shalem kernel:  sg_io+0x6b/0x390
+Aug 19 12:25:46 shalem kernel:  ? _copy_from_user+0x83/0xa0
+Aug 19 12:25:46 shalem kernel:  ? get_sg_io_hdr+0x26/0xb0
+Aug 19 12:25:46 shalem kernel:  scsi_ioctl+0x44c/0x960
+Aug 19 12:25:46 shalem kernel:  ? scsi_ioctl_block_when_processing_errors+0x45/0x50
+Aug 19 12:25:46 shalem kernel:  blkdev_ioctl+0x143/0x2c0
+Aug 19 12:25:46 shalem kernel:  __x64_sys_ioctl+0x90/0xd0
+Aug 19 12:25:46 shalem kernel:  do_syscall_64+0x5b/0x80
+Aug 19 12:25:46 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:25:46 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:25:46 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:25:46 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:25:46 shalem kernel:  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Aug 19 12:25:46 shalem kernel: RIP: 0033:0x7f9641245cdf
+Aug 19 12:25:46 shalem kernel: RSP: 002b:00007ffc73d257d0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+Aug 19 12:25:46 shalem kernel: RAX: ffffffffffffffda RBX: 00007ffc73d25ad0 RCX: 00007f9641245cdf
+Aug 19 12:25:46 shalem kernel: RDX: 00007ffc73d25840 RSI: 0000000000002285 RDI: 0000000000000003
+Aug 19 12:25:46 shalem kernel: RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+Aug 19 12:25:46 shalem kernel: R10: 000000000000003c R11: 0000000000000246 R12: 00007ffc73d25c50
+Aug 19 12:25:46 shalem kernel: R13: 0000000000000001 R14: 0000000000000000 R15: 000055fbff0abd10
+Aug 19 12:25:46 shalem kernel:  </TASK>
+Aug 19 12:25:46 shalem kernel: INFO: task pool-udisksd:9404 blocked for more than 122 seconds.
+Aug 19 12:25:46 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:25:46 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:25:46 shalem kernel: task:pool-udisksd    state:D stack:14624 pid: 9404 ppid:     1 flags:0x00000002
+Aug 19 12:25:46 shalem kernel: Call Trace:
+Aug 19 12:25:46 shalem kernel:  <TASK>
+Aug 19 12:25:46 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:25:46 shalem kernel:  ? lock_release+0x14f/0x460
+Aug 19 12:25:46 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x30/0x60
+Aug 19 12:25:46 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x40/0x60
+Aug 19 12:25:46 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:25:46 shalem kernel:  blk_queue_enter+0xe5/0x190
+Aug 19 12:25:46 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:25:46 shalem kernel:  blk_mq_alloc_request+0x50/0xb0
+Aug 19 12:25:46 shalem kernel:  scsi_alloc_request+0xb/0x30
+Aug 19 12:25:46 shalem kernel:  sg_io+0x6b/0x390
+Aug 19 12:25:46 shalem kernel:  ? _copy_from_user+0x83/0xa0
+Aug 19 12:25:46 shalem kernel:  ? get_sg_io_hdr+0x26/0xb0
+Aug 19 12:25:46 shalem kernel:  scsi_ioctl+0x44c/0x960
+Aug 19 12:25:46 shalem kernel:  ? scsi_ioctl_block_when_processing_errors+0x45/0x50
+Aug 19 12:25:46 shalem kernel:  blkdev_ioctl+0x143/0x2c0
+Aug 19 12:25:46 shalem kernel:  __x64_sys_ioctl+0x90/0xd0
+Aug 19 12:25:46 shalem kernel:  do_syscall_64+0x5b/0x80
+Aug 19 12:25:46 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:25:46 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:25:46 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:25:46 shalem kernel:  ? ret_from_fork+0x15/0x30
+Aug 19 12:25:46 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:25:46 shalem kernel:  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Aug 19 12:25:46 shalem kernel: RIP: 0033:0x7f0c77065cdf
+Aug 19 12:25:46 shalem kernel: RSP: 002b:00007f0c75dfd7f0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+Aug 19 12:25:46 shalem kernel: RAX: ffffffffffffffda RBX: 00007f0c75dfda00 RCX: 00007f0c77065cdf
+Aug 19 12:25:46 shalem kernel: RDX: 00007f0c75dfd860 RSI: 0000000000002285 RDI: 0000000000000011
+Aug 19 12:25:46 shalem kernel: RBP: 0000000000001388 R08: 00007f0c75dfd9e0 R09: 00007f0c75dfe550
+Aug 19 12:25:46 shalem kernel: R10: 00007f0c75dfd960 R11: 0000000000000246 R12: 00007f0c75dfdb70
+Aug 19 12:25:46 shalem kernel: R13: 0000000000000000 R14: 0000000000000011 R15: 00007f0c75dfd9e0
+Aug 19 12:25:46 shalem kernel:  </TASK>
+Aug 19 12:25:46 shalem kernel: 
+                               Showing all locks held in the system:
+Aug 19 12:25:46 shalem kernel: 1 lock held by rcu_tasks_kthre/11:
+Aug 19 12:25:46 shalem kernel:  #0: ffffffff86168820 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:25:46 shalem kernel: 1 lock held by rcu_tasks_rude_/12:
+Aug 19 12:25:46 shalem kernel:  #0: ffffffff86168560 (rcu_tasks_rude.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:25:46 shalem kernel: 1 lock held by rcu_tasks_trace/13:
+Aug 19 12:25:46 shalem kernel:  #0: ffffffff86168260 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:25:46 shalem kernel: 1 lock held by khungtaskd/100:
+Aug 19 12:25:46 shalem kernel:  #0: ffffffff86169320 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x15/0x16b
+Aug 19 12:25:46 shalem kernel: 4 locks held by kworker/0:3/305:
+Aug 19 12:25:46 shalem kernel:  #0: ffff8ac180051748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:25:46 shalem kernel:  #1: ffffa78dc4007e78 ((work_completion)(&ap->scsi_rescan_task)){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:25:46 shalem kernel:  #2: ffff8ac18ba840a8 (&ap->scsi_scan_mutex){+.+.}-{3:3}, at: ata_scsi_dev_rescan+0x32/0x110
+Aug 19 12:25:46 shalem kernel:  #3: ffff8ac1909b5390 (&dev->mutex){....}-{3:3}, at: scsi_rescan_device+0x24/0x90
+Aug 19 12:25:46 shalem kernel: 1 lock held by LCDd/2542:
+Aug 19 12:25:46 shalem kernel:  #0: ffffffff8635a578 (minors_rwsem){++++}-{3:3}, at: hidraw_write+0x1e/0x50
+Aug 19 12:25:46 shalem kernel: 
+Aug 19 12:25:46 shalem kernel: =============================================
+
+
+Aug 19 12:27:49 shalem kernel: INFO: task kworker/0:3:305 blocked for more than 245 seconds.
+Aug 19 12:27:49 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:27:49 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:27:49 shalem kernel: task:kworker/0:3     state:D stack:13008 pid:  305 ppid:     2 flags:0x00004000
+Aug 19 12:27:49 shalem kernel: Workqueue: events ata_scsi_dev_rescan
+Aug 19 12:27:49 shalem kernel: Call Trace:
+Aug 19 12:27:49 shalem kernel:  <TASK>
+Aug 19 12:27:49 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:27:49 shalem kernel:  ? mark_held_locks+0x50/0x80
+Aug 19 12:27:49 shalem kernel:  ? _raw_spin_unlock_irq+0x24/0x50
+Aug 19 12:27:49 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:27:49 shalem kernel:  blk_mq_freeze_queue_wait+0x57/0x90
+Aug 19 12:27:49 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:27:49 shalem kernel:  disk_clear_zone_settings+0x19/0xa0
+Aug 19 12:27:49 shalem kernel:  sd_revalidate_disk.isra.0+0x1660/0x2c60
+Aug 19 12:27:49 shalem kernel:  ? slab_free_freelist_hook.constprop.0+0x11b/0x160
+Aug 19 12:27:49 shalem kernel:  ? scsi_rescan_device+0x2c/0x90
+Aug 19 12:27:49 shalem kernel:  scsi_rescan_device+0x77/0x90
+Aug 19 12:27:49 shalem kernel:  ata_scsi_dev_rescan+0x9d/0x110
+Aug 19 12:27:49 shalem kernel:  process_one_work+0x2a0/0x600
+Aug 19 12:27:49 shalem kernel:  worker_thread+0x4f/0x3a0
+Aug 19 12:27:49 shalem kernel:  ? process_one_work+0x600/0x600
+Aug 19 12:27:49 shalem kernel:  kthread+0xf5/0x120
+Aug 19 12:27:49 shalem kernel:  ? kthread_complete_and_exit+0x20/0x20
+Aug 19 12:27:49 shalem kernel:  ret_from_fork+0x22/0x30
+Aug 19 12:27:49 shalem kernel:  </TASK>
+Aug 19 12:27:49 shalem kernel: INFO: task smartd:2557 blocked for more than 245 seconds.
+Aug 19 12:27:49 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:27:49 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:27:49 shalem kernel: task:smartd          state:D stack:13000 pid: 2557 ppid:     1 flags:0x00000002
+Aug 19 12:27:49 shalem kernel: Call Trace:
+Aug 19 12:27:49 shalem kernel:  <TASK>
+Aug 19 12:27:49 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:27:49 shalem kernel:  ? lock_release+0x14f/0x460
+Aug 19 12:27:49 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x30/0x60
+Aug 19 12:27:49 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x40/0x60
+Aug 19 12:27:49 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:27:49 shalem kernel:  blk_queue_enter+0xe5/0x190
+Aug 19 12:27:49 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:27:49 shalem kernel:  blk_mq_alloc_request+0x50/0xb0
+Aug 19 12:27:49 shalem kernel:  scsi_alloc_request+0xb/0x30
+Aug 19 12:27:49 shalem kernel:  sg_io+0x6b/0x390
+Aug 19 12:27:49 shalem kernel:  ? _copy_from_user+0x83/0xa0
+Aug 19 12:27:49 shalem kernel:  ? get_sg_io_hdr+0x26/0xb0
+Aug 19 12:27:49 shalem kernel:  scsi_ioctl+0x44c/0x960
+Aug 19 12:27:49 shalem kernel:  ? scsi_ioctl_block_when_processing_errors+0x45/0x50
+Aug 19 12:27:49 shalem kernel:  blkdev_ioctl+0x143/0x2c0
+Aug 19 12:27:49 shalem kernel:  __x64_sys_ioctl+0x90/0xd0
+Aug 19 12:27:49 shalem kernel:  do_syscall_64+0x5b/0x80
+Aug 19 12:27:49 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:27:49 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:27:49 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:27:49 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:27:49 shalem kernel:  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Aug 19 12:27:49 shalem kernel: RIP: 0033:0x7f9641245cdf
+Aug 19 12:27:49 shalem kernel: RSP: 002b:00007ffc73d257d0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+Aug 19 12:27:49 shalem kernel: RAX: ffffffffffffffda RBX: 00007ffc73d25ad0 RCX: 00007f9641245cdf
+Aug 19 12:27:49 shalem kernel: RDX: 00007ffc73d25840 RSI: 0000000000002285 RDI: 0000000000000003
+Aug 19 12:27:49 shalem kernel: RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+Aug 19 12:27:49 shalem kernel: R10: 000000000000003c R11: 0000000000000246 R12: 00007ffc73d25c50
+Aug 19 12:27:49 shalem kernel: R13: 0000000000000001 R14: 0000000000000000 R15: 000055fbff0abd10
+Aug 19 12:27:49 shalem kernel:  </TASK>
+Aug 19 12:27:49 shalem kernel: INFO: task pool-udisksd:9404 blocked for more than 245 seconds.
+Aug 19 12:27:49 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:27:49 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:27:49 shalem kernel: task:pool-udisksd    state:D stack:14624 pid: 9404 ppid:     1 flags:0x00000002
+Aug 19 12:27:49 shalem kernel: Call Trace:
+Aug 19 12:27:49 shalem kernel:  <TASK>
+Aug 19 12:27:49 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:27:49 shalem kernel:  ? lock_release+0x14f/0x460
+Aug 19 12:27:49 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x30/0x60
+Aug 19 12:27:49 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x40/0x60
+Aug 19 12:27:49 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:27:49 shalem kernel:  blk_queue_enter+0xe5/0x190
+Aug 19 12:27:49 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:27:49 shalem kernel:  blk_mq_alloc_request+0x50/0xb0
+Aug 19 12:27:49 shalem kernel:  scsi_alloc_request+0xb/0x30
+Aug 19 12:27:49 shalem kernel:  sg_io+0x6b/0x390
+Aug 19 12:27:49 shalem kernel:  ? _copy_from_user+0x83/0xa0
+Aug 19 12:27:49 shalem kernel:  ? get_sg_io_hdr+0x26/0xb0
+Aug 19 12:27:49 shalem kernel:  scsi_ioctl+0x44c/0x960
+Aug 19 12:27:49 shalem kernel:  ? scsi_ioctl_block_when_processing_errors+0x45/0x50
+Aug 19 12:27:49 shalem kernel:  blkdev_ioctl+0x143/0x2c0
+Aug 19 12:27:49 shalem kernel:  __x64_sys_ioctl+0x90/0xd0
+Aug 19 12:27:49 shalem kernel:  do_syscall_64+0x5b/0x80
+Aug 19 12:27:49 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:27:49 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:27:49 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:27:49 shalem kernel:  ? ret_from_fork+0x15/0x30
+Aug 19 12:27:49 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:27:49 shalem kernel:  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Aug 19 12:27:49 shalem kernel: RIP: 0033:0x7f0c77065cdf
+Aug 19 12:27:49 shalem kernel: RSP: 002b:00007f0c75dfd7f0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+Aug 19 12:27:49 shalem kernel: RAX: ffffffffffffffda RBX: 00007f0c75dfda00 RCX: 00007f0c77065cdf
+Aug 19 12:27:49 shalem kernel: RDX: 00007f0c75dfd860 RSI: 0000000000002285 RDI: 0000000000000011
+Aug 19 12:27:49 shalem kernel: RBP: 0000000000001388 R08: 00007f0c75dfd9e0 R09: 00007f0c75dfe550
+Aug 19 12:27:49 shalem kernel: R10: 00007f0c75dfd960 R11: 0000000000000246 R12: 00007f0c75dfdb70
+Aug 19 12:27:49 shalem kernel: R13: 0000000000000000 R14: 0000000000000011 R15: 00007f0c75dfd9e0
+Aug 19 12:27:49 shalem kernel:  </TASK>
+Aug 19 12:27:49 shalem kernel: 
+                               Showing all locks held in the system:
+Aug 19 12:27:49 shalem kernel: 1 lock held by rcu_tasks_kthre/11:
+Aug 19 12:27:49 shalem kernel:  #0: ffffffff86168820 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:27:49 shalem kernel: 1 lock held by rcu_tasks_rude_/12:
+Aug 19 12:27:49 shalem kernel:  #0: ffffffff86168560 (rcu_tasks_rude.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:27:49 shalem kernel: 1 lock held by rcu_tasks_trace/13:
+Aug 19 12:27:49 shalem kernel:  #0: ffffffff86168260 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:27:49 shalem kernel: 1 lock held by khungtaskd/100:
+Aug 19 12:27:49 shalem kernel:  #0: ffffffff86169320 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x15/0x16b
+Aug 19 12:27:49 shalem kernel: 4 locks held by kworker/0:3/305:
+Aug 19 12:27:49 shalem kernel:  #0: ffff8ac180051748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:27:49 shalem kernel:  #1: ffffa78dc4007e78 ((work_completion)(&ap->scsi_rescan_task)){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:27:49 shalem kernel:  #2: ffff8ac18ba840a8 (&ap->scsi_scan_mutex){+.+.}-{3:3}, at: ata_scsi_dev_rescan+0x32/0x110
+Aug 19 12:27:49 shalem kernel:  #3: ffff8ac1909b5390 (&dev->mutex){....}-{3:3}, at: scsi_rescan_device+0x24/0x90
+Aug 19 12:27:49 shalem kernel: 1 lock held by systemd-journal/2096:
+Aug 19 12:27:49 shalem kernel: 1 lock held by LCDd/2542:
+Aug 19 12:27:49 shalem kernel:  #0: ffffffff8635a578 (minors_rwsem){++++}-{3:3}, at: hidraw_write+0x1e/0x50
+Aug 19 12:27:49 shalem kernel: 
+Aug 19 12:27:49 shalem kernel: =============================================
+
+
+Aug 19 12:29:51 shalem kernel: INFO: task kworker/0:3:305 blocked for more than 368 seconds.
+Aug 19 12:29:51 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:29:51 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:29:51 shalem kernel: task:kworker/0:3     state:D stack:13008 pid:  305 ppid:     2 flags:0x00004000
+Aug 19 12:29:51 shalem kernel: Workqueue: events ata_scsi_dev_rescan
+Aug 19 12:29:51 shalem kernel: Call Trace:
+Aug 19 12:29:51 shalem kernel:  <TASK>
+Aug 19 12:29:51 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:29:51 shalem kernel:  ? mark_held_locks+0x50/0x80
+Aug 19 12:29:51 shalem kernel:  ? _raw_spin_unlock_irq+0x24/0x50
+Aug 19 12:29:51 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:29:51 shalem kernel:  blk_mq_freeze_queue_wait+0x57/0x90
+Aug 19 12:29:51 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:29:51 shalem kernel:  disk_clear_zone_settings+0x19/0xa0
+Aug 19 12:29:51 shalem kernel:  sd_revalidate_disk.isra.0+0x1660/0x2c60
+Aug 19 12:29:51 shalem kernel:  ? slab_free_freelist_hook.constprop.0+0x11b/0x160
+Aug 19 12:29:51 shalem kernel:  ? scsi_rescan_device+0x2c/0x90
+Aug 19 12:29:51 shalem kernel:  scsi_rescan_device+0x77/0x90
+Aug 19 12:29:51 shalem kernel:  ata_scsi_dev_rescan+0x9d/0x110
+Aug 19 12:29:51 shalem kernel:  process_one_work+0x2a0/0x600
+Aug 19 12:29:51 shalem kernel:  worker_thread+0x4f/0x3a0
+Aug 19 12:29:51 shalem kernel:  ? process_one_work+0x600/0x600
+Aug 19 12:29:51 shalem kernel:  kthread+0xf5/0x120
+Aug 19 12:29:51 shalem kernel:  ? kthread_complete_and_exit+0x20/0x20
+Aug 19 12:29:51 shalem kernel:  ret_from_fork+0x22/0x30
+Aug 19 12:29:51 shalem kernel:  </TASK>
+Aug 19 12:29:51 shalem kernel: INFO: task smartd:2557 blocked for more than 368 seconds.
+Aug 19 12:29:51 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:29:51 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:29:51 shalem kernel: task:smartd          state:D stack:13000 pid: 2557 ppid:     1 flags:0x00000002
+Aug 19 12:29:51 shalem kernel: Call Trace:
+Aug 19 12:29:51 shalem kernel:  <TASK>
+Aug 19 12:29:51 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:29:51 shalem kernel:  ? lock_release+0x14f/0x460
+Aug 19 12:29:51 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x30/0x60
+Aug 19 12:29:51 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x40/0x60
+Aug 19 12:29:51 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:29:51 shalem kernel:  blk_queue_enter+0xe5/0x190
+Aug 19 12:29:51 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:29:51 shalem kernel:  blk_mq_alloc_request+0x50/0xb0
+Aug 19 12:29:51 shalem kernel:  scsi_alloc_request+0xb/0x30
+Aug 19 12:29:51 shalem kernel:  sg_io+0x6b/0x390
+Aug 19 12:29:51 shalem kernel:  ? _copy_from_user+0x83/0xa0
+Aug 19 12:29:51 shalem kernel:  ? get_sg_io_hdr+0x26/0xb0
+Aug 19 12:29:51 shalem kernel:  scsi_ioctl+0x44c/0x960
+Aug 19 12:29:51 shalem kernel:  ? scsi_ioctl_block_when_processing_errors+0x45/0x50
+Aug 19 12:29:51 shalem kernel:  blkdev_ioctl+0x143/0x2c0
+Aug 19 12:29:51 shalem kernel:  __x64_sys_ioctl+0x90/0xd0
+Aug 19 12:29:51 shalem kernel:  do_syscall_64+0x5b/0x80
+Aug 19 12:29:51 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:29:51 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:29:51 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:29:51 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:29:51 shalem kernel:  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Aug 19 12:29:51 shalem kernel: RIP: 0033:0x7f9641245cdf
+Aug 19 12:29:51 shalem kernel: RSP: 002b:00007ffc73d257d0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+Aug 19 12:29:51 shalem kernel: RAX: ffffffffffffffda RBX: 00007ffc73d25ad0 RCX: 00007f9641245cdf
+Aug 19 12:29:51 shalem kernel: RDX: 00007ffc73d25840 RSI: 0000000000002285 RDI: 0000000000000003
+Aug 19 12:29:51 shalem kernel: RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+Aug 19 12:29:51 shalem kernel: R10: 000000000000003c R11: 0000000000000246 R12: 00007ffc73d25c50
+Aug 19 12:29:51 shalem kernel: R13: 0000000000000001 R14: 0000000000000000 R15: 000055fbff0abd10
+Aug 19 12:29:51 shalem kernel:  </TASK>
+Aug 19 12:29:51 shalem kernel: INFO: task pool-udisksd:9404 blocked for more than 368 seconds.
+Aug 19 12:29:51 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:29:51 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:29:51 shalem kernel: task:pool-udisksd    state:D stack:14624 pid: 9404 ppid:     1 flags:0x00000002
+Aug 19 12:29:51 shalem kernel: Call Trace:
+Aug 19 12:29:51 shalem kernel:  <TASK>
+Aug 19 12:29:51 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:29:51 shalem kernel:  ? lock_release+0x14f/0x460
+Aug 19 12:29:51 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x30/0x60
+Aug 19 12:29:51 shalem kernel:  ? _raw_spin_unlock_irqrestore+0x40/0x60
+Aug 19 12:29:51 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:29:51 shalem kernel:  blk_queue_enter+0xe5/0x190
+Aug 19 12:29:51 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:29:51 shalem kernel:  blk_mq_alloc_request+0x50/0xb0
+Aug 19 12:29:51 shalem kernel:  scsi_alloc_request+0xb/0x30
+Aug 19 12:29:51 shalem kernel:  sg_io+0x6b/0x390
+Aug 19 12:29:51 shalem kernel:  ? _copy_from_user+0x83/0xa0
+Aug 19 12:29:51 shalem kernel:  ? get_sg_io_hdr+0x26/0xb0
+Aug 19 12:29:51 shalem kernel:  scsi_ioctl+0x44c/0x960
+Aug 19 12:29:51 shalem kernel:  ? scsi_ioctl_block_when_processing_errors+0x45/0x50
+Aug 19 12:29:51 shalem kernel:  blkdev_ioctl+0x143/0x2c0
+Aug 19 12:29:51 shalem kernel:  __x64_sys_ioctl+0x90/0xd0
+Aug 19 12:29:51 shalem kernel:  do_syscall_64+0x5b/0x80
+Aug 19 12:29:51 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:29:51 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:29:51 shalem kernel:  ? do_syscall_64+0x67/0x80
+Aug 19 12:29:51 shalem kernel:  ? ret_from_fork+0x15/0x30
+Aug 19 12:29:51 shalem kernel:  ? lockdep_hardirqs_on+0x7d/0x100
+Aug 19 12:29:51 shalem kernel:  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Aug 19 12:29:51 shalem kernel: RIP: 0033:0x7f0c77065cdf
+Aug 19 12:29:51 shalem kernel: RSP: 002b:00007f0c75dfd7f0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+Aug 19 12:29:51 shalem kernel: RAX: ffffffffffffffda RBX: 00007f0c75dfda00 RCX: 00007f0c77065cdf
+Aug 19 12:29:51 shalem kernel: RDX: 00007f0c75dfd860 RSI: 0000000000002285 RDI: 0000000000000011
+Aug 19 12:29:51 shalem kernel: RBP: 0000000000001388 R08: 00007f0c75dfd9e0 R09: 00007f0c75dfe550
+Aug 19 12:29:51 shalem kernel: R10: 00007f0c75dfd960 R11: 0000000000000246 R12: 00007f0c75dfdb70
+Aug 19 12:29:51 shalem kernel: R13: 0000000000000000 R14: 0000000000000011 R15: 00007f0c75dfd9e0
+Aug 19 12:29:51 shalem kernel:  </TASK>
+Aug 19 12:29:51 shalem kernel: 
+                               Showing all locks held in the system:
+Aug 19 12:29:51 shalem kernel: 1 lock held by rcu_tasks_kthre/11:
+Aug 19 12:29:51 shalem kernel:  #0: ffffffff86168820 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:29:51 shalem kernel: 1 lock held by rcu_tasks_rude_/12:
+Aug 19 12:29:51 shalem kernel:  #0: ffffffff86168560 (rcu_tasks_rude.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:29:51 shalem kernel: 1 lock held by rcu_tasks_trace/13:
+Aug 19 12:29:51 shalem kernel:  #0: ffffffff86168260 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:29:51 shalem kernel: 1 lock held by khungtaskd/100:
+Aug 19 12:29:51 shalem kernel:  #0: ffffffff86169320 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x15/0x16b
+Aug 19 12:29:51 shalem kernel: 4 locks held by kworker/0:3/305:
+Aug 19 12:29:51 shalem kernel:  #0: ffff8ac180051748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:29:51 shalem kernel:  #1: ffffa78dc4007e78 ((work_completion)(&ap->scsi_rescan_task)){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:29:51 shalem kernel:  #2: ffff8ac18ba840a8 (&ap->scsi_scan_mutex){+.+.}-{3:3}, at: ata_scsi_dev_rescan+0x32/0x110
+Aug 19 12:29:51 shalem kernel:  #3: ffff8ac1909b5390 (&dev->mutex){....}-{3:3}, at: scsi_rescan_device+0x24/0x90
+Aug 19 12:29:51 shalem kernel: 1 lock held by LCDd/2542:
+Aug 19 12:29:51 shalem kernel:  #0: ffffffff8635a578 (minors_rwsem){++++}-{3:3}, at: hidraw_write+0x1e/0x50
+Aug 19 12:29:51 shalem kernel: 
+Aug 19 12:29:51 shalem kernel: =============================================
+
+
+Aug 19 12:31:54 shalem kernel: INFO: task kworker/0:3:305 blocked for more than 491 seconds.
+Aug 19 12:31:54 shalem kernel:       Tainted: G        W  OE     -------  ---  6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
+Aug 19 12:31:54 shalem kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Aug 19 12:31:54 shalem kernel: task:kworker/0:3     state:D stack:13008 pid:  305 ppid:     2 flags:0x00004000
+Aug 19 12:31:54 shalem kernel: Workqueue: events ata_scsi_dev_rescan
+Aug 19 12:31:54 shalem kernel: Call Trace:
+Aug 19 12:31:54 shalem kernel:  <TASK>
+Aug 19 12:31:54 shalem kernel:  __schedule+0x47f/0x16d0
+Aug 19 12:31:54 shalem kernel:  ? mark_held_locks+0x50/0x80
+Aug 19 12:31:54 shalem kernel:  ? _raw_spin_unlock_irq+0x24/0x50
+Aug 19 12:31:54 shalem kernel:  schedule+0x5d/0xe0
+Aug 19 12:31:54 shalem kernel:  blk_mq_freeze_queue_wait+0x57/0x90
+Aug 19 12:31:54 shalem kernel:  ? prepare_to_wait_exclusive+0xd0/0xd0
+Aug 19 12:31:54 shalem kernel:  disk_clear_zone_settings+0x19/0xa0
+Aug 19 12:31:54 shalem kernel:  sd_revalidate_disk.isra.0+0x1660/0x2c60
+Aug 19 12:31:54 shalem kernel:  ? slab_free_freelist_hook.constprop.0+0x11b/0x160
+Aug 19 12:31:54 shalem kernel:  ? scsi_rescan_device+0x2c/0x90
+Aug 19 12:31:54 shalem kernel:  scsi_rescan_device+0x77/0x90
+Aug 19 12:31:54 shalem kernel:  ata_scsi_dev_rescan+0x9d/0x110
+Aug 19 12:31:54 shalem kernel:  process_one_work+0x2a0/0x600
+Aug 19 12:31:54 shalem kernel:  worker_thread+0x4f/0x3a0
+Aug 19 12:31:54 shalem kernel:  ? process_one_work+0x600/0x600
+Aug 19 12:31:54 shalem kernel:  kthread+0xf5/0x120
+Aug 19 12:31:54 shalem kernel:  ? kthread_complete_and_exit+0x20/0x20
+Aug 19 12:31:54 shalem kernel:  ret_from_fork+0x22/0x30
+Aug 19 12:31:54 shalem kernel:  </TASK>
+Aug 19 12:31:54 shalem kernel: 
+                               Showing all locks held in the system:
+Aug 19 12:31:54 shalem kernel: 1 lock held by rcu_tasks_kthre/11:
+Aug 19 12:31:54 shalem kernel:  #0: ffffffff86168820 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:31:54 shalem kernel: 1 lock held by rcu_tasks_rude_/12:
+Aug 19 12:31:54 shalem kernel:  #0: ffffffff86168560 (rcu_tasks_rude.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:31:54 shalem kernel: 1 lock held by rcu_tasks_trace/13:
+Aug 19 12:31:54 shalem kernel:  #0: ffffffff86168260 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x2b/0x3e0
+Aug 19 12:31:54 shalem kernel: 1 lock held by khungtaskd/100:
+Aug 19 12:31:54 shalem kernel:  #0: ffffffff86169320 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x15/0x16b
+Aug 19 12:31:54 shalem kernel: 4 locks held by kworker/0:3/305:
+Aug 19 12:31:54 shalem kernel:  #0: ffff8ac180051748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:31:54 shalem kernel:  #1: ffffa78dc4007e78 ((work_completion)(&ap->scsi_rescan_task)){+.+.}-{0:0}, at: process_one_work+0x20b/0x600
+Aug 19 12:31:54 shalem kernel:  #2: ffff8ac18ba840a8 (&ap->scsi_scan_mutex){+.+.}-{3:3}, at: ata_scsi_dev_rescan+0x32/0x110
+Aug 19 12:31:54 shalem kernel:  #3: ffff8ac1909b5390 (&dev->mutex){....}-{3:3}, at: scsi_rescan_device+0x24/0x90
+Aug 19 12:31:54 shalem kernel: 1 lock held by gfx/688:
+Aug 19 12:31:54 shalem kernel:  #0: ffffffff86169320 (rcu_read_lock){....}-{1:2}, at: raw_spin_rq_lock_nested+0x24/0x80
+Aug 19 12:31:54 shalem kernel: 1 lock held by LCDd/2542:
+Aug 19 12:31:54 shalem kernel:  #0: ffffffff8635a578 (minors_rwsem){++++}-{3:3}, at: hidraw_write+0x1e/0x50
+Aug 19 12:31:54 shalem kernel: 2 locks held by kworker/u64:119/8383:
+Aug 19 12:31:54 shalem kernel: 1 lock held by WRRende~ckend#1/9586:
+Aug 19 12:31:54 shalem kernel: 
+Aug 19 12:31:54 shalem kernel: =============================================
+
+Sorry for not being able to write a better bug-report but I don't have
+the time to dive into this deeper. I hope this report is enough for
+someone to have a clue what is going on.
+
+Regards,
+
+Hans
 
