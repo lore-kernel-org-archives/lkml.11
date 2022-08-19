@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBDEC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 692FDC32792
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353924AbiHSQp3 (ORCPT
+        id S1354063AbiHSQpq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        Fri, 19 Aug 2022 12:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353625AbiHSQme (ORCPT
+        with ESMTP id S1353681AbiHSQmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:42:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFB31296FC;
-        Fri, 19 Aug 2022 09:10:57 -0700 (PDT)
+        Fri, 19 Aug 2022 12:42:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A17111C2D;
+        Fri, 19 Aug 2022 09:11:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC7B7B825D3;
-        Fri, 19 Aug 2022 16:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02A3EC433C1;
-        Fri, 19 Aug 2022 16:09:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08A4B61831;
+        Fri, 19 Aug 2022 16:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07248C433C1;
+        Fri, 19 Aug 2022 16:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925377;
-        bh=6n9zMhMjibMnoxJAvUJgUwuv1vcKVmaFXEhQLCNELsU=;
+        s=korg; t=1660925469;
+        bh=76ZGQOkP+oP8gNAIe5MRNKdqBKfUTNnmdCtMPmtdlHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DF/PDYCnBflffzhreUAq9/W1adzn//rhs65SSiqE6EaUzfQgBuzjaluXMHWDqp3rz
-         fZ0F4VVQ2dEs88tPGcgi22jAVUup6owTeWEMW3LRG2Q8O2FudcRc9IvNDJ8hlBRjrW
-         HfpwQRUpsi1YUUStxIkw9UaeEgHV/9durJIIw9FE=
+        b=eXqkimD3VdpHHR6xucdS6C37/lyPRQCe4n/iUZkL57brpA6RgHXM9RIIIlZX0+BD/
+         cj8za4Hpoc0HeY6XR9IbKkNe4kG0kMzx/nw4N7WT5Ud3Bu8ZKuNpoCICsstW2E3z1E
+         PV5xW0oHgRyl6cgGFbPI//EEX7gStoEn+kf/CHZc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 443/545] scsi: qla2xxx: Fix losing FCP-2 targets on long port disable with I/Os
-Date:   Fri, 19 Aug 2022 17:43:33 +0200
-Message-Id: <20220819153849.261964005@linuxfoundation.org>
+        stable@vger.kernel.org, Sean V Kelley <sean.v.kelley@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 473/545] PCI/AER: Write AER Capability only when we control it
+Date:   Fri, 19 Aug 2022 17:44:03 +0200
+Message-Id: <20220819153850.566901888@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,66 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Sean V Kelley <sean.v.kelley@intel.com>
 
-commit 2416ccd3815ba1613e10a6da0a24ef21acfe5633 upstream.
+[ Upstream commit 50cc18fcd3053fb46a09db5a39e6516e9560f765 ]
 
-FCP-2 devices were not coming back online once they were lost, login
-retries exhausted, and then came back up.  Fix this by accepting RSCN when
-the device is not online.
+If an OS has not been granted AER control via _OSC, it should not make
+changes to PCI_ERR_ROOT_COMMAND and PCI_ERR_ROOT_STATUS related registers.
+Per section 4.5.1 of the System Firmware Intermediary (SFI) _OSC and DPC
+Updates ECN [1], this bit also covers these aspects of the PCI Express
+Advanced Error Reporting. Based on the above and earlier discussion [2],
+make the following changes:
 
-Link: https://lore.kernel.org/r/20220616053508.27186-10-njavali@marvell.com
-Fixes: 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
-Cc: stable@vger.kernel.org
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add a check for the native case (i.e., AER control via _OSC)
+
+Note that the previous "clear, reset, enable" order suggests that the reset
+might cause errors that we should ignore. After this commit, those errors
+(if any) will remain logged in the PCI_ERR_ROOT_STATUS register.
+
+[1] System Firmware Intermediary (SFI) _OSC and DPC Updates ECN, Feb 24,
+    2020, affecting PCI Firmware Specification, Rev. 3.2
+    https://members.pcisig.com/wg/PCI-SIG/document/14076
+[2] https://lore.kernel.org/linux-pci/20201020162820.GA370938@bjorn-Precision-5520/
+
+Link: https://lore.kernel.org/r/20201121001036.8560-2-sean.v.kelley@intel.com
+Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
+Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/pci/pcie/aer.c | 29 ++++++++++++++++-------------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1734,7 +1734,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
- 	case RSCN_PORT_ADDR:
- 		fcport = qla2x00_find_fcport_by_nportid(vha, &ea->id, 1);
- 		if (fcport) {
--			if (fcport->flags & FCF_FCP2_DEVICE) {
-+			if (fcport->flags & FCF_FCP2_DEVICE &&
-+			    atomic_read(&fcport->state) == FCS_ONLINE) {
- 				ql_dbg(ql_dbg_disc, vha, 0x2115,
- 				       "Delaying session delete for FCP2 portid=%06x %8phC ",
- 					fcport->d_id.b24, fcport->port_name);
-@@ -1746,7 +1747,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
- 		break;
- 	case RSCN_AREA_ADDR:
- 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
--			if (fcport->flags & FCF_FCP2_DEVICE)
-+			if (fcport->flags & FCF_FCP2_DEVICE &&
-+			    atomic_read(&fcport->state) == FCS_ONLINE)
- 				continue;
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index c40546eeecb3..61f78b20b0cf 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -1366,23 +1366,26 @@ static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
+ 	u32 reg32;
+ 	int rc;
  
- 			if ((ea->id.b24 & 0xffff00) == (fcport->d_id.b24 & 0xffff00)) {
-@@ -1757,7 +1759,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
- 		break;
- 	case RSCN_DOM_ADDR:
- 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
--			if (fcport->flags & FCF_FCP2_DEVICE)
-+			if (fcport->flags & FCF_FCP2_DEVICE &&
-+			    atomic_read(&fcport->state) == FCS_ONLINE)
- 				continue;
+-
+-	/* Disable Root's interrupt in response to error messages */
+-	pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
+-	reg32 &= ~ROOT_PORT_INTR_ON_MESG_MASK;
+-	pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
++	if (pcie_aer_is_native(dev)) {
++		/* Disable Root's interrupt in response to error messages */
++		pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
++		reg32 &= ~ROOT_PORT_INTR_ON_MESG_MASK;
++		pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
++	}
  
- 			if ((ea->id.b24 & 0xff0000) == (fcport->d_id.b24 & 0xff0000)) {
-@@ -1769,7 +1772,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
- 	case RSCN_FAB_ADDR:
- 	default:
- 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
--			if (fcport->flags & FCF_FCP2_DEVICE)
-+			if (fcport->flags & FCF_FCP2_DEVICE &&
-+			    atomic_read(&fcport->state) == FCS_ONLINE)
- 				continue;
+ 	rc = pci_bus_error_reset(dev);
+-	pci_info(dev, "Root Port link has been reset\n");
++	pci_info(dev, "Root Port link has been reset (%d)\n", rc);
  
- 			fcport->scan_needed = 1;
+-	/* Clear Root Error Status */
+-	pci_read_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, &reg32);
+-	pci_write_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, reg32);
++	if (pcie_aer_is_native(dev)) {
++		/* Clear Root Error Status */
++		pci_read_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, &reg32);
++		pci_write_config_dword(dev, aer + PCI_ERR_ROOT_STATUS, reg32);
+ 
+-	/* Enable Root Port's interrupt in response to error messages */
+-	pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
+-	reg32 |= ROOT_PORT_INTR_ON_MESG_MASK;
+-	pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
++		/* Enable Root Port's interrupt in response to error messages */
++		pci_read_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
++		reg32 |= ROOT_PORT_INTR_ON_MESG_MASK;
++		pci_write_config_dword(dev, aer + PCI_ERR_ROOT_COMMAND, reg32);
++	}
+ 
+ 	return rc ? PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_RECOVERED;
+ }
+-- 
+2.35.1
+
 
 
