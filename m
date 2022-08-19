@@ -2,152 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE5DC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AD5C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349156AbiHSOXc (ORCPT
+        id S1349190AbiHSOYO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
+        Fri, 19 Aug 2022 10:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349054AbiHSOX2 (ORCPT
+        with ESMTP id S1348619AbiHSOYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:23:28 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B75F0E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:23:25 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id q184so4936809oif.1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:23:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=GeLnTCDFozOnXarr5bsZrfQIyPlCPObES/tRUVDlMRc=;
-        b=IbwerQM0KnuUKiPyH/DPcbFtlKeEJfs0qV5K8pmupSDXM20bKdKC/7T6BZ0OI6q4zD
-         +A2SFVIeHsHe54HLk/oLFri82rFSZzybkEN5oRx1vhn26Bwf3Me43ddfkIcoWRz48Acq
-         ruxEFs+P/ctwTDRaiCMlCwa3y2gjDYcvz6AYbrpzoKiqdUpV2toNmiqLHSlra3iSdcPw
-         PC6a0yOmfdGgjCVc9Kpj0+uN90FFCdaClXunjqOtQHDMugV7QG7DUCjWVT2u+auhtqwC
-         d4g6hBzTjKvWXNAJJy0dlH1uplQ01IgKk/zKWvBXCEs9CS+olmJRuB7U3ZWnRAzX6Kzq
-         z/fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=GeLnTCDFozOnXarr5bsZrfQIyPlCPObES/tRUVDlMRc=;
-        b=dnbCGGnVQuZb4aVYoo8yeIv+ZCKDSTJYAVDhvWTqAScUoyscp8WTXhECDn3mLMiK/K
-         qPVsrQYcIEyEL0ciW1ti0PIyYJeZj/LlQ89IBd+urzRROT2fiWb6zxfqJkCFRKCgPpEo
-         wtHTZYt1dXFzfLSrB1w+S6N5Yxi+7IayKZIdn+hALpcOLf4RAmcaACddxSadRgG0DVci
-         4O2guHPqHV35vKjqI+2n4UFEc7ml3Jf1pXB5td/yrkTfLCFTNeOB57P6FFv8wIPsg0yv
-         TMHxMP0GaoDKaBlmGglqNQdxS3O5EM9uCnuZ91kwng8tYgY6YYM8vKh1RO/9W4LTtGpa
-         3r5w==
-X-Gm-Message-State: ACgBeo3Z7jT0t21xJMMploQIVg6ITqPUxjUjCMrBXt9fwyC7Ixg3ngCX
-        mdSaDnsNg5Xiksi9vwAbq6WtsA==
-X-Google-Smtp-Source: AA6agR7N4ZbVcrXI4TmUZ/vYDXKsf2Lwa4ZiSJrBA5m0Qsfe0WDJTWC8qV+uhj11vk4/fyxaSM0aVw==
-X-Received: by 2002:a05:6808:1412:b0:343:345:98ac with SMTP id w18-20020a056808141200b00343034598acmr3320053oiv.288.1660919004509;
-        Fri, 19 Aug 2022 07:23:24 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id l6-20020a056870f14600b000f2455e26acsm1303283oac.48.2022.08.19.07.23.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 07:23:23 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <andersson@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: Update Bjorn's email address
-Date:   Fri, 19 Aug 2022 07:25:49 -0700
-Message-Id: <20220819142549.1605081-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Fri, 19 Aug 2022 10:24:12 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624CC543CD
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:24:10 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4M8PBv6Glkz9shj;
+        Fri, 19 Aug 2022 16:24:07 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ChCBnivmaNgi; Fri, 19 Aug 2022 16:24:07 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4M8PBv5P0wz9shX;
+        Fri, 19 Aug 2022 16:24:07 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A75B48B77C;
+        Fri, 19 Aug 2022 16:24:07 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id w2O8PlFKf6bu; Fri, 19 Aug 2022 16:24:07 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.4.22])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 703118B763;
+        Fri, 19 Aug 2022 16:24:07 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 27JENsXx2215266
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 16:23:54 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 27JENqoV2215261;
+        Fri, 19 Aug 2022 16:23:52 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc: Remove stale declarations in mmu_decl.h
+Date:   Fri, 19 Aug 2022 16:23:43 +0200
+Message-Id: <a821e8397dd56b8177ecc04966d3b3a7c4bda6d4.1660919016.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1660919021; l=1797; s=20211009; h=from:subject:message-id; bh=ag94Vf3Rakr/RdZ8kJ3Gqco/qFeLKkcm0jj7TlBwhgw=; b=fjdYcgWvTLMismOARo/EcN529KzFHN+iYs9G6CEfVCDkxC2P04zrgQG53TcPY+PjRcn5L7+v6Qd6 j5ukViuQAoHjgZuthJOwG0wHnCd3jz/3KGx3uuLY+p/z6QYVIry3
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the email address for Bjorn's maintainer entries and fill in
-.mailmap accordingly.
+rtas_size and rtas_data are not used anymore since at least
+commit 7c8c6b9776fb ("powerpc: Merge lmb.c and make MM initialization
+use it.")
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Remove them.
+
+Since commit 4b74a35fc7e9 ("powerpc/32s: Make Hash var static")
+the forward declaration of struct hash_pte is unneeded.
+
+Remove it.
+
+__initial_memory_limit_addr was removed by commit e63075a3c937 ("memblock:
+Introduce default allocation limit and use it to replace explicit ones")
+
+Remove the declaration.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- .mailmap    |  3 +++
- MAINTAINERS | 12 ++++++------
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ arch/powerpc/include/asm/setup.h | 1 -
+ arch/powerpc/mm/mmu_decl.h       | 4 ----
+ 2 files changed, 5 deletions(-)
 
-diff --git a/.mailmap b/.mailmap
-index 23241db2647f..521ecdb8aa67 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -71,6 +71,9 @@ Ben M Cahill <ben.m.cahill@intel.com>
- Ben Widawsky <bwidawsk@kernel.org> <ben@bwidawsk.net>
- Ben Widawsky <bwidawsk@kernel.org> <ben.widawsky@intel.com>
- Ben Widawsky <bwidawsk@kernel.org> <benjamin.widawsky@intel.com>
-+Bjorn Andersson <andersson@kernel.org> <bjorn@kryo.se>
-+Bjorn Andersson <andersson@kernel.org> <bjorn.andersson@linaro.org>
-+Bjorn Andersson <andersson@kernel.org> <bjorn.andersson@sonymobile.com>
- Björn Steinbrink <B.Steinbrink@gmx.de>
- Björn Töpel <bjorn@kernel.org> <bjorn.topel@gmail.com>
- Björn Töpel <bjorn@kernel.org> <bjorn.topel@intel.com>
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f69a1c5212bd..766037b30806 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2579,7 +2579,7 @@ W:	http://www.armlinux.org.uk/
+diff --git a/arch/powerpc/include/asm/setup.h b/arch/powerpc/include/asm/setup.h
+index d8c28902cf59..dd461b2c825c 100644
+--- a/arch/powerpc/include/asm/setup.h
++++ b/arch/powerpc/include/asm/setup.h
+@@ -7,7 +7,6 @@
+ #ifndef __ASSEMBLY__
+ extern void ppc_printk_progress(char *s, unsigned short hex);
  
- ARM/QUALCOMM SUPPORT
- M:	Andy Gross <agross@kernel.org>
--M:	Bjorn Andersson <bjorn.andersson@linaro.org>
-+M:	Bjorn Andersson <andersson@kernel.org>
- R:	Konrad Dybcio <konrad.dybcio@somainline.org>
- L:	linux-arm-msm@vger.kernel.org
- S:	Maintained
-@@ -8941,7 +8941,7 @@ F:	include/linux/hw_random.h
+-extern unsigned int rtas_data;
+ extern unsigned long long memory_limit;
+ extern void *zalloc_maybe_bootmem(size_t size, gfp_t mask);
  
- HARDWARE SPINLOCK CORE
- M:	Ohad Ben-Cohen <ohad@wizery.com>
--M:	Bjorn Andersson <bjorn.andersson@linaro.org>
-+M:	Bjorn Andersson <andersson@kernel.org>
- R:	Baolin Wang <baolin.wang7@gmail.com>
- L:	linux-remoteproc@vger.kernel.org
- S:	Maintained
-@@ -16134,7 +16134,7 @@ F:	drivers/gpio/gpio-sama5d2-piobu.c
- F:	drivers/pinctrl/pinctrl-at91*
+diff --git a/arch/powerpc/mm/mmu_decl.h b/arch/powerpc/mm/mmu_decl.h
+index 229c72e49198..8f5afad1b6af 100644
+--- a/arch/powerpc/mm/mmu_decl.h
++++ b/arch/powerpc/mm/mmu_decl.h
+@@ -92,15 +92,11 @@ extern void mapin_ram(void);
+ extern void setbat(int index, unsigned long virt, phys_addr_t phys,
+ 		   unsigned int size, pgprot_t prot);
  
- PIN CONTROLLER - QUALCOMM
--M:	Bjorn Andersson <bjorn.andersson@linaro.org>
-+M:	Bjorn Andersson <andersson@kernel.org>
- L:	linux-arm-msm@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/pinctrl/qcom,*.txt
-@@ -16827,7 +16827,7 @@ F:	Documentation/devicetree/bindings/media/*camss*
- F:	drivers/media/platform/qcom/camss/
+-extern unsigned int rtas_data, rtas_size;
+-
+-struct hash_pte;
+ extern u8 early_hash[];
  
- QUALCOMM CLOCK DRIVERS
--M:	Bjorn Andersson <bjorn.andersson@linaro.org>
-+M:	Bjorn Andersson <andersson@kernel.org>
- L:	linux-arm-msm@vger.kernel.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git
-@@ -17316,7 +17316,7 @@ S:	Supported
- F:	fs/reiserfs/
+ #endif /* CONFIG_PPC32 */
  
- REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM
--M:	Bjorn Andersson <bjorn.andersson@linaro.org>
-+M:	Bjorn Andersson <andersson@kernel.org>
- M:	Mathieu Poirier <mathieu.poirier@linaro.org>
- L:	linux-remoteproc@vger.kernel.org
- S:	Maintained
-@@ -17329,7 +17329,7 @@ F:	include/linux/remoteproc.h
- F:	include/linux/remoteproc/
- 
- REMOTE PROCESSOR MESSAGING (RPMSG) SUBSYSTEM
--M:	Bjorn Andersson <bjorn.andersson@linaro.org>
-+M:	Bjorn Andersson <andersson@kernel.org>
- M:	Mathieu Poirier <mathieu.poirier@linaro.org>
- L:	linux-remoteproc@vger.kernel.org
- S:	Maintained
+ extern unsigned long __max_low_memory;
+-extern phys_addr_t __initial_memory_limit_addr;
+ extern phys_addr_t total_memory;
+ extern phys_addr_t total_lowmem;
+ extern phys_addr_t memstart_addr;
 -- 
-2.35.1
+2.37.1
 
