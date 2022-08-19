@@ -2,104 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BD7C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 01:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B2CC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 02:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245068AbiHSB7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 21:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
+        id S244595AbiHSCFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 22:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236015AbiHSB7O (ORCPT
+        with ESMTP id S242075AbiHSCFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 21:59:14 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC80DC5E5
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:59:13 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-11cab7d7e0fso2619286fac.6
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 18:59:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=8i/BbB4J7UUtTj6wSLyEKQkjCMyvGUUhOuI103/eQ5w=;
-        b=61/an7qQdUYzdYH7mxmknmmDqxAxFZI1I10rEvVJ3eCj2u2oHrR655doSL9QRLZf2E
-         na6v1nEWzpa4ts/qZsNEU/fF3Gtng5HhoF3EEWJE07pWUnkOIFnVXgsRxhMW3QZPfvAS
-         p5Q36U5QlRfwVO0arZrKkpzUoQoOGpjK6q0BQCn47RILME9IDH1jafFXgI+el1NauJJi
-         XwUx0sjdRWzC1Kz9B0ef3wtoJ8XxUwARqyC98DAdC+2KPFktvr2Ndlam+klgSESQTfJ1
-         rvBhi1AJPeoVtdT2dnR3RCLZwmg0zgiRnjUSt/5OHCVlVicgvvNq9EipvZbQEgwKJMf0
-         VDMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=8i/BbB4J7UUtTj6wSLyEKQkjCMyvGUUhOuI103/eQ5w=;
-        b=dBQKatQ11zP/cR2JIDvFOtiUhgCxwXd5VY6Oq+qLuv0fVJjO5jo1fNZ07cEAVmalha
-         Ply0Q/q5xyvSnfYqqNDn7CaiMJ0+5lTL8mldJVWFxewcsxPzWKDCCnmhtBJ0J5yrVCzh
-         CNaQMMmAjYmXebMk9M91tpCMSa4Giv3weHu7zrJ1A+Jfp/wvYtvYB34yI43WYieFmdps
-         xlB6r1FwiZJ/3xW4LgWfz67h0hflkPs1pN6amURXOw5mrzx2ZvuGllffH2pWsUAc/bxq
-         djMhiM1IsDOf21RhLPVCX7hBvEPBxpI+e81fZfRZfY+gPf9HPU7RVBQAiHE3ULLMhxcl
-         Si9w==
-X-Gm-Message-State: ACgBeo0ljxGHDVYmaO9Ybhp5tuA/6BixO4+3ja8ZEF9AAXs6OXUIJX+M
-        a8AS6piaSVAH07o+zBhfte8BkMDbTT78a0VXMepl
-X-Google-Smtp-Source: AA6agR6kEYeSYs2Z59mtKeOewc1h/y2cKu34mOm7T2T0but7zsV0d3frO+g7bdSbunlx3YYSY6UFw4IsyyFdaajI2EQ=
-X-Received: by 2002:a05:6870:a78d:b0:11c:437b:ec70 with SMTP id
- x13-20020a056870a78d00b0011c437bec70mr2821970oao.136.1660874353259; Thu, 18
- Aug 2022 18:59:13 -0700 (PDT)
+        Thu, 18 Aug 2022 22:05:13 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40662D1E33
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 19:05:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660874712; x=1692410712;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/NRHceWCW4BRZifLcKURaP+NP/AZlWzPRnfQFh6oyGU=;
+  b=E39rX0vuvIXFtUvklck1ekVnTSwy/X72GyBXL1bH8piEclvSk2b6VtX0
+   I+I0Pg0IawCJdOyICJTZwhfHj8oVd5A0ysGNzB/qdos/Z20zuVYLdkNeo
+   6dQjrxAB72V+0ldyc7DOWyseELwQtw/pUoq4bJlEdnL+Qiu4cMecQOL5M
+   bzsWT9gKHHWuO36fVWehcMVXXxfZ4EfmOudvHGQOewKe5wXsCm+e2k6js
+   ZvosVNOADZTPlfUV73LHio6hAdspejoezwxRUDDc6luUU8yp62tCqF5Qk
+   aUI/kR4UXoJeSw4YG6FISHFH9PNALWHUgKHCBuff/dqBKzp9JVNMcowrh
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="273305872"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="273305872"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 19:05:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="608043055"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga002.jf.intel.com with ESMTP; 18 Aug 2022 19:05:08 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     iommu@lists.linux.dev
+Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Lennert Buytenhek <buytenh@wantstofly.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Fix lockdep splat due to klist iteration in atomic context
+Date:   Fri, 19 Aug 2022 09:59:49 +0800
+Message-Id: <20220819015949.4795-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAEHB248ft0LFUQDHNtB9NN_D3F=12Jndh13Ue=LokajXNhMk5Q@mail.gmail.com>
-In-Reply-To: <CAEHB248ft0LFUQDHNtB9NN_D3F=12Jndh13Ue=LokajXNhMk5Q@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 18 Aug 2022 21:59:02 -0400
-Message-ID: <CAHC9VhTXNPWBDRoPcz-Jw=f+NNAEhxbh-ySc56CUd-ZbuboW5w@mail.gmail.com>
-Subject: Re: data-race in audit_log_start / audit_receive
-To:     abhishek.shah@columbia.edu
-Cc:     eparis@redhat.com, linux-audit@redhat.com,
-        linux-kernel@vger.kernel.org, Gabriel Ryan <gabe@cs.columbia.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 6:23 PM Abhishek Shah
-<abhishek.shah@columbia.edu> wrote:
-> Hi all,
->
-> We found a data race involving the audit_cmd_mutex.owner variable. We think this bug is concerning because audit_ctl_owner_current is used at a location that controls the scheduling of tasks shown here. Please let us know what you think.
->
-> Thanks!
->
-> -----------------Report----------------------
->
-> write to 0xffffffff881d0710 of 8 bytes by task 6541 on cpu 0:
->  audit_ctl_lock kernel/audit.c:237 [inline]
+With CONFIG_INTEL_IOMMU_DEBUGFS enabled, below lockdep splat are seen
+when an I/O fault occurs on a machine with an Intel IOMMU in it.
 
-...
+ DMAR: DRHD: handling fault status reg 3
+ DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0
+       [fault reason 0x05] PTE Write access is not set
+ DMAR: Dump dmar0 table entries for IOVA 0x0
+ DMAR: root entry: 0x0000000127f42001
+ DMAR: context entry: hi 0x0000000000001502, low 0x000000012d8ab001
+ ================================
+ WARNING: inconsistent lock state
+ 5.20.0-0.rc0.20220812git7ebfc85e2cd7.10.fc38.x86_64 #1 Not tainted
+ --------------------------------
+ inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W} usage.
+ rngd/1006 [HC1[1]:SC0[0]:HE0:SE1] takes:
+ ff177021416f2d78 (&k->k_lock){?.+.}-{2:2}, at: klist_next+0x1b/0x160
+ {HARDIRQ-ON-W} state was registered at:
+   lock_acquire+0xce/0x2d0
+   _raw_spin_lock+0x33/0x80
+   klist_add_tail+0x46/0x80
+   bus_add_device+0xee/0x150
+   device_add+0x39d/0x9a0
+   add_memory_block+0x108/0x1d0
+   memory_dev_init+0xe1/0x117
+   driver_init+0x43/0x4d
+   kernel_init_freeable+0x1c2/0x2cc
+   kernel_init+0x16/0x140
+   ret_from_fork+0x1f/0x30
+ irq event stamp: 7812
+ hardirqs last  enabled at (7811): [<ffffffff85000e86>] asm_sysvec_apic_timer_interrupt+0x16/0x20
+ hardirqs last disabled at (7812): [<ffffffff84f16894>] irqentry_enter+0x54/0x60
+ softirqs last  enabled at (7794): [<ffffffff840ff669>] __irq_exit_rcu+0xf9/0x170
+ softirqs last disabled at (7787): [<ffffffff840ff669>] __irq_exit_rcu+0xf9/0x170
 
-> read to 0xffffffff881d0710 of 8 bytes by task 6542 on cpu 1:
->  audit_ctl_owner_current kernel/audit.c:258 [inline]
+The klist iterator functions using spin_*lock_irq*() but the klist
+insertion functions using spin_*lock(), combined with the Intel DMAR
+IOMMU driver iterating over klists from atomic (hardirq) context, where
+pci_get_domain_bus_and_slot() calls into bus_find_device() which iterates
+over klists.
 
-Yes, technically there is a race condition if/when an auditd instance
-is registering itself the exact same time as another task is
-attempting to log an audit record via audit_log_start().  The risk
-being that a *very* limited number of audit records could be
-mis-handled with respect to their queue priority and that is it; no
-records would be lost or misplaced.  Correcting this would likely
-involve a more complex locking scheme[1] or a rather severe
-performance penalty due to an additional lock in the audit_log_start()
-code path.  There may be some value in modifying
-audit_ctl_owner_current() to use READ_ONCE(), but it isn't clear to me
-that this would significantly improve things or have no impact on
-performance.
+As currently there's no plan to fix the klist to make it safe to use in
+atomic context, this fixes the lockdep splat by avoid calling
+pci_get_domain_bus_and_slot() in the hardirq context.
 
-Have you noticed any serious problems on your system due to this?  If
-you have a reproducer which shows actual harm on the system could you
-please share that?
+Fixes: 8ac0b64b9735 ("iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()")
+Reported-by: Lennert Buytenhek <buytenh@wantstofly.org>
+Link: https://lore.kernel.org/linux-iommu/Yvo2dfpEh%2FWC+Wrr@wantstofly.org/
+Link: https://lore.kernel.org/linux-iommu/YvyBdPwrTuHHbn5X@wantstofly.org/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 47 +++++++++++++++----------------------
+ 1 file changed, 19 insertions(+), 28 deletions(-)
 
-[1] The obvious choice would be to move to a RCU based scheme, but
-even that doesn't totally solve the problem as there would still be a
-window where some tasks would have an "old" value.  It might actually
-end up extending the race window on large multi-core systems due to
-the time needed for all of the critical sections to complete.
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index f12046f4b9aa..795529feac01 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -794,32 +794,11 @@ static void free_context_table(struct intel_iommu *iommu)
+ }
+ 
+ #ifdef CONFIG_DMAR_DEBUG
+-static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u8 devfn)
++static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
++			 u8 bus, u8 devfn, struct dma_pte *parent, int level)
+ {
+-	struct device_domain_info *info;
+-	struct dma_pte *parent, *pte;
+-	struct dmar_domain *domain;
+-	struct pci_dev *pdev;
+-	int offset, level;
+-
+-	pdev = pci_get_domain_bus_and_slot(iommu->segment, bus, devfn);
+-	if (!pdev)
+-		return;
+-
+-	info = dev_iommu_priv_get(&pdev->dev);
+-	if (!info || !info->domain) {
+-		pr_info("device [%02x:%02x.%d] not probed\n",
+-			bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+-		return;
+-	}
+-
+-	domain = info->domain;
+-	level = agaw_to_level(domain->agaw);
+-	parent = domain->pgd;
+-	if (!parent) {
+-		pr_info("no page table setup\n");
+-		return;
+-	}
++	struct dma_pte *pte;
++	int offset;
+ 
+ 	while (1) {
+ 		offset = pfn_level_offset(pfn, level);
+@@ -846,9 +825,10 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 	struct pasid_entry *entries, *pte;
+ 	struct context_entry *ctx_entry;
+ 	struct root_entry *rt_entry;
++	int i, dir_index, index, level;
+ 	u8 devfn = source_id & 0xff;
+ 	u8 bus = source_id >> 8;
+-	int i, dir_index, index;
++	struct dma_pte *pgtable;
+ 
+ 	pr_info("Dump %s table entries for IOVA 0x%llx\n", iommu->name, addr);
+ 
+@@ -876,8 +856,11 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 		ctx_entry->hi, ctx_entry->lo);
+ 
+ 	/* legacy mode does not require PASID entries */
+-	if (!sm_supported(iommu))
++	if (!sm_supported(iommu)) {
++		level = agaw_to_level(ctx_entry->hi & 7);
++		pgtable = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+ 		goto pgtable_walk;
++	}
+ 
+ 	/* get the pointer to pasid directory entry */
+ 	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+@@ -904,8 +887,16 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
+ 		pr_info("pasid table entry[%d]: 0x%016llx\n", i, pte->val[i]);
+ 
++	if (pasid_pte_get_pgtt(pte) == PASID_ENTRY_PGTT_FL_ONLY) {
++		level = pte->val[2] & BIT_ULL(2) ? 5 : 4;
++		pgtable = phys_to_virt(pte->val[2] & VTD_PAGE_MASK);
++	} else {
++		level = agaw_to_level((pte->val[0] >> 2) & 0x7);
++		pgtable = phys_to_virt(pte->val[0] & VTD_PAGE_MASK);
++	}
++
+ pgtable_walk:
+-	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn);
++	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn, pgtable, level);
+ }
+ #endif
+ 
 -- 
-paul-moore.com
+2.25.1
+
