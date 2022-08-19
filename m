@@ -2,65 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26583C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4E5C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349594AbiHSOkj (ORCPT
+        id S1349280AbiHSOne (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
+        Fri, 19 Aug 2022 10:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348130AbiHSOki (ORCPT
+        with ESMTP id S1349038AbiHSOn2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:40:38 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630BD63F2
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:40:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1I0ucBeVMEoFMs08MGdWuNXxLKgAd1wwapOXMbYJBGM=; b=Lp0Xe4G93z22RYX+k/BjoxutXK
-        vNMCaJ8mn1KoMCRp/fu67KSKSEoKyGmNLryl7W3gjxoNfc98xGPzv3W3zEWgcFK2n1Ktpd0Wp/bSh
-        zqBgTHfVLx60ViZKgCSWLBTmiLOQBfURHuC4NcTooIODNTWOgx+pwhb11GmfXHg3D1uQxKI+ho01X
-        h9+LJC/STfZeoFYanwlSYfdDI6SB4rZf47keQuUv4kQFmbzrJMCGAh4wHmYqGFhfqJ3sz9lf2xq5I
-        mYXON3kJaFjLtY/q7NrdBPnNnuOmQ3KHjVaRbuzmF7NYVOmb1cnkboZw5+0buSW8Zsjex7rEEpPlr
-        uq/USRTg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oP39H-00BEwT-Rp; Fri, 19 Aug 2022 14:39:00 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C40539801A1; Fri, 19 Aug 2022 16:38:57 +0200 (CEST)
-Date:   Fri, 19 Aug 2022 16:38:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     kan.liang@linux.intel.com
-Cc:     acme@redhat.com, linux-kernel@vger.kernel.org,
-        alexander.shishkin@linux.intel.com, ak@linux.intel.com,
-        Jianfeng Gao <jianfeng.gao@intel.com>
-Subject: Re: [RESEND PATCH] perf/x86/intel: Fix unchecked MSR access error
- for Alder Lake N
-Message-ID: <Yv+ggf6PRjL8Eio1@worktop.programming.kicks-ass.net>
-References: <20220818181530.2355034-1-kan.liang@linux.intel.com>
+        Fri, 19 Aug 2022 10:43:28 -0400
+X-Greylist: delayed 523 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 19 Aug 2022 07:43:27 PDT
+Received: from relay.agrotis.com.ua (relay.agrotis.com.ua [62.149.18.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7684A116
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:43:27 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by relay.agrotis.com.ua (Postfix) with ESMTP id EE5859F6599
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:34:16 +0300 (EEST)
+Received: from relay.agrotis.com.ua ([127.0.0.1])
+        by localhost (relay.agrotis.com.ua [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id z25vBjBGk29E for <linux-kernel@vger.kernel.org>;
+        Fri, 19 Aug 2022 17:34:16 +0300 (EEST)
+Received: from localhost (localhost [127.0.0.1])
+        by relay.agrotis.com.ua (Postfix) with ESMTP id 2C8739F6602
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:32:42 +0300 (EEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 relay.agrotis.com.ua 2C8739F6602
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=agrotis.com.ua;
+        s=D5B2AEA4-8E74-11E8-B208-83899F929C4F; t=1660919562;
+        bh=Nkl32Qmze6O9kxkLbYz0wAZsZN/2Han+n63K0lrKcIA=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=rvTwQYd3ciFzo0ycE3DSkVI0G9b6v74BqtPCsrZKug8+V94v3atsrP0vFT2IVRNKK
+         Lof/pnVqnr2n+2AA3ViajmvqA6SSMReuQqPxLOzOsB/N2Jy9Jzz19Rss5MJVUmYsCB
+         boO7fYyvMEZ7rdSGFxm969Y+cNWdHRorx81leUs8=
+X-Virus-Scanned: amavisd-new at agrotis.com.ua
+Received: from relay.agrotis.com.ua ([127.0.0.1])
+        by localhost (relay.agrotis.com.ua [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id d9TOw7EeHOAb for <linux-kernel@vger.kernel.org>;
+        Fri, 19 Aug 2022 17:32:42 +0300 (EEST)
+Received: from [192.168.0.105] (unknown [36.37.199.109])
+        by relay.agrotis.com.ua (Postfix) with ESMTPSA id 9648B9F67DD
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:30:38 +0300 (EEST)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818181530.2355034-1-kan.liang@linux.intel.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Representative
+To:     linux-kernel@vger.kernel.org
+From:   "visokos" <visokos@agrotis.com.ua>
+Date:   Fri, 19 Aug 2022 22:30:35 +0800
+Reply-To: f.liwei@outlook.com
+Message-Id: <20220819143038.9648B9F67DD@relay.agrotis.com.ua>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 11:15:30AM -0700, kan.liang@linux.intel.com wrote:
-> From: Kan Liang <kan.liang@linux.intel.com>
-> 
-> For some Alder Lake N machine, the below unchecked MSR access error may be
-> triggered.
-> 
-> [ 0.088017] rcu: Hierarchical SRCU implementation.
-> [ 0.088017] unchecked MSR access error: WRMSR to 0x38f (tried to write
-> 0x0001000f0000003f) at rIP: 0xffffffffb5684de8 (native_write_msr+0x8/0x30)
-> [ 0.088017] Call Trace:
-> [ 0.088017] <TASK>
-> [ 0.088017] __intel_pmu_enable_all.constprop.46+0x4a/0xa0
+Hello
 
-FWIW, I seem to get the same error when booting KVM on my ADL. I'm
-fairly sure the whole CPUID vs vCPU thing is a trainwreck.
+We would like to request your services as an Account receivable Representat=
+ive in your region on a part time basis.Let me know if you are interested i=
+n job description and commission.
+
+Kind Regards
+Liwei Fu
+Managing Executive Officer
+Nidec Copal Corporation
