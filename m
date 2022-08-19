@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6B6C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E38C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351832AbiHSUtf (ORCPT
+        id S1351851AbiHSUti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 16:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48502 "EHLO
+        Fri, 19 Aug 2022 16:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351462AbiHSUtN (ORCPT
+        with ESMTP id S1351575AbiHSUtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 16:49:13 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7130EB5A6C
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:49:09 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id w18so4100399qki.8
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:49:09 -0700 (PDT)
+        Fri, 19 Aug 2022 16:49:18 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA603B7EFE
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:49:10 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id c5so3774658qvt.11
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:49:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=lNcAKp5cSys1fGk6soAVHXz41xwD4aYJNt/yj8PSxMI=;
-        b=Z5NOz5b17X7HfkZzJOmU+TrGq9k9v7VqVqcjqBeqEHaupK1YDx6isupnlPQZnlKJoi
-         skTSm0cZbcoldx2512oPzJfb96Sm6Fkf1RxlhKRuXxSIirY3obUi/9OvTDhEwlG2rkKx
-         olPINJzLr6/w6LKuFHLL3aqhVPRvriUt+oUZg=
+        bh=426wMCJsiGTV85lu42+JZPwXusrFJ9i/3rufNlqDqLk=;
+        b=Zf0eIAQmZsTmWin33rp1mlGvqcz+m2sPSmH3oNADGIUsHoKnVEiH9xF+s1jb97xCiO
+         J0knpuEdwimm+Im9nIVGP8G1P07+5I5eQ4bVNmf31TVrIf/xuxXXdRoMQb4VbNXObzhg
+         F0hJq6xJ6mrwwj1riPdTvVJnS5dP5eb/go24s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=lNcAKp5cSys1fGk6soAVHXz41xwD4aYJNt/yj8PSxMI=;
-        b=IeUCF5xiVLRH1WlwcY0gc4v3AtnFQr1WNCwdjK+Y8y4k5eKVhTVf49nQ2w9EzN1cj1
-         v3/M+RIMCO/HDzZVQKnN06RtvcyWDBEolNQ7Y8oIDNO+aQmn2WhhQT6oBuxjcZDx14j2
-         uEBIPOchwhof12ajwxFBunNxs0euTp24vrxLQn/FKypIx/fyU7x8Ft99v7R9L5VFEXcK
-         QocGk9W0nNlCDoc/DZm8cCfLb/spJxwX8AEVYJ0jfjINjeYGA/tVSu41+pfcDZf0XatV
-         igNDvuV97nP2pCyLWbfQrbhBvh8kpvAClEzbKNK7GyckZz3442Z9VFcmLyDr//evNJXL
-         m/0w==
-X-Gm-Message-State: ACgBeo0VXmyId8XMozZ9XUX42zrCqmsIUgpWy/ukXDRcN19QmMkPi9De
-        TeOGEjCX+sjxJanYse1BRChPv1f+fwx6hQ==
-X-Google-Smtp-Source: AA6agR4Y+4r+MWffKODfxjuKe49rH8feKDIxdpzllu1ok0KwILGkckGGq/CDgdkru5b5f1OB/tBAUg==
-X-Received: by 2002:a05:620a:290d:b0:6b5:cecc:1cab with SMTP id m13-20020a05620a290d00b006b5cecc1cabmr6185949qkp.465.1660942148400;
-        Fri, 19 Aug 2022 13:49:08 -0700 (PDT)
+        bh=426wMCJsiGTV85lu42+JZPwXusrFJ9i/3rufNlqDqLk=;
+        b=mMyVFdDCT8F6vZJyClGOdiuZgPDgOh0ksdrusEPm6zffqTcsThLqr3qOYgcqlgEr79
+         SzdS3OlLtTnSOFAsXDePhPvkcNQZ5+L7JTrVVGoYgX9Q6lyylps5g5baiaEawduR4b7O
+         UuShLF7aWDlMyBWo9Y8CDmnMWYHb/jJdC20RO096SKCPaGkqrtUEieSE8pbuLr99SfEj
+         1Ux7Ho2zanAvzrqB3J+BNI0pSwBGdcayx/Dq+CGovuHU5iTT0N49N2SWobQsthmcSWSx
+         Vggcj6mQM5YbFF6J2eZnKpMBtY3ozyCVEy2WNHw3fVZvKyrvw1cBGacJTOXlNfggly+K
+         VJaw==
+X-Gm-Message-State: ACgBeo3aBH93KjlK8DLOhvZWAo1NnxjYCkS2Ug5Tx28RGa7mGAzdpB+X
+        4s171fI9OnRDFbYFQcyvDT6l/Orz5MFJdw==
+X-Google-Smtp-Source: AA6agR7qo/QCjvB0s7nlcW0al3t3YGKIAXKBT2yMiuCoFuRaib2mPR2/P0JockuC08afh9Yxq6314A==
+X-Received: by 2002:a0c:8ecc:0:b0:473:2fa4:df7c with SMTP id y12-20020a0c8ecc000000b004732fa4df7cmr7842135qvb.55.1660942149873;
+        Fri, 19 Aug 2022 13:49:09 -0700 (PDT)
 Received: from joelboxx.c.googlers.com.com (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
-        by smtp.gmail.com with ESMTPSA id x8-20020a05620a258800b006b9a89d408csm4377123qko.100.2022.08.19.13.49.07
+        by smtp.gmail.com with ESMTPSA id x8-20020a05620a258800b006b9a89d408csm4377123qko.100.2022.08.19.13.49.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 13:49:07 -0700 (PDT)
+        Fri, 19 Aug 2022 13:49:09 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
@@ -56,9 +56,9 @@ Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
         Frederic Weisbecker <frederic@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         rcu <rcu@vger.kernel.org>, vineeth@bitbyteword.org
-Subject: [PATCH v4 06/14] debug: Toggle lazy at runtime and change flush jiffies
-Date:   Fri, 19 Aug 2022 20:48:49 +0000
-Message-Id: <20220819204857.3066329-7-joel@joelfernandes.org>
+Subject: [PATCH v4 08/14] security: Move call_rcu() to call_rcu_lazy()
+Date:   Fri, 19 Aug 2022 20:48:51 +0000
+Message-Id: <20220819204857.3066329-9-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
 In-Reply-To: <20220819204857.3066329-1-joel@joelfernandes.org>
 References: <20220819204857.3066329-1-joel@joelfernandes.org>
@@ -68,95 +68,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable/Disable this feature by writing 1 or 0 /proc/sys/vm/rcu_lazy.
-
-Change value of /proc/sys/vm/rcu_lazy_jiffies to change max duration before
-flush.
-
-Do not merge, only for debug for reviewers.
+This is required to prevent callbacks triggering RCU machinery too
+quickly and too often, which adds more power to the system.
 
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- include/linux/sched/sysctl.h |  3 +++
- kernel/rcu/tree_nocb.h       |  9 +++++++++
- kernel/sysctl.c              | 17 +++++++++++++++++
- 3 files changed, 29 insertions(+)
+ security/security.c    | 2 +-
+ security/selinux/avc.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-index 2cd928f15df6..54610f9cd962 100644
---- a/include/linux/sched/sysctl.h
-+++ b/include/linux/sched/sysctl.h
-@@ -14,6 +14,9 @@ extern unsigned long sysctl_hung_task_timeout_secs;
- enum { sysctl_hung_task_timeout_secs = 0 };
- #endif
+diff --git a/security/security.c b/security/security.c
+index ea7163c20751..d76f4951b2bd 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -1053,7 +1053,7 @@ void security_inode_free(struct inode *inode)
+ 	 * The inode will be freed after the RCU grace period too.
+ 	 */
+ 	if (inode->i_security)
+-		call_rcu((struct rcu_head *)inode->i_security,
++		call_rcu_lazy((struct rcu_head *)inode->i_security,
+ 				inode_free_by_rcu);
+ }
  
-+extern unsigned int sysctl_rcu_lazy;
-+extern unsigned int sysctl_rcu_lazy_jiffies;
-+
- enum sched_tunable_scaling {
- 	SCHED_TUNABLESCALING_NONE,
- 	SCHED_TUNABLESCALING_LOG,
-diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index edb4e59dbf38..16621b32de46 100644
---- a/kernel/rcu/tree_nocb.h
-+++ b/kernel/rcu/tree_nocb.h
-@@ -266,6 +266,9 @@ static bool wake_nocb_gp(struct rcu_data *rdp, bool force)
- #define LAZY_FLUSH_JIFFIES (10 * HZ)
- unsigned long jiffies_till_flush = LAZY_FLUSH_JIFFIES;
+diff --git a/security/selinux/avc.c b/security/selinux/avc.c
+index 9a43af0ebd7d..381f046d820f 100644
+--- a/security/selinux/avc.c
++++ b/security/selinux/avc.c
+@@ -442,7 +442,7 @@ static void avc_node_free(struct rcu_head *rhead)
+ static void avc_node_delete(struct selinux_avc *avc, struct avc_node *node)
+ {
+ 	hlist_del_rcu(&node->list);
+-	call_rcu(&node->rhead, avc_node_free);
++	call_rcu_lazy(&node->rhead, avc_node_free);
+ 	atomic_dec(&avc->avc_cache.active_nodes);
+ }
  
-+unsigned int sysctl_rcu_lazy_jiffies = LAZY_FLUSH_JIFFIES;
-+unsigned int sysctl_rcu_lazy = 1;
-+
- #ifdef CONFIG_RCU_LAZY
- // To be called only from test code.
- void rcu_lazy_set_jiffies_till_flush(unsigned long jif)
-@@ -292,6 +295,9 @@ static void wake_nocb_gp_defer(struct rcu_data *rdp, int waketype,
- 	struct rcu_data *rdp_gp = rdp->nocb_gp_rdp;
- 	unsigned long mod_jif = 0;
- 
-+	/* debug: not for merge */
-+	rcu_lazy_set_jiffies_till_flush(sysctl_rcu_lazy_jiffies);
-+
- 	raw_spin_lock_irqsave(&rdp_gp->nocb_gp_lock, flags);
- 
- 	/*
-@@ -697,6 +703,9 @@ static void nocb_gp_wait(struct rcu_data *my_rdp)
- 	unsigned long wait_gp_seq = 0; // Suppress "use uninitialized" warning.
- 	bool wasempty = false;
- 
-+	/* debug: not for merge */
-+	rcu_lazy_set_jiffies_till_flush(sysctl_rcu_lazy_jiffies);
-+
- 	/*
- 	 * Each pass through the following loop checks for CBs and for the
- 	 * nearest grace period (if any) to wait for next.  The CB kthreads
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index b00f92df0af5..bbe25d635dc0 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -2450,6 +2450,23 @@ static struct ctl_table vm_table[] = {
- 		.extra2		= SYSCTL_ONE,
- 	},
- #endif
-+#ifdef CONFIG_RCU_LAZY
-+	{
-+		.procname	= "rcu_lazy",
-+		.data		= &sysctl_rcu_lazy,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
-+	{
-+		.procname	= "rcu_lazy_jiffies",
-+		.data		= &sysctl_rcu_lazy_jiffies,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
-+#endif
-+
- 	{ }
- };
+@@ -458,7 +458,7 @@ static void avc_node_replace(struct selinux_avc *avc,
+ 			     struct avc_node *new, struct avc_node *old)
+ {
+ 	hlist_replace_rcu(&old->list, &new->list);
+-	call_rcu(&old->rhead, avc_node_free);
++	call_rcu_lazy(&old->rhead, avc_node_free);
+ 	atomic_dec(&avc->avc_cache.active_nodes);
+ }
  
 -- 
 2.37.2.609.g9ff673ca1a-goog
