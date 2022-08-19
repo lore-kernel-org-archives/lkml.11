@@ -2,94 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1A0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAB1C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347993AbiHSJFq (ORCPT
+        id S1347679AbiHSJFt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34554 "EHLO
+        Fri, 19 Aug 2022 05:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348014AbiHSJFk (ORCPT
+        with ESMTP id S1347983AbiHSJFf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:05:40 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A77F23E7
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:05:36 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M8G3C4tRZzlWPm;
-        Fri, 19 Aug 2022 17:01:59 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 17:05:06 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
- 2022 17:05:05 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     Muchun Song <songmuchun@bytedance.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH -next v2] bootmem: remove the vmemmap pages from kmemleak in put_page_bootmem
-Date:   Fri, 19 Aug 2022 17:40:05 +0800
-Message-ID: <20220819094005.2928241-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 05:05:35 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46672F074A
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:05:34 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id q7so1643033lfu.5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:05:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=Lv2fWdRF99e7CpwgYLWA5Mtojc32Wbh8AA81DkMthw4=;
+        b=OSGiqt9yFp/YqXKBx4gm2F8C5JxtKpDRqyj2mKp7sWIlRwe+Fh+hasNwc2qRl47Ppw
+         I0GTNSWETzMrFZXfvSCKi1k7ttl2x1/FWvPrs9VFF3u/xg315gfvjd/F9cJD87Gf0oKB
+         rxgEjSMEqcjJVSCcgdApLk2/LNjbnpM4Kfe7rrX5rKBWTHdqsxxnq0ZTHVxbZrQG7Uj9
+         nfTf1I2n/ZqUJGTygLPCTFUNTYVj8sQ/5abcrw1zkK7h0TfvD3lLulpQuZUQET/vl5ix
+         Ve2DVwY0zoVo1krsxTiSN73f0SID8KNQRh6jdUDmLbhoQ+vT6JaFFDHUM8/jBfke43WQ
+         6L5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Lv2fWdRF99e7CpwgYLWA5Mtojc32Wbh8AA81DkMthw4=;
+        b=un+kccp6kBk0Q0dGlybkR0TzljVKGg6PlCz07CRQJD/GZw+aAGsUOylnKfyvKfW5SD
+         QUBNoJl2OASacbAJtAJ2uWjJqO3su+XXV7l4Ld18ZV8Xyx7sim7js9r2HDHXe7mWR5Iv
+         CfjpU/aBj7psAfJKUBpha36RUz3jrvILbU4xog/yKR1XTpnKtk7UrhZd3PXeqIshCUhH
+         5RVl4BEFCZB+pdeT8QkjB2hx1S6VyRS81djCZVuUqbnanhwZcoQ7kwqm8p+Z0YJeD5eo
+         ksI9dsoCobOma1xCnNieATjFbGMXo0cyIwItLiW/aYvNYk5z3ytX/uuj604bTODvMErR
+         w+gA==
+X-Gm-Message-State: ACgBeo2WP9VbGTMNc1GxgOnnar+N9DAoVsm9zh39zveln3NLzsFpuo3B
+        KQfG47VqmFDxRACjE/SJ4oraeA==
+X-Google-Smtp-Source: AA6agR4BD6cmbcbpC+BCZcvzn3RJP06MHPv/v/nVtuxaILQVOTEbitSObHN+inl836TTz+WCde6f7A==
+X-Received: by 2002:a05:6512:1686:b0:491:3199:d407 with SMTP id bu6-20020a056512168600b004913199d407mr2203181lfb.476.1660899932670;
+        Fri, 19 Aug 2022 02:05:32 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
+        by smtp.gmail.com with ESMTPSA id x7-20020a056512078700b00492c627cab5sm321401lfr.254.2022.08.19.02.05.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 02:05:32 -0700 (PDT)
+Message-ID: <0aba8906-ed30-786e-cff4-6cb70d6e73c5@linaro.org>
+Date:   Fri, 19 Aug 2022 12:05:30 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
+ json-schema
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Sergiu.Moga@microchip.com, lee@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        admin@hifiphile.com, Kavyasree.Kotagiri@microchip.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220817075517.49575-1-sergiu.moga@microchip.com>
+ <20220817075517.49575-3-sergiu.moga@microchip.com>
+ <942accc5-70aa-3bb2-63dd-306a39ee5ea4@linaro.org>
+ <d1aad8ea-3852-f36b-366b-7aa67d2dd9d5@microchip.com>
+ <ec86420c-a210-facd-ab3a-5baf84a736f3@linaro.org>
+In-Reply-To: <ec86420c-a210-facd-ab3a-5baf84a736f3@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The vmemmap pages is marked by kmemleak when allocated from memblock.
-Remove it from kmemleak when free the page. Otherwise, when we reuse the
-page, kmemleak may report such an error and then stop working.
+On 19/08/2022 11:47, Krzysztof Kozlowski wrote:
+> On 19/08/2022 11:38, Sergiu.Moga@microchip.com wrote:
+>> On 18.08.2022 11:39, Krzysztof Kozlowski wrote:
+>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>>
+>>> On 17/08/2022 10:55, Sergiu Moga wrote:
+>>>> Convert at91 USART DT Binding for Atmel/Microchip SoCs to
+>>>> json-schema format.
+>>>>
+>>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+>>>> ---
+>>>>   .../bindings/mfd/atmel,at91-usart.yaml        | 190 ++++++++++++++++++
+>>>>   .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
+>>>>   2 files changed, 190 insertions(+), 98 deletions(-)
+>>>>   create mode 100644 Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+>>>>   delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+>>>> new file mode 100644
+>>>> index 000000000000..cf15d73fa1e8
+>>>> --- /dev/null
+>>>> +++ b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+>>> One more thing - I think this should be in serial directory, not mfd,
+>>> even though it includes SPI. MFD is just a Linux naming/wrapper device.
+>>>
+>>> Best regards,
+>>> Krzysztof
+>>
+>> I would rather keep it in this directory, since its corresponding driver 
+>> is also in the mfd directory.
+> 
+> Sorry, but that's poor argument. Driver subsystems match Linux
+> convention, not necessarily hardware type/naming. Bindings directories
+> match hardware. MFD bindings are only for MFD wrapper drivers and this
+> is a serial interface. Not a MFD. You even do not add MFD devices in the
+> driver but add *always one* device depending on serial feature you want.
+> This is not even MFD device but regular platform device with children.
+> 
+> You put it in SoC, though, because all other SoCs store it there...
 
- kmemleak: Cannot insert 0xffff98fb6eab3d40 into the object search tree (overlaps existing)
- kmemleak: Kernel memory leak detector disabled
- kmemleak: Object 0xffff98fb6be00000 (size 335544320):
- kmemleak:   comm "swapper", pid 0, jiffies 4294892296
- kmemleak:   min_count = 0
- kmemleak:   count = 0
- kmemleak:   flags = 0x1
- kmemleak:   checksum = 0
- kmemleak:   backtrace:
+The last one should be:
 
-Fixes: f41f2ed43ca5 (mm: hugetlb: free the vmemmap pages associated with each HugeTLB page)
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- mm/bootmem_info.c | 2 ++
- 1 file changed, 2 insertions(+)
+You could put it in SoC, though, because all other SoCs store it there...
 
-diff --git a/mm/bootmem_info.c b/mm/bootmem_info.c
-index f18a631e7479..b1efebfcf94b 100644
---- a/mm/bootmem_info.c
-+++ b/mm/bootmem_info.c
-@@ -12,6 +12,7 @@
- #include <linux/memblock.h>
- #include <linux/bootmem_info.h>
- #include <linux/memory_hotplug.h>
-+#include <linux/kmemleak.h>
- 
- void get_page_bootmem(unsigned long info, struct page *page, unsigned long type)
- {
-@@ -33,6 +34,7 @@ void put_page_bootmem(struct page *page)
- 		ClearPagePrivate(page);
- 		set_page_private(page, 0);
- 		INIT_LIST_HEAD(&page->lru);
-+		kmemleak_free_part(page_to_virt(page), PAGE_SIZE);
- 		free_reserved_page(page);
- 	}
- }
--- 
-2.25.1
-
+Best regards,
+Krzysztof
