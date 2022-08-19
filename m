@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 601BBC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A5EC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353418AbiHSQh3 (ORCPT
+        id S1353411AbiHSQhj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45142 "EHLO
+        Fri, 19 Aug 2022 12:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353732AbiHSQcb (ORCPT
+        with ESMTP id S1353749AbiHSQcd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:32:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98D1104754;
-        Fri, 19 Aug 2022 09:06:44 -0700 (PDT)
+        Fri, 19 Aug 2022 12:32:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F23410BE1F;
+        Fri, 19 Aug 2022 09:06:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1F9F61199;
-        Fri, 19 Aug 2022 16:06:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFA9CC433C1;
-        Fri, 19 Aug 2022 16:06:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 000D661811;
+        Fri, 19 Aug 2022 16:06:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01905C433D6;
+        Fri, 19 Aug 2022 16:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925203;
-        bh=HzU8pj6Luk/sZdTYeK0EpPAjgSnllH3BA5qgpu/DSpw=;
+        s=korg; t=1660925212;
+        bh=sGAPkWxP+xDyr6Za3OEBFuLkln3k6B7lx6cCJIvfWC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztXhqknW3+gu+j2j6Voo9O63Mkd2Nejmwi2C3ZT9twpxtFZCV4w4ZkwxQHs/Kefm2
-         1VWonOeM3hARBd6RbIwT6vAYjhrVdO1X8sV/7DU/o4kVf/in2xTiEUtTjI8EOKhMTg
-         Ws3IPj+GgGXIH0WneGhp68sto5zTiAemeRkeJ/W0=
+        b=RaJCWdvPRYa/5LSbeUSMW9014EK62rr+zIqN2WkROllQiOVdL+yYgg1PzVen/kWnI
+         hfL1xAwsRFWykihMhSfXNDQ/vrHig0xIjYy17SqfeZQGr1EiderS5gpGuyw8DIgFCe
+         u/tNhnnStLEtiMkUZ8PFzAhXwhD01Nw3S7zfXjlA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        Chao Liu <liuchao@coolpad.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 417/545] powerpc/pci: Prefer PCI domain assignment via DT linux,pci-domain and alias
-Date:   Fri, 19 Aug 2022 17:43:07 +0200
-Message-Id: <20220819153848.088656244@linuxfoundation.org>
+Subject: [PATCH 5.10 420/545] f2fs: fix to remove F2FS_COMPR_FL and tag F2FS_NOCOMP_FL at the same time
+Date:   Fri, 19 Aug 2022 17:43:10 +0200
+Message-Id: <20220819153848.221957251@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,82 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Chao Liu <liuchao@coolpad.com>
 
-[ Upstream commit 0fe1e96fef0a5c53b4c0d1500d356f3906000f81 ]
+[ Upstream commit 8ee236dcaa690d09ca612622e8bc8d09c302021d ]
 
-Other Linux architectures use DT property 'linux,pci-domain' for
-specifying fixed PCI domain of PCI controller specified in Device-Tree.
+If the inode has the compress flag, it will fail to use
+'chattr -c +m' to remove its compress flag and tag no compress flag.
+However, the same command will be successful when executed again,
+as shown below:
 
-And lot of Freescale powerpc boards have defined numbered pci alias in
-Device-Tree for every PCIe controller which number specify preferred PCI
-domain.
+  $ touch foo.txt
+  $ chattr +c foo.txt
+  $ chattr -c +m foo.txt
+  chattr: Invalid argument while setting flags on foo.txt
+  $ chattr -c +m foo.txt
+  $ f2fs_io getflags foo.txt
+  get a flag on foo.txt ret=0, flags=nocompression,inline_data
 
-So prefer usage of DT property 'linux,pci-domain' (via function
-of_get_pci_domain_nr()) and DT pci alias (via function
-of_alias_get_id()) on powerpc architecture for assigning PCI domain to
-PCI controller.
+Fix this by removing some checks in f2fs_setflags_common()
+that do not affect the original logic. I go through all the
+possible scenarios, and the results are as follows. Bold is
+the only thing that has changed.
 
-Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220706102148.5060-2-pali@kernel.org
++---------------+-----------+-----------+----------+
+|               |            file flags            |
++ command       +-----------+-----------+----------+
+|               | no flag   | compr     | nocompr  |
++---------------+-----------+-----------+----------+
+| chattr +c     | compr     | compr     | -EINVAL  |
+| chattr -c     | no flag   | no flag   | nocompr  |
+| chattr +m     | nocompr   | -EINVAL   | nocompr  |
+| chattr -m     | no flag   | compr     | no flag  |
+| chattr +c +m  | -EINVAL   | -EINVAL   | -EINVAL  |
+| chattr +c -m  | compr     | compr     | compr    |
+| chattr -c +m  | nocompr   | *nocompr* | nocompr  |
+| chattr -c -m  | no flag   | no flag   | no flag  |
++---------------+-----------+-----------+----------+
+
+Link: https://lore.kernel.org/linux-f2fs-devel/20220621064833.1079383-1-chaoliu719@gmail.com/
+Fixes: 4c8ff7095bef ("f2fs: support data compression")
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Chao Liu <liuchao@coolpad.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/pci-common.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ fs/f2fs/file.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
-index 7920559a1ca8..7af00a880e16 100644
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -73,16 +73,30 @@ void set_pci_dma_ops(const struct dma_map_ops *dma_ops)
- static int get_phb_number(struct device_node *dn)
- {
- 	int ret, phb_id = -1;
--	u32 prop_32;
- 	u64 prop;
- 
- 	/*
- 	 * Try fixed PHB numbering first, by checking archs and reading
--	 * the respective device-tree properties. Firstly, try powernv by
--	 * reading "ibm,opal-phbid", only present in OPAL environment.
-+	 * the respective device-tree properties. Firstly, try reading
-+	 * standard "linux,pci-domain", then try reading "ibm,opal-phbid"
-+	 * (only present in powernv OPAL environment), then try device-tree
-+	 * alias and as the last try to use lower bits of "reg" property.
- 	 */
--	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
-+	ret = of_get_pci_domain_nr(dn);
-+	if (ret >= 0) {
-+		prop = ret;
-+		ret = 0;
-+	}
-+	if (ret)
-+		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
-+	if (ret)
-+		ret = of_alias_get_id(dn, "pci");
-+	if (ret >= 0) {
-+		prop = ret;
-+		ret = 0;
-+	}
- 	if (ret) {
-+		u32 prop_32;
- 		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
- 		prop = prop_32;
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index defa068b4c7c..d56fcace1821 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1844,10 +1844,7 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+ 		if (masked_flags & F2FS_COMPR_FL) {
+ 			if (!f2fs_disable_compressed_file(inode))
+ 				return -EINVAL;
+-		}
+-		if (iflags & F2FS_NOCOMP_FL)
+-			return -EINVAL;
+-		if (iflags & F2FS_COMPR_FL) {
++		} else {
+ 			if (!f2fs_may_compress(inode))
+ 				return -EINVAL;
+ 			if (S_ISREG(inode->i_mode) && inode->i_size)
+@@ -1856,10 +1853,6 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+ 			set_compress_context(inode);
+ 		}
  	}
-@@ -94,10 +108,7 @@ static int get_phb_number(struct device_node *dn)
- 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
- 		return phb_id;
+-	if ((iflags ^ masked_flags) & F2FS_NOCOMP_FL) {
+-		if (masked_flags & F2FS_COMPR_FL)
+-			return -EINVAL;
+-	}
  
--	/*
--	 * If not pseries nor powernv, or if fixed PHB numbering tried to add
--	 * the same PHB number twice, then fallback to dynamic PHB numbering.
--	 */
-+	/* If everything fails then fallback to dynamic PHB numbering. */
- 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
- 	BUG_ON(phb_id >= MAX_PHBS);
- 	set_bit(phb_id, phb_bitmap);
+ 	fi->i_flags = iflags | (fi->i_flags & ~mask);
+ 	f2fs_bug_on(F2FS_I_SB(inode), (fi->i_flags & F2FS_COMPR_FL) &&
 -- 
 2.35.1
 
