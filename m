@@ -2,92 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A642DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E36C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351383AbiHSRyQ (ORCPT
+        id S1349630AbiHSRyl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36814 "EHLO
+        Fri, 19 Aug 2022 13:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350181AbiHSRxm (ORCPT
+        with ESMTP id S1350171AbiHSRyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:53:42 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E935ADAA2D
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:29:53 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e19so4054231pju.1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:29:53 -0700 (PDT)
+        Fri, 19 Aug 2022 13:54:10 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D2D11A08;
+        Fri, 19 Aug 2022 10:33:25 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id w14so4691850plp.9;
+        Fri, 19 Aug 2022 10:33:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=TmCUsQL8JXn7Bb8iL7gl6/228zr3U/z7/7g4TUu4EMk=;
-        b=ntg7e5Uk9fDIy48sD1U7+KAmbXz1c5AGnUUSfJD2bWTIeixH5VBwArAz4RG4fvTSEh
-         QyRQVtAD7qoCMJtP7WsAbfGNnvnxkXt1ZFryOarpM5HCyyn+VjfFRcoMCbUtShcxgkxl
-         rTfDRgazxsasI1W8JnITN6mTovG00WrDnJN1ffLs5tWdH/BEdYUdyhqqI9JlCN14PNhf
-         Lrmqn3cZXXR701ILeEH4C+6gcrrgDVsJwdpr6ox8ilWfc7Lrh+YAZXWT+Uv0GIiuUjBn
-         psSP/T16fmGM5QVbSnMRGMZWeiHv67z/YdrSpv7gxHCRbwo9OD/nWYcx9UXTZfFlODD5
-         dPlw==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc;
+        bh=fqadMmXWI3FPz7mWQ1shnlAoTXiP9jnMsgjYOJuOFoo=;
+        b=XLoC5u3RQueoGHx7vAILKwaXo9QAjQrU4TwhNNPQBOd1CnzLc6TQpxCmCFhiADzo2M
+         vVzngvi3WWgBQbHqiBk3ZDLCAUuPjsOGvq+AGpzzL5J1EfxslGp6P0d16cIryfiH4y/n
+         xkTma1UrGwx13EnmFlj+t92DXI+pb/J7lFFi07Y6kiEK594GfromCsbC9ArT89I/NTo9
+         arjB8kANy2CdiyZSmvdv0vmifeMOLkJ7YYPu32SOgSPlcSb/X+g3dYWd/lAAaArmjvvn
+         mSD19RWLbvEOBRRoOKBhYlBNuq2YnHIzJg8JAJEyfRCobB7OkDORfs/qQOxdqjBkUUAH
+         mGKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=TmCUsQL8JXn7Bb8iL7gl6/228zr3U/z7/7g4TUu4EMk=;
-        b=uMfZrP1fjnTcx4I9aJIpox0M6uPeB0ED7G4uk1rs/7ztOYCogPJqYOQ4SBre6l57jL
-         9eb8WgzICYANzWO1VQcAf/4sEzVpHQVKwgO6eaHM0giDkYMVkIuvQTsxghqIkOD8OVYO
-         LKY2qPh5I96cML5IlyQIty9+Mn0tFBmd6+01Ao6YWRjULYbA+GnOVRvoT8GCLNyqQMPq
-         qXzmZCIKB7qcYJWxQYIDBDxRHk//ne1JtAZxHn+CT08NnIOMoMvn2Nxo3YJ12+Q2fv1u
-         X+ZOl33/cWQfQC40SNa8S60DiaEwLqfUM6EkGjkXIemzR4vsFC8riKZc234CRwlq/0DS
-         mGLQ==
-X-Gm-Message-State: ACgBeo2yDNUXrFZurl7iuttp2x1nVUBCsKXPbO3uUenCttrjE83gskm4
-        kgSfpkss8xikr7IldSTcw9H3UntYhmk=
-X-Google-Smtp-Source: AA6agR6PF+iURq3mD3Yya98Ews1MgOytFE0m7YTmxI220Cdgfd31bCWFEyMUZAD45XWvJHa8OBqo8Q==
-X-Received: by 2002:a17:90b:4cc5:b0:1f5:395:6c71 with SMTP id nd5-20020a17090b4cc500b001f503956c71mr15385124pjb.132.1660930193269;
-        Fri, 19 Aug 2022 10:29:53 -0700 (PDT)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc;
+        bh=fqadMmXWI3FPz7mWQ1shnlAoTXiP9jnMsgjYOJuOFoo=;
+        b=Us/QqrwaU8wtgIj5UZIzhCXKKTUbS/tRxWgL+qmDZR71NnWzqn1Ny0qrkrFPu14bil
+         NfMRqIZvHub3+87Re3UHajn3l8OC39y4JgsJLoKDGoV4Cz3KiS5NhAH5HsrZsT+oXHaR
+         ZdwdXtHXqUz4dKBZiuHy2QW8PMW+kffNrU2u7XWC8BKmL13SkW13YEe5aj6/2r8hQnVw
+         FmXg5Ji4kpzFF3yGeMQ1uOEveSWMui3von3RAyQgjzy9txQqSiEMoF7GRrBrs8kNU8E9
+         t65RbRuWAfxiTXz02DUn7NrqmNW45ea/SjEeenCXBnhEQn4BVsXRlwW6vyMRQqAPgx3N
+         ZNXA==
+X-Gm-Message-State: ACgBeo2+gLWUOPLK4S9abG7kQ2zkkwbR9/zGsAR1mCT7yd1QZOaQNQfx
+        MtIXy50qembD1i9gjQ6cjl4=
+X-Google-Smtp-Source: AA6agR6oscwM7f9Y+IO+Kt+o2d0lLW6v3d+P4w7KCUmrGv6Fk8Oyu9zHo8XEtW7WcMdJO+Rj6oAyEA==
+X-Received: by 2002:a17:903:18a:b0:16f:9027:60dc with SMTP id z10-20020a170903018a00b0016f902760dcmr8243997plg.147.1660930404825;
+        Fri, 19 Aug 2022 10:33:24 -0700 (PDT)
 Received: from localhost ([2620:10d:c090:400::5:db7d])
-        by smtp.gmail.com with ESMTPSA id i23-20020a17090acf9700b001fad69cc346sm644532pju.52.2022.08.19.10.29.52
+        by smtp.gmail.com with ESMTPSA id s2-20020a170903200200b00172cb8b97a8sm279412pla.5.2022.08.19.10.33.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 10:29:52 -0700 (PDT)
+        Fri, 19 Aug 2022 10:33:24 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 19 Aug 2022 07:29:51 -1000
+Date:   Fri, 19 Aug 2022 07:33:22 -1000
 From:   Tejun Heo <tj@kernel.org>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Subject: Re: [RFC PATCH 7/8] workqueue: Remove the outer loop in
- maybe_create_worker()
-Message-ID: <Yv/Ij/tE9BqMHhrL@slm.duckdns.org>
-References: <20220804084135.92425-1-jiangshanlai@gmail.com>
- <20220804084135.92425-8-jiangshanlai@gmail.com>
- <YvwVbWfoV/bkFb6e@slm.duckdns.org>
- <CAJhGHyAy2OVd_q_dtJ+cLX=BuNOa4L7hPn50oj_Y7iwBuNEfRQ@mail.gmail.com>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        "yukuai3@huawei.com >> yukuai (C)" <yukuai3@huawei.com>
+Subject: Re: [PATCH v7 4/9] blk-throttle: fix io hung due to configuration
+ updates
+Message-ID: <Yv/JYrqLygLAX56N@slm.duckdns.org>
+References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
+ <20220802140415.2960284-5-yukuai1@huaweicloud.com>
+ <Yvv3jcycOguuEbA3@slm.duckdns.org>
+ <215b4842-c09f-d622-7127-c8b1d9ce3aa9@huaweicloud.com>
+ <Yv0q7T5Eg6MzOIuU@slm.duckdns.org>
+ <d82305ef-1672-a648-f0b6-882bef1659f1@huaweicloud.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAJhGHyAy2OVd_q_dtJ+cLX=BuNOa4L7hPn50oj_Y7iwBuNEfRQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d82305ef-1672-a648-f0b6-882bef1659f1@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:44:02PM +0800, Lai Jiangshan wrote:
-> On Wed, Aug 17, 2022 at 6:08 AM Tejun Heo <tj@kernel.org> wrote:
-> >
-> > On Thu, Aug 04, 2022 at 04:41:34PM +0800, Lai Jiangshan wrote:
-> > > worker_thread() always does the recheck after getting the manager role,
-> > > so the recheck in the maybe_create_worker() is unneeded and is removed.
-> >
-> > So, before if multiple workers need to be created, a single manager would
-> > create them all. After, we'd end up daisy chaining, right? One manager
-> > creates one worker and goes to process one work item. The new worker wakes
-> > up and becomes the manager and creates another worker and so on. That
-> > doesn't seem like a desirable behavior.
-> >
-> 
-> The recheck is always in the same pool lock critical section, so the
-> behavior isn't changed before/after this patch.
+Hello,
 
-Ah, right you are.
+On Thu, Aug 18, 2022 at 09:16:28AM +0800, Yu Kuai wrote:
+> 在 2022/08/18 1:52, Tejun Heo 写道:
+> > On Wed, Aug 17, 2022 at 09:30:30AM +0800, Yu Kuai wrote:
+> > > > Would it be easier if the fields were signed? It's fragile and odd to
+> > > > explain "these are unsigned but if they underflow they behave just like
+> > > > signed when added" when they can just be signed. Also, I have a hard time
+> > > > understand what "preempt" means above.
+> > > 
+> > > I think preempt shound never happen based on current FIFO
+> > > implementation, perhaps
+> > 
+> > Can you elaborate what "preempt" is?
+> 
+> Here preempt means that the bio that is throttled later somehow get
+> dispatched earlier, Michal thinks it's better to comment that the code
+> still works fine in this particular scenario.
+
+You'd have to spell it out. It's not clear "preempt" means the above.
+
+> > How about carryover_{ios|bytes}?
+> 
+> Yes, that sounds good.
+> 
+> By the way, should I use 'ios' here instead of 'io'? I was confused
+> because there are many places that is using 'io' currently.
+
+Yeah, blk-throttle.c is kinda inconsistent about that. It uses bytes/ios in
+some places and bytes/io in others. I'd prefer ios here.
 
 Thanks.
 
