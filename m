@@ -2,66 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2FEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9583C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 06:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiHSGI5 (ORCPT
+        id S1346544AbiHSGJE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 02:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
+        Fri, 19 Aug 2022 02:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345200AbiHSGIO (ORCPT
+        with ESMTP id S1344838AbiHSGIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 02:08:14 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EF42186
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 23:08:12 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id dc19so6944308ejb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 23:08:12 -0700 (PDT)
+        Fri, 19 Aug 2022 02:08:31 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74AF6342
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 23:08:16 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id gk3so6973794ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 23:08:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ionos.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=eWEeXziGUOdEI5oNKy03c0myTReCFeg7Foyw+1lcRrk=;
-        b=C9BTh0YcOoOM+BaJ2jk5zMccdNL47XP+7S5376uY+xgH6uRxcyHeCmDoyhhrIffsc0
-         mIeT1wFHo/21wfMQbD0fKh1NjqQs2sb3ZrmSP2JMItCcYlbBxIx1TADQiRTcyosNM9tw
-         +FyZd7QOH81Dme/UxmvamfsGx0WScUC/ViWAgVMozeJatq0kX/BSs7Iez1wV60pEjUBD
-         xJfvpv9cn2tJZGwRA9tqEblawThl932jNqLX+yGMqxvkERGnh6xSR3hlOKURMhgcr2y8
-         JHYrsxeUt4r8Ee0D1OGfHo6HRsXUNFvRQhC89MqeC/3cT/mua8iAVdzF4VSGrLtY/6c2
-         6aYA==
+        bh=yWNMa8gEmIcjnbw10IXxxPNQFxmc0oHgvkM31hQzFRc=;
+        b=CdNssv8VREdsltNyexSeWPxtCS+nM5OPHWwJ/DSZPjxo9HvCIhCPo4pIEnMVin3ocB
+         lIoNLX+272S7PDpn/zyspH5zx2u/9uwxomOxtZWEDkeXwXo6Lb2Fs55Fp6IrcVytGCTH
+         iMlwQ1Gh6l8DySPqf4b5z72BI0EvCpqMRcNeNq5ywdG1jkwv2900Cb5TUF8EhHMcD71y
+         4XYHW2G/mqKVWCNEZEXVz8jUi4aZlclonPEMvTQGQ8S2GOrxTNummF5KE4t/5hZ/CrnS
+         q+BsiH4mAo3zpQ/LeDXYGDft/0J84YQnjLSMw6AwmbKjILi02+f4XTqjlOtwJ6cV0Agu
+         j2lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=eWEeXziGUOdEI5oNKy03c0myTReCFeg7Foyw+1lcRrk=;
-        b=qN0TunTAnTNWmz41W1EmXOUYG5z/9mwdXLBygp/xE8/4GcoOlAKAEQ5HhEZM2p/Fm1
-         SRzHT50nuU7G2s8q81+RKZt57M+37UUpd62O56YwnretDTQod67kapzg0Lfflgy5MuXj
-         AWANMGrvqH6P+5cWbAsXapURUsnua+skqj6iw8X2o8+RSvp4qbSnDS4FzQEA1P8uyJ95
-         hDkYc0qeIjerQycXpvy1Z+PWN6xUOKNP3z9Dp/X1umTcZmhI/9jP0si9TurW0o439zdP
-         v2hC0JNXdWtsGkdyNgBizmb7k+dpT7dCg/fqNkj7mWMIz6DrDW0UKBvxlrajmuUhgNby
-         /JXA==
-X-Gm-Message-State: ACgBeo275UQt8zKShAoc4HK7Abu8C6Cvlj5a7+yN5VHa5YCMVvUqng2+
-        hMB4jzb46muabGb2M3g9x34uELLSsS1ZaOr8
-X-Google-Smtp-Source: AA6agR47/tWuHZ8ns6fn80zPTh504eMTVk+51+SP8s7pyX37EYo602cuTfFZaMo2I/nNiLw/xYzREw==
-X-Received: by 2002:a17:907:2c5b:b0:73c:5bcb:8eb2 with SMTP id hf27-20020a1709072c5b00b0073c5bcb8eb2mr2422858ejc.38.1660889290951;
-        Thu, 18 Aug 2022 23:08:10 -0700 (PDT)
+        bh=yWNMa8gEmIcjnbw10IXxxPNQFxmc0oHgvkM31hQzFRc=;
+        b=CIimxW1HxRDp3V093+/Hyks3LiCm/bKbCz5geJA7Qkwr9eTfoSPWeIMWpSMGO9tBnR
+         PieziFsLRvp14+MdymTbWhNi5rpD1TM8aTxAKOSOKtDfTtslfedfJDbmR3LOKtEC7fLo
+         0+YrOmOwBUCTuAxxEXML4eTkgW6gbzMH1MdZaOEDeV74m46SVkPN6zU7yzFRGPWaWsoX
+         U3ENkPF1DrkcxCICwpgMLehVrS65lw29xBUK1e78m9lqIPhcTEj5NC6Y8YOEkSihNdyi
+         MmCH4+1ouSTzq0lp6CbzNyn675KMSYF0bWLuOKVJzfDhCZZtFW4TBJqw36hpZxDyT0t8
+         3CIw==
+X-Gm-Message-State: ACgBeo1XY0vPbLtBRUKQtY5obf4a8de6a3GcktKL4VqsggkyCR95V6v6
+        VZQKOQK2lVxn8Qyr5H6yRIeuwszEpF+duD7e
+X-Google-Smtp-Source: AA6agR5mnj3Lntlfg+nOscK9RMkuTgHH3g812bGxQFy1YxoIMbulcNh2VlnvdCAgFkRskbSY09yKWw==
+X-Received: by 2002:a17:907:6d06:b0:731:5809:ec67 with SMTP id sa6-20020a1709076d0600b007315809ec67mr3867186ejc.195.1660889295385;
+        Thu, 18 Aug 2022 23:08:15 -0700 (PDT)
 Received: from lb02065.fritz.box ([2001:9e8:143b:fd00:5207:8c7f:747a:b80d])
-        by smtp.gmail.com with ESMTPSA id y14-20020a1709063a8e00b0073a644ef803sm1809660ejd.101.2022.08.18.23.08.09
+        by smtp.gmail.com with ESMTPSA id y14-20020a1709063a8e00b0073a644ef803sm1809660ejd.101.2022.08.18.23.08.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 23:08:10 -0700 (PDT)
+        Thu, 18 Aug 2022 23:08:14 -0700 (PDT)
 From:   Jack Wang <jinpu.wang@ionos.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Alexey Sheplyakov <asheplyakov@basealt.ru>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-usb@vger.kernel.org
-Subject: [PATCH v1 06/19] usb/hcd: Fix dma_map_sg error check
-Date:   Fri, 19 Aug 2022 08:07:48 +0200
-Message-Id: <20220819060801.10443-7-jinpu.wang@ionos.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH v1 08/19] crypto: sahara: Fix error check for dma_map_sg
+Date:   Fri, 19 Aug 2022 08:07:50 +0200
+Message-Id: <20220819060801.10443-9-jinpu.wang@ionos.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220819060801.10443-1-jinpu.wang@ionos.com>
 References: <20220819060801.10443-1-jinpu.wang@ionos.com>
@@ -71,37 +66,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dma_map_sg return 0 on error.
+dma_map_sg return 0 on error, it returns the number of
+DMA address segments mapped (this may be shorter
+than <nents> passed in if some elements of the scatter/gather
+list are physically or virtually adjacent and an IOMMU maps
+them with a single entry).
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Stern <stern@rowland.harvard.edu>
-Cc: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Alexey Sheplyakov <asheplyakov@basealt.ru>
-Cc: Stephen Boyd <swboyd@chromium.org>
-Cc: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-usb@vger.kernel.org
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: linux-crypto@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
 Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
 ---
- drivers/usb/core/hcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/sahara.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-index 94b305bbd621..90dd32a24e5b 100644
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1474,7 +1474,7 @@ int usb_hcd_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb,
- 						urb->sg,
- 						urb->num_sgs,
- 						dir);
--				if (n <= 0)
-+				if (!n)
- 					ret = -EAGAIN;
- 				else
- 					urb->transfer_flags |= URB_DMA_MAP_SG;
+diff --git a/drivers/crypto/sahara.c b/drivers/crypto/sahara.c
+index 457084b344c1..bb71aac30e2c 100644
+--- a/drivers/crypto/sahara.c
++++ b/drivers/crypto/sahara.c
+@@ -487,13 +487,13 @@ static int sahara_hw_descriptor_create(struct sahara_dev *dev)
+ 
+ 	ret = dma_map_sg(dev->device, dev->in_sg, dev->nb_in_sg,
+ 			 DMA_TO_DEVICE);
+-	if (ret != dev->nb_in_sg) {
++	if (!ret) {
+ 		dev_err(dev->device, "couldn't map in sg\n");
+ 		goto unmap_in;
+ 	}
+ 	ret = dma_map_sg(dev->device, dev->out_sg, dev->nb_out_sg,
+ 			 DMA_FROM_DEVICE);
+-	if (ret != dev->nb_out_sg) {
++	if (!ret) {
+ 		dev_err(dev->device, "couldn't map out sg\n");
+ 		goto unmap_out;
+ 	}
 -- 
 2.34.1
 
