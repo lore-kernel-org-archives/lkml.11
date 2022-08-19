@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B45C3C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 307DCC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350056AbiHSPmS (ORCPT
+        id S1350065AbiHSPma (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
+        Fri, 19 Aug 2022 11:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349972AbiHSPls (ORCPT
+        with ESMTP id S1349981AbiHSPlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:41:48 -0400
+        Fri, 19 Aug 2022 11:41:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB31E102F23;
-        Fri, 19 Aug 2022 08:41:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAFFEA336;
+        Fri, 19 Aug 2022 08:41:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1329B82817;
-        Fri, 19 Aug 2022 15:41:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D9BC433C1;
-        Fri, 19 Aug 2022 15:41:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 262D8B82814;
+        Fri, 19 Aug 2022 15:41:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE08C433C1;
+        Fri, 19 Aug 2022 15:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660923661;
-        bh=q01TiepYCgbd3YDF3Teq86Su7fa1NExU5eO/8Pw2Xpc=;
+        s=korg; t=1660923664;
+        bh=qh/axndb7wUJZpXguucKoIulVp/Qb3Nd7Atm6YWpB5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kHOZ/cNj40mzAv1+SYNRiyco5Yxnp93P4lbEHIMGdFi3BiZZx1RyfvY9aZOF23ky2
-         rhFLrffKBDLRJojNoitlejwAByOxNsLb4G/JGRD2yPuA+2ZehmpsXaOImQJB2EHQGf
-         NjZg8KKpn+ixLw7hgf/I/NH5ytLhsBoG2MtwGWNY=
+        b=KyUglHcQebGDrtrwLWNu1M4ir0TS5OALsmqOMY7HEjtejt2cb6sMFLjxduKsyugpv
+         DbJqbOMTUQcWoe3cDCAUFVGImrQPocItkbBU107NqAbvSvTmJ4tuRgrxZWLTknBqyx
+         MF4+Xo6eb1esJQQgtJiLJh4GqqRDmxqbIBWpK08s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        kexec@lists.infradead.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Will Deacon <will@kernel.org>, Coiby Xu <coxu@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.15 14/14] arm64: kexec_file: use more system keyrings to verify kernel image signature
-Date:   Fri, 19 Aug 2022 17:40:30 +0200
-Message-Id: <20220819153712.144781772@linuxfoundation.org>
+        stable@vger.kernel.org, Nimish Mishra <neelam.nimish@gmail.com>,
+        Anirban Chakraborty <ch.anirban00727@gmail.com>,
+        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
+        Jerome Forissier <jerome.forissier@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 02/14] tee: add overflow check in register_shm_helper()
+Date:   Fri, 19 Aug 2022 17:40:18 +0200
+Message-Id: <20220819153711.747538439@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153711.658766010@linuxfoundation.org>
 References: <20220819153711.658766010@linuxfoundation.org>
@@ -53,68 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coiby Xu <coxu@redhat.com>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-commit 0d519cadf75184a24313568e7f489a7fc9b1be3b upstream.
+commit 573ae4f13f630d6660008f1974c0a8a29c30e18a upstream.
 
-Currently, when loading a kernel image via the kexec_file_load() system
-call, arm64 can only use the .builtin_trusted_keys keyring to verify
-a signature whereas x86 can use three more keyrings i.e.
-.secondary_trusted_keys, .machine and .platform keyrings. For example,
-one resulting problem is kexec'ing a kernel image  would be rejected
-with the error "Lockdown: kexec: kexec of unsigned images is restricted;
-see man kernel_lockdown.7".
+With special lengths supplied by user space, register_shm_helper() has
+an integer overflow when calculating the number of pages covered by a
+supplied user space memory region.
 
-This patch set enables arm64 to make use of the same keyrings as x86 to
-verify the signature kexec'ed kernel image.
+This causes internal_get_user_pages_fast() a helper function of
+pin_user_pages_fast() to do a NULL pointer dereference:
 
-Fixes: 732b7b93d849 ("arm64: kexec_file: add kernel signature verification support")
-Cc: stable@vger.kernel.org # 105e10e2cf1c: kexec_file: drop weak attribute from functions
-Cc: stable@vger.kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
-Cc: stable@vger.kernel.org # 83b7bb2d49ae: kexec, KEYS: make the code in bzImage64_verify_sig generic
-Acked-by: Baoquan He <bhe@redhat.com>
-Cc: kexec@lists.infradead.org
-Cc: keyrings@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-Co-developed-by: Michal Suchanek <msuchanek@suse.de>
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Coiby Xu <coxu@redhat.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+  Modules linked in:
+  CPU: 1 PID: 173 Comm: optee_example_a Not tainted 5.19.0 #11
+  Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
+  pc : internal_get_user_pages_fast+0x474/0xa80
+  Call trace:
+   internal_get_user_pages_fast+0x474/0xa80
+   pin_user_pages_fast+0x24/0x4c
+   register_shm_helper+0x194/0x330
+   tee_shm_register_user_buf+0x78/0x120
+   tee_ioctl+0xd0/0x11a0
+   __arm64_sys_ioctl+0xa8/0xec
+   invoke_syscall+0x48/0x114
+
+Fix this by adding an an explicit call to access_ok() in
+tee_shm_register_user_buf() to catch an invalid user space address
+early.
+
+Fixes: 033ddf12bcf5 ("tee: add register user memory")
+Cc: stable@vger.kernel.org
+Reported-by: Nimish Mishra <neelam.nimish@gmail.com>
+Reported-by: Anirban Chakraborty <ch.anirban00727@gmail.com>
+Reported-by: Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>
+Suggested-by: Jerome Forissier <jerome.forissier@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/kexec_image.c |   11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ drivers/tee/tee_shm.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/arm64/kernel/kexec_image.c
-+++ b/arch/arm64/kernel/kexec_image.c
-@@ -14,7 +14,6 @@
- #include <linux/kexec.h>
- #include <linux/pe.h>
- #include <linux/string.h>
--#include <linux/verification.h>
- #include <asm/byteorder.h>
- #include <asm/cpufeature.h>
- #include <asm/image.h>
-@@ -130,18 +129,10 @@ static void *image_load(struct kimage *i
- 	return NULL;
- }
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -222,6 +222,9 @@ struct tee_shm *tee_shm_register(struct
+ 		goto err;
+ 	}
  
--#ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
--static int image_verify_sig(const char *kernel, unsigned long kernel_len)
--{
--	return verify_pefile_signature(kernel, kernel_len, NULL,
--				       VERIFYING_KEXEC_PE_SIGNATURE);
--}
--#endif
--
- const struct kexec_file_ops kexec_image_ops = {
- 	.probe = image_probe,
- 	.load = image_load,
- #ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
--	.verify_sig = image_verify_sig,
-+	.verify_sig = kexec_kernel_verify_pe_sig,
- #endif
- };
++	if (!access_ok((void __user *)addr, length))
++		return ERR_PTR(-EFAULT);
++
+ 	mutex_lock(&teedev->mutex);
+ 	shm->id = idr_alloc(&teedev->idr, shm, 1, 0, GFP_KERNEL);
+ 	mutex_unlock(&teedev->mutex);
 
 
