@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95173C32771
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8812C32792
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351427AbiHSQFq (ORCPT
+        id S1351540AbiHSQGA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        Fri, 19 Aug 2022 12:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351522AbiHSQBz (ORCPT
+        with ESMTP id S1351573AbiHSQCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:01:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551CB10AE39;
-        Fri, 19 Aug 2022 08:53:51 -0700 (PDT)
+        Fri, 19 Aug 2022 12:02:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A8CD476F;
+        Fri, 19 Aug 2022 08:53:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E7066174A;
-        Fri, 19 Aug 2022 15:53:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1075EC433C1;
-        Fri, 19 Aug 2022 15:53:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE9206175C;
+        Fri, 19 Aug 2022 15:53:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD5A3C433B5;
+        Fri, 19 Aug 2022 15:53:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924429;
-        bh=Fe2xvqF00PLRopeHXplDF/j9rwU7NVQeQA+xBB6pBvU=;
+        s=korg; t=1660924435;
+        bh=mnrYvGynoNV2T6sVFeiXHQmy/DOrDpdMQcPlEzeqDwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wPvuxIZdgHVdz3JdayGkHprDZoH9EklwY2m8Jr0BA6rE/XEEDMeY4ZHp30o7iTQDR
-         eI4ZT87yypT0xJUS8MR09/yR174LlvpGUqLkMfNIpp+DaOqZ7If6XMF/FixrPzZBIA
-         f5j0bdNJNyvDuqhZfHVCi4+M7i+N+ZWKXT3Eg6O4=
+        b=AAuOL6B1oPHC4MMCMrpcXIm9y2vv7L4L04IxWr9/OpbGEwdOhME8aIgMxyxCbom2l
+         rnK+joXxqb7HVcevqFQ7CTH/YNW9o+0fLZup3sxHel5LIvQG6EMVPfbDjqVDhdAtmw
+         jJwAL7NQya77DhCFpiCEtgV2MnfKtDcIGFAmpGbY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 167/545] drm/mediatek: Separate poweron/poweroff from enable/disable and define new funcs
-Date:   Fri, 19 Aug 2022 17:38:57 +0200
-Message-Id: <20220819153836.832711193@linuxfoundation.org>
+        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 169/545] i2c: npcm: Remove own slave addresses 2:10
+Date:   Fri, 19 Aug 2022 17:38:59 +0200
+Message-Id: <20220819153836.914873041@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -54,126 +51,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jitao Shi <jitao.shi@mediatek.com>
+From: Tali Perry <tali.perry1@gmail.com>
 
-[ Upstream commit cde7e2e35c2866d22a3a012e72a41052dfcc255d ]
+[ Upstream commit 47d506d1a28fd10a9fb1f33df5622d88fae72095 ]
 
-In order to match the changes of "Use the drm_panel_bridge API",
-the poweron/poweroff of dsi is extracted from enable/disable and
-defined as new funcs (atomic_pre_enable/atomic_post_disable).
+NPCM can support up to 10 own slave addresses. In practice, only one
+address is actually being used. In order to access addresses 2 and above,
+need to switch register banks. The switch needs spinlock.
+To avoid using spinlock for this useless feature removed support of SA >=
+2. Also fix returned slave event enum.
 
-Since dsi_poweron is moved from dsi_enable to pre_enable function, in
-order to avoid poweron failure, the operation of dsi register fails to
-cause bus hang. Therefore, the protection mechanism is added to the
-dsi_enable function.
+Remove some comment since the bank selection is not required. The bank
+selection is not required since the supported slave addresses are reduced.
 
-Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
-
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-3-git-send-email-xinlei.lee@mediatek.com/
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 53 +++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 19 deletions(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 41 +++++++++++++-------------------
+ 1 file changed, 16 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 2c09b43705ef..1b13e429e9d9 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -674,16 +674,6 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	if (--dsi->refcount != 0)
- 		return;
- 
--	/*
--	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
--	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
--	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
--	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
--	 * after dsi is fully set.
--	 */
--	mtk_dsi_stop(dsi);
--
--	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-@@ -698,17 +688,9 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 
- static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
- {
--	int ret;
--
- 	if (dsi->enabled)
- 		return;
- 
--	ret = mtk_dsi_poweron(dsi);
--	if (ret < 0) {
--		DRM_ERROR("failed to power on dsi\n");
--		return;
--	}
--
- 	mtk_dsi_set_mode(dsi);
- 	mtk_dsi_clk_hs_mode(dsi, 1);
- 
-@@ -722,7 +704,16 @@ static void mtk_output_dsi_disable(struct mtk_dsi *dsi)
- 	if (!dsi->enabled)
- 		return;
- 
--	mtk_dsi_poweroff(dsi);
-+	/*
-+	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
-+	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
-+	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
-+	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
-+	 * after dsi is fully set.
-+	 */
-+	mtk_dsi_stop(dsi);
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index d9ac62c1ac25..ab31e7fb4cc9 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -123,11 +123,11 @@ enum i2c_addr {
+  * Since the addr regs are sprinkled all over the address space,
+  * use this array to get the address or each register.
+  */
+-#define I2C_NUM_OWN_ADDR 10
++#define I2C_NUM_OWN_ADDR 2
++#define I2C_NUM_OWN_ADDR_SUPPORTED 2
 +
-+	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 
- 	dsi->enabled = false;
- }
-@@ -759,13 +750,37 @@ static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
-+	if (dsi->refcount == 0)
-+		return;
-+
- 	mtk_output_dsi_enable(dsi);
- }
- 
-+static void mtk_dsi_bridge_atomic_pre_enable(struct drm_bridge *bridge,
-+					     struct drm_bridge_state *old_bridge_state)
-+{
-+	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
-+	int ret;
-+
-+	ret = mtk_dsi_poweron(dsi);
-+	if (ret < 0)
-+		DRM_ERROR("failed to power on dsi\n");
-+}
-+
-+static void mtk_dsi_bridge_atomic_post_disable(struct drm_bridge *bridge,
-+					       struct drm_bridge_state *old_bridge_state)
-+{
-+	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
-+
-+	mtk_dsi_poweroff(dsi);
-+}
-+
- static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
- 	.attach = mtk_dsi_bridge_attach,
- 	.atomic_disable = mtk_dsi_bridge_atomic_disable,
- 	.atomic_enable = mtk_dsi_bridge_atomic_enable,
-+	.atomic_pre_enable = mtk_dsi_bridge_atomic_pre_enable,
-+	.atomic_post_disable = mtk_dsi_bridge_atomic_post_disable,
- 	.mode_set = mtk_dsi_bridge_mode_set,
+ static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
+-	NPCM_I2CADDR1, NPCM_I2CADDR2, NPCM_I2CADDR3, NPCM_I2CADDR4,
+-	NPCM_I2CADDR5, NPCM_I2CADDR6, NPCM_I2CADDR7, NPCM_I2CADDR8,
+-	NPCM_I2CADDR9, NPCM_I2CADDR10,
++	NPCM_I2CADDR1, NPCM_I2CADDR2,
  };
+ #endif
+ 
+@@ -391,14 +391,10 @@ static void npcm_i2c_disable(struct npcm_i2c *bus)
+ #if IS_ENABLED(CONFIG_I2C_SLAVE)
+ 	int i;
+ 
+-	/* select bank 0 for I2C addresses */
+-	npcm_i2c_select_bank(bus, I2C_BANK_0);
+-
+ 	/* Slave addresses removal */
+-	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++)
++	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++)
+ 		iowrite8(0, bus->reg + npcm_i2caddr[i]);
+ 
+-	npcm_i2c_select_bank(bus, I2C_BANK_1);
+ #endif
+ 	/* Disable module */
+ 	i2cctl2 = ioread8(bus->reg + NPCM_I2CCTL2);
+@@ -603,8 +599,7 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
+ 			i2cctl1 &= ~NPCM_I2CCTL1_GCMEN;
+ 		iowrite8(i2cctl1, bus->reg + NPCM_I2CCTL1);
+ 		return 0;
+-	}
+-	if (addr_type == I2C_ARP_ADDR) {
++	} else if (addr_type == I2C_ARP_ADDR) {
+ 		i2cctl3 = ioread8(bus->reg + NPCM_I2CCTL3);
+ 		if (enable)
+ 			i2cctl3 |= I2CCTL3_ARPMEN;
+@@ -613,16 +608,16 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
+ 		iowrite8(i2cctl3, bus->reg + NPCM_I2CCTL3);
+ 		return 0;
+ 	}
++	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10)
++		dev_err(bus->dev, "try to enable more than 2 SA not supported\n");
++
+ 	if (addr_type >= I2C_ARP_ADDR)
+ 		return -EFAULT;
+-	/* select bank 0 for address 3 to 10 */
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_0);
++
+ 	/* Set and enable the address */
+ 	iowrite8(sa_reg, bus->reg + npcm_i2caddr[addr_type]);
+ 	npcm_i2c_slave_int_enable(bus, enable);
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_1);
++
+ 	return 0;
+ }
+ #endif
+@@ -843,15 +838,11 @@ static u8 npcm_i2c_get_slave_addr(struct npcm_i2c *bus, enum i2c_addr addr_type)
+ {
+ 	u8 slave_add;
+ 
+-	/* select bank 0 for address 3 to 10 */
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_0);
++	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10)
++		dev_err(bus->dev, "get slave: try to use more than 2 SA not supported\n");
+ 
+ 	slave_add = ioread8(bus->reg + npcm_i2caddr[(int)addr_type]);
+ 
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_1);
+-
+ 	return slave_add;
+ }
+ 
+@@ -861,12 +852,12 @@ static int npcm_i2c_remove_slave_addr(struct npcm_i2c *bus, u8 slave_add)
+ 
+ 	/* Set the enable bit */
+ 	slave_add |= 0x80;
+-	npcm_i2c_select_bank(bus, I2C_BANK_0);
+-	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++) {
++
++	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++) {
+ 		if (ioread8(bus->reg + npcm_i2caddr[i]) == slave_add)
+ 			iowrite8(0, bus->reg + npcm_i2caddr[i]);
+ 	}
+-	npcm_i2c_select_bank(bus, I2C_BANK_1);
++
+ 	return 0;
+ }
  
 -- 
 2.35.1
