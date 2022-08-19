@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15216C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A649C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352600AbiHSQXx (ORCPT
+        id S1352606AbiHSQX5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
+        Fri, 19 Aug 2022 12:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352228AbiHSQUK (ORCPT
+        with ESMTP id S1352225AbiHSQUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:20:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84D9108FA7;
-        Fri, 19 Aug 2022 09:01:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28DAEC4F2;
+        Fri, 19 Aug 2022 09:01:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5ED5B8280C;
-        Fri, 19 Aug 2022 16:01:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DB01C433D6;
-        Fri, 19 Aug 2022 16:01:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EC6D61644;
+        Fri, 19 Aug 2022 16:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 519BEC433D6;
+        Fri, 19 Aug 2022 16:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924880;
-        bh=OtPWqZkomw1fPfVd90lTptA0F5WqoBTC8rGiNIX4stM=;
+        s=korg; t=1660924870;
+        bh=ktUX/xRIlbmoMXweSsX34bnEMpvixH05UbFNlBjznjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G7CgckDtXpzjXqJKhZU0iUDY4HX/pPW1glEei4SDBYEE6KKrZspWw9UKR+tpTdObf
-         9TeK2HNeBZeMYQrihJxUykN29zpg0YqnM+Aigj0FxC26ykvJJ7gv6BG1CKArv5MZBe
-         3VBTo4k+h/pSZp/G9opgzWlPDX+w/bLVcuRWqnJo=
+        b=n1n6doKchbgbj1TJw0t0tZouBpMk7X0gQ+Bo3o+9A7c45ssRGbtUmPQIFMBnqZ3mn
+         2uppZyHGhJI03bfh8C2wGBxn8YbzsU8MkAeh1jBPyDVc7+YXPf/CXx0In3I3sxzalt
+         UmIh0U0enXRdpyuR1lFpnBrzy/VQ2Q0feGvQL5+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
+        stable@vger.kernel.org, Shunsuke Mie <mie@igel.co.jp>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 282/545] usb: xhci: tegra: Fix error check
-Date:   Fri, 19 Aug 2022 17:40:52 +0200
-Message-Id: <20220819153841.931627948@linuxfoundation.org>
+Subject: [PATCH 5.10 308/545] PCI: endpoint: Dont stop controller when unbinding endpoint function
+Date:   Fri, 19 Aug 2022 17:41:18 +0200
+Message-Id: <20220819153843.136862754@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -49,47 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tang Bin <tangbin@cmss.chinamobile.com>
+From: Shunsuke Mie <mie@igel.co.jp>
 
-[ Upstream commit 18fc7c435be3f17ea26a21b2e2312fcb9088e01f ]
+[ Upstream commit 1bc2b7bfba6e2f64edf5e246f3af2967261f6c3d ]
 
-In the function tegra_xusb_powerdomain_init(),
-dev_pm_domain_attach_by_name() may return NULL in some cases,
-so IS_ERR() doesn't meet the requirements. Thus fix it.
+Unbinding an endpoint function from the endpoint controller shouldn't stop
+the controller.  This is especially a problem for multi-function endpoints
+where other endpoints may still be active.
 
-Fixes: 6494a9ad86de ("usb: xhci: tegra: Add genpd support")
-Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
-Link: https://lore.kernel.org/r/20220524121404.18376-1-tangbin@cmss.chinamobile.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Don't stop the controller when unbinding one of its endpoints.  Normally
+the controller is stopped via configfs.
+
+Fixes: 349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
+Link: https://lore.kernel.org/r/20220622040924.113279-1-mie@igel.co.jp
+Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci-tegra.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pci/endpoint/functions/pci-epf-test.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/usb/host/xhci-tegra.c b/drivers/usb/host/xhci-tegra.c
-index 50bb91b6a4b8..246a3d274142 100644
---- a/drivers/usb/host/xhci-tegra.c
-+++ b/drivers/usb/host/xhci-tegra.c
-@@ -1042,15 +1042,15 @@ static int tegra_xusb_powerdomain_init(struct device *dev,
- 	int err;
+diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+index 262b2c4c70c9..ddfeca9016a0 100644
+--- a/drivers/pci/endpoint/functions/pci-epf-test.c
++++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+@@ -623,7 +623,6 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
  
- 	tegra->genpd_dev_host = dev_pm_domain_attach_by_name(dev, "xusb_host");
--	if (IS_ERR(tegra->genpd_dev_host)) {
--		err = PTR_ERR(tegra->genpd_dev_host);
-+	if (IS_ERR_OR_NULL(tegra->genpd_dev_host)) {
-+		err = PTR_ERR(tegra->genpd_dev_host) ? : -ENODATA;
- 		dev_err(dev, "failed to get host pm-domain: %d\n", err);
- 		return err;
- 	}
+ 	cancel_delayed_work(&epf_test->cmd_handler);
+ 	pci_epf_test_clean_dma_chan(epf_test);
+-	pci_epc_stop(epc);
+ 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
+ 		epf_bar = &epf->bar[bar];
  
- 	tegra->genpd_dev_ss = dev_pm_domain_attach_by_name(dev, "xusb_ss");
--	if (IS_ERR(tegra->genpd_dev_ss)) {
--		err = PTR_ERR(tegra->genpd_dev_ss);
-+	if (IS_ERR_OR_NULL(tegra->genpd_dev_ss)) {
-+		err = PTR_ERR(tegra->genpd_dev_ss) ? : -ENODATA;
- 		dev_err(dev, "failed to get superspeed pm-domain: %d\n", err);
- 		return err;
- 	}
 -- 
 2.35.1
 
