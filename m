@@ -2,180 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E275AC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B957C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352104AbiHSUve (ORCPT
+        id S1351882AbiHSUwU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 16:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
+        Fri, 19 Aug 2022 16:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351704AbiHSUvM (ORCPT
+        with ESMTP id S1352096AbiHSUvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 16:51:12 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C39FC2FA1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:50:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660942231; x=1692478231;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ICra1L3ovV0x36zZN8DmjHhF1v/YCjLMFv0va4iXfdc=;
-  b=GLlXBACNetDbtlR3h+QUVn9971fJ4kEHl+5gN7nHb2Lc0CJHghCe8vTf
-   QV6ZtMkPQhFsMJT8NvHDpbEffYhXQEkYHrpmuwUgYoxbw+oz7f5d75Q62
-   6Q/twC3mN2XmF/J8mB6TXJ9eeXTwRL9pUtISN5OLHdJiCVDiN+tFw6Y/L
-   ZMukf6mxF6qs97Q8mHEiOLgpdk4EGULcbZyaxsvic/yR2h+8WCfabs173
-   cUidfXGDC+1qYrrpThxlDy2ZGC6fDTFQAvKk3pXopVD9Jho0KXqhcMM4s
-   NKRSaxmTOjWfQIZ10ikTxnaIqiNHG0JENc4iFkQPXxNq6+KPKIpaSUqgb
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="319127492"
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="319127492"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 13:50:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="584786553"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 19 Aug 2022 13:50:11 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oP8wU-0001nM-2M;
-        Fri, 19 Aug 2022 20:50:10 +0000
-Date:   Sat, 20 Aug 2022 04:49:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse: sparse:
- incorrect type in argument 1 (different address spaces)
-Message-ID: <202208200410.1K6K7rCh-lkp@intel.com>
+        Fri, 19 Aug 2022 16:51:55 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8ACD10E961
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:51:09 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id x23so5068823pll.7
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:51:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=UbjdgasMWdhxwQlviQSCvgTrM7YMkVlQiQeuIEbCI20=;
+        b=F5jfp85iJvdeHkq3B0caSImoaFK/cXUJleEHGYjDONaJzOZYoILas7eS0W4lwLtBfe
+         pZcyIT8JUi0yodjaXKAh298KkYMF6jhuDdPAm66NpOd++zndjQq7fNUT7Qi4Rpp26CqQ
+         e0pgcxUaCUEEER5i5r3/K1hC7yb/wamOA0xWe+iafFJxwvWVwLl7xtikGjOHptaq2nzd
+         rIbGZCUXoYuTj41kJ07aMFAGjXnPQpELn1HxOzkIoxQcrtcIIO095VdiODAHP/fYKHzg
+         WvMSZ/qA4wYSR0D/ZXZ2ky8ljA8RMNDHc1lwnFQpBHm6fG+D+yCirzW2uiT7GWDBQbak
+         80VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=UbjdgasMWdhxwQlviQSCvgTrM7YMkVlQiQeuIEbCI20=;
+        b=rT0Hr8ZIPKVTYF3iAOhJC/f79GcKSpc3PrDVoqcUM3CMG4SRmmmnbKmdc6PpZXkEMc
+         CnISjk2PSyY1rgAtlWOnowFH1T5Hv3E4MkmSSoH6pxl+GUetK8Fmk7Cf6JdxJqcm+8uZ
+         g6uDIk1YK7FgIsGl8ZXm7+Xsy3hD7i5dZb7M95vATLrpUCGn389JcFO1hy0O1KgwsRz+
+         IwjogCVSYyD9dVMUCzJoE1t+Q0SqtwamzdNOeMdt54xDtAdol1hT3Kp2kif9HKzu+HCf
+         J+2UwnaNR7y2bK0o3BbsToMq5mWtQT7YGQUirKZPez1lfdO0s0RhzGn2983YMPtj//W5
+         8YtQ==
+X-Gm-Message-State: ACgBeo2ebmOpUgvlcsEuq6taV035w5LXSslae1CCenxsVM37Z01J0zdH
+        8/k719ZCH8ahi/mwxGjsNKV6U8KlcDRS5Q==
+X-Google-Smtp-Source: AA6agR5dZq0HkCdk3nAVTwQn5i+uPCXZZn+hn/3WIuR2C4mIJR6smSBqCK14KRZBDKTLl2B3wZLWhA==
+X-Received: by 2002:a17:90a:f88:b0:1fa:da0f:5e6 with SMTP id 8-20020a17090a0f8800b001fada0f05e6mr6885579pjz.102.1660942268166;
+        Fri, 19 Aug 2022 13:51:08 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id e13-20020a631e0d000000b0041d5001f0ecsm3187717pge.43.2022.08.19.13.51.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 13:51:07 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 20:51:03 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Andrew Jones <andrew.jones@linux.dev>
+Cc:     Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, marcorr@google.com,
+        michael.roth@amd.com, thomas.lendacky@amd.com, joro@8bytes.org,
+        mizhang@google.com, pbonzini@redhat.com, vannapurve@google.com
+Subject: Re: [V3 10/11] KVM: selftests: Add ucall pool based implementation
+Message-ID: <Yv/3t2oLDPUySpBd@google.com>
+References: <20220810152033.946942-1-pgonda@google.com>
+ <20220810152033.946942-11-pgonda@google.com>
+ <20220816161350.b7x5brnyz5pyi7te@kamzik>
+ <Yv5iKJbjW5VseagS@google.com>
+ <20220818190514.ny77xpfwiruah6m5@kamzik>
+ <Yv7LR8NMBMKVzS3Z@google.com>
+ <20220819051725.6lgggz2ktbd35pqj@kamzik>
+ <Yv/QPxeKczzmxR9H@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Yv/QPxeKczzmxR9H@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-include/linux/fortify-string.h
-lib/test_fortify/write_overflow_field-memset.c
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   963a70bee5880640d0fd83ed29dc1e7ec0d2bd4a
-commit: 28e77cc1c0686621a4d416f599cee5ab369daa0a fortify: Detect struct member overflows in memset() at compile-time
-date:   6 months ago
-config: arm64-randconfig-s041-20220820 (https://download.01.org/0day-ci/archive/20220820/202208200410.1K6K7rCh-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=28e77cc1c0686621a4d416f599cee5ab369daa0a
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 28e77cc1c0686621a4d416f599cee5ab369daa0a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/remoteproc/
+On Fri, Aug 19, 2022, Sean Christopherson wrote:
+> Or can we just say that it's always immediate after memslot0?  That would allow
+> us to delete the searching code in ARM's ucall_arch_init().
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I have this coded up, will test on x86 and arm64 and send out a series (essentially
+all of the non-SEV bits in this series).
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *cpu_addr @@
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse:     expected void const *
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse:     got void [noderef] __iomem *cpu_addr
->> drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *cpu_addr @@
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse:     expected void const *
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse:     got void [noderef] __iomem *cpu_addr
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem *cpu_addr @@
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse:     expected void *
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:437:9: sparse:     got void [noderef] __iomem *cpu_addr
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *cpu_addr @@
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse:     expected void const *
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse:     got void [noderef] __iomem *cpu_addr
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *cpu_addr @@
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse:     expected void const *
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse:     got void [noderef] __iomem *cpu_addr
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem *cpu_addr @@
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse:     expected void *
-   drivers/remoteproc/ti_k3_r5_remoteproc.c:440:9: sparse:     got void [noderef] __iomem *cpu_addr
+Prescribing an MMIO address from __vm_create() has a some nice side effects.
 
-vim +437 drivers/remoteproc/ti_k3_r5_remoteproc.c
+  1) KVM treats writes to read-only memslots as MMIO, so a future cleanup would
+     be to have __vm_create() create a memslot for the MMIO range to prevent
+     silently clobbering the address.  I'll leave this for later because selftests
+     currently assumes they can use all memslots except memslot0.
 
-6dedbd1d544389 Suman Anna 2020-10-02  378  
-6dedbd1d544389 Suman Anna 2020-10-02  379  /*
-6dedbd1d544389 Suman Anna 2020-10-02  380   * The R5F cores have controls for both a reset and a halt/run. The code
-6dedbd1d544389 Suman Anna 2020-10-02  381   * execution from DDR requires the initial boot-strapping code to be run
-6dedbd1d544389 Suman Anna 2020-10-02  382   * from the internal TCMs. This function is used to release the resets on
-6dedbd1d544389 Suman Anna 2020-10-02  383   * applicable cores to allow loading into the TCMs. The .prepare() ops is
-6dedbd1d544389 Suman Anna 2020-10-02  384   * invoked by remoteproc core before any firmware loading, and is followed
-6dedbd1d544389 Suman Anna 2020-10-02  385   * by the .start() ops after loading to actually let the R5 cores run.
-ee99ee7c929c3e Suman Anna 2021-03-27  386   *
-ee99ee7c929c3e Suman Anna 2021-03-27  387   * The Single-CPU mode on applicable SoCs (eg: AM64x) only uses Core0 to
-ee99ee7c929c3e Suman Anna 2021-03-27  388   * execute code, but combines the TCMs from both cores. The resets for both
-ee99ee7c929c3e Suman Anna 2021-03-27  389   * cores need to be released to make this possible, as the TCMs are in general
-ee99ee7c929c3e Suman Anna 2021-03-27  390   * private to each core. Only Core0 needs to be unhalted for running the
-ee99ee7c929c3e Suman Anna 2021-03-27  391   * cluster in this mode. The function uses the same reset logic as LockStep
-ee99ee7c929c3e Suman Anna 2021-03-27  392   * mode for this (though the behavior is agnostic of the reset release order).
-6dedbd1d544389 Suman Anna 2020-10-02  393   */
-6dedbd1d544389 Suman Anna 2020-10-02  394  static int k3_r5_rproc_prepare(struct rproc *rproc)
-6dedbd1d544389 Suman Anna 2020-10-02  395  {
-6dedbd1d544389 Suman Anna 2020-10-02  396  	struct k3_r5_rproc *kproc = rproc->priv;
-6dedbd1d544389 Suman Anna 2020-10-02  397  	struct k3_r5_cluster *cluster = kproc->cluster;
-6dedbd1d544389 Suman Anna 2020-10-02  398  	struct k3_r5_core *core = kproc->core;
-6dedbd1d544389 Suman Anna 2020-10-02  399  	struct device *dev = kproc->dev;
-7508ea19b20da8 Suman Anna 2020-11-18  400  	u32 ctrl = 0, cfg = 0, stat = 0;
-7508ea19b20da8 Suman Anna 2020-11-18  401  	u64 boot_vec = 0;
-7508ea19b20da8 Suman Anna 2020-11-18  402  	bool mem_init_dis;
-6dedbd1d544389 Suman Anna 2020-10-02  403  	int ret;
-6dedbd1d544389 Suman Anna 2020-10-02  404  
-7508ea19b20da8 Suman Anna 2020-11-18  405  	ret = ti_sci_proc_get_status(core->tsp, &boot_vec, &cfg, &ctrl, &stat);
-7508ea19b20da8 Suman Anna 2020-11-18  406  	if (ret < 0)
-7508ea19b20da8 Suman Anna 2020-11-18  407  		return ret;
-7508ea19b20da8 Suman Anna 2020-11-18  408  	mem_init_dis = !!(cfg & PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS);
-7508ea19b20da8 Suman Anna 2020-11-18  409  
-ee99ee7c929c3e Suman Anna 2021-03-27  410  	/* Re-use LockStep-mode reset logic for Single-CPU mode */
-ee99ee7c929c3e Suman Anna 2021-03-27  411  	ret = (cluster->mode == CLUSTER_MODE_LOCKSTEP ||
-ee99ee7c929c3e Suman Anna 2021-03-27  412  	       cluster->mode == CLUSTER_MODE_SINGLECPU) ?
-6dedbd1d544389 Suman Anna 2020-10-02  413  		k3_r5_lockstep_release(cluster) : k3_r5_split_release(core);
-34f2653686fecc Suman Anna 2020-10-02  414  	if (ret) {
-6dedbd1d544389 Suman Anna 2020-10-02  415  		dev_err(dev, "unable to enable cores for TCM loading, ret = %d\n",
-6dedbd1d544389 Suman Anna 2020-10-02  416  			ret);
-6dedbd1d544389 Suman Anna 2020-10-02  417  		return ret;
-6dedbd1d544389 Suman Anna 2020-10-02  418  	}
-6dedbd1d544389 Suman Anna 2020-10-02  419  
-7508ea19b20da8 Suman Anna 2020-11-18  420  	/*
-7508ea19b20da8 Suman Anna 2020-11-18  421  	 * Newer IP revisions like on J7200 SoCs support h/w auto-initialization
-7508ea19b20da8 Suman Anna 2020-11-18  422  	 * of TCMs, so there is no need to perform the s/w memzero. This bit is
-7508ea19b20da8 Suman Anna 2020-11-18  423  	 * configurable through System Firmware, the default value does perform
-7508ea19b20da8 Suman Anna 2020-11-18  424  	 * auto-init, but account for it in case it is disabled
-7508ea19b20da8 Suman Anna 2020-11-18  425  	 */
-7508ea19b20da8 Suman Anna 2020-11-18  426  	if (cluster->soc_data->tcm_ecc_autoinit && !mem_init_dis) {
-7508ea19b20da8 Suman Anna 2020-11-18  427  		dev_dbg(dev, "leveraging h/w init for TCM memories\n");
-7508ea19b20da8 Suman Anna 2020-11-18  428  		return 0;
-7508ea19b20da8 Suman Anna 2020-11-18  429  	}
-7508ea19b20da8 Suman Anna 2020-11-18  430  
-34f2653686fecc Suman Anna 2020-10-02  431  	/*
-34f2653686fecc Suman Anna 2020-10-02  432  	 * Zero out both TCMs unconditionally (access from v8 Arm core is not
-34f2653686fecc Suman Anna 2020-10-02  433  	 * affected by ATCM & BTCM enable configuration values) so that ECC
-34f2653686fecc Suman Anna 2020-10-02  434  	 * can be effective on all TCM addresses.
-34f2653686fecc Suman Anna 2020-10-02  435  	 */
-34f2653686fecc Suman Anna 2020-10-02  436  	dev_dbg(dev, "zeroing out ATCM memory\n");
-34f2653686fecc Suman Anna 2020-10-02 @437  	memset(core->mem[0].cpu_addr, 0x00, core->mem[0].size);
-34f2653686fecc Suman Anna 2020-10-02  438  
-34f2653686fecc Suman Anna 2020-10-02  439  	dev_dbg(dev, "zeroing out BTCM memory\n");
-34f2653686fecc Suman Anna 2020-10-02  440  	memset(core->mem[1].cpu_addr, 0x00, core->mem[1].size);
-34f2653686fecc Suman Anna 2020-10-02  441  
-34f2653686fecc Suman Anna 2020-10-02  442  	return 0;
-34f2653686fecc Suman Anna 2020-10-02  443  }
-34f2653686fecc Suman Anna 2020-10-02  444  
-
-:::::: The code at line 437 was first introduced by commit
-:::::: 34f2653686fecc9bd5a4ee16724768c72953fb57 remoteproc: k3-r5: Initialize TCM memories for ECC
-
-:::::: TO: Suman Anna <s-anna@ti.com>
-:::::: CC: Bjorn Andersson <bjorn.andersson@linaro.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+  2) It will simplify wwitching x86 and RISC-V to a common MMIO implementation,
+     if we ever want to do that.  I.e. have common code for everything except s390.
