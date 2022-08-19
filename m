@@ -2,117 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C609BC32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222B8C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:39:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349349AbiHSOin (ORCPT
+        id S1349588AbiHSOjR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
+        Fri, 19 Aug 2022 10:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349361AbiHSOih (ORCPT
+        with ESMTP id S1349582AbiHSOjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:38:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6943F4CA2E
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:38:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22344B827E9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA86BC433C1;
-        Fri, 19 Aug 2022 14:38:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660919912;
-        bh=TvKxoPTWbVRabhPk9a4rPqMy4W63RDOrWmCVASuqvME=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DEw47xgVqQEc1ADODU8BOwMIN++XRhfxnJMDhqIpSrFIOm8UKx0XIP43U+0Z7e6nO
-         K6nMS2zbJOu0JMRqJWKn9it4HYcxAYgo7hycLxzfKs/S2pJZzOvfG2OggbFz7tJ2My
-         MhFb5P915YjGQyzAcmOiSKdzavmPZeKXzotNBrpnXn4h3vTagxWRXUkvd4H2c3j/eq
-         VZj+uGVGwCGClhhydiXBDP5lp7agNisAixBkhJJ7U29kpqRIVvBJLS7+xz7MrUdhtm
-         5IuaTEYM+zgIb4avftvHqVX1ftelNpfrhgfVp5RISdOi4xtRPo9Ni7Na7olPpWWdzx
-         lGdk33jLIJPbA==
-Date:   Fri, 19 Aug 2022 15:38:27 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        gregkh@linuxfoundation.org, rafael@kernel.org, jic23@kernel.org,
-        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
-        tglx@linutronix.de, andy.shevchenko@gmail.com,
-        kernel <kernel@sberdevices.ru>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-Message-ID: <Yv+gY34CRfqu3sCS@sirena.org.uk>
-References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
- <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
- <87mtc1wtjz.wl-maz@kernel.org>
- <Yv5eMcmNOmyLmd++@sirena.org.uk>
- <5793e1a9ef6d5a8fafd3f22cda0bb5e4@kernel.org>
+        Fri, 19 Aug 2022 10:39:10 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37626DADD
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:39:08 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id m3so735611lfg.10
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=KFMtFtZySA4bvpQNARX7HTQqtQoy7c9hAyHo75MNDrc=;
+        b=tFKOpJghYdQzwgphRpBrhjwGCF3+e81YHAqmbInJ7EwZjj7nGg2QBi7wWaHfE10E9n
+         lGxFxV7YIENSDpredOvjEX526Sdq8W7XNSxMpBMQ5LQNTwgmrud5W6Yry0CTygfODRy6
+         8MskW7KBtv/LIHCB6kp9k7mkYtbUxWk/4/BChWRG9nTbi5ULmikcrJvKAQr2eQhjske4
+         LN1PnWjpPyOSLGjvkvA4V5jN1WcEJh+CneSHUzuwUc3JHNpR6mMbYz9ya2D6Ev5H5uk+
+         xP6VH/MIUShEFbskMRYkOkr0d9UYuShmAjQCLRsfyf7N/JeoE0RuC/JoJJGUbqrmEKpu
+         l7Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=KFMtFtZySA4bvpQNARX7HTQqtQoy7c9hAyHo75MNDrc=;
+        b=TGanXXdYfDEAk/SyPuE/RaAc7TtnrPtVZab3gYFxlXJZwsMo21n5TeELiB/EvXNqbE
+         x1jXTlThz7t2uBcDCzjZyhjWYbEAM+QwWQQiPjoM49wp2ttykZyhntUQILL2m2CKhR0W
+         iQ5IiiHyTBCkXVeOzkInM/mZoZZmuSAfWIuur1/+c9c+tDFt6qPJ0EWsISL10hlCIfPv
+         e6SqJw4MEC8XeJYdedGWXBBwDs715nYqKAlkRR+M7xAT58vOAwR6C0347XQYCkSlnA7M
+         KizQCwoIxJ67LVGRXzu+QI0DefBMflxij9diMCmXownvH0pPJK+U8Io1UlgGZarZeycj
+         PIag==
+X-Gm-Message-State: ACgBeo0vbvMJ6DO5wGHc6LScsYIDhm+Nhs+CyE7hf8IzOLUB5RmnxXLw
+        u9sHA3u5++nWdq75aECgWBAO9g==
+X-Google-Smtp-Source: AA6agR4Q1EbYcr4V84vNs+4a4X0At1d5fXgXRHjAm9c4PQOGI0y1GqQpYfoot5t3al3m32CAs6CvCw==
+X-Received: by 2002:a05:6512:280e:b0:48b:132:c420 with SMTP id cf14-20020a056512280e00b0048b0132c420mr2459974lfb.542.1660919946889;
+        Fri, 19 Aug 2022 07:39:06 -0700 (PDT)
+Received: from uffe-XPS13.. (h-94-254-63-18.NA.cust.bahnhof.se. [94.254.63.18])
+        by smtp.gmail.com with ESMTPSA id u7-20020a2e8447000000b002618fbebbbcsm639836ljh.47.2022.08.19.07.39.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 07:39:06 -0700 (PDT)
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+To:     Linus <torvalds@linux-foundation.org>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [GIT PULL] MMC fixes for v6.0-rc2
+Date:   Fri, 19 Aug 2022 16:39:05 +0200
+Message-Id: <20220819143905.8090-1-ulf.hansson@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LxcsmEkn3CkIR9C+"
-Content-Disposition: inline
-In-Reply-To: <5793e1a9ef6d5a8fafd3f22cda0bb5e4@kernel.org>
-X-Cookie: Price does not include taxes.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Linus,
 
---LxcsmEkn3CkIR9C+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Here's a PR with a couple of MMC fixes intended for v6.0-rc2. Details about the
+highlights are as usual found in the signed tag.
 
-On Fri, Aug 19, 2022 at 03:25:44PM +0100, Marc Zyngier wrote:
-> On 2022-08-18 16:43, Mark Brown wrote:
-> > On Thu, Aug 18, 2022 at 02:49:20PM +0100, Marc Zyngier wrote:
+Please pull this in!
 
-> > > I don't care much about regmap as a MMIO backend, but it strikes me as
-> > > odd that you end up with multiple ways of logging the same stuff (with
-> > > a memcpy in the middle of it).
+Kind regards
+Ulf Hansson
 
-> > > Why can't this be done with a small amount of trace post-processing?
 
-> > At the minute we don't put the actual data for the bulk transfers into
-> > the trace so the information simply isn't there.
+The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
 
-> But isn't that what this patch should do?
+  Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
 
-I'd imagine so based on a quick glance at the description, I've not
-actually reviewed it yet, but in that case I'm not sure what your
-concern is here?
+are available in the Git repository at:
 
-> We also have recently merged the CONFIG_TRACE_MMIO_ACCESS which
-> already dumps all sort of MMIO crap^Winformation.
+  git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v6.0-rc1
 
-Yes, that'd also cover it for MMIO based regmaps when enabled but
-obviously other buses exist and can also be accessed via regmap.
+for you to fetch changes up to a0753ef66c34c1739580219dca664eda648164b7:
 
-> Surely there should be a more common approach to this.
+  mmc: sdhci-of-dwcmshc: Re-enable support for the BlueField-3 SoC (2022-08-15 19:31:04 +0200)
 
-There's an argument for tracing at each abstraction layer since they're
-generally all doing *something*, people will look to the layer they're
-accessing and for things like tracing register accesses with buses like
-I2C and SPI regmap is adding the register semantics on top of a bus
-that's just a byte stream.  Even on buses with a native concept of an
-address there's stuff like paging which might be added on depending on
-the device.  They should probably all follow a similar pattern but I'm
-not sure we can do everything at once.
+----------------------------------------------------------------
+MMC host:
+ - meson-gx: Fix error handling in ->probe()
+ - mtk-sd: Fix a command problem when using cqe off/disable
+ - pxamci: Fix error handling in ->probe()
+ - sdhci-of-dwcmshc: Fix broken support for the BlueField-3 variant
 
---LxcsmEkn3CkIR9C+
-Content-Type: application/pgp-signature; name="signature.asc"
+----------------------------------------------------------------
+Christophe JAILLET (3):
+      mmc: pxamci: Fix an error handling path in pxamci_probe()
+      mmc: pxamci: Fix another error handling path in pxamci_probe()
+      mmc: meson-gx: Fix an error handling path in meson_mmc_probe()
 
------BEGIN PGP SIGNATURE-----
+Liming Sun (1):
+      mmc: sdhci-of-dwcmshc: Re-enable support for the BlueField-3 SoC
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL/oGIACgkQJNaLcl1U
-h9DX6Qf+OoBjfgFoO3Xhy+eR2uouLwxbrGR8U/XABS5j60khFX9z7qeEFen0sTLC
-0hbhuRHdXALOdsn8VW3xRINy0OEyVqngLxRGJwFBihY8tChOHkyI9F1gKc0VhjYM
-B1afQt28gy//Ci4yrYFg+mqOuEZJOKiygQSHNtkRZthn5nd83Oz06Zjik0APr6n+
-RPomVD9CMlaX8Naz6BeF7NHL2zrSU33sBEdMpqU2Ze4sWAP523cLkICC7sX4R0Za
-Cjag/ctllqxmCVLxghbZJL+mK1YxNN0l+zkJ5OOpmhi+LZFU8OBuQrTtf0mdFe2o
-vAjgi9Lq8RfTOeodMV9gB0vBiVCKdw==
-=RN6r
------END PGP SIGNATURE-----
+Wenbin Mei (1):
+      mmc: mtk-sd: Clear interrupts when cqe off/disable
 
---LxcsmEkn3CkIR9C+--
+ drivers/mmc/host/meson-gx-mmc.c     |  6 ++++--
+ drivers/mmc/host/mtk-sd.c           |  6 ++++++
+ drivers/mmc/host/pxamci.c           |  4 ++--
+ drivers/mmc/host/sdhci-of-dwcmshc.c | 16 ++++++++++++++--
+ 4 files changed, 26 insertions(+), 6 deletions(-)
