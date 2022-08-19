@@ -2,140 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64859C32773
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D60BC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347625AbiHSJoa (ORCPT
+        id S1347995AbiHSJrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        Fri, 19 Aug 2022 05:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347149AbiHSJo1 (ORCPT
+        with ESMTP id S1346902AbiHSJrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:44:27 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422D24AD63;
-        Fri, 19 Aug 2022 02:44:24 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([213.55.225.138]) by
- mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0MGTcU-1oBnG52lV2-00DHxp; Fri, 19 Aug 2022 11:44:02 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Agner <stefan@agner.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] ARM: dts: vf610: ddr pinmux
-Date:   Fri, 19 Aug 2022 11:43:54 +0200
-Message-Id: <20220819094354.247273-1-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 19 Aug 2022 05:47:10 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEDAEEF32;
+        Fri, 19 Aug 2022 02:47:07 -0700 (PDT)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id AA49D60007;
+        Fri, 19 Aug 2022 09:47:02 +0000 (UTC)
+Date:   Fri, 19 Aug 2022 11:46:59 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Marco Felsch <m.felsch@pengutronix.de>
+Cc:     mchehab@kernel.org, sakari.ailus@linux.intel.com,
+        laurent.pinchart+renesas@ideasonboard.com,
+        jacopo+renesas@jmondi.org, akinobu.mita@gmail.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 1/4] media: mt9m111: add V4L2_CID_PIXEL_RATE support
+Message-ID: <20220819094659.tgngnhr5taup2lhl@uno.localdomain>
+References: <20220818144712.997477-1-m.felsch@pengutronix.de>
+ <20220818161108.dlmi77o6j7wcyayc@uno.localdomain>
+ <20220819075615.a3nuakrac54kn7t3@pengutronix.de>
+ <20220819081548.q6c5pwio2z2ambqq@uno.localdomain>
+ <20220819090438.72vlat6by3ag6pvd@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:+kwEpCR2FMedMP8II0ZiZZWP/w6ychwvgRYCvG4l1RpzTRuEcJW
- U+VeTwdN0SX91wFuVeaJe0mGBABRrDDn0ga+guMmj/apHj7Uhdybn2iq4Rbtz/t05gZSELM
- u+cZzp2FJLruwibDBFUdoadZzTtPlR46PrfxQMTXMwEX4CX3ejQ7zOz8BqtnWXsOliCCJAM
- QsrHow8or+WFQD7FIXZKA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3OYq7tY+gQw=:MfcKlhbf3BAUk3g+hI+O9j
- GlhV6wUYW6FkTlP4GBqLbXN8TxdggD0FJMyngKh3bwjZytBDZOAIpgL3d8G+xR3vi2S2mXZHX
- SPsQXeZXata8g0/fUXi8ZCeHs3puyNh47vn6lGlG7z5rLhy1ttBb+YTZ8GKBIfjN6DShyP+Cw
- wdF2MtoTQ0pDAzFjx4rGYAkRywJlj07maGU7hP7foJrBVTrSJ5GAdJ16YtzrGfYl5Fz35z7tw
- 2BNd8IiRccMOOqmQa1+MfSodfeyZ0K4+DEeNrttI7e6J0IEqurVpmw+tOVGePa+bi36J96IRS
- 9U+KNIIQRWvKYIqArgtEC/Qj5dYPK8DNfb6LtjRrUp/KlIkFoEmGsoNcsq4ON4VMM9sptrbwr
- XF8vBI7GZnvfNP+Up+POhw4NP56mUJXRVwxOw/pZMk9VJwi8vZ9szQKiaZcPSXUJbGIN8IXAR
- /LDpl3JQKWanMIy7mNnYGflygTEEoU+87h6dVe+7hqx+U9CqU2evNK0KwrcYDyk4K1Pe7zHIn
- JO2ERqcSniasWWhsppBau9Uo6RcSpcMjr/shmPMoOs4xnii6YOjZKzbb2jeHtBGjREBCv8cng
- p3KEQyNqDZDax6BXiBx5cyOsu/lWwtCFcrsjA8JFhWrLE1seyPvK/sTGu+M/7yq2n/YdXOWDA
- L/rVLtdDRD92F/XELSQbj5PWn6p9LHMffNsj2QQ9IeSuNxW7VFgbEzddeQFfx6+PGa1+sepdO
- cfB84mJ31mFZENTJE5hBy0eq7EZDOpYkmlNoQb7B7UBt1zOLgQ61pWN8W6I=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220819090438.72vlat6by3ag6pvd@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Hi Marco,
 
-Add DDR pinmux which may be used in U-Boot after synchronising all
-them device trees (and includes) from Linux.
+On Fri, Aug 19, 2022 at 11:04:38AM +0200, Marco Felsch wrote:
+> On 22-08-19, Jacopo Mondi wrote:
+> > Hi Marco
+> >
+> > On Fri, Aug 19, 2022 at 09:56:15AM +0200, Marco Felsch wrote:
+> > > Hi Jacopo,
+> > >
+> > > On 22-08-18, Jacopo Mondi wrote:
+> > > > Hi Marco
+> > > >
+> > > > On Thu, Aug 18, 2022 at 04:47:09PM +0200, Marco Felsch wrote:
+> > > > > Add support to report the PIXEL_RATE so a host or bridge device can ask
+> > > > > the sensor.
+> > > > >
+> > > > > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+> > > > > ---
+> > > > >  drivers/media/i2c/mt9m111.c | 15 ++++++++++++++-
+> > > > >  1 file changed, 14 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/media/i2c/mt9m111.c b/drivers/media/i2c/mt9m111.c
+> > > > > index afc86efa9e3e..cdaf283e1309 100644
+> > > > > --- a/drivers/media/i2c/mt9m111.c
+> > > > > +++ b/drivers/media/i2c/mt9m111.c
+> > > > > @@ -908,6 +908,8 @@ static int mt9m111_s_ctrl(struct v4l2_ctrl *ctrl)
+> > > > >  		return mt9m111_set_test_pattern(mt9m111, ctrl->val);
+> > > > >  	case V4L2_CID_COLORFX:
+> > > > >  		return mt9m111_set_colorfx(mt9m111, ctrl->val);
+> > > > > +	case V4L2_CID_PIXEL_RATE:
+> > > > > +		return 0;
+> > > >
+> > > > By default PIXEL_RATE is read-only.
+> > > > Do you get a call to s_ctrl for it ?
+> > >
+> > > You're absolutly right, we don't need to do this.
+> > >
+> > > > >  	}
+> > > > >
+> > > > >  	return -EINVAL;
+> > > > > @@ -1249,6 +1251,7 @@ static int mt9m111_probe(struct i2c_client *client)
+> > > > >  {
+> > > > >  	struct mt9m111 *mt9m111;
+> > > > >  	struct i2c_adapter *adapter = client->adapter;
+> > > > > +	unsigned long mclk_rate;
+> > > > >  	int ret;
+> > > > >
+> > > > >  	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WORD_DATA)) {
+> > > > > @@ -1271,6 +1274,13 @@ static int mt9m111_probe(struct i2c_client *client)
+> > > > >  	if (IS_ERR(mt9m111->clk))
+> > > > >  		return PTR_ERR(mt9m111->clk);
+> > > > >
+> > > > > +	ret = clk_prepare_enable(mt9m111->clk);
+> > > > > +	if (ret < 0)
+> > > > > +		return ret;
+> > > > > +
+> > > >
+> > > > Do you need to enable clock to read its rate ?
+> > >
+> > > Yes, accroding the API [1].
+> > >
+> > > [1] https://elixir.bootlin.com/linux/v6.0-rc1/source/include/linux/clk.h#L682
+> >
+> > So weird! none of the drivers I checked do that. The most common
+> > pattern is
+> >
+> >         clk = devm_clk_get();
+> >         rate = clk_get_rate(clk)
+> >         if (rate != RATE)
+> >                 ...
+>
+> Yep, I know. There are a lot of drivers not respecting this.
+>
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+I wonder if it's really necessary then :)
 
----
+> > >
+> > > > > +	mclk_rate = clk_get_rate(mt9m111->clk);
+> > > > > +	clk_disable_unprepare(mt9m111->clk);
+> > > > > +
+> > > > >  	mt9m111->regulator = devm_regulator_get(&client->dev, "vdd");
+> > > > >  	if (IS_ERR(mt9m111->regulator)) {
+> > > > >  		dev_err(&client->dev, "regulator not found: %ld\n",
+> > > > > @@ -1285,7 +1295,7 @@ static int mt9m111_probe(struct i2c_client *client)
+> > > > >  	mt9m111->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
+> > > > >  				 V4L2_SUBDEV_FL_HAS_EVENTS;
+> > > > >
+> > > > > -	v4l2_ctrl_handler_init(&mt9m111->hdl, 7);
+> > > > > +	v4l2_ctrl_handler_init(&mt9m111->hdl, 8);
+> > > > >  	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops,
+> > > > >  			V4L2_CID_VFLIP, 0, 1, 1, 0);
+> > > > >  	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops,
+> > > > > @@ -1309,6 +1319,9 @@ static int mt9m111_probe(struct i2c_client *client)
+> > > > >  				BIT(V4L2_COLORFX_NEGATIVE) |
+> > > > >  				BIT(V4L2_COLORFX_SOLARIZATION)),
+> > > > >  			V4L2_COLORFX_NONE);
+> > > > > +	v4l2_ctrl_new_std(&mt9m111->hdl, &mt9m111_ctrl_ops, V4L2_CID_PIXEL_RATE,
+> > > > > +			  mclk_rate, mclk_rate, 1, mclk_rate);
+> > > > > +
+> > > >
+> > > > I don't have a datasheet but it seems a little weird that the mclk
+> > > > frequency is the same as the pixel clock rate ?
+> > >
+> > > I see your confusion here. I can only speak for the MT9M131 device which
+> > > is covered by this driver as well. This device is composed of a
+> > > internal-sensor and a internal-isp. The internal-sensor is clocked by
+> > > mclk/2 but the final image device/sensor output-fifo is clocked by mclk.
+> >
+> > No PLL, no rate multiplier/divider ? Does this sensor only work with
+> > one pixel rate that is defined by the input clock rate ?
+> >
+> > > There are options to devide the output clock as well, but these options
+> > > are not enabled yet. So yes, the pixel clock rate == mclk rate. To avoid
+> >
+> > Ah ok
+> >
+> > Could you share your setup mclk, resolution and frame rate to show how
+> > the pixel rate and the mclk rate are related ?
+>
+>
+> mclk:      54 MHz (input)
+> pixelclk:  54 MHz (output)
+> res:       1280x1024
 
- arch/arm/boot/dts/vf610-pinfunc.h | 52 ++++++++++++++++++++++++++++++-
- 1 file changed, 51 insertions(+), 1 deletion(-)
+You should take blankings into account as well, even if I havent'
+found where they are programmed in the driver
 
-diff --git a/arch/arm/boot/dts/vf610-pinfunc.h b/arch/arm/boot/dts/vf610-pinfunc.h
-index f1e5a7cf58a9..b7b7322a2d1b 100644
---- a/arch/arm/boot/dts/vf610-pinfunc.h
-+++ b/arch/arm/boot/dts/vf610-pinfunc.h
-@@ -420,7 +420,7 @@
- #define VF610_PAD_PTD29__FTM3_CH2		0x104 0x000 ALT4 0x0
- #define VF610_PAD_PTD29__DSPI2_SIN		0x104 0x000 ALT5 0x0
- #define VF610_PAD_PTD29__DEBUG_OUT11		0x104 0x000 ALT7 0x0
--#define VF610_PAD_PTD28__GPIO_66	 	0x108 0x000 ALT0 0x0
-+#define VF610_PAD_PTD28__GPIO_66		0x108 0x000 ALT0 0x0
- #define VF610_PAD_PTD28__FB_AD28		0x108 0x000 ALT1 0x0
- #define VF610_PAD_PTD28__NF_IO12		0x108 0x000 ALT2 0x0
- #define VF610_PAD_PTD28__I2C2_SCL		0x108 0x34C ALT3 0x1
-@@ -802,5 +802,55 @@
- #define VF610_PAD_PTE28__EWM_OUT		0x214 0x000 ALT7 0x0
- #define VF610_PAD_PTA7__GPIO_134		0x218 0x000 ALT0 0x0
- #define VF610_PAD_PTA7__VIU_PIX_CLK		0x218 0x3AC ALT1 0x1
-+#define VF610_PAD_DDR_RESETB			0x21c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A15__DDR_A_15		0x220 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A14__DDR_A_14		0x224 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A13__DDR_A_13		0x228 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A12__DDR_A_12		0x22c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A11__DDR_A_11		0x230 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A10__DDR_A_10		0x234 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A9__DDR_A_9		0x238 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A8__DDR_A_8		0x23c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A7__DDR_A_7		0x240 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A6__DDR_A_6		0x244 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A5__DDR_A_5		0x248 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A4__DDR_A_4		0x24c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A3__DDR_A_3		0x250 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A2__DDR_A_2		0x254 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A1__DDR_A_1		0x258 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_A0__DDR_A_0		0x25c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_BA2__DDR_BA_2		0x260 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_BA1__DDR_BA_1		0x264 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_BA0__DDR_BA_0		0x268 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_CAS__DDR_CAS_B		0x26c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_CKE__DDR_CKE_0		0x270 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_CLK__DDR_CLK_0		0x274 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_CS__DDR_CS_B_0		0x278 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D15__DDR_D_15		0x27c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D14__DDR_D_14		0x280 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D13__DDR_D_13		0x284 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D12__DDR_D_12		0x288 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D11__DDR_D_11		0x28c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D10__DDR_D_10		0x290 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D9__DDR_D_9		0x294 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D8__DDR_D_8		0x298 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D7__DDR_D_7		0x29c 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D6__DDR_D_6		0x2a0 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D5__DDR_D_5		0x2a4 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D4__DDR_D_4		0x2a8 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D3__DDR_D_3		0x2ac 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D2__DDR_D_2		0x2b0 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D1__DDR_D_1		0x2b4 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_D0__DDR_D_0		0x2b8 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_DQM1__DDR_DQM_1		0x2bc 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_DQM0__DDR_DQM_0		0x2c0 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_DQS1__DDR_DQS_1		0x2c4 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_DQS0__DDR_DQS_0		0x2c8 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_RAS__DDR_RAS_B		0x2cc 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_WE__DDR_WE_B		0x2d0 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_ODT1__DDR_ODT_0		0x2d4 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_ODT0__DDR_ODT_1		0x2d8 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_DDRBYTE1__DDR_DDRBYTE1	0x2dc 0x000 ALT0 0x0
-+#define VF610_PAD_DDR_DDRBYTE2__DDR_DDRBYTE2	0x2e0 0x000 ALT0 0x0
- 
- #endif
--- 
-2.36.1
 
+> fps:       15
+> bus-width: 8
+> bpp:       16
+>
+> After re-reading the PIXEL_RATE, maybe I missunderstood the control. As
+> of now I thought it is the amount of bytes per second send on the bus.
+
+Not bytes but pixels :)
+
+And the above gives me a 19.660.800 Hz pixel rate
+
+
+> But the documentation says pixels per second... Is there a control to
+> expose the current pixelclk on the mbus? What I wanna do in the end is
+> to calculate the througput on the (parallel-)bus.
+
+Not for parallel busses as far as I'm aware as my understanding is
+that CID_LINK_FREQ applies to CSI-2 setups only.
+
+To get the byte rate on the bus I would simply multiply the pixel
+clock by the number of bytes per pixel, in this case 2.
+
+>
+> > > confusion I could rename the mclk_rate to extclk_rate but then clock
+> > > request is not 100% correct since we are requesting a "mclk", this
+> > > should be "extclk".
+> >
+> > Doesn't really make a difference!
+> >
+> > A comment in the code to explain what happens would help though!
+>
+> I did that right now, after your confusion :)
+>
+> Regards,
+>   Marco
+>
+> >
+> > >
+> > > Regards,
+> > >   Marco
+> > >
+> > > > >  	mt9m111->subdev.ctrl_handler = &mt9m111->hdl;
+> > > > >  	if (mt9m111->hdl.error) {
+> > > > >  		ret = mt9m111->hdl.error;
+> > > > > --
+> > > > > 2.30.2
+> > > > >
+> > > >
+> >
