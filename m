@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35008C32771
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A558C32773
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353979AbiHSQpf (ORCPT
+        id S1354011AbiHSQpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56614 "EHLO
+        Fri, 19 Aug 2022 12:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353627AbiHSQme (ORCPT
+        with ESMTP id S1353554AbiHSQmn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:42:34 -0400
+        Fri, 19 Aug 2022 12:42:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C11129818;
-        Fri, 19 Aug 2022 09:11:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99266558C8;
+        Fri, 19 Aug 2022 09:11:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0AAD61831;
-        Fri, 19 Aug 2022 16:11:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE9B0C433C1;
-        Fri, 19 Aug 2022 16:11:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC97361888;
+        Fri, 19 Aug 2022 16:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE93CC433D6;
+        Fri, 19 Aug 2022 16:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925463;
-        bh=Xqe1kNlPDdEINyC5igfE7q3ovCl54Fa6yCcM0bnPJ0Y=;
+        s=korg; t=1660925393;
+        bh=THYaxhYxEtt5DwL3NnXBSqE1FH6qDsr39tfqXb4p+iA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wcg9YXRPqgT29HLXyyT9Y52HPIPCTQ4YeVYNuhj6ezi28H1M3qYdVtCLfyEuJa410
-         JJYXBIz7aYdv82cVnVEyppgCQmX+HhOsOF/0CK3smo8v8QrPbgtCFgtlLbijpy2+HE
-         pdhzs5IMMzhYai9uYQivRhbO6ugHraAGwbn/9/84=
+        b=TMPXUY0fxUR252LqFYU76InfDXCRawsqVicLQk22iC5fIorJlBAQuc6nhnKZSmCI1
+         8QGA+EnvHu6qehQMzSrERL3dohibnZX2cJM3cY/19Skv81vHO9D4EcIupaizZ97iZR
+         bAafw7/8tjYYH1IjNrc0ernkgUDqOYzlYO/yMTK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sachin Sant <sachinp@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 498/545] powerpc/powernv/kvm: Use darn for H_RANDOM on Power9
-Date:   Fri, 19 Aug 2022 17:44:28 +0200
-Message-Id: <20220819153851.777568501@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 438/545] video: fbdev: s3fb: Check the size of screen before memset_io()
+Date:   Fri, 19 Aug 2022 17:43:28 +0200
+Message-Id: <20220819153849.021915423@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,143 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 7ef3d06f1bc4a5e62273726f3dc2bd258ae1c71f ]
+[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
 
-The existing logic in KVM to support guests calling H_RANDOM only works
-on Power8, because it looks for an RNG in the device tree, but on Power9
-we just use darn.
+In the function s3fb_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause the following bug:
 
-In addition the existing code needs to work in real mode, so we have the
-special cased powernv_get_random_real_mode() to deal with that.
+[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
+[   54.083742] #PF: supervisor write access in kernel mode
+[   54.083744] #PF: error_code(0x0002) - not-present page
+[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
+[   54.083782] Call Trace:
+[   54.083788]  s3fb_set_par+0x1ec6/0x4040
+[   54.083806]  fb_set_var+0x604/0xeb0
+[   54.083836]  do_fb_ioctl+0x234/0x670
 
-Instead just have KVM call ppc_md.get_random_seed(), and do the real
-mode check inside of there, that way we use whatever RNG is available,
-including darn on Power9.
+Fix the this by checking the value of 'screen_size' before memset_io().
 
-Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
-Cc: stable@vger.kernel.org # v4.1+
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Sachin Sant <sachinp@linux.ibm.com>
-[mpe: Rebase on previous commit, update change log appropriately]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220727143219.2684192-2-mpe@ellerman.id.au
+Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/archrandom.h |  5 ----
- arch/powerpc/kvm/book3s_hv_builtin.c  |  7 +++---
- arch/powerpc/platforms/powernv/rng.c  | 36 ++++++---------------------
- 3 files changed, 12 insertions(+), 36 deletions(-)
+ drivers/video/fbdev/s3fb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/powerpc/include/asm/archrandom.h b/arch/powerpc/include/asm/archrandom.h
-index 9a53e29680f4..258174304904 100644
---- a/arch/powerpc/include/asm/archrandom.h
-+++ b/arch/powerpc/include/asm/archrandom.h
-@@ -38,12 +38,7 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
- #endif /* CONFIG_ARCH_RANDOM */
+diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
+index 5c74253e7b2c..a936455a3df2 100644
+--- a/drivers/video/fbdev/s3fb.c
++++ b/drivers/video/fbdev/s3fb.c
+@@ -902,6 +902,8 @@ static int s3fb_set_par(struct fb_info *info)
+ 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
+ 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
  
- #ifdef CONFIG_PPC_POWERNV
--int powernv_hwrng_present(void);
- int powernv_get_random_long(unsigned long *v);
--int powernv_get_random_real_mode(unsigned long *v);
--#else
--static inline int powernv_hwrng_present(void) { return 0; }
--static inline int powernv_get_random_real_mode(unsigned long *v) { return 0; }
- #endif
- 
- #endif /* _ASM_POWERPC_ARCHRANDOM_H */
-diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
-index 856a04ca833c..2f3e8b547f4e 100644
---- a/arch/powerpc/kvm/book3s_hv_builtin.c
-+++ b/arch/powerpc/kvm/book3s_hv_builtin.c
-@@ -19,7 +19,7 @@
- #include <asm/cputable.h>
- #include <asm/kvm_ppc.h>
- #include <asm/kvm_book3s.h>
--#include <asm/archrandom.h>
-+#include <asm/machdep.h>
- #include <asm/xics.h>
- #include <asm/xive.h>
- #include <asm/dbell.h>
-@@ -176,13 +176,14 @@ EXPORT_SYMBOL_GPL(kvmppc_hcall_impl_hv_realmode);
- 
- int kvmppc_hwrng_present(void)
- {
--	return powernv_hwrng_present();
-+	return ppc_md.get_random_seed != NULL;
- }
- EXPORT_SYMBOL_GPL(kvmppc_hwrng_present);
- 
- long kvmppc_rm_h_random(struct kvm_vcpu *vcpu)
- {
--	if (powernv_get_random_real_mode(&vcpu->arch.regs.gpr[4]))
-+	if (ppc_md.get_random_seed &&
-+	    ppc_md.get_random_seed(&vcpu->arch.regs.gpr[4]))
- 		return H_SUCCESS;
- 
- 	return H_HARDWARE;
-diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
-index a99033c3dce7..5f81ff9b5265 100644
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -29,15 +29,6 @@ struct powernv_rng {
- 
- static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
- 
--int powernv_hwrng_present(void)
--{
--	struct powernv_rng *rng;
--
--	rng = get_cpu_var(powernv_rng);
--	put_cpu_var(rng);
--	return rng != NULL;
--}
--
- static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
- {
- 	unsigned long parity;
-@@ -58,19 +49,6 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
- 	return val;
- }
- 
--int powernv_get_random_real_mode(unsigned long *v)
--{
--	struct powernv_rng *rng;
--
--	rng = raw_cpu_read(powernv_rng);
--	if (!rng)
--		return 0;
--
--	*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
--
--	return 1;
--}
--
- static int powernv_get_random_darn(unsigned long *v)
- {
- 	unsigned long val;
-@@ -107,12 +85,14 @@ int powernv_get_random_long(unsigned long *v)
- {
- 	struct powernv_rng *rng;
- 
--	rng = get_cpu_var(powernv_rng);
--
--	*v = rng_whiten(rng, in_be64(rng->regs));
--
--	put_cpu_var(rng);
--
-+	if (mfmsr() & MSR_DR) {
-+		rng = get_cpu_var(powernv_rng);
-+		*v = rng_whiten(rng, in_be64(rng->regs));
-+		put_cpu_var(rng);
-+	} else {
-+		rng = raw_cpu_read(powernv_rng);
-+		*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
-+	}
- 	return 1;
- }
- EXPORT_SYMBOL_GPL(powernv_get_random_long);
++	if (screen_size > info->screen_size)
++		screen_size = info->screen_size;
+ 	memset_io(info->screen_base, 0x00, screen_size);
+ 	/* Device and screen back on */
+ 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
 -- 
 2.35.1
 
