@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F55C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 21:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058E7C32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 21:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351804AbiHSVOr (ORCPT
+        id S1352319AbiHSVOw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 17:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
+        Fri, 19 Aug 2022 17:14:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351689AbiHSVOn (ORCPT
+        with ESMTP id S1351700AbiHSVOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 17:14:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650E3D399A;
-        Fri, 19 Aug 2022 14:14:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933B4D3E53
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:14:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02E5C6173F;
-        Fri, 19 Aug 2022 21:14:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6978FC433B5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30C8161737
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 21:14:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 98444C433C1;
         Fri, 19 Aug 2022 21:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660943681;
-        bh=4ygUPp+aIFecoGYX8y+QA9dNQzyIbBQ+ZAyD0vk6aYA=;
+        bh=GCa0IDVBdMQYrcNjZJ2AAdGVMd7ovgaNFED0tmvuzXc=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=pHLWDctchzvdnFGiD7M0cT0b4uwa5PoMDtdfbu5bgPxJwYzotkpktO7u7TPb1N0HQ
-         iInZdPWIq+a1fO2LkCPslIzoIqn/sGxQgAM5Cq+huj1ik/vXTL3O2V67vPdlzdkb6K
-         ugwz0KBYrshX8zbTe4yvOHeUCD6NKkviOeJSqhGVHePp2gTjdFJE4iz+IOxco51Ald
-         ZKnHHwu6eBrhI5Fd9zKeKvLZQh78XZ8bgSOa5ZS1AaMlL0QHxsXi0WHSr1rAvkx0EB
-         n10/zQ10PdkjHfWofwkZSrP1h9tjpcfn7IEMiDPU0GmgbSgWz1s0wCluk1bATfVeW9
-         MYddUdboyeHsA==
+        b=fK+Nw4MnjAjQzlbhmNEvvwWbi0hfkY3DUcc0+14B9mjOn/7lEyeDSl90Gl6Yhc08a
+         QU/7KVVSaXm0TKmfyK/cxcoDi3JP5bJTGrMLzGMRaWKxGhw7CwG0MO+G8BOTrgnlnt
+         uxT56JaiK6rfq/sfvg9h0Iy2bK5dWxJ1vS6F7hcXUv4HDVva98SCmEaiH841eg42cf
+         kKPl+Et0F8mKUOa+KysUK5RGyDTcZGguNJ5qgUdMgecxmGCm8zI8t5rHGkjp8h8nsD
+         9kHxAxN+NRb6BfrTwYlMycEHy2pVDzTqTSUDIPNS8207a/QA6u/XMGZxglmJhJoTys
+         4oAa4cgXlHLYg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5704BC43142;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 85C7EE2A050;
         Fri, 19 Aug 2022 21:14:41 +0000 (UTC)
-Subject: Re: [GIT PULL] Btrfs fixes for 6.0-rc2
+Subject: Re: [GIT PULL] RISC-V Fixes for 6.0-rc2
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <cover.1660908668.git.dsterba@suse.com>
-References: <cover.1660908668.git.dsterba@suse.com>
+In-Reply-To: <mhng-74337228-62c4-40ed-b7af-0d988ff94993@palmer-mbp2014>
+References: <mhng-74337228-62c4-40ed-b7af-0d988ff94993@palmer-mbp2014>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <cover.1660908668.git.dsterba@suse.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-6.0-rc1-tag
-X-PR-Tracked-Commit-Id: 899b7f69f244e539ea5df1b4d756046337de44a5
+X-PR-Tracked-Message-Id: <mhng-74337228-62c4-40ed-b7af-0d988ff94993@palmer-mbp2014>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-6.0-rc2
+X-PR-Tracked-Commit-Id: 96264230a6817bcd4a7ae0fc30c60bfb46499f68
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 42c54d5491ed7b9fe89a499224494277a33b23df
-Message-Id: <166094368135.15089.7383849118918589560.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 8fd00059cc13c7f170451e9318a9a5e772b88e17
+Message-Id: <166094368154.15089.7972422322159327730.pr-tracker-bot@kernel.org>
 Date:   Fri, 19 Aug 2022 21:14:41 +0000
-To:     David Sterba <dsterba@suse.com>
-Cc:     torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 19 Aug 2022 14:00:51 +0200:
+The pull request you sent on Fri, 19 Aug 2022 09:28:44 -0700 (PDT):
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-6.0-rc1-tag
+> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-6.0-rc2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/42c54d5491ed7b9fe89a499224494277a33b23df
+https://git.kernel.org/torvalds/c/8fd00059cc13c7f170451e9318a9a5e772b88e17
 
 Thank you!
 
