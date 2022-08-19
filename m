@@ -2,182 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC11C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EB7C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 11:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348814AbiHSLZG (ORCPT
+        id S1348211AbiHSLZe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 07:25:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        Fri, 19 Aug 2022 07:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348819AbiHSLYw (ORCPT
+        with ESMTP id S1348835AbiHSLZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 07:24:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685A7DA3C6;
-        Fri, 19 Aug 2022 04:24:50 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 17E4C34450;
-        Fri, 19 Aug 2022 11:24:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660908289; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=X71bsXQe8X2f7i/wXt+ZaSMOEJy6QPzm6trBFKfJVg4=;
-        b=wSJow9AcSgg3Gh+KlijcBCh0yKDvH2+oVWlKE1M7jaD+ds6m1txscyAlqKbsMJI48k7qvI
-        o05HJChUiE05yWV01tisn5upkQvq+6I2mGPk961MEfQGwHWrqM8I7rikZq9IJLDHvs8nho
-        a9u+9BoEv0NxKoOSuLXSluohOJsYbmQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660908289;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=X71bsXQe8X2f7i/wXt+ZaSMOEJy6QPzm6trBFKfJVg4=;
-        b=aVrT3+KO7RULInVTdRKbngA/gi84S5COyCdI15brX97/QfYBfXrCPYwkqh5YVHCL7n7RKd
-        jf+Q1f7bubrM3bAQ==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E2A862C141;
-        Fri, 19 Aug 2022 11:24:48 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 9CD90A0635; Fri, 19 Aug 2022 13:24:48 +0200 (CEST)
-Date:   Fri, 19 Aug 2022 13:24:48 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>, Jan Kara <jack@suse.cz>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v4 2/4] fanotify: define struct members to hold response
- decision context
-Message-ID: <20220819112448.poyke7hqcqrnolg5@quack3>
-References: <cover.1659996830.git.rgb@redhat.com>
- <8767f3a0d43d6a994584b86c03eb659a662cc416.1659996830.git.rgb@redhat.com>
- <CAOQ4uxjWCyFNATVmAcgOa8HNk6Upj+PPrJF7DA9V-4LjOGAALA@mail.gmail.com>
+        Fri, 19 Aug 2022 07:25:21 -0400
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A182FD9EAA;
+        Fri, 19 Aug 2022 04:25:16 -0700 (PDT)
+Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JBM6OK008105;
+        Fri, 19 Aug 2022 04:22:43 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=PPS06212021;
+ bh=OxkVfPdV09BsblCgs3m0EpWVHAADlKxxQ31Gvrw9Euo=;
+ b=g677eaDY6ccDN1X+BphKynRgQ3Fas8CSJhLsubF73HuXxUIQVhtWRGgRTH/vlTsb1Hwx
+ 2svye79h+b/FO5o2+aVQLHv9a5bl9KDlsKqWRu/hdeoH3DimvZmEmXhTCi7rHaZFIakT
+ aX267n6KlEnuHhA5BML9DvHgiYgEvwFXxw6LwZftiF8Krv+AhCYJVKMH9orWfHk6svCh
+ e36j9rTDwm3sC6B1Qf5D6e0Jsv/hQx1wbXAaLCOhv47vGNlPwBL0FaW+a1CmYwWMrUNl
+ 7xjTzwP0bkEQwm2Arh2MYuFDGMO18DmMw0ujDtOwApvK/mLG1cnx3QtyKY41dNKSOsxX KA== 
+Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hxbfjn0sj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 19 Aug 2022 04:22:42 -0700
+Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Fri, 19 Aug 2022 04:22:38 -0700
+From:   Dragos-Marian Panait <dragos.panait@windriver.com>
+To:     <stable@vger.kernel.org>
+CC:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 4.14 1/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Fri, 19 Aug 2022 14:22:26 +0300
+Message-ID: <20220819112226.922595-2-dragos.panait@windriver.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220819112226.922595-1-dragos.panait@windriver.com>
+References: <20220819112226.922595-1-dragos.panait@windriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOQ4uxjWCyFNATVmAcgOa8HNk6Upj+PPrJF7DA9V-4LjOGAALA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [128.224.125.191]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
+X-Proofpoint-GUID: eP2hJnvv-X8YTHkC7Sqt6ivkzF88Q8rA
+X-Proofpoint-ORIG-GUID: eP2hJnvv-X8YTHkC7Sqt6ivkzF88Q8rA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ mlxlogscore=977 clxscore=1015 phishscore=0 bulkscore=0 priorityscore=1501
+ impostorscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208190044
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 10-08-22 08:22:49, Amir Goldstein wrote:
-> [+linux-api]
-> 
-> On Tue, Aug 9, 2022 at 7:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > This patch adds a flag, FAN_INFO and an extensible buffer to provide
-> > additional information about response decisions.  The buffer contains
-> > one or more headers defining the information type and the length of the
-> > following information.  The patch defines one additional information
-> > type, FAN_RESPONSE_INFO_AUDIT_RULE, an audit rule number.  This will
-> > allow for the creation of other information types in the future if other
-> > users of the API identify different needs.
-> >
-> > Suggested-by: Steve Grubb <sgrubb@redhat.com>
-> > Link: https://lore.kernel.org/r/2745105.e9J7NaK4W3@x2
-> > Suggested-by: Jan Kara <jack@suse.cz>
-> > Link: https://lore.kernel.org/r/20201001101219.GE17860@quack2.suse.cz
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > ---
+From: Pavel Skripkin <paskripkin@gmail.com>
 
+commit 0ac4827f78c7ffe8eef074bc010e7e34bc22f533 upstream.
+
+Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
+problem was in incorrect htc_handle->drv_priv initialization.
+
+Probable call trace which can trigger use-after-free:
+
+ath9k_htc_probe_device()
+  /* htc_handle->drv_priv = priv; */
+  ath9k_htc_wait_for_target()      <--- Failed
+  ieee80211_free_hw()		   <--- priv pointer is freed
+
+<IRQ>
 ...
+ath9k_hif_usb_rx_cb()
+  ath9k_hif_usb_rx_stream()
+   RX_STAT_INC()		<--- htc_handle->drv_priv access
 
-> >  static int process_access_response(struct fsnotify_group *group,
-> > -                                  struct fanotify_response *response_struct)
-> > +                                  struct fanotify_response *response_struct,
-> > +                                  const char __user *buf,
-> > +                                  size_t count)
-> >  {
-> >         struct fanotify_perm_event *event;
-> >         int fd = response_struct->fd;
-> >         u32 response = response_struct->response;
-> > +       struct fanotify_response_info_header info_hdr;
-> > +       char *info_buf = NULL;
-> >
-> > -       pr_debug("%s: group=%p fd=%d response=%u\n", __func__, group,
-> > -                fd, response);
-> > +       pr_debug("%s: group=%p fd=%d response=%u buf=%p size=%lu\n", __func__,
-> > +                group, fd, response, info_buf, count);
-> >         /*
-> >          * make sure the response is valid, if invalid we do nothing and either
-> >          * userspace can send a valid response or we will clean it up after the
-> >          * timeout
-> >          */
-> > -       switch (response & ~FAN_AUDIT) {
-> > +       if (response & ~FANOTIFY_RESPONSE_VALID_MASK)
-> > +               return -EINVAL;
-> > +       switch (response & FANOTIFY_RESPONSE_ACCESS) {
-> >         case FAN_ALLOW:
-> >         case FAN_DENY:
-> >                 break;
-> >         default:
-> >                 return -EINVAL;
-> >         }
-> > -
-> > -       if (fd < 0)
-> > -               return -EINVAL;
-> > -
-> >         if ((response & FAN_AUDIT) && !FAN_GROUP_FLAG(group, FAN_ENABLE_AUDIT))
-> >                 return -EINVAL;
-> > +       if (fd < 0)
-> > +               return -EINVAL;
-> 
-> Since you did not accept my suggestion of FAN_TEST [1],
-> I am not sure why this check was moved.
-> 
-> However, if you move this check past FAN_INFO processing,
-> you could change the error value to -ENOENT, same as the return value
-> for an fd that is >= 0 but does not correspond to any pending
-> permission event.
-> 
-> The idea was that userspace could write a test
-> fanotify_response_info_audit_rule payload to fanotify fd with FAN_NOFD
-> in the response.fd field.
-> On old kernel, this will return EINVAL.
-> On new kernel, if the fanotify_response_info_audit_rule payload
-> passes all the validations, this will do nothing and return ENOENT.
-> 
-> [1] https://lore.kernel.org/linux-fsdevel/CAOQ4uxi+8HUqyGxQBNMqSong92nreOWLKdy9MCrYg8wgW9Dj4g@mail.gmail.com/
+In order to not add fancy protection for drv_priv we can move
+htc_handle->drv_priv initialization at the end of the
+ath9k_htc_probe_device() and add helper macro to make
+all *_STAT_* macros NULL safe, since syzbot has reported related NULL
+deref in that macros [1]
 
-Yes. Richard, if you don't like the FAN_TEST proposal from Amir, please
-explain (preferably also with sample code) how you imagine userspace will
-decide whether to use FAN_INFO flag in responses or not. Because if it will
-just blindly set it, that will result in all permission events to finished
-with EPERM for kernels not recognizing FAN_INFO.
+Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
+Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com
+Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
+---
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-> > -       if (count < sizeof(response))
-> > -               return -EINVAL;
-> > -
-> > -       count = sizeof(response);
-> > -
-> >         pr_debug("%s: group=%p count=%zu\n", __func__, group, count);
-> >
-> > -       if (copy_from_user(&response, buf, count))
-> > +       if (count < sizeof(response))
-> > +               return -EINVAL;
-> > +       if (copy_from_user(&response, buf, sizeof(response)))
-> >                 return -EFAULT;
-> >
-> > -       ret = process_access_response(group, &response);
-> > +       c = count - sizeof(response);
-> > +       if (response.response & FAN_INFO) {
-> > +               if (c < sizeof(struct fanotify_response_info_header))
-> > +                       return -EINVAL;
-> 
-> Should FAN_INFO require FAN_AUDIT?
-
-Currently we could but longer term not all additional info needs to be
-related to audit so probably I'd not require that even now (which results
-in info being effectively ignored after it is parsed).
-
-								Honza
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 16dff4b89a86..d66d3c9299fb 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -325,11 +325,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
+ 
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-
+-#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+-#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+-#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+-#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
++#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
++#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
++#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
++#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
++#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+ #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+ 
+ #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+index 88e3b4a4de31..9fcdda6f7088 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+@@ -946,7 +946,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	priv->hw = hw;
+ 	priv->htc = htc_handle;
+ 	priv->dev = dev;
+-	htc_handle->drv_priv = priv;
+ 	SET_IEEE80211_DEV(hw, priv->dev);
+ 
+ 	ret = ath9k_htc_wait_for_target(priv);
+@@ -967,6 +966,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	if (ret)
+ 		goto err_init;
+ 
++	htc_handle->drv_priv = priv;
++
+ 	return 0;
+ 
+ err_init:
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.37.1
+
