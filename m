@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC34C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D674C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351730AbiHSQKO (ORCPT
+        id S1351736AbiHSQKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
+        Fri, 19 Aug 2022 12:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349831AbiHSQGp (ORCPT
+        with ESMTP id S1351227AbiHSQGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:06:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEC8104B0A;
-        Fri, 19 Aug 2022 08:56:00 -0700 (PDT)
+        Fri, 19 Aug 2022 12:06:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FA610E7A5;
+        Fri, 19 Aug 2022 08:56:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 906C1615E7;
-        Fri, 19 Aug 2022 15:56:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830F0C433C1;
-        Fri, 19 Aug 2022 15:55:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D918561745;
+        Fri, 19 Aug 2022 15:56:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA42DC433C1;
+        Fri, 19 Aug 2022 15:56:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924560;
-        bh=VgUsXg6j2xmflmD+gNyUG1zzFZ+GaO+YqXg3TuUkSz8=;
+        s=korg; t=1660924563;
+        bh=Lr0HrZMd4wWj9MZOVXFZmFcxwZ0FXpH4x7qydVGbCis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1oRNgpEH5Kh6V/cSCj+ksbjg1IMnHVGnjbyj5grBsaJznk96cuLXXdI4pOjzwe6zq
-         FRPIgesneLvXlX3aXccUOoT+fSJi50TtiK94yTvLeZyrPDvGV8JEANhW0wfC673lEg
-         3eHsqLU7Ak6M6xmQ9cn7WsVzbBkZUOTl8nkfshuk=
+        b=pFYPVSv/yxRuREonCsirouRtlW0eNajFCWAox/T7Qc7fYgsMPgTPZCPxBSOTDr6Ir
+         QZ/cQQZnCIH8KzS8LYdjGNwC7lLXLN2rRCQFu/jM0JUQtlcFdVLmZ3jmJVmoJ4Q5Jv
+         hJzZ1TlJp1sA+P/QCZmANhpIQfPR4WnVMZ/pGtxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 183/545] crypto: ccp - During shutdown, check SEV data pointer before using
-Date:   Fri, 19 Aug 2022 17:39:13 +0200
-Message-Id: <20220819153837.550802866@linuxfoundation.org>
+Subject: [PATCH 5.10 210/545] drm/mediatek: dpi: Only enable dpi after the bridge is enabled
+Date:   Fri, 19 Aug 2022 17:39:40 +0200
+Message-Id: <20220819153838.766202407@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,42 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Lendacky <thomas.lendacky@amd.com>
+From: Guillaume Ranquet <granquet@baylibre.com>
 
-[ Upstream commit 1b05ece0c931536c0a38a9385e243a7962e933f6 ]
+[ Upstream commit aed61ef6beb911cc043af0f2f291167663995065 ]
 
-On shutdown, each CCP device instance performs shutdown processing.
-However, __sev_platform_shutdown_locked() uses the controlling psp
-structure to obtain the pointer to the sev_device structure. However,
-during driver initialization, it is possible that an error can be received
-from the firmware that results in the sev_data pointer being cleared from
-the controlling psp structure. The __sev_platform_shutdown_locked()
-function does not check for this situation and will segfault.
+Enabling the dpi too early causes glitches on screen.
 
-While not common, this scenario should be accounted for. Add a check for a
-NULL sev_device structure before attempting to use it.
+Move the call to mtk_dpi_enable() at the end of the bridge_enable
+callback to ensure everything is setup properly before enabling dpi.
 
-Fixes: 5441a07a127f ("crypto: ccp - shutdown SEV firmware on kexec")
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-16-rex-bc.chen@mediatek.com/
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccp/sev-dev.c | 2 +-
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-index 57b57d4db500..ed39a22e1b2b 100644
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -278,7 +278,7 @@ static int __sev_platform_shutdown_locked(int *error)
- 	struct sev_device *sev = psp_master->sev_data;
- 	int ret;
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 554ad60af4e9..c1ae336df683 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -397,7 +397,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
+ 	if (dpi->pinctrl && dpi->pins_dpi)
+ 		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
  
--	if (sev->state == SEV_STATE_UNINIT)
-+	if (!sev || sev->state == SEV_STATE_UNINIT)
- 		return 0;
+-	mtk_dpi_enable(dpi);
+ 	return 0;
  
- 	ret = __sev_do_cmd_locked(SEV_CMD_SHUTDOWN, NULL, error);
+ err_pixel:
+@@ -534,6 +533,7 @@ static void mtk_dpi_bridge_enable(struct drm_bridge *bridge)
+ 
+ 	mtk_dpi_power_on(dpi);
+ 	mtk_dpi_set_display_mode(dpi, &dpi->mode);
++	mtk_dpi_enable(dpi);
+ }
+ 
+ static const struct drm_bridge_funcs mtk_dpi_bridge_funcs = {
 -- 
 2.35.1
 
