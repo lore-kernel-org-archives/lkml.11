@@ -2,141 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E5EC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E33C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 19:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351370AbiHST2E (ORCPT
+        id S1351003AbiHSTbW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 15:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
+        Fri, 19 Aug 2022 15:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349705AbiHST16 (ORCPT
+        with ESMTP id S1349705AbiHSTbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 15:27:58 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6BE81B2F
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:27:56 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id bh13so4429725pgb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 12:27:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=OdVRHW5dgn9+ZFv7Dx3d9MQVdeaggjviefmhBuLYccY=;
-        b=KLiHLmUnTwUW4nPAcccokb8rqDM7RaZKR3tAhfpWrqa4fyUZ11fQGnRCahlJbMSNkc
-         K7onznVTAcTPdJ5ctU5qfok0xiXA4RUZWWeXukjQhEL0KrbtzmRpe90Uuw2GudQ6cB3z
-         wqidMjhzn3TYXU35oygksNUgU3fknacc64G2XK3+HLTw5IWBs6csGTW6/65ggSWB/q94
-         VV1NbgwFLjrAIvYqiN/GSEoDRheHm2Jcs0J12eYCvBM3w1EYrjOcPA4TzdFyaz7+hBZg
-         W08yNzJhuyiH6ybAoXgAL2/XGKRMYk/cdwhxrx/frztCzW3qlKJK1yFKPYJyVcVN9uzT
-         Z1KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=OdVRHW5dgn9+ZFv7Dx3d9MQVdeaggjviefmhBuLYccY=;
-        b=1DIyRp4EBP0Yhz6r93YhbhVGqhotUBp5uk4l8DgvOmrNQuQh8beqrHYsTBMwrd17hL
-         aWZ+QO07RPPbBS3XIs0WrcWUB/VODuIT24Kmupg+6Zi6+p1uGmrUmZVYWlRY/RIX+xT9
-         h9o5/CPFBPM5zyHY99Pu1cBebC8n4H1p2BQKU3JYQ2zmyq4/pxOyl+8ozOZcfjNE47Si
-         j18UsYVuRQanNZGaKBtPb8p4imSuQQ3Y8e7KKJdMgIQQ9RjoKr48/CZWaqFm+dSlhrqq
-         /wGUdzCdPOSwIOyQThLZknbUnFRhsAmd9nXY2tYU7ZzpRAZ5sX9LXmNWIenn1UMcwGEP
-         H7AA==
-X-Gm-Message-State: ACgBeo38jrBQ1duavcILj4CFXQj1myxeNhB3y44+77gWTS762usHS8PP
-        Py5cP2Ws0DhYEguNiQkgObU6yaGYJh6YTqb8qrXpUA==
-X-Google-Smtp-Source: AA6agR6GwGgHvB/kIWBltf1ldR8xs3lS7wiIsIOwazSdhvuDPMSNX6TOwG4x6BLYFJ/S/btctxhQLjTtMJ9Rygnp60E=
-X-Received: by 2002:a65:5941:0:b0:41d:a203:c043 with SMTP id
- g1-20020a655941000000b0041da203c043mr7317812pgu.483.1660937275721; Fri, 19
- Aug 2022 12:27:55 -0700 (PDT)
+        Fri, 19 Aug 2022 15:31:19 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B085DAB96;
+        Fri, 19 Aug 2022 12:31:17 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9849329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9849:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4D6891EC04E4;
+        Fri, 19 Aug 2022 21:31:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660937472;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=rDBjs6ck2762vz3B6T2wDLAMdlKeW/SGlAz2K+k9L6Q=;
+        b=dBD8WF0JPnWTGqJwpe+ZiyHjT+COtUN+WZgX2h8TY221/ZOtI6nMzvVFWRK5+WmL9Br7of
+        L0oBdrKk+jU6zJrZHW9tDGLCdL62C/34MZeLnYFsCt79AyHttRIW0IrzM3n/OJoCyATmn4
+        sliwkBxOx2gpotfL0YjvuRs979RPbP4=
+Date:   Fri, 19 Aug 2022 21:31:06 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kani, Toshi" <toshi.kani@hpe.com>
+Cc:     Justin He <Justin.He@arm.com>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "devel@acpica.org" <devel@acpica.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        nd <nd@arm.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>
+Subject: Re: [PATCH v2 5/7] EDAC/ghes: Prevent chipset-specific edac from
+ loading after ghes_edac is registered
+Message-ID: <Yv/k+kcj6rRNRzkm@zn.tnic>
+References: <20220817143458.335938-1-justin.he@arm.com>
+ <20220817143458.335938-6-justin.he@arm.com>
+ <DM4PR84MB18538A56870A280CDC4637A7826C9@DM4PR84MB1853.NAMPRD84.PROD.OUTLOOK.COM>
+ <DBBPR08MB453891E87563F1BBE291248AF76C9@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <DM4PR84MB1853B213F2F45E495D9D6446826C9@DM4PR84MB1853.NAMPRD84.PROD.OUTLOOK.COM>
+ <Yv/Wm/Zf0kdGgT33@zn.tnic>
+ <DM4PR84MB185306C2C0DE95FF408173BA826C9@DM4PR84MB1853.NAMPRD84.PROD.OUTLOOK.COM>
+ <Yv/batVmSf7PDRcL@zn.tnic>
+ <DM4PR84MB185311667EA26C06348F6074826C9@DM4PR84MB1853.NAMPRD84.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-References: <20220810152033.946942-1-pgonda@google.com> <20220810152033.946942-11-pgonda@google.com>
-In-Reply-To: <20220810152033.946942-11-pgonda@google.com>
-From:   Vishal Annapurve <vannapurve@google.com>
-Date:   Fri, 19 Aug 2022 12:27:44 -0700
-Message-ID: <CAGtprH-emXA_5dwwdb4noOC-cuy3BTGT8UbKRkPD8j2gjBSu+Q@mail.gmail.com>
-Subject: Re: [V3 10/11] KVM: selftests: Add ucall pool based implementation
-To:     Peter Gonda <pgonda@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Marc Orr <marcorr@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Mingwei Zhang <mizhang@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, andrew.jones@linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <DM4PR84MB185311667EA26C06348F6074826C9@DM4PR84MB1853.NAMPRD84.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 8:20 AM Peter Gonda <pgonda@google.com> wrote:
-> ...
-> +
-> +static struct ucall *ucall_alloc(void)
-> +{
-> +       struct ucall *uc = NULL;
-> +       int i;
-> +
-> +       if (!use_ucall_pool)
-> +               goto out;
-> +
-> +       for (i = 0; i < KVM_MAX_VCPUS; ++i) {
-> +               if (!atomic_test_and_set_bit(i, ucall_pool->in_use)) {
-> +                       uc = &ucall_pool->ucalls[i];
-> +                       memset(uc->args, 0, sizeof(uc->args));
-> +                       break;
-> +               }
-> +       }
-> +out:
-> +       return uc;
-> +}
-> +
-> +static inline size_t uc_pool_idx(struct ucall *uc)
-> +{
-> +       return uc->hva - ucall_pool->ucalls;
-> +}
-> +
-> +static void ucall_free(struct ucall *uc)
-> +{
-> +       if (!use_ucall_pool)
-> +               return;
-> +
-> +       clear_bit(uc_pool_idx(uc), ucall_pool->in_use);
-> +}
->
->  void ucall(uint64_t cmd, int nargs, ...)
->  {
-> -       struct ucall uc = {};
-> +       struct ucall *uc;
-> +       struct ucall tmp = {};
+On Fri, Aug 19, 2022 at 06:53:41PM +0000, Kani, Toshi wrote:
+> When the system does not implement ACPI GHES table,
+> which I suppose is most of the case on ARM.
 
-This steps seems to result in generating instructions that need SSE
-support on x86:
-struct ucall tmp = {};
-   movaps %xmm0,0x20(%rsp)
-   movaps %xmm0,0x30(%rsp)
-   movaps %xmm0,0x40(%rsp)
-   movaps %xmm0,0x50(%rsp)
+That should be detected in ghes_get_devices() - just like on x86.
 
-This initialization will need proper compilation flags to generate
-instructions according to VM configuration.
+-- 
+Regards/Gruss,
+    Boris.
 
->         va_list va;
->         int i;
->
-> -       WRITE_ONCE(uc.cmd, cmd);
-> +       uc = ucall_alloc();
-> +       if (!uc)
-> +               uc = &tmp;
-> +
-> +       WRITE_ONCE(uc->cmd, cmd);
->
->         nargs = min(nargs, UCALL_MAX_ARGS);
->
->         va_start(va, nargs);
->         for (i = 0; i < nargs; ++i)
-> -               WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
-> +               WRITE_ONCE(uc->args[i], va_arg(va, uint64_t));
->         va_end(va);
->
-> -       ucall_arch_do_ucall((vm_vaddr_t)&uc);
-> ...
+https://people.kernel.org/tglx/notes-about-netiquette
