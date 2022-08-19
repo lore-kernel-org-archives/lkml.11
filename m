@@ -2,117 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F720C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 830F6C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 22:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240608AbiHSWRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 18:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35542 "EHLO
+        id S239790AbiHSWSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 18:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239411AbiHSWQm (ORCPT
+        with ESMTP id S234988AbiHSWSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 18:16:42 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B3EC0E6A
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:16:32 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-333b218f2cbso97335417b3.0
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:16:32 -0700 (PDT)
+        Fri, 19 Aug 2022 18:18:15 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FADC25
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:18:11 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id ds12-20020a17090b08cc00b001fae6343d9fso1822137pjb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 15:18:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=H3YEiHHCZDHfvJiU4fCYVtnbVB8iHyjPM7ELjaj28Ew=;
-        b=X1U73b0XniNLU7Z952Uoe4oLLlOQuH9fMoxIo3YE8wTvISBipZU3kbSsA/PpZc74b9
-         GKGrN3RRsS65zQ/iiGgHDkFgLoHu+HT15JxvGOx9hJ2PV56mfIi6fXTua6T4tCzBZCDs
-         pidzBZcxXFnAUE6H041z//D5yM40NWB78f6EufBqHmtQf2Fy2jYoy7SMHxtXqD8J18Jl
-         tglJU4xpK/iRl2mW5tY+0pgOj4nH9Bx5lesRwnijThCj0o6tZ7h84PrI8aDfHNjuuotw
-         33+iubcVMVmM0KnScNcfs0uK//EhpI5sVYu65TPan5KCq2k7mlKkYFPNxSojzIFEnPuE
-         wSnQ==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=r+cCMT58pYHKtEwlcJSRL8VNEfa9oIZs3vISfoDn2kc=;
+        b=BcAPABzciTIGP2cxF54N2Wsd/iSJnRwhaMTJUEPlID3X+lEPUS9PKxCYhEulFZwRxd
+         06bqrTdWnqjtnqc2C3v4TI8GRA6eiJXScnwQfLinTWZ/GYZMRuQkN3HbWHc1PSDNRaEY
+         Xl4RNP3A6PtVIwmuNLThV2GWpVrvVfgQSzyN0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=H3YEiHHCZDHfvJiU4fCYVtnbVB8iHyjPM7ELjaj28Ew=;
-        b=5jhCnPkl/Cj26sjVYVortIQXyFko2nAxICxVMjoJQ0FfcJynZ47pJz3HPC3+0jQhhy
-         UMDlmhf/vk8Md1pck2CxXucVFER+NFVk/lPVU1PAE4FJomSTpn5UxJeo9kusnK9pTnhM
-         lx7S/9lvvrk0QwbdaNrkO6uwMoHAELpPXbHRwwE5dyd0Br9I1za4F9nW+x5x/htBXs8q
-         YBhYvYMF5xsf+oPy5lntwIsXgiPwupj3LAVYPasZdgPtz+2bkFF2JwqZUbyE0ATHaGed
-         M2/FGAZ84HkSLSHk7CKcrIRtUvToOEjnVhBLkbsm7oQCxhjcnLzVndM3SyKo8YgCWfQa
-         5edg==
-X-Gm-Message-State: ACgBeo0IrbPPTCWwM4y6FuWGMaq2WtrUacu8/RW4wHrNL5A4C7mHCHwX
-        V33NOzGiU7EiEUPGqDFtpjqBOEAg1gJ/qMg=
-X-Google-Smtp-Source: AA6agR6s7O9ks9P+6MMRLsKupYiohHddIyehPE2rdJmt/AJwJ41rH2q/2hZo31rpF1++hMgFEDboETrWBMyKu5U=
-X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f93e:7b61:ce3d:5b06])
- (user=saravanak job=sendgmr) by 2002:a81:5744:0:b0:333:7505:5bca with SMTP id
- l65-20020a815744000000b0033375055bcamr9459605ywb.315.1660947391375; Fri, 19
- Aug 2022 15:16:31 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 15:16:14 -0700
-In-Reply-To: <20220819221616.2107893-1-saravanak@google.com>
-Message-Id: <20220819221616.2107893-5-saravanak@google.com>
-Mime-Version: 1.0
-References: <20220819221616.2107893-1-saravanak@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH v2 4/4] Revert "iommu/of: Delete usage of driver_deferred_probe_check_state()"
-From:   Saravana Kannan <saravanak@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saravana Kannan <saravanak@google.com>
-Cc:     Peng Fan <peng.fan@nxp.com>, Luca Weiss <luca.weiss@fairphone.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jean-Philippe Brucker <jpb@kernel.org>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=r+cCMT58pYHKtEwlcJSRL8VNEfa9oIZs3vISfoDn2kc=;
+        b=YPmQgXfSBZ3ub3dBZoYVu7065+sjsPBKQZwPSO80i/GbQ4Zq/dLv8mACdgkyGGD1t+
+         qgCRmohlyVm2V6REfFXbloFYk5Ylmr4ZixrVB+94oYZ/0pGBvS9PJl59PckLGunkBj3x
+         basucfcdg3HfZnkUk4nGrGtcwjJNQc+vZzzZ9DgNTvTR6cZLo7z3S1r0MUN/7GEYAvPo
+         ihK//QdQhT3jvqTAvs5Nl/YTPvgZ42y/oE3LusJl3+j+iw+qv2RwOP1BHfHv4LDP7li5
+         LJKD/qATP9HIV0sVU1JI+I6siAOM16ZZBMcuqQEUXCwOlDt4lKYgcv+MbskeJqyQqDs9
+         N6FQ==
+X-Gm-Message-State: ACgBeo2s/TXd1wDSQn6pTXmVBWEupjsa5YP/sdyJNspGmRmlC3SC/o9j
+        OjYl2C+jFWQpOoGFZPpo4Gdn6g==
+X-Google-Smtp-Source: AA6agR5RK5bWwK14DmSWfIsVl2lWE7zgftE7SAP1zrNok3zDiq4QmjJez0ZgiEkrRJEXvaPKAwRg5Q==
+X-Received: by 2002:a17:90a:8911:b0:1fa:c8f7:1450 with SMTP id u17-20020a17090a891100b001fac8f71450mr10531200pjn.123.1660947491479;
+        Fri, 19 Aug 2022 15:18:11 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e5-20020a17090a4a0500b001f303d149casm3603350pjh.50.2022.08.19.15.18.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 15:18:10 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 15:18:10 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Tales Aparecida <tales.aparecida@gmail.com>
+Cc:     Sadiya Kazi <sadiyakazi@google.com>, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davidgow@google.com,
+        corbet@lwn.net, brendan.higgins@linux.dev,
+        Trevor Woerner <twoerner@gmail.com>, siqueirajordao@riseup.net,
+        mwen@igalia.com, andrealmeid@riseup.net, mairacanal@riseup.net,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 7/8] lib: overflow: update reference to kunit-tool
+Message-ID: <202208191518.980071F7@keescook>
+References: <20220819053234.241501-1-tales.aparecida@gmail.com>
+ <20220819053234.241501-8-tales.aparecida@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819053234.241501-8-tales.aparecida@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit b09796d528bbf06e3e10a4a8f78038719da7ebc6.
+On Fri, Aug 19, 2022 at 02:32:33AM -0300, Tales Aparecida wrote:
+> Replace URL with an updated path to the full Documentation page
+> 
+> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
 
-An issue was reported[1] on the original commit. I'll need to address that
-before I can delete the use of driver_deferred_probe_check_state().  So,
-bring it back for now.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-[1] - https://lore.kernel.org/lkml/4799738.LvFx2qVVIh@steina-w/
-
-Fixes: b09796d528bb ("iommu/of: Delete usage of driver_deferred_probe_check_state()")
-Reported-by: Jean-Philippe Brucker <jpb@kernel.org>
-Signed-off-by: Saravana Kannan <saravanak@google.com>
----
- drivers/iommu/of_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 41f4eb005219..5696314ae69e 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -40,7 +40,7 @@ static int of_iommu_xlate(struct device *dev,
- 	 * a proper probe-ordering dependency mechanism in future.
- 	 */
- 	if (!ops)
--		return -ENODEV;
-+		return driver_deferred_probe_check_state(dev);
- 
- 	if (!try_module_get(ops->owner))
- 		return -ENODEV;
 -- 
-2.37.1.595.g718a3a8f04-goog
-
+Kees Cook
