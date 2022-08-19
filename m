@@ -2,104 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125AAC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68990C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351940AbiHSRsC (ORCPT
+        id S1351382AbiHSRsS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        Fri, 19 Aug 2022 13:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354819AbiHSRrO (ORCPT
+        with ESMTP id S1352097AbiHSRr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:47:14 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB9ED5EB6
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:13:50 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id z6so6901813lfu.9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:13:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=edg8lK0cSqRr9RuI8JDP5IrO1qX/mkNkGe7tR1FyceM=;
-        b=JbpEeM3LmaZg4DRJJpStFU53Gd1ryMDuKjMAfF6g+kqPtgpIU3Ls4NTo3SL/btxnqC
-         tJqoY3AiiI4FN/qq6IqSr1OV4ZqUHcl7nFuUlN5HIzTZKXoPruMSEMy90MwENLtwZ28r
-         56TnufYCaUs4tYioKNOo5y9CdUZiVe0bvhS3ifBJZ92976Ca0NxvQB0PTTjuRlEHg27l
-         cHWHLVjB82y3eBY4FXYii6uSSuQ61M/LkZxF7Ninx/OM/K2qe3fvG8ZPrpWuJU4aOs+G
-         BJ4vXYzg6wt4dZq73s1G/r/5wpjbL7EGfI84mU0Eiu09j3X79oJwP83NDlh5jSC14fox
-         iMsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=edg8lK0cSqRr9RuI8JDP5IrO1qX/mkNkGe7tR1FyceM=;
-        b=sJzZPfJ3DxNRaAXeTtllKzk081secdSvQnCrnQXmwY2nnTvoGw4jDzhOZU2bfLWrN0
-         czIJTAIdTUmDNeQyKFgK1EL4EZdVPKcJecxaM0rXser73Rij8/CvUX+QUC5jB//Zrc2W
-         yP9N8/tTCORWjPKVuULP776slCDTS2HvXY/jpea44cU69o4GifrlmaPC4DaXKI5sPnLB
-         oZuwW5aH5CRpqa+tjGo6M/IDBXyEFTKlyP4NI9NbMzKCzZ7IJtaTpOHBSbjApO4wFVB2
-         +FK/0VWt5aSf2w7F83rNH/ChQYiBpgZ2BusIdCM0CBtfzoSVikHbqWvtDn0AgZ19nBmQ
-         iIcA==
-X-Gm-Message-State: ACgBeo1jgGLtlSaAdnq7WP6QNUX0Y+TxY/pZWdj/+oCsqSeiR5+9fyzp
-        4eQmPJlLbnYqhmuIyvyVD7ruGYXygr4YbyOIoFlh5A==
-X-Google-Smtp-Source: AA6agR7Ug/2q+/DeCl94fc+McGXHwOFifbrv7g/ZFyCweAxodclr6jIcrvFs5tqrGJuuT1RNGO2dBUUVakteqjYXYf0=
-X-Received: by 2002:a05:6512:158b:b0:48b:38:cff8 with SMTP id
- bp11-20020a056512158b00b0048b0038cff8mr2578141lfb.100.1660929228166; Fri, 19
- Aug 2022 10:13:48 -0700 (PDT)
+        Fri, 19 Aug 2022 13:47:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CABB2844;
+        Fri, 19 Aug 2022 10:15:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8F84617D7;
+        Fri, 19 Aug 2022 17:15:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C463DC433C1;
+        Fri, 19 Aug 2022 17:15:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660929303;
+        bh=YMX+KaIq1TQ+gLn7mH2jPjTivQfw0jkmJhCSzBgZXaw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oF5gRvBjJBHYMHiArma6zy/FxKEx6nu09qgf2RhpCWCP8UTRls+hXdEWDjDQAPid9
+         hcL8S7EmfKPxvNKF4gFFrvDbldYGrBOVe3fRHFOfbACn2zTqIt6GItapqvHioOAgc1
+         Re4tGl3mypmeOXNWYnqa91HFzxi3ZrF5yK22VDFqR+a2jKbyesWeIhgxvlsQvF5vtK
+         1wBnC+LqN0RFtRW4xwt6+fdXQIs0+uIIr62K7Ve482jSpNSf5YUS4gA/dmd98BQ/s2
+         bxq9CeL7iDllZoWXJFyxJOrEaxgGOPk5zYtvDwcKTakrETK37a+nMRKiD52FSJKTuO
+         m1h4unFnJdtHQ==
+Date:   Fri, 19 Aug 2022 18:25:39 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: move from strlcpy with unused retval to strscpy
+Message-ID: <20220819182539.44de60c8@jic23-huawei>
+In-Reply-To: <CAHp75Ve+xuqRAiRO=7wQBBmjKm9P-_iEiHWt23E7c82RcFutVA@mail.gmail.com>
+References: <20220818210017.6817-1-wsa+renesas@sang-engineering.com>
+        <CAHp75Ve+xuqRAiRO=7wQBBmjKm9P-_iEiHWt23E7c82RcFutVA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220819153829.135562864@linuxfoundation.org> <20220819153829.269574566@linuxfoundation.org>
-In-Reply-To: <20220819153829.269574566@linuxfoundation.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 19 Aug 2022 10:13:36 -0700
-Message-ID: <CAKwvOd=DQcLbmk0R+h80s4dQ3NrPy+RXqHKnOrAtyam+-QOCyw@mail.gmail.com>
-Subject: Re: [PATCH 5.10 002/545] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Fangrui Song <maskray@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry for not reporting this sooner; been out sick all week with COVID.
+On Fri, 19 Aug 2022 11:07:56 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-On Fri, Aug 19, 2022 at 8:46 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> From: Nick Desaulniers <ndesaulniers@google.com>
->
-> commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
->
+> On Fri, Aug 19, 2022 at 12:02 AM Wolfram Sang
+> <wsa+renesas@sang-engineering.com> wrote:
+> >
+> > Follow the advice of the below link and prefer 'strscpy' in this
+> > subsystem. Conversion is 1:1 because the return value is not used.
+> > Generated by a coccinelle script.  
+> 
+> Same comments as per similar patch you submit to PDx86.
+> 
 
-<snip>
+Given it was an easy split, I've turned this into two patches
+and applied those to the togreg branch of iio.git - initially pushed
+out as testing for 0-day to poke at it.
 
-> --- a/arch/x86/boot/compressed/Makefile
-> +++ b/arch/x86/boot/compressed/Makefile
-> @@ -68,6 +68,10 @@ LDFLAGS_vmlinux := -pie $(call ld-option
->  ifdef CONFIG_LD_ORPHAN_WARN
->  LDFLAGS_vmlinux += --orphan-handling=warn
->  endif
-> +LDFLAGS_vmlinux += -z noexecstack
-> +ifeq ($(CONFIG_LD_IS_BFD),y)
-
-5.10.y is missing CONFIG_LD_IS_BFD. Specifically
-
-commit 02aff8592204 ("kbuild: check the minimum linker version in Kconfig")
-which first landed in v5.12-rc1.  I'd recommend simply dropping the
-`ifeq` guards; the ld-option guard will still work.  Otherwise GNU BFD
-2.39 users will observe linker warnings related to rwx-segments.
-
-Greg, do you mind dropping this patch and I'll supply a v2, or is it
-too late and I should send a patch on top?
-
-> +LDFLAGS_vmlinux += $(call ld-option,--no-warn-rwx-segments)
-> +endif
->  LDFLAGS_vmlinux += -T
->
->  hostprogs      := mkpiggy
-
--- 
 Thanks,
-~Nick Desaulniers
+
+Jonathan
+
