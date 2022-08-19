@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E45C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4410C32793
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351052AbiHSQA0 (ORCPT
+        id S1350790AbiHSQCj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51050 "EHLO
+        Fri, 19 Aug 2022 12:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350960AbiHSP71 (ORCPT
+        with ESMTP id S1350961AbiHSP71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 11:59:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4201108FBB;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000F8108FBC;
         Fri, 19 Aug 2022 08:52:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D922B82812;
-        Fri, 19 Aug 2022 15:52:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415A3C433D7;
-        Fri, 19 Aug 2022 15:52:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F1A9B8280C;
+        Fri, 19 Aug 2022 15:51:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D893C433C1;
+        Fri, 19 Aug 2022 15:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924321;
-        bh=qFtJTFkGXlUimLZQdQpb9oM5fPuVizHi3ChcOSFqcV4=;
+        s=korg; t=1660924309;
+        bh=omZ20BVuFxL1W05Lz9Iqe5y6+N9MFAhSKFKp3+JoWnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vo8WdwDufZTnndvifm71IZTHUylGGybiLfNLbLSiXDpYk2AHyiZIih2GUw45okp/i
-         ImlHbdZNAPUFT+OeqkcJGJX+/6ZTiuqSAtheiZY96G0sNVVmiOAoHKNoijxnKx8rtD
-         tFXwQkBFg9MQ4YtGc45wXj+MFscsLPlHYxY8mu3E=
+        b=UCOB7M8fNRshMjlZ7boe4gFhb51DYhXz+OljD4nnTTAC8zsEdFpaZic0SKq0oJZ7t
+         YN8XNLzBVBEIDdHSnuXGdx3i+Zsej/O6YdXIHGW1FGl+gaOw6hQQabi+ij/9fh8U+t
+         Tt/EMsMHiW84yWZBS5IQ7teURiFDhVXthfLPfhh8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Brian Masney <masneyb@onstation.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 132/545] soc: qcom: ocmem: Fix refcount leak in of_get_ocmem
-Date:   Fri, 19 Aug 2022 17:38:22 +0200
-Message-Id: <20220819153835.238280205@linuxfoundation.org>
+Subject: [PATCH 5.10 128/545] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
+Date:   Fri, 19 Aug 2022 17:38:18 +0200
+Message-Id: <20220819153835.048901655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,45 +52,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 92a563fcf14b3093226fb36f12e9b5cf630c5a5d ]
+[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
 
-of_parse_phandle() returns a node pointer with refcount
+of_find_matching_node() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when not need anymore.
 Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
 
-Fixes: 88c1e9404f1d ("soc: qcom: add OCMEM driver")
+Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Brian Masney <masneyb@onstation.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220602042430.1114-1-linmq006@gmail.com
+Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/ocmem.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mach-omap2/prm3xxx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
-index 85f82e195ef8..1dfdd0b9ba24 100644
---- a/drivers/soc/qcom/ocmem.c
-+++ b/drivers/soc/qcom/ocmem.c
-@@ -194,14 +194,17 @@ struct ocmem *of_get_ocmem(struct device *dev)
- 	devnode = of_parse_phandle(dev->of_node, "sram", 0);
- 	if (!devnode || !devnode->parent) {
- 		dev_err(dev, "Cannot look up sram phandle\n");
-+		of_node_put(devnode);
- 		return ERR_PTR(-ENODEV);
+diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
+index 1b442b128569..63e73e9b82bc 100644
+--- a/arch/arm/mach-omap2/prm3xxx.c
++++ b/arch/arm/mach-omap2/prm3xxx.c
+@@ -708,6 +708,7 @@ static int omap3xxx_prm_late_init(void)
  	}
  
- 	pdev = of_find_device_by_node(devnode->parent);
- 	if (!pdev) {
- 		dev_err(dev, "Cannot find device node %s\n", devnode->name);
-+		of_node_put(devnode);
- 		return ERR_PTR(-EPROBE_DEFER);
- 	}
-+	of_node_put(devnode);
+ 	irq_num = of_irq_get(np, 0);
++	of_node_put(np);
+ 	if (irq_num == -EPROBE_DEFER)
+ 		return irq_num;
  
- 	ocmem = platform_get_drvdata(pdev);
- 	if (!ocmem) {
 -- 
 2.35.1
 
