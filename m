@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C25C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73065C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352221AbiHSQXd (ORCPT
+        id S1352260AbiHSQXh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
+        Fri, 19 Aug 2022 12:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352887AbiHSQSC (ORCPT
+        with ESMTP id S1352070AbiHSQTK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:18:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026EC109A28;
-        Fri, 19 Aug 2022 09:01:04 -0700 (PDT)
+        Fri, 19 Aug 2022 12:19:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBB611847D;
+        Fri, 19 Aug 2022 09:01:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AAEFB827F8;
-        Fri, 19 Aug 2022 16:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9030FC433C1;
-        Fri, 19 Aug 2022 16:00:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A7D2616B3;
+        Fri, 19 Aug 2022 16:01:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 476C7C433C1;
+        Fri, 19 Aug 2022 16:01:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924852;
-        bh=oHE8NdQs2C19dr7h8yVkyh2h8g6uL/b9qy2FrVV/yzI=;
+        s=korg; t=1660924861;
+        bh=mZdDAXadWmFIttx25Wr5E6+vtakiqgoPmNDTMADLk1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vv0pPc+mUpQ5HC/c/4sGdMfmhJf7BPAxozlloVx3Ci+h44JM51GLgAkONnTtfRSKK
-         m/J2zmtwV3f6Mul/eXLZwg/KLM6wbOypyE2XbvZf/wzIb+mP+YZOpBnTxHsAHTs8ip
-         uAuUSl4iCtGxBFv0ywI0NNBP7N6tAr7tsb82AQFY=
+        b=PK51UMTC4KyueqAX06S2EXIGubf38x7Np7bw+DYAx/Hi1LHoJzq7jKj+OCGUH4PcH
+         5tKmiuwfT7kJTRbWIHGvJ8t1/X8HAK0ksjNJGbq2FvUqsrxI5TEzXvnq374qkMH7rM
+         jfvFUh+aSf5rmu/irKcBkLZFJa/ev4PerDtlFjPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Vidya Sagar <vidyas@nvidia.com>, Rob Herring <robh@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 303/545] PCI: dwc: Always enable CDM check if "snps,enable-cdm-check" exists
-Date:   Fri, 19 Aug 2022 17:41:13 +0200
-Message-Id: <20220819153842.894243190@linuxfoundation.org>
+        stable@vger.kernel.org, Austin Kim <austin.kim@lge.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 306/545] dmaengine: sf-pdma: apply proper spinlock flags in sf_pdma_prep_dma_memcpy()
+Date:   Fri, 19 Aug 2022 17:41:16 +0200
+Message-Id: <20220819153843.043321900@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,59 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Austin Kim <austin.kim@lge.com>
 
-[ Upstream commit ec7b952f453ce7eabe7e1bea584626934d44f668 ]
+[ Upstream commit 94b4cd7c5fc0dd6858a046b00ca729fb0512b9ba ]
 
-If the "snps,enable-cdm-check" property exists, we should enable the CDM
-check.  But previously dw_pcie_setup() could exit before doing so if the
-"num-lanes" property was absent or invalid.
+The second parameter of spinlock_irq[save/restore] function is flags,
+which is the last input parameter of sf_pdma_prep_dma_memcpy().
 
-Move the CDM enable earlier so we do it regardless of whether "num-lanes"
-is present.
+So declare local variable 'iflags' to be used as the second parameter of
+spinlock_irq[save/restore] function.
 
-[bhelgaas: commit log]
-Fixes: 07f123def73e ("PCI: dwc: Add support to enable CDM register check")
-Link: https://lore.kernel.org/r/20220624143428.8334-7-Sergey.Semin@baikalelectronics.ru
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Austin Kim <austin.kim@lge.com>
+Link: https://lore.kernel.org/r/20210611065336.GA1121@raspberrypi
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-designware.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/dma/sf-pdma/sf-pdma.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 69651c6ae6c6..2b74ff88c5c5 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -598,6 +598,13 @@ void dw_pcie_setup(struct dw_pcie *pci)
- 	val |= PORT_LINK_DLL_LINK_EN;
- 	dw_pcie_writel_dbi(pci, PCIE_PORT_LINK_CONTROL, val);
+diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
+index 528deb5d9f31..1cd2d7df9715 100644
+--- a/drivers/dma/sf-pdma/sf-pdma.c
++++ b/drivers/dma/sf-pdma/sf-pdma.c
+@@ -94,6 +94,7 @@ sf_pdma_prep_dma_memcpy(struct dma_chan *dchan,	dma_addr_t dest, dma_addr_t src,
+ {
+ 	struct sf_pdma_chan *chan = to_sf_pdma_chan(dchan);
+ 	struct sf_pdma_desc *desc;
++	unsigned long iflags;
  
-+	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
-+		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
-+		       PCIE_PL_CHK_REG_CHK_REG_START;
-+		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
-+	}
-+
- 	of_property_read_u32(np, "num-lanes", &pci->num_lanes);
- 	if (!pci->num_lanes) {
- 		dev_dbg(pci->dev, "Using h/w default number of lanes\n");
-@@ -644,11 +651,4 @@ void dw_pcie_setup(struct dw_pcie *pci)
- 		break;
- 	}
- 	dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, val);
--
--	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
--		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
--		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
--		       PCIE_PL_CHK_REG_CHK_REG_START;
--		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
--	}
+ 	if (chan && (!len || !dest || !src)) {
+ 		dev_err(chan->pdma->dma_dev.dev,
+@@ -109,10 +110,10 @@ sf_pdma_prep_dma_memcpy(struct dma_chan *dchan,	dma_addr_t dest, dma_addr_t src,
+ 	desc->dirn = DMA_MEM_TO_MEM;
+ 	desc->async_tx = vchan_tx_prep(&chan->vchan, &desc->vdesc, flags);
+ 
+-	spin_lock_irqsave(&chan->vchan.lock, flags);
++	spin_lock_irqsave(&chan->vchan.lock, iflags);
+ 	chan->desc = desc;
+ 	sf_pdma_fill_desc(desc, dest, src, len);
+-	spin_unlock_irqrestore(&chan->vchan.lock, flags);
++	spin_unlock_irqrestore(&chan->vchan.lock, iflags);
+ 
+ 	return desc->async_tx;
  }
 -- 
 2.35.1
