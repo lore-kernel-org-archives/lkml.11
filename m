@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DB1C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD827C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354065AbiHSQx7 (ORCPT
+        id S1354463AbiHSQyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        Fri, 19 Aug 2022 12:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354704AbiHSQvh (ORCPT
+        with ESMTP id S1354351AbiHSQws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:51:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDE112D988;
-        Fri, 19 Aug 2022 09:14:37 -0700 (PDT)
+        Fri, 19 Aug 2022 12:52:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E038E12CDE3;
+        Fri, 19 Aug 2022 09:14:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2BB9B82820;
-        Fri, 19 Aug 2022 16:13:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F97C433C1;
-        Fri, 19 Aug 2022 16:13:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 43290CE26B7;
+        Fri, 19 Aug 2022 16:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C40FC433D7;
+        Fri, 19 Aug 2022 16:13:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925621;
-        bh=74affbnttGnyqEhedSfWUdEvnKEhCwGfv9CcwS7CboE=;
+        s=korg; t=1660925612;
+        bh=lwuN6VTFP1zBL9eoIkTQqR16l7lBZMYs5E+TzRiZ2B8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CT0qFnhCg+ORyluzgiXE/92FuBhjhtJUw9Al+CzAD5uIK6cqto8j0VlvMjuk4ByBM
-         SBi1IBB6PZDr5aXWMa88LeHX6TXFOJpG9dOKob8Y/2BVTZwyaRX7e2jCNCt0rhKavU
-         58yDVt5BWvANmCFYk4yYuW8caRDwmwROZCVssYis=
+        b=n5JwbhQvLcZf+d3MkT9L4fLOyE1Zx2W9wxCDiB4OkhLpGqoHdR2mOTBhOFIrjBfvH
+         HZ5MFquHOoOVWVpeVb8DrDeVihlHe+yUcM72eXjkKuOaXe6/JG/SqfOyfCxhO6DRGN
+         XH6UG+jNocAYVVFKpVhLn4yQTmmrHg8OTvCcFQ4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 5.10 541/545] net/9p: Initialize the iounit field during fid creation
-Date:   Fri, 19 Aug 2022 17:45:11 +0200
-Message-Id: <20220819153853.812789162@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.10 538/545] mtd: rawnand: arasan: Prevent an unsupported configuration
+Date:   Fri, 19 Aug 2022 17:45:08 +0200
+Message-Id: <20220819153853.664599425@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,69 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyler Hicks <tyhicks@linux.microsoft.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit aa7aeee169480e98cf41d83c01290a37e569be6d upstream.
+commit fc9e18f9e987ad46722dad53adab1c12148c213c upstream.
 
-Ensure that the fid's iounit field is set to zero when a new fid is
-created. Certain 9P operations, such as OPEN and CREATE, allow the
-server to reply with an iounit size which the client code assigns to the
-p9_fid struct shortly after the fid is created by p9_fid_create(). On
-the other hand, an XATTRWALK operation doesn't allow for the server to
-specify an iounit value. The iounit field of the newly allocated p9_fid
-struct remained uninitialized in that case. Depending on allocation
-patterns, the iounit value could have been something reasonable that was
-carried over from previously freed fids or, in the worst case, could
-have been arbitrary values from non-fid related usages of the memory
-location.
+Under the following conditions:
+* after rounding up by 4 the number of bytes to transfer (this is
+  related to the controller's internal constraints),
+* if this (rounded) amount of data is situated beyond the end of the
+  device,
+* and only in NV-DDR mode,
+the Arasan NAND controller timeouts.
 
-The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
-after the uninitialized iounit field resulted in the typical sequence of
-two getxattr(2) syscalls, one to get the size of an xattr and another
-after allocating a sufficiently sized buffer to fit the xattr value, to
-hit an unexpected ERANGE error in the second call to getxattr(2). An
-uninitialized iounit field would sometimes force rsize to be smaller
-than the xattr value size in p9_client_read_once() and the 9P server in
-WSL refused to chunk up the READ on the attr_fid and, instead, returned
-ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
-the READ and this problem goes undetected there.
+This currently can happen in a particular helper used when picking
+software ECC algorithms. Let's prevent this situation by refusing to use
+the NV-DDR interface with software engines.
 
-Link: https://lkml.kernel.org/r/20220710141402.803295-1-tyhicks@linux.microsoft.com
-Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-[tyhicks: Adjusted context due to:
- - Lack of fid refcounting introduced in v5.11 commit 6636b6dcc3db ("9p:
-   add refcount to p9_fid struct")
- - Difference in how buffer sizes are specified v5.16 commit
-   6e195b0f7c8e ("9p: fix a bunch of checkpatch warnings")]
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Fixes: 4edde6031458 ("mtd: rawnand: arasan: Support NV-DDR interface")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211008163640.1753821-1-miquel.raynal@bootlin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/9p/client.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/mtd/nand/raw/arasan-nand-controller.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -893,16 +893,13 @@ static struct p9_fid *p9_fid_create(stru
- 	struct p9_fid *fid;
- 
- 	p9_debug(P9_DEBUG_FID, "clnt %p\n", clnt);
--	fid = kmalloc(sizeof(struct p9_fid), GFP_KERNEL);
-+	fid = kzalloc(sizeof(struct p9_fid), GFP_KERNEL);
- 	if (!fid)
- 		return NULL;
- 
--	memset(&fid->qid, 0, sizeof(struct p9_qid));
- 	fid->mode = -1;
- 	fid->uid = current_fsuid();
- 	fid->clnt = clnt;
--	fid->rdir = NULL;
--	fid->fid = 0;
- 
- 	idr_preload(GFP_KERNEL);
- 	spin_lock_irq(&clnt->lock);
+--- a/drivers/mtd/nand/raw/arasan-nand-controller.c
++++ b/drivers/mtd/nand/raw/arasan-nand-controller.c
+@@ -891,6 +891,21 @@ static int anfc_setup_interface(struct n
+ 		nvddr = nand_get_nvddr_timings(conf);
+ 		if (IS_ERR(nvddr))
+ 			return PTR_ERR(nvddr);
++
++		/*
++		 * The controller only supports data payload requests which are
++		 * a multiple of 4. In practice, most data accesses are 4-byte
++		 * aligned and this is not an issue. However, rounding up will
++		 * simply be refused by the controller if we reached the end of
++		 * the device *and* we are using the NV-DDR interface(!). In
++		 * this situation, unaligned data requests ending at the device
++		 * boundary will confuse the controller and cannot be performed.
++		 *
++		 * This is something that happens in nand_read_subpage() when
++		 * selecting software ECC support and must be avoided.
++		 */
++		if (chip->ecc.engine_type == NAND_ECC_ENGINE_TYPE_SOFT)
++			return -ENOTSUPP;
+ 	} else {
+ 		sdr = nand_get_sdr_timings(conf);
+ 		if (IS_ERR(sdr))
 
 
