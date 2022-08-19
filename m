@@ -2,109 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2D0C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD208C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354508AbiHSQzM (ORCPT
+        id S1354464AbiHSQzO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        Fri, 19 Aug 2022 12:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354313AbiHSQyQ (ORCPT
+        with ESMTP id S1354458AbiHSQyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:54:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0705612E3C9;
-        Fri, 19 Aug 2022 09:15:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C765CB82821;
-        Fri, 19 Aug 2022 16:09:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F63C433D6;
-        Fri, 19 Aug 2022 16:09:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925365;
-        bh=h8IyBVO2lyakzG8OlSbZNlxR0q9T5IL2p0yWfBHLfbA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C0HK3sBnL4ao3T2SggmFOkGslfbfo9lq1p1nSK0bgQW2yy8UwDDP95xGmrCq5totl
-         evOwA74oJilV5WBw4hfAAwaEFthGKze19vNHYof5n74EuLjYd8Xfu3QD1ohC334kAv
-         TtzdHcIUFWGcYeb19YVocE930vg9iCiFXkXxxv8U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 441/545] scsi: qla2xxx: Turn off multi-queue for 8G adapters
-Date:   Fri, 19 Aug 2022 17:43:31 +0200
-Message-Id: <20220819153849.164637463@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 19 Aug 2022 12:54:18 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AF08C468
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:15:38 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id bx38so4936802ljb.10
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 09:15:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=tvaOIKhIqDrlMVEW0M57lH2FbWGy6GB7UifbcgzXwMA=;
+        b=BWPL5Gwxnd6uvirT5L872kNYJ1/RVqqzVTOuvVl0byaKKDwxiC85rh1yDoAgy+gao5
+         3fM/PAfiyWkXCZVyxHqUcfFbmhYPy/yalvQXBwkN6niIQt9NlbZRxmLDaknpSV7WxZes
+         6W3rLratY55z6g5aDDOzcW0j5qKK9dzHqN2oGuJv3bQksoxpeK3oULTkk5e+yXmagh9X
+         nMs1GVU8IZy7n3jOC3CR2Y3daqHQw0MDKcxNM3x0oSYiUpgXF/Ky55KZBTxEtmW/oDqN
+         bjQez5aoT2e/EmPFMBB4vkRrqfUUAc9ie3ITUwuIxLOQ5IYE2RFzLLj4WHvjdfBiYrXQ
+         UFBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=tvaOIKhIqDrlMVEW0M57lH2FbWGy6GB7UifbcgzXwMA=;
+        b=RNd0jWHw+Dlsd7P0uEqForBggsQ+ARnfP0ZYim8nYbpPo5EjQWdPYfVYC+vlp0CFQQ
+         npBkoGSBkc4tJN+hWwBxc++ClrdMLi6bCNiAvOUANmh1u8ukGz74bl7mlXLBseVOIvxz
+         FttQMVDA0Va/xnbzvpOGCp0HFxalkxlRaYKK6jfgZ1KbzsKawFBBH2t3GyKyid+vdzgI
+         2YszVc+0nz6axtvWZqHMrl/rVodSpjihyS7GOZlLy7W3PFfN5C9yFVmDWPa06qVPUTzx
+         nQtdeT6pc8/cCy6yDkuTKaXfEAuJXJeq014d8xbrIzpxHpHeBqEN+UpmbufaSsYf0zu5
+         6hRw==
+X-Gm-Message-State: ACgBeo1S2h8L7L8lpiFdRYjJAzw4YS6PWv1BeHETWivCFCO/Sc1iXtk7
+        BZfnkup5qzFrlu6Y9Qy1dM/wgIGZYdl9CGyl0Fs13Q==
+X-Google-Smtp-Source: AA6agR7ylA+ldzRezYJ/9dHzw0N0PaVrNlEsvgrtMNftGoI69PPeTWIjFPy22UT8Csh8mEMNSX9bxxcZo6h9BeNxHCU=
+X-Received: by 2002:a05:651c:b20:b0:25f:e9c7:ac9e with SMTP id
+ b32-20020a05651c0b2000b0025fe9c7ac9emr2229509ljr.266.1660925685170; Fri, 19
+ Aug 2022 09:14:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220814141237.493457-1-mail@conchuod.ie> <mhng-49e49c17-7241-45f8-bea3-17188bd1d0fa@palmer-ri-x1c9>
+In-Reply-To: <mhng-49e49c17-7241-45f8-bea3-17188bd1d0fa@palmer-ri-x1c9>
+From:   Anup Patel <apatel@ventanamicro.com>
+Date:   Fri, 19 Aug 2022 21:44:32 +0530
+Message-ID: <CAK9=C2UGJgu0eXHARkvftf+xbqnTaK2k9Jbz_4WVS8PQpgtaWg@mail.gmail.com>
+Subject: Re: [PATCH 0/4] misc warning cleanup in arch/risc-v
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     mail@conchuod.ie, anup@brainfault.org, atishp@atishpatra.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, conor.dooley@microchip.com,
+        guoren@kernel.org, vincent.chen@sifive.com,
+        xianting.tian@linux.alibaba.com, heiko@sntech.de,
+        wangkefeng.wang@huawei.com, tongtiangen@huawei.com,
+        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+On Fri, Aug 19, 2022 at 4:32 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+>
+> On Sun, 14 Aug 2022 07:12:34 PDT (-0700), mail@conchuod.ie wrote:
+> > From: Conor Dooley <conor.dooley@microchip.com>
+> >
+> > Hey all,
+> > Couple fixes here for most of what's left of the {sparse,} warnings in
+> > arch/riscv that are still in need of patches. Ben has sent patches
+> > for the VDSO issue already (although they seem to need rework).
+> >
+> > VDSO aside, With this patchset applied, we are left with:
+> > - cpuinfo_ops missing prototype: this likely needs to go into an
+> >   asm-generic header & I'll send a separate patch for that.
+> > - Complaints about an error in mm/init.c:
+> >   "error inarch/riscv/mm/init.c:819:2: error: "setup_vm() is <trunc>
+> >   I think this can be ignored.
+> > - 600+ -Woverride-init warnings for syscall table setup where
+> >   overriding seems to be the whole point of the macro.
+> > - Warnings about imported kvm core code.
+> > - Flexible array member warnings that look like common KVM code
+> >   patterns
+> > - An unexpected unlock in kvm_riscv_check_vcpu_requests that was added
+> >   intentionally:
+> >   https://lore.kernel.org/all/20220710151105.687193-1-apatel@ventanamicro.com/
+> >   Is it worth looking into whether that's a false positive or not?
+> >
+> > Thanks,
+> > Conor.
+> >
+> > Conor Dooley (4):
+> >   riscv: kvm: vcpu_timer: fix unused variable warnings
+> >   riscv: kvm: move extern sbi_ext declarations to a header
+> >   riscv: signal: fix missing prototype warning
+> >   riscv: traps: add missing prototype
+> >
+> >  arch/riscv/include/asm/kvm_vcpu_sbi.h | 12 ++++++++++++
+> >  arch/riscv/include/asm/signal.h       | 12 ++++++++++++
+> >  arch/riscv/include/asm/thread_info.h  |  2 ++
+> >  arch/riscv/kernel/signal.c            |  1 +
+> >  arch/riscv/kernel/traps.c             |  3 ++-
+> >  arch/riscv/kvm/vcpu_sbi.c             | 12 +-----------
+> >  arch/riscv/kvm/vcpu_timer.c           |  4 ----
+> >  7 files changed, 30 insertions(+), 16 deletions(-)
+> >  create mode 100644 arch/riscv/include/asm/signal.h
+>
+> These generally look good to me.  Anup handles the KVM bits so I'll let
+> him chime in there, but
+>
+> Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+>
+> on all of them.
+>
+> Happy to do some sort of shared tag thing, but it looks like these are
+> all independent enough that it'd be easier to just split them up.  I've
+> put the non-KVM bits over at palmer/riscv-variable_fixes_without_kvm, if
+> you guys are all OK splitting this up then I'll go take those onto
+> riscv/fixes.  I'll wait a bit for folks to get a chance to look, so it
+> won't be for tomorrow morning.
 
-commit 5304673bdb1635e27555bd636fd5d6956f1cd552 upstream.
+Thanks Palmer. I have queued the KVM fixes (first two patches).
 
-For 8G adapters, multi-queue was enabled accidentally. Make sure
-multi-queue is not enabled.
+Regards,
+Anup
 
-Link: https://lore.kernel.org/r/20220616053508.27186-5-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/qla2xxx/qla_def.h |    4 ++--
- drivers/scsi/qla2xxx/qla_isr.c |   16 ++++++----------
- 2 files changed, 8 insertions(+), 12 deletions(-)
-
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -4135,8 +4135,8 @@ struct qla_hw_data {
- #define IS_OEM_001(ha)          ((ha)->device_type & DT_OEM_001)
- #define HAS_EXTENDED_IDS(ha)    ((ha)->device_type & DT_EXTENDED_IDS)
- #define IS_CT6_SUPPORTED(ha)	((ha)->device_type & DT_CT6_SUPPORTED)
--#define IS_MQUE_CAPABLE(ha)	((ha)->mqenable || IS_QLA83XX(ha) || \
--				IS_QLA27XX(ha) || IS_QLA28XX(ha))
-+#define IS_MQUE_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
-+				 IS_QLA28XX(ha))
- #define IS_BIDI_CAPABLE(ha) \
-     (IS_QLA25XX(ha) || IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
- /* Bit 21 of fw_attributes decides the MCTP capabilities */
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -4054,16 +4054,12 @@ msix_register_fail:
- 	}
- 
- 	/* Enable MSI-X vector for response queue update for queue 0 */
--	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
--		if (ha->msixbase && ha->mqiobase &&
--		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
--		     ql2xmqsupport))
--			ha->mqenable = 1;
--	} else
--		if (ha->mqiobase &&
--		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
--		     ql2xmqsupport))
--			ha->mqenable = 1;
-+	if (IS_MQUE_CAPABLE(ha) &&
-+	    (ha->msixbase && ha->mqiobase && ha->max_qpairs))
-+		ha->mqenable = 1;
-+	else
-+		ha->mqenable = 0;
-+
- 	ql_dbg(ql_dbg_multiq, vha, 0xc005,
- 	    "mqiobase=%p, max_rsp_queues=%d, max_req_queues=%d.\n",
- 	    ha->mqiobase, ha->max_rsp_queues, ha->max_req_queues);
-
-
+>
+> Thanks!
+>
+> --
+> kvm-riscv mailing list
+> kvm-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/kvm-riscv
