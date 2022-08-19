@@ -2,98 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97451C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7ACC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352374AbiHSQ4w (ORCPT
+        id S1354387AbiHSQ45 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        Fri, 19 Aug 2022 12:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354290AbiHSQy5 (ORCPT
+        with ESMTP id S1354493AbiHSQz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:54:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E278754A4;
-        Fri, 19 Aug 2022 09:15:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6026B82828;
-        Fri, 19 Aug 2022 16:09:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF941C433C1;
-        Fri, 19 Aug 2022 16:09:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925390;
-        bh=StjgcR6nA87Jhlh+ZwYMvS8/tCMtuZEn7F+G7iUqQg8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jqm+hTQuS3YJzyh92NBUGxuSXUXIf7mo/MXVphNx9YIJAgxxKs7R9ZSO5Gob1MeK4
-         91XbY0jSdmz1wpVuh1G6AbQveAJq+KgHD9c244dWK54K2hsfo7qybBm9Mb6I+bwdig
-         OYC0cV/s3rtGfgkEj9/n00SdVRf8Y9ATYKIudX6k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 5.10 447/545] x86/olpc: fix logical not is only applied to the left hand side
-Date:   Fri, 19 Aug 2022 17:43:37 +0200
-Message-Id: <20220819153849.436542896@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Fri, 19 Aug 2022 12:55:27 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71644D91D0;
+        Fri, 19 Aug 2022 09:16:13 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1660925708;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=k0xkptv3Zqc9QB1iW0tg7GYz6w0QjKzvT8qQb1OUOvo=;
+        b=HpdH+BTYOAHCdvv2kpRE5FYFGRD1GQes+Zjko16lbijJL3vTVXF105i/Vx5mGXmZ/FBrRk
+        aIlt61jYoi38RhDvxwQffosCtoQDzbVPtv8eUtSMW/PUkgCxtM9EqMTD0+kt+bUDf8i2f2
+        3NYNJqjwKBr5L45AWadau0UwHvlGNc0=
+From:   Oliver Upton <oliver.upton@linux.dev>
+To:     Marc Zyngier <maz@kernel.org>, James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Oliver Upton <oliver.upton@linux.dev>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     Reiji Watanabe <reijiw@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] KVM: selftests: Update top-of-file comment in psci_test
+Date:   Fri, 19 Aug 2022 16:14:11 +0000
+Message-Id: <20220819161411.212530-1-oliver.upton@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Fix the comment to accurately describe the test and recently added
+SYSTEM_SUSPEND test case.
 
-commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
+What was once psci_cpu_on_test was renamed and extended to squeeze in a
+test case for PSCI SYSTEM_SUSPEND. Nonetheless, the author of those
+changes (whoever they may be...) failed to update the file comment to
+reflect what had changed.
 
-The bitops compile-time optimization series revealed one more
-problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
-warnings:
-
-arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
-   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-      |                                                               ^~
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
-
-Despite this code working as intended, this redundant double
-negation of boolean value, together with comparing to `char`
-with no explicit conversion to bool, makes compilers think
-the author made some unintentional logical mistakes here.
-Make it the other way around and negate the char instead
-to silence the warnings.
-
-Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
-Cc: stable@vger.kernel.org # 3.5+
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Reiji Watanabe <reijiw@google.com>
+Signed-off-by: Oliver Upton <oliver.upton@linux.dev>
 ---
- arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/kvm/aarch64/psci_test.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/arch/x86/platform/olpc/olpc-xo1-sci.c
-+++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
-@@ -80,7 +80,7 @@ static void send_ebook_state(void)
- 		return;
- 	}
+diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
+index f7621f6e938e..8a77bd06427c 100644
+--- a/tools/testing/selftests/kvm/aarch64/psci_test.c
++++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
+@@ -1,12 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * psci_cpu_on_test - Test that the observable state of a vCPU targeted by the
+- * CPU_ON PSCI call matches what the caller requested.
++ * psci_test - Tests relating to KVM's PSCI implementation.
+  *
+  * Copyright (c) 2021 Google LLC.
+  *
+- * This is a regression test for a race between KVM servicing the PSCI call and
+- * userspace reading the vCPUs registers.
++ * This test includes:
++ *  - A regression test for a race between KVM servicing the PSCI CPU_ON call
++ *    and userspace reading the targeted vCPU's registers.
++ *  - A test for KVM's handling of PSCI SYSTEM_SUSPEND and the associated
++ *    KVM_EXIT_SYSTEM_SUSPEND UAPI.
+  */
  
--	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-+	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
- 		return; /* Nothing new to report. */
- 
- 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
+ #define _GNU_SOURCE
 
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.37.1.595.g718a3a8f04-goog
 
