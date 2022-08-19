@@ -2,250 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C52EDC32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5D5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350328AbiHSSJ7 (ORCPT
+        id S1349904AbiHSSLT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 14:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
+        Fri, 19 Aug 2022 14:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349986AbiHSSJW (ORCPT
+        with ESMTP id S1349994AbiHSSKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 14:09:22 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA276D9F3;
-        Fri, 19 Aug 2022 10:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1660931899;
-        bh=LtW6M/ZUPq1Opl8pyRUIA2iryjiKgkljrq5i0Br2P0s=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=jadZQR7rMi0AixAIvX4jEiJNOdfplZoHdhQa3yMpXGC4QcTM3pz2jQfFZacTc4eA4
-         DGIdepboLlUws2ur0yySoO+MMuHFRughYNDMLrz8Y//Q8QuqAJXXsJA67anc8HfEuG
-         3dOhJs0sf7jFdfevL2WACsrFBkpM6tKMfXqP7Ayw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from p100 ([92.116.153.160]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MkYXs-1nd8Rp1mb0-00m3ga; Fri, 19
- Aug 2022 19:58:19 +0200
-Date:   Fri, 19 Aug 2022 19:58:15 +0200
-From:   Helge Deller <deller@gmx.de>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Helge Deller <deller@gmx.de>, Randy Dunlap <rdunlap@infradead.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Meelis Roos <mroos@linux.ee>,
-        Linux Kernel Development <linux-kernel@vger.kernel.org>
-Subject: Re: linux-parisc compile failure in current git
-Message-ID: <Yv/PLFLga51+T9xg@p100>
-References: <892b6ab7-862c-1c0a-2996-0f8408e5043d@linux.ee>
- <89515325-fc21-31da-d238-6f7a9abbf9a0@gmx.de>
- <CAK7LNATuzry1MUj-VruOVUwU_nH2xJd_2SxD_s_Z1QBb3PVnQw@mail.gmail.com>
- <5dfd81eb-c8ca-b7f5-e80e-8632767c022d@gmx.de>
- <CAK7LNATO_30uHzAe-Vsy+hgu=wwEN_aPGET4Ys78rc3=nSuJsg@mail.gmail.com>
- <YNOafsB81ZcP2r7z@ls3530>
- <f599c358-815f-088e-f2aa-b064ccb64e44@infradead.org>
- <CAK7LNAREcSW2Hn3Ty_zTVzTCLgYnFfo=ZcibE2zif1mBWp==4A@mail.gmail.com>
- <39ee0ca2-48a0-755b-605c-3ce1205b9715@gmx.de>
- <CAK7LNAQceFhO1-vupRAJy3rU+p+MK97vRuswVXvVEgF7q0akDA@mail.gmail.com>
+        Fri, 19 Aug 2022 14:10:00 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24C79FF7;
+        Fri, 19 Aug 2022 11:00:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JBSrS+07aHxXbn0gK8OXjEAsUuGOeOCTYJRfI2+c73hiui31Lzt6XQ9mRx1cq96cfJIIrgHunL9OogmYAob5KonNR/fS0oQ7HJC6g08zZHtkIhgWtQexmmRKI7fEJu+ujS1y5A7NQQQV40YWm0+oEwkjijH2kRrmTS8KSuRE4PqvLPpnhH5Gm+5OQNuapqkMuR3kQMrZspMa8tJGSa+hFyBTj1VoDgxrwkuJAwRnL48t8zQQ+YOosGHemleTqadxVLUNwf7cG/EBkRIjHMmJ48wN//mJQsPcUzibHZW1Gv4Caeb1tJzQbe1XFu6fjM8B0BWUtcbtyM3Eu9xtnQKHNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CmvtuoZTC46Hai5gd9ctow2J+/J4eIREecU+PeIouNs=;
+ b=dc5t3P7rCHEkzuI4YMTnhjDkoDrFNy7yp/930F9kSSwUxjiGLwBBraTwxd4g9ZFXhXM1AowCeFPGLyvJz5MaLQpKuBe/KG4G40T4r2pgHYtWc8IZ1hNBZ6E7eHc+te5kFRN2ew2CfT+dJX3uni9K0PGRBuzyTDTszy3JRIdOFvgp1buq4PPX6DDSBjf0d4D4EPawGqR+uqqjaj1UcwzD4UHQdf9cZL9mmtqU25OL8SKX0/1/fPp08cr/Zm+kZeOeNEFyZgNvyiAQPFsZ80Yx15GPSYwqGQz/Gj+d4Rdmw36AdXFUheJoMLFrPv4U4ygEwiiklqjVPEeVVyPXhvZx0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CmvtuoZTC46Hai5gd9ctow2J+/J4eIREecU+PeIouNs=;
+ b=Et9naoRBdHZ/lm5uyg/iHXgI8NZCNFpUmTdKbvvtJhYSwReCsE1en5ClXXxIXcALfhJq6eRNZ42yUGCGnQXxvdBTV4tjIpxUJ8lx0ZYRTx2h5wU3iXGSuP7mZ1KaFDcCsIWTeoqopYhFINks5jiOjbxgwgZrnF3BcgNBvu7mPM0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MN0PR12MB6101.namprd12.prod.outlook.com (2603:10b6:208:3cb::10)
+ by MN2PR12MB3326.namprd12.prod.outlook.com (2603:10b6:208:cb::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Fri, 19 Aug
+ 2022 18:00:33 +0000
+Received: from MN0PR12MB6101.namprd12.prod.outlook.com
+ ([fe80::4489:9a98:ef82:6c67]) by MN0PR12MB6101.namprd12.prod.outlook.com
+ ([fe80::4489:9a98:ef82:6c67%3]) with mapi id 15.20.5546.016; Fri, 19 Aug 2022
+ 18:00:33 +0000
+Message-ID: <1faa9531-8897-dd21-2c38-3b7dd740ebfa@amd.com>
+Date:   Fri, 19 Aug 2022 13:00:30 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [External] [PATCH] platform/x86: thinkpad_acpi: Explicitly set to
+ balanced mode on startup
+Content-Language: en-US
+To:     Mark Pearson <markpearson@lenovo.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>
+Cc:     madcatx@atlas.cz, ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220819140142.4925-1-mario.limonciello@amd.com>
+ <d9be30da-7306-149d-0e43-f32832965e59@lenovo.com>
+From:   "Limonciello, Mario" <mario.limonciello@amd.com>
+In-Reply-To: <d9be30da-7306-149d-0e43-f32832965e59@lenovo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0178.namprd13.prod.outlook.com
+ (2603:10b6:208:2bd::33) To MN0PR12MB6101.namprd12.prod.outlook.com
+ (2603:10b6:208:3cb::10)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK7LNAQceFhO1-vupRAJy3rU+p+MK97vRuswVXvVEgF7q0akDA@mail.gmail.com>
-X-Provags-ID: V03:K1:RX2sYvylV5aO8psxFgZSvazuogg7TGWCv8J6u2uglsi9YDhPAYa
- elfWokC5d6d1/cuNzrWBg2MMxectitNoQ3gC0O9Zhg/C9VTuFDxZ2S9p9HOUNv9/joTNEo+
- Fv1kRfze0VaIoXRn8FUXZrWgluNd0+Vpx1kAVgPhEUfvOTc5ycd6SUq3vQO52UaCIp/wH0E
- +YvlLE7vNWuHc812KY0Ug==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5UkWiUGHQO0=:CG6RcWcpyDMMQBYkiWG/qy
- g3MqinanWxyNvr7bpRhOVNpaLJ/o7Y30L6M3dgc5kblx5hXEFAMaxAE9z/I+aSvvVW1bAKCFH
- IIqfM8jEhowKgvQwPmrf+uA9ra9kcADyuYuzZPpk76U3K00Mysv30VydOX6mFhmt3rSx1fUYs
- mHrBwDrSw5+VlqsiOl7PUi7nhixJLi4YJUu/AwSwovVFtFN9YHgpPTT5i3Chtq1vcmnr+KV90
- mgz5X0EMHk3S8jYSgE4EisR1OAD5U0zIBgCjTGx4jKT3/yHDwdba+AWhqRY0s0Lgd8zmCl3Dc
- AwOYP7QIVMdic70l//CDfZp2QSApEVnXMCaECfxmthZGw38hU/WQhRyFz0cT4qB3wOzUMO6GS
- L7Ev4CpYbV6JUJTDGfMODFOx3Q8uz1BzJCm+uBh2FF7grKOVGiJAYg7OqfukZ8sL6t4/T40jx
- Apn3ceQ/QFZip+KWDbtHXHXbQHsOo61OcbYVBdxdC8exBdRWgGYAgnw04qucg7FyjsdE1yJEx
- w4zEyLcMN1bJ9DlvgFm0AZuLPz4/6KPGYfLyOa8ixTGpxIBSjeAz+02Ck7uW4DZe4BlajEkA7
- GdX8uAs9slW8L4QEwbc8zk9HupDRCGFUmTp8UXOd5jMM6OnY8W3Pa1hWHHBLKSCtXS66Bz+mE
- S5NwOeFj63DNxJ0KmEav164/+nBTNyP0j2UYMRCbqaM2OAl7RQ//EScpHrvl0ijIfatvZDsFh
- zBTj6k1066wckCeTrtOZNSfztCDQvKye/pSbc36H3JDD5PjSu2hKNRAFWv+zLG/aWyZDmy94k
- qwBac3+5O1Pe9MhBRVX/WWF1RW3NiCEbc1dfRLbfIZPK4sQ0NEFkxCBqvZPeiUL7JuE2SBHjo
- YDD1u4F/FlBy+BrosSdCzCoBmG4i4h8p/JeVd3Sn1Q9eKhWp+bAajTZsy8bo7oz3nO236EKLX
- Jox7xm+V5tFXiAmxLDv3+qxYKQwT93MSpKW73Ldi75sB7ZxsbEq1IG7M/jzmeJjWwmBlxFxdL
- G9kGzeA3RoIfxogcPyLbkxlWI7IK7hJTvyBhP/IZWiUKlKqBTxZRJN+xKGSoWMUVY9MW7YUaW
- A47J72IfTrq3GR27cY7UEdzSvP2OheCl1VRR2zr4AN8zSX64tImvAhtHQ==
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 790ba33c-1b1a-4e54-42ce-08da820cb5c6
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3326:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: g4ob8mVGTILXol1uQVAqRWD+FxGF3s7gfablgYT6O2O+VXAJolIAeLFZjQd2fzLdsXZtcAyEwHcrRcZ8IeEbi1N1uMBrEYSAzcwRuyqUfYEFJRneIDCyWZCc2ODNSXfsNmq2khSadEBpkHr2wUVOrKypzVP05tNZnHfjYWdqUrLrBYkICyzSsRxJoT5xWbn2SJhUFk6SeBYK+houT29Xy4S0iUUVOXxCdi+iKNCp2YVqyjz45kNsqxB/WCW821UAopFUPf8OtBo5TNWCLrRtOWlaAimo7KYQlVLfRgxr/fpoTREChWSSPWkbZraStVzzMcrgoF9oQJKFzTiBW0WGwXlJ0d4ZwtEF8AxJ0vB084p+/ky7GB9y9aPdBjyWkegyJZ+FMcbfgMQMhQdtF+n1aBkVzORY0QnVZ0MIk440aLAwFaleqHuDtsg3GPb7G6w5EDzujFAkh+SJMgdhAkvvvkHkh46/mQLNUk2WOdwOV3s50ncf4UP30ItqqGSuXUJd2AYZPROu7pYQcgGqAx7+EfqfossXkLXAjldrTRbAcJOC5y3+XU3689AzL5pM0mvgL1h78KyTeQpcr0i7+5+XkEq/PnR8j8th5ENUefUuvtM6gQnBlur4UR0GKHK5HB+gYwtr1OBLGHjxhNfaR8d0O5+edNsXEqGa2P7elnMGh9hi+3nBgb50tcT4Hdq//rlxWbEatoy4Yk52mstmyVpIOrNk2InHpjv/4AD3fmq7m8R8hx+RbUQYXh7P2QJdjFDtsaDCFuRzV9XMElJCF1fV+cWFWT7X4o94odawdT/Uhv2EJN+KjZRGybCRQwofHjRf6dylJBhIG3nWA65lSLdhzg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB6101.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(366004)(346002)(39860400002)(136003)(45080400002)(83380400001)(966005)(6486002)(38100700002)(478600001)(26005)(53546011)(2616005)(66476007)(41300700001)(186003)(5660300002)(4326008)(36756003)(8676002)(6506007)(2906002)(66946007)(66556008)(8936002)(86362001)(6512007)(110136005)(31696002)(31686004)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?THNDNTBOcERtRkdrb3RXbTFZV2tUZUdjR1kyTWEyZjd3WXlIcGdabW5USGh5?=
+ =?utf-8?B?S29UYk1uVXdZTkFBZDJwS3NTY0QwSWxYMEVzQUg3R3BSalB4OHBGbmU5T1Fa?=
+ =?utf-8?B?M2w4azFybGNqM29JcmEwb0N3bkdXN0c4Z0FFNXZtcmF0TmFHU3FYL0FOdFZp?=
+ =?utf-8?B?V1J2YXhNbUQ5VGdtZ2VwdWdLbDErdGJtYWFEbGNIS2NCSUZSN3ZNOWxnbndm?=
+ =?utf-8?B?V2tHdklyOGtIVGRiOEJlSE94bE5OaUx5T0xrTDZQZUZmUjdtdUc1d2ErOGEz?=
+ =?utf-8?B?T2Z1cXhIWThSazNVWTltYUNQSGw3bS9NSmtjaWw5eThhZ0p2em1Ua2p1cjYw?=
+ =?utf-8?B?UGQ3UFpwRE41QUYrbllCaS9iUXl1SUgzd3FRNWpsUFZqZVN0S3d5Wi83SmV5?=
+ =?utf-8?B?MXBWWERVTU5HT1k1cTlWYWdhSEhYK2M4TmtTVEtOb3R6dVk4V0t3dVJJUEtD?=
+ =?utf-8?B?Q2hjbTU5Q3hnQUprQ25mV1diWUhWZ2k0UkxnV1RkWHJVRHIzc2pVUDFzTU5R?=
+ =?utf-8?B?MjZkdCsvWUNzR3A3aHFTN2hsM21NSEF2NXdkSHhMbmZxQm5OMXJ1OTlZZ0Fn?=
+ =?utf-8?B?bk9tQk83VlJRSzVVNzRJdE55QUZlc0svU1JNYVJlZ21GVzZWSzRkb3pKVVIr?=
+ =?utf-8?B?TW9XeEpUdWM3UysyeWxnakx3MTU3WWRROWlNUlpFL3V5M2YrU3NoUHhhZ21m?=
+ =?utf-8?B?b0VoZHlrNXA3NEh5cmFVYnU2UEFwa1UvRy9iOVRUSzZBdStIZUs4VTVSYXkw?=
+ =?utf-8?B?ZzJjaGtSVWwxL2NjS2d3Q1pYVDd0LzJncG4ra2tCNnhUeFNxZTA0eFVTZkpS?=
+ =?utf-8?B?allnc0lnQUVoVEpxZmNUS1k2d0o0RmFRaGpTRzBxTGt5RVdoYmJLSTlIZXcy?=
+ =?utf-8?B?WXdaUlhLZjJ6WXZBZEg1MnFQeXlRUzB2WmE1RCtOM1BsKys4ZUFKTVZEZ2RS?=
+ =?utf-8?B?eW5DeldITVNtUk9XbnNjcm5GZmM2dERxUHQzOHFqOWpaSm1KRTlJQ1FWK3Ay?=
+ =?utf-8?B?c2EzKzdWeGxOaGpBWDk2bVhTbUFoU3VTTk5ONGFGRXZyalFXZ3BVMGRDYlpz?=
+ =?utf-8?B?YmVwSmpqL0hFeklyWEwrbHZ6RG11L1I1NERwbXZGOTBIbVZIZlQ3ZWtzZStG?=
+ =?utf-8?B?aUoxczJYMEd3WnpncW5aZjA0ZUhsT3I2OXlGR2RNRjJyaW9YKysrQjJSN2NT?=
+ =?utf-8?B?dG1nSmdiY0NOQmk5em5vVGhRWTRKL3BLeVJEdGM2SHg3UEd3dUZsL0p2eU9O?=
+ =?utf-8?B?SFBVZ29KMXQvK3F5Z0Rid1prOFdablJrMzI3NDJWYmh4VFMzaGYrdUxGQnJ5?=
+ =?utf-8?B?QVZBSDlOR2EzV2JWUGJKenlMYytiODhnUTdick8ycGRRakNpZDQzOGh0S2d3?=
+ =?utf-8?B?VzF2TTU5NjlucTBUNWszMW00OXkrVHNaRzVDL1JuSnR6MVhFSGFtTFdhZWMv?=
+ =?utf-8?B?N1pKQ1JJZWlQbkFoRnoxa2JjZVNDcWZoQm8zYTJDa2FSMmtmU2k3M0pPRjNq?=
+ =?utf-8?B?QXlmVHkvcWtiNXNwelFnQ3ZudTBIQTVFeFFjZEthSkFTeEhha21kZjZVYjJS?=
+ =?utf-8?B?dHpWeFFKZkVMekMzbTYwYjdiRW9CTG5kc2h2bkI5SFk5aGtUeDVqWXYzK25r?=
+ =?utf-8?B?Z0FESDRNbWJ3YVhGRWdiN0N4cXZGbVFpTGR5blNycWJoak9qRVBpYU5jQnZk?=
+ =?utf-8?B?TVhJV3JjTGFkUldFcTF3K1Y3cGlhUXBwM2MwQmdRcWYzUldWL3VGaHVzblYz?=
+ =?utf-8?B?aHRFeVhRRlhzeDY2OWpYaDJaZVkyZ3R1MmlDMmFndzNyMFJWdytNUnZzVXZW?=
+ =?utf-8?B?Ukt6d1VQVDI2ekh5N3U3bzZhN0pnUVNYdlBNRnhpcVhxQ3FUdWhUeDQrdEVC?=
+ =?utf-8?B?ZEYrSWF1RFZBYUMrd0FWamhERm0rVGRxbDhCZFBCdDdTdHpVTVZuT0N2dktl?=
+ =?utf-8?B?R0F5QkRkbnIyVFc5YlhJbXVhY2F6MG5uTlhOZTJHYit6dEY5R0FQUEZsTkdr?=
+ =?utf-8?B?cVVQUUdRVWNJRUNVYVk3dUxCL2l5UkI2SUhCQkkyTVRWNlhQdjFYVC9PRnNn?=
+ =?utf-8?B?SytXeXFJZXhJODlZS2VGTUJJRDdtcEFFSTA1OHM2cXloNkhQTWt3cFo2SHdB?=
+ =?utf-8?Q?kbcIe8a8Y4zsRlLSMHdgwP5b8?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 790ba33c-1b1a-4e54-42ce-08da820cb5c6
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB6101.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 18:00:32.8952
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aJR0ELkfxHcEN8TWuhg4rirD16sTrzm+D8inKpkcrK81QXKy82ZHCgsgwF1Cm+nUEzIbGVYT0ifJGNSEP9J6fw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3326
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Masahiro Yamada <masahiroy@kernel.org>:
-> > > The reason is 64BIT depends on PA8X00.
-> > >
-> > > allmodconfig chooses PA7000 instead of PA8X00
-> > > in the "Processor type" choice since
-> > > PA7000 is the default.
-> > >
-> > >
-> > > If you apply this patch,
-> > >
-> > >
-> > >
-> > > diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-> > > index 7f059cd1196a..458b8e22e240 100644
-> > > --- a/arch/parisc/Kconfig
-> > > +++ b/arch/parisc/Kconfig
-> > > @@ -146,7 +146,7 @@ menu "Processor type and features"
-> > >
-> > >  choice
-> > >         prompt "Processor type"
-> > > -       default PA7000
-> > > +       default PA8X00
-> > >
-> > >  config PA7000
-> > >         bool "PA7000/PA7100"
-> > >
-> > > allmodconfig will start enabling CONFIG_64BIT,
-> > > but it is up to Helge.
-> >
-> > That patch "partly" works, in the sense that with:
-> > make ARCH=3Dparisc64 randconfig
-> >
-> > you randomly end up with a 32- or 64-bit kernel.
-> > Since "ARCH=3Dparisc64" was given, one probably would expect a 64-bit-=
-enabled kernel randconfig,
-> > and with "ARCH=3Dparisc" a 32-bit randconfig.
-> > But, I'm not sure if this intended or not and works that way on other =
-arches as well.
->
->
-> Ah, OK.
->
-> Then, you can mimic sparc code.
->
-> In the top Makefile:
->
->
-> ifeq ($(ARCH),sparc32)
->        SRCARCH :=3D sparc
-> endif
-> ifeq ($(ARCH),sparc64)
->        SRCARCH :=3D sparc
-> endif
->
->
->
->
-> In arch/sparc/Kconfig:
->
->
-> config 64BIT
->         bool "64-bit kernel" if "$(ARCH)" =3D "sparc"
->         default "$(ARCH)" =3D "sparc64"
->
-> "make ARCH=3Dsparc32 randconfig" always disables
-> CONFIG_64BIT, and randomizes the rest of options.
->
->
-> "make ARCH=3Dsparc64 randconfig" always enables
-> CONFIG_64BIT, and randomizes the rest of options.
->
->
-> "make ARCH=3Dsparc randconfig" randomizes all options,
-> including CONFIG_64BIT.
+On 8/19/2022 11:57, Mark Pearson wrote:
+> 
+> 
+> On 2022-08-19 10:01, Mario Limonciello wrote:
+>> It was observed that on a Thinkpad T14 Gen1 (AMD) that the platform
+>> profile is starting up in 'low-power' mode after refreshing what the
+>> firmware had.  This is most likely a firmware bug, but as a harmless
+>> workaround set the default profile to 'balanced' at thinkpad_acpi startup.
+>>
+>> Reported-and-tested-by: madcatx@atlas.cz
+>> Link: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D216347&amp;data=05%7C01%7Cmario.limonciello%40amd.com%7C7f33822a8c2c428fdb0b08da8203f783%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637965250825035615%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=ua0qRTvx6MmngRCYI8TxgaTjLrd2fnRNtUhA0%2BRS6S8%3D&amp;reserved=0>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>>   drivers/platform/x86/thinkpad_acpi.c | 7 +------
+>>   1 file changed, 1 insertion(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+>> index 22d4e8633e30..e7e86c0b9ad7 100644
+>> --- a/drivers/platform/x86/thinkpad_acpi.c
+>> +++ b/drivers/platform/x86/thinkpad_acpi.c
+>> @@ -10590,12 +10590,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
+>>   		return -ENODEV;
+>>   
+>>   	/* Ensure initial values are correct */
+>> -	dytc_profile_refresh();
+>> -
+>> -	/* Set AMT correctly now we know current profile */
+>> -	if ((dytc_capabilities & BIT(DYTC_FC_PSC)) &&
+>> -	    (dytc_capabilities & BIT(DYTC_FC_AMT)))
+>> -	    dytc_control_amt(dytc_current_profile == PLATFORM_PROFILE_BALANCED);
+>> +	dytc_profile_set(NULL, PLATFORM_PROFILE_BALANCED);
+>>   
+>>   	return 0;
+>>   }
+> I'm hesitant on this and would like some time to dig into it first.
+> 
+> I worry that this would be overriding the setting in the BIOS. On the
+> Intel platforms (at least on the mobile workstations) we can set the
+> default power setting in the BIOS. I don't see this on the T14 AMD G1 -
+> and haven't had a chance to check other platforms so its less of a
+> concern there.
 
-Ah, cool.
-Thank you!
+Ah wasn't aware you stored it for some systems.
 
-> I suggest to introduce ARCH=3Dparisc32
+> 
+> As a compromise I'd want to force the profile to balanced on the PSC
+> modes only.
+> 
+> Ideally, if this is a FW bug we should get it fixed in FW. I know our FW
+> team can be a bit slow, but I'd rather hold off a few more days until I
+> have a better idea where the issue is. I don't really understand why the
+> person with the original issue is seeing the behaviour that they are.
+> 
+> Mark
 
-No need. We already have ARCH=3Dparisc64 or ARCH=3Dparisc.
-
-The patch below fixes it nicely and I've pushed it into the parisc
-for-next git tree.
-
-@Randy: Maybe you could try it as well. With that approach
-you get what you want. Maybe that's a better approach for riscv64 as
-well?
-
-Helge
-
-
-
-=46rom a529c0a388f74a243363976af8535b10d3d69d20 Mon Sep 17 00:00:00 2001
-From: Helge Deller <deller@gmx.de>
-Date: Fri, 19 Aug 2022 19:30:50 +0200
-Subject: [PATCH] parisc: Enable CONFIG_64BIT for ARCH=3Dparisc64 only
-
-With this patch the ARCH=3D parameter decides if the
-CONFIG_64BIT option will be set or not. This means, the
-ARCH=3D parameter will give:
-
-	ARCH=3Dparisc	-> 32-bit kernel
-	ARCH=3Dparisc64	-> 64-bit kernel
-
-This simplifies the usage of the other config options like
-randconfig, allmodconfig and allyesconfig a lot and produces
-the output which is expected for parisc64 (64-bit) vs. parisc (32-bit).
-
-Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
-
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index 7f059cd1196a..9aede2447011 100644
-=2D-- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -146,10 +146,10 @@ menu "Processor type and features"
-
- choice
- 	prompt "Processor type"
--	default PA7000
-+	default PA7000 if "$(ARCH)" =3D "parisc"
-
- config PA7000
--	bool "PA7000/PA7100"
-+	bool "PA7000/PA7100" if "$(ARCH)" =3D "parisc"
- 	help
- 	  This is the processor type of your CPU.  This information is
- 	  used for optimizing purposes.  In order to compile a kernel
-@@ -160,21 +160,21 @@ config PA7000
- 	  which is required on some machines.
-
- config PA7100LC
--	bool "PA7100LC"
-+	bool "PA7100LC" if "$(ARCH)" =3D "parisc"
- 	help
- 	  Select this option for the PCX-L processor, as used in the
- 	  712, 715/64, 715/80, 715/100, 715/100XC, 725/100, 743, 748,
- 	  D200, D210, D300, D310 and E-class
-
- config PA7200
--	bool "PA7200"
-+	bool "PA7200" if "$(ARCH)" =3D "parisc"
- 	help
- 	  Select this option for the PCX-T' processor, as used in the
- 	  C100, C110, J100, J110, J210XC, D250, D260, D350, D360,
- 	  K100, K200, K210, K220, K400, K410 and K420
-
- config PA7300LC
--	bool "PA7300LC"
-+	bool "PA7300LC" if "$(ARCH)" =3D "parisc"
- 	help
- 	  Select this option for the PCX-L2 processor, as used in the
- 	  744, A180, B132L, B160L, B180L, C132L, C160L, C180L,
-@@ -224,17 +224,8 @@ config MLONGCALLS
- 	  Enabling this option will probably slow down your kernel.
-
- config 64BIT
--	bool "64-bit kernel"
-+	def_bool "$(ARCH)" =3D "parisc64"
- 	depends on PA8X00
--	help
--	  Enable this if you want to support 64bit kernel on PA-RISC platform.
--
--	  At the moment, only people willing to use more than 2GB of RAM,
--	  or having a 64bit-only capable PA-RISC machine should say Y here.
--
--	  Since there is no 64bit userland on PA-RISC, there is no point to
--	  enable this option otherwise. The 64bit kernel is significantly bigger
--	  and slower than the 32bit one.
-
- choice
- 	prompt "Kernel page size"
+Sure; I'll send out a v2 to that effect.
