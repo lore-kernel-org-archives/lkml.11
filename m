@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC47DC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4124AC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353572AbiHSQnj (ORCPT
+        id S1353748AbiHSQnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
+        Fri, 19 Aug 2022 12:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353848AbiHSQlI (ORCPT
+        with ESMTP id S1353857AbiHSQlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:41:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026A9124229;
-        Fri, 19 Aug 2022 09:09:31 -0700 (PDT)
+        Fri, 19 Aug 2022 12:41:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D2B12578F;
+        Fri, 19 Aug 2022 09:09:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE996B82824;
-        Fri, 19 Aug 2022 16:08:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59EEDC433C1;
-        Fri, 19 Aug 2022 16:08:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC6CD61639;
+        Fri, 19 Aug 2022 16:08:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D570C43141;
+        Fri, 19 Aug 2022 16:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925328;
-        bh=8kUpbkMwLPfjZaP/tQk/YlBKuvxAlceCaVIlCRD3mqw=;
+        s=korg; t=1660925332;
+        bh=qBJun0bWQYxXyX9cv6OKocqYB+O1BIvrD1jsikgfFIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lpChL0SuU6jSSYERKfpNQExCm8Ss29uKB7Zp4Oh9ZG8VN9bEfxoNwDFNnstIr1wGR
-         i1Yj+OGogoVlbsJQ8mwmARqxemY15iISaUzB1DtHHdiNFdHhJFqqpcwesC9PMoyBck
-         v4nrRdY50BdswOju03xr9aEyWlcO/Pi0Hw0wtYAI=
+        b=Far5wnp31bNbkUbATA0TOtUdbhp6VurU6CnHw227cul447uu3RRtgPG2ouiw8AB/l
+         T5GO9iVI+70UTiaOOyS8Rv0aluLFTeKtQL/mw10vnwShcLug2G42wLdPHlVUslcC6g
+         wctB0TQD2QRV2Id99rc9ZtZd1IlReVILHXApUakw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 457/545] drm/vc4: drv: Adopt the dma configuration from the HVS or V3D component
-Date:   Fri, 19 Aug 2022 17:43:47 +0200
-Message-Id: <20220819153849.836678563@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 440/545] scsi: qla2xxx: Fix discovery issues in FC-AL topology
+Date:   Fri, 19 Aug 2022 17:43:30 +0200
+Message-Id: <20220819153849.113964391@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,67 +52,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit da8e393e23efb60eba8959856c7df88f9859f6eb ]
+commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
 
-vc4_drv isn't necessarily under the /soc node in DT as it is a
-virtual device, but it is the one that does the allocations.
-The DMA addresses are consumed by primarily the HVS or V3D, and
-those require VideoCore cache alias address mapping, and so will be
-under /soc.
+A direct attach tape device, when gets swapped with another, was not
+discovered. Fix this by looking at loop map and reinitialize link if there
+are devices present.
 
-During probe find the a suitable device node for HVS or V3D,
-and adopt the DMA configuration of that node.
-
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-2-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
+Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reported-by: Tony Battersby <tonyb@cybernetics.com>
+Tested-by: Tony Battersby <tonyb@cybernetics.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_drv.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
+ drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
+ drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
+ 3 files changed, 35 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
-index 839610f8092a..4bed62916b64 100644
---- a/drivers/gpu/drm/vc4/vc4_drv.c
-+++ b/drivers/gpu/drm/vc4/vc4_drv.c
-@@ -246,6 +246,15 @@ static void vc4_match_add_drivers(struct device *dev,
- 	}
+--- a/drivers/scsi/qla2xxx/qla_gbl.h
++++ b/drivers/scsi/qla2xxx/qla_gbl.h
+@@ -405,7 +405,8 @@ extern int
+ qla2x00_get_resource_cnts(scsi_qla_host_t *);
+ 
+ extern int
+-qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
++qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
++		u8 *num_entries);
+ 
+ extern int
+ qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -5270,6 +5270,22 @@ static int qla2x00_configure_n2n_loop(sc
+ 	return QLA_FUNCTION_FAILED;
  }
  
-+const struct of_device_id vc4_dma_range_matches[] = {
-+	{ .compatible = "brcm,bcm2711-hvs" },
-+	{ .compatible = "brcm,bcm2835-hvs" },
-+	{ .compatible = "brcm,bcm2835-v3d" },
-+	{ .compatible = "brcm,cygnus-v3d" },
-+	{ .compatible = "brcm,vc4-v3d" },
-+	{}
-+};
++static void
++qla_reinitialize_link(scsi_qla_host_t *vha)
++{
++	int rval;
 +
- static int vc4_drm_bind(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
-@@ -263,6 +272,16 @@ static int vc4_drm_bind(struct device *dev)
- 		vc4_drm_driver.driver_features &= ~DRIVER_RENDER;
- 	of_node_put(node);
- 
-+	node = of_find_matching_node_and_match(NULL, vc4_dma_range_matches,
-+					       NULL);
-+	if (node) {
-+		ret = of_dma_configure(dev, node, true);
-+		of_node_put(node);
-+
-+		if (ret)
-+			return ret;
++	atomic_set(&vha->loop_state, LOOP_DOWN);
++	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
++	rval = qla2x00_full_login_lip(vha);
++	if (rval == QLA_SUCCESS) {
++		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
++	} else {
++		ql_dbg(ql_dbg_disc, vha, 0xd051,
++			"Link reinitialization failed (%d)\n", rval);
 +	}
++}
 +
- 	vc4 = devm_drm_dev_alloc(dev, &vc4_drm_driver, struct vc4_dev, base);
- 	if (IS_ERR(vc4))
- 		return PTR_ERR(vc4);
--- 
-2.35.1
-
+ /*
+  * qla2x00_configure_local_loop
+  *	Updates Fibre Channel Device Database with local loop devices.
+@@ -5321,6 +5337,19 @@ qla2x00_configure_local_loop(scsi_qla_ho
+ 		spin_unlock_irqrestore(&vha->work_lock, flags);
+ 
+ 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
++			u8 loop_map_entries = 0;
++			int rc;
++
++			rc = qla2x00_get_fcal_position_map(vha, NULL,
++						&loop_map_entries);
++			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
++				/*
++				 * There are devices that are still not logged
++				 * in. Reinitialize to give them a chance.
++				 */
++				qla_reinitialize_link(vha);
++				return QLA_FUNCTION_FAILED;
++			}
+ 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
+ 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
+ 		}
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -3017,7 +3017,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
+  *	Kernel context.
+  */
+ int
+-qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
++qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
++		u8 *num_entries)
+ {
+ 	int rval;
+ 	mbx_cmd_t mc;
+@@ -3057,6 +3058,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
+ 
+ 		if (pos_map)
+ 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
++		if (num_entries)
++			*num_entries = pmap[0];
+ 	}
+ 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
+ 
 
 
