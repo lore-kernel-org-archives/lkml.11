@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48ABEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA0BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352282AbiHSQVp (ORCPT
+        id S1352246AbiHSQVv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        Fri, 19 Aug 2022 12:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352494AbiHSQQw (ORCPT
+        with ESMTP id S1352511AbiHSQQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:52 -0400
+        Fri, 19 Aug 2022 12:16:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697E5116EE4;
-        Fri, 19 Aug 2022 09:00:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5C21175DE;
+        Fri, 19 Aug 2022 09:00:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55ECCB8280C;
-        Fri, 19 Aug 2022 16:00:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD41C433C1;
-        Fri, 19 Aug 2022 15:59:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80FCFB8280F;
+        Fri, 19 Aug 2022 16:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A60C433C1;
+        Fri, 19 Aug 2022 16:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924800;
-        bh=hzkemkVpECEz8P8+g1ZXBJ+D0VCbFxbSR+3zAHrHpjE=;
+        s=korg; t=1660924806;
+        bh=RC6lXEymBzfAqCZ9b6uCBQLC/nq3rGk6sjYUMbqsevM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ui0BGLzLquUgccZIC+Q1OSwepnwxoDeG9tTuqLCAv0KcKqIhu7PoyXEZUvubBhyR4
-         NyZc9jJu3duxoTiULLaStxcnYdfJEaiqcyw95/haODs1kazJFEInfzM1Qegcw0KyNT
-         M2BM6tj0D/SvnYOpfpcBS4RsyJeN9nX7uQexSY7s=
+        b=cIxQkf8nqAF4tUWWUa4Yty6/2hKPLQZI5GEc51PjhwmApRafHd3BjIZiAAA0I6wGR
+         qGbsWQWXUPhLlOdJJpsmGDq5jphXli8EwR7mrDhpi79J2slYDbdsGbXgNAy/biaYKU
+         EjqOr8bBTyb2TPKNbEW0B1e4Py2VCOYUrczs+otk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 287/545] clk: mediatek: reset: Fix written reset bit offset
-Date:   Fri, 19 Aug 2022 17:40:57 +0200
-Message-Id: <20220819153842.171408863@linuxfoundation.org>
+Subject: [PATCH 5.10 289/545] mwifiex: Ignore BTCOEX events from the 88W8897 firmware
+Date:   Fri, 19 Aug 2022 17:40:59 +0200
+Message-Id: <20220819153842.266637844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -54,51 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rex-BC Chen <rex-bc.chen@mediatek.com>
+From: Jonas Dreßler <verdre@v0yd.nl>
 
-[ Upstream commit edabcf71d100fd433a0fc2d0c97057c446c33b2a ]
+[ Upstream commit 84d94e16efa268e4f2887d858cd67ee37b870f25 ]
 
-Original assert/deassert bit is BIT(0), but it's more resonable to modify
-them to BIT(id % 32) which is based on id.
+The firmware of the 88W8897 PCIe+USB card sends those events very
+unreliably, sometimes bluetooth together with 2.4ghz-wifi is used and no
+COEX event comes in, and sometimes bluetooth is disabled but the
+coexistance mode doesn't get disabled.
 
-This patch will not influence any previous driver because the reset is
-only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
+This means we sometimes end up capping the rx/tx window size while
+bluetooth is not enabled anymore, artifically limiting wifi speeds even
+though bluetooth is not being used.
 
-Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220523093346.28493-3-rex-bc.chen@mediatek.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Since we can't fix the firmware, let's just ignore those events on the
+88W8897 device. From some Wireshark capture sessions it seems that the
+Windows driver also doesn't change the rx/tx window sizes when bluetooth
+gets enabled or disabled, so this is fairly consistent with the Windows
+driver.
+
+Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211103205827.14559-1-verdre@v0yd.nl
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/mediatek/reset.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/main.h      | 2 ++
+ drivers/net/wireless/marvell/mwifiex/pcie.c      | 3 +++
+ drivers/net/wireless/marvell/mwifiex/sta_event.c | 3 +++
+ 3 files changed, 8 insertions(+)
 
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index cb939c071b0c..89916acf0bc3 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -25,7 +25,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4);
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
+index 5923c5c14c8d..f4e3dce10d65 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.h
++++ b/drivers/net/wireless/marvell/mwifiex/main.h
+@@ -1054,6 +1054,8 @@ struct mwifiex_adapter {
+ 	void *devdump_data;
+ 	int devdump_len;
+ 	struct timer_list devdump_timer;
++
++	bool ignore_btcoex_events;
+ };
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
- }
+ void mwifiex_process_tx_queue(struct mwifiex_adapter *adapter);
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 7c137eba8cda..b0024893a1cb 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -3142,6 +3142,9 @@ static int mwifiex_init_pcie(struct mwifiex_adapter *adapter)
+ 	if (ret)
+ 		goto err_alloc_buffers;
  
- static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
-@@ -34,7 +34,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
++	if (pdev->device == PCIE_DEVICE_ID_MARVELL_88W8897)
++		adapter->ignore_btcoex_events = true;
++
+ 	return 0;
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
- }
- 
- static int mtk_reset_assert(struct reset_controller_dev *rcdev,
+ err_alloc_buffers:
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+index 753458628f86..05073a49ab5f 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+@@ -1061,6 +1061,9 @@ int mwifiex_process_sta_event(struct mwifiex_private *priv)
+ 		break;
+ 	case EVENT_BT_COEX_WLAN_PARA_CHANGE:
+ 		dev_dbg(adapter->dev, "EVENT: BT coex wlan param update\n");
++		if (adapter->ignore_btcoex_events)
++			break;
++
+ 		mwifiex_bt_coex_wlan_param_update_event(priv,
+ 							adapter->event_skb);
+ 		break;
 -- 
 2.35.1
 
