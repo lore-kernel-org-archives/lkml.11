@@ -2,150 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14AD8C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75435C32792
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348091AbiHSJSA (ORCPT
+        id S1348110AbiHSJSC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
+        Fri, 19 Aug 2022 05:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348092AbiHSJRz (ORCPT
+        with ESMTP id S1348073AbiHSJR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:17:55 -0400
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120053.outbound.protection.outlook.com [40.107.12.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82BFF2D5B
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 02:17:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W7nWnXgl6FIqikfCY/3onpT4jFHRbCAYeoVCXl9qswcxpAiLSHMODw0t+iW+XUdIiDcjlJ3CMpPIXdkPHK73Bts/qfnICa8pQjKWnBW2pE9gpaTMT1UyMLexxcUw+wCQ4OdVkKJm67lyN/pJXgj++GugtrJWrm3M5ATb5bMqY1M0tFJdDTG7b32acIjLuJW5cZ4seq1KJh1SqQxGNzT2BcbXxj6raYN8Lzur/3N7yQG11douX6oeJY/7lWNGreJ8dZkGA8oRLa8x2BreC4HhcawbLq3bxlt1nB8DkzQfFE9rAT65pPXRDitFdxby0odi2h8RtGL7cZbGsDdY0G+QHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jIx5Ahe9xvW0F1WKdEXFZQ+ukGrV/wOgKsgfTmHyuyQ=;
- b=GaaDgw3X6L2Z8HBxQgph1CiJaKRofCIj8qB1izS9zJoY2+kyuSrLzztroQpbrcnQ1WUbK00mlZvCf8DvWKPWsi+oiSnrfu4WUkzPx5SeFvkh1X4UT1xQIQ7Z0vZFZWMb62RwHL8supkNhNFbF0FFJdSwWD/zb+8qovTtU/1LmHMXTRty9pFdSuBlxsWCHjR7tBCO5x0gJx/yd+Dm/oOaDe+ibAKJNNWTwmoG7UYovn4RWM423cvyNMKdmJEEGe5pKM/7Nq5gNdENqRK9z5SIJrYDOEQ8M5dHTyjmLg+b9jygIZmuQltGosYLrSIhB+v/cHYccHNI7JNS0jKe0vK2nA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jIx5Ahe9xvW0F1WKdEXFZQ+ukGrV/wOgKsgfTmHyuyQ=;
- b=meqDHWOLnw3UIgDx9msNxt9Pt0alu4/ZiNQxwMcXXK5kDs5Qn4SlvOgNoEnJpfyIajuzXZQbbwlSk+G4Xn0Tbvokr9+MwlX1kiOgL09HjfrPy/yxsbQdEf7KDMQCOTvN2Tdc/rP2NrGRRsvwqlcgi7T99J8EEx5qEQLWaJ+dCOsEpCt4mKPlSh9R+s9WAGfru4KcbSWMUbgmRDGoxGL/iCBaaE3k2GSj0WePOOBXfhFM+flBIcKZ6g2sOw41/t3WCK/4RCQhACULEja2hh/6EvzfilQt6B/SvafJwCIEDQQzPGI15pIzAsMloxSiwEn7syUDDMZo6fE2J3oNIvTRug==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by PR1P264MB4085.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:250::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Fri, 19 Aug
- 2022 09:17:49 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::888e:a92e:a4ee:ce9e]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::888e:a92e:a4ee:ce9e%5]) with mapi id 15.20.5546.018; Fri, 19 Aug 2022
- 09:17:49 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Dmitry Safonov <dima@arista.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: Re: [PATCH v3 00/23] Add generic vdso_base tracking
-Thread-Topic: [PATCH v3 00/23] Add generic vdso_base tracking
-Thread-Index: AQHYM9OLTa3qCxlr+U+sdKEFqnRDQay5IPoAgP3QdwA=
-Date:   Fri, 19 Aug 2022 09:17:49 +0000
-Message-ID: <ad912d91-c6e8-12ab-f309-d52b8cd9a92a@csgroup.eu>
-References: <20210611180242.711399-1-dima@arista.com>
- <8bba9ed8-ae1f-7c98-fde5-808927935447@csgroup.eu>
- <6b2513db-7c31-8da4-38ec-0b9898c6589c@arista.com>
-In-Reply-To: <6b2513db-7c31-8da4-38ec-0b9898c6589c@arista.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5d42f26b-7436-4117-2294-08da81c3afc3
-x-ms-traffictypediagnostic: PR1P264MB4085:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: pWdCvKDT30j7cca33D9bn5Z2y7c7H6YjN1/jHUQ7GOvxWmXXaxKFLGSLYgKHCOhmafGSr32QKxx5Rm9F6RdG03zN4OEvnrp7QORwekyCXMRmbkTL63IKmIGeTcd2OAPQ4zG4CXz5o22YzEy9Z5ktZosMwfMjWPFQQiHMW6MiOeKhoVFm1335U0CfPIrCaHhQy6YdPWHT4gGKoFmx1F+DSBCK7b+nCIjhtBDc8Xx7BE8m256ZpPFaAjh4qQAS5shT1pLP/0FIAUBdJ+QHx/B5IectkVNg6F5xbvdw4txODGbXb20SqOBdLqriWnzI5kSHGxB8AwPDRmz5xxHXH/J2YL86tVv7+nC50QyQ7yEcGkjgNR16LNGH714COASvwtgUkjTUOJHTDrvJa0rlAYesAZOE9cnQPVXbnnIej95bW85gevludtCbQWRRT6mpnL6vSP4cK/rcpMFBSq+Ixm1w21g68+eoLNII/fu7+OIgI8csMc3wPQK/weT0yDvmX5laDc+JZ/LalaPJJ8oMVk+feQAOurQMt7T9LReb0EGp9OkDByk6KaEnNaBXpwvNgZiJ6f9NBqzDi+9WJKM2FCl/wEbpCdUbptWiR6HyJ4I3OMtEroE2UBEmUEAUEfuHiopK+p6GU5Lxytv7gXCGIASAJZz7UvlO96ERmPkmxgd0r4fSIYrcg7buKC46jBOMCxn+ykxW3bsIJqnHanA0BEPgLTIeyZuqPKLmu56ejZTUpgL9DBiBIVqRxwkKsE3rlFiQD3emBkATewKY1lfatYSCmsywj/DBxCNHsMkr7/Ujxu4n1NCTF8NRrsrRWiTyVWtjRFqNIrbRUqejBIAILbrX1lBzwXjcvQhJ6JSO2xQxuMM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(39850400004)(136003)(396003)(44832011)(6506007)(66476007)(53546011)(66556008)(66446008)(76116006)(66946007)(7416002)(2616005)(91956017)(4326008)(186003)(41300700001)(64756008)(26005)(8676002)(6486002)(5660300002)(8936002)(6512007)(478600001)(4744005)(38070700005)(2906002)(31696002)(86362001)(38100700002)(316002)(36756003)(122000001)(110136005)(31686004)(54906003)(71200400001)(41533002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?N1IxdWdGS2F5NHlnTXVVTDFVV09ZcGQwdkZmSzBHYisreEVUb2VrMS9sYU54?=
- =?utf-8?B?alRac1NWRDFNSldlT3R1S1hzMmZMK1JMMW5qelc2akJsODh5ZFE4Q3VKc0Zm?=
- =?utf-8?B?UHdWbi9DbnZsWG81QXZVVkpiOEtkT0ErcS8yQWJ5MXNqRG5GOGJkeGMxb3pr?=
- =?utf-8?B?ZVlLR21pYzR3d2hTd0lHd2FSRHlNWUlEUjhrOE4wMGx1ZkF1a0hnQXk3YnE3?=
- =?utf-8?B?T1R2SFg4VXpRVG5CN0kvNEtYSERhVnBneTJLODl0bkE5eUNXMXdVYnplb2ZZ?=
- =?utf-8?B?N3pRUUVuSmJwcFZ0V1pDc1QrTE5ONFc0S3lGekdxTlE3VVJSamJjZ1pEbGpN?=
- =?utf-8?B?RFAyZWtHanZFb2NOZEJ0WFNWd0Zwb1UvL1FuQVpqZEhBNlUyMkhvcUhlTDMx?=
- =?utf-8?B?UTdmUUNFb21HZGlyeTZnWFZoZktYVmRURnQxSkpmWDJRN0QzOGQ4MG5vQnNU?=
- =?utf-8?B?OXBKTlB2T0JHTC8vK3lDbGJWZFM3SmFDckw0UDlPQWY1M1JZK2xOdDFEUTh0?=
- =?utf-8?B?cXdRM0haK2Jzb1NmclExbFRFVmwrOFpDb29uc1NGNUR1SWdVTE4vU1ozeDh4?=
- =?utf-8?B?ODR1cjY4UGNZcXhtd0lpb2c5bUNuNWFhL0dzUTIzRmJkblFvK0txQ1puZXhH?=
- =?utf-8?B?Ny9TNXU5dVcxZ2RmdTJRMVB5NmU3NWVkSVBwRjNuZHVpZVpjRTBDOUkwenVD?=
- =?utf-8?B?TkRKWnlUMHlQUTloalpjQTVYcjg1cTI3NmhMRXdiVG1OZ0xSZFRQS01hSElp?=
- =?utf-8?B?bmg3ckhCK0lWa3F2SSt3R0JQWmw1YWpPOHpkbjhCWWRiUFdHc3NidjhnazJz?=
- =?utf-8?B?L3JkUUErR1Fsd0lTOWlGcld6TWtINGhMNzk2R3F1bVMwTDlVaEw1K2lzNVdl?=
- =?utf-8?B?N0tGQzRuc0tSM0E2dXp5R0dWb0RMSXdqaWNpTzNPZDFFcklWa0dDQmR4NXF6?=
- =?utf-8?B?QmdvU0lqQnJSSjZwUXJvQTFZTG96Uko1Q0NEZWYvYmVkUU4yMHpEWjNmSHRt?=
- =?utf-8?B?RGFmalN0bkdraFBoZVgzSzNUdmNZUkp5RkI3MTdiUW9zVFd4V010dXllUnJC?=
- =?utf-8?B?Qk5IajNhRXFpOGEvcklKSVFxSzZyN0xvSUhXaU1QTkNNZmRObE42TlNKSVJQ?=
- =?utf-8?B?NFNlQ293K2ttakFtKzJ1UmNLUkpvL2Z3d3ZKSWxEaXZqNGlYMC9IYVRTODEr?=
- =?utf-8?B?OWJ5Y1RtaitpSDMxOFE3L0JhV1NjSGdCRmpNQnJoa1JIQTFKRFgwNGsvQ0Nh?=
- =?utf-8?B?RmpNUDZGMzVBY1lEZTZ4SnZzU1ZaaUlPWW5JamE1aHZucysvekdwME00R0ZC?=
- =?utf-8?B?UGNzczVveEVJQVl0RDFTbHJFdGI0aU1IcnZVaENUVXlhbzdLNWY4OHUzaWNj?=
- =?utf-8?B?SUVHTm9KWFZUYzlJVGZ6aE1FWEtQeXFCN2ViRnVscHNobjhWTzRBZnlpQ0Fh?=
- =?utf-8?B?SU80dUtXUTJBaytGeEhSRWpzOEZSdXFsQnRhN0ZVRTE1c0E4dnhqM3R5ZXNZ?=
- =?utf-8?B?aFNTaXArbzdCMkxKV2Fvbk5NRzRIRkN2RlNEOTN3eVV6TG9PMTBKellkeFdz?=
- =?utf-8?B?OURNRGRqQ21iY1Y0TXFraW5kM1c5S2lZUU5hYVFEanpkR3NNMDBUdk10V05V?=
- =?utf-8?B?REdRbzdaREZ4K2J6RkEzNzk3RGlUZTE2bW5PaDBIbHQ4ZllnSzhDd2pKbk9G?=
- =?utf-8?B?b0Y4Ky83R0JobFRDYmtiV2pLTXVveGc3N1FVL3VlNDVuMFdDK3VvM2kzVEph?=
- =?utf-8?B?TXFXKzVxVFNIRS9WdUZWbzZwdkpkVDU0blMzYXd1eXJ4K3VDRWF5L3pGaGt3?=
- =?utf-8?B?VGx0U1hkdFM0TjBuTE8vNkxoRE9OaXVyUmJCRTlHS1dPVGE3WFVabFp6bFpr?=
- =?utf-8?B?ZVhEZXlrUFhTendRVUw3NWpta3VqSGpLYXhqZE12U3N1KzBKa0JObno1QXpF?=
- =?utf-8?B?RWtHR3VHOG5ibjVta3F0M2ZnTmx6UEdlOU1odnFNSW1CL282czdic2lCREtv?=
- =?utf-8?B?WVNsOWxVSVk0MnF4aGFDM0lJcXZwRFkwZlAyZ0JaL0YvMkRpR1ZRK2l0aUtM?=
- =?utf-8?B?NGVLdVd2YnpRNlFJUVBTUjhqQmplRFRRNXBJVlF2QUR5Zlpsbll3Mmp3M0tX?=
- =?utf-8?B?ejBoVzJFV3I2VTNKdm05Mm9CN0JGb2RvOU9hemxZRmdCT0VYUUFHZTlSd2xK?=
- =?utf-8?Q?4veb50lszi0CGmNhhb2N+aM=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E0401D76B9A8DC4C8DCB13A0863541C3@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Fri, 19 Aug 2022 05:17:59 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755FCF4392;
+        Fri, 19 Aug 2022 02:17:58 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id q184so4194190oif.1;
+        Fri, 19 Aug 2022 02:17:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=p1fTT14mThGLEnUJzebZNUEmZIwatmKiQNsPLBHI5iY=;
+        b=kBfeia/XUVgX0NjH4njVgp10Xc+G+28B7su+3eLWJGuGhpg+B6pi63D7X7ze0vV6ap
+         TF7KX4NW+jKdP61KoE0V40tmQa/s+NfkO9m9S+h+YkUQ2AMiYQlIzG9nwFhSjbxflmr9
+         5WGyFoW9cIf5hKib/FNGaA4zPJJ3MIzH3fM1cEkJ5dENjMsz2irwnfI6OFN07HoQtB8K
+         iHRS+5U+nLzWrpXRLrv4S6HpjT1Y1BjUMEtLrIfb0YcTXARrisPlFl9FkIG3IAQQGiJ0
+         mIuccOKwveXBwwNIyrsQlZrzcZrS0i1gIOiFTiiMI+2EIVIMxmirctiPgpdUkOnW8PpT
+         iNaw==
+X-Gm-Message-State: ACgBeo2t22LqTqksUVWW4/4tRBNGwS5vxFL9yJgdw/kF81HLq89yOwXr
+        ydoie4ybEhlLIPaADnA4Gf/G1GmAoBk5HQ==
+X-Google-Smtp-Source: AA6agR7hZqcd16EjL3RuiBwYvUhrQuTVo7VMNddPUiVSBB02kjqZEYsLOygKuKvn+l2N3NaYliFvvg==
+X-Received: by 2002:a05:6808:10ce:b0:344:e898:3584 with SMTP id s14-20020a05680810ce00b00344e8983584mr2827050ois.36.1660900677604;
+        Fri, 19 Aug 2022 02:17:57 -0700 (PDT)
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com. [209.85.160.52])
+        by smtp.gmail.com with ESMTPSA id k38-20020a4a94a9000000b004354a4412edsm841634ooi.29.2022.08.19.02.17.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 02:17:56 -0700 (PDT)
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-11c5ee9bf43so4597042fac.5;
+        Fri, 19 Aug 2022 02:17:56 -0700 (PDT)
+X-Received: by 2002:a25:cbcf:0:b0:695:2d3b:366 with SMTP id
+ b198-20020a25cbcf000000b006952d3b0366mr1673997ybg.365.1660900664907; Fri, 19
+ Aug 2022 02:17:44 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d42f26b-7436-4117-2294-08da81c3afc3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2022 09:17:49.3597
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aqREZvr3wxi1lx96yt0r/rHdnEpryVK4t7GWkDQsgp3u712bUZ52R6CEHWRF8k6zUaMdAiCpS+lINyf2AppPHGc6eOS7VVEcgW+YdTwAUCM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB4085
+References: <20220818135522.3143514-1-arnd@kernel.org> <20220818135522.3143514-2-arnd@kernel.org>
+In-Reply-To: <20220818135522.3143514-2-arnd@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 19 Aug 2022 11:17:33 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXEXQNeOQGnYTQG58nHwB8YwLQ5q1vaje7kPQexrAMsRA@mail.gmail.com>
+Message-ID: <CAMuHMdXEXQNeOQGnYTQG58nHwB8YwLQ5q1vaje7kPQexrAMsRA@mail.gmail.com>
+Subject: Re: [PATCH 01/11] ARM: defconfig: reorder defconfig files
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Qin Jian <qinjian@cqplus1.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>, Bin Liu <b-liu@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>,
+        Peter Chen <peter.chen@nxp.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Felipe Balbi <balbi@ti.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
+        <linux-omap@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgRG1pdHJ5LA0KDQpMZSAxMC8wMy8yMDIyIMOgIDIyOjE3LCBEbWl0cnkgU2Fmb25vdiBhIMOp
-Y3JpdMKgOg0KPiBIaSBDaHJpc3RvcGhlLA0KPiANCj4gT24gMy85LzIyIDE1OjQxLCBDaHJpc3Rv
-cGhlIExlcm95IHdyb3RlOg0KPj4gSGkgRG1pdHJ5LA0KPj4NCj4+IEknbSB3b25kZXJpbmcgdGhl
-IHN0YXR1cyBvZiB0aGlzIHNlcmllcy4NCj4gDQo+IFllYWgsIEkgcGxhbiB0byB3b3JrIG9uIHY0
-IGFkZHJlc3NpbmcgdGhlIHJldmlld3MuDQo+IFdGSCBoYXMgcXVpdGUgYWZmZWN0ZWQgbXkgd29y
-ayBvbiBzaWRlLXByb2plY3RzIGFuZCBJJ3ZlIGxhaWQgYXNpZGUgZm9yDQo+IGEgd2hpbGUgdGhp
-cyBwYXRjaCBzZXQgdGhhdCB0b3VjaGVzIGV2ZXJ5IGFyY2hpdGVjdHVyZSBhbmQgaXMgYmVzaWRl
-cw0KPiBhIGJpdCBjaGFsbGVuZ2luZyB0byB1cHN0cmVhbS4NCg0KQW55IHByb2dyZXNzID8NCg0K
-VGhhbmtzDQpDaHJpc3RvcGhl
+Hi Arnd,
+
+On Thu, Aug 18, 2022 at 3:55 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> The debug-info and can subystem options have moved around in the
+> 'savedefconfig' output, so fix these up to reduce the clutter
+> from the savedefconfig command.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Thanks for your patch!
+
+> --- a/arch/arm/configs/shmobile_defconfig
+> +++ b/arch/arm/configs/shmobile_defconfig
+> @@ -33,7 +33,6 @@ CONFIG_INET=y
+>  CONFIG_IP_PNP=y
+>  CONFIG_IP_PNP_DHCP=y
+>  CONFIG_CAN=y
+> -CONFIG_CAN_RCAR=y
+>  CONFIG_PCI=y
+>  CONFIG_PCI_MSI=y
+>  CONFIG_PCI_RCAR_GEN2=y
+> @@ -57,6 +56,7 @@ CONFIG_RAVB=y
+>  CONFIG_SMSC911X=y
+>  CONFIG_MICREL_PHY=y
+>  CONFIG_SMSC_PHY=y
+> +CONFIG_CAN_RCAR=y
+>  CONFIG_INPUT_EVDEV=y
+>  CONFIG_KEYBOARD_GPIO=y
+>  # CONFIG_INPUT_MOUSE is not set
+
+This may cause conflicts with the usual refresh I plan to do for
+v6.0-rc1, which will be very similar to
+https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git/commit/?id=517d634d376042ab797d9feeb94236ad4cb03396
+So it may be better to drop this part.
+
+However, that decision is up to you, as you will have to handle the
+conflict when merging renesas-arm-defconfig-for-v6.0-tag1 later ;-)
+But sfr might complain before...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
