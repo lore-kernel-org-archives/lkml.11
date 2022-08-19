@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F26C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B64C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350764AbiHSP6w (ORCPT
+        id S1350909AbiHSP65 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39962 "EHLO
+        Fri, 19 Aug 2022 11:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350965AbiHSP4H (ORCPT
+        with ESMTP id S1350974AbiHSP4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:56:07 -0400
+        Fri, 19 Aug 2022 11:56:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0D530547;
-        Fri, 19 Aug 2022 08:51:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07B152FDB;
+        Fri, 19 Aug 2022 08:51:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65614B82813;
-        Fri, 19 Aug 2022 15:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8F05C4347C;
-        Fri, 19 Aug 2022 15:50:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 060EFB8277D;
+        Fri, 19 Aug 2022 15:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D510C433D6;
+        Fri, 19 Aug 2022 15:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924260;
-        bh=e48tc2OR3RCBc0ZTNyT/lHkQqToIZBrW1d32zs+2JUE=;
+        s=korg; t=1660924265;
+        bh=nHlSxlq3+rvZNO4BoQZpyhlxjtlURvU4B7fVlq7DHS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ryyc/S/99OdPlslEI1GWkQDbaHmK9P+ra46CwOCwUkBqBWpLTdKCVlpdwfD6hDSjG
-         Mwf4V537PUnK7GiYstG+G4gitNF6Cpq33zF0NKRHWWAYhnujqvnXGQWWMzPO/dqP3F
-         fxlULuIEhYh3SNL8YdWRqm8/hPCYhZYHoy8zUVmE=
+        b=xdQvf0Bb81oa+KXshFdUSDtI7/18ZABnb2kBFZ3WqC9sMuxhGPHQA0bRpGntlehZR
+         6aJH8Ok+EjbNsVUUF9sEa8HLpfZrePOrSiLpf7TRemauX5q+ySMLnNBkWen7DQya3L
+         Hfd3OJME44zw1jqgjZnis4EFDeTNlboRYr+btqCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 083/545] genirq: GENERIC_IRQ_IPI depends on SMP
-Date:   Fri, 19 Aug 2022 17:37:33 +0200
-Message-Id: <20220819153832.971337534@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 111/545] ARM: bcm: Fix refcount leak in bcm_kona_smc_init
+Date:   Fri, 19 Aug 2022 17:38:01 +0200
+Message-Id: <20220819153834.260329147@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,49 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
+[ Upstream commit cb23389a2458c2e4bfd6c86a513cbbe1c4d35e76 ]
 
-The generic IPI code depends on the IRQ affinity mask being allocated
-and initialized. This will not be the case if SMP is disabled. Fix up
-the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
+Fixes: b8eb35fd594a ("ARM: bcm281xx: Add L2 cache enable code")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/Kconfig | 2 +-
- kernel/irq/Kconfig      | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/mach-bcm/bcm_kona_smc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index c4b971cd239d..3c24bf45263c 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -178,7 +178,7 @@ config MADERA_IRQ
- config IRQ_MIPS_CPU
- 	bool
- 	select GENERIC_IRQ_CHIP
--	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
-+	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
- 	select IRQ_DOMAIN
- 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
+diff --git a/arch/arm/mach-bcm/bcm_kona_smc.c b/arch/arm/mach-bcm/bcm_kona_smc.c
+index 43a16f922b53..513efea655ba 100644
+--- a/arch/arm/mach-bcm/bcm_kona_smc.c
++++ b/arch/arm/mach-bcm/bcm_kona_smc.c
+@@ -54,6 +54,7 @@ int __init bcm_kona_smc_init(void)
+ 		return -ENODEV;
  
-diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-index 164a031cfdb6..0f2a44fc0971 100644
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -82,6 +82,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
- # Generic IRQ IPI support
- config GENERIC_IRQ_IPI
- 	bool
-+	depends on SMP
- 	select IRQ_DOMAIN_HIERARCHY
+ 	prop_val = of_get_address(node, 0, &prop_size, NULL);
++	of_node_put(node);
+ 	if (!prop_val)
+ 		return -EINVAL;
  
- # Generic MSI interrupt support
 -- 
 2.35.1
 
