@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB80C32796
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF907C32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351607AbiHSQGI (ORCPT
+        id S1351103AbiHSQGt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
+        Fri, 19 Aug 2022 12:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351593AbiHSQCM (ORCPT
+        with ESMTP id S1351248AbiHSQBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:02:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76B110B51C;
-        Fri, 19 Aug 2022 08:53:55 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9459DB4428;
+        Fri, 19 Aug 2022 08:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76FBAB8280D;
-        Fri, 19 Aug 2022 15:53:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0FB7C433D6;
-        Fri, 19 Aug 2022 15:53:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0900061714;
+        Fri, 19 Aug 2022 15:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C78C433D6;
+        Fri, 19 Aug 2022 15:52:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924432;
-        bh=VPqFzFfLVZdIbtPQuP1vU+xxVbuVQx69nKkqMQyhbf0=;
+        s=korg; t=1660924333;
+        bh=mxljtDHMst5iwqEorc0AT/oDFsf1xLqdqqSlxIcDaPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2YkifPwPo1vGRH3FYGp5jQ0ZC/eZxkxxWYu8tZnNJJ57Y55Sc0o4Pv4nEPWDAMuoo
-         sd4nbnkhL6YfoWZ0aAdoVEuIJ/vDvLVDSRpVBL2uMKfGb4cZhFhPwoGRRzjeFbCgth
-         4bhf48/cAE0BgRri7WP+Dlp0Q8HxnEW6JHiZPGyg=
+        b=O0YN4qs4aQC0V/c+ccIIix1VM+cTTY9VHSlraVJQlepE3jRWhazoS/fq5hFjbsejp
+         3MHRlTAqGTm0Hkglty4XhYR8unIVrhqFrHqd/BtqyUPTHjTIruqg0OO8+LHDwqICuK
+         lidq2mifO3Ug7uhlh/e9s+UwKx7G9so132MxalOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        John Garry <john.garry@huawei.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 168/545] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
-Date:   Fri, 19 Aug 2022 17:38:58 +0200
-Message-Id: <20220819153836.879441566@linuxfoundation.org>
+Subject: [PATCH 5.10 135/545] bus: hisi_lpc: fix missing platform_device_put() in hisi_lpc_acpi_probe()
+Date:   Fri, 19 Aug 2022 17:38:25 +0200
+Message-Id: <20220819153835.383298485@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,46 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
+[ Upstream commit 54872fea6a5ac967ec2272aea525d1438ac6735a ]
 
-In the dsi_enable function, mtk_dsi_rxtx_control is to
-pull up the MIPI signal operation. Before dsi_disable,
-MIPI should also be pulled down by writing a register
-instead of disabling dsi.
+In error case in hisi_lpc_acpi_probe() after calling platform_device_add(),
+hisi_lpc_acpi_remove() can't release the failed 'pdev', so it will be leak,
+call platform_device_put() to fix this problem.
+I'v constructed this error case and tested this patch on D05 board.
 
-If disable dsi without pulling the mipi signal low, the value of
-the register will still maintain the setting of the mipi signal being
-pulled high.
-After resume, even if the mipi signal is not pulled high, it will still
-be in the high state.
-
-Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
-
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes: 99c0228d6ff1 ("HISI LPC: Re-Add ACPI child enumeration support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/bus/hisi_lpc.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 1b13e429e9d9..f39785934999 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -677,6 +677,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-+	/* set the lane number as 0 to pull down mipi */
-+	writel(0, dsi->regs + DSI_TXRX_CTRL);
+diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+index 378f5d62a991..e7eaa8784fee 100644
+--- a/drivers/bus/hisi_lpc.c
++++ b/drivers/bus/hisi_lpc.c
+@@ -503,13 +503,13 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
+ {
+ 	struct acpi_device *adev = ACPI_COMPANION(hostdev);
+ 	struct acpi_device *child;
++	struct platform_device *pdev;
+ 	int ret;
  
- 	mtk_dsi_disable(dsi);
+ 	/* Only consider the children of the host */
+ 	list_for_each_entry(child, &adev->children, node) {
+ 		const char *hid = acpi_device_hid(child);
+ 		const struct hisi_lpc_acpi_cell *cell;
+-		struct platform_device *pdev;
+ 		const struct resource *res;
+ 		bool found = false;
+ 		int num_res;
+@@ -571,22 +571,24 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
  
+ 		ret = platform_device_add_resources(pdev, res, num_res);
+ 		if (ret)
+-			goto fail;
++			goto fail_put_device;
+ 
+ 		ret = platform_device_add_data(pdev, cell->pdata,
+ 					       cell->pdata_size);
+ 		if (ret)
+-			goto fail;
++			goto fail_put_device;
+ 
+ 		ret = platform_device_add(pdev);
+ 		if (ret)
+-			goto fail;
++			goto fail_put_device;
+ 
+ 		acpi_device_set_enumerated(child);
+ 	}
+ 
+ 	return 0;
+ 
++fail_put_device:
++	platform_device_put(pdev);
+ fail:
+ 	hisi_lpc_acpi_remove(hostdev);
+ 	return ret;
 -- 
 2.35.1
 
