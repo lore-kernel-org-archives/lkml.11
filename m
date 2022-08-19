@@ -2,87 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 840E7C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E45DDC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347492AbiHSIKn (ORCPT
+        id S1347486AbiHSIMG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
+        Fri, 19 Aug 2022 04:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347466AbiHSIKg (ORCPT
+        with ESMTP id S1347471AbiHSIME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:10:36 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F4CE58B2;
-        Fri, 19 Aug 2022 01:10:35 -0700 (PDT)
-X-UUID: 865d04cad794429a8e03abdc123386ee-20220819
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=PjEyeFwR0pYC0NFB2Fr7WLGBrAjewg/mIlk1vInLY7Q=;
-        b=sMZV3l+LJhFA1pQvqewOAnOjh/bkMbQo83lD/gpnzBTOX9WXBn/drX2xsUobA5yaro9CTL2WIIZRQeXi23gq8VdKJ2Lx5wtxJLEcCFdvtDDGaO9s6lEEsBA/1/YuKjsaqga+oQmoaYBrzNHGZbi9E7Rcc/HQPjPoKbF4YkvgaF8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:b9c25485-e0fd-4302-a6dd-b545bde45a0d,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release
-        _Ham,ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.10,REQID:b9c25485-e0fd-4302-a6dd-b545bde45a0d,OB:0,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS98
-        1B3D,ACTION:quarantine,TS:95
-X-CID-META: VersionHash:84eae18,CLOUDID:bad348af-9535-44a6-aa9b-7f62b79b6ff6,C
-        OID:57848d79a4de,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 865d04cad794429a8e03abdc123386ee-20220819
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 205123183; Fri, 19 Aug 2022 16:10:30 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Fri, 19 Aug 2022 16:10:29 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Fri, 19 Aug 2022 16:10:28 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] dt-bindings: usb: mtu3: add compatible for mt8188
-Date:   Fri, 19 Aug 2022 16:10:27 +0800
-Message-ID: <20220819081027.32382-1-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 19 Aug 2022 04:12:04 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98086E096C;
+        Fri, 19 Aug 2022 01:12:03 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id y18so2825568qtv.5;
+        Fri, 19 Aug 2022 01:12:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=13cZgSYlONAYh9NAs+6LHBFcHKVS3iOvfRVkc4Te0KI=;
+        b=0f3xHpHpK9i6+0aul/eSAcGvX3/+HIfTWMrlo4sVDSAo7zDfVk2WcDYPEc3WagkHFU
+         SVKtI05FjAEc1piMxNkLJz6lX6JxBdfApvUZBOL+qoSbuclOCug6y+kkIms5K0YYJFH9
+         BgSIPNQlbI/vbR6/YGyGwyeP+2Lia1uxigpp/2imYSzsvIOuqEuJWI8AVTNbRFSd/JGb
+         dOE2qYQLVM5t0AGbPGzo4msRBPkc0UuuNYjqbzmUCnVn4i9i+OhQzdRQL2aENm4+w4Ak
+         7iWP4fGw4dWpOt53Vkc1b86KqmHuVd5KDHp6b6GvbiqcntpvIIzb5wVYHdkV5je/sRkV
+         lXmw==
+X-Gm-Message-State: ACgBeo2sTWzes8b4JVc/V4JafwrIuZm+ynCHm7XCwUD4U2ZIfdWvxE19
+        4ssN53vBUp8HFXUBG7Zl1bHe8geyCioqLQ==
+X-Google-Smtp-Source: AA6agR6frXyJBQ5llQknU9B1FCdeCUJbwnmu3GLJgdMw/ma3Cd5REZULJbtpk3A5b1Np6JnF/bJvaA==
+X-Received: by 2002:ac8:7e81:0:b0:344:95a5:75a0 with SMTP id w1-20020ac87e81000000b0034495a575a0mr3907047qtj.128.1660896722359;
+        Fri, 19 Aug 2022 01:12:02 -0700 (PDT)
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
+        by smtp.gmail.com with ESMTPSA id f22-20020a05620a409600b006bad20a6cfesm3700332qko.102.2022.08.19.01.12.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 01:12:01 -0700 (PDT)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-334dc616f86so102672417b3.8;
+        Fri, 19 Aug 2022 01:12:01 -0700 (PDT)
+X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
+ r1-20020a5b06c1000000b00669a7c34c33mr6358491ybq.543.1660896721064; Fri, 19
+ Aug 2022 01:12:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK:  N
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220815151451.23293-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220815151451.23293-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 19 Aug 2022 10:11:48 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUYOWZ8tG-OLLam3ROAtriO=VEOH0nrWfC2T1iOoq=LWQ@mail.gmail.com>
+Message-ID: <CAMuHMdUYOWZ8tG-OLLam3ROAtriO=VEOH0nrWfC2T1iOoq=LWQ@mail.gmail.com>
+Subject: Re: [PATCH v2 6/8] riscv: dts: renesas: Add minimal DTS for Renesas
+ RZ/Five SMARC EVK
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new compatible for mt8188
+On Mon, Aug 15, 2022 at 5:16 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Enable the minimal blocks required for booting the Renesas RZ/Five
+> SMARC EVK with initramfs.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
- Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
-index e63b66545317..b019d490170d 100644
---- a/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
-+++ b/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
-@@ -24,6 +24,7 @@ properties:
-           - mediatek,mt2712-mtu3
-           - mediatek,mt8173-mtu3
-           - mediatek,mt8183-mtu3
-+          - mediatek,mt8188-mtu3
-           - mediatek,mt8192-mtu3
-           - mediatek,mt8195-mtu3
-       - const: mediatek,mtu3
--- 
-2.18.0
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
