@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AFDC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C25C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351467AbiHSQHs (ORCPT
+        id S1351405AbiHSQHy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        Fri, 19 Aug 2022 12:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351206AbiHSQEB (ORCPT
+        with ESMTP id S1351223AbiHSQEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:04:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE59E107750;
-        Fri, 19 Aug 2022 08:54:54 -0700 (PDT)
+        Fri, 19 Aug 2022 12:04:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF87D106530;
+        Fri, 19 Aug 2022 08:54:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3DCE6175C;
-        Fri, 19 Aug 2022 15:54:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A8CC433C1;
-        Fri, 19 Aug 2022 15:54:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 294BFB82816;
+        Fri, 19 Aug 2022 15:54:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D6BC433C1;
+        Fri, 19 Aug 2022 15:54:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924491;
-        bh=xljCr0BzOGYAQrWcxm3BXLxu+ZD2hawX5Ixtdp6VyCI=;
+        s=korg; t=1660924481;
+        bh=NJC2d+YzT+eT1IoiThwIMwHhXPKVEerdtRPdxhwOZuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rOfNVkb0HbYASEMZIP7DpRjNWJHNuUrutR/dwh9QhaWxmFmzCk8I6sPTvSGMp6Q1l
-         +7XoCpkPKk8Kjy52xQ0FihNnhBpkbrndcmlSVCf3qOhw/Xn9scc9tvuJNrstjmE6M0
-         qVeYiYVQU8r5UYd4iEXvN7ar0T1cq6F41CHSlD7E=
+        b=XiKBuokndFyehkKiCstmoiJIBTi/6542Njp3i1FSMpWyuwKIcf7cVoP5UyRtPNwXA
+         2flz257bWAQsuTxkWDa5ttOp71t0e/+ELC2rOV+kvtPIGdFMRr6zFapb0JBifv01gc
+         5UT4wKaWhKIh+CZAHlES5L051EGurIhWApp013G4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        German Gomez <german.gomez@arm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 147/545] drivers/perf: arm_spe: Fix consistency of SYS_PMSCR_EL1.CX
-Date:   Fri, 19 Aug 2022 17:38:37 +0200
-Message-Id: <20220819153835.908707733@linuxfoundation.org>
+Subject: [PATCH 5.10 154/545] pwm: sifive: Ensure the clk is enabled exactly once per running PWM
+Date:   Fri, 19 Aug 2022 17:38:44 +0200
+Message-Id: <20220819153836.230489557@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -55,100 +53,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anshuman Khandual <anshuman.khandual@arm.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 92f2b8bafa3d6e89c750e9d301a8b7ab76aaa8b6 ]
+[ Upstream commit ace41d7564e655c39f709a78c035188a460c7cbd ]
 
-The arm_spe_pmu driver will enable SYS_PMSCR_EL1.CX in order to add CONTEXT
-packets into the traces, if the owner of the perf event runs with required
-capabilities i.e CAP_PERFMON or CAP_SYS_ADMIN via perfmon_capable() helper.
+.apply() assumes the clk to be for a given PWM iff the PWM is enabled.
+So make sure this is the case when .probe() completes. And in .remove()
+disable the according number of times.
 
-The value of this bit is computed in the arm_spe_event_to_pmscr() function
-but the check for capabilities happens in the pmu event init callback i.e
-arm_spe_pmu_event_init(). This suggests that the value of the CX bit should
-remain consistent for the duration of the perf session.
+This fixes a clk enable/disable imbalance, if some PWMs are already running
+at probe time.
 
-However, the function arm_spe_event_to_pmscr() may be called later during
-the event start callback i.e arm_spe_pmu_start() when the "current" process
-is not the owner of the perf session, hence the CX bit setting is currently
-not consistent.
-
-One way to fix this, is by caching the required value of the CX bit during
-the initialization of the PMU event, so that it remains consistent for the
-duration of the session. It uses currently unused 'event->hw.flags' element
-to cache perfmon_capable() value, which can be referred during event start
-callback to compute SYS_PMSCR_EL1.CX. This ensures consistent availability
-of context packets in the trace as per event owner capabilities.
-
-Drop BIT(SYS_PMSCR_EL1_CX_SHIFT) check in arm_spe_pmu_event_init(), because
-now CX bit cannot be set in arm_spe_event_to_pmscr() with perfmon_capable()
-disabled.
-
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Fixes: d5d9696b0380 ("drivers/perf: Add support for ARMv8.2 Statistical Profiling Extension")
-Reported-by: German Gomez <german.gomez@arm.com>
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/20220714061302.2715102-1-anshuman.khandual@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 9e37a53eb051 (pwm: sifive: Add a driver for SiFive SoC PWM)
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/arm_spe_pmu.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-sifive.c | 46 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 37 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
-index cc00915ad6d1..6fbfcab4918c 100644
---- a/drivers/perf/arm_spe_pmu.c
-+++ b/drivers/perf/arm_spe_pmu.c
-@@ -39,6 +39,24 @@
- #include <asm/mmu.h>
- #include <asm/sysreg.h>
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index cc32f7ce09a6..1def1bc59240 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -230,6 +230,8 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 	struct pwm_chip *chip;
+ 	struct resource *res;
+ 	int ret;
++	u32 val;
++	unsigned int enabled_pwms = 0, enabled_clks = 1;
  
-+/*
-+ * Cache if the event is allowed to trace Context information.
-+ * This allows us to perform the check, i.e, perfmon_capable(),
-+ * in the context of the event owner, once, during the event_init().
-+ */
-+#define SPE_PMU_HW_FLAGS_CX			BIT(0)
+ 	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
+ 	if (!ddata)
+@@ -260,6 +262,33 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	val = readl(ddata->regs + PWM_SIFIVE_PWMCFG);
++	if (val & PWM_SIFIVE_PWMCFG_EN_ALWAYS) {
++		unsigned int i;
 +
-+static void set_spe_event_has_cx(struct perf_event *event)
-+{
-+	if (IS_ENABLED(CONFIG_PID_IN_CONTEXTIDR) && perfmon_capable())
-+		event->hw.flags |= SPE_PMU_HW_FLAGS_CX;
-+}
++		for (i = 0; i < chip->npwm; ++i) {
++			val = readl(ddata->regs + PWM_SIFIVE_PWMCMP(i));
++			if (val > 0)
++				++enabled_pwms;
++		}
++	}
 +
-+static bool get_spe_event_has_cx(struct perf_event *event)
-+{
-+	return !!(event->hw.flags & SPE_PMU_HW_FLAGS_CX);
-+}
++	/* The clk should be on once for each running PWM. */
++	if (enabled_pwms) {
++		while (enabled_clks < enabled_pwms) {
++			/* This is not expected to fail as the clk is already on */
++			ret = clk_enable(ddata->clk);
++			if (unlikely(ret)) {
++				dev_err_probe(dev, ret, "Failed to enable clk\n");
++				goto disable_clk;
++			}
++			++enabled_clks;
++		}
++	} else {
++		clk_disable(ddata->clk);
++		enabled_clks = 0;
++	}
 +
- #define ARM_SPE_BUF_PAD_BYTE			0
+ 	/* Watch for changes to underlying clock frequency */
+ 	ddata->notifier.notifier_call = pwm_sifive_clock_notifier;
+ 	ret = clk_notifier_register(ddata->clk, &ddata->notifier);
+@@ -282,7 +311,11 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ unregister_clk:
+ 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+ disable_clk:
+-	clk_disable_unprepare(ddata->clk);
++	while (enabled_clks) {
++		clk_disable(ddata->clk);
++		--enabled_clks;
++	}
++	clk_unprepare(ddata->clk);
  
- struct arm_spe_pmu_buf {
-@@ -274,7 +292,7 @@ static u64 arm_spe_event_to_pmscr(struct perf_event *event)
- 	if (!attr->exclude_kernel)
- 		reg |= BIT(SYS_PMSCR_EL1_E1SPE_SHIFT);
+ 	return ret;
+ }
+@@ -290,21 +323,16 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ static int pwm_sifive_remove(struct platform_device *dev)
+ {
+ 	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
+-	bool is_enabled = false;
+ 	struct pwm_device *pwm;
+ 	int ch;
  
--	if (IS_ENABLED(CONFIG_PID_IN_CONTEXTIDR) && perfmon_capable())
-+	if (get_spe_event_has_cx(event))
- 		reg |= BIT(SYS_PMSCR_EL1_CX_SHIFT);
+ 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+ 		pwm = &ddata->chip.pwms[ch];
+-		if (pwm->state.enabled) {
+-			is_enabled = true;
+-			break;
+-		}
++		if (pwm->state.enabled)
++			clk_disable(ddata->clk);
+ 	}
+-	if (is_enabled)
+-		clk_disable(ddata->clk);
  
- 	return reg;
-@@ -699,10 +717,10 @@ static int arm_spe_pmu_event_init(struct perf_event *event)
- 	    !(spe_pmu->features & SPE_PMU_FEAT_FILT_LAT))
- 		return -EOPNOTSUPP;
- 
-+	set_spe_event_has_cx(event);
- 	reg = arm_spe_event_to_pmscr(event);
- 	if (!perfmon_capable() &&
- 	    (reg & (BIT(SYS_PMSCR_EL1_PA_SHIFT) |
--		    BIT(SYS_PMSCR_EL1_CX_SHIFT) |
- 		    BIT(SYS_PMSCR_EL1_PCT_SHIFT))))
- 		return -EACCES;
+-	clk_disable_unprepare(ddata->clk);
++	clk_unprepare(ddata->clk);
+ 	pwmchip_remove(&ddata->chip);
+ 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
  
 -- 
 2.35.1
