@@ -2,81 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734E0C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D22C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 09:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348049AbiHSJOa (ORCPT
+        id S1348066AbiHSJOf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 05:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        Fri, 19 Aug 2022 05:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348015AbiHSJOR (ORCPT
+        with ESMTP id S1348007AbiHSJOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 05:14:17 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476A43DBE6;
-        Fri, 19 Aug 2022 02:14:10 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id y18so2898617qtv.5;
-        Fri, 19 Aug 2022 02:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=VKM8TcTJgGWEjr2El3gvJFe6zfmgEmlCrlb69frx1uI=;
-        b=isbPdSYqfliPlROpQuyUVQJ5e+6RWIqhR+PiC4x/6zDfdZNNVhX10kQ5f8fEhG/UUo
-         vB7d6vO002zZ7efDLx1mef8eT7/vQMvQI2boxdN9lqCQ5fQ585JPzJ2UFelZpJAmXJAs
-         fF35HtNq6uB+nay819J2UJWSmatnjH+boUkR8pl2tH6n9v+D4D9PetdP8RPBVrYKDEuY
-         xOEsek496Ri+Ahy3vEpxQg4MT2kDphNXink1qPNesBibDRpL1x5cXXexUozp/PoKgOtZ
-         uxgkhlF0m58y+9b44AvTExF3axrvCZmRHj94U4aT/gIHbB+V5nEN80pDFNJLofx9JevG
-         kiFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=VKM8TcTJgGWEjr2El3gvJFe6zfmgEmlCrlb69frx1uI=;
-        b=y+GY3iFDNTwMSbjwtSBQ1kIs8xk+IB8SnARar3JcFyGQCs9tKMyNM9bwVsbWcGX47c
-         DpLgG2mJ7mHvpJpqOXrnk2f2uh1/U1Zkm0tx9cSpwZRz9juujfaMCm7Yei2gngNZapH0
-         qD1ASGWTfG26BLyv+qec5Gw0XdH0RM1hfSrKaA1BbW3aKi3nQuko9ZSETFKBuRiUkUwI
-         3CwqlQ5roSIS4CfbBCG/90oogMVsoh6EyKu0Kmej799F9lJOihiOtiaQB9fsB3SIwBgW
-         0+ZaXzR4nBXi1rtS3UZniG6eUjWi9eq1lRPypILkLkxM8KlK6xxVPyWlsFYNSiLR0OLy
-         jZsw==
-X-Gm-Message-State: ACgBeo2QmrdRN/w5zMPSjXUcy3TUNy5C6bAUyKpzOBceh3rrMkdKts2b
-        UZMyLXh/eZ4N1s5snCMCbSU6fyymt1K0mva2brI=
-X-Google-Smtp-Source: AA6agR5Ihu8MycYundNRVHx2wexqtqdkevIKQSdCM+iIfxrz6lmiGwSQWVsh7JjQjEOT5OX3KL1k2FPHLVxdE7b6bz4=
-X-Received: by 2002:a05:622a:491:b0:344:95bf:8f05 with SMTP id
- p17-20020a05622a049100b0034495bf8f05mr4237877qtx.61.1660900449375; Fri, 19
- Aug 2022 02:14:09 -0700 (PDT)
+        Fri, 19 Aug 2022 05:14:08 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0253C176;
+        Fri, 19 Aug 2022 02:14:06 -0700 (PDT)
+X-UUID: 0708a393aa414964be1f0fdedeead9f3-20220819
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=tS6CZCBjUbOc1UZ92WKOWil7JFSb8J7Du3g9c10m3yA=;
+        b=OHIgAhQcj43bNiCvufA3X/m94mgZNyQqu64dP3z3vhl+JWDb/pAyzuPms+BPzNaKP17zoLC6eEojdtyNZIRcWo48h8awiFE9Oqw2QmtdVkUwtXYKbFwyhmaqX3v9r2TanJXk9n12Xzz2HvnPI288Yv6i5HkKDAJPWqAIsp7z6dM=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:ef19bea7-fe68-4ba6-b936-282652d8da33,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:4b79b667-a9d9-4672-a3c8-12721739a220,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
+        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 0708a393aa414964be1f0fdedeead9f3-20220819
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 723050939; Fri, 19 Aug 2022 17:13:57 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 19 Aug 2022 17:13:48 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 19 Aug 2022 17:13:47 +0800
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Eddie Hung <eddie.hung@mediatek.com>
+Subject: [PATCH 4/7] phy: phy-mtk-tphy: disable hardware efuse when set INTR
+Date:   Fri, 19 Aug 2022 17:13:41 +0800
+Message-ID: <20220819091344.2274-4-chunfeng.yun@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
+References: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-References: <20220813071803.4692-1-jagathjog1996@gmail.com>
- <20220813071803.4692-2-jagathjog1996@gmail.com> <20220814180451.44a27126@jic23-huawei>
- <CAM+2EuJu3g98NOt2tOxPzWnGO3kvFNkruuAeZBd-=VxYvw7x9Q@mail.gmail.com>
-In-Reply-To: <CAM+2EuJu3g98NOt2tOxPzWnGO3kvFNkruuAeZBd-=VxYvw7x9Q@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 19 Aug 2022 12:13:33 +0300
-Message-ID: <CAHp75VcUb71tGKN8Pg0wy0+7739LzJKvUiN+rMCkQhMKJDpEMQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] iio: Add new event type gesture and use direction
- for single and double tap
-To:     Jagath Jog J <jagathjog1996@gmail.com>,
-        Joe Perches <joe@perches.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 9:33 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> On Sun, Aug 14, 2022 at 10:24 PM Jonathan Cameron <jic23@kernel.org> wrote:
+INTR's value is able autoload from hardware efuse by default, when
+software tries to update its value, should disable hardware efuse
+firstly.
 
-> Sure, I will leave KernelVersion blank in the next series.
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+---
+ drivers/phy/mediatek/phy-mtk-tphy.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-You may use 6.1, that way we don't forget about it.
-
-I'm wondering if checkpatch or other tools can validate the ABI descriptions.
-
+diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+index 986fde0f63a0..7f40b8b052bd 100644
+--- a/drivers/phy/mediatek/phy-mtk-tphy.c
++++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+@@ -874,9 +874,14 @@ static void u2_phy_props_set(struct mtk_tphy *tphy,
+ 		mtk_phy_update_bits(com + U3P_USBPHYACR1, PA1_RG_TERM_SEL,
+ 				    PA1_RG_TERM_SEL_VAL(instance->eye_term));
+ 
+-	if (instance->intr)
++	if (instance->intr) {
++		if (u2_banks->misc)
++			mtk_phy_set_bits(u2_banks->misc + U3P_MISC_REG1,
++					 MR1_EFUSE_AUTO_LOAD_DIS);
++
+ 		mtk_phy_update_bits(com + U3P_USBPHYACR1, PA1_RG_INTR_CAL,
+ 				    PA1_RG_INTR_CAL_VAL(instance->intr));
++	}
+ 
+ 	if (instance->discth)
+ 		mtk_phy_update_bits(com + U3P_USBPHYACR6, PA6_RG_U2_DISCTH,
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
