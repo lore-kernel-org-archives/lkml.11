@@ -2,119 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1A4C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B4EC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 20:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351582AbiHSUDw (ORCPT
+        id S1351593AbiHSUEJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 16:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        Fri, 19 Aug 2022 16:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351558AbiHSUDs (ORCPT
+        with ESMTP id S1351558AbiHSUEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 16:03:48 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430EF40555
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:03:47 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id dc19so10669950ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:03:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=9n5RFn8TAV/PffgBuvz2HviY+YN6byWrm18eu2DfQto=;
-        b=Ip/Z93LjOs20PVD0ORy+d2AlF7JTde7DigljJbgUklC8daxceXrlHlC+osry84FYst
-         RhLGh7wZAKwAOM6Mv9UPKCwzkc1Sdwwl3EsKEpat05HMIhVvQx7Dm7h8pN3OoRSnIuir
-         PlAV/67SwQQUcuotu1/3g6SFa6BGGnl+9Qp00=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=9n5RFn8TAV/PffgBuvz2HviY+YN6byWrm18eu2DfQto=;
-        b=7CZRjvsUgVhlcQ6l+GEMo8dxL8jFKbvTvMyRRzTKAcSRmX4DjBfonq62M7mblwf4bu
-         yq3+Y4DUl/07YzIERAS4L8pSlISIDSURYMYcPc+1Yn+JPb1gCA4DMiRPMCaKLM7chY97
-         wICbU9F+7HXT56ccMugDmEXne76EEENZt66ZoL99PRjzrIQMBRDcteXr/pZ8jxW5Y0zO
-         Y9Z50nKozt0JTGpEEYN04AbATtcVxSEXxrH500rbnTYLDy6VNcdQGUnD8sX3IkrTNxv4
-         QXN9diIsSfNpUpU/GNWIqOttCcsekxuCxQFDzNbhnF6mkBr9PTdfR4+XaPa4fDYRyuYb
-         mxmQ==
-X-Gm-Message-State: ACgBeo20GGdchrpEyL38N0SKyHlsKTUh00HrFcfEK26XNL0FhbGsmvI1
-        RAGeN4Q7UCP2oVoudWpxnF89nXi7YholP0KMwWQ=
-X-Google-Smtp-Source: AA6agR5Y9KRXZzjtZlLT8n+2+o84v6+kG78xaQSg1sL8RhXRL6rohNl9eOiGlzKNLTB7I1wmLbx8aQ==
-X-Received: by 2002:a17:907:7354:b0:73c:d528:94ae with SMTP id dq20-20020a170907735400b0073cd52894aemr3252331ejc.274.1660939425590;
-        Fri, 19 Aug 2022 13:03:45 -0700 (PDT)
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
-        by smtp.gmail.com with ESMTPSA id 25-20020a170906311900b0073a96816eb0sm1468739ejx.222.2022.08.19.13.03.44
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 13:03:44 -0700 (PDT)
-Received: by mail-wm1-f52.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so2971852wms.5
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 13:03:44 -0700 (PDT)
-X-Received: by 2002:a05:600c:4e8b:b0:3a5:f5bf:9c5a with SMTP id
- f11-20020a05600c4e8b00b003a5f5bf9c5amr9034593wmq.85.1660939423911; Fri, 19
- Aug 2022 13:03:43 -0700 (PDT)
+        Fri, 19 Aug 2022 16:04:06 -0400
+X-Greylist: delayed 312 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 19 Aug 2022 13:04:03 PDT
+Received: from mx-out1.startmail.com (mx-out1.startmail.com [145.131.90.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2230B7C747;
+        Fri, 19 Aug 2022 13:04:00 -0700 (PDT)
+Message-ID: <f8eaa7ce-8f33-b561-a9e1-a007f704af14@startmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=startmail.com;
+        s=2020-07; t=1660939127;
+        bh=mRQlqUiR3YkPKtD18b6chQglsvkhSFJ5UFwvj2kApEI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+         In-Reply-To:Content-Type:Content-Transfer-Encoding:From:Subject:To:
+         Date:Sender:Content-Type:Content-Transfer-Encoding:
+         Content-Disposition:Mime-Version:Reply-To:In-Reply-To:References:
+         Message-Id:Autocrypt;
+        b=1fp7hkIpmhK1KOXcJv49p9XmUv83TCNwqfKyT94SLLlypMjol5NgvttGon/Xs9f0z
+         QXXmihvQuQikRXoIjNmXS8ljRgOcV1uuAJRkAR8jCxXNGmTFzufIcqRhwm5oA028Sp
+         2FcDh0jc8SK9tGXnQVlOpkeL758CE+VKnl6uLBUTaMC9cVWRZ5wfARvvtRD9pM/YuP
+         MUhMFoSgY7OloxXWBiOUGEe0krcZmRzwVCykRiwgLwHbYau5jQkphLgROSKH9MzW6b
+         BJh5brFnxgKxsYKfjSYTl4/hk27DpXvPcHWXtwKxPUcvxD/yI9FpVaiydHkzIKsLKv
+         YJLPnwuOKPwew==
+Date:   Fri, 19 Aug 2022 22:58:45 +0300
 MIME-Version: 1.0
-References: <20220819194336.382740-1-ahalaney@redhat.com>
-In-Reply-To: <20220819194336.382740-1-ahalaney@redhat.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 19 Aug 2022 13:03:31 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VH5_i5uVcaXQrrHQWF0=ffnqFpZkmexpqoEFr7RFn_3Q@mail.gmail.com>
-Message-ID: <CAD=FV=VH5_i5uVcaXQrrHQWF0=ffnqFpZkmexpqoEFr7RFn_3Q@mail.gmail.com>
-Subject: Re: [PATCH] regulator: core: Clean up on enable failure
-To:     Andrew Halaney <ahalaney@redhat.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bmasney@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v3 12/14] iio: max1241: simplify using
+ devm_regulator_get_enable()
+Content-Language: en-US
+To:     Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1660934107.git.mazziesaccount@gmail.com>
+ <7c759bf6c06e72ae70bffeebc1939d9903427278.1660934107.git.mazziesaccount@gmail.com>
+From:   Alexandru Lazar <alazar@startmail.com>
+In-Reply-To: <7c759bf6c06e72ae70bffeebc1939d9903427278.1660934107.git.mazziesaccount@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Heya,
 
-On Fri, Aug 19, 2022 at 12:44 PM Andrew Halaney <ahalaney@redhat.com> wrote:
->
-> If regulator_enable() fails, enable_count is incremented still.
-> A consumer, assuming no matching regulator_disable() is necessary on
-> failure, will then get this error message upon regulator_put()
-> since enable_count is non-zero:
->
->     [    1.277418] WARNING: CPU: 3 PID: 1 at drivers/regulator/core.c:2304 _regulator_put.part.0+0x168/0x170
->
-> The consumer could try to fix this in their driver by cleaning up on
-> error from regulator_enable() (i.e. call regulator_disable()), but that
-> results in the following since regulator_enable() failed and didn't
-> increment user_count:
->
->     [    1.258112] unbalanced disables for vreg_l17c
->     [    1.262606] WARNING: CPU: 4 PID: 1 at drivers/regulator/core.c:2899 _regulator_disable+0xd4/0x190
->
-> Fix this by decrementing enable_count upon failure to enable.
->
-> With this in place, just the reason for failure to enable is printed
-> as expected and developers can focus on the root cause of their issue
-> instead of thinking their usage of the regulator consumer api is
-> incorrect. For example, in my case:
->
->     [    1.240426] vreg_l17c: invalid input voltage found
->
-> Fixes: 5451781dadf8 ("regulator: core: Only count load for enabled consumers")
-> Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+I don't have the hardware at hand (long story, lots of smoke), so all I 
+can do for this patch at the moment is:
+
+Acked-by: Alexandru Lazar <alazar@startmail.com>
+
+That being said, IIRC the MAX1241 has no special requirements in this 
+regard, so if other SPI devices work, this one ought to work as well. If 
+anyone's concerned, I can test it, but probably not sooner than a week 
+or so :-(.
+
+FWIW I really like this, the straightforward regulator boilerplate 
+always felt a tad wrong.
+
+All the best,
+Alex
+
+On 8/19/2022 10:20 PM, Matti Vaittinen wrote:
+> Drop open-coded pattern: 'devm_regulator_get(), regulator_enable(),
+> add_action_or_reset(regulator_disable)' and use the
+> devm_regulator_get_enable() and drop the pointer to the regulator.
+> This simplifies code and makes it less tempting to add manual control
+> for the regulator which is also controlled by devm.
+> 
+> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
 > ---
->
-> I'm new to using the regulator framework, but I _believe_ this is a
-> cosmetic bug that's fixed by this patch. I went down a bit of a rabbit
-> hole because of the original WARN() message, so I'm trying to prevent
-> others from doing the same :)
->
-> Please let me know what you think, I tested on the misconfigured system
-> and on a working system and things seemed to work as expected.
->
-> Thanks,
-> Andrew
->
->  drivers/regulator/core.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-
-This looks right to me. Thanks!
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> v2 => v3:
+> New patch
+> ---
+>   drivers/iio/adc/max1241.c | 28 +++-------------------------
+>   1 file changed, 3 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/max1241.c b/drivers/iio/adc/max1241.c
+> index a815ad1f6913..500bb09ab19b 100644
+> --- a/drivers/iio/adc/max1241.c
+> +++ b/drivers/iio/adc/max1241.c
+> @@ -22,7 +22,6 @@ enum max1241_id {
+>   struct max1241 {
+>   	struct spi_device *spi;
+>   	struct mutex lock;
+> -	struct regulator *vdd;
+>   	struct regulator *vref;
+>   	struct gpio_desc *shutdown;
+>   
+> @@ -110,17 +109,6 @@ static const struct iio_info max1241_info = {
+>   	.read_raw = max1241_read_raw,
+>   };
+>   
+> -static void max1241_disable_vdd_action(void *data)
+> -{
+> -	struct max1241 *adc = data;
+> -	struct device *dev = &adc->spi->dev;
+> -	int err;
+> -
+> -	err = regulator_disable(adc->vdd);
+> -	if (err)
+> -		dev_err(dev, "could not disable vdd regulator.\n");
+> -}
+> -
+>   static void max1241_disable_vref_action(void *data)
+>   {
+>   	struct max1241 *adc = data;
+> @@ -147,20 +135,10 @@ static int max1241_probe(struct spi_device *spi)
+>   	adc->spi = spi;
+>   	mutex_init(&adc->lock);
+>   
+> -	adc->vdd = devm_regulator_get(dev, "vdd");
+> -	if (IS_ERR(adc->vdd))
+> -		return dev_err_probe(dev, PTR_ERR(adc->vdd),
+> -				     "failed to get vdd regulator\n");
+> -
+> -	ret = regulator_enable(adc->vdd);
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+>   	if (ret)
+> -		return ret;
+> -
+> -	ret = devm_add_action_or_reset(dev, max1241_disable_vdd_action, adc);
+> -	if (ret) {
+> -		dev_err(dev, "could not set up vdd regulator cleanup action\n");
+> -		return ret;
+> -	}
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to get/enable vdd regulator\n");
+>   
+>   	adc->vref = devm_regulator_get(dev, "vref");
+>   	if (IS_ERR(adc->vref))
