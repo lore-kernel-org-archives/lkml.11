@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B400C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE442C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352730AbiHSQ1L (ORCPT
+        id S1352753AbiHSQ1P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        Fri, 19 Aug 2022 12:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352526AbiHSQXH (ORCPT
+        with ESMTP id S1352555AbiHSQXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:23:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56596109A36;
-        Fri, 19 Aug 2022 09:02:59 -0700 (PDT)
+        Fri, 19 Aug 2022 12:23:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8BBCD539;
+        Fri, 19 Aug 2022 09:02:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A1C612DF;
-        Fri, 19 Aug 2022 16:02:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2245DC433D6;
-        Fri, 19 Aug 2022 16:02:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B69C1B82819;
+        Fri, 19 Aug 2022 16:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D5DFC433D6;
+        Fri, 19 Aug 2022 16:02:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924977;
-        bh=MHPQppSR0ss8H2c7oFH97tBCudTnbEBjMCtJRGtFqTo=;
+        s=korg; t=1660924974;
+        bh=AcJrX1xUykEM0PUZFgTpse9dGF07x7CuOQftmr59ePw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BjcoE7rknLdJddfsp0ZKNZawok3fUq+brNia+vLvgdzAjOCBCsgaMMF6uOBSm9Q/j
-         suBKjjco9eFj8B6eMFL+wPP283lrDr2V6CVBikGUDPr45xirOnpRRa2N1FaQMy2A4c
-         mz9OBpsmqGmvexosTXJiiQa2qqHX5YubErLsjxdc=
+        b=mBRCC2semryP2zuKSI0n7yxj0xrALrlQedcR2g6QwxHGG5kXQgbvwUUN4ckoqGfAJ
+         Z4zOwHePnaoYx8K8Yi9h6hXzr1hwdywXOMuYEbGcCHWqMR7rLzXrbP3+MtyNGvV3a6
+         drhzfA38VqYU8DSuojY0G1aHsBqcipv5LcYhATJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 314/545] memstick/ms_block: Fix some incorrect memory allocation
-Date:   Fri, 19 Aug 2022 17:41:24 +0200
-Message-Id: <20220819153843.407016403@linuxfoundation.org>
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 341/545] HID: mcp2221: prevent a buffer overflow in mcp_smbus_write()
+Date:   Fri, 19 Aug 2022 17:41:51 +0200
+Message-Id: <20220819153844.658940181@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -51,63 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit 2e531bc3e0d86362fcd8a577b3278d9ef3cc2ba0 ]
+[ Upstream commit 62ac2473553a00229e67bdf3cb023b62cf7f5a9a ]
 
-Some functions of the bitmap API take advantage of the fact that a bitmap
-is an array of long.
+Smatch Warning:
+drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy()
+'&mcp->txbuf[5]' too small (59 vs 255)
+drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy() 'buf'
+too small (34 vs 255)
 
-So, to make sure this assertion is correct, allocate bitmaps with
-bitmap_zalloc() instead of kzalloc()+hand-computed number of bytes.
+The 'len' variable can take a value between 0-255 as it can come from
+data->block[0] and it is user data. So add an bound check to prevent a
+buffer overflow in memcpy().
 
-While at it, also use bitmap_free() instead of kfree() to keep the
-semantic.
-
-Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/dbf633c48c24ae6d95f852557e8d8b3bbdef65fe.1656155715.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 67a95c21463d ("HID: mcp2221: add usb to i2c-smbus host bridge")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memstick/core/ms_block.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/hid/hid-mcp2221.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
-index bc1f484f50f1..6fa3ad3a94a0 100644
---- a/drivers/memstick/core/ms_block.c
-+++ b/drivers/memstick/core/ms_block.c
-@@ -1335,17 +1335,17 @@ static int msb_ftl_initialize(struct msb_data *msb)
- 	msb->zone_count = msb->block_count / MS_BLOCKS_IN_ZONE;
- 	msb->logical_block_count = msb->zone_count * 496 - 2;
- 
--	msb->used_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
--	msb->erased_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
-+	msb->used_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
-+	msb->erased_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
- 	msb->lba_to_pba_table =
- 		kmalloc_array(msb->logical_block_count, sizeof(u16),
- 			      GFP_KERNEL);
- 
- 	if (!msb->used_blocks_bitmap || !msb->lba_to_pba_table ||
- 						!msb->erased_blocks_bitmap) {
--		kfree(msb->used_blocks_bitmap);
-+		bitmap_free(msb->used_blocks_bitmap);
-+		bitmap_free(msb->erased_blocks_bitmap);
- 		kfree(msb->lba_to_pba_table);
--		kfree(msb->erased_blocks_bitmap);
- 		return -ENOMEM;
+diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
+index 4211b9839209..de52e9f7bb8c 100644
+--- a/drivers/hid/hid-mcp2221.c
++++ b/drivers/hid/hid-mcp2221.c
+@@ -385,6 +385,9 @@ static int mcp_smbus_write(struct mcp2221 *mcp, u16 addr,
+ 		data_len = 7;
+ 		break;
+ 	default:
++		if (len > I2C_SMBUS_BLOCK_MAX)
++			return -EINVAL;
++
+ 		memcpy(&mcp->txbuf[5], buf, len);
+ 		data_len = len + 5;
  	}
- 
-@@ -1953,7 +1953,7 @@ static int msb_bd_open(struct block_device *bdev, fmode_t mode)
- static void msb_data_clear(struct msb_data *msb)
- {
- 	kfree(msb->boot_page);
--	kfree(msb->used_blocks_bitmap);
-+	bitmap_free(msb->used_blocks_bitmap);
- 	kfree(msb->lba_to_pba_table);
- 	kfree(msb->cache);
- 	msb->card = NULL;
 -- 
 2.35.1
 
