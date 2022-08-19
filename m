@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3367C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C37C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353081AbiHSQe7 (ORCPT
+        id S1353307AbiHSQfH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
+        Fri, 19 Aug 2022 12:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353452AbiHSQbm (ORCPT
+        with ESMTP id S1353482AbiHSQbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2334910C800;
-        Fri, 19 Aug 2022 09:05:55 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F18A11DF79;
+        Fri, 19 Aug 2022 09:06:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00E06B82816;
-        Fri, 19 Aug 2022 16:05:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD77C433C1;
-        Fri, 19 Aug 2022 16:05:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9EC1617F2;
+        Fri, 19 Aug 2022 16:05:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3992C433C1;
+        Fri, 19 Aug 2022 16:05:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925112;
-        bh=3P594sQw1S5hklxJTFfzCA1Jk0Y55SgeCeQ+IobAdZY=;
+        s=korg; t=1660925131;
+        bh=ZxhMVr49eMNwslMvCFUqsr9mcAHtbfXm7urEzpKHVlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y32mnCX6OtFN/iYbBZmZCTn3jBox+B7bIlpyf7WZe6kguvliktZydzsfo0DQxxA+n
-         D6Zn8WwpEHMLIEwd4LrHRFIV8ZPeGdMGEICqmMaVO0Zb6IpcSFuZJKlLSP/UhIKuil
-         KB0XSlsFfuiOp91lrjLS/HTBKGxA/YrruVAVCVtI=
+        b=FzVZiOGt9Fy+zM7uksxaqmWgAMYmNgn/KQPGpBT7i34ahzYrqFtaiNGUWCvwDmnzV
+         jDIAMxu1r+gVcKJz5pJVMXaU4GI8U+dozqNG4ihA0chyXjGMrkd2TxmVDz9JfD7ovv
+         T5vj02G9kS71h/UKrjN2jZeLmVL34C6FE20tAKjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 388/545] remoteproc: qcom: wcnss: Fix handling of IRQs
-Date:   Fri, 19 Aug 2022 17:42:38 +0200
-Message-Id: <20220819153846.772250736@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Lawrence <joe.lawrence@redhat.com>,
+        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 376/545] selftests/livepatch: better synchronize test_klp_callbacks_busy
+Date:   Fri, 19 Aug 2022 17:42:26 +0200
+Message-Id: <20220819153846.236093717@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,60 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Joe Lawrence <joe.lawrence@redhat.com>
 
-[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
+[ Upstream commit 55eb9a6c8bf3e2099863118ef53e02d9f44f85a8 ]
 
-The wcnss_get_irq function is expected to return a value > 0 in the
-event that an IRQ is succssfully obtained, but it instead returns 0.
-This causes the stop and ready IRQs to never actually be used despite
-being defined in the device-tree. This patch fixes that.
+The test_klp_callbacks_busy module conditionally blocks a future
+livepatch transition by busy waiting inside its workqueue function,
+busymod_work_func().  After scheduling this work, a test livepatch is
+loaded, introducing the transition under test.
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
+Both events are marked in the kernel log for later verification, but
+there is no synchronization to ensure that busymod_work_func() logs its
+function entry message before subsequent selftest commands log their own
+messages.  This can lead to a rare test failure due to unexpected
+ordering like:
+
+#  --- expected
+#  +++ result
+#  @@ -1,7 +1,7 @@
+#   % modprobe test_klp_callbacks_busy block_transition=Y
+#   test_klp_callbacks_busy: test_klp_callbacks_busy_init
+#  -test_klp_callbacks_busy: busymod_work_func enter
+#   % modprobe test_klp_callbacks_demo
+#  +test_klp_callbacks_busy: busymod_work_func enter
+#   livepatch: enabling patch 'test_klp_callbacks_demo'
+#   livepatch: 'test_klp_callbacks_demo': initializing patching transition
+#   test_klp_callbacks_demo: pre_patch_callback: vmlinux
+
+Force the module init function to wait until busymod_work_func() has
+started (and logged its message), before exiting to the next selftest
+steps.
+
+Fixes: 547840bd5ae5 ("selftests/livepatch: simplify test-klp-callbacks busy target tests")
+Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220602203233.979681-1-joe.lawrence@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ lib/livepatch/test_klp_callbacks_busy.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index 67286a4505cd..572f7b8ba234 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -415,6 +415,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 			     irq_handler_t thread_fn)
+--- a/lib/livepatch/test_klp_callbacks_busy.c
++++ b/lib/livepatch/test_klp_callbacks_busy.c
+@@ -16,10 +16,12 @@ MODULE_PARM_DESC(block_transition, "bloc
+ 
+ static void busymod_work_func(struct work_struct *work);
+ static DECLARE_WORK(work, busymod_work_func);
++static DECLARE_COMPLETION(busymod_work_started);
+ 
+ static void busymod_work_func(struct work_struct *work)
  {
- 	int ret;
-+	int irq_number;
+ 	pr_info("%s enter\n", __func__);
++	complete(&busymod_work_started);
  
- 	ret = platform_get_irq_byname(pdev, name);
- 	if (ret < 0 && optional) {
-@@ -425,14 +426,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 		return ret;
- 	}
+ 	while (READ_ONCE(block_transition)) {
+ 		/*
+@@ -37,6 +39,12 @@ static int test_klp_callbacks_busy_init(
+ 	pr_info("%s\n", __func__);
+ 	schedule_work(&work);
  
-+	irq_number = ret;
++	/*
++	 * To synchronize kernel messages, hold the init function from
++	 * exiting until the work function's entry message has printed.
++	 */
++	wait_for_completion(&busymod_work_started);
 +
- 	ret = devm_request_threaded_irq(&pdev->dev, ret,
- 					NULL, thread_fn,
- 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
- 					"wcnss", wcnss);
--	if (ret)
-+	if (ret) {
- 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
-+		return ret;
-+	}
- 
--	return ret;
-+	/* Return the IRQ number if the IRQ was successfully acquired */
-+	return irq_number;
- }
- 
- static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
--- 
-2.35.1
-
+ 	if (!block_transition) {
+ 		/*
+ 		 * Serialize output: print all messages from the work
 
 
