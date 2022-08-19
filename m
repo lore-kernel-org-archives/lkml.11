@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EFCC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8154C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353229AbiHSQeJ (ORCPT
+        id S1350370AbiHSQeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
+        Fri, 19 Aug 2022 12:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353188AbiHSQbC (ORCPT
+        with ESMTP id S1353218AbiHSQbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:31:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147CB11D529;
-        Fri, 19 Aug 2022 09:05:14 -0700 (PDT)
+        Fri, 19 Aug 2022 12:31:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A1311D51F;
+        Fri, 19 Aug 2022 09:05:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B107761825;
-        Fri, 19 Aug 2022 16:04:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E92C433D6;
-        Fri, 19 Aug 2022 16:04:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2A996177D;
+        Fri, 19 Aug 2022 16:05:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06484C433C1;
+        Fri, 19 Aug 2022 16:05:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925094;
-        bh=0rSuf08xxpAs4juZrf9DdyilhYifmFUsrkyHzwVov84=;
+        s=korg; t=1660925109;
+        bh=0LRa2qW6GKXsFvHpfCpJ6RmeVaMfVKEE0QrVISvZ+qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2kTlsVujd273sMzw0OvFCxbxse9Xu9EBn3RzBQFkvCSETh3q1FhYfhovrZ/fLV26h
-         3flVRBE2uXzHcW+52ESDqRNmqsL+DrIlvjqLC3AtVcmFo+hXJSQ+6yIka3ujPSwkWM
-         6g53l/Jko3UVBROyj/z/Moixig6lZDDeQy5h13hM=
+        b=2shO/PaKC6MCx39owtaV6w9+DQUR77JpfN1oj6JCrh7WYJX3+Ay7jIhWjj5fzBsI6
+         UCejbJsJSfbV5romun8oyrRVLbzfqvC+7s03F/nJU/riwy7jyH+Iwyqio9g8ksuevG
+         2qFYIyD6KYAoslpJshR5oMuVRil1jKoIEfLCXwM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 342/545] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
-Date:   Fri, 19 Aug 2022 17:41:52 +0200
-Message-Id: <20220819153844.706015370@linuxfoundation.org>
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.10 387/545] ASoC: qcom: Fix missing of_node_put() in asoc_qcom_lpass_cpu_platform_probe()
+Date:   Fri, 19 Aug 2022 17:42:37 +0200
+Message-Id: <20220819153846.722891413@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,34 +53,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
+[ Upstream commit f507c0c67dac57d2bcd5dcae4b6139b0305d8957 ]
 
-In octeon_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+We should call of_node_put() for the reference 'dsp_of_node' returned by
+of_parse_phandle() which will increase the refcount.
 
-Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
+Fixes: 9bae4880acee ("ASoC: qcom: move ipq806x specific bits out of lpass driver.")
+Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220702020109.263980-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-octeon.c | 1 +
+ sound/soc/qcom/lpass-cpu.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
-index 2c4b2df52adb..12dca91a8ef6 100644
---- a/drivers/mmc/host/cavium-octeon.c
-+++ b/drivers/mmc/host/cavium-octeon.c
-@@ -277,6 +277,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "Error populating slots\n");
- 			octeon_mmc_set_shared_power(host, 0);
-+			of_node_put(cn);
- 			goto error;
- 		}
- 		i++;
+diff --git a/sound/soc/qcom/lpass-cpu.c b/sound/soc/qcom/lpass-cpu.c
+index e620a62ef534..03abb3d719d0 100644
+--- a/sound/soc/qcom/lpass-cpu.c
++++ b/sound/soc/qcom/lpass-cpu.c
+@@ -846,6 +846,7 @@ int asoc_qcom_lpass_cpu_platform_probe(struct platform_device *pdev)
+ 	dsp_of_node = of_parse_phandle(pdev->dev.of_node, "qcom,adsp", 0);
+ 	if (dsp_of_node) {
+ 		dev_err(dev, "DSP exists and holds audio resources\n");
++		of_node_put(dsp_of_node);
+ 		return -EBUSY;
+ 	}
+ 
 -- 
 2.35.1
 
