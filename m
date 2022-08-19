@@ -2,110 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A49C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7CFC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349396AbiHSOrY (ORCPT
+        id S1349481AbiHSOtd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        Fri, 19 Aug 2022 10:49:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349128AbiHSOrV (ORCPT
+        with ESMTP id S1348837AbiHSOta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:47:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC547ED03A
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:47:20 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oP3HC-0003wt-2B; Fri, 19 Aug 2022 16:47:10 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oP3H9-000jRx-Q8; Fri, 19 Aug 2022 16:47:07 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oP3H9-00Ckm6-4a; Fri, 19 Aug 2022 16:47:07 +0200
-Date:   Fri, 19 Aug 2022 16:44:53 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Romain Perier <romain.perier@gmail.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Palmer <daniel@0x0f.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] pwm: Add support for the MSTAR MSC313 PWM
-Message-ID: <20220819144453.4pegktwwargunlzl@pengutronix.de>
-References: <20220615070813.7720-1-romain.perier@gmail.com>
- <20220615070813.7720-3-romain.perier@gmail.com>
- <20220619213520.qonqdv4e7zkvpeo7@pengutronix.de>
- <CABgxDo+_uZyO2vV4QxmVLTo2ohpAxzC89jcGJ3oksT6XxEBCmA@mail.gmail.com>
+        Fri, 19 Aug 2022 10:49:30 -0400
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05583D87F1;
+        Fri, 19 Aug 2022 07:49:29 -0700 (PDT)
+Received: by mail-pg1-f172.google.com with SMTP id c24so3864011pgg.11;
+        Fri, 19 Aug 2022 07:49:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=AEaEgab2mhaMiSkvYoYiW7yx1z+hEFyxx9wlIiPpIa8=;
+        b=PZ5svkXPbBwfSmVwVlHXWBmxq3AZJqp1RSsZNV5Oq5Dh1sKLcsDXsaDJP43L1FWZQq
+         za3PikWje+XoLxbmk7iVdND4a6hbwkG8/J/It6sJQpAhMZKI11CSTYr/oBsdm+qrKIqR
+         j7oIuOlmekZNPKeb+R8M+whb+ocqQKLGEURKHwm5j2FnoBHwJkTFRApU6tSZ8Tg/rbLA
+         afLL5UfJymiV9jUWKcWyEconwlHGBeqrHSmqVDjv/FOAXbWHC/rhhfF6BvFX/D8my400
+         bBu4iCw0YNHY6pRewxyRO+8i6c/NU59CpaQn/5ycxNs4Vj6PN3TG82q/QUyDhURpochP
+         E/kw==
+X-Gm-Message-State: ACgBeo1Wv8jjSIQEvvAySHP4iZmvJ/G6BdjNUqkvisRjf1CVEAJWjENQ
+        bL2452RhqJ+s76ySQek3n7EwFwZkyiw=
+X-Google-Smtp-Source: AA6agR4n7cfXryL/GLcBwpbdaZ8OS1DGI89ou5DCJZPaiWYVxSuSylH84/CiOOS86Tu5616hB6UhkA==
+X-Received: by 2002:a63:1925:0:b0:429:f4f4:7d48 with SMTP id z37-20020a631925000000b00429f4f47d48mr6689792pgl.474.1660920568337;
+        Fri, 19 Aug 2022 07:49:28 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id e14-20020aa798ce000000b00534a1315a63sm3580495pfm.136.2022.08.19.07.49.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 07:49:27 -0700 (PDT)
+Message-ID: <17ccd5ae-0268-1bee-7822-1352f4c676ba@acm.org>
+Date:   Fri, 19 Aug 2022 07:49:25 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gulr5uxr5zgvdp56"
-Content-Disposition: inline
-In-Reply-To: <CABgxDo+_uZyO2vV4QxmVLTo2ohpAxzC89jcGJ3oksT6XxEBCmA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: 6.0-rc1 regression block (blk_mq) / RCU task stuck errors +
+ block-io hang
+Content-Language: en-US
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     linux-block@vger.kernel.org, rcu@vger.kernel.org
+References: <dd6844e7-f338-a4e9-2dad-0960e25b2ca1@redhat.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <dd6844e7-f338-a4e9-2dad-0960e25b2ca1@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 8/19/22 05:01, Hans de Goede wrote:
+> I've been dogfooding 6.0-rc1 on my main workstation and I have hit
+> this pretty serious bug, serious enough for me to go back to 5.19
+> 
+> My dmesg is showing various blk_mq (RCU?) related lockdep splats
+> followed by some tasks getting stuck on disk-IO. E.g. "sync"
+> is guaranteed to hang, but other tasks too.
+> 
+> This seems to be mainly the case on "sd" disks (both sata
+> and USB) where as my main nvme drive seems fine, which has
+> probably saved me from worse issues...
+> 
+> Here are 4 task stuck reports from my last boot, where
+> I had to turn off the machine by keeping the power button
+> pressed for 4 seconds.
+> 
+> [ ... ]
+ >
+> Sorry for not being able to write a better bug-report but I don't have
+> the time to dive into this deeper. I hope this report is enough for
+> someone to have a clue what is going on.
 
---gulr5uxr5zgvdp56
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the detailed report. I think this report is detailed 
+enough to root-cause this issue, something that was not possible before 
+this report.
 
-Hello Romain,
+Please help with verifying whether this patch fixes this issue: "[PATCH] 
+scsi: sd: Revert "Rework asynchronous resume support"" 
+(https://lore.kernel.org/linux-scsi/20220816172638.538734-1-bvanassche@acm.org/).
 
-On Fri, Aug 19, 2022 at 03:12:56PM +0200, Romain Perier wrote:
-> Le dim. 19 juin 2022 =E0 23:35, Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> a =E9crit :
-> > > +static void msc313e_pwm_writecounter(struct regmap_field *low, struc=
-t regmap_field *high, u32 value)
-> > > +{
-> > > +     regmap_field_write(low, value);
-> > > +     regmap_field_write(high, value >> 16);
-> >
-> > Is this racy? E.g. if the hw is running and the low register overflows
-> > before the high register is updated?
-> >
->=20
-> Ack, I am re-working most of the stuff you noticed. The problem with
-> this IP blocks (and others...) is we have close registers
-> but we only need to write or read 16 bits in each of these (it is
-> mainly reverse engineered from vendor source or runtime most of the
-> time) . You cannot really do a single read (except by doing an obscur
-> thing via readq ? ...)
+Thanks,
 
-This is fine, but pleast document that in a comment.
+Bart.
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---gulr5uxr5zgvdp56
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmL/oeIACgkQwfwUeK3K
-7AnLfAf/Q730KOcWvic9TGtU5LYxv/PYwKyDY+F+78jFpI+Q15r9ECURWXCeXVx8
-Qr5883rCMEpqlcwUvP30Gosy0oFVvhAsZMg/Jq/BOQMJMyFwb8L7Dxw814dIeqdq
-7K6BLh3PP9AjkqCH1d8l2PxsPmmovPASki2/olFnHrN/MQdzgN+bAow52Ua1Rj4k
-7xdu3AQlhQf4O3ohpshUFxoxi+9lS9tcD+QSOxHoG5cXyQgC0UxMhhxEyu0ojiGJ
-klX5Qw4oRmRm35cfupZhfitj00+RbF/VLeMY0sLqyYIKoGJbr+y5PEH4XSP4wmAS
-MeyGeP0/BKsW8Awe3iK9F6urs60esA==
-=+A3G
------END PGP SIGNATURE-----
-
---gulr5uxr5zgvdp56--
