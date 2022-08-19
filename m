@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 395FCC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA02C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350939AbiHSP76 (ORCPT
+        id S1351021AbiHSQAC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
+        Fri, 19 Aug 2022 12:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350682AbiHSP6h (ORCPT
+        with ESMTP id S1350753AbiHSP6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:58:37 -0400
+        Fri, 19 Aug 2022 11:58:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEBC108F35;
-        Fri, 19 Aug 2022 08:51:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5324108F80;
+        Fri, 19 Aug 2022 08:51:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC42E616F9;
-        Fri, 19 Aug 2022 15:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D74CFC433D6;
-        Fri, 19 Aug 2022 15:51:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DCFE61732;
+        Fri, 19 Aug 2022 15:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 567A6C433D6;
+        Fri, 19 Aug 2022 15:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924307;
-        bh=heW+vIvSlCq8CVzUL814zA4Ddm/CiDW1r8tf0uU3lw4=;
+        s=korg; t=1660924312;
+        bh=14BO3jFRo9LTUBo+dV5YyJ4Ptn7JKSUmnCiFGI1LRj8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Exy4Rhtky5xIw1n5aZpzd7bHnehEz4qKXyqx6skmN9V8TmFGBq1D7IVHKnpyRVXGF
-         V4hFPtgze6s/LmFAcMulOB5X4FGAL4oIpdrZ3sfMS85ZnLigchmTWi2CcGVzsoh9Ks
-         jgcCcGvcKHPyrgDrxtLnr5qeUhIZYh9OSWwRS9Wk=
+        b=KtutzwNuxk3GOsEL53rdHTY1O6KgoWcxkSYd3k+qt+u5lOYOb1ysbrzbpYagXoIcQ
+         1+SV4MoW1d2WpmpoXS38eFF5Tj7JEO0Q67Jt2OG0+6V/Tf2M2xG1Ama2yVBxHWhYpD
+         TOMuJMMEPina8lENCFExIwQFzhRc6kGfsLkMuKD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Tony Lindgren <tony@atomide.com>,
+        Michal Simek <michal.simek@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 127/545] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
-Date:   Fri, 19 Aug 2022 17:38:17 +0200
-Message-Id: <20220819153834.999588022@linuxfoundation.org>
+Subject: [PATCH 5.10 129/545] cpufreq: zynq: Fix refcount leak in zynq_get_revision
+Date:   Fri, 19 Aug 2022 17:38:19 +0200
+Message-Id: <20220819153835.099495278@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -53,41 +52,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 9705db1eff38d6b9114121f9e253746199b759c9 ]
+[ Upstream commit d1ff2559cef0f6f8d97fba6337b28adb10689e16 ]
 
-omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
-node. of_find_compatible_node() returns a node pointer with refcount
+of_find_compatible_node() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() in later error path and normal path.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
+Fixes: 00f7dc636366 ("ARM: zynq: Add support for SOC_BUS")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220601044858.3352-1-linmq006@gmail.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220605082807.21526-1-linmq006@gmail.com
+Signed-off-by: Michal Simek <michal.simek@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/mach-zynq/common.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index fc635eed73ab..f24d4e56ddfc 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -260,11 +260,13 @@ static int __init omapdss_init_of(void)
- 
- 	if (!pdev) {
- 		pr_err("Unable to find DSS platform device\n");
-+		of_node_put(node);
- 		return -ENODEV;
+diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
+index e1ca6a5732d2..15e8a321a713 100644
+--- a/arch/arm/mach-zynq/common.c
++++ b/arch/arm/mach-zynq/common.c
+@@ -77,6 +77,7 @@ static int __init zynq_get_revision(void)
  	}
  
- 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
- 	put_device(&pdev->dev);
-+	of_node_put(node);
- 	if (r) {
- 		pr_err("Unable to populate DSS submodule devices\n");
- 		return r;
+ 	zynq_devcfg_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	if (!zynq_devcfg_base) {
+ 		pr_err("%s: Unable to map I/O memory\n", __func__);
+ 		return -1;
 -- 
 2.35.1
 
