@@ -2,91 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14211C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346BDC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 14:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349317AbiHSO0J (ORCPT
+        id S1349525AbiHSO01 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 10:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
+        Fri, 19 Aug 2022 10:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349401AbiHSOZu (ORCPT
+        with ESMTP id S1349567AbiHSO0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 10:25:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C62E97E3
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:25:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C69756140B
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 14:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C84BC433C1;
-        Fri, 19 Aug 2022 14:25:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660919147;
-        bh=wVDuKRUcKIT+J+zHm3pjGF+KsciSAfq/7YwwDDEViJA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mOBkmKTYodAez4EWZsTIFLmiX3gXBxBMArR1k5Xn/ZBDBmzFewDGnGTWKFhBBTfxr
-         g+tqNewEeiOjN4bVSgGzIuyvCHajul+2QYP6sTDWtstMagwV8HoTteghCEIOW9FDUP
-         pfIzSdAIOzcLgw+FDf2Kg1AFRwGFyBobvRd7l4X9m/BRN/iVhcgWtHM0rH5IkZCvPW
-         PenCR3XyJHM6cflQ4+BEe+004oHfzcSo28gMjsHXlxGu4asLvUg6IpldC7ZuIV6oEd
-         8BMOOeqq0h6N0pTZRCRQHipY4gm89aaKttie5w+4tap+SXQneGWlqGUgGwCscGXKz/
-         nTMJJJlh0i99A==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1oP2wS-004ISX-RJ;
-        Fri, 19 Aug 2022 15:25:44 +0100
+        Fri, 19 Aug 2022 10:26:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BAAE990D
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660919163;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eICnUMCnIldtlbZrl7FbZerwo61fNEIPgGY03g7m9SQ=;
+        b=JlyZPpLAvhP7xV63oKAnhGdwPdm8Sj6V4TMNPlDH+CPSBS9wb1S2GfsOajGD3Yx+CsEJ8A
+        bP1uPpZNE7lxfBQiM1qI+eMSIJ0UlXRGZw0BYKSY8nah4tLd5tCn53hOsiRKhMSSS1JenB
+        zlDm56e+c6l2RxAIr8NUL9qNxym8mQ0=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-386-lpBn-DqLNNm3M5Q5HGjEaA-1; Fri, 19 Aug 2022 10:26:01 -0400
+X-MC-Unique: lpBn-DqLNNm3M5Q5HGjEaA-1
+Received: by mail-ed1-f70.google.com with SMTP id h8-20020a05640250c800b0044642d29d35so1075575edb.18
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 07:26:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=eICnUMCnIldtlbZrl7FbZerwo61fNEIPgGY03g7m9SQ=;
+        b=xXXVXuoLmbvV6/HypXO8ydqLsPEWJ3/wrupB9YG6fe0JnUMQNB+ZHaq4586S1CUTqk
+         A0mlFkW4r2mNqPtYX5+CRlCIm9rF4ZriqZ8G6qrjKAeV7hdyjOc8MDyHVmaw5Yo1QzS9
+         V/UbB5Vs0RUYr4mB30xDQIBpHGYSPuP0IufwncBJgmNE59kWVoJYtuXamuUjfqalfnhi
+         n7fhnoEo7JRHdBxbjO/nqAIlOQSnhq+aMHjCTjpSnm3foQxtDfBY+QhrXbKu2hSQfitp
+         yfcsWEgD8C9op4EilyxOtXx+2dZMP3aNKTH5eULNNLcb5eCtuDcsV0yoysF2gD7DWbDa
+         JkjA==
+X-Gm-Message-State: ACgBeo1nCsvAnhN4F7hIY4ZyfhbSTwTZoiek9YhEZHqMgK+RWeVGau9Z
+        Jpiigiru4TmPzVeCyslEvMtSooBzQB5oaXr5OJI9UfWCldd5cHa6N9hPf8dMYbTuIWKJ3UubZf8
+        lW5NZbgyqAAOeXWbneM+FSoOy
+X-Received: by 2002:a05:6402:22f3:b0:446:39e9:5d0e with SMTP id dn19-20020a05640222f300b0044639e95d0emr2966902edb.300.1660919160746;
+        Fri, 19 Aug 2022 07:26:00 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR63eJLF5q6lph4qaiToW0WKHDqW73GHbf0jK4qlifdLRM1JnNcG7Cu+W7XEKmmCbaYhJF6M5g==
+X-Received: by 2002:a05:6402:22f3:b0:446:39e9:5d0e with SMTP id dn19-20020a05640222f300b0044639e95d0emr2966890edb.300.1660919160596;
+        Fri, 19 Aug 2022 07:26:00 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:2a07:3a01:67e5:daf9:cec0:df6? (2001-1c00-2a07-3a01-67e5-daf9-cec0-0df6.cable.dynamic.v6.ziggo.nl. [2001:1c00:2a07:3a01:67e5:daf9:cec0:df6])
+        by smtp.gmail.com with ESMTPSA id kw11-20020a170907770b00b0073c9db65819sm1470939ejc.47.2022.08.19.07.25.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 07:25:59 -0700 (PDT)
+Message-ID: <e15d7107-636d-eb55-10a3-24a1e311f7c0@redhat.com>
+Date:   Fri, 19 Aug 2022 16:25:58 +0200
 MIME-Version: 1.0
-Date:   Fri, 19 Aug 2022 15:25:44 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        gregkh@linuxfoundation.org, rafael@kernel.org, jic23@kernel.org,
-        "linux@rasmusvillemoes.dk>" <linux@rasmusvillemoes.dk>,
-        tglx@linutronix.de, andy.shevchenko@gmail.com,
-        kernel <kernel@sberdevices.ru>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] regmap: introduce value tracing for regmap bulk
- operations
-In-Reply-To: <Yv5eMcmNOmyLmd++@sirena.org.uk>
-References: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
- <20220818121515.6azkxyqetnunwsc6@CAB-WSD-L081021.sigma.sbrf.ru>
- <87mtc1wtjz.wl-maz@kernel.org> <Yv5eMcmNOmyLmd++@sirena.org.uk>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <5793e1a9ef6d5a8fafd3f22cda0bb5e4@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 0/8] remove some dead code
+Content-Language: en-US
+To:     Nam Cao <namcaov@gmail.com>, lkp@intel.com
+Cc:     Larry.Finger@lwfinger.net, gregkh@linuxfoundation.org,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+References: <202208192018.BfgiZyOY-lkp@intel.com>
+ <cover.1660916523.git.namcaov@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <cover.1660916523.git.namcaov@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: broonie@kernel.org, DDRokosov@sberdevices.ru, gregkh@linuxfoundation.org, rafael@kernel.org, jic23@kernel.org, linux@rasmusvillemoes.dk, tglx@linutronix.de, andy.shevchenko@gmail.com, kernel@sberdevices.ru, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-18 16:43, Mark Brown wrote:
-> On Thu, Aug 18, 2022 at 02:49:20PM +0100, Marc Zyngier wrote:
+Hi,
+
+On 8/19/22 15:49, Nam Cao wrote:
+> Remove some unused functions and variables.
 > 
->> I don't care much about regmap as a MMIO backend, but it strikes me as
->> odd that you end up with multiple ways of logging the same stuff (with
->> a memcpy in the middle of it).
+> Change in v2: add a new patch to fix kernel test robot's warning
+> about unused variable.
 > 
->> Why can't this be done with a small amount of trace post-processing?
+> Nam Cao (8):
+>   staging: rtl8723bs: remove function rtw_odm_dbg_comp_msg
+>   staging: rtl8723bs: remove function rtw_get_ch_setting_union
+>   staging: rtl8723bs: remove function rtw_odm_ability_set
+>   staging: rtl8723bs: remove function GetFractionValueFromString
+>   staging: rtl8723bs: remove function IsCommentString
+>   staging: rtl8723bs: remove function rtw_odm_adaptivity_parm_msg
+>   staging: rtl8723bs: remove function rtw_odm_dbg_comp_set
+>   staging: rtl8723bs: remove static const variable odm_comp_str
 > 
-> At the minute we don't put the actual data for the bulk transfers into
-> the trace so the information simply isn't there.
+>  drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 21 -----
+>  drivers/staging/rtl8723bs/core/rtw_odm.c      | 79 -------------------
+>  drivers/staging/rtl8723bs/hal/hal_com.c       | 55 -------------
+>  drivers/staging/rtl8723bs/include/hal_com.h   |  5 --
+>  .../staging/rtl8723bs/include/rtw_mlme_ext.h  |  1 -
+>  drivers/staging/rtl8723bs/include/rtw_odm.h   |  4 -
+>  6 files changed, 165 deletions(-)
 
-But isn't that what this patch should do?
+Thanks, the entire series looks good to me:
 
-We also have recently merged the CONFIG_TRACE_MMIO_ACCESS which
-already dumps all sort of MMIO crap^Winformation.
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-Surely there should be a more common approach to this.
+for the series.
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+Regards,
+
+Hans
+
