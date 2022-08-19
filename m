@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F04C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D53C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352219AbiHSQVa (ORCPT
+        id S1352264AbiHSQVg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
+        Fri, 19 Aug 2022 12:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352463AbiHSQQq (ORCPT
+        with ESMTP id S1352451AbiHSQQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:16:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4641160A5;
-        Fri, 19 Aug 2022 08:59:57 -0700 (PDT)
+        Fri, 19 Aug 2022 12:16:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58435116ECA;
+        Fri, 19 Aug 2022 09:00:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CAADB8280F;
-        Fri, 19 Aug 2022 15:59:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9665AC433B5;
-        Fri, 19 Aug 2022 15:59:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B67DB82814;
+        Fri, 19 Aug 2022 15:59:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71BAC433D6;
+        Fri, 19 Aug 2022 15:59:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924794;
-        bh=C61K24rBrj/U4o+Uq8gi+BmJc7Il3MbtnCWIPgG7VdM=;
+        s=korg; t=1660924797;
+        bh=YdPA2pUsmy1j4WukL3ftC+x/O9+nLCAZcpceB+7WrAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DhLMD8Dl6N1tMbydI8S89HqgR5gCcMXotDLQD5H1QYekpxNandAly1W8UfVsYvIxM
-         YuGBaiGXMeF64mReoe7OrBXenwVO8JiCQc5ejxb/d+XhsOpNkJgSYTbZvH1dQAlY2u
-         RPP1USX7+Ou/JiGX3lrUHvIqvfGy+u765IrIuwow=
+        b=j5SqKM/45JS5PWFbygA9vPWeauYpkhrnABZWiEfIyPtKtM/IKwujcXwUfIIdSo/fh
+         ZiED/g86ai54L1VUVEOXWWJFLSyiD9ju8/LjyUzLClXzJnIfg9eSfIBPnD/tCzcyGX
+         ClFsmORu72A/syw4bUkeNWOvG2CPY+xp5dkzjvNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Xu Yilun <yilun.xu@intel.com>,
+        Marco Pagani <marpagan@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 245/545] Bluetooth: hci_intel: Add check for platform_driver_register
-Date:   Fri, 19 Aug 2022 17:40:15 +0200
-Message-Id: <20220819153840.320651183@linuxfoundation.org>
+Subject: [PATCH 5.10 278/545] fpga: altera-pr-ip: fix unsigned comparison with less than zero
+Date:   Fri, 19 Aug 2022 17:40:48 +0200
+Message-Id: <20220819153841.759220471@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,39 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Marco Pagani <marpagan@redhat.com>
 
-[ Upstream commit ab2d2a982ff721f4b029282d9a40602ea46a745e ]
+[ Upstream commit 2df84a757d87fd62869fc401119d429735377ec5 ]
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
+Fix the "comparison with less than zero" warning reported by
+cppcheck for the unsigned (size_t) parameter count of the
+alt_pr_fpga_write() function.
 
-Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: d201cc17a8a3 ("fpga pr ip: Core driver support for Altera Partial Reconfiguration IP")
+Reviewed-by: Tom Rix <trix@redhat.com>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+Signed-off-by: Marco Pagani <marpagan@redhat.com>
+Link: https://lore.kernel.org/r/20220609140520.42662-1-marpagan@redhat.com
+Signed-off-by: Xu Yilun <yilun.xu@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_intel.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/fpga/altera-pr-ip-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
-index b20a40fab83e..d5d2feef6c52 100644
---- a/drivers/bluetooth/hci_intel.c
-+++ b/drivers/bluetooth/hci_intel.c
-@@ -1214,7 +1214,11 @@ static struct platform_driver intel_driver = {
+diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+index 2cf25fd5e897..75b4b3ec933a 100644
+--- a/drivers/fpga/altera-pr-ip-core.c
++++ b/drivers/fpga/altera-pr-ip-core.c
+@@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
+ 	u32 *buffer_32 = (u32 *)buf;
+ 	size_t i = 0;
  
- int __init intel_init(void)
- {
--	platform_driver_register(&intel_driver);
-+	int err;
-+
-+	err = platform_driver_register(&intel_driver);
-+	if (err)
-+		return err;
+-	if (count <= 0)
++	if (!count)
+ 		return -EINVAL;
  
- 	return hci_uart_register_proto(&intel_proto);
- }
+ 	/* Write out the complete 32-bit chunks */
 -- 
 2.35.1
 
