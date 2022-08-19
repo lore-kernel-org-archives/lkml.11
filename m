@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A12E8C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F26C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350892AbiHSP6q (ORCPT
+        id S1350764AbiHSP6w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
+        Fri, 19 Aug 2022 11:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350966AbiHSP4H (ORCPT
+        with ESMTP id S1350965AbiHSP4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 11:56:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886FC1CFD8;
-        Fri, 19 Aug 2022 08:51:04 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0D530547;
+        Fri, 19 Aug 2022 08:51:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81B47615E7;
-        Fri, 19 Aug 2022 15:51:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87061C433C1;
-        Fri, 19 Aug 2022 15:51:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65614B82813;
+        Fri, 19 Aug 2022 15:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8F05C4347C;
+        Fri, 19 Aug 2022 15:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924262;
-        bh=JmNy9SOqsoECasqAIXzyjV4CCn1OElcxYFq12UPQwfQ=;
+        s=korg; t=1660924260;
+        bh=e48tc2OR3RCBc0ZTNyT/lHkQqToIZBrW1d32zs+2JUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mEUpi6b6Wj4oia+4AXsibQQ5NX3+5X/3OVaBBH4hbCPm3ja+fgxH7Yv2+r5Zm7mJ0
-         EwCZ/CdlZbWOkFtvk09A2Imw6jsWztFpNXHZ7W4cA+xilUihTomvq6/tdTDEqgnASf
-         nD7WxGQz7qx53EMV1dv4Y2rJruvDjYPr6t3o+hcQ=
+        b=ryyc/S/99OdPlslEI1GWkQDbaHmK9P+ra46CwOCwUkBqBWpLTdKCVlpdwfD6hDSjG
+         Mwf4V537PUnK7GiYstG+G4gitNF6Cpq33zF0NKRHWWAYhnujqvnXGQWWMzPO/dqP3F
+         fxlULuIEhYh3SNL8YdWRqm8/hPCYhZYHoy8zUVmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 110/545] arm64: dts: renesas: beacon: Fix regulator node names
-Date:   Fri, 19 Aug 2022 17:38:00 +0200
-Message-Id: <20220819153834.211620489@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 083/545] genirq: GENERIC_IRQ_IPI depends on SMP
+Date:   Fri, 19 Aug 2022 17:37:33 +0200
+Message-Id: <20220819153832.971337534@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,58 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 7512af9f78dedea7e04225f665dad6750df7d095 ]
+[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
 
-Currently there are two nodes named "regulator_camera".  This causes the
-former to be overwritten by the latter.
+The generic IPI code depends on the IRQ affinity mask being allocated
+and initialized. This will not be the case if SMP is disabled. Fix up
+the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
 
-Fix this by renaming them to unique names, using the preferred hyphen
-instead of an underscore.
-
-While at it, update the name of the audio regulator (which was added in
-the same commit) to use a hyphen.
-
-Fixes: a1d8a344f1ca0709 ("arm64: dts: renesas: Introduce r8a774a1-beacon-rzg2m-kit")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/a9ac82bdf108162487289d091c53a9b3de393f13.1652263918.git.geert+renesas@glider.be
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/irqchip/Kconfig | 2 +-
+ kernel/irq/Kconfig      | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
-index bc4bb5dd8bae..53e1d43cbecf 100644
---- a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
-+++ b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
-@@ -145,7 +145,7 @@ rgb_panel: endpoint {
- 		};
- 	};
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index c4b971cd239d..3c24bf45263c 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -178,7 +178,7 @@ config MADERA_IRQ
+ config IRQ_MIPS_CPU
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+-	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
++	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
+ 	select IRQ_DOMAIN
+ 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
  
--	reg_audio: regulator_audio {
-+	reg_audio: regulator-audio {
- 		compatible = "regulator-fixed";
- 		regulator-name = "audio-1.8V";
- 		regulator-min-microvolt = <1800000>;
-@@ -173,7 +173,7 @@ reg_lcd_reset: regulator-lcd-reset {
- 		vin-supply = <&reg_lcd>;
- 	};
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index 164a031cfdb6..0f2a44fc0971 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -82,6 +82,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
+ # Generic IRQ IPI support
+ config GENERIC_IRQ_IPI
+ 	bool
++	depends on SMP
+ 	select IRQ_DOMAIN_HIERARCHY
  
--	reg_cam0: regulator_camera {
-+	reg_cam0: regulator-cam0 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "reg_cam0";
- 		regulator-min-microvolt = <1800000>;
-@@ -182,7 +182,7 @@ reg_cam0: regulator_camera {
- 		enable-active-high;
- 	};
- 
--	reg_cam1: regulator_camera {
-+	reg_cam1: regulator-cam1 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "reg_cam1";
- 		regulator-min-microvolt = <1800000>;
+ # Generic MSI interrupt support
 -- 
 2.35.1
 
