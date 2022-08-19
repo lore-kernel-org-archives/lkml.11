@@ -2,139 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C10FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53EB9C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 17:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354782AbiHSRs0 (ORCPT
+        id S1352147AbiHSRtC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
+        Fri, 19 Aug 2022 13:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351375AbiHSRr5 (ORCPT
+        with ESMTP id S1351972AbiHSRsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:47:57 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FC210B513
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:15:06 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id by6so5074142ljb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:15:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JAXhCl3E9jd9ApnOWZBAjKRPaL6FpmdOdGj2ig44w3U=;
-        b=YTvX3/p+STgYcKJuwODn8Uc2Aou3SxtXuHaCCf7vVsR3gKxBrq7ZAMDSwSiCbB4VOw
-         frem9BQfTK15GIHNFl7F7raHe34pjYsm1E8g01nDz+2/OVBD3wTKZKiCWkNs/7bALyz0
-         bOiDvwn8NCVcAJiAf3RbfLshZ9IbeZ1rh0baIar/vssInLWH64yottw/7dBYcphX8V34
-         4EdLdkSZdpcZH79nWgSM441h/ciz/UmRA6ABKwmbvFF/Ohf7mxyVmdjraKmXcVUkHuQ8
-         xcqJ7JPRusqrN7kUR223Yrc0yypsAxBh+WsQJpZAwvCdMBg9E/HfQU6pU3Y4S+HfNbM9
-         Q+ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JAXhCl3E9jd9ApnOWZBAjKRPaL6FpmdOdGj2ig44w3U=;
-        b=YiJGbbErQDL2mJJH2oaQl1hkfqgSEPvJ/Um16mu5Ez2CQ0lKiHVfdKUbxBxHSwlDvz
-         B7/syiXdS7rhjfadQlAYYSXkU8jRgE58KwG7dpTznegyo9Ly2ViSSdo2kX0GK/Fs4Xoa
-         SJjzI4eDWnVOV5qccwXcIeOppukYeZ3bWZhouURNU38TtLdFxa+thpJwlgUG8JHC9WP3
-         6mZMMuQ0b+YRdD+ilUOTccE5tvQ+0KfxYGdXGZFSHyovhVU9PlJZkVhhMNR8V/QWhxl/
-         uXU9x42iBpnF+5XifeX+zvjXFIWoeqHfbmnCE9MaLnAOSfZHTCaoVos41p5Bh2iA1SMc
-         O1vg==
-X-Gm-Message-State: ACgBeo341YECEiQHILiSQr4uP7e4DyvF7IqbjBgIItHnZIVTMcK/k+aW
-        keQBqIjIkZWf4qyLPa5rGVFkiPqcxsOs2WnnyUteNg==
-X-Google-Smtp-Source: AA6agR7GKpemeJnJ8VnG9PjjkIm1ieSXlIFGKo/VPqH7oed8eOn1lSRe+2EBvu50VsAbVa33qJMy+FeN/vfsCpCuvg8=
-X-Received: by 2002:a2e:a910:0:b0:261:b408:1169 with SMTP id
- j16-20020a2ea910000000b00261b4081169mr2289309ljq.360.1660929304284; Fri, 19
- Aug 2022 10:15:04 -0700 (PDT)
+        Fri, 19 Aug 2022 13:48:15 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE95E3F
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:16:19 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9849329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9849:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B16FB1EC02F2;
+        Fri, 19 Aug 2022 19:16:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660929373;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=yQC+7FVFDNtQ+l2POC084zBQBfc8MvJ3Aqo0JoE3Rdo=;
+        b=eR3p6bUjJwKUmi++oaqkjzehmZzhr/FBN10Is85K1KNRFYE0DHnq+hF2eBOVTDXqox8+jK
+        EeP4K3RrPV30HiuSLpteHXpqc847poa8PTyQQUi7B0wIw8ZSC/ySk5y1JR+zfh90o7Afx4
+        TwqIeFblvFFul7nSrsogadm3dL2QysY=
+Date:   Fri, 19 Aug 2022 19:16:13 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Saurabh Singh Sengar <ssengar@linux.microsoft.com>
+Cc:     ssengar@microsoft.com, mikelley@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, peterz@infradead.org, tim.c.chen@linux.intel.com,
+        will@kernel.org, song.bao.hua@hisilicon.com,
+        suravee.suthikulpanit@amd.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86/cacheinfo: Don't use cpu_llc_shared_map for
+ !CONFIG_SMP
+Message-ID: <Yv/FXcOkB0BpUkVn@zn.tnic>
+References: <1660148115-302-1-git-send-email-ssengar@linux.microsoft.com>
+ <Yv1ELaWHbRfvdt/p@zn.tnic>
+ <20220818045225.GA9054@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <Yv4pOz01nAkafiwd@zn.tnic>
+ <20220818122925.GA8507@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 MIME-Version: 1.0
-References: <20220819153829.135562864@linuxfoundation.org> <20220819153829.220984987@linuxfoundation.org>
-In-Reply-To: <20220819153829.220984987@linuxfoundation.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 19 Aug 2022 10:14:51 -0700
-Message-ID: <CAKwvOdmu72iN8NE3dbCaoWNf9mbr9UcRAzmRgezRsKsWmT5xJg@mail.gmail.com>
-Subject: Re: [PATCH 5.10 001/545] Makefile: link with -z noexecstack --no-warn-rwx-segments
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Fangrui Song <maskray@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220818122925.GA8507@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 8:46 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> From: Nick Desaulniers <ndesaulniers@google.com>
->
-> commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
->
-> Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-> instances of a new warning when linking kernels in the form:
->
->   ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
->   ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
->   ld: warning: vmlinux has a LOAD segment with RWX permissions
->
-> Generally, we would like to avoid the stack being executable.  Because
-> there could be a need for the stack to be executable, assembler sources
-> have to opt-in to this security feature via explicit creation of the
-> .note.GNU-stack feature (which compilers create by default) or command
-> line flag --noexecstack.  Or we can simply tell the linker the
-> production of such sections is irrelevant and to link the stack as
-> --noexecstack.
->
-> LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-> strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-> to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-> currently BFD specific and only available in the current latest release,
-> so it's wrapped in an ld-option check.
->
-> While the kernel makes extensive usage of ELF sections, it doesn't use
-> permissions from ELF segments.
->
-> Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-> Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-> Link: https://github.com/llvm/llvm-project/issues/57009
-> Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-> Suggested-by: Fangrui Song <maskray@google.com>
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  Makefile |    5 +++++
->  1 file changed, 5 insertions(+)
->
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -983,6 +983,11 @@ KBUILD_CFLAGS   += $(KCFLAGS)
->  KBUILD_LDFLAGS_MODULE += --build-id=sha1
->  LDFLAGS_vmlinux += --build-id=sha1
->
-> +KBUILD_LDFLAGS += -z noexecstack
-> +ifeq ($(CONFIG_LD_IS_BFD),y)
-> +KBUILD_LDFLAGS += $(call ld-option,--no-warn-rwx-segments)
-> +endif
+On Thu, Aug 18, 2022 at 05:29:25AM -0700, Saurabh Singh Sengar wrote:
+> Boot latest linux kernel on AMD CPU, having CONGIG_SMP=n. Once booted
+> execute lscpu (just lscpu without any argument ), this will cause
+> segfault. Please make a note issue is observed with 2.34 version
+> (default lscpu version with Ubuntu 20.04.4) of lscpu.
 
-5.10.y is missing CONFIG_LD_IS_BFD. Specifically
+Does that fix it?
 
-commit 02aff8592204 ("kbuild: check the minimum linker version in Kconfig")
-which first landed in v5.12-rc1.  I'd recommend simply dropping the
-`ifeq` guards; the ld-option guard will still work.  Otherwise GNU BFD
-2.39 users will observe linker warnings related to rwx-segments.
-
-Greg, do you mind dropping this patch and I'll supply a v2, or is it
-too late and I should send a patch on top?
-
-> +
->  ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
->  LDFLAGS_vmlinux        += $(call ld-option, -X,)
->  endif
->
->
-
+---
+diff --git a/arch/x86/include/asm/smp.h b/arch/x86/include/asm/smp.h
+index 81a0211a372d..a73bced40e24 100644
+--- a/arch/x86/include/asm/smp.h
++++ b/arch/x86/include/asm/smp.h
+@@ -21,16 +21,6 @@ DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_llc_id);
+ DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_l2c_id);
+ DECLARE_PER_CPU_READ_MOSTLY(int, cpu_number);
+ 
+-static inline struct cpumask *cpu_llc_shared_mask(int cpu)
+-{
+-	return per_cpu(cpu_llc_shared_map, cpu);
+-}
+-
+-static inline struct cpumask *cpu_l2c_shared_mask(int cpu)
+-{
+-	return per_cpu(cpu_l2c_shared_map, cpu);
+-}
+-
+ DECLARE_EARLY_PER_CPU_READ_MOSTLY(u16, x86_cpu_to_apicid);
+ DECLARE_EARLY_PER_CPU_READ_MOSTLY(u32, x86_cpu_to_acpiid);
+ DECLARE_EARLY_PER_CPU_READ_MOSTLY(u16, x86_bios_cpu_apicid);
+@@ -172,6 +162,16 @@ extern int safe_smp_processor_id(void);
+ # define safe_smp_processor_id()	smp_processor_id()
+ #endif
+ 
++static inline struct cpumask *cpu_llc_shared_mask(int cpu)
++{
++	return per_cpu(cpu_llc_shared_map, cpu);
++}
++
++static inline struct cpumask *cpu_l2c_shared_mask(int cpu)
++{
++	return per_cpu(cpu_l2c_shared_map, cpu);
++}
++
+ #else /* !CONFIG_SMP */
+ #define wbinvd_on_cpu(cpu)     wbinvd()
+ static inline int wbinvd_on_all_cpus(void)
+@@ -179,6 +179,11 @@ static inline int wbinvd_on_all_cpus(void)
+ 	wbinvd();
+ 	return 0;
+ }
++
++static inline struct cpumask *cpu_llc_shared_mask(int cpu)
++{
++	return (struct cpumask *)cpumask_of(0);
++}
+ #endif /* CONFIG_SMP */
+ 
+ extern unsigned disabled_cpus;
 
 -- 
-Thanks,
-~Nick Desaulniers
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
