@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CBBC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CA4C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353613AbiHSQrG (ORCPT
+        id S1353967AbiHSQrK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
+        Fri, 19 Aug 2022 12:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353751AbiHSQpL (ORCPT
+        with ESMTP id S1353876AbiHSQpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:45:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B72510EEF0;
-        Fri, 19 Aug 2022 09:11:29 -0700 (PDT)
+        Fri, 19 Aug 2022 12:45:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18364108967;
+        Fri, 19 Aug 2022 09:11:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 726BCB82804;
-        Fri, 19 Aug 2022 16:09:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01F4C433D6;
-        Fri, 19 Aug 2022 16:09:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C2796181D;
+        Fri, 19 Aug 2022 16:10:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1433EC433D6;
+        Fri, 19 Aug 2022 16:10:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925396;
-        bh=MaGMXRIlJ9pG07km76Li0uZMw63W0tee65bOyaB3NMg=;
+        s=korg; t=1660925440;
+        bh=hVUJ72nZ/V0jcQbOqOoLv0prB9eEJBlnpXj47lIaUnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WPcIYpfxD16IkDAmQH79SJ1gvX4/tBkf7M5uaMm/gWBGc5Nm86tSkX05lWUewrqj5
-         ivKrC5+Eumn+lQqg3F/qH3FIBSLrbZpWXWYd29HfSus97XIZTXtFrDMuPMQ+mHVZPI
-         W/y3Du7BABMmvs4NJWPLAEe0S7Zipta/FpE6x+0k=
+        b=aFMh3TgkLA/KJmSj9ciendWddTY/KR3m48f2aN57aZUtF64xQRWPKxMDCe2nyVX/6
+         9h7enpOVfT5O/IxWykwhNktBDgVn/9H8qryHGTLTslwOYn4VwFI2POgpAZpVLSRI/H
+         ni5/kwkoKwJv98lZEU24RUYUnu8fShrY3F3TFEls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 471/545] KVM: x86: Signal #GP, not -EPERM, on bad WRMSR(MCi_CTL/STATUS)
-Date:   Fri, 19 Aug 2022 17:44:01 +0200
-Message-Id: <20220819153850.484320566@linuxfoundation.org>
+Subject: [PATCH 5.10 491/545] timekeeping: contribute wall clock to rng on time change
+Date:   Fri, 19 Aug 2022 17:44:21 +0200
+Message-Id: <20220819153851.426949216@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,48 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 2368048bf5c2ec4b604ac3431564071e89a0bc71 ]
+[ Upstream commit b8ac29b40183a6038919768b5d189c9bd91ce9b4 ]
 
-Return '1', not '-1', when handling an illegal WRMSR to a MCi_CTL or
-MCi_STATUS MSR.  The behavior of "all zeros' or "all ones" for CTL MSRs
-is architectural, as is the "only zeros" behavior for STATUS MSRs.  I.e.
-the intent is to inject a #GP, not exit to userspace due to an unhandled
-emulation case.  Returning '-1' gets interpreted as -EPERM up the stack
-and effecitvely kills the guest.
+The rng's random_init() function contributes the real time to the rng at
+boot time, so that events can at least start in relation to something
+particular in the real world. But this clock might not yet be set that
+point in boot, so nothing is contributed. In addition, the relation
+between minor clock changes from, say, NTP, and the cycle counter is
+potentially useful entropic data.
 
-Fixes: 890ca9aefa78 ("KVM: Add MCE support")
-Fixes: 9ffd986c6e4e ("KVM: X86: #GP when guest attempts to write MCi_STATUS register w/o 0")
+This commit addresses this by mixing in a time stamp on calls to
+settimeofday and adjtimex. No entropy is credited in doing so, so it
+doesn't make initialization faster, but it is still useful input to
+have.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Link: https://lore.kernel.org/r/20220512222716.4112548-2-seanjc@google.com
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/time/timekeeping.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 23a5e5880615..98422a53bb1e 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -2869,13 +2869,13 @@ static int set_msr_mce(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			 */
- 			if ((offset & 0x3) == 0 &&
- 			    data != 0 && (data | (1 << 10) | 1) != ~(u64)0)
--				return -1;
-+				return 1;
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index e12ce2821dba..d9b48f7a35e0 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -23,6 +23,7 @@
+ #include <linux/pvclock_gtod.h>
+ #include <linux/compiler.h>
+ #include <linux/audit.h>
++#include <linux/random.h>
  
- 			/* MCi_STATUS */
- 			if (!msr_info->host_initiated &&
- 			    (offset & 0x3) == 1 && data != 0) {
- 				if (!can_set_mci_status(vcpu))
--					return -1;
-+					return 1;
- 			}
+ #include "tick-internal.h"
+ #include "ntp_internal.h"
+@@ -1330,8 +1331,10 @@ int do_settimeofday64(const struct timespec64 *ts)
+ 	/* signal hrtimers about time change */
+ 	clock_was_set();
  
- 			vcpu->arch.mce_banks[offset] = data;
+-	if (!ret)
++	if (!ret) {
+ 		audit_tk_injoffset(ts_delta);
++		add_device_randomness(ts, sizeof(*ts));
++	}
+ 
+ 	return ret;
+ }
+@@ -2410,6 +2413,7 @@ int do_adjtimex(struct __kernel_timex *txc)
+ 	ret = timekeeping_validate_timex(txc);
+ 	if (ret)
+ 		return ret;
++	add_device_randomness(txc, sizeof(*txc));
+ 
+ 	if (txc->modes & ADJ_SETOFFSET) {
+ 		struct timespec64 delta;
+@@ -2427,6 +2431,7 @@ int do_adjtimex(struct __kernel_timex *txc)
+ 	audit_ntp_init(&ad);
+ 
+ 	ktime_get_real_ts64(&ts);
++	add_device_randomness(&ts, sizeof(ts));
+ 
+ 	raw_spin_lock_irqsave(&timekeeper_lock, flags);
+ 	write_seqcount_begin(&tk_core.seq);
 -- 
 2.35.1
 
