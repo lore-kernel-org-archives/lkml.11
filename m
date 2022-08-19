@@ -2,450 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F9BC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 05:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E35C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 05:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243011AbiHSFV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 01:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        id S1345753AbiHSFWd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 01:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238595AbiHSFVz (ORCPT
+        with ESMTP id S241654AbiHSFWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 01:21:55 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36601DFB4B
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 22:21:53 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id 2so3293232pll.0
-        for <linux-kernel@vger.kernel.org>; Thu, 18 Aug 2022 22:21:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=u+CnDhjLlXCRY/C8SfiPEVXWRpNGtWX+sN9YvnfBPFM=;
-        b=dhdaPmIgMJDiYHWmdRD2mmexEC15AOGCZEgkA+x/70ZLkhbS/b0vwfjbc1QhBz8D1/
-         RcLiY+zmvvuNvdXKlqkEIsYs0RJVaBOsKmAt+51Cx//dd0iISgmFEilP9ZzRwUCMeQf4
-         OQGfvJF0AGgRyySQONgiCAg2tMIO08nEV5bH0YoeUCXnvOQkq1xsLkeu0CUssQ2qVn5d
-         eWhInBeu6Z64suSxJfGvier1QMz7qd9mpeP4VarSu8qy87SXqIya1l5/xyVKaW8ch2w+
-         4nur+7Xlc4WBwDoxWyGPR9XhJqqfgYV6+lsoRhqyZPoNFhZGfBO07bfabGhyKRqXU+s+
-         SRCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=u+CnDhjLlXCRY/C8SfiPEVXWRpNGtWX+sN9YvnfBPFM=;
-        b=2+ZbFFJDkNP26B/f5sWRQlMhg6sZrcvdGtgA31abv8qXcy9i9HFZQQJVilyPQWb9fs
-         01ygpqfJH/Nz6szSiKlkU1QamPFFqOj7C5xQdwKR4LBCEl6o419wXcU9DhB5lihey1PZ
-         OyGLhe873kkZhX118i1Nxm4ePhp31wHLsgt7dowxqOs/218S1xgMkEjmFnrtjix48Kcj
-         3GKL3+O3pieFQM6TbpcfGn3ki6gdyzT+x/e2bztv1zHYUou1t6CG1gADu05Tl1h3piys
-         HHWYnCv5/lfogmfpYTMz0TrV8UmN1bncQdyR4nrFNzbbNF7s/tAaZtB+8hBXitUn86kC
-         B9zw==
-X-Gm-Message-State: ACgBeo0Ca+DfBlAkqQ/UE/jlMxcSJBMPWVd0I/dReuY81ulUV18NFxu4
-        cFgY1e8OUbqOxaYd+Qx0h6WvRw==
-X-Google-Smtp-Source: AA6agR5UN1h3aOw5IGJ9ghH2y6DkLpD9X/Q2u6TYwxgSUscKyRGV9CR54pVNlevHpOj+aZ/G2cjZZQ==
-X-Received: by 2002:a17:903:2d0:b0:172:b63b:3a1e with SMTP id s16-20020a17090302d000b00172b63b3a1emr4689539plk.76.1660886512411;
-        Thu, 18 Aug 2022 22:21:52 -0700 (PDT)
-Received: from PXLDJ45XCM.bytedance.net ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id q31-20020a635c1f000000b00421841943dfsm2116524pgb.12.2022.08.18.22.21.47
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 18 Aug 2022 22:21:52 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org,
-        mike.kravetz@oracle.com, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, osalvador@suse.de, david@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        muchun.song@linux.dev
-Subject: [PATCH] mm: hugetlb: simplify per-node sysfs creation and removal
-Date:   Fri, 19 Aug 2022 13:21:37 +0800
-Message-Id: <20220819052137.7985-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        Fri, 19 Aug 2022 01:22:30 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48A5E01C2;
+        Thu, 18 Aug 2022 22:22:27 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 0860D5FD07;
+        Fri, 19 Aug 2022 08:22:26 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660886546;
+        bh=GooZAVHnzepBYKSNfdd8aQsvtHUU6TX2S4d+v+I+b5A=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=gWXX37n6OWek1Tn13sSWrePrmJlZWkOMfAwk1K9RHcopEiyS5ph67ICXSOjz+whrB
+         d8ItdpjOFRvIphMxg1rlNxIifJEFH3BywI9FcuqpqKDR0dB8BVIPJk7T8H6i8TxOCO
+         gpwQ6DeFaSDoC3zR/UEozuHx2sZc7Uah8bdKd6QElN4oTO7YAy9j4XZFGVi2QyTr7z
+         rTVojXRzVW3U4zeMFs1L9HfGI/VeTWskm+/2zAhAdDZGrUxMzKNr0C6/dmDC6aZ5g0
+         DJkTu2ghabQx2IZiddvWHWQlG82MjWlIwa+jbjXt4Qk+FsGgPYEGW/h2HG7WejpI19
+         jirpVG+AZS2/g==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri, 19 Aug 2022 08:22:24 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+Subject: [PATCH net-next v4 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Topic: [PATCH net-next v4 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Index: AQHYs4uayjgwUp42sUeXUj6ZEfA4aQ==
+Date:   Fri, 19 Aug 2022 05:21:58 +0000
+Message-ID: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A9355D7A3C795643AE6D4E91DD6FD380@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/19 00:26:00 #20118704
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit offload per-node sysfs creation and removal to a kworker and
-did not say why it is needed.  And it also said "I don't know that this is
-absolutely required".  It seems like the author was not sure as well.  Since it
-only complicates the code, this patch will revert the changes to simplify the code.
-
-  39da08cb074c ("hugetlb: offload per node attribute registrations")
-
-We could use memory hotplug notifier to do per-node sysfs creation and removal
-instead of inserting those operations to node registration and unregistration.
-Then, it can reduce the code coupling between node.c and hugetlb.c.  Also, it can
-simplify the code.
-
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- drivers/base/node.c  | 139 ++-------------------------------------------------
- include/linux/node.h |  24 ++-------
- mm/hugetlb.c         |  45 +++++++++++------
- 3 files changed, 36 insertions(+), 172 deletions(-)
-
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index eb0f43784c2b..ed391cb09999 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -587,64 +587,9 @@ static const struct attribute_group *node_dev_groups[] = {
- 	NULL
- };
- 
--#ifdef CONFIG_HUGETLBFS
--/*
-- * hugetlbfs per node attributes registration interface:
-- * When/if hugetlb[fs] subsystem initializes [sometime after this module],
-- * it will register its per node attributes for all online nodes with
-- * memory.  It will also call register_hugetlbfs_with_node(), below, to
-- * register its attribute registration functions with this node driver.
-- * Once these hooks have been initialized, the node driver will call into
-- * the hugetlb module to [un]register attributes for hot-plugged nodes.
-- */
--static node_registration_func_t __hugetlb_register_node;
--static node_registration_func_t __hugetlb_unregister_node;
--
--static inline bool hugetlb_register_node(struct node *node)
--{
--	if (__hugetlb_register_node &&
--			node_state(node->dev.id, N_MEMORY)) {
--		__hugetlb_register_node(node);
--		return true;
--	}
--	return false;
--}
--
--static inline void hugetlb_unregister_node(struct node *node)
--{
--	if (__hugetlb_unregister_node)
--		__hugetlb_unregister_node(node);
--}
--
--void register_hugetlbfs_with_node(node_registration_func_t doregister,
--				  node_registration_func_t unregister)
--{
--	__hugetlb_register_node   = doregister;
--	__hugetlb_unregister_node = unregister;
--}
--#else
--static inline void hugetlb_register_node(struct node *node) {}
--
--static inline void hugetlb_unregister_node(struct node *node) {}
--#endif
--
- static void node_device_release(struct device *dev)
- {
--	struct node *node = to_node(dev);
--
--#if defined(CONFIG_MEMORY_HOTPLUG) && defined(CONFIG_HUGETLBFS)
--	/*
--	 * We schedule the work only when a memory section is
--	 * onlined/offlined on this node. When we come here,
--	 * all the memory on this node has been offlined,
--	 * so we won't enqueue new work to this work.
--	 *
--	 * The work is using node->node_work, so we should
--	 * flush work before freeing the memory.
--	 */
--	flush_work(&node->node_work);
--#endif
--	kfree(node);
-+	kfree(to_node(dev));
- }
- 
- /*
-@@ -665,11 +610,9 @@ static int register_node(struct node *node, int num)
- 
- 	if (error)
- 		put_device(&node->dev);
--	else {
--		hugetlb_register_node(node);
--
-+	else
- 		compaction_register_node(node);
--	}
-+
- 	return error;
- }
- 
-@@ -683,7 +626,6 @@ static int register_node(struct node *node, int num)
- void unregister_node(struct node *node)
- {
- 	compaction_unregister_node(node);
--	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
- 	node_remove_accesses(node);
- 	node_remove_caches(node);
- 	device_unregister(&node->dev);
-@@ -905,74 +847,8 @@ void register_memory_blocks_under_node(int nid, unsigned long start_pfn,
- 			   (void *)&nid, func);
- 	return;
- }
--
--#ifdef CONFIG_HUGETLBFS
--/*
-- * Handle per node hstate attribute [un]registration on transistions
-- * to/from memoryless state.
-- */
--static void node_hugetlb_work(struct work_struct *work)
--{
--	struct node *node = container_of(work, struct node, node_work);
--
--	/*
--	 * We only get here when a node transitions to/from memoryless state.
--	 * We can detect which transition occurred by examining whether the
--	 * node has memory now.  hugetlb_register_node() already check this
--	 * so we try to register the attributes.  If that fails, then the
--	 * node has transitioned to memoryless, try to unregister the
--	 * attributes.
--	 */
--	if (!hugetlb_register_node(node))
--		hugetlb_unregister_node(node);
--}
--
--static void init_node_hugetlb_work(int nid)
--{
--	INIT_WORK(&node_devices[nid]->node_work, node_hugetlb_work);
--}
--
--static int node_memory_callback(struct notifier_block *self,
--				unsigned long action, void *arg)
--{
--	struct memory_notify *mnb = arg;
--	int nid = mnb->status_change_nid;
--
--	switch (action) {
--	case MEM_ONLINE:
--	case MEM_OFFLINE:
--		/*
--		 * offload per node hstate [un]registration to a work thread
--		 * when transitioning to/from memoryless state.
--		 */
--		if (nid != NUMA_NO_NODE)
--			schedule_work(&node_devices[nid]->node_work);
--		break;
--
--	case MEM_GOING_ONLINE:
--	case MEM_GOING_OFFLINE:
--	case MEM_CANCEL_ONLINE:
--	case MEM_CANCEL_OFFLINE:
--	default:
--		break;
--	}
--
--	return NOTIFY_OK;
--}
--#endif	/* CONFIG_HUGETLBFS */
- #endif /* CONFIG_MEMORY_HOTPLUG */
- 
--#if !defined(CONFIG_MEMORY_HOTPLUG) || !defined(CONFIG_HUGETLBFS)
--static inline int node_memory_callback(struct notifier_block *self,
--				unsigned long action, void *arg)
--{
--	return NOTIFY_OK;
--}
--
--static void init_node_hugetlb_work(int nid) { }
--
--#endif
--
- int __register_one_node(int nid)
- {
- 	int error;
-@@ -991,8 +867,6 @@ int __register_one_node(int nid)
- 	}
- 
- 	INIT_LIST_HEAD(&node_devices[nid]->access_list);
--	/* initialize work queue for memory hot plug */
--	init_node_hugetlb_work(nid);
- 	node_init_caches(nid);
- 
- 	return error;
-@@ -1063,13 +937,8 @@ static const struct attribute_group *cpu_root_attr_groups[] = {
- 	NULL,
- };
- 
--#define NODE_CALLBACK_PRI	2	/* lower than SLAB */
- void __init node_dev_init(void)
- {
--	static struct notifier_block node_memory_callback_nb = {
--		.notifier_call = node_memory_callback,
--		.priority = NODE_CALLBACK_PRI,
--	};
- 	int ret, i;
- 
-  	BUILD_BUG_ON(ARRAY_SIZE(node_state_attr) != NR_NODE_STATES);
-@@ -1079,8 +948,6 @@ void __init node_dev_init(void)
- 	if (ret)
- 		panic("%s() failed to register subsystem: %d\n", __func__, ret);
- 
--	register_hotmemory_notifier(&node_memory_callback_nb);
--
- 	/*
- 	 * Create all node devices, which will properly link the node
- 	 * to applicable memory block devices and already created cpu devices.
-diff --git a/include/linux/node.h b/include/linux/node.h
-index 40d641a8bfb0..ea817b507f54 100644
---- a/include/linux/node.h
-+++ b/include/linux/node.h
-@@ -2,15 +2,15 @@
- /*
-  * include/linux/node.h - generic node definition
-  *
-- * This is mainly for topological representation. We define the 
-- * basic 'struct node' here, which can be embedded in per-arch 
-+ * This is mainly for topological representation. We define the
-+ * basic 'struct node' here, which can be embedded in per-arch
-  * definitions of processors.
-  *
-  * Basic handling of the devices is done in drivers/base/node.c
-- * and system devices are handled in drivers/base/sys.c. 
-+ * and system devices are handled in drivers/base/sys.c.
-  *
-  * Nodes are exported via driverfs in the class/node/devices/
-- * directory. 
-+ * directory.
-  */
- #ifndef _LINUX_NODE_H_
- #define _LINUX_NODE_H_
-@@ -18,7 +18,6 @@
- #include <linux/device.h>
- #include <linux/cpumask.h>
- #include <linux/list.h>
--#include <linux/workqueue.h>
- 
- /**
-  * struct node_hmem_attrs - heterogeneous memory performance attributes
-@@ -84,10 +83,6 @@ static inline void node_set_perf_attrs(unsigned int nid,
- struct node {
- 	struct device	dev;
- 	struct list_head access_list;
--
--#if defined(CONFIG_MEMORY_HOTPLUG) && defined(CONFIG_HUGETLBFS)
--	struct work_struct	node_work;
--#endif
- #ifdef CONFIG_HMEM_REPORTING
- 	struct list_head cache_attrs;
- 	struct device *cache_dev;
-@@ -96,7 +91,6 @@ struct node {
- 
- struct memory_block;
- extern struct node *node_devices[];
--typedef  void (*node_registration_func_t)(struct node *);
- 
- #if defined(CONFIG_MEMORY_HOTPLUG) && defined(CONFIG_NUMA)
- void register_memory_blocks_under_node(int nid, unsigned long start_pfn,
-@@ -144,11 +138,6 @@ extern void unregister_memory_block_under_nodes(struct memory_block *mem_blk);
- extern int register_memory_node_under_compute_node(unsigned int mem_nid,
- 						   unsigned int cpu_nid,
- 						   unsigned access);
--
--#ifdef CONFIG_HUGETLBFS
--extern void register_hugetlbfs_with_node(node_registration_func_t doregister,
--					 node_registration_func_t unregister);
--#endif
- #else
- static inline void node_dev_init(void)
- {
-@@ -176,11 +165,6 @@ static inline int unregister_cpu_under_node(unsigned int cpu, unsigned int nid)
- static inline void unregister_memory_block_under_nodes(struct memory_block *mem_blk)
- {
- }
--
--static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
--						node_registration_func_t unreg)
--{
--}
- #endif
- 
- #define to_node(device) container_of(device, struct node, dev)
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 536a52c29035..9a72499486c1 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -33,6 +33,7 @@
- #include <linux/migrate.h>
- #include <linux/nospec.h>
- #include <linux/delayacct.h>
-+#include <linux/memory.h>
- 
- #include <asm/page.h>
- #include <asm/pgalloc.h>
-@@ -3967,19 +3968,19 @@ static void hugetlb_unregister_node(struct node *node)
-  * Register hstate attributes for a single node device.
-  * No-op if attributes already registered.
-  */
--static void hugetlb_register_node(struct node *node)
-+static int hugetlb_register_node(struct node *node)
- {
- 	struct hstate *h;
- 	struct node_hstate *nhs = &node_hstates[node->dev.id];
- 	int err;
- 
- 	if (nhs->hugepages_kobj)
--		return;		/* already allocated */
-+		return 0;		/* already allocated */
- 
- 	nhs->hugepages_kobj = kobject_create_and_add("hugepages",
- 							&node->dev.kobj);
- 	if (!nhs->hugepages_kobj)
--		return;
-+		return -ENOMEM;
- 
- 	for_each_hstate(h) {
- 		err = hugetlb_sysfs_add_hstate(h, nhs->hugepages_kobj,
-@@ -3989,9 +3990,28 @@ static void hugetlb_register_node(struct node *node)
- 			pr_err("HugeTLB: Unable to add hstate %s for node %d\n",
- 				h->name, node->dev.id);
- 			hugetlb_unregister_node(node);
--			break;
-+			return -ENOMEM;
- 		}
- 	}
-+	return 0;
-+}
-+
-+static int __meminit hugetlb_memory_callback(struct notifier_block *self,
-+					     unsigned long action, void *arg)
-+{
-+	int ret = 0;
-+	struct memory_notify *mnb = arg;
-+	int nid = mnb->status_change_nid;
-+
-+	if (nid == NUMA_NO_NODE)
-+		return NOTIFY_DONE;
-+
-+	if (action == MEM_GOING_ONLINE)
-+		ret = hugetlb_register_node(node_devices[nid]);
-+	else if (action == MEM_CANCEL_ONLINE || action == MEM_OFFLINE)
-+		hugetlb_unregister_node(node_devices[nid]);
-+
-+	return notifier_from_errno(ret);
- }
- 
- /*
-@@ -4003,18 +4023,11 @@ static void __init hugetlb_register_all_nodes(void)
- {
- 	int nid;
- 
--	for_each_node_state(nid, N_MEMORY) {
--		struct node *node = node_devices[nid];
--		if (node->dev.id == nid)
--			hugetlb_register_node(node);
--	}
--
--	/*
--	 * Let the node device driver know we're here so it can
--	 * [un]register hstate attributes on node hotplug.
--	 */
--	register_hugetlbfs_with_node(hugetlb_register_node,
--				     hugetlb_unregister_node);
-+	get_online_mems();
-+	hotplug_memory_notifier(hugetlb_memory_callback, 0);
-+	for_each_node_state(nid, N_MEMORY)
-+		hugetlb_register_node(node_devices[nid]);
-+	put_online_mems();
- }
- #else	/* !CONFIG_NUMA */
- 
--- 
-2.11.0
-
+SGVsbG8sDQoNClRoaXMgcGF0Y2hzZXQgaW5jbHVkZXMgc29tZSB1cGRhdGVzIGZvciBTT19SQ1ZM
+T1dBVDoNCg0KMSkgYWZfdnNvY2s6DQogICBEdXJpbmcgbXkgZXhwZXJpbWVudHMgd2l0aCB6ZXJv
+Y29weSByZWNlaXZlLCBpIGZvdW5kLCB0aGF0IGluIHNvbWUNCiAgIGNhc2VzLCBwb2xsKCkgaW1w
+bGVtZW50YXRpb24gdmlvbGF0ZXMgUE9TSVg6IHdoZW4gc29ja2V0IGhhcyBub24tDQogICBkZWZh
+dWx0IFNPX1JDVkxPV0FUKGUuZy4gbm90IDEpLCBwb2xsKCkgd2lsbCBhbHdheXMgc2V0IFBPTExJ
+TiBhbmQNCiAgIFBPTExSRE5PUk0gYml0cyBpbiAncmV2ZW50cycgZXZlbiBudW1iZXIgb2YgYnl0
+ZXMgYXZhaWxhYmxlIHRvIHJlYWQNCiAgIG9uIHNvY2tldCBpcyBzbWFsbGVyIHRoYW4gU09fUkNW
+TE9XQVQgdmFsdWUuIEluIHRoaXMgY2FzZSx1c2VyIHNlZXMNCiAgIFBPTExJTiBmbGFnIGFuZCB0
+aGVuIHRyaWVzIHRvIHJlYWQgZGF0YShmb3IgZXhhbXBsZSB1c2luZyAgJ3JlYWQoKScNCiAgIGNh
+bGwpLCBidXQgcmVhZCBjYWxsIHdpbGwgYmUgYmxvY2tlZCwgYmVjYXVzZSAgU09fUkNWTE9XQVQg
+bG9naWMgaXMNCiAgIHN1cHBvcnRlZCBpbiBkZXF1ZXVlIGxvb3AgaW4gYWZfdnNvY2suYy4gQnV0
+IHRoZSBzYW1lIHRpbWUsICBQT1NJWA0KICAgcmVxdWlyZXMgdGhhdDoNCg0KICAgIlBPTExJTiAg
+ICAgRGF0YSBvdGhlciB0aGFuIGhpZ2gtcHJpb3JpdHkgZGF0YSBtYXkgYmUgcmVhZCB3aXRob3V0
+DQogICAgICAgICAgICAgICBibG9ja2luZy4NCiAgICBQT0xMUkROT1JNIE5vcm1hbCBkYXRhIG1h
+eSBiZSByZWFkIHdpdGhvdXQgYmxvY2tpbmcuIg0KDQogICBTZWUgaHR0cHM6Ly93d3cub3Blbi1z
+dGQub3JnL2p0YzEvc2MyMi9vcGVuL240MjE3LnBkZiwgcGFnZSAyOTMuDQoNCiAgIFNvLCB3ZSBo
+YXZlLCB0aGF0IHBvbGwoKSBzeXNjYWxsIHJldHVybnMgUE9MTElOLCBidXQgcmVhZCBjYWxsIHdp
+bGwNCiAgIGJlIGJsb2NrZWQuDQoNCiAgIEFsc28gaW4gbWFuIHBhZ2Ugc29ja2V0KDcpIGkgZm91
+bmQgdGhhdDoNCg0KICAgIlNpbmNlIExpbnV4IDIuNi4yOCwgc2VsZWN0KDIpLCBwb2xsKDIpLCBh
+bmQgZXBvbGwoNykgaW5kaWNhdGUgYQ0KICAgc29ja2V0IGFzIHJlYWRhYmxlIG9ubHkgaWYgYXQg
+bGVhc3QgU09fUkNWTE9XQVQgYnl0ZXMgYXJlIGF2YWlsYWJsZS4iDQoNCiAgIEkgY2hlY2tlZCBU
+Q1AgY2FsbGJhY2sgZm9yIHBvbGwoKShuZXQvaXB2NC90Y3AuYywgdGNwX3BvbGwoKSksIGl0DQog
+ICB1c2VzIFNPX1JDVkxPV0FUIHZhbHVlIHRvIHNldCBQT0xMSU4gYml0LCBhbHNvIGkndmUgdGVz
+dGVkIFRDUCB3aXRoDQogICB0aGlzIGNhc2UgZm9yIFRDUCBzb2NrZXQsIGl0IHdvcmtzIGFzIFBP
+U0lYIHJlcXVpcmVkLg0KDQogICBJJ3ZlIGFkZGVkIHNvbWUgZml4ZXMgdG8gYWZfdnNvY2suYyBh
+bmQgdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYywNCiAgIHRlc3QgaXMgYWxzbyBpbXBsZW1lbnRl
+ZC4NCg0KMikgdmlydGlvL3Zzb2NrOg0KICAgSXQgYWRkcyBzb21lIG9wdGltaXphdGlvbiB0byB3
+YWtlIHVwcywgd2hlbiBuZXcgZGF0YSBhcnJpdmVkLiBOb3csDQogICBTT19SQ1ZMT1dBVCBpcyBj
+b25zaWRlcmVkIGJlZm9yZSB3YWtlIHVwIHNsZWVwZXJzIHdobyB3YWl0IG5ldyBkYXRhLg0KICAg
+VGhlcmUgaXMgbm8gc2Vuc2UsIHRvIGtpY2sgd2FpdGVyLCB3aGVuIG51bWJlciBvZiBhdmFpbGFi
+bGUgYnl0ZXMNCiAgIGluIHNvY2tldCdzIHF1ZXVlIDwgU09fUkNWTE9XQVQsIGJlY2F1c2UgaWYg
+d2Ugd2FrZSB1cCByZWFkZXIgaW4NCiAgIHRoaXMgY2FzZSwgaXQgd2lsbCB3YWl0IGZvciBTT19S
+Q1ZMT1dBVCBkYXRhIGFueXdheSBkdXJpbmcgZGVxdWV1ZSwNCiAgIG9yIGluIHBvbGwoKSBjYXNl
+LCBQT0xMSU4vUE9MTFJETk9STSBiaXRzIHdvbid0IGJlIHNldCwgc28gc3VjaA0KICAgZXhpdCBm
+cm9tIHBvbGwoKSB3aWxsIGJlICJzcHVyaW91cyIuIFRoaXMgbG9naWMgaXMgYWxzbyB1c2VkIGlu
+IFRDUA0KICAgc29ja2V0cy4NCg0KMykgdm1jaS92c29jazoNCiAgIFNhbWUgYXMgMiksIGJ1dCBp
+J20gbm90IHN1cmUgYWJvdXQgdGhpcyBjaGFuZ2VzLiBXaWxsIGJlIHZlcnkgZ29vZCwNCiAgIHRv
+IGdldCBjb21tZW50cyBmcm9tIHNvbWVvbmUgd2hvIGtub3dzIHRoaXMgY29kZS4NCg0KNCkgSHlw
+ZXItVjoNCiAgIEFzIERleHVhbiBDdWkgbWVudGlvbmVkLCBmb3IgSHlwZXItViB0cmFuc3BvcnQg
+aXQgaXMgZGlmZmljdWx0IHRvDQogICBzdXBwb3J0IFNPX1JDVkxPV0FULCBzbyBoZSBzdWdnZXN0
+ZWQgdG8gZGlzYWJsZSB0aGlzIGZlYXR1cmUgZm9yDQogICBIeXBlci1WLg0KDQpUaGFuayBZb3UN
+Cg0KQXJzZW5peSBLcmFzbm92KDkpOg0KIHZzb2NrOiBTT19SQ1ZMT1dBVCB0cmFuc3BvcnQgc2V0
+IGNhbGxiYWNrDQogaHZfc29jazogZGlzYWJsZSBTT19SQ1ZMT1dBVCBzdXBwb3J0DQogdmlydGlv
+L3Zzb2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxfaW4gY2FsbGJhY2sNCiB2bWNpL3Zz
+b2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxfaW4gY2FsbGJhY2sNCiB2c29jazogcGFz
+cyBzb2NrX3Jjdmxvd2F0IHRvIG5vdGlmeV9wb2xsX2luIGFzIHRhcmdldA0KIHZzb2NrOiBhZGQg
+QVBJIGNhbGwgZm9yIGRhdGEgcmVhZHkNCiB2aXJ0aW8vdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FU
+IGJlZm9yZSB3YWtlIHVwIHJlYWRlcg0KIHZtY2kvdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FUIGJl
+Zm9yZSB3YWtlIHVwIHJlYWRlcg0KIHZzb2NrX3Rlc3Q6IFBPTExJTiArIFNPX1JDVkxPV0FUIHRl
+c3QNCg0KIGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICAgICAgICAgICAgICAgICAgICAgIHwgICAy
+ICsNCiBuZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgICAgICAgICAgICAgICAgICAgICB8ICAzMyAr
+KysrKysrLQ0KIG5ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jICAgICAgICAgICAgIHwg
+ICA3ICsrDQogbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jICAgICAgfCAg
+IDcgKy0NCiBuZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0X25vdGlmeS5jICAgICAgICB8ICAx
+MCArLS0NCiBuZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0X25vdGlmeV9xc3RhdGUuYyB8ICAx
+MiArLS0NCiB0b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYyAgICAgICAgICAgICB8IDEw
+OCArKysrKysrKysrKysrKysrKysrKysrKysrKysNCiA3IGZpbGVzIGNoYW5nZWQsIDE2MiBpbnNl
+cnRpb25zKCspLCAxNyBkZWxldGlvbnMoLSkNCg0KIENoYW5nZWxvZzoNCg0KIHYxIC0+IHYyOg0K
+IDEpIFBhdGNoZXMgZm9yIFZNQ0kgdHJhbnNwb3J0KHNhbWUgYXMgZm9yIHZpcnRpby12c29jayku
+DQogMikgUGF0Y2hlcyBmb3IgSHlwZXItViB0cmFuc3BvcnQoZGlzYWJsaW5nIFNPX1JDVkxPV0FU
+IHNldHRpbmcpLg0KIDMpIFdhaXRpbmcgbG9naWMgaW4gdGVzdCB3YXMgdXBkYXRlZChzbGVlcCgp
+IC0+IHBvbGwoKSkuDQoNCiB2MiAtPiB2MzoNCiAxKSBQYXRjaGVzIHdlcmUgcmVvcmRlcmVkLg0K
+IDIpIENvbW1pdCBtZXNzYWdlIHVwZGF0ZWQgaW4gMDAwNS4NCiAzKSBDaGVjayAndHJhbnNwb3J0
+JyBwb2ludGVyIGluIDAwMDEgZm9yIE5VTEwuDQoNCiB2MyAtPiB2NDoNCiAxKSB2c29ja19zZXRf
+cmN2bG93YXQoKSBsb2dpYyBjaGFuZ2VkLiBQcmV2aW91cyB2ZXJzaW9uIHJlcXVpcmVkDQogICAg
+YXNzaWduZWQgdHJhbnNwb3J0IGFuZCBhbHdheXMgY2FsbGVkIGl0cyAnc2V0X3Jjdmxvd2F0JyBj
+YWxsYmFjaw0KICAgIChpZiBwcmVzZW50KS4gTm93LCBhc3NpZ25tZW50IGlzIG5vdCBuZWVkZWQu
+DQogMikgMDAwMywwMDA0LDAwMDUsMDAwNiwwMDA3LDAwMDggLSBjb21taXQgbWVzc2FnZXMgdXBk
+YXRlZC4NCiAzKSAwMDA5IC0gc21hbGwgcmVmYWN0b3JpbmcgYW5kIHN0eWxlIGZpeGVzLg0KIDQp
+IFJGQyB0YWcgd2FzIHJlbW92ZWQuDQoNCi0tIA0KMi4yNS4xDQo=
