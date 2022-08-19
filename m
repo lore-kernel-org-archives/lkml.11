@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C55C1C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4309C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352274AbiHSQU1 (ORCPT
+        id S1352311AbiHSQUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
+        Fri, 19 Aug 2022 12:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352264AbiHSQQI (ORCPT
+        with ESMTP id S1352266AbiHSQQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 12:16:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD0D108B39;
-        Fri, 19 Aug 2022 08:59:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EBD2108976;
+        Fri, 19 Aug 2022 08:59:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FDE2617A6;
-        Fri, 19 Aug 2022 15:59:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AA40C433D6;
-        Fri, 19 Aug 2022 15:59:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3ADA61644;
+        Fri, 19 Aug 2022 15:59:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9590CC433C1;
+        Fri, 19 Aug 2022 15:59:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924757;
-        bh=EV4wr2hu2Sxq/LOx2C5FGvFlFkpJ1iz8Kk4U1TX4jmA=;
+        s=korg; t=1660924763;
+        bh=ZWJtKv6jVkqiridAY8cXFrzdiuW3E35fs+WyaR0mDGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MtVXhGWyoxgm74q2kH1QeEYfPIi6/IyxbnpMyzp4W/oipE7/NKT/wszw51X0j0JMf
-         gsrdIR9H3VmgUms6Z9r9jSBROYfmfnwzthjNCHj0dNw2tKyeWUX1BCnlbtuih5vsnP
-         sgQUofIm0SdzeVB+09O3b3jXdVo2FH/eQxKLPho4=
+        b=tm6JoIxoVyWHPSLdqtyHm8cvqo2PRNcbKZlyCsnjYIRREYwT+5oMKNUu1Z2mrW1GE
+         jI0SUdGSaH085RrDldPGjnWYHobRDw5KgO6gofVHB1roFAFYLO0blnoJztue0XklEt
+         UHxWh4tKRRHRQxgb7XrGQheszMo0pNVx39sBCvm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Liang Yang <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 272/545] mtd: rawnand: meson: Fix a potential double free issue
-Date:   Fri, 19 Aug 2022 17:40:42 +0200
-Message-Id: <20220819153841.509976087@linuxfoundation.org>
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 274/545] HID: cp2112: prevent a buffer overflow in cp2112_xfer()
+Date:   Fri, 19 Aug 2022 17:40:44 +0200
+Message-Id: <20220819153841.603174653@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,44 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit ec0da06337751b18f6dee06b6526e0f0d6e80369 ]
+[ Upstream commit 381583845d19cb4bd21c8193449385f3fefa9caf ]
 
-When meson_nfc_nand_chip_cleanup() is called, it will call:
-	meson_nfc_free_buffer(&meson_chip->nand);
-	nand_cleanup(&meson_chip->nand);
+Smatch warnings:
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
+'data->block[1]' too small (33 vs 255)
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
+small (64 vs 255)
 
-nand_cleanup() in turn will call nand_detach() which calls the
-.detach_chip() which is here meson_nand_detach_chip().
+The 'read_length' variable is provided by 'data->block[0]' which comes
+from user and it(read_length) can take a value between 0-255. Add an
+upper bound to 'read_length' variable to prevent a buffer overflow in
+memcpy().
 
-meson_nand_detach_chip() already calls meson_nfc_free_buffer(), so we
-could double free some memory.
-
-Fix it by removing the unneeded explicit call to meson_nfc_free_buffer().
-
-Fixes: 8fae856c5350 ("mtd: rawnand: meson: add support for Amlogic NAND flash controller")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Liang Yang <liang.yang@amlogic.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/ec15c358b8063f7c50ff4cd628cf0d2e14e43f49.1653064877.git.christophe.jaillet@wanadoo.fr
+Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/meson_nand.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/hid/hid-cp2112.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
-index 817bddccb775..327a2257ec26 100644
---- a/drivers/mtd/nand/raw/meson_nand.c
-+++ b/drivers/mtd/nand/raw/meson_nand.c
-@@ -1307,7 +1307,6 @@ static int meson_nfc_nand_chip_cleanup(struct meson_nfc *nfc)
- 		if (ret)
- 			return ret;
- 
--		meson_nfc_free_buffer(&meson_chip->nand);
- 		nand_cleanup(&meson_chip->nand);
- 		list_del(&meson_chip->node);
- 	}
+diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
+index 477baa30889c..172f20e88c6c 100644
+--- a/drivers/hid/hid-cp2112.c
++++ b/drivers/hid/hid-cp2112.c
+@@ -788,6 +788,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
+ 		data->word = le16_to_cpup((__le16 *)buf);
+ 		break;
+ 	case I2C_SMBUS_I2C_BLOCK_DATA:
++		if (read_length > I2C_SMBUS_BLOCK_MAX) {
++			ret = -EINVAL;
++			goto power_normal;
++		}
++
+ 		memcpy(data->block + 1, buf, read_length);
+ 		break;
+ 	case I2C_SMBUS_BLOCK_DATA:
 -- 
 2.35.1
 
