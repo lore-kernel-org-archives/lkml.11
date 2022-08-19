@@ -2,77 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 236AFC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8792BC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 18:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350038AbiHSR75 (ORCPT
+        id S1349813AbiHSSBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 13:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
+        Fri, 19 Aug 2022 14:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349902AbiHSR7Y (ORCPT
+        with ESMTP id S1350823AbiHSSA1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 13:59:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D95DF41;
-        Fri, 19 Aug 2022 10:46:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 037786184B;
-        Fri, 19 Aug 2022 17:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 610C7C433D6;
-        Fri, 19 Aug 2022 17:46:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660931165;
-        bh=pnoRxmb4SZjZlfuYaUMFVyBKjjD93ZdYQ8Neue15m8E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uRVTyd4l5ZLWcOrKi+EKkuKe+a5XArPm3PoE01X9sXVuLCYe1oQFAUMWAoE1X88cr
-         o67t7IVRrKQ60RPKyqnvIV9BgGelTRHRg2ocpPf0EjsyB34sPgmKkB5VI+aPNgTmPV
-         fFubmnWsWeT/8H6d4OxwPFi4JVdPfQgFQQwJPeSRaWl9aWoduB/hpkasGM1mXpfF6j
-         M7bDFA5h7YC+4Bb2DvLBbhvkgS6nh3uQu4cmdzZp0JV+uaJek3GRWDB5lZIQ07KXbC
-         skZhy3x46TBjBn61jBuyBXwR4XnbuxTDL12WG42YZyi760jN7JCpSd4D0y2VTYjshW
-         gsZ1POA4ar8rw==
-Date:   Fri, 19 Aug 2022 18:56:40 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: Drop Tomislav Denis
-Message-ID: <20220819185640.434b32b5@jic23-huawei>
-In-Reply-To: <20220818145350.GE1829017-robh@kernel.org>
-References: <20220816125401.70317-1-krzysztof.kozlowski@linaro.org>
-        <20220818145350.GE1829017-robh@kernel.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 19 Aug 2022 14:00:27 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245A7108F14
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:47:23 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3360c0f0583so87502607b3.2
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 10:47:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=68jCmlJPTWjEgDH8dkKvsN/Vy+R3D5xwsjHMw72NqNI=;
+        b=NM4HyjtIBQ7etrlOFPYIvVk5AscNC7t026h95x4fzfrTKG/0tt7n8peKjYT7elXEKv
+         5BSLtW4bMFgrN6ymudRaSc7o4eyszTLMILhkqSMcAqk71Belo4theQvOvFbAcyBdR8mT
+         Y4QMGBFg2QZjPAMu4HURM9fZg+m22w7PyufoX4YXFtboyXUAJdt/ZV6gs285xyx7Iike
+         tRhpzNBUbMUhjBe3WxyNncJ8Cs5trM/tdh/JmemktXFM6HyhKPNUeUbtacvl39ZlCxvi
+         kXY9fTvnMgGaNeXrmCP5Z0gVeTtDXo8zc32GSnUCNmN2PrGd8kbdZhvTHmfWN1cMv30n
+         VbMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=68jCmlJPTWjEgDH8dkKvsN/Vy+R3D5xwsjHMw72NqNI=;
+        b=U8xwq7DeNn6rYzE/YLg2GYyDCp/mU0pwQ7mXTtnUQgYQMC3ko+yOpcE+DE9y61q04g
+         BEtJ4uPoJyOjEfu2Vy9DWLpQe4xAjMlANN0YF8nz2zDtlSE3qGxOgY1K1k+34fPC6epE
+         /EqvMdgpiH/gSekP5iVKRj4OgzgKCDW+NZFAKdk5EkHwI97aCH7eeK+3Zwhs1P3U9kuY
+         xqokKoW7Ip02C1kcA3HQZfpaDtcePYzYvzdKerPdCgWehBY25TXrPH7t5FIyy+6nM1jp
+         yqQcd7PazEvARhFnEBaflPmoT00DBX3UDHsCC9K0gmSYEsdF9DY+1L3/0uxU1G3UAXVq
+         bQBA==
+X-Gm-Message-State: ACgBeo1qWeuL8a+ObNTym+zSvCBPAI0vfFIYbpt+9Rs/QIpp8MPzdbFC
+        1pVvcLlxbVqq8yii+IY+H6V6FhILoeyQNCTh
+X-Google-Smtp-Source: AA6agR6DIUG9NXvjt9p2KBgUlc6EhGutVC6loa8Jf8FHQddKVVlyc1IRm//fxEaRXHCuyKWYVdFq1MWl3jfvMPqb
+X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
+ (user=vannapurve job=sendgmr) by 2002:a25:bd3:0:b0:691:d47a:be78 with SMTP id
+ 202-20020a250bd3000000b00691d47abe78mr8120620ybl.574.1660931242410; Fri, 19
+ Aug 2022 10:47:22 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 17:46:53 +0000
+Message-Id: <20220819174659.2427983-1-vannapurve@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [RFC V3 PATCH 0/6] selftests: KVM: selftests for fd-based private memory
+From:   Vishal Annapurve <vannapurve@google.com>
+To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, shuah@kernel.org, yang.zhong@intel.com,
+        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
+        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
+        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
+        bfields@fieldses.org, akpm@linux-foundation.org,
+        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
+        jun.nakajima@intel.com, dave.hansen@intel.com,
+        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
+        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
+        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
+        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
+        diviness@google.com, maz@kernel.org, dmatlack@google.com,
+        axelrasmussen@google.com, maciej.szmigiero@oracle.com,
+        mizhang@google.com, bgardon@google.com,
+        Vishal Annapurve <vannapurve@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 08:53:50 -0600
-Rob Herring <robh@kernel.org> wrote:
+This v3 series implements selftests targeting the feature floated by Chao
+via:
+https://lore.kernel.org/linux-mm/20220706082016.2603916-12-chao.p.peng@linux.intel.com/T/
 
-> On Tue, Aug 16, 2022 at 03:53:59PM +0300, Krzysztof Kozlowski wrote:
-> > Emails to Tomislav Denis bounce ("550 5.1.1 User Unknown").
-> > 
-> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml     | 2 +-
-> >  Documentation/devicetree/bindings/iio/pressure/asc,dlhl60d.yaml | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)  
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
+Below changes aim to test the fd based approach for guest private memory
+in context of normal (non-confidential) VMs executing on non-confidential
+platforms.
 
-Series applied to the togreg branch of iio.git.
-There is other stuff in there that needs a 0-day run, so for now pushed
-out as testing.
+private_mem_test.c file adds selftest to access private memory from the
+guest via private/shared accesses and checking if the contents can be
+leaked to/accessed by vmm via shared memory view before/after conversions.
 
-Thanks,
+Updates in V3:
+1) Series is based on v7 series from Chao
+2) Changes are introduced in KVM to help execute private mem selftests
+3) Selftests are executing from private memory
+4) Test implementation is simplified to contain implicit/explicit memory
+conversion paths according to feedback from Sean.
+5) Addressed comments from Sean and Shuah.
 
-Jonathan
+This series has dependency on following patches:
+1) V7 series patches from Chao mentioned above.
+2) https://lore.kernel.org/lkml/20220810152033.946942-1-pgonda@google.com/T/#u
+  - Series posted by Peter containing patches from Michael and Sean.
+
+Github link for the patches posted as part of this series:
+https://github.com/vishals4gh/linux/commits/priv_memfd_selftests_rfc_v3
+
+Vishal Annapurve (6):
+  kvm: x86: Add support for testing private memory
+  selftests: kvm: Add support for private memory
+  selftests: kvm: ucall: Allow querying ucall pool gpa
+  selftests: kvm: x86: Execute hypercall as per the cpu
+  selftests: kvm: x86: Execute VMs with private memory
+  sefltests: kvm: x86: Add selftest for private memory
+
+ arch/x86/include/uapi/asm/kvm_para.h          |   2 +
+ arch/x86/kvm/Kconfig                          |   1 +
+ arch/x86/kvm/mmu/mmu.c                        |  19 ++
+ arch/x86/kvm/mmu/mmu_internal.h               |   2 +-
+ arch/x86/kvm/x86.c                            |  67 +++-
+ include/linux/kvm_host.h                      |  12 +
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   2 +
+ .../selftests/kvm/include/kvm_util_base.h     |  12 +-
+ .../selftests/kvm/include/ucall_common.h      |   2 +
+ .../kvm/include/x86_64/private_mem.h          |  51 +++
+ tools/testing/selftests/kvm/lib/kvm_util.c    |  40 ++-
+ .../testing/selftests/kvm/lib/ucall_common.c  |  12 +
+ .../selftests/kvm/lib/x86_64/private_mem.c    | 297 ++++++++++++++++++
+ .../selftests/kvm/lib/x86_64/processor.c      |  15 +-
+ .../selftests/kvm/x86_64/private_mem_test.c   | 262 +++++++++++++++
+ virt/kvm/Kconfig                              |   9 +
+ virt/kvm/kvm_main.c                           |  90 +++++-
+ 18 files changed, 887 insertions(+), 9 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/include/x86_64/private_mem.h
+ create mode 100644 tools/testing/selftests/kvm/lib/x86_64/private_mem.c
+ create mode 100644 tools/testing/selftests/kvm/x86_64/private_mem_test.c
+
+-- 
+2.37.1.595.g718a3a8f04-goog
+
