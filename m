@@ -2,108 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4463FC32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43D0C32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 12:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348902AbiHSMQG (ORCPT
+        id S1348503AbiHSMTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 08:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        Fri, 19 Aug 2022 08:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348546AbiHSMQD (ORCPT
+        with ESMTP id S1347929AbiHSMTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 08:16:03 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F170DFBA4D
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:16:01 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id a9so5858078lfm.12
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 05:16:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=iRQAht+syD+WoClHi+abQcpzAmB47QGZmxwK52W8goQ=;
-        b=gAnalwOyubLu6+wLXJWbeHG2l/u2fmMgVQ9Vpx1zAjL7bFzAM5ZzxJQcJDTeot4yn+
-         i1AJkCiTdquYltpTVt2ufhmroC5Uj/FxxUY6TdC9cKeyHf3f/ViVjSeGky44Bm+U7x03
-         7UcAcO4Ol3ry4gVYmwiLyIvga5mk111OYk+z1mTQjAUBS8QbknoRSmXCcSeqxp3J4BAM
-         lGS55fHy2ePWP/sOp3TCd1gTP+zRBRsgcPLcehqXQBBqRL8CghXkoR/xGnXewBmiDEEG
-         oqeNqSFRTsqamvLgd0nUvdFvmZ0A8GCy2DBVQx14FWpRe3kQcv0YPrMQacMchQJe6X1b
-         96MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=iRQAht+syD+WoClHi+abQcpzAmB47QGZmxwK52W8goQ=;
-        b=O55yijnzT60v0kN1/8SVok4NuNTOFm5W21NA/Aw+8nRRMb1dMzIeeLcYdlQ12eo26D
-         ZZrdNL5Csw4TMhS+b+dgQAV+Za3NTra2isSHmgvNwj/0N7oOTGkIReKo/FOMGfh5GZNk
-         gxcTw1by4ntVGSLF5TDhadv1AnLkiLE1A3CLWWW9N0mUxCndcBOTnDX95FC/Ja6vYbIE
-         p000XEi3eNrbAE8R41W5a/I/24scvzTYTyJjjD9wIcZ9Z3s457i/HxZLxfpBM9WP6tB0
-         eaFE+4cvp4rF1HasSEoTUT8WG2dsTnRill1+5NewONdLYY1S3KFV0Sid9AhJPE/33wgs
-         CmZg==
-X-Gm-Message-State: ACgBeo2uKp0z/tJjTF+s9uP7IUcgmvG3USYqriupjEACXH1DimG0qvI6
-        nR3s61X9rmQkJJfHiu+iVrKnjQ==
-X-Google-Smtp-Source: AA6agR6ZzDgldit3bbnQaHeffN9D/ccyNG3aT6Z0pYd8NszNFSXmXT7adl+3BQtJYB1uFOadxcnBlQ==
-X-Received: by 2002:ac2:5e75:0:b0:492:c50a:3a89 with SMTP id a21-20020ac25e75000000b00492c50a3a89mr1449763lfr.68.1660911360346;
-        Fri, 19 Aug 2022 05:16:00 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5? (d1xw6v77xrs23np8r6z-4.rev.dnainternet.fi. [2001:14bb:ac:e5a8:ef73:73ed:75b3:8ed5])
-        by smtp.gmail.com with ESMTPSA id t14-20020a2e8e6e000000b00261af4754bbsm594964ljk.41.2022.08.19.05.15.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 05:15:59 -0700 (PDT)
-Message-ID: <438da392-f419-ad76-7e91-aa4aab36e12c@linaro.org>
-Date:   Fri, 19 Aug 2022 15:15:58 +0300
+        Fri, 19 Aug 2022 08:19:08 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5BFE9A99;
+        Fri, 19 Aug 2022 05:19:06 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6AB43188488D;
+        Fri, 19 Aug 2022 12:18:34 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id B357F2503313;
+        Fri, 19 Aug 2022 12:18:23 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 02302A1A5E40; Fri, 19 Aug 2022 09:51:11 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 2/7] dt-bindings: phy: mediatek,tphy: add property to set
- pre-emphasis
-Content-Language: en-US
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eddie Hung <eddie.hung@mediatek.com>
-References: <20220819091344.2274-1-chunfeng.yun@mediatek.com>
- <20220819091344.2274-2-chunfeng.yun@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220819091344.2274-2-chunfeng.yun@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 19 Aug 2022 11:51:11 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <YvkM7UJ0SX+jkts2@shredder>
+References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
+ <YvkM7UJ0SX+jkts2@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/08/2022 12:13, Chunfeng Yun wrote:
-> Add a property to set usb2 phy's pre-emphasis.
-> 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/phy/mediatek,tphy.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> index 848edfb1f677..aee2f3027371 100644
-> --- a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> +++ b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> @@ -219,6 +219,13 @@ patternProperties:
->          minimum: 1
->          maximum: 15
->  
-> +      mediatek,pre-emphasis:
-> +        description:
-> +          The selection of pre-emphasis (U2 phy)
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        minimum: 1
-> +        maximum: 3
+On 2022-08-14 16:55, Ido Schimmel wrote:
+> On Fri, Aug 12, 2022 at 02:29:48PM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-08-11 13:28, Ido Schimmel wrote:
+>> 
+>> > > > I'm talking about roaming, not forwarding. Let's say you have a locked
+>> > > > entry with MAC X pointing to port Y. Now you get a packet with SMAC X
+>> > > > from port Z which is unlocked. Will the FDB entry roam to port Z? I
+>> > > > think it should, but at least in current implementation it seems that
+>> > > > the "locked" flag will not be reset and having locked entries pointing
+>> > > > to an unlocked port looks like a bug.
 
-Instead of hard-coding register values in bindings, you should rather
-describe here feature/effect. If it is in units, use unit suffixes. If
-it is some choice, usually string enum is appropriate.
+I have made the locked entries sticky in the bridge, so that they don't 
+move to other ports.
 
-Best regards,
-Krzysztof
+>> > > >
+>> > >
+>> 
+>> In general I have been thinking that the said setup is a network
+>> configuration error as I was arguing in an earlier conversation with
+>> Vladimir. In this setup we must remember that SMAC X becomes DMAC X in 
+>> the
+>> return traffic on the open port. But the question arises to me why MAC 
+>> X
+>> would be behind the locked port without getting authed while being 
+>> behind an
+>> open port too?
+>> In a real life setup, I don't think you would want random hosts behind 
+>> a
+>> locked port in the MAB case, but only the hosts you will let through. 
+>> Other
+>> hosts should be regarded as intruders.
+>> 
+>> If we are talking about a station move, then the locked entry will age 
+>> out
+>> and MAC X will function normally on the open port after the timeout, 
+>> which
+>> was a case that was taken up in earlier discussions.
+>> 
+>> But I will anyhow do some testing with this 'edge case' (of being 
+>> behind
+>> both a locked and an unlocked port) if I may call it so, and see to 
+>> that the
+>> offloaded and non-offloaded cases correspond to each other, and will 
+>> work
+>> satisfactory.
+> 
+> It would be best to implement these as additional test cases in the
+> current selftest. Then you can easily test with both veth pairs and
+> loopbacks and see that the hardware and software data paths behave the
+> same.
+> 
+
+How many loops would be needed to have a selftest with a HUB and a MAC 
+on both a locked and an unlocked port?
+
+>> 
+>> I think it will be good to have a flag to enable the mac-auth/MAB 
+>> feature,
+>> and I suggest just calling the flag 'mab', as it is short.
+
+I have now created the flag to enable Mac-Auth/MAB with iproute2:
+bridge link set dev DEV macauth on|off
+
+with the example output from 'bridge -d link show dev DEV' when macauth 
+is enabled:
+1: ethX: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 master br0 state 
+forwarding priority 32 cost 19
+     hairpin off guard off root_block off fastleave off learning on flood 
+off mcast_flood on bcast_flood on mcast_router 1 mcast_to_unicast off 
+neigh_suppress off vlan_tunnel off isolated off locked mab on
+
+The flag itself in the code is called BR_PORT_MACAUTH.
+
+> 
+> Fine by me, but I'm not sure everyone agrees.
