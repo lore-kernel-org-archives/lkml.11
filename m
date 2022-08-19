@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46140C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC50EC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351170AbiHSQDl (ORCPT
+        id S1351181AbiHSQDs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
+        Fri, 19 Aug 2022 12:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351210AbiHSQA5 (ORCPT
+        with ESMTP id S1351244AbiHSQBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:00:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5634E75CC3;
-        Fri, 19 Aug 2022 08:52:41 -0700 (PDT)
+        Fri, 19 Aug 2022 12:01:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1412610A760;
+        Fri, 19 Aug 2022 08:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D072AB8280C;
-        Fri, 19 Aug 2022 15:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2ECC433D6;
-        Fri, 19 Aug 2022 15:52:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32284615E7;
+        Fri, 19 Aug 2022 15:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFF0EC433D6;
+        Fri, 19 Aug 2022 15:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924359;
-        bh=IvyDxYgxGBSsVEU6s1zkgyz6QckgiL3Xxkh1jfbbQXc=;
+        s=korg; t=1660924379;
+        bh=mMHWB+1et05fSZ7uZu7j8PjCDavhZJN072Bc+vANuQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RbIIZXAsjt3qeEtgVAG1+p3bqyFcdWjVQQcUA/E6qDIM5nxMqXP8jfurK7I0JwkTt
-         IcvIBxydYr8Yu33za2Pi6loiYdIfX3WTBKJ2WlbmTAMDisTSHo8aRGV0O42gB6qCmE
-         8fshvMcnABRE3TU69m4ngx8/8tJMYgxIIVf0fzWU=
+        b=QhWrXHAP641NBwiyPF6Ri7d7kuzAzCsPpejPf2gVIrxZgb5uwGKnJKWoUyGloEs0A
+         4gvIF5Ieyr+PGjSckS58o3kJ1vGdiFIqFDhOhY8/bhj4Ges7PqQ2k7t1C6jo+zicmk
+         MkCWvqVVIJRByNPKtg6MrrbAgCzV0X+j3lhk38fU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Brian Cain <bcain@codeaurora.org>,
+        David Rientjes <rientjes@google.com>,
+        Oliver Glitta <glittao@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 117/545] arm64: dts: renesas: Fix thermal-sensors on single-zone sensors
-Date:   Fri, 19 Aug 2022 17:38:07 +0200
-Message-Id: <20220819153834.522030048@linuxfoundation.org>
+Subject: [PATCH 5.10 121/545] hexagon: select ARCH_WANT_LD_ORPHAN_WARN
+Date:   Fri, 19 Aug 2022 17:38:11 +0200
+Message-Id: <20220819153834.707125710@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,62 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 62e8a53431145e06e503b71625a34eaa87b72b2c ]
+[ Upstream commit 113616ec5b64b23a1c9b663adafadabdfbec0f51 ]
 
-"make dtbs_check":
+Now that we handle all of the sections in a Hexagon defconfig, select
+ARCH_WANT_LD_ORPHAN_WARN so that unhandled sections are warned about by
+default.
 
-    arch/arm64/boot/dts/renesas/r8a774c0-cat874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[74], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a774c0-ek874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[79], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a774c0-ek874-idk-2121wr.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[82], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a774c0-ek874-mipi-2.1.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[87], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a77990-ebisu.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[105], [0]] is too long
-	    From schema: Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-
-Indeed, the thermal sensors on R-Car E3 and RZ/G2E support only a single
-zone, hence #thermal-sensor-cells = <0>.
-
-Fix this by dropping the bogus zero cell from the thermal sensor
-specifiers.
-
-Fixes: 8fa7d18f9ee2dc20 ("arm64: dts: renesas: r8a77990: Create thermal zone to support IPA")
-Fixes: 8438bfda9d768157 ("arm64: dts: renesas: r8a774c0: Create thermal zone to support IPA")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Link: https://lore.kernel.org/r/28b812fdd1fc3698311fac984ab8b91d3d655c1c.1655301684.git.geert+renesas@glider.be
+Link: https://lkml.kernel.org/r/20210521011239.1332345-4-nathan@kernel.org
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Acked-by: Brian Cain <bcain@codeaurora.org>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Oliver Glitta <glittao@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/r8a774c0.dtsi | 2 +-
- arch/arm64/boot/dts/renesas/r8a77990.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/hexagon/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-index e0e54342cd4c..4c7d7e8f8e28 100644
---- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-@@ -1929,7 +1929,7 @@ thermal-zones {
- 		cpu-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <0>;
--			thermal-sensors = <&thermal 0>;
-+			thermal-sensors = <&thermal>;
- 			sustainable-power = <717>;
- 
- 			cooling-maps {
-diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-index 33d7e657bd9c..37159b9408e8 100644
---- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-@@ -2029,7 +2029,7 @@ thermal-zones {
- 		cpu-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <0>;
--			thermal-sensors = <&thermal 0>;
-+			thermal-sensors = <&thermal>;
- 			sustainable-power = <717>;
- 
- 			cooling-maps {
+diff --git a/arch/hexagon/Kconfig b/arch/hexagon/Kconfig
+index f2afabbadd43..cc2c1ae48e62 100644
+--- a/arch/hexagon/Kconfig
++++ b/arch/hexagon/Kconfig
+@@ -32,6 +32,7 @@ config HEXAGON
+ 	select MODULES_USE_ELF_RELA
+ 	select GENERIC_CPU_DEVICES
+ 	select SET_FS
++	select ARCH_WANT_LD_ORPHAN_WARN
+ 	help
+ 	  Qualcomm Hexagon is a processor architecture designed for high
+ 	  performance and low power across a wide variety of applications.
 -- 
 2.35.1
 
