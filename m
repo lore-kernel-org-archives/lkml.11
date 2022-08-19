@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564C8C32771
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 395FCC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350708AbiHSP7x (ORCPT
+        id S1350939AbiHSP76 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
+        Fri, 19 Aug 2022 11:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350825AbiHSP5s (ORCPT
+        with ESMTP id S1350682AbiHSP6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:57:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C89108F22;
-        Fri, 19 Aug 2022 08:51:49 -0700 (PDT)
+        Fri, 19 Aug 2022 11:58:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEBC108F35;
+        Fri, 19 Aug 2022 08:51:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01EFAB82818;
-        Fri, 19 Aug 2022 15:51:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6075DC433D6;
-        Fri, 19 Aug 2022 15:51:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC42E616F9;
+        Fri, 19 Aug 2022 15:51:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D74CFC433D6;
+        Fri, 19 Aug 2022 15:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660924301;
-        bh=w5eZTdyW0/Q0cvE8Zzj/7xqO49ceUXfYFU3tvte4MTg=;
+        s=korg; t=1660924307;
+        bh=heW+vIvSlCq8CVzUL814zA4Ddm/CiDW1r8tf0uU3lw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCbwQ7s4jz6OWL1c1H+zTglvXy7Q5lkRzSDVWXQqK01PcKzVkQDzFx70DVI0tqW2h
-         r5WQnZ0M8knc4y5JY4xrbF16kbsq/d0yrYOZZaiCQE0lVTEtB4XsaBRepYSZwzJ/a2
-         5G5a2OR0ezSvSGJdqcZOYXx9FH/ZbAqbQCRwjg+0=
+        b=Exy4Rhtky5xIw1n5aZpzd7bHnehEz4qKXyqx6skmN9V8TmFGBq1D7IVHKnpyRVXGF
+         V4hFPtgze6s/LmFAcMulOB5X4FGAL4oIpdrZ3sfMS85ZnLigchmTWi2CcGVzsoh9Ks
+         jgcCcGvcKHPyrgDrxtLnr5qeUhIZYh9OSWwRS9Wk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 125/545] block: fix infinite loop for invalid zone append
-Date:   Fri, 19 Aug 2022 17:38:15 +0200
-Message-Id: <20220819153834.898143118@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 127/545] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
+Date:   Fri, 19 Aug 2022 17:38:17 +0200
+Message-Id: <20220819153834.999588022@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -52,43 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b82d9fa257cb3725c49d94d2aeafc4677c34448a ]
+[ Upstream commit 9705db1eff38d6b9114121f9e253746199b759c9 ]
 
-Returning 0 early from __bio_iov_append_get_pages() for the
-max_append_sectors warning just creates an infinite loop since 0 means
-success, and the bio will never fill from the unadvancing iov_iter. We
-could turn the return into an error value, but it will already be turned
-into an error value later on, so just remove the warning. Clearly no one
-ever hit it anyway.
+omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
+node. of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() in later error path and normal path.
 
-Fixes: 0512a75b98f84 ("block: Introduce REQ_OP_ZONE_APPEND")
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Link: https://lore.kernel.org/r/20220610195830.3574005-2-kbusch@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220601044858.3352-1-linmq006@gmail.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/arm/mach-omap2/display.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/bio.c b/block/bio.c
-index f8d26ce7b61b..6d6e7b96b002 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1057,9 +1057,6 @@ static int __bio_iov_append_get_pages(struct bio *bio, struct iov_iter *iter)
- 	size_t offset;
- 	int ret = 0;
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index fc635eed73ab..f24d4e56ddfc 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -260,11 +260,13 @@ static int __init omapdss_init_of(void)
  
--	if (WARN_ON_ONCE(!max_append_sectors))
--		return 0;
--
- 	/*
- 	 * Move page array up in the allocated memory for the bio vecs as far as
- 	 * possible so that we can start filling biovecs from the beginning
+ 	if (!pdev) {
+ 		pr_err("Unable to find DSS platform device\n");
++		of_node_put(node);
+ 		return -ENODEV;
+ 	}
+ 
+ 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
+ 	put_device(&pdev->dev);
++	of_node_put(node);
+ 	if (r) {
+ 		pr_err("Unable to populate DSS submodule devices\n");
+ 		return r;
 -- 
 2.35.1
 
