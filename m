@@ -2,105 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD179C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C00AAC32773
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347831AbiHSIya (ORCPT
+        id S1347847AbiHSIyj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        Fri, 19 Aug 2022 04:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346481AbiHSIyO (ORCPT
+        with ESMTP id S1346481AbiHSIyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:54:14 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DADBAEDB9
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:54:13 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id i14so7588099ejg.6
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:54:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=xYBRhSDok53eb0OvQN4XDJTh9o2Zw4fM6AIaxBqnM/k=;
-        b=ltdvzkJRO9g2IMP5iAVwgdjpl0KDRL0IG3LSpk4IBLDzc/KPGdw9U+rjTiGUI5Uemz
-         0Koyktpo0sYtmEWn8siCBEcp9dgM0ON/9MZeX7t0dqGJiTXtjeHmzP6CTMO7d6uGPgas
-         AX+Ek87nsl2r8G3RcnUdpz6uLqk/oOwxhpw4G36ksJ/7+EGErTfgmhSMJL3XvqtwNj8E
-         eBH/sScrEuYCYHA/5FeF9gJ9/YpIS3GII/tI6hr0CvTfIa6E15f3nDx53QjcjjrsZ6Pd
-         Vl97bRM0mK8VoYceRVo/gEzGb785J6wFnu7qGgIlmxhCFQrpfZcvS5IBXZ1yC8Ocp960
-         s0Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=xYBRhSDok53eb0OvQN4XDJTh9o2Zw4fM6AIaxBqnM/k=;
-        b=p+pwfu0nx9ouNHYEWkruHHQq+q+Q+dEPuJypaFLDPV5KjVx1aOaB+AdxabTfwG6xKr
-         5Cs4qZId1JVoxCvE9MwGsXyZLLXUZApEdIuFHg9kEfOLQuuxEryWVK0PKa1x4C/sam5S
-         IPiNaNx5y9kp3VvuHtUBTOdyTlYork8dME3m5qtw91uW/7ABkrLEWpEiEsJqtKr0cnuo
-         bs0JsU26mY9zlugN6Sw11uFlMINHvpJWfQphglIRFldjYlzQK97WeatOE5OO4Gucv/0H
-         +5UQgIxDYaVVPMJzGsCennMY6xzThoQXGulhZwSvwex4BHUE8bsO4rIOTJxBBjNKyjml
-         YB8Q==
-X-Gm-Message-State: ACgBeo1anyeArDkNQsFJiZ9yDgi/NzWIRxUo/kjbGn7GNY0RU5xAmPNm
-        U6J/I2G/epgsucpEqQJOtlVO+/KD08Qeag==
-X-Google-Smtp-Source: AA6agR5AVVX8Bhx+h0cLCh1hbXIILyI8JLqKQvYeEvO2DBkVvyckuyYRwtaLGKgumDy8vWrKgnjS4A==
-X-Received: by 2002:a17:907:2bc4:b0:730:aa9c:bd86 with SMTP id gv4-20020a1709072bc400b00730aa9cbd86mr4243212ejc.341.1660899251902;
-        Fri, 19 Aug 2022 01:54:11 -0700 (PDT)
-Received: from nam-dell.ucebne.fiit.stuba.sk ([147.175.148.17])
-        by smtp.gmail.com with ESMTPSA id b9-20020a17090630c900b0073c9d68ca0dsm1084261ejb.133.2022.08.19.01.54.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 01:54:11 -0700 (PDT)
-From:   Nam Cao <namcaov@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        namcaov@gmail.com, hdegoede@redhat.com, Larry.Finger@lwfinger.net
-Subject: [PATCH 7/7] staging: rtl8723bs: remove function rtw_odm_dbg_comp_set
-Date:   Fri, 19 Aug 2022 10:52:57 +0200
-Message-Id: <e1927eb6151d39b53a6ce1eed1d7ad20a2d633be.1660898432.git.namcaov@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1660898432.git.namcaov@gmail.com>
-References: <cover.1660898432.git.namcaov@gmail.com>
+        Fri, 19 Aug 2022 04:54:36 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48075CB5D3;
+        Fri, 19 Aug 2022 01:54:29 -0700 (PDT)
+X-UUID: 795ec15caa844faaab20411d1242d557-20220819
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=tjf6H6IThMSCMLkSgMB4FlCL8HQC6Ruzd1YbmB9axXU=;
+        b=qnEk5lDjhGmXy9g39XUj0Bo5ZZCaiNC4g7K5BP40m0gtCy65uFswz/zSjvlCGMulXb11QbtS29lEwSgF84kAeLSqN5aFqYhcLk/odmqTwLBt5BhiW1ErqR/W1I1eRz6fkPMSgFmyED5rYZoDhsZDaw+d0uTIMMo93RKoKV/CtGE=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:bb66b020-6ac2-473c-865f-ad5c16d2e421,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:834803cf-20bd-4e5e-ace8-00692b7ab380,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 795ec15caa844faaab20411d1242d557-20220819
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1021614146; Fri, 19 Aug 2022 16:54:27 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 19 Aug 2022 16:54:25 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 19 Aug 2022 16:54:25 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <cellopoint.kai@gmail.com>, Moudy Ho <moudy.ho@mediatek.com>
+Subject: [PATCH v26 3/4] arm64: dts: mt8183: add MediaTek MDP3 nodes
+Date:   Fri, 19 Aug 2022 16:54:22 +0800
+Message-ID: <20220819085423.17023-4-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220819085423.17023-1-moudy.ho@mediatek.com>
+References: <20220819085423.17023-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-because this function is not used.
+Add device nodes for Media Data Path 3 (MDP3) modules.
 
-Signed-off-by: Nam Cao <namcaov@gmail.com>
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/staging/rtl8723bs/core/rtw_odm.c    | 5 -----
- drivers/staging/rtl8723bs/include/rtw_odm.h | 1 -
- 2 files changed, 6 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 63 ++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_odm.c b/drivers/staging/rtl8723bs/core/rtw_odm.c
-index 2cba7825c9b3..58b6299ed9d7 100644
---- a/drivers/staging/rtl8723bs/core/rtw_odm.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_odm.c
-@@ -90,11 +90,6 @@ static const char * const odm_dbg_level_str[] = {
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 9d32871973a2..1543876b1e3c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1691,6 +1691,60 @@
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
+ 		};
  
- #define RTW_ODM_DBG_LEVEL_NUM 6
++		mdp3-rdma0@14001000 {
++			compatible = "mediatek,mt8183-mdp3-rdma";
++			reg = <0 0x14001000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_RDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_RDMA0_EOF>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_RDMA0>,
++				 <&mmsys CLK_MM_MDP_RSZ1>;
++			iommus = <&iommu M4U_PORT_MDP_RDMA0>;
++			mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
++				 <&gce 21 CMDQ_THR_PRIO_LOWEST 0>;
++		};
++
++		mdp3-rsz0@14003000 {
++			compatible = "mediatek,mt8183-mdp3-rsz";
++			reg = <0 0x14003000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_RSZ0_SOF>,
++					      <CMDQ_EVENT_MDP_RSZ0_EOF>;
++			clocks = <&mmsys CLK_MM_MDP_RSZ0>;
++		};
++
++		mdp3-rsz1@14004000 {
++			compatible = "mediatek,mt8183-mdp3-rsz";
++			reg = <0 0x14004000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_RSZ1_SOF>,
++					      <CMDQ_EVENT_MDP_RSZ1_EOF>;
++			clocks = <&mmsys CLK_MM_MDP_RSZ1>;
++		};
++
++		mdp3-wrot0@14005000 {
++			compatible = "mediatek,mt8183-mdp3-wrot";
++			reg = <0 0x14005000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_WROT0_SOF>,
++					      <CMDQ_EVENT_MDP_WROT0_EOF>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_WROT0>;
++			iommus = <&iommu M4U_PORT_MDP_WROT0>;
++		};
++
++		mdp3-wdma@14006000 {
++			compatible = "mediatek,mt8183-mdp3-wdma";
++			reg = <0 0x14006000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_WDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_WDMA0_EOF>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++			iommus = <&iommu M4U_PORT_MDP_WDMA0>;
++		};
++
+ 		ovl0: ovl@14008000 {
+ 			compatible = "mediatek,mt8183-disp-ovl";
+ 			reg = <0 0x14008000 0 0x1000>;
+@@ -1834,6 +1888,15 @@
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+ 		};
  
--inline void rtw_odm_dbg_comp_set(struct adapter *adapter, u64 comps)
--{
--	rtw_hal_set_def_var(adapter, HW_DEF_ODM_DBG_FLAG, &comps);
--}
--
- void rtw_odm_dbg_level_msg(void *sel, struct adapter *adapter)
- {
- 	u32 dbg_level;
-diff --git a/drivers/staging/rtl8723bs/include/rtw_odm.h b/drivers/staging/rtl8723bs/include/rtw_odm.h
-index be0d47413fd2..6a431c121285 100644
---- a/drivers/staging/rtl8723bs/include/rtw_odm.h
-+++ b/drivers/staging/rtl8723bs/include/rtw_odm.h
-@@ -13,7 +13,6 @@
- * This file provides utilities/wrappers for rtw driver to use ODM
- */
- 
--void rtw_odm_dbg_comp_set(struct adapter *adapter, u64 comps);
- void rtw_odm_dbg_level_msg(void *sel, struct adapter *adapter);
- void rtw_odm_dbg_level_set(struct adapter *adapter, u32 level);
- 
++		mdp3-ccorr@1401c000 {
++			compatible = "mediatek,mt8183-mdp3-ccorr";
++			reg = <0 0x1401c000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_CCORR_SOF>,
++					      <CMDQ_EVENT_MDP_CCORR_EOF>;
++			clocks = <&mmsys CLK_MM_MDP_CCORR>;
++		};
++
+ 		imgsys: syscon@15020000 {
+ 			compatible = "mediatek,mt8183-imgsys", "syscon";
+ 			reg = <0 0x15020000 0 0x1000>;
 -- 
-2.25.1
+2.18.0
 
