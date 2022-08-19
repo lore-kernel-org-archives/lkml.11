@@ -2,65 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57C5C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B60BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351892AbiHSQM6 (ORCPT
+        id S1351910AbiHSQNF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
+        Fri, 19 Aug 2022 12:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352126AbiHSQLc (ORCPT
+        with ESMTP id S1352132AbiHSQLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:11:32 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E0D113DD0;
-        Fri, 19 Aug 2022 08:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GrUZ6R8n7vev89O6T0Ky0Xq1mndn1wTWujgzj1y80B4=; b=r6vufpG6vTiXmsN1xb2U0nStuA
-        Asurqg9pfrJdFlGSErBpZ5pV+SKIt06vaC5VqPy56rmX4PLdzKbAQqC2JkgsjL06FETqpD6PS3Dcs
-        WnUuyQAJS8+ii02bIC20xViWK9GTaeXEiFhdQfPp6fy2EtRuwTYvxyq5VReIv4g02aAo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oP4Mt-00Dvit-Pr; Fri, 19 Aug 2022 17:57:07 +0200
-Date:   Fri, 19 Aug 2022 17:57:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     wei.fang@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: fec: change the default rx copybreak length to
- 1518
-Message-ID: <Yv+y0x6MzVmShWL9@lunn.ch>
-References: <20220819090041.1541422-1-wei.fang@nxp.com>
+        Fri, 19 Aug 2022 12:11:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BEF113DD5;
+        Fri, 19 Aug 2022 08:57:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5773361789;
+        Fri, 19 Aug 2022 15:57:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F0ACC433D7;
+        Fri, 19 Aug 2022 15:57:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660924644;
+        bh=LDc5v2TEHp05C8b2r86tDhiTfn3L0KsfkxXXLoe6Xp4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KwLv4UtPj0BEGBnvjSjVBoVG142XvFm1wzUwXFpZpgdgrIIvbhf4QlgyCVyQtqMEG
+         +hR4Jyz8f2z/HijZzoLmGaVyknaFNklAS5ru1Q/8FWxqDwPqvjiVsRCs9Mbf+asOxl
+         tCgndAhWkrCVRb1q7MJRSImXS69WvauAU+tgrAgU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 236/545] can: rcar_can: do not report txerr and rxerr during bus-off
+Date:   Fri, 19 Aug 2022 17:40:06 +0200
+Message-Id: <20220819153839.918798025@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
+References: <20220819153829.135562864@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819090041.1541422-1-wei.fang@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 05:00:41PM +0800, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
-> 
-> Set the default rx copybreak value to 1518 so that improve the
-> performance when SMMU is enabled. User can change the copybreak
-> length in dynamically by ethtool.
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-Please provide some benchmark for this. And include a range of SoCs
-which include the FEC. Maybe this helps for the platform you are
-testing on, but is bad for imx25, Vybrid etc?
+[ Upstream commit a37b7245e831a641df360ca41db6a71c023d3746 ]
 
-> + * The driver support .set_tunable() interface for ethtool, user
-> + * can dynamicly change the copybreak value.
-> + */
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-Which also means you could change it for your platform. So a patch
-like this needs justifying.
+Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
+Link: https://lore.kernel.org/all/20220719143550.3681-3-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/can/rcar/rcar_can.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-     Andrew
+diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
+index 3570a4de0085..134eda66f0dc 100644
+--- a/drivers/net/can/rcar/rcar_can.c
++++ b/drivers/net/can/rcar/rcar_can.c
+@@ -235,11 +235,8 @@ static void rcar_can_error(struct net_device *ndev)
+ 	if (eifr & (RCAR_CAN_EIFR_EWIF | RCAR_CAN_EIFR_EPIF)) {
+ 		txerr = readb(&priv->regs->tecr);
+ 		rxerr = readb(&priv->regs->recr);
+-		if (skb) {
++		if (skb)
+ 			cf->can_id |= CAN_ERR_CRTL;
+-			cf->data[6] = txerr;
+-			cf->data[7] = rxerr;
+-		}
+ 	}
+ 	if (eifr & RCAR_CAN_EIFR_BEIF) {
+ 		int rx_errors = 0, tx_errors = 0;
+@@ -339,6 +336,9 @@ static void rcar_can_error(struct net_device *ndev)
+ 		can_bus_off(ndev);
+ 		if (skb)
+ 			cf->can_id |= CAN_ERR_BUSOFF;
++	} else if (skb) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
+ 	}
+ 	if (eifr & RCAR_CAN_EIFR_ORIF) {
+ 		netdev_dbg(priv->ndev, "Receive overrun error interrupt\n");
+-- 
+2.35.1
+
+
+
