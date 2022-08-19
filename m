@@ -2,103 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAA0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA5EC32772
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 07:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347190AbiHSHq0 (ORCPT
+        id S1347200AbiHSHrD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 03:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
+        Fri, 19 Aug 2022 03:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346383AbiHSHqY (ORCPT
+        with ESMTP id S236150AbiHSHrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 03:46:24 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B778CD7422
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 00:46:23 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8DJ21Zr4zkWYv;
-        Fri, 19 Aug 2022 15:42:58 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 19 Aug 2022 15:46:21 +0800
-Received: from huawei.com (10.67.174.169) by dggpemm500001.china.huawei.com
- (7.185.36.107) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 19 Aug
- 2022 15:46:21 +0800
-From:   Chen Lifu <chenlifu@huawei.com>
-To:     <benh@kernel.crashing.org>, <mpe@ellerman.id.au>,
-        <npiggin@gmail.com>, <christophe.leroy@csgroup.eu>,
-        <nick.child@ibm.com>, <zhengzucheng@huawei.com>,
-        <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <paulus@samba.org>, <rppt@kernel.org>, <akpm@linux-foundation.org>,
-        <oohall@gmail.com>
-CC:     <chenlifu@huawei.com>
-Subject: [PATCH -next] powerpc/powermac: Fix symbol not declared warnings
-Date:   Fri, 19 Aug 2022 15:43:11 +0800
-Message-ID: <20220819074311.862263-1-chenlifu@huawei.com>
-X-Mailer: git-send-email 2.37.1
+        Fri, 19 Aug 2022 03:47:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04A4D7429;
+        Fri, 19 Aug 2022 00:47:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57C9D6150B;
+        Fri, 19 Aug 2022 07:47:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43B8BC433C1;
+        Fri, 19 Aug 2022 07:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660895220;
+        bh=Em3J87UAnVJ85gv0oSrm3kKkfOsRWsOBe6EAHU7l2Y0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RV1Xgtnoo11aUynUI43snFihEUiJoxtsfSp/+affmZxiR3uKDGeje2ZF6KKwRxeWL
+         UmHgZoqTk5cPEOnmSXqjIR5E3XZgWsgRtMD411I+TmDEQAlagV9oV1Fz8ngZ+DPO2+
+         0153hl+uIca2TT2mNsIBe7xTmuPUuJ9G8Ttqew/m4mUEI3yT5HA2+0XUKeNW9d4BTH
+         9SRTgPkp4TU2DggDJeGBfN4EWkjCeccF4Qm0kg9t1OVss1mCov+mvEI4jzGI4J4rak
+         QI7vNC4xAuNRTsae/OR3WEp0n6yOwC9pIy3zqL87xzIlXJXKuh11H7y8KncU9yUb3G
+         4k1x5RCwizUxA==
+Date:   Fri, 19 Aug 2022 09:46:51 +0200
+From:   Lorenzo Pieralisi <lpieralisi@kernel.org>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     Johan Hovold <johan@kernel.org>, Brian Masney <bmasney@redhat.com>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 8/8] PCI: qcom: Sort device-id table
+Message-ID: <Yv8/6x7pgrBhzdbQ@lpieralisi>
+References: <20220714071348.6792-1-johan+linaro@kernel.org>
+ <20220714071348.6792-9-johan+linaro@kernel.org>
+ <YtAny03L/RLk9nv6@xps13>
+ <YtEaqHT7NdXPhK+y@hovoldconsulting.com>
+ <YvvAfQJChCVX4cPH@lpieralisi>
+ <20220818200530.lab2zlcaetekcclq@halaneylaptop>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.169]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818200530.lab2zlcaetekcclq@halaneylaptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1. ppc_override_l2cr and ppc_override_l2cr_value are only used in
-   l2cr_init() function, so move them inside the function.
-2. has_l2cache is not used outside of the file, so mark it static, and
-   do not initialise statics to 0.
+On Thu, Aug 18, 2022 at 03:05:30PM -0500, Andrew Halaney wrote:
+> Hi Lorenzo,
+> 
+> On Tue, Aug 16, 2022 at 06:06:21PM +0200, Lorenzo Pieralisi wrote:
+> > On Fri, Jul 15, 2022 at 09:43:36AM +0200, Johan Hovold wrote:
+> > > On Thu, Jul 14, 2022 at 10:27:23AM -0400, Brian Masney wrote:
+> > > > On Thu, Jul 14, 2022 at 09:13:48AM +0200, Johan Hovold wrote:
+> > > > > Sort the device-id table entries alphabetically by compatible string to
+> > > > > make it easier to find entries and add new ones.
+> > > > > 
+> > > > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > > > > ---
+> > > > >  drivers/pci/controller/dwc/pcie-qcom.c | 12 ++++++------
+> > > > >  1 file changed, 6 insertions(+), 6 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> > > > > index 8dddb72f8647..fea921cca8fa 100644
+> > > > > --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> > > > > +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> > > > > @@ -1749,24 +1749,24 @@ static int qcom_pcie_remove(struct platform_device *pdev)
+> > > > >  }
+> > > > >  
+> > > > >  static const struct of_device_id qcom_pcie_match[] = {
+> > > > > +	{ .compatible = "qcom,pcie-apq8064", .data = &cfg_2_1_0 },
+> > > > >  	{ .compatible = "qcom,pcie-apq8084", .data = &cfg_1_0_0 },
+> > > > > +	{ .compatible = "qcom,pcie-ipq6018", .data = &cfg_2_9_0 },
+> > > > >  	{ .compatible = "qcom,pcie-ipq8064", .data = &cfg_2_1_0 },
+> > > > >  	{ .compatible = "qcom,pcie-ipq8064-v2", .data = &cfg_2_1_0 },
+> > > > > -	{ .compatible = "qcom,pcie-apq8064", .data = &cfg_2_1_0 },
+> > > > > -	{ .compatible = "qcom,pcie-msm8996", .data = &cfg_2_3_2 },
+> > > > >  	{ .compatible = "qcom,pcie-ipq8074", .data = &cfg_2_3_3 },
+> > > > >  	{ .compatible = "qcom,pcie-ipq4019", .data = &cfg_2_4_0 },
+> > > > 
+> > > > qcom,pcie-ipq4019 should be moved up above qcom,pcie-ipq6018.
+> > > 
+> > > If we only had some sort of machine that could sort strings for us... ;)
+> > > I'll rely on vim for this from now on.
+> > > 
+> > > Perhaps Bjorn H can fix that up when applying unless I'll be sending a
+> > > v3 for some other reason. This series still depends on the MSI rework to
+> > > be applied first.
+> > 
+> > I can do it while applying. A link to the lore archive for the MSI
+> > rework please (I don't think it was merged for v6.0) ? I was away for
+> > two months, catching up with threads.
+> 
+> I don't see a reply to this, so here I am following up out of interest
+> for getting this in mainline for my x13s laptop to use.
+> 
+> It appears the MSI rework[0] (which is in the cover letter here so I
+> know I grabbed the right thing) was applied in 6.0:
+> 
+>     ahalaney@halaneylaptop ~/git/linux (git)-[remotes/upstream/HEAD] % git log --oneline --abbrev=12 --grep=2436629 v6.0-rc1 -- drivers/pci/controller/dwc/ 
+>     cd761378e62c PCI: dwc: Handle MSIs routed to multiple GIC interrupts
+>     db388348acff PCI: dwc: Convert struct pcie_port.msi_irq to an array
+>     226ec087497a PCI: dwc: Split MSI IRQ parsing/allocation to a separate function
+>     3c62f878a969 PCI: dwc: Correct msi_irq condition in dw_pcie_free_msi()
+>     ahalaney@halaneylaptop ~/git/linux (git)-[remotes/upstream/HEAD] %
+> 
+> Just a friendly FYI, hope that helps!
 
-Fixes the following warning:
+Thanks for the heads-up, I will merge this series then.
 
-arch/powerpc/platforms/powermac/setup.c:74:5: warning: symbol 'ppc_override_l2cr' was not declared. Should it be static?
-arch/powerpc/platforms/powermac/setup.c:75:5: warning: symbol 'ppc_override_l2cr_value' was not declared. Should it be static?
-arch/powerpc/platforms/powermac/setup.c:76:5: warning: symbol 'has_l2cache' was not declared. Should it be static?
+Lorenzo
 
-Signed-off-by: Chen Lifu <chenlifu@huawei.com>
----
- arch/powerpc/platforms/powermac/setup.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/arch/powerpc/platforms/powermac/setup.c b/arch/powerpc/platforms/powermac/setup.c
-index 04daa7f0a03c..f8b847a2f5b5 100644
---- a/arch/powerpc/platforms/powermac/setup.c
-+++ b/arch/powerpc/platforms/powermac/setup.c
-@@ -68,13 +68,11 @@
- 
- #include "pmac.h"
- 
- #undef SHOW_GATWICK_IRQS
- 
--int ppc_override_l2cr = 0;
--int ppc_override_l2cr_value;
--int has_l2cache = 0;
-+static int has_l2cache;
- 
- int pmac_newworld;
- 
- static int current_root_goodness = -1;
- 
-@@ -226,10 +224,13 @@ static void __init ohare_init(void)
- 	}
- }
- 
- static void __init l2cr_init(void)
- {
-+	int ppc_override_l2cr = 0;
-+	int ppc_override_l2cr_value;
-+
- 	/* Checks "l2cr-value" property in the registry */
- 	if (cpu_has_feature(CPU_FTR_L2CR)) {
- 		struct device_node *np;
- 
- 		for_each_of_cpu_node(np) {
--- 
-2.37.1
-
+> [0] https://lore.kernel.org/all/20220707134733.2436629-6-dmitry.baryshkov@linaro.org/
+> 
+> Thanks,
+> Andrew
+> 
+> > 
+> > Thanks,
+> > Lorenzo
+> > 
+> > > Thanks for reviewing.
+> > > 
+> > > Johan
+> 
