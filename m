@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDA2C32772
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0302EC32771
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 15:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350170AbiHSPql (ORCPT
+        id S1350175AbiHSPqq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 11:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50792 "EHLO
+        Fri, 19 Aug 2022 11:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349995AbiHSPqU (ORCPT
+        with ESMTP id S1350074AbiHSPqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 11:46:20 -0400
+        Fri, 19 Aug 2022 11:46:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBE6E23;
-        Fri, 19 Aug 2022 08:46:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AF5121;
+        Fri, 19 Aug 2022 08:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA813B8280C;
-        Fri, 19 Aug 2022 15:46:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A35FC433D6;
-        Fri, 19 Aug 2022 15:46:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5D15B8280D;
+        Fri, 19 Aug 2022 15:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F30F6C433D6;
+        Fri, 19 Aug 2022 15:46:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660923975;
-        bh=lJLzc8d9+86WEwNqDxbB97ZQFE0ncetGI6joDF2J7iY=;
+        s=korg; t=1660923978;
+        bh=02GTl3ZAuwMrQMaVDLUwz22xt+OLryNiYBma1PGALg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y11DthlYS3wD+QpKHZVZQwmXNzYYpyZYpcfNVssAulmYgrHGQnJ3KWkKDWHaX91z+
-         Q9Oh20vrtAsAZ2U6AFLyAUkaUbrrAjE9Nkc9k2mw4l2wKUuXT2zovkaX7+PNDfolSd
-         xUpALvSooJVHij28HnjmFewdQPGd58XizBh5sBwI=
+        b=YrV1/9rS1NkXqFoYbOLAJvXXmCzkdO69ZC2zWJj3Fz13q1iQbLmA4Ifo9wvPkc94p
+         Gu2q06lsQxyzVrZHpUxxWCiwO9b1jtWuW7cRg7TrSkFEZ0WpgRJ67L8UaNqUe7V1C5
+         xLw3nko2QmjzVxDzwgMhzr2Un2dNXDr4cHe0IC8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lei Wang <lei4.wang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 014/545] KVM: nVMX: Snapshot pre-VM-Enter BNDCFGS for !nested_run_pending case
-Date:   Fri, 19 Aug 2022 17:36:24 +0200
-Message-Id: <20220819153829.799467310@linuxfoundation.org>
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 002/545] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
+Date:   Fri, 19 Aug 2022 17:36:12 +0200
+Message-Id: <20220819153829.269574566@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,53 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-commit fa578398a0ba2c079fa1170da21fa5baae0cedb2 upstream.
+commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
 
-If a nested run isn't pending, snapshot vmcs01.GUEST_BNDCFGS irrespective
-of whether or not VM_ENTRY_LOAD_BNDCFGS is set in vmcs12.  When restoring
-nested state, e.g. after migration, without a nested run pending,
-prepare_vmcs02() will propagate nested.vmcs01_guest_bndcfgs to vmcs02,
-i.e. will load garbage/zeros into vmcs02.GUEST_BNDCFGS.
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
 
-If userspace restores nested state before MSRs, then loading garbage is a
-non-issue as loading BNDCFGS will also update vmcs02.  But if usersepace
-restores MSRs first, then KVM is responsible for propagating L2's value,
-which is actually thrown into vmcs01, into vmcs02.
+  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
 
-Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
-is all kinds of bizarre and ideally would not be supported.  Sadly, some
-VMMs do exactly that and rely on KVM to make things work.
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
 
-Note, there's still a lurking SMM bug, as propagating vmcs01.GUEST_BNDFGS
-to vmcs02 across RSM may corrupt L2's BNDCFGS.  But KVM's entire VMX+SMM
-emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
-"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
 
-Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
-Fixes: 62cf9bd8118c ("KVM: nVMX: Fix emulation of VM_ENTRY_LOAD_BNDCFGS")
-Cc: stable@vger.kernel.org
-Cc: Lei Wang <lei4.wang@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220614215831.3762138-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
+
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/boot/Makefile            |    2 +-
+ arch/x86/boot/compressed/Makefile |    4 ++++
+ arch/x86/entry/vdso/Makefile      |    2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3340,7 +3340,8 @@ enum nvmx_vmentry_status nested_vmx_ente
- 	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
- 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
- 	if (kvm_mpx_supported() &&
--		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
-+	    (!vmx->nested.nested_run_pending ||
-+	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS)))
- 		vmx->nested.vmcs01_guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -103,7 +103,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
+ AFLAGS_header.o += -I$(objtree)/$(obj)
+ $(obj)/header.o: $(obj)/zoffset.h
  
- 	/*
+-LDFLAGS_setup.elf	:= -m elf_i386 -T
++LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
+ $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
+ 	$(call if_changed,ld)
+ 
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -68,6 +68,10 @@ LDFLAGS_vmlinux := -pie $(call ld-option
+ ifdef CONFIG_LD_ORPHAN_WARN
+ LDFLAGS_vmlinux += --orphan-handling=warn
+ endif
++LDFLAGS_vmlinux += -z noexecstack
++ifeq ($(CONFIG_LD_IS_BFD),y)
++LDFLAGS_vmlinux += $(call ld-option,--no-warn-rwx-segments)
++endif
+ LDFLAGS_vmlinux += -T
+ 
+ hostprogs	:= mkpiggy
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -176,7 +176,7 @@ quiet_cmd_vdso = VDSO    $@
+ 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
+ 
+ VDSO_LDFLAGS = -shared --hash-style=both --build-id=sha1 \
+-	$(call ld-option, --eh-frame-hdr) -Bsymbolic
++	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
+ GCOV_PROFILE := n
+ 
+ quiet_cmd_vdso_and_check = VDSO    $@
 
 
