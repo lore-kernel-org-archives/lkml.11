@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D7FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE7CC28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 16:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352935AbiHSQ3W (ORCPT
+        id S1352943AbiHSQ30 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 12:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
+        Fri, 19 Aug 2022 12:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353090AbiHSQ0L (ORCPT
+        with ESMTP id S1353097AbiHSQ0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 12:26:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9F1CAC94;
-        Fri, 19 Aug 2022 09:03:49 -0700 (PDT)
+        Fri, 19 Aug 2022 12:26:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B60118C97;
+        Fri, 19 Aug 2022 09:03:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9309BCE26AA;
-        Fri, 19 Aug 2022 16:03:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80370C433D6;
-        Fri, 19 Aug 2022 16:03:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D52EC617F1;
+        Fri, 19 Aug 2022 16:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1DEC43140;
+        Fri, 19 Aug 2022 16:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660925019;
-        bh=atgAS25s2COpB8BFvUkh8vDm4Mkm8/SqFe6Oe0UtabQ=;
+        s=korg; t=1660925035;
+        bh=WDNnPOBERHt5+eoDNxGRACSNg3dxrCW6GtFXzhVsNRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXDVnANnkSpwZKodoq03xC5hcl4Ppw7+2c4EahLZuZxIMChTlXl80jz10xcx4ZDMm
-         cItORCNUgv/VR+wOwkOtiGSLEk+FRB06ufDylX+RqkDKfWraql3WvV9UVEEyFsqaEg
-         eRpAowilaTX0DxKJpvFxEFFDYep3i+KXChckGhto=
+        b=eeThMjRjat89SNSNTph0TBswNfABU4eO6ePxvBrly874Cc3CmxChMD0tLKn5+W5kL
+         nNEO+HTEiIoRLL9N708q28C4OZCtohcOzg8rMR2UCT4w6XsDLhcGpIm7s3qdRmbl56
+         5MeqTwsdrXML+agmmuPgI4OxsbS+KCgyvqYL9tyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 358/545] nvme: use command_id instead of req->tag in trace_nvme_complete_rq()
-Date:   Fri, 19 Aug 2022 17:42:08 +0200
-Message-Id: <20220819153845.402530904@linuxfoundation.org>
+Subject: [PATCH 5.10 362/545] usb: cdns3: Dont use priv_dev uninitialized in cdns3_gadget_ep_enable()
+Date:   Fri, 19 Aug 2022 17:42:12 +0200
+Message-Id: <20220819153845.581978538@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
 References: <20220819153829.135562864@linuxfoundation.org>
@@ -50,38 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bean Huo <beanhuo@micron.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 679c54f2de672b7d79d02f8c4ad483ff6dd8ce2e ]
+[ Upstream commit 78acd4ca433425e6dd4032cfc2156c60e34931f2 ]
 
-Use command_id instead of req->tag in trace_nvme_complete_rq(),
-because of commit e7006de6c238 ("nvme: code command_id with a genctr
-for use authentication after release"), cmd->common.command_id is set to
-((genctl & 0xf)< 12 | req->tag), no longer req->tag, which makes cid in
-trace_nvme_complete_rq and trace_nvme_setup_cmd are not the same.
+Clang warns:
 
-Fixes: e7006de6c238 ("nvme: code command_id with a genctr for use authentication after release")
-Signed-off-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  drivers/usb/cdns3/cdns3-gadget.c:2290:11: error: variable 'priv_dev' is uninitialized when used here [-Werror,-Wuninitialized]
+                  dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
+                          ^~~~~~~~
+  include/linux/dev_printk.h:155:18: note: expanded from macro 'dev_dbg'
+          dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+                          ^~~
+  include/linux/dynamic_debug.h:167:7: note: expanded from macro 'dynamic_dev_dbg'
+                          dev, fmt, ##__VA_ARGS__)
+                          ^~~
+  include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+          __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                              ^~~~~~~~~~~
+  include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+                  func(&id, ##__VA_ARGS__);               \
+                              ^~~~~~~~~~~
+  drivers/usb/cdns3/cdns3-gadget.c:2278:31: note: initialize the variable 'priv_dev' to silence this warning
+          struct cdns3_device *priv_dev;
+                                      ^
+                                      = NULL
+  1 error generated.
+
+The priv_dev assignment was moved below the if statement to avoid
+potentially dereferencing ep before it was checked but priv_dev is used
+in the dev_dbg() call.
+
+To fix this, move the priv_dev and comp_desc assignments back to their
+original spot and hoist the ep check above those assignments with a call
+to pr_debug() instead of dev_dbg().
+
+Fixes: c3ffc9c4ca44 ("usb: cdns3: change place of 'priv_ep' assignment in cdns3_gadget_ep_dequeue(), cdns3_gadget_ep_enable()")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1680
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/trace.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/cdns3/gadget.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nvme/host/trace.h b/drivers/nvme/host/trace.h
-index 35bac7a25422..aa8b0f86b2be 100644
---- a/drivers/nvme/host/trace.h
-+++ b/drivers/nvme/host/trace.h
-@@ -98,7 +98,7 @@ TRACE_EVENT(nvme_complete_rq,
- 	    TP_fast_assign(
- 		__entry->ctrl_id = nvme_req(req)->ctrl->instance;
- 		__entry->qid = nvme_req_qid(req);
--		__entry->cid = req->tag;
-+		__entry->cid = nvme_req(req)->cmd->common.command_id;
- 		__entry->result = le64_to_cpu(nvme_req(req)->result.u64);
- 		__entry->retries = nvme_req(req)->retries;
- 		__entry->flags = nvme_req(req)->flags;
+diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
+index c1b39a7acabc..f120da442d43 100644
+--- a/drivers/usb/cdns3/gadget.c
++++ b/drivers/usb/cdns3/gadget.c
+@@ -2293,16 +2293,20 @@ static int cdns3_gadget_ep_enable(struct usb_ep *ep,
+ 	int ret = 0;
+ 	int val;
+ 
++	if (!ep) {
++		pr_debug("usbss: ep not configured?\n");
++		return -EINVAL;
++	}
++
+ 	priv_ep = ep_to_cdns3_ep(ep);
++	priv_dev = priv_ep->cdns3_dev;
++	comp_desc = priv_ep->endpoint.comp_desc;
+ 
+-	if (!ep || !desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
++	if (!desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
+ 		dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	comp_desc = priv_ep->endpoint.comp_desc;
+-	priv_dev = priv_ep->cdns3_dev;
+-
+ 	if (!desc->wMaxPacketSize) {
+ 		dev_err(priv_dev->dev, "usbss: missing wMaxPacketSize\n");
+ 		return -EINVAL;
 -- 
 2.35.1
 
