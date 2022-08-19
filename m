@@ -2,175 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83DAC25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:41:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF099C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 19 Aug 2022 08:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347198AbiHSIlD (ORCPT
+        id S1347309AbiHSIlJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 04:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
+        Fri, 19 Aug 2022 04:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347041AbiHSIkP (ORCPT
+        with ESMTP id S1347168AbiHSIlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 04:40:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655C353013
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:40:13 -0700 (PDT)
+        Fri, 19 Aug 2022 04:41:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CF453015;
+        Fri, 19 Aug 2022 01:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15CF6B824EA
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D688DC43470
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 08:40:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BFCFB8265F;
+        Fri, 19 Aug 2022 08:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2807CC433D6;
+        Fri, 19 Aug 2022 08:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660898410;
-        bh=pbPOH8lcJsczbtzTQ81SaxpugXuzQ8vfVpiBgdOWZos=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=pfMxvGTPU3pVuiuDYLLA5c5ZmV/YXIGkwKZ9Ys18RSjydBMQuyfcOLtXjrE4unJLq
-         qE6xKMBlPSil3Qbi3X7f9kuYCMKPxEAlqEt6PufFhEl9JysdYzK6bWd/XXc3myVXkI
-         qnCPkAOJomDteQMMFVRZaOkX/GMUXyAUHbkxNPuSjHDkU9uym8KE+Ce85RawFFBxec
-         7w/2v/cBhUUC8saEsIwZXTUOpCqT7GWOJEz7x8+ZLGMuVGjB0RmPeZRnVlS7OMoRRo
-         8BaymNtzSmuFj/W/ai+JfvYMEXCkgRCrR+XU4qd6Vap3KzxlAqMGSnRNlUBVUsfkap
-         G5Ygth0XHctcw==
-Received: by mail-vs1-f42.google.com with SMTP id j2so3828054vsp.1
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 01:40:10 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0XRycE2GCer+x+3Wia82UpwdujQ/1hHuGUiUoqEY9JJxfizSA+
-        UGmRFw7w1y3a+EdVrG5nVXRy8W6kLkaXUmH1zBQ=
-X-Google-Smtp-Source: AA6agR6rQK+fyBXvNJhcWl+WEfRCdo2v3o22mYmBhfqQ5UR5TbIn9ARpfFOQv7GnOVZtfy5tvmtzWfHjEnZqtj4WVbk=
-X-Received: by 2002:a67:d483:0:b0:38f:4981:c4f3 with SMTP id
- g3-20020a67d483000000b0038f4981c4f3mr2113563vsj.59.1660898409777; Fri, 19 Aug
- 2022 01:40:09 -0700 (PDT)
+        s=k20201202; t=1660898458;
+        bh=ZO9Yt5h1s9hT57VwDqwNry2UW8mH5yxqDyvTp4FAdAg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mV9R/RDiU0pcWufabeFiXc56gxrmdleuuYH7yMW+MZX/F0oGnnMeS5X2nbg/Es4BE
+         E9PfoxQRPODvJnyicgHjUWWdGxoZT3gMx3YKIc6u5iUg+yceIeHTZX5+1KbisEQSfe
+         7FDO8tHxDhuKzLpSR2s/+V3NaLqvqrJ4duWq31OBgDLth08g9QrdNl3JoCA6hjuejo
+         2lROo6CGMx4RRagliYCONjwxqUlsrWn6LFYR9HWkeg9ZJlB1Yzfwdk/1iTLkcnlvXh
+         V69EjeTTaagSquajZzPkJlyUh+thKJl0yY0gVUP+e/Sk8mGkdp4rDH8vMhVVgVbONC
+         u5Ay/osfyWN0Q==
+From:   Lorenzo Pieralisi <lpieralisi@kernel.org>
+To:     Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        devicetree@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: Re: [PATCH v2 0/8] PCI: qcom: Add support for SC8280XP and SA8540P
+Date:   Fri, 19 Aug 2022 10:40:49 +0200
+Message-Id: <166089832025.262926.4406465315336249603.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220714071348.6792-1-johan+linaro@kernel.org>
+References: <20220714071348.6792-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-References: <20220819072239.60378-1-liyupeng@zbhlos.com>
-In-Reply-To: <20220819072239.60378-1-liyupeng@zbhlos.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Fri, 19 Aug 2022 16:39:57 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H4m+Wzc-E=owWo34hYBa8fHKQG_uBAw4y4mCFUXEfge0g@mail.gmail.com>
-Message-ID: <CAAhV-H4m+Wzc-E=owWo34hYBa8fHKQG_uBAw4y4mCFUXEfge0g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] irqchip: Fixed LoongArch CPU interrupt types defined.
-To:     Yupeng Li <liyupeng@zbhlos.com>
-Cc:     WANG Xuerui <kernel@xen0n.name>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>, Caicai <caizp2008@163.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Yupeng,
+On Thu, 14 Jul 2022 09:13:40 +0200, Johan Hovold wrote:
+> This series adds support for the PCIe controllers found on SC8280XP and
+> SA8540P.
+> 
+> Included are also three patches that clean up the way the driver handles
+> different IP revisions (e.g. by modelling optional clocks as being truly
+> optional).
+> 
+> [...]
 
-This errors can be fixed once this patch be merged:
-https://lore.kernel.org/lkml/20220808085319.3350111-1-chenhuacai@loongson.c=
-n/
+I tweaked commits as-per thread discussion (please check them, I had
+to fix minor rebase conflicts) and applied to pci/qcom, thanks!
 
-Huacai
+[1/8] dt-bindings: PCI: qcom: Enumerate platforms with single msi interrupt
+      https://git.kernel.org/lpieralisi/pci/c/a871c90977a4
+[2/8] dt-bindings: PCI: qcom: Add SC8280XP to binding
+      https://git.kernel.org/lpieralisi/pci/c/0122ab0115a9
+[3/8] dt-bindings: PCI: qcom: Add SA8540P to binding
+      https://git.kernel.org/lpieralisi/pci/c/fe9681a74d04
+[4/8] PCI: qcom: Add support for SC8280XP
+      https://git.kernel.org/lpieralisi/pci/c/e37d881f9f3a
+[5/8] PCI: qcom: Add support for SA8540P
+      https://git.kernel.org/lpieralisi/pci/c/b325dc5f9d39
+[6/8] PCI: qcom: Make all optional clocks optional
+      https://git.kernel.org/lpieralisi/pci/c/4c4ef240b58a
+[7/8] PCI: qcom: Clean up IP configurations
+      https://git.kernel.org/lpieralisi/pci/c/4daa5e24813e
+[8/8] PCI: qcom: Sort device-id table
+      https://git.kernel.org/lpieralisi/pci/c/46bafd187104
 
-On Fri, Aug 19, 2022 at 3:23 PM Yupeng Li <liyupeng@zbhlos.com> wrote:
->
-> When CONFIG_LOONGSON_LIOINTC,CONFIG_LOONGSON_EIOINTC,
-> CONFIG_LOONGSON_PCH_LPC,CONFIG_LOONGSON_PCH_PIC was disabled,
-> build kernel with errors like:
->
-> MODPOST vmlinux.symvers
-> MODINFO modules.builtin.modinfo
-> GEN     modules.builtin
-> LD      .tmp_vmlinux.kallsyms1
-> loongarch64-linux-gnu-ld: drivers/irqchip/irq-loongarch-cpu.o: in functio=
-n `lpic_get_gsi_domain_id':
-> irq-loongarch-cpu.c:(.text+0x8): undefined reference to `pch_lpc_handle'
-> loongarch64-linux-gnu-ld: irq-loongarch-cpu.c:(.text+0xc): undefined refe=
-rence to `pch_lpc_handle'
-> loongarch64-linux-gnu-ld: irq-loongarch-cpu.c:(.text+0xc): undefined refe=
-rence to `pch_lpc_handle'
-> make: *** [Makefile:1171=EF=BC=9Avmlinux] =E9=94=99=E8=AF=AF 1
->
-> Reviewed-by: Caicai <caizp2008@163.com>
-> Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-> ---
->  drivers/irqchip/irq-loongarch-cpu.c | 20 ++++++++++++++++----
->  1 file changed, 16 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-lo=
-ongarch-cpu.c
-> index 327f3ab62c03..d296f704cbb6 100644
-> --- a/drivers/irqchip/irq-loongarch-cpu.c
-> +++ b/drivers/irqchip/irq-loongarch-cpu.c
-> @@ -27,24 +27,30 @@ static u32 lpic_gsi_to_irq(u32 gsi)
->
->  static struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
->  {
-> +#ifdef CONFIG_LOONGSON_PCH_PIC
->         int id;
-> +#endif
->         struct fwnode_handle *domain_handle =3D NULL;
->
->         switch (gsi) {
->         case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
-> +#ifdef CONFIG_LOONGSON_LIOINTC
->                 if (liointc_handle)
->                         domain_handle =3D liointc_handle;
-> +#endif
->                 break;
-> -
->         case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
-> +#ifdef CONFIG_LOONGSON_PCH_LPC
->                 if (pch_lpc_handle)
->                         domain_handle =3D pch_lpc_handle;
-> +#endif
->                 break;
-> -
->         case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
-> +#ifdef CONFIG_LOONGSON_PCH_PIC
->                 id =3D find_pch_pic(gsi);
->                 if (id >=3D 0 && pch_pic_handle[id])
->                         domain_handle =3D pch_pic_handle[id];
-> +#endif
->                 break;
->         }
->
-> @@ -92,6 +98,7 @@ static const struct irq_domain_ops loongarch_cpu_intc_i=
-rq_domain_ops =3D {
->         .xlate =3D irq_domain_xlate_onecell,
->  };
->
-> +#ifdef CONFIG_LOONGSON_LIOINTC
->  static int __init
->  liointc_parse_madt(union acpi_subtable_headers *header,
->                        const unsigned long end)
-> @@ -100,7 +107,8 @@ liointc_parse_madt(union acpi_subtable_headers *heade=
-r,
->
->         return liointc_acpi_init(irq_domain, liointc_entry);
->  }
-> -
-> +#endif
-> +#ifdef CONFIG_LOONGSON_EIOINTC
->  static int __init
->  eiointc_parse_madt(union acpi_subtable_headers *header,
->                        const unsigned long end)
-> @@ -109,13 +117,17 @@ eiointc_parse_madt(union acpi_subtable_headers *hea=
-der,
->
->         return eiointc_acpi_init(irq_domain, eiointc_entry);
->  }
-> -
-> +#endif
->  static int __init acpi_cascade_irqdomain_init(void)
->  {
-> +#ifdef CONFIG_LOONGSON_LIOINTC
->         acpi_table_parse_madt(ACPI_MADT_TYPE_LIO_PIC,
->                               liointc_parse_madt, 0);
-> +#endif
-> +#ifdef CONFIG_LOONGSON_EIOINTC
->         acpi_table_parse_madt(ACPI_MADT_TYPE_EIO_PIC,
->                               eiointc_parse_madt, 0);
-> +#endif
->         return 0;
->  }
->
-> --
-> 2.34.1
->
+Thanks,
+Lorenzo
