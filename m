@@ -2,104 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7873EC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 22:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F389DC32772
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 22:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235605AbiHTWqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 18:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
+        id S234676AbiHTWv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 18:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234011AbiHTWq2 (ORCPT
+        with ESMTP id S230371AbiHTWvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 18:46:28 -0400
-Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024BA22505;
-        Sat, 20 Aug 2022 15:46:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
-        s=20190804; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=WRiYwROZ16kVAe/wuAeCca/SXcJ/4o6AYy4x1BePKz4=; b=xChpAe7GlnOU0yPSil4rYT2m4g
-        h4i18+2YpWsIX9N6Ax3WCUN6oJFUtYMyoaBLZGBicAfusNdpuoV2AwHv/9dyLWObRGkWUfMEuo20j
-        xYotEAFzIjqGgUZM4AlcyKbrUjxxlMQ+m3mufhepAtgYJw1aO1qOcWPaNe1eRiClc4kZ3hHdHpaLn
-        GI4N3Snpx3zoD2AQXJzK2Ln6DeTA+0vIUfh0LldXHlc3f3thnXmvncvmXyZd2mVD0w85hEm4eISm5
-        yyT2wMXMeRdm4Fl2AjsSMag0kVfmXIpObzlKqboHc+FJCUwZOVauZmiW0wWDwpBMWy5RZf7aHSY9E
-        ALIAOu0Q==;
-Received: from [2a02:2454:9869:1a:9eb6:54ff:0:fa5] (helo=cerator.lan)
-        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lynxis@fe80.eu>)
-        id 1oPXE6-00G2sh-JE; Sat, 20 Aug 2022 22:45:58 +0000
-From:   Alexander Couzens <lynxis@fe80.eu>
-To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Daniel Golle <daniel@makrotopia.org>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: [PATCH 4/4] net: mediatek: sgmii: set the speed according to the phy interface in AN
-Date:   Sun, 21 Aug 2022 00:45:38 +0200
-Message-Id: <20220820224538.59489-5-lynxis@fe80.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220820224538.59489-1-lynxis@fe80.eu>
-References: <20220820224538.59489-1-lynxis@fe80.eu>
+        Sat, 20 Aug 2022 18:51:25 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AB825E94;
+        Sat, 20 Aug 2022 15:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661035882; x=1692571882;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BMC9c98PYAsxMWUPCS4FPSTVdvVtrr6r3fNBNU+hp4s=;
+  b=a6RfjFP0aYR7PnSQJ13CXvNsB+h5eyhR9M0reGF4ZcUnISRGFEt4WOE2
+   toPwQzNr9JT5dMKCcDKR5IyJx1Hh0PsR4lriCVKnHI+GRkxiIgdzOimou
+   urtvvheSaFWJMF9hb6MPEYaaMfLCDnaPseCJHjjyCBI5poSCTD/2ul0KF
+   vIFIM9YGj00bCGPj3BbCd5dEUH1B5mRpg3C9rXRE5g95FyWwZT9jiW4Nw
+   gTo8/kRIMHArV09vs9xHUYgNkB6pekv+eJFabXT/xiMvUoQG9V3pOcExj
+   Ls7hiMjsyzT+dqz18SaevKb7y9gbWsCUBC4G3edzBvHy/TNndN28MgcsF
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10445"; a="280171632"
+X-IronPort-AV: E=Sophos;i="5.93,251,1654585200"; 
+   d="scan'208";a="280171632"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2022 15:51:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,251,1654585200"; 
+   d="scan'208";a="676800072"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Aug 2022 15:51:18 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oPXJF-0003JD-2E;
+        Sat, 20 Aug 2022 22:51:17 +0000
+Date:   Sun, 21 Aug 2022 06:50:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiangshan Yi <13667453960@163.com>, tytso@mit.edu,
+        adilger.kernel@dilger.ca
+Cc:     kbuild-all@lists.01.org, lczerner@redhat.com,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiangshan Yi <yijiangshan@kylinos.cn>
+Subject: Re: [PATCH v3] fs/ext4: replace ternary operator with min()/max()
+ and min_t()
+Message-ID: <202208210652.VUSXxffI-lkp@intel.com>
+References: <20220816011553.2912926-1-13667453960@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816011553.2912926-1-13667453960@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The non auto-negotiating code path is setting the correct speed for the
-interface. Ensure auto-negotiation code path is doing it as well.
+Hi Jiangshan,
 
-Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
----
- drivers/net/ethernet/mediatek/mtk_sgmii.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Thank you for the patch! Perhaps something to improve:
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index aa69baf1a42f..75de2c73a048 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -21,13 +21,20 @@ static struct mtk_pcs *pcs_to_mtk_pcs(struct phylink_pcs *pcs)
- }
- 
- /* For SGMII interface mode */
--static int mtk_pcs_setup_mode_an(struct mtk_pcs *mpcs)
-+static int mtk_pcs_setup_mode_an(struct mtk_pcs *mpcs, phy_interface_t interface)
- {
- 	unsigned int val;
- 
- 	/* PHYA power down */
- 	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, SGMII_PHYA_PWD);
- 
-+	/* Set SGMII phy speed */
-+	regmap_read(mpcs->regmap, mpcs->ana_rgc3, &val);
-+	val &= ~RG_PHY_SPEED_MASK;
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val |= RG_PHY_SPEED_3_125G;
-+	regmap_write(mpcs->regmap, mpcs->ana_rgc3, val);
-+
- 	/* Setup the link timer and QPHY power up inside SGMIISYS */
- 	regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER,
- 		     SGMII_LINK_TIMER_DEFAULT);
-@@ -100,7 +107,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 	if (interface != PHY_INTERFACE_MODE_SGMII)
- 		err = mtk_pcs_setup_mode_force(mpcs, interface);
- 	else if (phylink_autoneg_inband(mode))
--		err = mtk_pcs_setup_mode_an(mpcs);
-+		err = mtk_pcs_setup_mode_an(mpcs, interface);
- 
- 	return err;
- }
+[auto build test WARNING on tytso-ext4/dev]
+[also build test WARNING on linus/master v6.0-rc1 next-20220819]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jiangshan-Yi/fs-ext4-replace-ternary-operator-with-min-max-and-min_t/20220816-144454
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git dev
+config: parisc-randconfig-s041-20220821 (https://download.01.org/0day-ci/archive/20220821/202208210652.VUSXxffI-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/cdc8d157495f1a1cbf921569e2babf14446058cf
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jiangshan-Yi/fs-ext4-replace-ternary-operator-with-min-max-and-min_t/20220816-144454
+        git checkout cdc8d157495f1a1cbf921569e2babf14446058cf
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash fs/ext4/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+sparse warnings: (new ones prefixed by >>)
+>> fs/ext4/super.c:6907:26: sparse: sparse: incompatible types in comparison expression (different type sizes):
+>> fs/ext4/super.c:6907:26: sparse:    unsigned long *
+>> fs/ext4/super.c:6907:26: sparse:    unsigned int *
+   fs/ext4/super.c:992:6: sparse: sparse: context imbalance in '__ext4_grp_locked_error' - different lock contexts for basic block
+   fs/ext4/super.c:3266:9: sparse: sparse: context imbalance in 'ext4_check_descriptors' - different lock contexts for basic block
+
+vim +6907 fs/ext4/super.c
+
+  6885	
+  6886	/* Read data from quotafile - avoid pagecache and such because we cannot afford
+  6887	 * acquiring the locks... As quota files are never truncated and quota code
+  6888	 * itself serializes the operations (and no one else should touch the files)
+  6889	 * we don't have to be afraid of races */
+  6890	static ssize_t ext4_quota_read(struct super_block *sb, int type, char *data,
+  6891				       size_t len, loff_t off)
+  6892	{
+  6893		struct inode *inode = sb_dqopt(sb)->files[type];
+  6894		ext4_lblk_t blk = off >> EXT4_BLOCK_SIZE_BITS(sb);
+  6895		int offset = off & (sb->s_blocksize - 1);
+  6896		int tocopy;
+  6897		size_t toread;
+  6898		struct buffer_head *bh;
+  6899		loff_t i_size = i_size_read(inode);
+  6900	
+  6901		if (off > i_size)
+  6902			return 0;
+  6903		if (off+len > i_size)
+  6904			len = i_size-off;
+  6905		toread = len;
+  6906		while (toread > 0) {
+> 6907			tocopy = min(sb->s_blocksize - offset, toread);
+  6908			bh = ext4_bread(NULL, inode, blk, 0);
+  6909			if (IS_ERR(bh))
+  6910				return PTR_ERR(bh);
+  6911			if (!bh)	/* A hole? */
+  6912				memset(data, 0, tocopy);
+  6913			else
+  6914				memcpy(data, bh->b_data+offset, tocopy);
+  6915			brelse(bh);
+  6916			offset = 0;
+  6917			toread -= tocopy;
+  6918			data += tocopy;
+  6919			blk++;
+  6920		}
+  6921		return len;
+  6922	}
+  6923	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
