@@ -2,183 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2813C28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 01:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4C1C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 01:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245454AbiHTBsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 21:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
+        id S243566AbiHTBuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 21:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238875AbiHTBs1 (ORCPT
+        with ESMTP id S242956AbiHTBuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 21:48:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FBD17AAA;
-        Fri, 19 Aug 2022 18:48:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 948E1B82A29;
-        Sat, 20 Aug 2022 01:48:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A86C4314B;
-        Sat, 20 Aug 2022 01:48:20 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.96)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1oPDbF-004uWL-1o;
-        Fri, 19 Aug 2022 21:48:33 -0400
-Message-ID: <20220820014833.395997394@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Fri, 19 Aug 2022 21:40:39 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
-Subject: [PATCH 4/4] tracing/eprobes: Have event probes be consistent with kprobes and
- uprobes
-References: <20220820014035.531145719@goodmis.org>
+        Fri, 19 Aug 2022 21:50:22 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D58D86E3
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 18:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660960221; x=1692496221;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tsNA+VCpLUZdUkssXDr9KR9EWKwqSulXLyFsxZIg5VE=;
+  b=BKZKAwYiX1BzxI2NsdXQR92jLcp7lUbuHKp5HBNpOIiG9P9FP0iYqzSv
+   WDKuQltZoML0qMdWDYY537Ajbq51Cf+YFsHHoc6WW9RKSTMhaubhP55Tk
+   r6y11IBNAjUKKru/NEEdlZhWL2p5DdmfLrlNQbvg8t8ysaBRQfWi+eEl7
+   HlrJVvw5xgTFiX9jqau75GTbdaU5Kvm+b4Zoha+PliqA+PK8K85E7l9/G
+   IHOgI91RC8WeLw/IByvRXhRFGq/GnxGzsGVn7c7MesZhEoTZVoPvYIldq
+   RcIp5dpMnXTttPuM223aqa4NLda45XFxXILtAiT4hhO5xeNXaX4jcpeD9
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="293925798"
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="293925798"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 18:50:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="584861915"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 19 Aug 2022 18:50:20 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oPDcx-00020d-1b;
+        Sat, 20 Aug 2022 01:50:19 +0000
+Date:   Sat, 20 Aug 2022 09:49:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/spi/spi-mpc52xx-psc.c:195:5: warning: no previous prototype
+ for 'mpc52xx_psc_spi_transfer_one_message'
+Message-ID: <202208200920.YS4MVCTL-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+drivers/spi/spi-mpc52xx-psc.c
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   50cd95ac46548429e5bba7ca75cc97d11a697947
+commit: 145cfc3840e5931a789a8e2e76af841ab4cad44b spi: mpc52xx-psc: Switch to using core message queue
+date:   8 weeks ago
+config: powerpc-randconfig-r006-20220819 (https://download.01.org/0day-ci/archive/20220820/202208200920.YS4MVCTL-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=145cfc3840e5931a789a8e2e76af841ab4cad44b
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 145cfc3840e5931a789a8e2e76af841ab4cad44b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/spi/
 
-Currently, if a symbol "@" is attempted to be used with an event probe
-(eprobes), it will cause a NULL pointer dereference crash.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Both kprobes and uprobes can reference data other than the main registers.
-Such as immediate address, symbols and the current task name. Have eprobes
-do the same thing.
+All warnings (new ones prefixed by >>):
 
-For "comm", if "comm" is used and the event being attached to does not
-have the "comm" field, then make it the "$comm" that kprobes has. This is
-consistent to the way histograms and filters work.
+>> drivers/spi/spi-mpc52xx-psc.c:195:5: warning: no previous prototype for 'mpc52xx_psc_spi_transfer_one_message' [-Wmissing-prototypes]
+     195 | int mpc52xx_psc_spi_transfer_one_message(struct spi_controller *ctlr,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Cc: stable@vger.kernel.org
-Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- kernel/trace/trace_eprobe.c | 67 +++++++++++++++++++++++++++++++++----
- 1 file changed, 61 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
-index a1d3423ab74f..63218a541217 100644
---- a/kernel/trace/trace_eprobe.c
-+++ b/kernel/trace/trace_eprobe.c
-@@ -227,6 +227,7 @@ static int trace_eprobe_tp_arg_update(struct trace_eprobe *ep, int i)
- 	struct probe_arg *parg = &ep->tp.args[i];
- 	struct ftrace_event_field *field;
- 	struct list_head *head;
-+	int ret = -ENOENT;
- 
- 	head = trace_get_fields(ep->event);
- 	list_for_each_entry(field, head, link) {
-@@ -236,9 +237,17 @@ static int trace_eprobe_tp_arg_update(struct trace_eprobe *ep, int i)
- 			return 0;
- 		}
- 	}
-+
-+	/* Argument no found on event. But allow for comm and COMM to be used */
-+	if (strcmp(parg->code->data, "COMM") == 0 ||
-+	    strcmp(parg->code->data, "comm") == 0) {
-+		parg->code->op = FETCH_OP_COMM;
-+		ret = 0;
-+	}
-+
- 	kfree(parg->code->data);
- 	parg->code->data = NULL;
--	return -ENOENT;
-+	return ret;
- }
- 
- static int eprobe_event_define_fields(struct trace_event_call *event_call)
-@@ -363,16 +372,38 @@ static unsigned long get_event_field(struct fetch_insn *code, void *rec)
- 
- static int get_eprobe_size(struct trace_probe *tp, void *rec)
- {
-+	struct fetch_insn *code;
- 	struct probe_arg *arg;
- 	int i, len, ret = 0;
- 
- 	for (i = 0; i < tp->nr_args; i++) {
- 		arg = tp->args + i;
--		if (unlikely(arg->dynamic)) {
-+		if (arg->dynamic) {
- 			unsigned long val;
- 
--			val = get_event_field(arg->code, rec);
--			len = process_fetch_insn_bottom(arg->code + 1, val, NULL, NULL);
-+			code = arg->code;
-+ retry:
-+			switch (code->op) {
-+			case FETCH_OP_TP_ARG:
-+				val = get_event_field(code, rec);
-+				break;
-+			case FETCH_OP_IMM:
-+				val = code->immediate;
-+				break;
-+			case FETCH_OP_COMM:
-+				val = (unsigned long)current->comm;
-+				break;
-+			case FETCH_OP_DATA:
-+				val = (unsigned long)code->data;
-+				break;
-+			case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
-+				code++;
-+				goto retry;
-+			default:
-+				continue;
-+			}
-+			code++;
-+			len = process_fetch_insn_bottom(code, val, NULL, NULL);
- 			if (len > 0)
- 				ret += len;
- 		}
-@@ -390,8 +421,28 @@ process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
- {
- 	unsigned long val;
- 
--	val = get_event_field(code, rec);
--	return process_fetch_insn_bottom(code + 1, val, dest, base);
-+ retry:
-+	switch (code->op) {
-+	case FETCH_OP_TP_ARG:
-+		val = get_event_field(code, rec);
-+		break;
-+	case FETCH_OP_IMM:
-+		val = code->immediate;
-+		break;
-+	case FETCH_OP_COMM:
-+		val = (unsigned long)current->comm;
-+		break;
-+	case FETCH_OP_DATA:
-+		val = (unsigned long)code->data;
-+		break;
-+	case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
-+		code++;
-+		goto retry;
-+	default:
-+		return -EILSEQ;
-+	}
-+	code++;
-+	return process_fetch_insn_bottom(code, val, dest, base);
- }
- NOKPROBE_SYMBOL(process_fetch_insn)
- 
-@@ -866,6 +917,10 @@ static int trace_eprobe_tp_update_arg(struct trace_eprobe *ep, const char *argv[
- 			trace_probe_log_err(0, BAD_ATTACH_ARG);
- 	}
- 
-+	/* Handle symbols "@" */
-+	if (!ret)
-+		ret = traceprobe_update_arg(&ep->tp.args[i]);
-+
- 	return ret;
- }
- 
+vim +/mpc52xx_psc_spi_transfer_one_message +195 drivers/spi/spi-mpc52xx-psc.c
+
+   194	
+ > 195	int mpc52xx_psc_spi_transfer_one_message(struct spi_controller *ctlr,
+   196						 struct spi_message *m)
+   197	{
+   198		struct spi_device *spi;
+   199		struct spi_transfer *t = NULL;
+   200		unsigned cs_change;
+   201		int status;
+   202	
+   203		spi = m->spi;
+   204		cs_change = 1;
+   205		status = 0;
+   206		list_for_each_entry (t, &m->transfers, transfer_list) {
+   207			if (t->bits_per_word || t->speed_hz) {
+   208				status = mpc52xx_psc_spi_transfer_setup(spi, t);
+   209				if (status < 0)
+   210					break;
+   211			}
+   212	
+   213			if (cs_change)
+   214				mpc52xx_psc_spi_activate_cs(spi);
+   215			cs_change = t->cs_change;
+   216	
+   217			status = mpc52xx_psc_spi_transfer_rxtx(spi, t);
+   218			if (status)
+   219				break;
+   220			m->actual_length += t->len;
+   221	
+   222			spi_transfer_delay_exec(t);
+   223	
+   224			if (cs_change)
+   225				mpc52xx_psc_spi_deactivate_cs(spi);
+   226		}
+   227	
+   228		m->status = status;
+   229		if (status || !cs_change)
+   230			mpc52xx_psc_spi_deactivate_cs(spi);
+   231	
+   232		mpc52xx_psc_spi_transfer_setup(spi, NULL);
+   233	
+   234		spi_finalize_current_message(ctlr);
+   235	
+   236		return 0;
+   237	}
+   238	
+
 -- 
-2.35.1
+0-DAY CI Kernel Test Service
+https://01.org/lkp
