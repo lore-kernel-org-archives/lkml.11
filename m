@@ -2,153 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C21AC28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 01:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C38BC28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 01:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245353AbiHTBiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 21:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35604 "EHLO
+        id S238407AbiHTBmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 21:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243750AbiHTBiq (ORCPT
+        with ESMTP id S232860AbiHTBmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 21:38:46 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 291F639BA8;
-        Fri, 19 Aug 2022 18:38:43 -0700 (PDT)
-Received: from localhost.localdomain (unknown [111.9.175.10])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8CxkOAcOwBjCHYFAA--.25921S3;
-        Sat, 20 Aug 2022 09:38:38 +0800 (CST)
-Subject: Re: [PATCH 1/9] LoongArch/ftrace: Add basic support
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Qing Zhang <zhangqing@loongson.cn>
-References: <20220819081403.7143-1-zhangqing@loongson.cn>
- <20220819081403.7143-2-zhangqing@loongson.cn>
- <20220819132509.127a1353@gandalf.local.home>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-From:   Jinyang He <hejinyang@loongson.cn>
-Message-ID: <246779c0-b834-16a6-ec68-c06d8f9a375d@loongson.cn>
-Date:   Sat, 20 Aug 2022 09:38:21 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        Fri, 19 Aug 2022 21:42:52 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C8ED5701
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 18:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660959771; x=1692495771;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=3mKKmkmP7KLS3Osccsn4JUnHp9tvDD+w9wER8H2ldE4=;
+  b=UmAlDz+YAvTaXrVn4yXI50A0ra3TmQD6oWV8DbB8HykVn9GEC2dgA577
+   SVSjs6E4kgfdgItvoXZ27lecQ4tk25rpK+za9mPFNaMWTkrV8UfNhljOi
+   wno+OViC+1jexewdv/UOvtBrkf8e0ppvKqIT9r/JFveoWcDosKEhVp0YJ
+   kpl5ISULKw2b09D62bP3VzmTEx7+I9Xrx+aN1AJ0rsQfNAncPZJxBHMWZ
+   x7OSeTkq74cPEdYUUQwGJiwn4zKX5t3z1GKNrnKWuhQzDKXuDZWhrFqtk
+   NnG1LZK58E/LUTJTo0gawd79RscDbd5yQ50BGrMr3Coy4wvg3JuDzwhlb
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="291884839"
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="291884839"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 18:42:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="676634108"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Aug 2022 18:42:50 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 19 Aug 2022 18:42:50 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 19 Aug 2022 18:42:47 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Fri, 19 Aug 2022 18:42:47 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Fri, 19 Aug 2022 18:42:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OK9tVpMiXtztUBWUw3varumViiw7yTDaUTYoYJmF6k4IGepz1pG1J2KRIh4T4igFjfgeXxle6E3+zBcfX3U6itsgs+mjwX7fx0bGB1wXsMesYkD2aTR445e7vApAg88SA7178txFOc3lubrisKEFyGG/3Z6QNPn86BFQs+FF59LwQSAKxyJO5peoMUifxw9UXLF3g9+fCqY35Z+OUs9D/PXyvl2mNMPf3G2QJlbhY+VYj0wLdILGP/3awFWjUQRaB+DSrcXtd8ttrNX8R7gkYx7W1+UOmwGCCpZPoM3J1stmlTJbt2RyuQ0nLEvs2c07qvnhPPQS0BREheETlZOa7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3mKKmkmP7KLS3Osccsn4JUnHp9tvDD+w9wER8H2ldE4=;
+ b=nQNw9YGu2tfXxoZwe7DKY18uUg4EvbpN+m8QsqXLzQZQMF+7XU55Gu6vb7+3jZ8s30/qt7gn64FSeDuEjUV139/+ntxU6eopaLROF4wIfJ/c5i5E2+AabjRI2lHdWWgH1ybrFIqUB2da1RCeKq8ukZFfOWHq2QXmh1CvbXLNfJ+pjya0d5GBGe55zAgoj0eryprYFzuJYVSxnPfVU4kgp6Y5ETkba6VSn6peqVoaVz8+8TZStOU4LDzVx0RqAmLRoSeFgcW2Jf3XytQINhTolGeZ93AEoDwuguj7zmg8qQPQ8cOpRlLkeWbpTw0ZSr4sUYaPim87b3zyZv1mhKB02Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
+ (2603:10b6:301:53::18) by DM5PR11MB1804.namprd11.prod.outlook.com
+ (2603:10b6:3:114::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Sat, 20 Aug
+ 2022 01:42:45 +0000
+Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
+ ([fe80::481e:1aa9:a675:db16]) by MWHPR1101MB2221.namprd11.prod.outlook.com
+ ([fe80::481e:1aa9:a675:db16%11]) with mapi id 15.20.5525.019; Sat, 20 Aug
+ 2022 01:42:45 +0000
+Date:   Sat, 20 Aug 2022 09:42:38 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Dongli Zhang <dongli.zhang@oracle.com>
+CC:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <hch@infradead.org>, <m.szyprowski@samsung.com>,
+        <robin.murphy@arm.com>, <jxgao@google.com>,
+        <konrad.wilk@oracle.com>
+Subject: Re: [PATCH v2] swiotlb: avoid potential left shift overflow
+Message-ID: <YwA8DttmM7wgYuHv@gao-cwp>
+References: <20220819084537.52374-1-chao.gao@intel.com>
+ <38c58aa0-11c7-f553-95fd-292fd4944a75@oracle.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <38c58aa0-11c7-f553-95fd-292fd4944a75@oracle.com>
+X-ClientProxiedBy: SG2PR01CA0193.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::18) To MWHPR1101MB2221.namprd11.prod.outlook.com
+ (2603:10b6:301:53::18)
 MIME-Version: 1.0
-In-Reply-To: <20220819132509.127a1353@gandalf.local.home>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf8CxkOAcOwBjCHYFAA--.25921S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxCF4xJw4Uur4fGFWxXFWUArb_yoW5WryDpr
-        yrJanrKa1UtF4a9r4I9wn8Aryaqws3J340krZYgryfCF1DJrs3Cry2yr4DKr93Jw1UCr92
-        9340grWfG34av37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE
-        67vIY487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
-        AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
-        c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
-        AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_
-        Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UU
-        UUU
-X-CM-SenderInfo: pkhmx0p1dqwqxorr0wxvrqhubq/
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5d03f04b-8e35-46bb-f36c-08da824d477c
+X-MS-TrafficTypeDiagnostic: DM5PR11MB1804:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GWJQHwgTR2dM1pqOb0WgiN1SLG3YsgVafTfwMl789Ao+RJYCdY5/IENTGKFocO1Cw/q0UwKhBzs+VXLbwYhx57iQzbBBieowNRH6gaumEoxyanx6FMX8CEcG6bd4mnJosP1r2k+XeCppAkdyBVaXeyoRkEAAYpC/9hSiHH5zH3/cRCWjojWszGJf+40BTEb8nj6czicQfsosIb2eAwNrCJ26UL6ZAVlutQ+T96YmzxYkqPV42HzlmebCsAvVzTdJlxmhvsxlO3rpXstbYjrkrZ8HbAgT0DZ1DOJOIFdzcpn9fFat2hQBc1uZrvFUhebn4dkZbvKg4XTh/17GraFXT/XT0WpK6xG8PXAAjFAmYxwiD+njsoZgv1Kx4YDlZNqonzsz1lFheFPZaIuHeczMbfHdkKABMHSFA059r8w/0S8Skmzz1ySKW36ibNMnmEb2EbCrCS6xjMZc9mgkW/Huk3u6XkoLLmA968HZF7aEiszGFDZYn7NlUWIsn8Z8Ocfwe4GVawZ3HHy3w+OYB2UaXp+KxRokKTBTml0AjCdoq2XjsJuzVM2c+/BSHVZv7ZuMaKt9bsEImDYH2LhLXR/SQo3eLu6Kpm9H/fMAw9V+yzXbnbvx9AGdds6mbK3ARSP6yftyRZjL/LeqmxiFLPXulOcgMIb+fNfNYjuJk6R8nvLY5fNP6ptcQc0cn1cjLGl4Jo0eGpww2jzAg9zkRGgqccG0oiimSQ80xcUc0whNUMc8TbpRLEgKWxtIcuZFVfxf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2221.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(39860400002)(396003)(376002)(346002)(136003)(478600001)(9686003)(86362001)(6512007)(316002)(26005)(6486002)(6506007)(8676002)(66946007)(4326008)(2906002)(33716001)(82960400001)(66476007)(66556008)(41300700001)(6916009)(6666004)(5660300002)(8936002)(44832011)(83380400001)(186003)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LeDTUs8nF4XzMPY9bn1XRaj52XSHq/fEWEi/IVgOezRVYAgbSFmTQTxy+Q84?=
+ =?us-ascii?Q?KFgfUEpssrAenfhNqVSc6+dnUQbHtfINGaSnTOISyukEnVqFsEV9fcw1pOYG?=
+ =?us-ascii?Q?y3OFD6sYMDNvGR9pXUddrUt1Nkr9/y7W7aNkgID3T4J5t6Gg5IWjVZPAdssh?=
+ =?us-ascii?Q?1bnH0ZDNTIxVj7YFXiGivmmFoKH8ebyuTF54XhSed3cUpVGA2yXJ1tJtgkCu?=
+ =?us-ascii?Q?kf/zuZOICyq7stdft1qaS184PI+a4AEjzYCygLKNFnSxnyTIpwx/y1et15k2?=
+ =?us-ascii?Q?UclphMdbqbLNe5DVA8A69oaHKIy+pdX+ZAtYwN6cIJ4ffkRU7PaG19lFE30g?=
+ =?us-ascii?Q?F3IgP7LApluGbwBkBxwBfcC9i3/KnBVL6B2XjHsodA/FDTQfNVt7URoJEvD4?=
+ =?us-ascii?Q?M+MtA92BrCRFO3qr+UvEMaAIf4ODJ3RJ8n7R7L1M/aaTaAAPd0Rq0LPe8V4E?=
+ =?us-ascii?Q?WkNT4OO1V4LxnIByLE1bN1DegkuPWbonMfcxTTiPP1QzpoQbYK7uZpX0VhdH?=
+ =?us-ascii?Q?VPaFsrJ5qweoDMYLBeHO6wyQgozPRYNqlAXH7BslRMfvCKZ86w7vUQxsm0XM?=
+ =?us-ascii?Q?OE/X6DNaApoUptnkgSjQ1KS57tb6rpuvu35RkTtO/KOKuZOCq6JLNd2wpHjF?=
+ =?us-ascii?Q?jA+ba9b06MhOiWoSl/SaKMiCbLbOuKoPqd8fCaRC1mO/WEMOdW5lP4tA7irR?=
+ =?us-ascii?Q?AKChq9zB7225jru2O6ubS21Of1pyQHM8Qt+ZIwQT/OnlzCNrDgAW4rWrkcOr?=
+ =?us-ascii?Q?gTVJrgFlzgu9WvoEp2nWFXYzc2D9f0xum6eO32SyhcB7CEa62UeTmhUK0wIV?=
+ =?us-ascii?Q?roRHgaa80v2l2gcgSmx1kZlomSK/x/KrlV8PPQ28A886J5vFns8zuqx8xTFp?=
+ =?us-ascii?Q?ZAJAXbcmUTl+HzCL36lNEhTttucnXNFpSltt3tSJpTyV4LZNg/48/lXzcQw6?=
+ =?us-ascii?Q?/Cksk/qk2LAg8pq9ooZ8Em4ukIzKCbpEcvNagn+9IZfJOedqWfavST4kZeSB?=
+ =?us-ascii?Q?bPbl4wkA6EI5oXOSvol3tMMpyZU1706s6G4knvYwhOwCQ7Dy3T1jwif4VM5j?=
+ =?us-ascii?Q?wTrXTT6TiKzTcbd5HYSenE9k3yV0KlW3yvb6YTvoqrPIFZYqdnhA08GTPAFI?=
+ =?us-ascii?Q?MRyQ5bRFXpyY+vnUpBELm7n2y8ZEg/iZyzCfZSlSEJhUUGHvogyX/f2HEPsf?=
+ =?us-ascii?Q?QLf7N9E/u/WZ1/a8GeEbS++/APd2hLDNlr5xoPPzYtVT1dFawuhHg2x1sD9S?=
+ =?us-ascii?Q?Yi6pDlMC++b+2EvNqWW04Z7fxhSilWPRS3M2MW+lRJo3CE4iQ5KBN+8YbMdj?=
+ =?us-ascii?Q?fTkoz+tdvaSLkI+oIgdfmE/vUw7ESAdZ2uMtEIGAZaXvJRkamxBt2raJkosF?=
+ =?us-ascii?Q?flLpgVbUUFWNh+aDd0aNsI9LfLFxcj3ZAsMqVA35HjWvQhtyKCcZGlIIi0KM?=
+ =?us-ascii?Q?g8i2Y7Kb4FtyombqCdncQUFjXGrrRstdFNGZOL3yjcKFRWYNOn6agM/tzzcw?=
+ =?us-ascii?Q?hrul8FjaxCT8DZ5l4Edc1MedQbeZOw4fkpQXky9s0l4qgcUmArn3945mAsQM?=
+ =?us-ascii?Q?Mo6ozy9vEbmnP+bIbQHs/cWm5NgzdftK/xcgUHox?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d03f04b-8e35-46bb-f36c-08da824d477c
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2221.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2022 01:42:45.1685
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: p3DnihihJKvn6KpRc9OQZ39sHQTv6GOCVnPtL17fAte3WDRdJckSId6ygNRa3qdP4o682uIgVXWA92KUh/iZPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1804
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/20/2022 01:25 AM, Steven Rostedt wrote:
-
-> On Fri, 19 Aug 2022 16:13:55 +0800
-> Qing Zhang <zhangqing@loongson.cn> wrote:
+On Fri, Aug 19, 2022 at 06:44:05AM -0700, Dongli Zhang wrote:
+>I also encountered this when sending out another version of the 64-bit swiotlb.
 >
->> +#define MCOUNT_STACK_SIZE	(2 * SZREG)
->> +#define MCOUNT_S0_OFFSET	(0)
->> +#define MCOUNT_RA_OFFSET	(SZREG)
->> +
->> +	.macro MCOUNT_SAVE_REGS
->> +	PTR_ADDI sp, sp, -MCOUNT_STACK_SIZE
->> +	PTR_S	s0, sp, MCOUNT_S0_OFFSET
->> +	PTR_S	ra, sp, MCOUNT_RA_OFFSET
->> +	move	s0, a0
->> +	.endm
->> +
->> +	.macro MCOUNT_RESTORE_REGS
->> +	move	a0, s0
->> +	PTR_L	ra, sp, MCOUNT_RA_OFFSET
->> +	PTR_L	s0, sp, MCOUNT_S0_OFFSET
->> +	PTR_ADDI sp, sp, MCOUNT_STACK_SIZE
->> +	.endm
->> +
->> +
->> +SYM_FUNC_START(_mcount)
->> +	la	t1, ftrace_stub
->> +	la	t2, ftrace_trace_function	/* Prepare t2 for (1) */
->> +	PTR_L	t2, t2, 0
->> +	beq	t1, t2, fgraph_trace
->> +
->> +	MCOUNT_SAVE_REGS
->> +
->> +	move	a0, ra				/* arg0: self return address */
->> +	move	a1, s0				/* arg1: parent's return address */
->> +	jirl	ra, t2, 0			/* (1) call *ftrace_trace_function */
->> +
->> +	MCOUNT_RESTORE_REGS
-> You know, if you can implement CONFIG_FTRACE_WITH_ARGS, where the default
-> function callback gets a ftrace_regs pointer (that only holds what is
-> needed for the arguments of the function as well as the stack pointer),
-> then you could also implement function graph on top of that, and remove the
-> need for the below "fgraph_trace" trampoline.
+>https://lore.kernel.org/all/20220609005553.30954-8-dongli.zhang@oracle.com/
 >
-> I'd really would like all architectures to go that way. Also, the
-> CONFIG_FTRACE_WITH_ARGS is all you need for live kernel patching.
-Hi, Steve,
-
-I think we have implemented CONFIG_FTRACE_WITH_ARGS in dynamic ftrace
-in the [Patch3/9]. But, for non dynamic ftrace, it is hardly to
-implement it. Because the LoongArch compiler gcc treats mount as a
-really call, like 'call _mcount(__builtin_return_address(0))'. That
-means, they decrease stack, save args to callee saved regs and may
-do some optimization before calling mcount. It is difficult to find the
-original args and apply changes from tracers.
-
-Thanks,
-Jinyang
-
+>Unfortunately, I could not find an environment (e.g., powerpc) to allocate more
+>than 4G until swiotlb supports 64-bit.
 >
->
->> +
->> +fgraph_trace:
->> +#ifdef	CONFIG_FUNCTION_GRAPH_TRACER
->> +	la	t1, ftrace_stub
->> +	la	t3, ftrace_graph_return
->> +	PTR_L	t3, t3, 0
->> +	bne	t1, t3, ftrace_graph_caller
->> +	la	t1, ftrace_graph_entry_stub
->> +	la	t3, ftrace_graph_entry
->> +	PTR_L	t3, t3, 0
->> +	bne	t1, t3, ftrace_graph_caller
->> +#endif
->> +
->> +	.globl ftrace_stub
->> +ftrace_stub:
->> +	jirl	zero, ra, 0
->> +SYM_FUNC_END(_mcount)
->> +EXPORT_SYMBOL(_mcount)
->> +
->> +#ifdef CONFIG_FUNCTION_GRAPH_TRACER
->> +SYM_FUNC_START(ftrace_graph_caller)
->> +	MCOUNT_SAVE_REGS
->> +
->> +	PTR_ADDI	a0, ra, -4			/* arg0: Callsite self return addr */
->> +	PTR_ADDI	a1, sp, MCOUNT_STACK_SIZE	/* arg1: Callsite sp */
->> +	move	a2, s0					/* arg2: Callsite parent ra */
->> +	bl	prepare_ftrace_return
->> +
->> +	MCOUNT_RESTORE_REGS
->> +	jirl	zero, ra, 0
->> +SYM_FUNC_END(ftrace_graph_caller)
+>Although xen supports 64-bit, but the hypervisor side limits the max to < 4G.
 
+Sorry. I didn't notice your series before. I agree that the overflow
+isn't an issue if swiotlb size cannot be larger than 4GB. That's why
+I said the overflow is a potential issue.
+
+In an internal effort to measure the impact of swiotlb size to IO
+performance of confidential VM (e.g., TDX VM), we simply added
+SWIOTLB_ANY to the default io_tlb_mem to lift the restriction on swiotlb
+size. Then we hit this issue and worked out this fix. I posted this
+fix because I think the fix by itself is helpful because it removes the
+implicit dependency of the left-shift in slot_addr() on swiotlb size and
+then someone trying to lift the size limitation won't hit the same issue.
