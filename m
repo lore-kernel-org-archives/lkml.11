@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE1CC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 06:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FBCC32772
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 06:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245284AbiHTGBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 02:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
+        id S245346AbiHTGBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 02:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244304AbiHTGAv (ORCPT
+        with ESMTP id S244375AbiHTGAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 02:00:51 -0400
+        Sat, 20 Aug 2022 02:00:52 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B26A2628;
-        Fri, 19 Aug 2022 23:00:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A6CA260A;
+        Fri, 19 Aug 2022 23:00:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660975250; x=1692511250;
+  t=1660975251; x=1692511251;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Tr3yA3TW4wQhy3y6XXgJ33VEExdUImA9iqqmlfQuqZk=;
-  b=MguFDtAoF5mgYdt08wAuTqFALgCIMUvbKPa+KP5emjVHtzaBqDHbrIPl
-   HGrg+9yekHSbELGsu08YTUY/gK/AecWZ3o0ZqdKIZO74VuArW9CFBBJJ2
-   3JhLZe+lL0KA7wE9g4MCn6kPZRqofIvjpBnYr4BxaRpYeRkisSydG8TOi
-   UQ3MmyldxmsN3gfZjHpnKjTP4tYIkmQ8WkjXrhjmDoZ2mJQxKZPPfOR+R
-   eV0Dkdz0PwCrCaK/ViA+TYOwqRXUHzukuFrLetf24tXR116qAZPj6UZcM
-   xPb7MgqkiJSo19AzJAZfWidxhQp/unMDNP/mq4TGuzHy4qRJH5JKPzUyf
+  bh=a+b7bWmrpg+akx27e5IPdnpc7BaBJM21hcXB7NFDQzI=;
+  b=n0NZrU0PR/YN6KO+NrNplcgMqa1r9no09XuGxgFTGBL5wpSUx0iPVzgc
+   f2qtEbW9VqFShHcR0NSV/HB98louruBPPQ4ALEgSQOmfRdhWIWpFnlzZE
+   L6F4tyItpKqoZhzQ+XYq2Zzrw1ZkYyQnl0WA5Ktt1NTh2uXCYums26EqA
+   /XajkWpa4HafmvZ9YPF4ASlRIugtHfjs3MXc3k1IZxTt63crqrW3dgbQM
+   JJOPKpbY3qgmjcDMWvwcWzBsqAp5H6YAlMCmu5c6OVcoT0atQi+c9tJIW
+   TMuh2uZxFG44TrmHWqv7oXXIj4jRNiJJOQ3mUSBqSsHN/W2W4IiteCo5A
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="379448972"
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="379448974"
 X-IronPort-AV: E=Sophos;i="5.93,250,1654585200"; 
-   d="scan'208";a="379448972"
+   d="scan'208";a="379448974"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 23:00:49 -0700
 X-IronPort-AV: E=Sophos;i="5.93,250,1654585200"; 
-   d="scan'208";a="668857527"
+   d="scan'208";a="668857535"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 23:00:49 -0700
 From:   isaku.yamahata@intel.com
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Sean Christopherson <seanjc@google.com>,
         Kai Huang <kai.huang@intel.com>, Chao Gao <chao.gao@intel.com>,
         Will Deacon <will@kernel.org>
-Subject: [RFC PATCH 06/18] KVM: Add arch hook when VM is added/deleted
-Date:   Fri, 19 Aug 2022 23:00:12 -0700
-Message-Id: <ccbd4117278ae973617918f4adb029d648deb8f3.1660974106.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH 08/18] KVM: kvm_arch.c: Remove _nolock post fix
+Date:   Fri, 19 Aug 2022 23:00:14 -0700
+Message-Id: <d357c81da2145d1ea7498b440f24b6a15683b976.1660974106.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1660974106.git.isaku.yamahata@intel.com>
 References: <cover.1660974106.git.isaku.yamahata@intel.com>
@@ -58,119 +58,109 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-and pass kvm_usage_count with kvm_lock.  Move kvm_arch_post_init_vm() under
-kvm_arch_add_vm().  Later kvm_arch_post_init_vm() is deleted once x86
-overrides kvm_arch_add_vm().
+Now all related callbacks are called under kvm_lock, no point for _nolock
+post fix.  Remove _nolock post fix for short function name.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- include/linux/kvm_host.h |  2 ++
- virt/kvm/kvm_arch.c      | 12 +++++++++++-
- virt/kvm/kvm_main.c      | 21 +++++++++++++++++----
- 3 files changed, 30 insertions(+), 5 deletions(-)
+ virt/kvm/kvm_arch.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index c38f382f3808..5ae66062620c 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1445,6 +1445,8 @@ int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu);
- bool kvm_arch_dy_runnable(struct kvm_vcpu *vcpu);
- bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
- int kvm_arch_post_init_vm(struct kvm *kvm);
-+int kvm_arch_add_vm(struct kvm *kvm, int usage_count);
-+int kvm_arch_del_vm(int usage_count);
- void kvm_arch_pre_destroy_vm(struct kvm *kvm);
- int kvm_arch_create_vm_debugfs(struct kvm *kvm);
- 
 diff --git a/virt/kvm/kvm_arch.c b/virt/kvm/kvm_arch.c
-index 4748a76bcb03..0eac996f4981 100644
+index d593610edb0a..8a5d88b02aab 100644
 --- a/virt/kvm/kvm_arch.c
 +++ b/virt/kvm/kvm_arch.c
-@@ -10,11 +10,21 @@
- 
- #include <linux/kvm_host.h>
- 
-+__weak int kvm_arch_post_init_vm(struct kvm *kvm)
-+{
-+	return 0;
-+}
-+
- /*
-  * Called after the VM is otherwise initialized, but just before adding it to
-  * the vm_list.
-  */
--__weak int kvm_arch_post_init_vm(struct kvm *kvm)
-+__weak int kvm_arch_add_vm(struct kvm *kvm, int usage_count)
-+{
-+	return kvm_arch_post_init_vm(kvm);
-+}
-+
-+__weak int kvm_arch_del_vm(int usage_count)
- {
+@@ -20,7 +20,7 @@ __weak int kvm_arch_post_init_vm(struct kvm *kvm)
  	return 0;
  }
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 8d08126e6c74..0ba370acff8d 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -144,6 +144,7 @@ static int kvm_no_compat_open(struct inode *inode, struct file *file)
- #endif
- static int hardware_enable_all(void);
- static void hardware_disable_all(void);
-+static void kvm_del_vm(void);
  
- static void kvm_io_bus_destroy(struct kvm_io_bus *bus);
- 
-@@ -1201,11 +1202,12 @@ static struct kvm *kvm_create_vm(unsigned long type, const char *fdname)
- 	if (r)
- 		goto out_err_no_mmu_notifier;
- 
--	r = kvm_arch_post_init_vm(kvm);
--	if (r)
--		goto out_err_mmu_notifier;
--
- 	mutex_lock(&kvm_lock);
-+	r = kvm_arch_add_vm(kvm, kvm_usage_count);
-+	if (r) {
-+		mutex_unlock(&kvm_lock);
-+		goto out_err_mmu_notifier;
-+	}
- 	list_add(&kvm->vm_list, &vm_list);
- 	mutex_unlock(&kvm_lock);
- 
-@@ -1237,6 +1239,7 @@ static struct kvm *kvm_create_vm(unsigned long type, const char *fdname)
- #endif
- out_err_no_mmu_notifier:
- 	hardware_disable_all();
-+	kvm_del_vm();
- out_err_no_disable:
- 	kvm_arch_destroy_vm(kvm);
- out_err_no_arch_destroy_vm:
-@@ -1316,6 +1319,7 @@ static void kvm_destroy_vm(struct kvm *kvm)
- 	kvm_arch_free_vm(kvm);
- 	preempt_notifier_dec();
- 	hardware_disable_all();
-+	kvm_del_vm();
- 	mmdrop(mm);
- 	module_put(kvm_chardev_ops.owner);
- }
-@@ -5055,6 +5059,15 @@ static void hardware_disable_all(void)
- 	cpus_read_unlock();
- }
- 
-+static void kvm_del_vm(void)
-+{
-+	cpus_read_lock();
-+	mutex_lock(&kvm_lock);
-+	kvm_arch_del_vm(kvm_usage_count);
-+	mutex_unlock(&kvm_lock);
-+	cpus_read_unlock();
-+}
-+
- static int hardware_enable_all(void)
+-static void hardware_enable_nolock(void *junk)
++static void hardware_enable(void *junk)
  {
- 	int r = 0;
+ 	int cpu = raw_smp_processor_id();
+ 	int r;
+@@ -41,7 +41,7 @@ static void hardware_enable_nolock(void *junk)
+ 	}
+ }
+ 
+-static void hardware_disable_nolock(void *junk)
++static void hardware_disable(void *junk)
+ {
+ 	int cpu = raw_smp_processor_id();
+ 
+@@ -55,7 +55,7 @@ static void hardware_disable_nolock(void *junk)
+ 
+ __weak void kvm_arch_pre_hardware_unsetup(void)
+ {
+-	on_each_cpu(hardware_disable_nolock, NULL, 1);
++	on_each_cpu(hardware_disable, NULL, 1);
+ }
+ 
+ /*
+@@ -70,7 +70,7 @@ __weak int kvm_arch_add_vm(struct kvm *kvm, int usage_count)
+ 		return 0;
+ 
+ 	atomic_set(&hardware_enable_failed, 0);
+-	on_each_cpu(hardware_enable_nolock, NULL, 1);
++	on_each_cpu(hardware_enable, NULL, 1);
+ 
+ 	if (atomic_read(&hardware_enable_failed)) {
+ 		r = -EBUSY;
+@@ -80,7 +80,7 @@ __weak int kvm_arch_add_vm(struct kvm *kvm, int usage_count)
+ 	r = kvm_arch_post_init_vm(kvm);
+ err:
+ 	if (r)
+-		on_each_cpu(hardware_disable_nolock, NULL, 1);
++		on_each_cpu(hardware_disable, NULL, 1);
+ 	return r;
+ }
+ 
+@@ -89,39 +89,39 @@ __weak int kvm_arch_del_vm(int usage_count)
+ 	if (usage_count)
+ 		return 0;
+ 
+-	on_each_cpu(hardware_disable_nolock, NULL, 1);
++	on_each_cpu(hardware_disable, NULL, 1);
+ 	return 0;
+ }
+ 
+ __weak int kvm_arch_online_cpu(unsigned int cpu, int usage_count)
+ {
+ 	if (usage_count)
+-		hardware_enable_nolock(NULL);
++		hardware_enable(NULL);
+ 	return 0;
+ }
+ 
+ __weak int kvm_arch_offline_cpu(unsigned int cpu, int usage_count)
+ {
+ 	if (usage_count)
+-		hardware_disable_nolock(NULL);
++		hardware_disable(NULL);
+ 	return 0;
+ }
+ 
+ __weak int kvm_arch_reboot(int val)
+ {
+-	on_each_cpu(hardware_disable_nolock, NULL, 1);
++	on_each_cpu(hardware_disable, NULL, 1);
+ 	return NOTIFY_OK;
+ }
+ 
+ __weak int kvm_arch_suspend(int usage_count)
+ {
+ 	if (usage_count)
+-		hardware_disable_nolock(NULL);
++		hardware_disable(NULL);
+ 	return 0;
+ }
+ 
+ __weak void kvm_arch_resume(int usage_count)
+ {
+ 	if (usage_count)
+-		hardware_enable_nolock(NULL);
++		hardware_enable(NULL);
+ }
 -- 
 2.25.1
 
