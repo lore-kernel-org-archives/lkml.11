@@ -2,84 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46084C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 774BEC32792
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345611AbiHTLqi (ORCPT
+        id S1345304AbiHTLqr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36272 "EHLO
+        Sat, 20 Aug 2022 07:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241192AbiHTLqf (ORCPT
+        with ESMTP id S241192AbiHTLqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:46:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A539C2CE;
-        Sat, 20 Aug 2022 04:46:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EE4160C9B;
-        Sat, 20 Aug 2022 11:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA217C433C1;
-        Sat, 20 Aug 2022 11:46:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660995993;
-        bh=KWya8Ir7VxqGsghF5iElXNfuH21OU6AhpqVzC3o0LYo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vJmQ9cp7v+CbrquW5fjf4f9qTzptUSTBEtW3y07hTULnCx1gcBIJ1YEfkbHDWzSby
-         0ITtxpczsHUaf+wN0ev5KoyoIdCcZhqXjkO1gViZ5qPXjrgmPl+SnhW8qDKhL/Yf8/
-         Qa1EKlB9fKZWfWaAn0NcXQJwXn0KOZiIh1dd7Yb1xhjeJXJC5RrV1jhJHYDPlb7p0W
-         mIc+XHCGSXMh5f4UcsxGoBz1dypWOa62ZyslAICmma9wCTc8HdVjdfBpTVUWnYUE5K
-         CIwvMklQe6ow3g/hor/QDsYWbUFfDDbt8B6FqcUBZC5t/4UqtVyGJzfBM6xEkbDjOk
-         lO319oG8j397A==
-Date:   Sat, 20 Aug 2022 12:57:09 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     sunliming <sunliming@kylinos.cn>
-Cc:     ktsai@capellamicro.com, lars@metafoo.de,
-        kai.heng.feng@canonical.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kelulanainsley@gmail.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] iio: light: cm32181: make cm32181_pm_ops static
-Message-ID: <20220820125709.7df567c1@jic23-huawei>
-In-Reply-To: <20220815012930.150078-1-sunliming@kylinos.cn>
-References: <20220815012930.150078-1-sunliming@kylinos.cn>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 20 Aug 2022 07:46:44 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A3F9C2D8
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:46:43 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id 73so5612343pgb.9
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=59rOYkPYIN5vND2RHdpdK5DJi+/2g+av+qqSSDBCCnw=;
+        b=OjHcQHpWoJKYiWkkbfcLWXVdj3+kRPw287FwB7lpv6aEZinWASIxNNKBbapiJXfIFJ
+         H2JYaAd483oGU1YY1b8BLeFnLR6uV0QBlCcnpeZjhik1cnf0x6D2pj0DOAsl1oq4adYz
+         2MW/+bzn8coCr3RhrGYWPuZp5vQlDXDtvDjL7LAPcSZfk+f/5cJc+rmkgJw/XIYpNDet
+         QS+wci6hmhxBXr8f77akL1Pn/InELxozRqNvQs72S5wjsjYjZv+BfI11jRRvo8XiJP5s
+         53rrl4gu6UbJ9ilY9D1m5Js0vpKI0Vr0bqElxLkn2tZdXBZMA3WWkDX/85GeqXo+2vME
+         m74A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=59rOYkPYIN5vND2RHdpdK5DJi+/2g+av+qqSSDBCCnw=;
+        b=WdO+waN7XEwFDnPeZbqannfu1WepBM4PcEExJhtsVT22dXGvKnWt/n3iqhpEiFaLSW
+         7xa9n4LRWVOuiRoCkWiyCjW7ky42DLsW2bhGJzvxwsGCB3Ls6RoQOzhLGwV6x2VrwAS/
+         +6VkfJGPf/yHv5ZqR006IV0CwyngpfUs4p7xL292pBeKvgD4Y6tiUl8mwsgjxJvJw5h+
+         dlMZurorphtPrcLZ/u/HXGYsh4Hf0f0ja3b8LYahit82vbYruueGbBSxND0qv7T5QoNp
+         dsTaj1LXatMAACi0MVSIMImOIEvTJcc2UE7XexFD5OK+oxcFm9TC7JB2Q5dyFhFwI0Gh
+         x0iQ==
+X-Gm-Message-State: ACgBeo1SRR155UGTSOkYy16XsGRiefGYupVprj+nOYeGxCh+D+0/Nusp
+        zch/qz5uguBsV2JqT4hHzG3k
+X-Google-Smtp-Source: AA6agR43PtIofVC+YbgiSz3DSzmga1gvZh3tKV/nc2zsDcX2jdU9xpw0lyMHzZL7EQuz7t74s+Zttw==
+X-Received: by 2002:a65:5bc5:0:b0:42a:b6:24c2 with SMTP id o5-20020a655bc5000000b0042a00b624c2mr9182792pgr.443.1660996003259;
+        Sat, 20 Aug 2022 04:46:43 -0700 (PDT)
+Received: from thinkpad ([220.158.158.232])
+        by smtp.gmail.com with ESMTPSA id w6-20020a170902e88600b0016bf803341asm1320728plg.146.2022.08.20.04.46.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Aug 2022 04:46:42 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 17:16:38 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     kishon@ti.com, lpieralisi@kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mie@igel.co.jp, kw@linux.com
+Subject: Re: [PATCH 1/5] misc: pci_endpoint_test: Remove unnecessary WARN_ON
+Message-ID: <20220820114638.GA3151@thinkpad>
+References: <20220819145018.35732-1-manivannan.sadhasivam@linaro.org>
+ <20220819145018.35732-2-manivannan.sadhasivam@linaro.org>
+ <Yv+rxuqUc+an6R3q@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yv+rxuqUc+an6R3q@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 09:29:30 +0800
-sunliming <sunliming@kylinos.cn> wrote:
-
-> This symbol is not used outside of cm32181.c, so marks it static.
+On Fri, Aug 19, 2022 at 05:27:02PM +0200, Greg KH wrote:
+> On Fri, Aug 19, 2022 at 08:20:14PM +0530, Manivannan Sadhasivam wrote:
+> > If unable to map test_reg_bar, then probe will fail with a dedicated
+> > error message. So there is no real need of WARN_ON here.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > ---
+> >  drivers/misc/pci_endpoint_test.c | 4 +---
+> >  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> Fixes the following sparse warnings:
-> >> drivers/iio/light/cm32181.c:508:1: sparse: sparse: symbol 'cm32181_pm_ops'  
-> was not declared. Should it be static?
+> Should this go to stable kernels?
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: sunliming <sunliming@kylinos.cn>
 
-Applied.  Thanks,
-> ---
->  drivers/iio/light/cm32181.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+This is not a bug fix but a removal of unnecessary stacktrace, so I'm not sure
+if this needs to be backported.
+
+Thanks,
+Mani
+
+> thanks,
 > 
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index edbe6a3138d0..001055d09750 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -505,7 +505,7 @@ static int cm32181_resume(struct device *dev)
->  					 cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
->  }
->  
-> -DEFINE_SIMPLE_DEV_PM_OPS(cm32181_pm_ops, cm32181_suspend, cm32181_resume);
-> +static DEFINE_SIMPLE_DEV_PM_OPS(cm32181_pm_ops, cm32181_suspend, cm32181_resume);
->  
->  static const struct of_device_id cm32181_of_match[] = {
->  	{ .compatible = "capella,cm3218" },
+> greg k-h
 
+-- 
+மணிவண்ணன் சதாசிவம்
