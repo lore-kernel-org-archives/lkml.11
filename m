@@ -2,104 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3479C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB88C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344492AbiHTL0M (ORCPT
+        id S1345030AbiHTL1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        Sat, 20 Aug 2022 07:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbiHTL0J (ORCPT
+        with ESMTP id S241503AbiHTL1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:26:09 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69842193E2;
-        Sat, 20 Aug 2022 04:26:08 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-335624d1e26so181884697b3.4;
-        Sat, 20 Aug 2022 04:26:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=X55tJK6SwStzChxJgm/vni+D0twkhoJ6fdk+hQZkwrU=;
-        b=xDMvAy221Mjvj/CMv6nMlFH8TPt5V2hbCGbs4Q+c4zPzJbaU+hnuJ/1lSi4w2KoFkE
-         l31qql2Z0g64Tl3vinyXYXXy89neGap/KgEmbMbZUGgvNHBDmWxN9JmG/FdxshwsPzdy
-         qrsCx1+TUH+eCiknyKlExW1cvJA+NZ6ouNKfEvEzaRBomLP1uEmrUqu8Fwf3xOw7W9L3
-         ZcE1buOmUQjkHjiuX10Sg5WES9XMRkYZbiV6bxIcoVQGzJDNuRMu7V+zYuxnl6BKmzgg
-         /EvtBGPKV3ZZ81ilcZqmQibNc3QyxyodgA/EyxXYegPLw7HrP9SiLZQAhofk7yDg/h+u
-         cMXQ==
-X-Gm-Message-State: ACgBeo0VQVMzzQOubXv8dTab+j3Fq4HBA2Hj+xYt6vjsTr+UtzZDPL4g
-        bZRh7tSy3ZV8I+Mf2vJtJ+ZuFGsEQYmkRZFzeeA=
-X-Google-Smtp-Source: AA6agR628vKI0tbnu0N8qUd5OW6pJUINV7CGdfSi9on2Aox71vQfT9mZu6t4+ZRX9rnhTAe1k0DK/BEBMBWMLOIBdPw=
-X-Received: by 2002:a81:104e:0:b0:336:37f1:9686 with SMTP id
- 75-20020a81104e000000b0033637f19686mr12115184ywq.149.1660994767631; Sat, 20
- Aug 2022 04:26:07 -0700 (PDT)
+        Sat, 20 Aug 2022 07:27:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58DE220C2;
+        Sat, 20 Aug 2022 04:27:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65FF6B80B8E;
+        Sat, 20 Aug 2022 11:27:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6ABC433C1;
+        Sat, 20 Aug 2022 11:27:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660994849;
+        bh=2x0Gsy+of145puKe++xz+vCM/2yS9d9yxU3kwmjgqz4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EETcnA+jD97hRAAmnT6LpnuOKiKz0cf2ZhDX152jOU+0vhd5JKKmDBWc6rU1ohN2X
+         HTJ+dGrH/kfKv/MI3DnWCuyHfW3ewXakq+65Qzzk1dLkfG/JmzIQRNIAeY+4qmv0Xg
+         un6NwC6pu458ZeCnSat1dDLnRUy0H+aBuSusBy71bCUW9IosftGlSn/I5RXQQD/D1Q
+         hI0OAK2T3DLQ3t/335ckA5T54Z96c5yYHnvyKEu23D0A2vhd9yhbf4Wx6ET7lSEszQ
+         YoNfp51NDCuN9a9oTLkNsjCWpJMoHbxLgqsQFQYEzmI+N9UMxFl6ZLeaxAmSdmU7GJ
+         8DRlVGzwMNc5g==
+Date:   Sat, 20 Aug 2022 12:38:04 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Xiang wangx <wangxiang@cdjrlc.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 08/14] iio: bmg160_core: Simplify using
+ devm_regulator_*get_enable()
+Message-ID: <20220820123707.7f075381@jic23-huawei>
+In-Reply-To: <795d16f2-4dee-7492-4a87-e928020efebe@fi.rohmeurope.com>
+References: <cover.1660934107.git.mazziesaccount@gmail.com>
+        <3fd11489356b1c73a3d7b4bd9dec7e12c9fe8788.1660934107.git.mazziesaccount@gmail.com>
+        <CAHp75VePr790pXZ5AiRnrPmxkOgZ3YKRTbABE6dvk+udQYrXGA@mail.gmail.com>
+        <795d16f2-4dee-7492-4a87-e928020efebe@fi.rohmeurope.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
- <Yv6PLl4aLPzHTJTQ@kroah.com> <Yv9ftg2MVx+okmzC@kuha.fi.intel.com> <Yv9m6LSGKXvnnBSY@kroah.com>
-In-Reply-To: <Yv9m6LSGKXvnnBSY@kroah.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 20 Aug 2022 13:25:56 +0200
-Message-ID: <CAJZ5v0h19Rdvt-HYdnFC=dD=gWv=HRqNbA=cpx=zbXNyV1rGKA@mail.gmail.com>
-Subject: Re: [PATCH 0/6] ACPI: New helper function acpi_dev_get_memory_resources()
- and a new ACPI ID
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Utkarsh Patel <utkarsh.h.patel@intel.com>,
-        "Mani, Rajmohan" <rajmohan.mani@intel.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
-        <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 12:33 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Fri, Aug 19, 2022 at 01:02:30PM +0300, Heikki Krogerus wrote:
-> > Hi,
-> >
-> > On Thu, Aug 18, 2022 at 09:12:46PM +0200, Greg Kroah-Hartman wrote:
-> > > On Tue, Aug 16, 2022 at 01:16:23PM +0300, Heikki Krogerus wrote:
-> > > > Hi,
-> > > >
-> > > > The helper function returns all memory resources described for a
-> > > > device regardless of the ACPI descriptor type (as long as it's
-> > > > memory), but the first patch introduces new ACPI ID for the IOM
-> > > > controller on Intel Meteor Lake and also separately modifies the
-> > > > driver so that it can get the memory resource from Address Space
-> > > > Resource Descriptor.
-> > > >
-> > > > An alternative would have been to introduce that helper function first
-> > > > so we would not need to modify the driver when the new ID is added,
-> > > > but then the helper would also need to be applied to the stable kernel
-> > > > releases, and that does not feel necessary or appropriate in this
-> > > > case, at least not IMO.
-> > > >
-> > > > So that's why I'm proposing here that we first add the ID, and only
-> > > > after that introduce the helper, and only for mainline. That way the
-> > > > patch introducing the ID is the only that goes to the stable releases.
-> > > >
-> > > > If that's okay, and these don't have any other problems, I assume it's
-> > > > OK if Rafael takes all of these, including the ID?
-> > >
-> > > I took the id now, for 6.0-final as it seems to be totally independant
-> > > of the other commits (otherwise you would not have tagged it for the
-> > > stable tree.)
-> > >
-> > > The remainder should probably be resent and send through the acpi tree.
-> >
-> > Okay. The last patch depends on that ID patch, so Rafael, you need to
-> > handle that conflict with immutable branch I guess. Or should we just
-> > skip that patch for now?
->
-> You can wait for -rc3 or so which should have that commit in it.
+On Sat, 20 Aug 2022 06:19:00 +0000
+"Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com> wrote:
 
-I'll apply the series on top of -rc3.
+> Thanks for the review Andy
+> 
+> On 8/20/22 02:30, Andy Shevchenko wrote:
+> > On Fri, Aug 19, 2022 at 10:21 PM Matti Vaittinen
+> > <mazziesaccount@gmail.com> wrote:  
+> >>
+> >> Use devm_regulator_bulk_get_enable() instead of open coded bulk-get,
+> >> bulk-enable, add-action-to-disable-at-detach - pattern.  
+> > 
+> > ...
+> >   
+> >>   int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> >>                        const char *name)
+> >>   {
+> >>          struct bmg160_data *data;
+> >>          struct iio_dev *indio_dev;
+> >>          int ret;
+> >> +       static const char * const regulators[] = {"vdd", "vddio"};  
+> > 
+> > Please, keep this following the "longest line first" rule. Note, in  
+> 
+> This was not following the (IMO slightly silly) rule even prior my 
+> patch. I can for sure move my line up - but that won't give you the 
+> "reverse X-mas tree".
+> 
+> I don't have any real objections on changing the styling though - I 
+> don't expect this to be merged before the dependency is in rc1 - so I 
+> guess I will anyways need to respin this for next cycle. I can do the 
+> styling then.
+I was a bit surprised Mark didn't do an immutable branch for this, but
+indeed looks like it's going to be a multiple cycle thing - so we'll
+probably have a bunch of new cases introduced in the meantime that
+we need to tidy up.  Ah well.
 
-Cheers!
+> 
+> > this case you even can move it out of the function, so we will see
+> > clearly that this is (not a hidden) global variable.  
+> 
+> Here I do disagree with you. Moving the array out of the function makes 
+> it _much_ less obvious it is not used outside this function. Reason for 
+> making is "static const" is to allow the data be placed in read-only 
+> area (thanks to Guenter who originally gave me this tip).
+> 
+> > P.S. Same applies for the rest of the similar places in your series.
+> >   
+> 
+> Br,
+> 	-- Matti
+> 
+
