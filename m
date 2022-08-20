@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D83C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3479C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344891AbiHTLSg (ORCPT
+        id S1344492AbiHTL0M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
+        Sat, 20 Aug 2022 07:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241192AbiHTLSc (ORCPT
+        with ESMTP id S231132AbiHTL0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:18:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB7217585;
-        Sat, 20 Aug 2022 04:18:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF628611B6;
-        Sat, 20 Aug 2022 11:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E52CAC433D6;
-        Sat, 20 Aug 2022 11:18:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660994309;
-        bh=kELYW5Oc9wfTfaOtjKzFb+oTCYYXKgWBwjVIEpvSZzo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OKXpMSJ9vYjGxuMUK4WJCfaAgKUhsdFoXl0ESYoKwLeALqiPaBRqsnKgNy1y5tfVP
-         POuAAe/pRp8raThz+MWKIPZRQrOyQB+ALR/sYsTCh7ob5Ljs8mWQIA8CcPVFMf5UFO
-         qPhDg/8ih9B8aOMwhyWY6ohhs4p04ONPQAGpi4y0z9i/3tdZimjcpPS7keVMAFSpnZ
-         7NIeYCwSXRNaLAat5bRKCDrVVFnhFvbJxEc6MoC1+f6ERSgarAks05rB54cL/UyB6f
-         PXtDQniCITsSOKNxr4Cxr/oMF/1P3tvLOGpKwn7OhzEUOpsUdfh8q8tWfRbV6c5XZK
-         vZ52Htn66kgHw==
-Date:   Sat, 20 Aug 2022 20:18:24 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 2/4] tracing/eprobes: Do not hardcode $comm as a string
-Message-Id: <20220820201824.5637c4feff4a7674aebde60a@kernel.org>
-In-Reply-To: <20220820014833.035925907@goodmis.org>
-References: <20220820014035.531145719@goodmis.org>
-        <20220820014833.035925907@goodmis.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Sat, 20 Aug 2022 07:26:09 -0400
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69842193E2;
+        Sat, 20 Aug 2022 04:26:08 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-335624d1e26so181884697b3.4;
+        Sat, 20 Aug 2022 04:26:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=X55tJK6SwStzChxJgm/vni+D0twkhoJ6fdk+hQZkwrU=;
+        b=xDMvAy221Mjvj/CMv6nMlFH8TPt5V2hbCGbs4Q+c4zPzJbaU+hnuJ/1lSi4w2KoFkE
+         l31qql2Z0g64Tl3vinyXYXXy89neGap/KgEmbMbZUGgvNHBDmWxN9JmG/FdxshwsPzdy
+         qrsCx1+TUH+eCiknyKlExW1cvJA+NZ6ouNKfEvEzaRBomLP1uEmrUqu8Fwf3xOw7W9L3
+         ZcE1buOmUQjkHjiuX10Sg5WES9XMRkYZbiV6bxIcoVQGzJDNuRMu7V+zYuxnl6BKmzgg
+         /EvtBGPKV3ZZ81ilcZqmQibNc3QyxyodgA/EyxXYegPLw7HrP9SiLZQAhofk7yDg/h+u
+         cMXQ==
+X-Gm-Message-State: ACgBeo0VQVMzzQOubXv8dTab+j3Fq4HBA2Hj+xYt6vjsTr+UtzZDPL4g
+        bZRh7tSy3ZV8I+Mf2vJtJ+ZuFGsEQYmkRZFzeeA=
+X-Google-Smtp-Source: AA6agR628vKI0tbnu0N8qUd5OW6pJUINV7CGdfSi9on2Aox71vQfT9mZu6t4+ZRX9rnhTAe1k0DK/BEBMBWMLOIBdPw=
+X-Received: by 2002:a81:104e:0:b0:336:37f1:9686 with SMTP id
+ 75-20020a81104e000000b0033637f19686mr12115184ywq.149.1660994767631; Sat, 20
+ Aug 2022 04:26:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
+ <Yv6PLl4aLPzHTJTQ@kroah.com> <Yv9ftg2MVx+okmzC@kuha.fi.intel.com> <Yv9m6LSGKXvnnBSY@kroah.com>
+In-Reply-To: <Yv9m6LSGKXvnnBSY@kroah.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Sat, 20 Aug 2022 13:25:56 +0200
+Message-ID: <CAJZ5v0h19Rdvt-HYdnFC=dD=gWv=HRqNbA=cpx=zbXNyV1rGKA@mail.gmail.com>
+Subject: Re: [PATCH 0/6] ACPI: New helper function acpi_dev_get_memory_resources()
+ and a new ACPI ID
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Utkarsh Patel <utkarsh.h.patel@intel.com>,
+        "Mani, Rajmohan" <rajmohan.mani@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
+        <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 21:40:37 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Fri, Aug 19, 2022 at 12:33 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Fri, Aug 19, 2022 at 01:02:30PM +0300, Heikki Krogerus wrote:
+> > Hi,
+> >
+> > On Thu, Aug 18, 2022 at 09:12:46PM +0200, Greg Kroah-Hartman wrote:
+> > > On Tue, Aug 16, 2022 at 01:16:23PM +0300, Heikki Krogerus wrote:
+> > > > Hi,
+> > > >
+> > > > The helper function returns all memory resources described for a
+> > > > device regardless of the ACPI descriptor type (as long as it's
+> > > > memory), but the first patch introduces new ACPI ID for the IOM
+> > > > controller on Intel Meteor Lake and also separately modifies the
+> > > > driver so that it can get the memory resource from Address Space
+> > > > Resource Descriptor.
+> > > >
+> > > > An alternative would have been to introduce that helper function first
+> > > > so we would not need to modify the driver when the new ID is added,
+> > > > but then the helper would also need to be applied to the stable kernel
+> > > > releases, and that does not feel necessary or appropriate in this
+> > > > case, at least not IMO.
+> > > >
+> > > > So that's why I'm proposing here that we first add the ID, and only
+> > > > after that introduce the helper, and only for mainline. That way the
+> > > > patch introducing the ID is the only that goes to the stable releases.
+> > > >
+> > > > If that's okay, and these don't have any other problems, I assume it's
+> > > > OK if Rafael takes all of these, including the ID?
+> > >
+> > > I took the id now, for 6.0-final as it seems to be totally independant
+> > > of the other commits (otherwise you would not have tagged it for the
+> > > stable tree.)
+> > >
+> > > The remainder should probably be resent and send through the acpi tree.
+> >
+> > Okay. The last patch depends on that ID patch, so Rafael, you need to
+> > handle that conflict with immutable branch I guess. Or should we just
+> > skip that patch for now?
+>
+> You can wait for -rc3 or so which should have that commit in it.
 
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> 
-> The variable $comm is hard coded as a string, which is true for both
-> kprobes and uprobes, but for event probes (eprobes) it is a field name. In
-> most cases the "comm" field would be a string, but there's no guarantee of
-> that fact.
-> 
-> Do not assume that comm is a string. Not to mention, it currently forces
-> comm fields to fault, as string processing for event probes is currently
-> broken.
+I'll apply the series on top of -rc3.
 
-Indeed. There should be an event argument which names "comm".
-Eprobe might refer it. BTW, does eprobe use any special common fields?
-I originally introduced "$" variable for such special variables.
-
-Thank you,
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
->  kernel/trace/trace_probe.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
-> index dec657af363c..23dcd52ad45c 100644
-> --- a/kernel/trace/trace_probe.c
-> +++ b/kernel/trace/trace_probe.c
-> @@ -622,9 +622,10 @@ static int traceprobe_parse_probe_arg_body(const char *argv, ssize_t *size,
->  
->  	/*
->  	 * Since $comm and immediate string can not be dereferenced,
-> -	 * we can find those by strcmp.
-> +	 * we can find those by strcmp. But ignore for eprobes.
->  	 */
-> -	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
-> +	if (!(flags & TPARG_FL_TPOINT) &&
-> +	    strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
->  		/* The type of $comm must be "string", and not an array. */
->  		if (parg->count || (t && strcmp(t, "string")))
->  			goto out;
-> -- 
-> 2.35.1
-
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Cheers!
