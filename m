@@ -2,136 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA91C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 15:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D1CC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 15:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345396AbiHTPbZ convert rfc822-to-8bit (ORCPT
+        id S1345635AbiHTPdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 11:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
+        Sat, 20 Aug 2022 11:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiHTPbW (ORCPT
+        with ESMTP id S229605AbiHTPdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 11:31:22 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B867697A
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 08:31:21 -0700 (PDT)
-Received: from [192.168.0.105] (unknown [136.169.224.60])
-        by mail.ispras.ru (Postfix) with ESMTPSA id CFF9740D403D;
-        Sat, 20 Aug 2022 15:31:19 +0000 (UTC)
-Message-ID: <6228a437bb9d7f677f5e97973518bcd555bc2a07.camel@ispras.ru>
-Subject: [POSSIBLE BUG] Dereferencing of NULL pointer
-From:   Rustam Subkhankulov <subkhankulov@ispras.ru>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Date:   Sat, 20 Aug 2022 20:30:56 +0300
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Sat, 20 Aug 2022 11:33:18 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F4BD82
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 08:33:13 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98e0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98e0:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 697471EC026E;
+        Sat, 20 Aug 2022 17:33:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661009587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=G3IJhwDiyGx/Q6TP7rSZkT6XzxALCoB5GDPvScV6Xxc=;
+        b=gnc57b2xfK1sYH0TxE+ABfVo3ri5AT8BQuM099vt8JnFzerGLM6AWfQPHk/wLJEj10aShN
+        mtnRK0uATfH+rKvJSNXCRfNQi+ODG+hoY9sHIIddwlLeK53CVJKd2TpZNt6bvVcMfugLBb
+        KkOZkz5X+G15C4BYkIVFy6EcbyZCAiY=
+Date:   Sat, 20 Aug 2022 17:33:01 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Russ Dill <russ.dill@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yinghai Lu <yinghai@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org
+Subject: Re: [PATCH] x86/boot: Fail gracefully if SMP MP-table early_memremap
+ fails
+Message-ID: <YwD+rZ/7zDPCmlRI@zn.tnic>
+References: <20220819224400.2667654-1-Russ.Dill@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220819224400.2667654-1-Russ.Dill@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Version: 6.0-rc1
+On Fri, Aug 19, 2022 at 03:44:00PM -0700, Russ Dill wrote:
+> At least one older motherboard (Micronics W6-LI Pentium Pro) has been
+> observed to fill in the physptr but not actually populate the mpc when
+> only one CPU is present. In this specific case, this leads to the size
+> field being zero which causes early_memremap to fail. This then
+> causes a NULL pointer exception in smp_read_mpc.
+> 
+> Add a simple return check. Returning -1 here will cause the MP-table to
+> be ignored and the system to boot in nosmp mode.
+> 
+> Signed-off-by: Russ Dill <Russ.Dill@gmail.com>
+> Cc: Tom Lendacky <thomas.lendacky@amd.com>
+> Cc: Ingo Molnar <mingo@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Yinghai Lu <yinghai@kernel.org>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: H. Peter Anvin <hpa@zytor.com>
+> Cc: x86@kernel.org
+> ---
+>  arch/x86/kernel/mpparse.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
+> index fed721f90116..ca2af4f42cb8 100644
+> --- a/arch/x86/kernel/mpparse.c
+> +++ b/arch/x86/kernel/mpparse.c
+> @@ -438,6 +438,10 @@ static int __init check_physptr(struct mpf_intel *mpf, unsigned int early)
+>  
+>  	size = get_mpc_size(mpf->physptr);
 
-Description: 
+If the size is 0, why aren't you checking size and returning early here
+instead of the early_memremap() result which gets called with size=0?
 
-In function 'privcmd_ioctl_dm_op' (drivers/xen/privcmd.c: 615)return
-value of 'kcalloc' with GFP_KERNEL flag is assigned to "pages"
-variable. GFP_KERNEL flag does not guarantee, that the return value
-will not be NULL. In that case, there is a jump to the "out" label. 
+-- 
+Regards/Gruss,
+    Boris.
 
----------------------------------------------------------------------
-667	pages = kcalloc(nr_pages, sizeof(*pages), GFP_KERNEL);
-668	if (!pages) {
-669		rc = -ENOMEM;
-670		goto out;
-671	}
----------------------------------------------------------------------
-
-Variable 'pages' is passed to function 'unpin_user_pages_dirty_lock' as
-1st parameter at [drivers/xen/privcmd.c: 695].
-
----------------------------------------------------------------------
-694	out:
-695		unlock_pages(pages, nr_pages);
----------------------------------------------------------------------
-
-Then, variable 'pages' is passed to function
-'unpin_user_pages_dirty_lock' as 1st parameter at
-[drivers/xen/privcmd.c: 612].
-
----------------------------------------------------------------------
-610	static void unlock_pages(struct page *pages[], unsigned int
-nr_pages)
-611	{
-612		unpin_user_pages_dirty_lock(pages, nr_pages, true);
-613	}
----------------------------------------------------------------------
-
-'pages' and 'npages' are passed as parameters to function
-'sanity_check_pinned_pages' at [mm/gup.c: 311].
-
----------------------------------------------------------------------
-299	void unpin_user_pages_dirty_lock(struct page **pages, unsigned
-long npages,
-300					 bool make_dirty)
-301	{
-302		unsigned long i;
-303     struct folio *folio;
-304     unsigned int nr;
-305		
-306		if (!make_dirty) {
-307			unpin_user_pages(pages, npages);
-308			return;
-309		}
-310
-311		sanity_check_pinned_pages(pages, npages);
----------------------------------------------------------------------
-
-In function 'sanity_check_pinned_pages', if
-(IS_ENABLED(CONFIG_DEBUG_VM)) and (npages > 0), NULL pointer 'pages' is
-dereferenced at [mm/gup.c: 51].
-
----------------------------------------------------------------------
-32	static inline void sanity_check_pinned_pages(struct page
-**pages,
-33						     unsigned long
-npages)
-34	{
-35		if (!IS_ENABLED(CONFIG_DEBUG_VM))
-36			return;
-..
-50		for (; npages; npages--, pages++) {
-51			struct page *page = *pages;
-								^^^^^^
-^
----------------------------------------------------------------------
-
-Else if (!IS_ENABLED(CONFIG_DEBUG_VM)) and (npages > 0) function
-'gup_folio_next' is called with 'pages' and 'npages' as parameters at
-[mm/gup.c: 311].
-
----------------------------------------------------------------------
-312		for (i = 0; i < npages; i += nr) {
-313			folio = gup_folio_next(pages, npages, i, &nr);
----------------------------------------------------------------------
-
-In function 'gup_folio_next' NULL pointer 'list' is dereferenced at
-[mm/gup.c: 263].
-
----------------------------------------------------------------------
-262	static inline struct folio *gup_folio_next(struct page **list,
-263			unsigned long npages, unsigned long i,
-unsigned int *ntails)
-264	{
-265		struct folio *folio = page_folio(list[i]);
-								
-		^^^^^^^^^
----------------------------------------------------------------------
-
+https://people.kernel.org/tglx/notes-about-netiquette
