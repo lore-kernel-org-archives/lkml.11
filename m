@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A97F7C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 15:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1343C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 15:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346536AbiHTPDg (ORCPT
+        id S1346592AbiHTPDk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 11:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
+        Sat, 20 Aug 2022 11:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345529AbiHTPDY (ORCPT
+        with ESMTP id S1345671AbiHTPDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 11:03:24 -0400
+        Sat, 20 Aug 2022 11:03:25 -0400
 Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E449D11A
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 08:03:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18521055A
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 08:03:23 -0700 (PDT)
 Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id EC5F130EB91;
-        Sat, 20 Aug 2022 17:03:18 +0200 (CEST)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 2B42A30EB93;
+        Sat, 20 Aug 2022 17:03:20 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1661007799;
+        s=mail1707; t=1661007800;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=t+7AAdDRL/f7FSphHpccBaW6Xe1Vk3ErU6kmokpL3Rw=;
-        b=7lAHiwN1M6TeEfTRC+rmea1OcIvfct2NbCM7g7JOD690ZXNs4Urh8v/b3LMgazRfk2YKiM
-        qDkfZcLkSgbW4acHvkTNKlBwX9dtNII8oZAZlDjAPF8xhHfHxBocSb2fCzrQFnMmSXEQ1D
-        K/6aawqsXf3IqoyHM/ne6w0fc8Fv4yhfYW7mZI+A+TdZdNCNUJ9V/KnkyWhke/IQNtSIsd
-        tYpP0CQ+8wQxciSTDsuNfub79dDi4QYADeqMiH6l+AHPyNlC9tqTk5FkAharfrfiLkjXJb
-        d/KVqkcWfnoAmbN35II/SC5U7l/6jvPkgodydP/FJ579Sl9OfBuGpk6md/pzPA==
+        bh=pPd/AOQ42Ah9pMi9sYfgHT+nIuvXCN3yBxlQRtkdXdU=;
+        b=pcqWb2sL1MkysYbpSmbZR+lGMrykkOkSjKgWjaIL9HLobQUG7vbq4aUFRTCHQWLEgattAx
+        agsHgjhVcTCgu0EVg60KCBbuj76y9dW15p5ymuCGzRobtjsHePY1KTBrNgwfDFf9dDHqNI
+        d4P4K50C2rJjM8RglTD84LWw8FHCpYLQGE5+HjzpWjVt2/q6QfZFtL5egXKmkchOm8Wc89
+        NfUzWlV7J7Jxz+KCYZe47w6CUn+KSrT528u1jNt7XupGMqGScWQ4qEXArc0v+ikcIsac+v
+        kCsIOiZXviKo2lvelp+Vc5DH1RaMCupK5kXGk+FvF/HxrRMpjHZTerV29suUjA==
 From:   Sander Vanheule <sander@svanheule.net>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -45,9 +45,9 @@ To:     Yury Norov <yury.norov@gmail.com>,
 Cc:     =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
         linux-kernel@vger.kernel.org,
         Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v2 1/5] lib/test_cpumask: drop cpu_possible_mask full test
-Date:   Sat, 20 Aug 2022 17:03:09 +0200
-Message-Id: <6dfd4d3a4d77f97f13ab3f22bc53c96c38ba908e.1661007339.git.sander@svanheule.net>
+Subject: [PATCH v2 3/5] lib/test_cpumask: follow KUnit style guidelines
+Date:   Sat, 20 Aug 2022 17:03:11 +0200
+Message-Id: <5f261a0c55fe47d298d9861beb358c11ef68a547.1661007339.git.sander@svanheule.net>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <cover.1661007338.git.sander@svanheule.net>
 References: <cover.1661007338.git.sander@svanheule.net>
@@ -58,37 +58,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the number of CPUs that can possibly be brought online is known at
-boot time, e.g. when HOTPLUG is disabled, nr_cpu_ids may be smaller than
-NR_CPUS. In that case, cpu_possible_mask would not be completely filled,
-and cpumask_full(cpu_possible_mask) can return false for valid system
-configurations.
+The cpumask test suite doesn't follow the KUnit style guidelines, as
+laid out in Documentation/dev-tools/kunit/style.rst.  The file is
+renamed to lib/cpumask_kunit.c to clearly distinguish it from other,
+non-KUnit, tests.
 
-Fixes: c41e8866c28c ("lib/test: introduce cpumask KUnit test suite")
 Link: https://lore.kernel.org/lkml/346cb279-8e75-24b0-7d12-9803f2b41c73@riseup.net/
-Reported-by: Maíra Canal <mairacanal@riseup.net>
+Suggested-by: Maíra Canal <mairacanal@riseup.net>
 Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Tested-by: Maíra Canal <mairacanal@riseup.net>
+Reviewed-by: Maíra Canal <mairacanal@riseup.net>
 Reviewed-by: David Gow <davidgow@google.com>
 ---
-Changes in v2:
-Rewrite commit message to explain why this test is wrong
+ lib/Kconfig.debug                       | 7 +++++--
+ lib/Makefile                            | 2 +-
+ lib/{test_cpumask.c => cpumask_kunit.c} | 0
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+ rename lib/{test_cpumask.c => cpumask_kunit.c} (100%)
 
- lib/test_cpumask.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/lib/test_cpumask.c b/lib/test_cpumask.c
-index a31a1622f1f6..4ebf9f5805f3 100644
---- a/lib/test_cpumask.c
-+++ b/lib/test_cpumask.c
-@@ -54,7 +54,6 @@ static cpumask_t mask_all;
- static void test_cpumask_weight(struct kunit *test)
- {
- 	KUNIT_EXPECT_TRUE(test, cpumask_empty(&mask_empty));
--	KUNIT_EXPECT_TRUE(test, cpumask_full(cpu_possible_mask));
- 	KUNIT_EXPECT_TRUE(test, cpumask_full(&mask_all));
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 072e4b289c13..bcbe60d6c80c 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2029,13 +2029,16 @@ config LKDTM
+ 	Documentation on how to use the module can be found in
+ 	Documentation/fault-injection/provoke-crashes.rst
  
- 	KUNIT_EXPECT_EQ(test, 0, cpumask_weight(&mask_empty));
+-config TEST_CPUMASK
+-	tristate "cpumask tests" if !KUNIT_ALL_TESTS
++config CPUMASK_KUNIT_TEST
++	tristate "KUnit test for cpumask" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable to turn on cpumask tests, running at boot or module load time.
+ 
++	  For more information on KUnit and unit tests in general, please refer
++	  to the KUnit documentation in Documentation/dev-tools/kunit/.
++
+ 	  If unsure, say N.
+ 
+ config TEST_LIST_SORT
+diff --git a/lib/Makefile b/lib/Makefile
+index 5927d7fa0806..ffabc30a27d4 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -60,6 +60,7 @@ obj-$(CONFIG_TEST_BPF) += test_bpf.o
+ obj-$(CONFIG_TEST_FIRMWARE) += test_firmware.o
+ obj-$(CONFIG_TEST_BITOPS) += test_bitops.o
+ CFLAGS_test_bitops.o += -Werror
++obj-$(CONFIG_CPUMASK_KUNIT_TEST) += cpumask_kunit.o
+ obj-$(CONFIG_TEST_SYSCTL) += test_sysctl.o
+ obj-$(CONFIG_TEST_SIPHASH) += test_siphash.o
+ obj-$(CONFIG_HASH_KUNIT_TEST) += test_hash.o
+@@ -100,7 +101,6 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
+ obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
+ obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
+ obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
+-obj-$(CONFIG_TEST_CPUMASK) += test_cpumask.o
+ CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
+ obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
+ #
+diff --git a/lib/test_cpumask.c b/lib/cpumask_kunit.c
+similarity index 100%
+rename from lib/test_cpumask.c
+rename to lib/cpumask_kunit.c
 -- 
 2.37.2
 
