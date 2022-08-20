@@ -2,114 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7B3C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 07:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB9BC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 07:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbiHUHBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 03:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49760 "EHLO
+        id S229943AbiHUHB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 03:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbiHUHAX (ORCPT
+        with ESMTP id S229738AbiHUHBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 03:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DED2A97D;
-        Sun, 21 Aug 2022 00:00:20 -0700 (PDT)
+        Sun, 21 Aug 2022 03:01:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45C92AC49;
+        Sun, 21 Aug 2022 00:01:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE0A1B80BAB;
-        Sun, 21 Aug 2022 07:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EADCC433D6;
-        Sun, 21 Aug 2022 07:00:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECC64B80BA8;
+        Sun, 21 Aug 2022 07:01:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D1A8C433D6;
+        Sun, 21 Aug 2022 07:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661065217;
-        bh=U3R0PXOVeBNi/aGM4YLPCESs8wspJ1yGJqt1ZsKx6+c=;
+        s=korg; t=1661065293;
+        bh=IkBhuQ4Ga0ENimbZcXbIIWSwXIVkLhO73dH4+EuA5qk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=x7Tf+AMVCgIQZwayiOfU/Y1dszhZX8/KbmuJcz/pS1ymQMDBPzGnQSi3kEHmunUhb
-         9crcz/ibXy39LqfgyrmoBMQ47F9XCVOGed0JyVtgzzLxH6mS2yrRHi+q9ClqBKgjcH
-         nz7755oseR7rTVc5iHnf51Hk3OcP10cEOgAQTzDY=
-Date:   Sat, 20 Aug 2022 20:16:07 +0200
+        b=gaRiIVD//Qr759lieITGg0VK5y8wZHNrbBrROJxrwx7M8f0yQz3U3PklMmRWCJ2ac
+         A/2TxsYoxPbDbFCMPf2cNq41YOSAOVZhklFeCGAZb/qHkk5y7eyqU93AD1oIStI8uV
+         YjlV4MWCK0hySxeUQOkFco/U5bjU9gBtUYvMYTNo=
+Date:   Sat, 20 Aug 2022 20:40:52 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 0/6] 5.18.19-rc1 review
-Message-ID: <YwEk5xZ/wXWJMMUq@kroah.com>
-References: <20220819153710.430046927@linuxfoundation.org>
- <YwCxc5gwpmGRBUL1@debian>
- <CADVatmM_xDmAORG8J0KgrCOwmEyVKd7kc8VGQRHPaLZzifivhg@mail.gmail.com>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>
+Cc:     Linyu Yuan <quic_linyyuan@quicinc.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [REGRESSION 5.19] NULL dereference by ucsi_acpi driver
+Message-ID: <YwEqtGB2WldUeiEN@kroah.com>
+References: <87r11cmbx0.wl-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CADVatmM_xDmAORG8J0KgrCOwmEyVKd7kc8VGQRHPaLZzifivhg@mail.gmail.com>
+In-Reply-To: <87r11cmbx0.wl-tiwai@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 11:32:36AM +0100, Sudip Mukherjee wrote:
-> On Sat, Aug 20, 2022 at 11:03 AM Sudip Mukherjee (Codethink)
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > Hi Greg,
-> >
-> > On Fri, Aug 19, 2022 at 05:40:12PM +0200, Greg Kroah-Hartman wrote:
-> > > -------------------
-> > > NOTE, this is the LAST 5.18.y stable release.  This tree will be
-> > > end-of-life after this one.  Please move to 5.19.y at this point in time
-> > > or let us know why that is not possible.
-> > > -------------------
-> > >
-> > > This is the start of the stable review cycle for the 5.18.19 release.
-> > > There are 6 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
-> > > Responses should be made by Sun, 21 Aug 2022 15:36:59 +0000.
-> > > Anything received after that time might be too late.
-> >
+On Fri, Aug 19, 2022 at 06:32:43PM +0200, Takashi Iwai wrote:
+> Hi,
 > 
-> <snip>
+> we've got multiple reports about 5.19 kernel starting crashing after
+> some time, and this turned out to be triggered by ucsi_acpi driver.
+> The details are found in:
+>   https://bugzilla.suse.com/show_bug.cgi?id=1202386
 > 
-> >
-> > powerpc failure is not seen in mainline. Same error as csky and mips.
-> >
-> > In function 'memcmp',
-> >     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:302:9,
-> >     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2002:15:
-> > ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-> >    44 | #define __underlying_memcmp     __builtin_memcmp
-> >       |                                 ^
-> > ./include/linux/fortify-string.h:404:16: note: in expansion of macro '__underlying_memcmp'
-> >   404 |         return __underlying_memcmp(p, q, size);
-> >       |                ^~~~~~~~~~~~~~~~~~~
-> > In function 'memcmp',
-> >     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:302:9,
-> >     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
-> > ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-> >    44 | #define __underlying_memcmp     __builtin_memcmp
-> >       |                                 ^
-> > ./include/linux/fortify-string.h:404:16: note: in expansion of macro '__underlying_memcmp'
-> >   404 |         return __underlying_memcmp(p, q, size);
-> >       |                ^~~~~~~~~~~~~~~~~~~
-> >
-> > I am bisecting now to find out what caused it.
-> 
-> Introduced in v5.18.18 due to 11e008e59970 ("Bluetooth: L2CAP: Fix
-> l2cap_global_chan_by_psm regression").
-> But v5.19.y and mainline does not show the build failure as they also
-> have 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN
-> support").
+> The culprit seems to be the commit 87d0e2f41b8c
+>     usb: typec: ucsi: add a common function ucsi_unregister_connectors()
 
-Ick, that's a mess.  This is going to be the last 5.18 tree, so I'm just
-going to leave this alone...
+Adding Heikki to the thread...
+
+>     
+> This commit looks as if it were a harmless cleanup, but this failed in
+> a subtle way.  Namely, in the error scenario, the driver gets an error
+> at ucsi_register_altmodes(), and goes to the error handling to release
+> the resources.  Through this refactoring, the release part was unified
+> to a funciton ucsi_unregister_connectors().  And there, it has a NULL
+> check of con->wq, and it bails out the loop if it's NULL. 
+> Meanwhile, ucsi_register_port() itself still calls destroy_workqueue()
+> and clear con->wq at its error path.  This ended up in the leftover
+> power supply device with the uninitialized / cleared device.
+> 
+> It was confirmed that the problem could be avoided by a simple
+> revert.
+
+I'll be glad to revert this now, unless Heikki thinks:
+
+> 
+> I guess another fix could be removing the part clearing con->wq, i.e.
+> 
+> --- a/drivers/usb/typec/ucsi/ucsi.c
+> +++ b/drivers/usb/typec/ucsi/ucsi.c
+> @@ -1192,11 +1192,6 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
+>  out_unlock:
+>  	mutex_unlock(&con->lock);
+>  
+> -	if (ret && con->wq) {
+> -		destroy_workqueue(con->wq);
+> -		con->wq = NULL;
+> -	}
+> -
+>  	return ret;
+>  }
+>  
+> 
+> ... but it's totally untested and I'm not entirely sure whether it's
+> better.
+
+that is any better?
 
 thanks,
 
