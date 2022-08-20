@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDBDC28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 849A5C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244972AbiHTAOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
+        id S244999AbiHTAO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244299AbiHTAOT (ORCPT
+        with ESMTP id S244937AbiHTAOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 20:14:19 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C705E678
+        Fri, 19 Aug 2022 20:14:20 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22EB6053A
         for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:14:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1660954458; x=1692490458;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EnX6Yf3cZ2gQ4Fnr+UfQPDbVQijcZ+WwjUZMXTbYEfc=;
-  b=TeWRJzZagVRw1u+bBFV4x4Qxq8JEaA8p42a/AsK0l8i6yxG+3Gw60LPq
-   csyByiktafzFutlPZU+YNqJGw+yAbS37ZAf0fixOWrIJckyT0grybVeeI
-   DosrD/HtfxWJVZTbEr5f1WA6tw5sBWyqdm2AYagMIwPSzKuDEx5bULpl+
-   57899cTbjpyTDsBdM+2t/Y75pB4uLTcLdjigPnBKDN/YW8Cja0ogokUOs
-   sV6OVMp8oMQ9jXW5DTu4SEpPtytR58bGppvE1Vsick49EKLbnDjete5Fo
-   bBQeQUjd5Ym+bbjpgb56gwXP5otdM/LpAE7AQjfGlKnnncffQv8dLqy0G
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="280093171"
+  bh=0pkWwH2wSD9gvsHrarqZvzQyvP8hrcdUrMl7gKVgE7U=;
+  b=BlxlLLVxJyVMd4ttfsaGSGLMtZNbhFc11fjXCoRQdT8unPcL+b3n4sWA
+   4WIbh05/yo0byECzP99AIeDH/nk/yTZnbcvuEaFWOFaoUWmeeyL/I5xnZ
+   Yn/DCAvwTjRjOEonOk7vE6HlP6Ny00rtgrOkrOOPE9to4+6fg9jXz2Xfr
+   57k8DIb2VTSgz41EzOmKHN++p8gGKfRPGG/79PCWTRhQ4ff8wn+ylOTU0
+   mLs/DT9ANvyOAkdaocLCeyeHd04Y/00CnPHMzRMDcGaIHIgFntWROIIdG
+   WK/rQ0WC8jtyRa5ZaoPdyVhfiHndsXv5bg+kJ9cHV5pSbnzlfmh3uDiO+
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="291876412"
 X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="280093171"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 17:14:18 -0700
+   d="scan'208";a="291876412"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 17:14:18 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="750692025"
+   d="scan'208";a="559119530"
 Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 19 Aug 2022 17:14:17 -0700
+  by orsmga003.jf.intel.com with ESMTP; 19 Aug 2022 17:14:16 -0700
 Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oPC80-0001we-15;
+        id 1oPC80-0001wb-0z;
         Sat, 20 Aug 2022 00:14:16 +0000
-Date:   Sat, 20 Aug 2022 08:13:53 +0800
+Date:   Sat, 20 Aug 2022 08:13:49 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [intel-tdx:guest-hardening-rebased 35/36]
- drivers/virtio/virtio_mmio.c:611:13: error: implicit declaration of function
- 'cc_platform_has'
-Message-ID: <202208200821.ZCtdp6wi-lkp@intel.com>
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [intel-tdx:guest-hardening-rebased 11/36]
+ arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for function
+ 'tdx_write_msr'
+Message-ID: <202208200851.ZfmiszQz-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,144 +60,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/virtio/virtio_mmio.c
+arch/x86/coco/tdx/tdx.c
 tree:   https://github.com/intel/tdx.git guest-hardening-rebased
 head:   d941f409a509c084250b50a3b5fc1c3c84a596a0
-commit: 8aee8422c3b96f5d4dde1f31f8a96409a3e55c48 [35/36] virtio-mmio: Disable in TDX guest
-config: microblaze-buildonly-randconfig-r001-20220820 (https://download.01.org/0day-ci/archive/20220820/202208200821.ZCtdp6wi-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 12.1.0
+commit: a9189da9f0413f85d9072894ccb973cf785d2c0d [11/36] x86/tdx: Use direct paravirt call for wrmsrl
+config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220820/202208200851.ZfmiszQz-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 0ac597f3cacf60479ffd36b03766fa7462dabd78)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/8aee8422c3b96f5d4dde1f31f8a96409a3e55c48
+        # https://github.com/intel/tdx/commit/a9189da9f0413f85d9072894ccb973cf785d2c0d
         git remote add intel-tdx https://github.com/intel/tdx.git
         git fetch --no-tags intel-tdx guest-hardening-rebased
-        git checkout 8aee8422c3b96f5d4dde1f31f8a96409a3e55c48
+        git checkout a9189da9f0413f85d9072894ccb973cf785d2c0d
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/virtio/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   In file included from include/linux/build_bug.h:5,
-                    from include/linux/bits.h:22,
-                    from include/linux/ioport.h:13,
-                    from include/linux/acpi.h:12,
-                    from drivers/virtio/virtio_mmio.c:57:
-   drivers/virtio/virtio_mmio.c: In function 'virtio_mmio_probe':
->> drivers/virtio/virtio_mmio.c:611:13: error: implicit declaration of function 'cc_platform_has' [-Werror=implicit-function-declaration]
-     611 |         if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-         |             ^~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
-      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-         |                                                    ^~~~
-   drivers/virtio/virtio_mmio.c:611:9: note: in expansion of macro 'if'
-     611 |         if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-         |         ^~
->> drivers/virtio/virtio_mmio.c:611:29: error: 'CC_ATTR_GUEST_HARDENED' undeclared (first use in this function)
-     611 |         if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-         |                             ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
-      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-         |                                                    ^~~~
-   drivers/virtio/virtio_mmio.c:611:9: note: in expansion of macro 'if'
-     611 |         if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-         |         ^~
-   drivers/virtio/virtio_mmio.c:611:29: note: each undeclared identifier is reported only once for each function it appears in
-     611 |         if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-         |                             ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
-      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-         |                                                    ^~~~
-   drivers/virtio/virtio_mmio.c:611:9: note: in expansion of macro 'if'
-     611 |         if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-         |         ^~
-   cc1: some warnings being treated as errors
+>> arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for function 'tdx_write_msr' [-Wmissing-prototypes]
+   void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
+                ^
+   arch/x86/coco/tdx/tdx.c:298:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
+   ^
+   static 
+   1 warning generated.
 
 
-vim +/cc_platform_has +611 drivers/virtio/virtio_mmio.c
+vim +/tdx_write_msr +298 arch/x86/coco/tdx/tdx.c
 
-   604	
-   605	static int virtio_mmio_probe(struct platform_device *pdev)
-   606	{
-   607		struct virtio_mmio_device *vm_dev;
-   608		unsigned long magic;
-   609		int rc;
-   610	
- > 611		if (cc_platform_has(CC_ATTR_GUEST_HARDENED))
-   612			return -ENODEV;
-   613	
-   614		vm_dev = devm_kzalloc(&pdev->dev, sizeof(*vm_dev), GFP_KERNEL);
-   615		if (!vm_dev)
-   616			return -ENOMEM;
-   617	
-   618		vm_dev->vdev.dev.parent = &pdev->dev;
-   619		vm_dev->vdev.dev.release = virtio_mmio_release_dev;
-   620		vm_dev->vdev.config = &virtio_mmio_config_ops;
-   621		vm_dev->pdev = pdev;
-   622		INIT_LIST_HEAD(&vm_dev->virtqueues);
-   623		spin_lock_init(&vm_dev->lock);
-   624	
-   625		vm_dev->base = devm_platform_ioremap_resource(pdev, 0);
-   626		if (IS_ERR(vm_dev->base))
-   627			return PTR_ERR(vm_dev->base);
-   628	
-   629		/* Check magic value */
-   630		magic = readl(vm_dev->base + VIRTIO_MMIO_MAGIC_VALUE);
-   631		if (magic != ('v' | 'i' << 8 | 'r' << 16 | 't' << 24)) {
-   632			dev_warn(&pdev->dev, "Wrong magic value 0x%08lx!\n", magic);
-   633			return -ENODEV;
-   634		}
-   635	
-   636		/* Check device version */
-   637		vm_dev->version = readl(vm_dev->base + VIRTIO_MMIO_VERSION);
-   638		if (vm_dev->version < 1 || vm_dev->version > 2) {
-   639			dev_err(&pdev->dev, "Version %ld not supported!\n",
-   640					vm_dev->version);
-   641			return -ENXIO;
-   642		}
-   643	
-   644		vm_dev->vdev.id.device = readl(vm_dev->base + VIRTIO_MMIO_DEVICE_ID);
-   645		if (vm_dev->vdev.id.device == 0) {
-   646			/*
-   647			 * virtio-mmio device with an ID 0 is a (dummy) placeholder
-   648			 * with no function. End probing now with no error reported.
-   649			 */
-   650			return -ENODEV;
-   651		}
-   652		vm_dev->vdev.id.vendor = readl(vm_dev->base + VIRTIO_MMIO_VENDOR_ID);
-   653	
-   654		if (vm_dev->version == 1) {
-   655			writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
-   656	
-   657			rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-   658			/*
-   659			 * In the legacy case, ensure our coherently-allocated virtio
-   660			 * ring will be at an address expressable as a 32-bit PFN.
-   661			 */
-   662			if (!rc)
-   663				dma_set_coherent_mask(&pdev->dev,
-   664						      DMA_BIT_MASK(32 + PAGE_SHIFT));
-   665		} else {
-   666			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-   667		}
-   668		if (rc)
-   669			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-   670		if (rc)
-   671			dev_warn(&pdev->dev, "Failed to enable 64-bit or 32-bit DMA.  Trying to continue, but this might not work.\n");
-   672	
-   673		platform_set_drvdata(pdev, vm_dev);
-   674	
-   675		rc = register_virtio_device(&vm_dev->vdev);
-   676		if (rc)
-   677			put_device(&vm_dev->vdev.dev);
-   678	
-   679		return rc;
-   680	}
-   681	
+   297	
+ > 298	void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
+   299	{
+   300		struct tdx_hypercall_args args = {
+   301			.r10 = TDX_HYPERCALL_STANDARD,
+   302			.r11 = hcall_func(EXIT_REASON_MSR_WRITE),
+   303			.r12 = msr,
+   304			.r13 = (u64)high << 32 | low,
+   305		};
+   306	
+   307		if (tdx_fast_tdcall_path_msr(msr))
+   308			__tdx_hypercall(&args, 0);
+   309		else
+   310			native_write_msr(msr, low, high);
+   311	}
+   312	
 
 -- 
 0-DAY CI Kernel Test Service
