@@ -2,116 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A38F5C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 575F3C32792
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345433AbiHTKzX (ORCPT
+        id S1345494AbiHTK4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 06:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        Sat, 20 Aug 2022 06:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344182AbiHTKzR (ORCPT
+        with ESMTP id S242181AbiHTK4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 06:55:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1B39AF94
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 03:55:15 -0700 (PDT)
+        Sat, 20 Aug 2022 06:56:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BE4A5738;
+        Sat, 20 Aug 2022 03:56:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F6B4B8013A
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 10:55:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB381C433D6;
-        Sat, 20 Aug 2022 10:55:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A328F61174;
+        Sat, 20 Aug 2022 10:56:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7716EC433C1;
+        Sat, 20 Aug 2022 10:56:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660992913;
-        bh=3N+NDI2cJKh99li5pLUDKXcxy68n6z1/LP/ToJrkZTg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mN+Ksxc2YnQIljxsn1KYA946GXSecuBUHJZgu9vmtUcaRpOCEvidcVsRanc/EYlAZ
-         zvSM4RhT6UxCWmLHN3BQE2dSwWHdV70BUZFY6uJ9F0g5l5VZ6+maBCkngsl5hVNyy+
-         8KFe94cU9OjV/d57FF4HJ6X30Bn+phJPA861qYCidDPfhWpSdACNDvbwSmmNMkKyJl
-         CcibQczNDY+20GaJlKgQUHd3xWgYHaLBZ1cEYiSriA4vRFjuiS00IwTq/Z7vPTPtFB
-         HxidjPFAI1dgYmtaKjwAmf5fO/l5hDHTA6+UEFb3lIrVAloCNOI00S449zcXRoOAWV
-         3LW0t29D6lvnQ==
-Received: by pali.im (Postfix)
-        id 3FEF75D0; Sat, 20 Aug 2022 12:55:10 +0200 (CEST)
-Date:   Sat, 20 Aug 2022 12:55:10 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: [PATCH v1 2/5] powerpc/32: Don't always pass -mcpu=powerpc to
- the compiler
-Message-ID: <20220820105510.psagglbbfyve53fc@pali>
-References: <8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu>
- <d4df724691351531bf46d685d654689e5dfa0d74.1657549153.git.christophe.leroy@csgroup.eu>
- <20220818174634.6nkzcztzn6uqcrzg@pali>
+        s=k20201202; t=1660992964;
+        bh=b2iO0hLmokZ8rJ3GCQaQjV/dfXMQhljRGwpKAg/ck4c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mGJNidZ779yhD4gUGSxdEOEF/tZFd3Zu0M3RL3GmbgsOj0727VfA3GqxrI0zVlhGf
+         ON9lMSFYpER3wOy2ZdFI76pCOcEvjXxzjcTjAGHH6OSTC5vunkiei6xI59ruWe16Wj
+         oEgxvjfRIwnktPSI513Q5Sg5Zr5OrqdVng9llWY9DQJGQzdYBF2QysQNyKCagdlRYv
+         oiusK8GK1ycunyrpWhKE1m4tFfC20SnqCui0w6o/vY88Hd5B0E1MpjZ+ekCIAx61iG
+         P7puuPhcG9m444vUPXqydGKhJ2FgIQISGQ1Tav6EvR/7nZM9WmfmfBfgQJhtDa9Wrc
+         QOsAjN9HK2/yw==
+Date:   Sat, 20 Aug 2022 12:06:40 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     <kernel@axis.com>, Lars-Peter Clausen <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Peter Rosin <peda@axentia.se>
+Subject: Re: [PATCH] iio: buffer: Silence lock nesting splat
+Message-ID: <20220820120640.6d1b928d@jic23-huawei>
+In-Reply-To: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
+References: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220818174634.6nkzcztzn6uqcrzg@pali>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 18 August 2022 19:46:34 Pali Rohár wrote:
-> On Monday 11 July 2022 16:19:30 Christophe Leroy wrote:
-> > Since commit 4bf4f42a2feb ("powerpc/kbuild: Set default generic
-> > machine type for 32-bit compile"), when building a 32 bits kernel
-> > with a bi-arch version of GCC, or when building a book3s/32 kernel,
-> > the option -mcpu=powerpc is passed to GCC at all time, relying on it
-> > being eventually overriden by a subsequent -mcpu=xxxx.
-> > 
-> > But when building the same kernel with a 32 bits only version of GCC,
-> > that is not done, relying on gcc being built with the expected default
-> > CPU.
-> > 
-> > This logic has two problems. First, it is a bit fragile to rely on
-> > whether the GCC version is bi-arch or not, because today we can have
-> > bi-arch versions of GCC configured with a 32 bits default. Second,
-> > there are some versions of GCC which don't support -mcpu=powerpc,
-> > for instance for e500 SPE-only versions.
-> > 
-> > So, stop relying on this approximative logic and allow the user to
-> > decide whether he/she wants to use the toolchain's default CPU or if
-> > he/she wants to set one, and allow only possible CPUs based on the
-> > selected target.
-> 
-> Hello! Exactly same issue is still in file arch/powerpc/boot/Makefile:
-> 
->   ifdef CONFIG_PPC64_BOOT_WRAPPER
->   ifdef CONFIG_CPU_LITTLE_ENDIAN
->   BOOTCFLAGS	+= -m64 -mcpu=powerpc64le
->   else
->   BOOTCFLAGS	+= -m64 -mcpu=powerpc64
->   endif
->   else
->   BOOTCFLAGS	+= -m32 -mcpu=powerpc
->   endif
-> 
-> It cause compile error:
-> 
->   make ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnuspe- mpc85xx_smp_defconfig uImage
->   ...
->     BOOTAS  arch/powerpc/boot/crt0.o
->   powerpc-linux-gnuspe-gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
->   powerpc-linux-gnuspe-gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
->   make[1]: *** [arch/powerpc/boot/Makefile:231: arch/powerpc/boot/crt0.o] Error 1
+On Tue, 16 Aug 2022 10:08:28 +0200
+Vincent Whitchurch <vincent.whitchurch@axis.com> wrote:
 
-Now I have sent patch for this issue:
-https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20220820105200.30425-1-pali@kernel.org/
+> If an IIO driver uses callbacks from another IIO driver and calls
+> iio_channel_start_all_cb() from one of its buffer setup ops, then
+> lockdep complains due to the lock nesting, as in the below example with
+> lmp91000.  Since the locks are being taken on different IIO devices,
+> there is no actual deadlock, so add lock nesting annotation to silence
+> the spurious warning.
+> 
+>  ============================================
+>  WARNING: possible recursive locking detected
+>  6.0.0-rc1+ #10 Not tainted
+>  --------------------------------------------
+>  python3/23 is trying to acquire lock:
+>  0000000064c944c0 (&indio_dev->mlock){+.+.}-{3:3}, at: iio_update_buffers+0x62/0x180
+> 
+>  but task is already holding lock:
+>  00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
+> 
+>  other info that might help us debug this:
+>   Possible unsafe locking scenario:
+> 
+>         CPU0
+>         ----
+>    lock(&indio_dev->mlock);
+>    lock(&indio_dev->mlock);
+> 
+>   *** DEADLOCK ***
+> 
+>   May be due to missing lock nesting notation
+> 
+>  5 locks held by python3/23:
+>   #0: 00000000636b5420 (sb_writers#5){.+.+}-{0:0}, at: ksys_write+0x67/0x100
+>   #1: 0000000064c19280 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x13a/0x270
+>   #2: 0000000064c3d9e0 (kn->active#14){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x149/0x270
+>   #3: 00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
+>   #4: 0000000064c945c8 (&iio_dev_opaque->info_exist_lock){+.+.}-{3:3}, at: iio_update_buffers+0x4f/0x180
+> 
+>  stack backtrace:
+>  CPU: 0 PID: 23 Comm: python3 Not tainted 6.0.0-rc1+ #10
+>  Call Trace:
+>   dump_stack+0x1a/0x1c
+>   __lock_acquire.cold+0x407/0x42d
+>   lock_acquire+0x1ed/0x310
+>   __mutex_lock+0x72/0xde0
+>   mutex_lock_nested+0x1d/0x20
+>   iio_update_buffers+0x62/0x180
+>   iio_channel_start_all_cb+0x1c/0x20 [industrialio_buffer_cb]
+>   lmp91000_buffer_postenable+0x1b/0x20 [lmp91000]
+>   __iio_update_buffers+0x50b/0xd80
+>   enable_store+0x81/0x100
+>   dev_attr_store+0xf/0x20
+>   sysfs_kf_write+0x4c/0x70
+>   kernfs_fop_write_iter+0x179/0x270
+>   new_sync_write+0x99/0x120
+>   vfs_write+0x2c1/0x470
+>   ksys_write+0x67/0x100
+>   sys_write+0x10/0x20
+> 
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-> > Reported-by: Pali Rohár <pali@kernel.org>
-> > Tested-by: Pali Rohár <pali@kernel.org>
-> > Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Segher Boessenkool <segher@kernel.crashing.org>
-> > Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> > ---
-> >  arch/powerpc/Makefile                  | 26 +-------------------------
-> >  arch/powerpc/platforms/Kconfig.cputype | 21 ++++++++++++++++++---
-> >  2 files changed, 19 insertions(+), 28 deletions(-)
+I'm wondering if this is sufficient.
+At first glance there are a whole bunch of other possible cases of this.
+Any consumer driver that calls iio_device_claim_direct_mode() would be a
+problem - though I'm not sure any do?
+
+I'm not sure I properly understand lockdep notations, but I thought the
+point was we needed to define a hierarchy?  To do that here we need
+an IIO driver that is a consumer to somehow let the IIO core know that
+and mark all calls to the locks appropriately.  This gets trickier
+as we allow 3+ levels of IIO drivers calling into each other.
+
+We should also think about how to prevent recursion if there are 3
+IIO drivers involved.
+
++CC Peter as most of the fun cases of IIO consumers were from him.
+
+Perhaps this notation is a step in the right direction and we can
+look for other problem cases later.  
+
+One side note is that it's not immediately obvious that iio_update_buffers()
+is called only from consumers (the other paths use __iio_update_buffers() directly
+so if we make this change we should consider renaming that function or
+at very least adding some documentation.
+
+Jonathan
+
+> ---
+>  drivers/iio/industrialio-buffer.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index acc2b6c05d57..27868ed092d0 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1255,7 +1255,7 @@ int iio_update_buffers(struct iio_dev *indio_dev,
+>  		return -EINVAL;
+>  
+>  	mutex_lock(&iio_dev_opaque->info_exist_lock);
+> -	mutex_lock(&indio_dev->mlock);
+> +	mutex_lock_nested(&indio_dev->mlock, SINGLE_DEPTH_NESTING);
+>  
+>  	if (insert_buffer && iio_buffer_is_active(insert_buffer))
+>  		insert_buffer = NULL;
+
