@@ -2,262 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F9AC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 04:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E44DC32772
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 04:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240226AbiHTEds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 00:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S243302AbiHTEf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 00:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiHTEdq (ORCPT
+        with ESMTP id S229458AbiHTEf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 00:33:46 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E219C5C97D;
-        Fri, 19 Aug 2022 21:33:38 -0700 (PDT)
-X-UUID: 105e9bd2909b46798526f09b668b66e5-20220820
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=ECAyJs3Ash9rLQKi8udUycepkroxO08HjjjdDql2x/E=;
-        b=Ea3cDgAcbgNhg3jCFX3FDABYUInUufnc0BJ3KECdtE9KObhBmj/2troEElUUNAcmPEmmNx/+z8QV9OaqjVUfrdZp9Gyu8LADNve4eB/vy/CAztGXehOTXmvmI+pjtfdygbxlhw5di1LMliB6gSbyJlRY1shMDpopky7qj6vrhEY=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:f7b26673-523c-4ccd-bfdc-7f383ab7bd3b,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-        Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:130411cf-20bd-4e5e-ace8-00692b7ab380,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 105e9bd2909b46798526f09b668b66e5-20220820
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <moudy.ho@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 845400877; Sat, 20 Aug 2022 12:33:33 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Sat, 20 Aug 2022 12:33:31 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Sat, 20 Aug 2022 12:33:31 +0800
-Message-ID: <8d551e1f51fe53b7c84afdf476de95b268205923.camel@mediatek.com>
-Subject: Re: [PATCH v26 4/4] media: platform: mtk-mdp3: add MediaTek MDP3
- driver
-From:   20181221122106 created <moudy.ho@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <cellopoint.kai@gmail.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>
-Date:   Sat, 20 Aug 2022 12:33:31 +0800
-In-Reply-To: <46436973-0de0-f810-5851-6f26bdf460aa@xs4all.nl>
-References: <20220819085423.17023-1-moudy.ho@mediatek.com>
-         <20220819085423.17023-5-moudy.ho@mediatek.com>
-         <46436973-0de0-f810-5851-6f26bdf460aa@xs4all.nl>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Sat, 20 Aug 2022 00:35:58 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0915DA3C2;
+        Fri, 19 Aug 2022 21:35:55 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8m364hr8znTbf;
+        Sat, 20 Aug 2022 12:33:38 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 20 Aug 2022 12:35:53 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 20 Aug 2022 12:35:53 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <stable@vger.kernel.org>,
+        <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Pu Lehui <pulehui@huawei.com>
+Subject: [PATCH 5.10] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+Date:   Sat, 20 Aug 2022 13:05:18 +0800
+Message-ID: <20220820050518.2118130-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
+commit 4c46091ee985ae84c60c5e95055d779fcd291d87 upstream.
 
-On Fri, 2022-08-19 at 17:37 +0200, Hans Verkuil wrote:
-> Hi Moudy,
-> 
-> On 19/08/2022 10:54, Moudy Ho wrote:
-> > This patch adds driver for MediaTek's Media Data Path ver.3 (MDP3).
-> > It provides the following functions:
-> >   color transform, format conversion, resize, crop, rotate, flip
-> >   and additional image quality enhancement.
-> > 
-> > The MDP3 driver is mainly used for Google Chromebook products to
-> > import the new architecture to set the HW settings as shown below:
-> >   User -> V4L2 framework
-> >     -> MDP3 driver -> SCP (setting calculations)
-> >       -> MDP3 driver -> CMDQ (GCE driver) -> HW
-> > 
-> > Each modules' related operation control is sited in mtk-mdp3-comp.c
-> > Each modules' register table is defined in file with "mdp_reg_"
-> > prefix
-> > GCE related API, operation control  sited in mtk-mdp3-cmdq.c
-> > V4L2 m2m device functions are implemented in mtk-mdp3-m2m.c
-> > Probe, power, suspend/resume, system level functions are defined in
-> > mtk-mdp3-core.c
-> > 
-> > Signed-off-by: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
-> > Signed-off-by: daoyuan huang <daoyuan.huang@mediatek.com>
-> > Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-> > Tested-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > ---
-> >  drivers/media/platform/mediatek/Kconfig       |    1 +
-> >  drivers/media/platform/mediatek/Makefile      |    1 +
-> >  drivers/media/platform/mediatek/mdp3/Kconfig  |   20 +
-> >  drivers/media/platform/mediatek/mdp3/Makefile |    6 +
-> >  .../platform/mediatek/mdp3/mdp_reg_ccorr.h    |   19 +
-> >  .../platform/mediatek/mdp3/mdp_reg_rdma.h     |   65 ++
-> >  .../platform/mediatek/mdp3/mdp_reg_rsz.h      |   39 +
-> >  .../platform/mediatek/mdp3/mdp_reg_wdma.h     |   47 +
-> >  .../platform/mediatek/mdp3/mdp_reg_wrot.h     |   55 +
-> >  .../platform/mediatek/mdp3/mtk-img-ipi.h      |  290 +++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-cmdq.c    |  466 ++++++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-cmdq.h    |   43 +
-> >  .../platform/mediatek/mdp3/mtk-mdp3-comp.c    | 1031
-> > +++++++++++++++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-comp.h    |  186 +++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-core.c    |  357 ++++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-core.h    |   94 ++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-m2m.c     |  724 ++++++++++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-m2m.h     |   48 +
-> >  .../platform/mediatek/mdp3/mtk-mdp3-regs.c    |  733 ++++++++++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-regs.h    |  373 ++++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-vpu.c     |  313 +++++
-> >  .../platform/mediatek/mdp3/mtk-mdp3-vpu.h     |   78 ++
-> >  22 files changed, 4989 insertions(+)
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/Kconfig
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/Makefile
-> >  create mode 100644
-> > drivers/media/platform/mediatek/mdp3/mdp_reg_ccorr.h
-> >  create mode 100644
-> > drivers/media/platform/mediatek/mdp3/mdp_reg_rdma.h
-> >  create mode 100644
-> > drivers/media/platform/mediatek/mdp3/mdp_reg_rsz.h
-> >  create mode 100644
-> > drivers/media/platform/mediatek/mdp3/mdp_reg_wdma.h
-> >  create mode 100644
-> > drivers/media/platform/mediatek/mdp3/mdp_reg_wrot.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-img-
-> > ipi.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > cmdq.c
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > cmdq.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > comp.c
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > comp.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > core.c
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > core.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > m2m.c
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > m2m.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > regs.c
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > regs.h
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > vpu.c
-> >  create mode 100644 drivers/media/platform/mediatek/mdp3/mtk-mdp3-
-> > vpu.h
-> > 
-> > diff --git a/drivers/media/platform/mediatek/Kconfig
-> > b/drivers/media/platform/mediatek/Kconfig
-> > index af47d9888552..84104e2cd024 100644
-> > --- a/drivers/media/platform/mediatek/Kconfig
-> > +++ b/drivers/media/platform/mediatek/Kconfig
-> > @@ -6,3 +6,4 @@ source
-> > "drivers/media/platform/mediatek/jpeg/Kconfig"
-> >  source "drivers/media/platform/mediatek/mdp/Kconfig"
-> >  source "drivers/media/platform/mediatek/vcodec/Kconfig"
-> >  source "drivers/media/platform/mediatek/vpu/Kconfig"
-> > +source "drivers/media/platform/mediatek/mdp3/Kconfig"
-> > diff --git a/drivers/media/platform/mediatek/Makefile
-> > b/drivers/media/platform/mediatek/Makefile
-> > index d3850a13f128..38e6ba917fe5 100644
-> > --- a/drivers/media/platform/mediatek/Makefile
-> > +++ b/drivers/media/platform/mediatek/Makefile
-> > @@ -3,3 +3,4 @@ obj-y += jpeg/
-> >  obj-y += mdp/
-> >  obj-y += vcodec/
-> >  obj-y += vpu/
-> > +obj-y += mdp3/
-> > diff --git a/drivers/media/platform/mediatek/mdp3/Kconfig
-> > b/drivers/media/platform/mediatek/mdp3/Kconfig
-> > new file mode 100644
-> > index 000000000000..8c8e59687417
-> > --- /dev/null
-> > +++ b/drivers/media/platform/mediatek/mdp3/Kconfig
-> > @@ -0,0 +1,20 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only
-> > +config VIDEO_MEDIATEK_MDP3
-> > +	tristate "MediaTek MDP v3 driver"
-> > +	depends on MTK_IOMMU || COMPILE_TEST
-> > +	depends on VIDEO_DEV
-> > +	depends on ARCH_MEDIATEK || COMPILE_TEST
-> > +	depends on MTK_MMSYS || COMPILE_TEST
-> 
-> It turned out that this will cause link errors if MTK_MMSYS is not
-> set:
-> 
-> ERROR: modpost: "mtk_mutex_write_sof"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> ERROR: modpost: "mtk_mutex_enable_by_cmdq"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> ERROR: modpost: "mtk_mutex_put"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> ERROR: modpost: "mtk_mutex_write_mod"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> ERROR: modpost: "mtk_mutex_unprepare"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> ERROR: modpost: "mtk_mutex_get"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> ERROR: modpost: "mtk_mutex_prepare"
-> [drivers/media/platform/mediatek/mdp3/mtk-mdp3.ko] undefined!
-> 
-> I wonder if it isn't better to do 'select MTK_MMSYS': that seems to
-> work fine.
-> 
-> What do you think?
-> 
-> Regards,
-> 
-> 	Hans
-> 
+Syzbot found a Use After Free bug in compute_effective_progs().
+The reproducer creates a number of BPF links, and causes a fault
+injected alloc to fail, while calling bpf_link_detach on them.
+Link detach triggers the link to be freed by bpf_link_free(),
+which calls __cgroup_bpf_detach() and update_effective_progs().
+If the memory allocation in this function fails, the function restores
+the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+gets freed just after it returns. After this, every subsequent call to
+update_effective_progs() causes this already deallocated pointer to be
+dereferenced in prog_list_length(), and triggers KASAN UAF error.
 
-Thank you for bringing this up for discussion, this was added on v10 at
-Geert's suggestion.
-But I didn't take into account all the conditions to avoid the issue
-you mentioned, and replacing "depend on" with "select" would be a
-better option to avoid compilation errors in various combinations.
-Please allow me to release a new version that fixes this problem.
+To fix this issue don't preserve the pointer to the prog or link in the
+list, but remove it and replace it with a dummy prog without shrinking
+the table. The subsequent call to __cgroup_bpf_detach() or
+__cgroup_bpf_detach() will correct it.
 
-Thanks,
-Moudy Ho
+Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+Link: https://lore.kernel.org/bpf/20220517180420.87954-1-tadeusz.struk@linaro.org
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+---
+ kernel/bpf/cgroup.c | 70 ++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 60 insertions(+), 10 deletions(-)
 
-> > +	depends on HAS_DMA
-> > +	select VIDEOBUF2_DMA_CONTIG
-> > +	select V4L2_MEM2MEM_DEV
-> > +	select VIDEO_MEDIATEK_VPU
-> > +	select MTK_CMDQ
-> > +	select MTK_SCP
-> > +	default n
-> > +	help
-> > +	    It is a v4l2 driver and present in MediaTek MT8183 SoC.
-> > +	    The driver supports scaling and color space conversion.
-> > +
-> > +	    To compile this driver as a module, choose M here: the
-> > +	    module will be called mtk-mdp3.
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 6aa9e10c6335..d154e52dd7ae 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -653,6 +653,60 @@ static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
+ 	return ERR_PTR(-ENOENT);
+ }
+ 
++/**
++ * purge_effective_progs() - After compute_effective_progs fails to alloc new
++ *			     cgrp->bpf.inactive table we can recover by
++ *			     recomputing the array in place.
++ *
++ * @cgrp: The cgroup which descendants to travers
++ * @prog: A program to detach or NULL
++ * @link: A link to detach or NULL
++ * @type: Type of detach operation
++ */
++static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
++				  struct bpf_cgroup_link *link,
++				  enum bpf_attach_type type)
++{
++	struct cgroup_subsys_state *css;
++	struct bpf_prog_array *progs;
++	struct bpf_prog_list *pl;
++	struct list_head *head;
++	struct cgroup *cg;
++	int pos;
++
++	/* recompute effective prog array in place */
++	css_for_each_descendant_pre(css, &cgrp->self) {
++		struct cgroup *desc = container_of(css, struct cgroup, self);
++
++		if (percpu_ref_is_zero(&desc->bpf.refcnt))
++			continue;
++
++		/* find position of link or prog in effective progs array */
++		for (pos = 0, cg = desc; cg; cg = cgroup_parent(cg)) {
++			if (pos && !(cg->bpf.flags[type] & BPF_F_ALLOW_MULTI))
++				continue;
++
++			head = &cg->bpf.progs[type];
++			list_for_each_entry(pl, head, node) {
++				if (!prog_list_prog(pl))
++					continue;
++				if (pl->prog == prog && pl->link == link)
++					goto found;
++				pos++;
++			}
++		}
++found:
++		BUG_ON(!cg);
++		progs = rcu_dereference_protected(
++				desc->bpf.effective[type],
++				lockdep_is_held(&cgroup_mutex));
++
++		/* Remove the program from the array */
++		WARN_ONCE(bpf_prog_array_delete_safe_at(progs, pos),
++			  "Failed to purge a prog from array at index %d", pos);
++	}
++}
++
+ /**
+  * __cgroup_bpf_detach() - Detach the program or link from a cgroup, and
+  *                         propagate the change to descendants
+@@ -671,7 +725,6 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	u32 flags = cgrp->bpf.flags[type];
+ 	struct bpf_prog_list *pl;
+ 	struct bpf_prog *old_prog;
+-	int err;
+ 
+ 	if (prog && link)
+ 		/* only one of prog or link can be specified */
+@@ -686,9 +739,12 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	pl->prog = NULL;
+ 	pl->link = NULL;
+ 
+-	err = update_effective_progs(cgrp, type);
+-	if (err)
+-		goto cleanup;
++	if (update_effective_progs(cgrp, type)) {
++		/* if update effective array failed replace the prog with a dummy prog*/
++		pl->prog = old_prog;
++		pl->link = link;
++		purge_effective_progs(cgrp, old_prog, link, type);
++	}
+ 
+ 	/* now can actually delete it from this cgroup list */
+ 	list_del(&pl->node);
+@@ -700,12 +756,6 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 		bpf_prog_put(old_prog);
+ 	static_branch_dec(&cgroup_bpf_enabled_key);
+ 	return 0;
+-
+-cleanup:
+-	/* restore back prog or link */
+-	pl->prog = old_prog;
+-	pl->link = link;
+-	return err;
+ }
+ 
+ /* Must be called with cgroup_mutex held to avoid races. */
+-- 
+2.25.1
 
