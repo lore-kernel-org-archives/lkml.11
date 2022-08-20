@@ -2,114 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB88C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57897C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345030AbiHTL1f (ORCPT
+        id S1344400AbiHTLaA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        Sat, 20 Aug 2022 07:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241503AbiHTL1c (ORCPT
+        with ESMTP id S231152AbiHTL35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:27:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58DE220C2;
-        Sat, 20 Aug 2022 04:27:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65FF6B80B8E;
-        Sat, 20 Aug 2022 11:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6ABC433C1;
-        Sat, 20 Aug 2022 11:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660994849;
-        bh=2x0Gsy+of145puKe++xz+vCM/2yS9d9yxU3kwmjgqz4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EETcnA+jD97hRAAmnT6LpnuOKiKz0cf2ZhDX152jOU+0vhd5JKKmDBWc6rU1ohN2X
-         HTJ+dGrH/kfKv/MI3DnWCuyHfW3ewXakq+65Qzzk1dLkfG/JmzIQRNIAeY+4qmv0Xg
-         un6NwC6pu458ZeCnSat1dDLnRUy0H+aBuSusBy71bCUW9IosftGlSn/I5RXQQD/D1Q
-         hI0OAK2T3DLQ3t/335ckA5T54Z96c5yYHnvyKEu23D0A2vhd9yhbf4Wx6ET7lSEszQ
-         YoNfp51NDCuN9a9oTLkNsjCWpJMoHbxLgqsQFQYEzmI+N9UMxFl6ZLeaxAmSdmU7GJ
-         8DRlVGzwMNc5g==
-Date:   Sat, 20 Aug 2022 12:38:04 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Xiang wangx <wangxiang@cdjrlc.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 08/14] iio: bmg160_core: Simplify using
- devm_regulator_*get_enable()
-Message-ID: <20220820123707.7f075381@jic23-huawei>
-In-Reply-To: <795d16f2-4dee-7492-4a87-e928020efebe@fi.rohmeurope.com>
-References: <cover.1660934107.git.mazziesaccount@gmail.com>
-        <3fd11489356b1c73a3d7b4bd9dec7e12c9fe8788.1660934107.git.mazziesaccount@gmail.com>
-        <CAHp75VePr790pXZ5AiRnrPmxkOgZ3YKRTbABE6dvk+udQYrXGA@mail.gmail.com>
-        <795d16f2-4dee-7492-4a87-e928020efebe@fi.rohmeurope.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 20 Aug 2022 07:29:57 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB0E240A7
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:29:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660994946; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=Nqty8JFgrOxBVH4CzVzB+JLvRqKOQ+RaeObPKiZC2L9vPXlSECC8VEXrWnJw1eDvelBhZHz3sOt7EdaITmBT9F/y/hZ3SC3SNxzFENbOuDRRO+2JTZORa3HicaGPBzAZ5iBHq84T39dgAKEFoErCHjzWFyVgVErvbQQBNtVcQDE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1660994946; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=/i1BQuBFaVZtsaNVV0P5lReOS+nc8mcEOK2Ji36Irn8=; 
+        b=X/FuWa0BtbmySalV7QY8s2gAJo7eQWBW6isSBshOwhmYGuNWg5tvCRC+rnyg65AqhDlMd1MI2eGRcKywq14k+vroDXbfImk/kz4oGEs+7Wa3bpZ8T8Yd/pvXjEXj+e7CP3GPLBEETwaowVQKCzfVd1p0rkcgifdq/jpaOOglt74=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660994946;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=/i1BQuBFaVZtsaNVV0P5lReOS+nc8mcEOK2Ji36Irn8=;
+        b=czsdL8kbKjKitm2RKCXEdbc0de0vVu2hjz+GQYUzDnZF1A+n72JXfkOwOlx+q3v+
+        FwaPLRBx4vuNISqNrmXYH3KrMbDd95XqtN0k1zOvkVysxvhvo6iwGVcFnNnkqiw/2aF
+        FWqwxc73EubYj0S/Dsexd+/344zE/Z0X6hBJs5rI=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1660994935866227.9120167406926; Sat, 20 Aug 2022 16:58:55 +0530 (IST)
+Date:   Sat, 20 Aug 2022 16:58:55 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Eric Biggers" <ebiggers@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "David Howells" <dhowells@redhat.com>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
+        "Eric Dumazet" <edumazet@google.com>
+Cc:     "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <182bb035c23.6b1246ee44934.6791244868891887905@siddh.me>
+In-Reply-To: <cover.1659771577.git.code@siddh.me>
+References: <cover.1659771577.git.code@siddh.me>
+Subject: Re: [PATCH v2 0/2] watch_queue: Clean up some code
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 20 Aug 2022 06:19:00 +0000
-"Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com> wrote:
+On Sat, 06 Aug 2022 13:13:40 +0530  Siddh Raman Pant  wrote:
+> There is a dangling reference to pipe in a watch_queue after clearing it.
+> Thus, NULL that pointer while clearing.
+> 
+> This change renders wqueue->defunct superfluous, as the latter is only used
+> to check if watch_queue is cleared. With this change, the pipe is NULLed
+> while clearing, so we can just check if the pipe is NULL.
+> 
+> Extending comment for watch_queue->pipe in the definition of watch_queue
+> made the comment conventionally too long (it was already past 80 chars),
+> so I have changed the struct annotations to be kerneldoc-styled, so that
+> I can extend the comment mentioning that the pipe is NULL when watch_queue
+> is cleared. In the process, I have also hopefully improved documentation
+> by documenting things which weren't documented before.
+> 
+> Changes in v2:
+> - Merged the NULLing and removing defunct patches.
+> - Removed READ_ONCE barrier in lock_wqueue().
+> - Improved and fixed errors in struct docs.
+> - Better commit messages.
+> 
+> Siddh Raman Pant (2):
+>   include/linux/watch_queue: Improve documentation
+>   kernel/watch_queue: NULL the dangling *pipe, and use it for clear
+>     check
+> 
+>  include/linux/watch_queue.h | 100 ++++++++++++++++++++++++++----------
+>  kernel/watch_queue.c        |  12 ++---
+>  2 files changed, 79 insertions(+), 33 deletions(-)
+> 
+> -- 
+> 2.35.1
 
-> Thanks for the review Andy
-> 
-> On 8/20/22 02:30, Andy Shevchenko wrote:
-> > On Fri, Aug 19, 2022 at 10:21 PM Matti Vaittinen
-> > <mazziesaccount@gmail.com> wrote:  
-> >>
-> >> Use devm_regulator_bulk_get_enable() instead of open coded bulk-get,
-> >> bulk-enable, add-action-to-disable-at-detach - pattern.  
-> > 
-> > ...
-> >   
-> >>   int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> >>                        const char *name)
-> >>   {
-> >>          struct bmg160_data *data;
-> >>          struct iio_dev *indio_dev;
-> >>          int ret;
-> >> +       static const char * const regulators[] = {"vdd", "vddio"};  
-> > 
-> > Please, keep this following the "longest line first" rule. Note, in  
-> 
-> This was not following the (IMO slightly silly) rule even prior my 
-> patch. I can for sure move my line up - but that won't give you the 
-> "reverse X-mas tree".
-> 
-> I don't have any real objections on changing the styling though - I 
-> don't expect this to be merged before the dependency is in rc1 - so I 
-> guess I will anyways need to respin this for next cycle. I can do the 
-> styling then.
-I was a bit surprised Mark didn't do an immutable branch for this, but
-indeed looks like it's going to be a multiple cycle thing - so we'll
-probably have a bunch of new cases introduced in the meantime that
-we need to tidy up.  Ah well.
+Hello,
 
-> 
-> > this case you even can move it out of the function, so we will see
-> > clearly that this is (not a hidden) global variable.  
-> 
-> Here I do disagree with you. Moving the array out of the function makes 
-> it _much_ less obvious it is not used outside this function. Reason for 
-> making is "static const" is to allow the data be placed in read-only 
-> area (thanks to Guenter who originally gave me this tip).
-> 
-> > P.S. Same applies for the rest of the similar places in your series.
-> >   
-> 
-> Br,
-> 	-- Matti
-> 
+Maybe the above quoted patch was missed due to the
+then-ongoing merge window. This can be found on:
+https://lore.kernel.org/lkml/cover.1659771577.git.code@siddh.me/
 
+This patch was posted 2 weeks ago, with changes as requested.
+
+With the merge window closed, may I request for another look at
+this patch?
+
+Thanks,
+Siddh
