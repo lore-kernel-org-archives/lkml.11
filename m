@@ -2,81 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7D0C32772
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 09:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732B1C32793
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 09:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344227AbiHTJW2 (ORCPT
+        id S1344431AbiHTJZn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 05:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
+        Sat, 20 Aug 2022 05:25:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244085AbiHTJW0 (ORCPT
+        with ESMTP id S243060AbiHTJZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 05:22:26 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7D1B69C7;
-        Sat, 20 Aug 2022 02:22:23 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VMj1MZi_1660987338;
-Received: from 192.168.31.65(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VMj1MZi_1660987338)
-          by smtp.aliyun-inc.com;
-          Sat, 20 Aug 2022 17:22:19 +0800
-Message-ID: <da9573d7-cc79-1a75-da52-480c9aac827e@linux.alibaba.com>
-Date:   Sat, 20 Aug 2022 17:22:19 +0800
+        Sat, 20 Aug 2022 05:25:40 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0B75F9BE
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 02:25:38 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 74AEB1FAB0;
+        Sat, 20 Aug 2022 09:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660987537; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0gjmfenIvywBVf50iHOvJGRTYSPveQrXTU08CzyNoCY=;
+        b=BqdX/14cAakxRQyKAhO65J4h9xsR0T7dbg6/jEYZjEbmtxjh0iAKszwYrhWIOXn9Z6MxvT
+        xoYP+siT0ssDMrA2jTHAKGCC3fTwN9qvGW+BeiP/B/kIgLR+Mh0DfmcuIh/VU6Xe79Amxv
+        ERgSGeKIrH4w+QpK9axgoFZsg+7FNwo=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2EA7513440;
+        Sat, 20 Aug 2022 09:25:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id oKf+CZGoAGPJMAAAMHmgww
+        (envelope-from <jgross@suse.com>); Sat, 20 Aug 2022 09:25:37 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH v2 02/10] x86/mtrr: remove unused cyrix_set_all() function
+Date:   Sat, 20 Aug 2022 11:25:25 +0200
+Message-Id: <20220820092533.29420-3-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220820092533.29420-1-jgross@suse.com>
+References: <20220820092533.29420-1-jgross@suse.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH v3] cachefiles: fix error return code in
- cachefiles_ondemand_copen()
-Content-Language: en-US
-To:     Sun Ke <sunke32@huawei.com>, dhowells@redhat.com
-Cc:     linux-cachefs@redhat.com, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-fsdevel@vger.kernel.org
-References: <20220818125038.2247720-1-sunke32@huawei.com>
-From:   JeffleXu <jefflexu@linux.alibaba.com>
-In-Reply-To: <20220818125038.2247720-1-sunke32@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The Cyrix cpu specific MTRR function cyrix_set_all() will never be
+called, as the struct mtrr_ops set_all() callback will only be called
+in the use_intel() case, which would require the use_intel_if member
+of struct mtrr_ops to be set, which isn't the case for Cyrix.
 
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+V2:
+- new patch
+---
+ arch/x86/kernel/cpu/mtrr/cyrix.c | 34 --------------------------------
+ 1 file changed, 34 deletions(-)
 
-On 8/18/22 8:50 PM, Sun Ke wrote:
-> The cache_size field of copen is specified by the user daemon.
-> If cache_size < 0, then the OPEN request is expected to fail,
-> while copen itself shall succeed. However, returning 0 is indeed
-> unexpected when cache_size is an invalid error code.
-> 
-> Fix this by returning error when cache_size is an invalid error code.
-> 
-> Fixes: c8383054506c ("cachefiles: notify the user daemon when looking up cookie")
-> Signed-off-by: Sun Ke <sunke32@huawei.com>
-
-LGTM.
-
-Reviewed-by: Jingbo Xu <jefflexu@linux.alibaba.com>
-
-> ---
-> v3: update the commit log suggested by Jingbo.
-> 
->  fs/cachefiles/ondemand.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
-> index 1fee702d5529..ea8a1e8317d9 100644
-> --- a/fs/cachefiles/ondemand.c
-> +++ b/fs/cachefiles/ondemand.c
-> @@ -159,7 +159,7 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
->  	/* fail OPEN request if daemon reports an error */
->  	if (size < 0) {
->  		if (!IS_ERR_VALUE(size))
-> -			size = -EINVAL;
-> +			ret = size = -EINVAL;
->  		req->error = size;
->  		goto out;
->  	}
-
+diff --git a/arch/x86/kernel/cpu/mtrr/cyrix.c b/arch/x86/kernel/cpu/mtrr/cyrix.c
+index ca670919b561..c77d3b0a5bf2 100644
+--- a/arch/x86/kernel/cpu/mtrr/cyrix.c
++++ b/arch/x86/kernel/cpu/mtrr/cyrix.c
+@@ -234,42 +234,8 @@ static void cyrix_set_arr(unsigned int reg, unsigned long base,
+ 	post_set();
+ }
+ 
+-typedef struct {
+-	unsigned long	base;
+-	unsigned long	size;
+-	mtrr_type	type;
+-} arr_state_t;
+-
+-static arr_state_t arr_state[8] = {
+-	{0UL, 0UL, 0UL}, {0UL, 0UL, 0UL}, {0UL, 0UL, 0UL}, {0UL, 0UL, 0UL},
+-	{0UL, 0UL, 0UL}, {0UL, 0UL, 0UL}, {0UL, 0UL, 0UL}, {0UL, 0UL, 0UL}
+-};
+-
+-static unsigned char ccr_state[7] = { 0, 0, 0, 0, 0, 0, 0 };
+-
+-static void cyrix_set_all(void)
+-{
+-	int i;
+-
+-	prepare_set();
+-
+-	/* the CCRs are not contiguous */
+-	for (i = 0; i < 4; i++)
+-		setCx86(CX86_CCR0 + i, ccr_state[i]);
+-	for (; i < 7; i++)
+-		setCx86(CX86_CCR4 + i, ccr_state[i]);
+-
+-	for (i = 0; i < 8; i++) {
+-		cyrix_set_arr(i, arr_state[i].base,
+-			      arr_state[i].size, arr_state[i].type);
+-	}
+-
+-	post_set();
+-}
+-
+ static const struct mtrr_ops cyrix_mtrr_ops = {
+ 	.vendor            = X86_VENDOR_CYRIX,
+-	.set_all	   = cyrix_set_all,
+ 	.set               = cyrix_set_arr,
+ 	.get               = cyrix_get_arr,
+ 	.get_free_region   = cyrix_get_free_region,
 -- 
-Thanks,
-Jingbo
+2.35.3
+
