@@ -2,174 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30276C28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8B6C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244713AbiHTAGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
+        id S244741AbiHTAGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244401AbiHTAGN (ORCPT
+        with ESMTP id S244394AbiHTAGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 19 Aug 2022 20:06:13 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE47C59E4;
-        Fri, 19 Aug 2022 17:06:12 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id 20so5343736plo.10;
-        Fri, 19 Aug 2022 17:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=mALUVzvQkNStgXaHgA3odIsd31YxLLGk1d2u95EoEbw=;
-        b=oVeJjDc3RH46Mfe5B8tkD6PdFxEdVoazg8nbQW8oMsw3JPk3gclva8LRuwooFi+Yhh
-         UfACsm70DPl4YknurmVAfkFyLXAamAb97UiskrCdJtVzSTyr8X2urqsw9ATZ2dvKEKFF
-         7Fz69+byXmQoQrPx2UWpf3cumRScIwLF5Vtwa9JKlCHlU+JBAO/ZkDjjvNoYGFDiQtEv
-         hxs4xUDLt6wXUlvj/SN2j2NNZwMxBEh15P4WTc5cwcQHkQlX8U+FJC3zUiV1YwZLLQwK
-         aUiTaqwJis86CwvPFaBCY7LfO0Ntl1V1B9r7AJOtEn56f/Wj9Isj3Vp7eOJYUf/BtIJQ
-         KBfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc;
-        bh=mALUVzvQkNStgXaHgA3odIsd31YxLLGk1d2u95EoEbw=;
-        b=QePyw8PQZ5o159b1GG5rh6yiB6nWkzOmqKHOXE1o9HTjlgq1maO/kC3ba5HNzqmq6k
-         Ii7W3hm12hhEI6v28LqFIyzdXEXJjsnH6dM0+CKfAXmbawvZwEWXH0RJAim66kio26gP
-         kN9m4gEtjfjPQSfB/rI20X2Hw1OrV5g7cFD9xNNX84i9dGwM95lnYyJtDzYFcU/C7Wh4
-         nmpQt5Ig+s7Y/oOyk8mrxZaks9x2tnLiECY4Y3ZHJtgfFPt2yb1hNs5x1YIVwECGU698
-         x7AJPYCxeBnUaSq2Ak0+z6XLDuQ/rbE9swF4X2ZILkNJGw61vRF/RWNl06hh296YpExF
-         LUXg==
-X-Gm-Message-State: ACgBeo08t+ZcFvES3PUjJ3rPuZQDD0KaPOwiKuRs6jSdhQBq9mqsBhRO
-        /LmymIAHjUN7dwsfihva+7MqcqZy4gI=
-X-Google-Smtp-Source: AA6agR5CM7J59rSZzXsxpmaVSmGNSqOdihNEvMdBamjMVcEi3uhG6gbUPPwADBu38U+aO5iWNfMhdw==
-X-Received: by 2002:a17:902:c411:b0:170:91ff:884b with SMTP id k17-20020a170902c41100b0017091ff884bmr9656022plk.58.1660953971444;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29DDC57B6;
         Fri, 19 Aug 2022 17:06:11 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:a2f5])
-        by smtp.gmail.com with ESMTPSA id f7-20020a170902684700b0016d93c84049sm3702023pln.54.2022.08.19.17.06.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 17:06:11 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-From:   Tejun Heo <tj@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5/7] kernfs: Make kernfs_drain() skip draining more aggressively
-Date:   Fri, 19 Aug 2022 14:05:49 -1000
-Message-Id: <20220820000550.367085-6-tj@kernel.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220820000550.367085-1-tj@kernel.org>
-References: <20220820000550.367085-1-tj@kernel.org>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3ECF5CE2836;
+        Sat, 20 Aug 2022 00:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D478C433C1;
+        Sat, 20 Aug 2022 00:06:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660953968;
+        bh=bmY/rIg42sR+LftATW/o/kfBdIvBcTzPrp7h7embqQk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K39ZSV5fNmgcRWBMZwUdCZgWzZRx4KVPEHSqxIley39L2Z2hiBNBanX22WpWOfWNs
+         d15Ey+rZNSUwYf9js/7cqs3A2H+wTTFG5Ulkcy2RBlXLdCbePeSt/bQ6E6l4p/9SQ8
+         5Z8Ootp22+495DSeGwxqd6Zey02VUyOk2E8NmN5bnBdBNvz/ATRGex/EvcGPFBBDqH
+         VWc0FYVM4JTIZR6ahlo6DQ557864VIumRlzwgMuKA4bMr4nvtcd5M74wghck1FjlAp
+         HNWOgSTuJ7GIeSjlruT3QD0a7HzWwm2oGlU1QsG4ts4QbGQiWKUrmeFQbyTMBzplYu
+         tBO/GigY85Mow==
+Date:   Fri, 19 Aug 2022 17:06:06 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH v4 6/9] f2fs: don't allow DIO reads but not DIO writes
+Message-ID: <YwAlbsorBsshkxfU@google.com>
+References: <20220722071228.146690-1-ebiggers@kernel.org>
+ <20220722071228.146690-7-ebiggers@kernel.org>
+ <YtyoF89iOg8gs7hj@google.com>
+ <Yt7dCcG0ns85QqJe@sol.localdomain>
+ <YuXyKh8Zvr56rR4R@google.com>
+ <YvrrEcw4E+rpDLwM@sol.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvrrEcw4E+rpDLwM@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernfs_drain() is updated to handle whether draining is necessary or not
-rather than its caller. __kernfs_remove() now always calls kernfs_drain()
-instead of filtering based on KERNFS_ACTIVATED.
+On 08/15, Eric Biggers wrote:
+> On Sat, Jul 30, 2022 at 08:08:26PM -0700, Jaegeuk Kim wrote:
+> > On 07/25, Eric Biggers wrote:
+> > > On Sat, Jul 23, 2022 at 07:01:59PM -0700, Jaegeuk Kim wrote:
+> > > > On 07/22, Eric Biggers wrote:
+> > > > > From: Eric Biggers <ebiggers@google.com>
+> > > > > 
+> > > > > Currently, if an f2fs filesystem is mounted with the mode=lfs and
+> > > > > io_bits mount options, DIO reads are allowed but DIO writes are not.
+> > > > > Allowing DIO reads but not DIO writes is an unusual restriction, which
+> > > > > is likely to be surprising to applications, namely any application that
+> > > > > both reads and writes from a file (using O_DIRECT).  This behavior is
+> > > > > also incompatible with the proposed STATX_DIOALIGN extension to statx.
+> > > > > Given this, let's drop the support for DIO reads in this configuration.
+> > > > 
+> > > > IIRC, we allowed DIO reads since applications complained a lower performance.
+> > > > So, I'm afraid this change will make another confusion to users. Could
+> > > > you please apply the new bahavior only for STATX_DIOALIGN?
+> > > > 
+> > > 
+> > > Well, the issue is that the proposed STATX_DIOALIGN fields cannot represent this
+> > > weird case where DIO reads are allowed but not DIO writes.  So the question is
+> > > whether this case actually matters, in which case we should make STATX_DIOALIGN
+> > > distinguish between DIO reads and DIO writes, or whether it's some odd edge case
+> > > that doesn't really matter, in which case we could just fix it or make
+> > > STATX_DIOALIGN report that DIO is unsupported.  I was hoping that you had some
+> > > insight here.  What sort of applications want DIO reads but not DIO writes?
+> > > Is this common at all?
+> > 
+> > I think there's no specific application to use the LFS mode at this
+> > moment, but I'd like to allow DIO read for zoned device which will be
+> > used for Android devices.
+> > 
+> 
+> So if the zoned device feature becomes widely adopted, then STATX_DIOALIGN will
+> be useless on all Android devices?  That sounds undesirable. 
 
-kernfs_drain() now tests kn->active and kernfs_should_drain_open_files() to
-determine whether draining is necessary at all. If not, it returns %false
-without doing anything. Otherwise, it unlocks kernfs_rwsem and drains as
-before and returns %true. The return value isn't used yet.
+Do you have a plan to adopt STATX_DIOALIGN in android?
 
-Using the precise conditions allows skipping more aggressively. This isn't a
-meaningful optimization on its own but will enable future stand-alone
-kernfs_deactivate() implementation.
+> Are you sure that
+> supporting DIO reads but not DIO writes actually works?  Does it not cause
+> problems for existing applications?
 
-While at it, make minor comment updates.
+I haven't heard any issue so far.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
----
- fs/kernfs/dir.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+> 
+> What we need to do is make a decision about whether this means we should build
+> in a stx_dio_direction field (indicating no support / readonly support /
+> writeonly support / readwrite support) into the API from the beginning.  If we
+> don't do that, then I don't think we could simply add such a field later, as the
+> statx_dio_*_align fields will have already been assigned their meaning.  I think
+> we'd instead have to "duplicate" the API, with STATX_DIOROALIGN and
+> statx_dio_ro_*_align fields.  That seems uglier than building a directional
+> indicator into the API from the beginning.  On the other hand, requiring all
+> programs to check stx_dio_direction would add complexity to using the API.
+> 
+> Any thoughts on this?
 
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index 8ae44db920d4..f857731598cd 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -460,10 +460,14 @@ void kernfs_put_active(struct kernfs_node *kn)
-  * @kn: kernfs_node to drain
-  *
-  * Drain existing usages and nuke all existing mmaps of @kn.  Mutiple
-- * removers may invoke this function concurrently on @kn and all will
-+ * callers may invoke this function concurrently on @kn and all will
-  * return after draining is complete.
-+ *
-+ * RETURNS:
-+ * %false if nothing needed to be drained; otherwise, %true. On %true return,
-+ * kernfs_rwsem has been released and re-acquired.
-  */
--static void kernfs_drain(struct kernfs_node *kn)
-+static bool kernfs_drain(struct kernfs_node *kn)
- 	__releases(&kernfs_root(kn)->kernfs_rwsem)
- 	__acquires(&kernfs_root(kn)->kernfs_rwsem)
- {
-@@ -472,6 +476,16 @@ static void kernfs_drain(struct kernfs_node *kn)
- 	lockdep_assert_held_write(&root->kernfs_rwsem);
- 	WARN_ON_ONCE(kernfs_active(kn));
- 
-+	/*
-+	 * Skip draining if already fully drained. This avoids draining and its
-+	 * lockdep annotations for nodes which have never been activated
-+	 * allowing embedding kernfs_remove() in create error paths without
-+	 * worrying about draining.
-+	 */
-+	if (atomic_read(&kn->active) == KN_DEACTIVATED_BIAS &&
-+	    kernfs_should_drain_open_files(kn))
-+		return false;
-+
- 	up_write(&root->kernfs_rwsem);
- 
- 	if (kernfs_lockdep(kn)) {
-@@ -480,7 +494,6 @@ static void kernfs_drain(struct kernfs_node *kn)
- 			lock_contended(&kn->dep_map, _RET_IP_);
- 	}
- 
--	/* but everyone should wait for draining */
- 	wait_event(root->deactivate_waitq,
- 		   atomic_read(&kn->active) == KN_DEACTIVATED_BIAS);
- 
-@@ -493,6 +506,8 @@ static void kernfs_drain(struct kernfs_node *kn)
- 		kernfs_drain_open_files(kn);
- 
- 	down_write(&root->kernfs_rwsem);
-+
-+	return true;
- }
- 
- /**
-@@ -1370,23 +1385,14 @@ static void __kernfs_remove(struct kernfs_node *kn)
- 		pos = kernfs_leftmost_descendant(kn);
- 
- 		/*
--		 * kernfs_drain() drops kernfs_rwsem temporarily and @pos's
-+		 * kernfs_drain() may drop kernfs_rwsem temporarily and @pos's
- 		 * base ref could have been put by someone else by the time
- 		 * the function returns.  Make sure it doesn't go away
- 		 * underneath us.
- 		 */
- 		kernfs_get(pos);
- 
--		/*
--		 * Drain iff @kn was activated.  This avoids draining and
--		 * its lockdep annotations for nodes which have never been
--		 * activated and allows embedding kernfs_remove() in create
--		 * error paths without worrying about draining.
--		 */
--		if (kn->flags & KERNFS_ACTIVATED)
--			kernfs_drain(pos);
--		else
--			WARN_ON_ONCE(atomic_read(&kn->active) != KN_DEACTIVATED_BIAS);
-+		kernfs_drain(pos);
- 
- 		/*
- 		 * kernfs_unlink_sibling() succeeds once per node.  Use it
--- 
-2.37.2
+I haven't seen the details of the implementation tho, why not supporting it
+only if filesystem has the same DIO RW policy?
 
+> 
+> - Eric
