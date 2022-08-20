@@ -2,112 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4452BC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 08:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7B9C32774
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 08:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245179AbiHTIEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 04:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
+        id S245271AbiHTIFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 04:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243060AbiHTIEC (ORCPT
+        with ESMTP id S244415AbiHTIFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 04:04:02 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E3D75CFF
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:03:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660982640; x=1692518640;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6JUrxYCKKv9Corxi85IfluTexRfbKr9u7r3UhCXYa8Q=;
-  b=HFGWRgSibZCi/4zI9YgpDlxB+GfEKXMcG/2ikm8kbKcsfUA6MNczPAJw
-   p1jWFoGL8il7kW0+cOcbEL4yOZRKkoSMz22svVwrtYcEzSNskjIoVlqHf
-   WJJFSLVzyiH8ssNSWeJA0+c7fPRNROfVpPDAsdBOjmuS5+MQJzIMXRAnV
-   5ZqbjYmQoeE/q/g2RO+fVGGZb3FLFnNgG7xsCfmCpYupemuLPdsA/DWuH
-   cK4Rw9ubvnxg8zvdPwmEkwFs1LMVyUSHsuAqw3i1jAYU9iav5rhGtzvV5
-   tYB2Xrg+E3nzjnjgYH82iTpue/hDUVC8hih7GfluDdEGgFmsMluI7cZ/H
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="273551160"
-X-IronPort-AV: E=Sophos;i="5.93,250,1654585200"; 
-   d="scan'208";a="273551160"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2022 01:03:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,250,1654585200"; 
-   d="scan'208";a="936468917"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 20 Aug 2022 01:03:57 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPJSX-0002Ln-0C;
-        Sat, 20 Aug 2022 08:03:57 +0000
-Date:   Sat, 20 Aug 2022 16:02:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:19: warning:
- no previous prototype for function '__ashldi3'
-Message-ID: <202208201544.3bfagcR3-lkp@intel.com>
+        Sat, 20 Aug 2022 04:05:12 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA34FB7768
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:05:10 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id u15so3902603ejt.6
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:05:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=C12ECdGG1RKxVZ00Sm1eAbakDJeM+iWoj3xaGjwbf9U=;
+        b=ulgurSA3DEgNLfIkCnnkMM55hIo5jwGFwLK/9lUH7SHsnJIjY3E5O35RnTs9YeJw57
+         3UIN2LZOvna+UWAlJHxYuuc3RY1EKVlxQ/v8QctYGdWOBDAhL0oOykjt/q3N4Gjie64m
+         /dKQKAQYlvRCxXDBIP0Q5SeWzadvRYn+X6WoUMlqiBlblmkFDsJ08mnEBVuUy0cje0Qw
+         CgPlnjVhULIYyH3pIijIXQntpn5vKC3svEoqm38MEpAW6TW/2Z3QgPsxWJdkUGdDu2/z
+         1q0jayA3F8Hpeqws7YUrmSfWHrozLZIooXYt7F5xuovPeMLzxXsgi3D6V972nTHSIeWv
+         SJIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=C12ECdGG1RKxVZ00Sm1eAbakDJeM+iWoj3xaGjwbf9U=;
+        b=p62FZ2FIOTAUWqgrhk4IRWoMn5uNHa7aM6CyqtwVs92aMDFHLhfwv8MZTDr5Rw2+tm
+         MioNMd32E/SmsRF+DTQfTg+45OvruLc015RD8qM5DFWEbcMGbWbFABEWuqCqlyCJPwPR
+         vFbtULSyPhE6FfEceHcbTHm1Db2/nEu64r12mf1/q22xiSHU4/atCOqXBbpDcfdRcXGQ
+         bxl6Z+3um0DEOyTGqbezN+XhwrRr2t08y5SCKn6ZNvAUHhJOgBXnXIaqUUsBeq5veJt4
+         8E1VeNuZYHeMUGePAT0D4VNpX6rwn+uztkAOdIT1tZCNBnRJfK5RWEdp7w5Ai/vNVGcX
+         EUEQ==
+X-Gm-Message-State: ACgBeo2jI1ZMGxRnHVC7n87uRDAWrN+xFiHvKRYrWV40LwFcvJz6sn46
+        yaFJ+fN8J7fg7DwRgCl+irkfQmw0zTLmv6dJqEEaxQ==
+X-Google-Smtp-Source: AA6agR7axdTBDNz5k1m9wqa5h+vTpUmPATrp3i9tpIvKP7B2b8K0bO9NoGU6orcc3CmM/DDxZI5k7SNUL0qNmizMdwM=
+X-Received: by 2002:a17:907:86ac:b0:731:5180:8aa0 with SMTP id
+ qa44-20020a17090786ac00b0073151808aa0mr7030817ejc.366.1660982709229; Sat, 20
+ Aug 2022 01:05:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220819153711.552247994@linuxfoundation.org>
+In-Reply-To: <20220819153711.552247994@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 20 Aug 2022 13:34:57 +0530
+Message-ID: <CA+G9fYvApY2VQcPdFrLDn8LhuN_zLdUW-yiPFq7TuPWamCkKKg@mail.gmail.com>
+Subject: Re: [PATCH 5.19 0/7] 5.19.3-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masahiro,
+On Fri, 19 Aug 2022 at 21:09, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.19.3 release.
+> There are 7 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 21 Aug 2022 15:36:59 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.3-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-FYI, the error/warning still remains.
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   50cd95ac46548429e5bba7ca75cc97d11a697947
-commit: f78b25ee922ef6faf59a258af1b9388ca894cfd9 mips: decompressor: do not copy source files while building
-date:   9 months ago
-config: mips-loongson1c_defconfig (https://download.01.org/0day-ci/archive/20220820/202208201544.3bfagcR3-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c9a41fe60ab62f7a40049c100adcc8087a47669b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mipsel-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f78b25ee922ef6faf59a258af1b9388ca894cfd9
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f78b25ee922ef6faf59a258af1b9388ca894cfd9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+## Build
+* kernel: 5.19.3-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.19.y
+* git commit: 8c2c6014fe886925b313a6e8b6eb46763dafbaff
+* git describe: v5.19.2-8-g8c2c6014fe88
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.19.y/build/v5.19.2-8-g8c2c6014fe88
 
-Note: functions only called from assembly code should be annotated with the asmlinkage attribute
-All warnings (new ones prefixed by >>):
+## No test Regressions (compared to v5.19.2)
 
-   In file included from arch/mips/boot/compressed/ashldi3.c:2:
->> arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:19: warning: no previous prototype for function '__ashldi3' [-Wmissing-prototypes]
-   long long notrace __ashldi3(long long u, word_type b)
-                     ^
-   arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   long long notrace __ashldi3(long long u, word_type b)
-   ^
-   static 
-   1 warning generated.
+## No metric Regressions (compared to v5.19.2)
 
+## No test Fixes (compared to v5.19.2)
 
-vim +/__ashldi3 +9 arch/mips/boot/compressed/../../../../lib/ashldi3.c
+## No metric Fixes (compared to v5.19.2)
 
-b35cd9884fa5d8 Palmer Dabbelt 2017-05-23  8  
-b35cd9884fa5d8 Palmer Dabbelt 2017-05-23 @9  long long notrace __ashldi3(long long u, word_type b)
+## Test result summary
+total: 167248, pass: 149293, fail: 1211, skip: 15719, xfail: 1025
 
-:::::: The code at line 9 was first introduced by commit
-:::::: b35cd9884fa5d81c9d5e7f57c9d03264ae2bd835 lib: Add shared copies of some GCC library routines
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 314 total, 311 passed, 3 failed
+* arm64: 76 total, 74 passed, 2 failed
+* i386: 64 total, 58 passed, 6 failed
+* mips: 50 total, 47 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 65 total, 56 passed, 9 failed
+* riscv: 32 total, 27 passed, 5 failed
+* s390: 22 total, 20 passed, 2 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x86_64: 69 total, 67 passed, 2 failed
 
-:::::: TO: Palmer Dabbelt <palmer@dabbelt.com>
-:::::: CC: Palmer Dabbelt <palmer@dabbelt.com>
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--
+Linaro LKFT
+https://lkft.linaro.org
