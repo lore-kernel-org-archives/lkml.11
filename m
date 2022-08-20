@@ -2,199 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1ECC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 08:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E66C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 08:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344166AbiHTIJf (ORCPT
+        id S1344073AbiHTIKc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 04:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        Sat, 20 Aug 2022 04:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343870AbiHTIJU (ORCPT
+        with ESMTP id S1344475AbiHTIKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 04:09:20 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E656B5A3CA;
-        Sat, 20 Aug 2022 01:09:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660982929; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=MEcu3imQh3NYN0O4gumjRRnRT4LWeOT1Am2Ug99PiPY1eKfFr/pSRv9q2q9e1zDva8TEnyuzXfHfDK5F0+dMDSaHqFAEoFQGFgvgHur1JYokxvD73qneEPXum9Pc2Q26QBCXufr2BvFrXjxxXGGBESaaH284hjJEn86/pJHfRMY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660982929; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=efZyIMqhvsHv7kWVzGyHqdrHhC0Tjwb1XVhmNHq+bJ4=; 
-        b=HZL9Z4LyI63yBisuO4pnl1BRIXGEZJ/8uFPmx8oee75OdV90wDPXaoRy5WO302xjrcaTeavoir8mZYgEGLk0SEaUNQ2W5HoY5kbPf51Z7MJ/3XzBf9WiJCYQvYeF5hPQipmVhMCqli6BkZ5BRC61D+JeQ+KBvjXq+a3hiEQE/bk=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660982929;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=efZyIMqhvsHv7kWVzGyHqdrHhC0Tjwb1XVhmNHq+bJ4=;
-        b=WVlJw/eAD3Gc7p40X3WujYKXEtCd6IuCCWxb4ouHMeFmSsHL1x1qmDFgQx8+qq79
-        RkdR2PYIcsyLN9N2OHjIsU1P0gm/Q3lL4u/OvysYENynbcyq5g2uLP2vnaZSAIziPoX
-        y2uFbldAQJT6GimGiT0FMBrpLCMlvQ9cDNmuSvXk=
-Received: from arinc9-PC.lan (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1660982926255105.11458904953486; Sat, 20 Aug 2022 01:08:46 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v4 6/6] dt-bindings: net: dsa: mediatek,mt7530: update binding description
-Date:   Sat, 20 Aug 2022 11:07:58 +0300
-Message-Id: <20220820080758.9829-7-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220820080758.9829-1-arinc.unal@arinc9.com>
-References: <20220820080758.9829-1-arinc.unal@arinc9.com>
+        Sat, 20 Aug 2022 04:10:25 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEAF5FF44
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:10:21 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z2so8072047edc.1
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:10:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1+lx3KfzLA3Bl+2mHK+2ai5gW3qN56may3qT3AObQ0Q=;
+        b=fx7VUWO2slXaKYm765QUsT+4fEO1cdEgTMvl6KQ+gBQdWPFocKfZ5EIvtHNSVNtyvd
+         KP1Yl1tzvWZffTTvKPc+/B0wnU4c+fmU0nqrmC+V0uWJ+nKoGbmr+Z/pQl1tYljmHxk0
+         OMdF54TgxFw73D+LhI4K5tTnIwndbCgGaau15CBN+onJOK+aaxCmDdEYuKwzrC9f5um6
+         mTHGpAf78owAEpnxzuUNwac8o+72nn9AekEbZnBmQhNBdX+8ty9qI7f9nQcvW1l4jBss
+         ssfQnILrbQSzPlsfYUXel661Ny73BEOmpTnA4o4iZuMRj3LFWcFgsaKy1YGZRYlZqfDA
+         8spw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1+lx3KfzLA3Bl+2mHK+2ai5gW3qN56may3qT3AObQ0Q=;
+        b=rXbZamcwLZIdW76VNS4lUXXO0X+04W4USNJkFkvneH4A/KapUGKIb9AL3lKHSLFPmc
+         ipe66DuPgKuJIaWbCAKB8Gz6H+eomx0grkyeWFbk1901jB0fxwGZGbBZY7MR1mEYeTBN
+         IOLLLkPUQx+n0Ye7/WMHD+4fYa8/hAClUCnGmgNfB2egJT6P5BcnzXzkPL7OIddDW+Cm
+         V0A2fjFvA04XFgRXMYTb0aC472zUtOkV3XCkemR6vy7bHMm2aGaM3luX63izOZqvbOEh
+         THo9GWWVlPq0ZLVociAblvcZod7EsAV75K4G86RJIttw9DEA0OJAAu7WUKEAMR4LJIvJ
+         A6dw==
+X-Gm-Message-State: ACgBeo04BoWvtISqsphM2PBBX1iA94tZhBIS6p7xLIvOxDNHuN0TUM6u
+        N7aNRxRtzhphAdgpNDCYETWH6+8NUtvwoStwefgUgQ==
+X-Google-Smtp-Source: AA6agR7WXe0PWfc39N6UpvpYHu32jxaWcRJJG1j4FYXEWbqmNIfVQhpiksNqua1pirBB/TuEltpR/QT/TSOvKkyuCRQ=
+X-Received: by 2002:a05:6402:13c6:b0:446:1c68:915b with SMTP id
+ a6-20020a05640213c600b004461c68915bmr7795778edx.208.1660983019184; Sat, 20
+ Aug 2022 01:10:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+References: <20220819153710.430046927@linuxfoundation.org>
+In-Reply-To: <20220819153710.430046927@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 20 Aug 2022 13:40:07 +0530
+Message-ID: <CA+G9fYu783oU+cQA2akFBXMncE6UXO8B9rvNCt9Fg19GnHuADQ@mail.gmail.com>
+Subject: Re: [PATCH 5.18 0/6] 5.18.19-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the description of the binding.
+On Fri, 19 Aug 2022 at 21:10, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> -------------------
+> NOTE, this is the LAST 5.18.y stable release.  This tree will be
+> end-of-life after this one.  Please move to 5.19.y at this point in time
+> or let us know why that is not possible.
+> -------------------
+>
+> This is the start of the stable review cycle for the 5.18.19 release.
+> There are 6 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 21 Aug 2022 15:36:59 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.19-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-- Describe the switches, which SoCs they are in, or if they are standalone.
-- Explain the various ways of configuring MT7530's port 5.
-- Remove phy-mode = "rgmii-txid" from description. Same code path is
-followed for delayed rgmii and rgmii phy-mode on mtk_eth_soc.c.
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 97 ++++++++++++-------
- 1 file changed, 62 insertions(+), 35 deletions(-)
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index eff2f0c6182e..80ec05fd81f6 100644
---- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -13,41 +13,68 @@ maintainers:
-   - Sean Wang <sean.wang@mediatek.com>
- 
- description: |
--  Port 5 of mt7530 and mt7621 switch is muxed between:
--  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
--  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
--     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
--     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
--       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
--       connected to external component!
--
--  Port 5 modes/configurations:
--  1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
--     GMAC of the SOC.
--     In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
--     GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
--  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
--     It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
--     and RGMII delay.
--  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
--     Port 5 becomes an extra switch port.
--     Only works on platform where external phy TX<->RX lines are swapped.
--     Like in the Ubiquiti ER-X-SFP.
--  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
--     Currently a 2nd CPU port is not supported by DSA code.
--
--  Depending on how the external PHY is wired:
--  1. normal: The PHY can only connect to 2nd GMAC but not to the switch
--  2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
--     a ethernet port. But can't interface to the 2nd GMAC.
--
--    Based on the DT the port 5 mode is configured.
--
--  Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
--  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
--  phy-mode must be set, see also example 2 below!
--  * mt7621: phy-mode = "rgmii-txid";
--  * mt7623: phy-mode = "rgmii";
-+  There are two versions of MT7530, standalone and in a multi-chip module.
-+
-+  MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
-+  MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
-+
-+  MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
-+  and the switch registers are directly mapped into SoC's memory map rather than
-+  using MDIO. The DSA driver currently doesn't support this.
-+
-+  There is only the standalone version of MT7531.
-+
-+  Port 5 on MT7530 has got various ways of configuration.
-+
-+  For standalone MT7530:
-+
-+    - Port 5 can be used as a CPU port.
-+
-+    - PHY 0 or 4 of the switch can be muxed to connect to the gmac of the SoC
-+      which port 5 is wired to. Usually used for connecting the wan port
-+      directly to the CPU to achieve 2 Gbps routing in total.
-+
-+      The driver looks up the reg on the ethernet-phy node which the phy-handle
-+      property refers to on the gmac node to mux the specified phy.
-+
-+      The driver requires the gmac of the SoC to have "mediatek,eth-mac" as the
-+      compatible string and the reg must be 1. So, for now, only gmac1 of an
-+      MediaTek SoC can benefit this. Banana Pi BPI-R2 suits this.
-+      Check out example 5 for a similar configuration.
-+
-+    - Port 5 can be wired to an external phy. Port 5 becomes a DSA slave.
-+      Check out example 7 for a similar configuration.
-+
-+  For multi-chip module MT7530:
-+
-+    - Port 5 can be used as a CPU port.
-+
-+    - PHY 0 or 4 of the switch can be muxed to connect to gmac1 of the SoC.
-+      Usually used for connecting the wan port directly to the CPU to achieve 2
-+      Gbps routing in total.
-+
-+      The driver looks up the reg on the ethernet-phy node which the phy-handle
-+      property refers to on the gmac node to mux the specified phy.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
-+      Check out example 5.
-+
-+    - In case of an external phy wired to gmac1 of the SoC, port 5 must not be
-+      enabled.
-+
-+      In case of muxing PHY 0 or 4, the external phy must not be enabled.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
-+      Check out example 6.
-+
-+    - Port 5 can be muxed to an external phy. Port 5 becomes a DSA slave.
-+      The external phy must be wired TX to TX to gmac1 of the SoC for this to
-+      work. Ubiquiti EdgeRouter X SFP is wired this way.
-+
-+      Muxing PHY 0 or 4 won't work when the external phy is connected TX to TX.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with gpio function.
-+      Check out example 7.
- 
- properties:
-   compatible:
--- 
-2.34.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.18.19-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.18.y
+* git commit: f06dacf3d236cd8b16b2a869572c0e849f2aa156
+* git describe: v5.18.18-7-gf06dacf3d236
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18.18-7-gf06dacf3d236
+
+## No test Regressions (compared to v5.18.18)
+
+## No metric Regressions (compared to v5.18.18)
+
+## No test Fixes (compared to v5.18.18)
+
+## No metric Fixes (compared to v5.18.18)
+
+## Test result summary
+total: 138885, pass: 123740, fail: 932, skip: 13421, xfail: 792
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 313 total, 310 passed, 3 failed
+* arm64: 76 total, 74 passed, 2 failed
+* i386: 64 total, 58 passed, 6 failed
+* mips: 50 total, 47 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 65 total, 56 passed, 9 failed
+* riscv: 32 total, 27 passed, 5 failed
+* s390: 23 total, 20 passed, 3 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x86_64: 69 total, 67 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libgpiod[
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
