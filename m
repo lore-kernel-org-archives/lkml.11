@@ -2,100 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE71C28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 02:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAFEC32789
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 02:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241923AbiHTCv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 22:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        id S242374AbiHTC42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 22:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiHTCvY (ORCPT
+        with ESMTP id S229463AbiHTC40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 22:51:24 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1C1B5E4C
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 19:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660963884; x=1692499884;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lIWdGRlLgC6lsdpl02nzxXz9mnLvLDWzqkX7ahVNpIg=;
-  b=gr5SEveI37USRaHsMA1ektehFFka9nIYmBvhzntPeaQVS80bGPGfAqUq
-   2z7XYZwICTsH4wRn6CRcU8kitmvqZKuoBanFWSWJJvYYw1s9uB3I87GPC
-   5O4HrMZvTP/aGHbfA8XmCIw3+OziJwlblKNAGn2QieF/+aQqQGgwEXqBP
-   Y9jKmlF/dQ9DnikLNRozYg0kZCWq6N/DdJV1IzWzbrgnsn2jVIqOFDZ2N
-   4sPYRqZU9Hk1zVp5hkb2iAnUH+/ITvTrLvuzIYuS89AuApU6Q/SAwmmiV
-   iCfmUUCg0Pv0yRFFaqazXLign2ck4+3Ku8bnO82oZYWVItMWfKDNcdLtO
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="293143866"
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="293143866"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 19:51:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="750716616"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 19 Aug 2022 19:51:21 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPEa1-00023D-0F;
-        Sat, 20 Aug 2022 02:51:21 +0000
-Date:   Sat, 20 Aug 2022 10:50:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nam Cao <namcaov@gmail.com>, gregkh@linuxfoundation.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, namcaov@gmail.com,
-        hdegoede@redhat.com, Larry.Finger@lwfinger.net
-Subject: Re: [PATCH 3/3] staging: rtl8723bs: remove odm_NoiseMonitor.h and
- odm_NoiseMonitor.c
-Message-ID: <202208201056.675rcXqe-lkp@intel.com>
-References: <3d6124867c546368b961a30f85b56ee6c2600441.1660901124.git.namcaov@gmail.com>
+        Fri, 19 Aug 2022 22:56:26 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DB6C0B4D;
+        Fri, 19 Aug 2022 19:56:26 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id de16so2257102qvb.12;
+        Fri, 19 Aug 2022 19:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=WdNXulQpLKnb1hellq34T9B1cVet72f1MSilSB+CN3I=;
+        b=a0T43ybU8bO+siRIbhddbFvW07aOpcJFI9kVRLWv1QE01sXTkiaHNKqcOUKvCwkW83
+         U6rq+EgVCugy2FgWYwcKdnrOcF55gS0sCyeyKvfDLqhBm5rGM+rjxwHio4+99dZIyWnJ
+         +OgN4lV9ZLoslTJqA/Mnwmxh/Q1QVT4N1ODyOCsLTlV6ymw+2EoS+sn+dJBkKSkh8Sxe
+         Cspejh90MS6vhhvyhEJRP6tLRAT89pRJxjVMe38Ucv+LTJAJ8dvLtZrLczbKKfOygPxS
+         X+v+SKoo0OV6ZrcSw31WlJrW8I87oua869SCNp1Vqb0RjZHQu8jFbJSu3SaktASnaioV
+         FMoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=WdNXulQpLKnb1hellq34T9B1cVet72f1MSilSB+CN3I=;
+        b=omRZctxL+mMmyNKuNS8sjYUt6yWRM3DBe+IHwP6aqVNrwrX89J7lOPLVYcisFOl0sX
+         zYLY6lXhRxUwkaZB/CZK+I9Ji6u5jIRTEdTsGy9ixkm+Z+ZVWniLsVYWP+dg+LEHRE4t
+         CwEj2OzIu9xGILASoq5pZaF7dyd4zhlJ8DyR9tlIeUIVJ/jFmn7UQE//RB1xhD6crP3D
+         XFu/RnNxIKeWVcknvZYOUyIViYjLhYatX+J3JTG2v6c/bUoMWNSuzJdAlAYDKAGa0O8K
+         EPO5TVzcGsbRJ01WyXyaxw4T2FhmmmVIKYwrUxDWSHBLonNuhJsVFAZk21m03hGnaXza
+         6nEw==
+X-Gm-Message-State: ACgBeo2uwxyYmr/6h3uk0r8JOzcoyUdWyMoFjN3K/iJmM7DEg5WIV1WB
+        h7KG7BdkgYuk/L+8VoRbV0U=
+X-Google-Smtp-Source: AA6agR7UhV0tlzwEw3Nj/aSzxj7GebTOwBfhp2btuNUyiCKC7iqVFL+Ymoa89dvUVa2Q3lk1yzk54Q==
+X-Received: by 2002:a05:6214:f27:b0:476:9d88:2597 with SMTP id iw7-20020a0562140f2700b004769d882597mr8722836qvb.45.1660964185291;
+        Fri, 19 Aug 2022 19:56:25 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id w16-20020ac843d0000000b00344a9149da2sm1535606qtn.55.2022.08.19.19.56.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 19:56:24 -0700 (PDT)
+Message-ID: <7a438a56-007e-beb8-ef55-ff99ed7ba736@gmail.com>
+Date:   Fri, 19 Aug 2022 19:56:22 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3d6124867c546368b961a30f85b56ee6c2600441.1660901124.git.namcaov@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [krzk-mem-ctrl:for-v6.1/brcm-stb 1/3] htmldocs: Warning:
+ Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt references a file
+ that doesn't exist:
+ Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>, linux-doc@vger.kernel.org
+References: <202208180941.oGoLuq8U-lkp@intel.com>
+ <427c0198-850c-17a7-f0d7-954a8252b11a@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <427c0198-850c-17a7-f0d7-954a8252b11a@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nam,
 
-Thank you for the patch! Yet something to improve:
 
-[auto build test ERROR on staging/staging-testing]
+On 8/17/2022 11:09 PM, Krzysztof Kozlowski wrote:
+> On 18/08/2022 04:59, kernel test robot wrote:
+>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-mem-ctrl.git for-v6.1/brcm-stb
+>> head:   65991a63d02decf269e7d5334620df0dd5919762
+>> commit: 0da0b6bf854dcfb047fec70bbbadabb7ff0fcb3e [1/3] dt-bindings: memory-controller: Document Broadcom STB MEMC
+>> reproduce: make htmldocs
+>>
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All warnings (new ones prefixed by >>):
+>>
+>>>> Warning: Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt references a file that doesn't exist: Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml
+> 
+> I'll fixup the commit.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nam-Cao/staging-rtl8723bs-remove-useless-files/20220819-173916
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 8379cf83fe6d57a12952de6dcaf7a7fbd7b364fc
-config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220820/202208201056.675rcXqe-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0fdeb2305c40b79975f2c6b683ee5225b3aedf08
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nam-Cao/staging-rtl8723bs-remove-useless-files/20220819-173916
-        git checkout 0fdeb2305c40b79975f2c6b683ee5225b3aedf08
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/staging/
+Thanks
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> 
+> Florian,
+> It's useful also to have own development trees covered by LKP.
 
-All errors (new ones prefixed by >>):
-
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/core/rtw_ieee80211.o] Error 1
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/core/rtw_pwrctrl.o] Error 1
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/core/rtw_mlme_ext.o] Error 1
->> make[4]: *** No rule to make target 'drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.o', needed by 'drivers/staging/rtl8723bs/r8723bs.o'.
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/os_dep/sdio_ops_linux.o] Error 1
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/os_dep/sdio_intf.o] Error 1
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/hal/HalPhyRf_8723B.o] Error 1
-   make[4]: *** [scripts/Makefile.build:249: drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.o] Error 1
-   make[4]: Target '__build' not remade because of errors.
-
+I will keep that in mind.
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Florian
