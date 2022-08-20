@@ -2,92 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AF8C32793
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4302FC32792
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345872AbiHTLwM (ORCPT
+        id S1345061AbiHTLwU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
+        Sat, 20 Aug 2022 07:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345327AbiHTLwL (ORCPT
+        with ESMTP id S241030AbiHTLwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:52:11 -0400
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5889E136;
-        Sat, 20 Aug 2022 04:52:10 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-3375488624aso153371847b3.3;
-        Sat, 20 Aug 2022 04:52:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=RZrX4TsmyKYIZeKVsYzl/dXGPxXgZPHqV4cddoyqRO0=;
-        b=pwc04a5FVqjPOLPl6SiZ7b0z2LWHxvoDi5OpuXrWCagG1YT73sp3r/RouZyF4X3jNV
-         n9mn2lKxeeurTdRDNynO9yCLvfJYG8A4O3NihZrFhbGGr2BClfDtbsiGAUSn2NX/QdU6
-         Yu2YtVPpIQAGK72cmLijMMIaqAqJ9i7F862cDodYbTqiDed+DBJUBJYVt1VTEgWxItx9
-         ke79XlS+dUb6SB0+E2kLSdvwDWuXzEqZY39znPu9DIapCi0s/0Yf+RAdfWwHZmWFWtrH
-         c9yAj798LwHm403uXkkGmSGCs6Xk1KHr4fHK53l9XR96k2pKULsowcFedKVHbRA3ue6w
-         ofCw==
-X-Gm-Message-State: ACgBeo1eCJLhAgehHLIam8dM1lqeZJFr8x+sfosjJXcoawbSWQioe0tf
-        sr3GHHddgbF9ChdwEMeQOanSzrpfkNyL3TSkRfE664Wr
-X-Google-Smtp-Source: AA6agR7nqoBR/gw5q60Ast2lmIvmYz0AuT2Uxm2lMmepCX1F8NqJDPp5jnO5ykO3U6vwPYLsHFg9cnvO/VSQS1+7TLU=
-X-Received: by 2002:a25:cbcf:0:b0:695:2d3b:366 with SMTP id
- b198-20020a25cbcf000000b006952d3b0366mr6051546ybg.365.1660996329583; Sat, 20
- Aug 2022 04:52:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <dbd20ef2-f109-0675-6fbe-8d08da5cc5a3@linaro.org>
-In-Reply-To: <dbd20ef2-f109-0675-6fbe-8d08da5cc5a3@linaro.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 20 Aug 2022 13:51:58 +0200
-Message-ID: <CAJZ5v0jPm5+zu9ju=RAit01LC6Nc=wRK6T3y8HY-9rgKeXJ5nw@mail.gmail.com>
-Subject: Re: [GIT PULL] thermal fixes for v6.0-rc1
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sat, 20 Aug 2022 07:52:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AF49E2C8;
+        Sat, 20 Aug 2022 04:52:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CDC3B80B92;
+        Sat, 20 Aug 2022 11:52:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE46C433C1;
+        Sat, 20 Aug 2022 11:52:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660996332;
+        bh=EHHFSu4yACtrEkdzmPcb5OuIYaJ/erGqHqabiAFd4n0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Uobzz6hGYwNST4mLp+32zhAK6hBM2uMuPL0tYHoaXf0VUw/lzTlKYbYBEwAIGG5s8
+         /vL9/34IUQoabbZ4/veM5PwU3SyN5rbMs0Mz2sefrt+/34t+6ENNsKzv8bhuZenELl
+         zUCZUKQdpFGSFl+ppucXaF3Lmn3ZDvxL2yRPzU7SJ2+uy7zHWoC6iiRqL5uN+Y6k1Z
+         eimAJsPvYMXo/c7OMoKd4vYV9B/vPYbyt2Y8BzIppm0iAfG3PoWDGT2a6mKurNo//g
+         UiqtAHhUizVfXi984+qDb/74ClB7njfQmhdHuH/LNFAEIWHR+0RMklLaEEnhvmTb+f
+         9pH+tXiyWvRBw==
+Date:   Sat, 20 Aug 2022 13:02:48 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Eddie James <eajames@linux.ibm.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM mailing list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Joel Stanley <joel@jms.id.au>
+Subject: Re: [PATCH v5 2/2] iio: pressure: dps310: Reset chip if MEAS_CFG is
+ corrupt
+Message-ID: <20220820130248.7773a6b3@jic23-huawei>
+In-Reply-To: <CAHp75VegQspJJ9YT=2E3YvKh-hp9-AGincp4z0GdQbA0Vq4Zug@mail.gmail.com>
+References: <20220815145705.203017-1-eajames@linux.ibm.com>
+        <20220815145705.203017-3-eajames@linux.ibm.com>
+        <CAHp75VegQspJJ9YT=2E3YvKh-hp9-AGincp4z0GdQbA0Vq4Zug@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 1:39 PM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
->
-> The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
->
->    Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
->
-> are available in the Git repository at:
->
->
-> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git
-> tags/thermal-v6.0-rc2
->
-> for you to fetch changes up to 8c596324232d22e19f8df59ba03410b9b5b0f3d7:
->
->    dt-bindings: thermal: Fix missing required property (2022-08-15
-> 20:38:40 +0200)
->
-> ----------------------------------------------------------------
-> - Fix missing required property for thermal zone description (Daniel
->    Lezcano)
->
-> - Add missing export symbol for
->    thermal_zone_device_register_with_trips() (Daniel Lezcano)
->
-> ----------------------------------------------------------------
-> Daniel Lezcano (2):
->        thermal/core: Add missing EXPORT_SYMBOL_GPL
->        dt-bindings: thermal: Fix missing required property
->
->   Documentation/devicetree/bindings/thermal/thermal-zones.yaml | 1 +
->   drivers/thermal/thermal_core.c                               | 1 +
->   2 files changed, 2 insertions(+)
->
->
-> --
+On Thu, 18 Aug 2022 23:16:55 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Pulled, thanks!
+> On Mon, Aug 15, 2022 at 5:57 PM Eddie James <eajames@linux.ibm.com> wrote:
+> >
+> > Corruption of the MEAS_CFG register has been observed soon after
+> > system boot. In order to recover this scenario, check MEAS_CFG if
+> > measurement isn't ready, and if it's incorrect, reset the DPS310
+> > and execute the startup procedure.  
+> 
+> ...
+> 
+> > + * Called with lock held. Returns a negative value on error, a positive value
+> > + * when the device is not ready, and zero when the device is ready.  
+> 
+> Can we have
+> 
+> #define DPS310_DEVICE_NOT_READY  1
+> 
+> (or anonymous enum) and return it instead of abstract 1 or any other
+> positive number?
 
-I will be pushing this for -rc3, though.
+Perhaps make it even clearer by returning the need to wait via another parameter
+rather than this being (probably) the only place in driver with a postive rc.
+
+bool reset_done;
+
+rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY, &reset_done);
+
+if (reset_done) {
+}
+
+> 
+> ...
+> 
+> > +       rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY);
+> >         if (rc < 0)
+> >                 goto done;
+> >
+> > +       if (rc > 0) {
+> > +               rate = dps310_get_temp_samp_freq(data);
+> > +               timeout = DPS310_POLL_TIMEOUT_US(rate);
+> > +
+> > +               /*
+> > +                * Poll for sensor readiness; base the timeout upon the sample
+> > +                * rate.
+> > +                */
+> > +               rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
+> > +                                             ready, ready & DPS310_TMP_RDY,
+> > +                                             DPS310_POLL_SLEEP_US(timeout),
+> > +                                             timeout);
+> > +               if (rc)
+> > +                       goto done;
+> > +       }  
+> 
+> But have you tried to make a helper that takes a pointer to the
+> respective function?
+> 
+
