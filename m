@@ -2,63 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6653DC32789
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC5BC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiHUG5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 02:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46596 "EHLO
+        id S229762AbiHUG6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 02:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHUG5g (ORCPT
+        with ESMTP id S229725AbiHUG61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 02:57:36 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDDD1D32B
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:57:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tbA8GPJvpZPjyT8xHzEYgyx5w9Okhk3popffrDAY7oI=; b=YQLHw+2HeEkLn1TFXnAvnkNWuQ
-        CMyJ6wld0ZyFCBh86KeBcBe+lLp2TWnlT6BiMubAZLJ0ABQA26Nhcz7LIp4ysQytdifnmFp/uPWab
-        majGosilWVAwMpzMrnkoxMRXSsB1DVftzKSWOvBM/sna7VtHeYFEGArhRaH/wJyqe0nMdgy0L0Ha6
-        QtYT1Xby+15OePctot8MDtVp27E8nBpwmzewLKX6qX2Yz2Aadsae2jvS+LFIsaFbdRkntWv6B4g0Y
-        ouqQQjGQb4h7XHQHzTsUbVEvMjB0sdNSsziNUhkgiYus8hjbVwXhS9jOvm5AH0kqlhBikY4I458hD
-        0K1JB16A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oPetl-0071xF-ID; Sun, 21 Aug 2022 06:57:30 +0000
-Date:   Sat, 20 Aug 2022 23:57:29 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, hch@infradead.org,
-        agordeev@linux.ibm.com, wangkefeng.wang@huawei.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 03/11] mm: ioremap: allow ARCH to have its own ioremap
- definition
-Message-ID: <YwHXWdycBZr+bluG@infradead.org>
-References: <20220820003125.353570-1-bhe@redhat.com>
- <20220820003125.353570-4-bhe@redhat.com>
+        Sun, 21 Aug 2022 02:58:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E112ADE;
+        Sat, 20 Aug 2022 23:58:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0017060CD4;
+        Sun, 21 Aug 2022 06:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D12EC433D6;
+        Sun, 21 Aug 2022 06:58:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661065103;
+        bh=tbuVzHoEL8ZVZPHiH4E6B7fj2SIHZgFp4d15ptne13A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qeS88CcrbZxYoNjnNZ8rrfUJAL0QH8+Ilq9eUT2AWxAB/JeIQ5ONfou68r+J8agdD
+         Kd2kevU/0A4V3wpOZAv32UzCjcexHXYMLyYAa4cWfNDtwWKtddQxNh5ADur/eZP5vj
+         CHtkQ+AHGAuqFb0t0Z4ZBk6MTfI66ufO+p5Glitw=
+Date:   Sat, 20 Aug 2022 19:32:37 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     SeongJae Park <sj@kernel.org>, badari.pulavarty@intel.com,
+        damon@lists.linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] mm/damon/dbgfs: avoid duplicate context directory
+ creation
+Message-ID: <YwEatUUtU8570PRV@kroah.com>
+References: <20220819171930.16166-1-sj@kernel.org>
+ <20220819140809.1e3929fd8f50bfc32cae31d3@linux-foundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220820003125.353570-4-bhe@redhat.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220819140809.1e3929fd8f50bfc32cae31d3@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 08:31:17AM +0800, Baoquan He wrote:
-> Architectures like xtensa, arc, can be converted to GENERIC_IOREMAP,
-> to take standard ioremap_prot() and ioremap_xxx() way. But they have
-> ARCH specific handling for ioremap() method, than standard ioremap()
-> method.
+On Fri, Aug 19, 2022 at 02:08:09PM -0700, Andrew Morton wrote:
+> On Fri, 19 Aug 2022 17:19:30 +0000 SeongJae Park <sj@kernel.org> wrote:
+> 
+> > From: Badari Pulavarty <badari.pulavarty@intel.com>
+> > 
+> > When user tries to create a DAMON context via the DAMON debugfs
+> > interface with a name of an already existing context, the context
+> > directory creation silently fails but the context is added in the
+> > internal data structure.  As a result, memory could leak and DAMON
+> > cannot be turned on.  An example test case is as below:
+> > 
+> >     # cd /sys/kernel/debug/damon/
+> >     # echo "off" >  monitor_on
+> >     # echo paddr > target_ids
+> >     # echo "abc" > mk_context
+> >     # echo "abc" > mk_context
+> >     # echo $$ > abc/target_ids
+> >     # echo "on" > monitor_on  <<< fails
+> > 
+> > This commit fixes the issue by checking if the name already exist and
+> > immediately returning '-EEXIST' in the case.
+> > 
+> > ...
+> >
+> > --- a/mm/damon/dbgfs.c
+> > +++ b/mm/damon/dbgfs.c
+> > @@ -795,7 +795,7 @@ static void dbgfs_destroy_ctx(struct damon_ctx *ctx)
+> >   */
+> >  static int dbgfs_mk_context(char *name)
+> >  {
+> > -	struct dentry *root, **new_dirs, *new_dir;
+> > +	struct dentry *root, **new_dirs, *new_dir, *dir;
+> >  	struct damon_ctx **new_ctxs, *new_ctx;
+> >  
+> >  	if (damon_nr_running_ctxs())
+> > @@ -817,6 +817,12 @@ static int dbgfs_mk_context(char *name)
+> >  	if (!root)
+> >  		return -ENOENT;
+> >  
+> > +	dir = debugfs_lookup(name, root);
+> > +	if (dir) {
+> > +		dput(dir);
+> > +		return -EEXIST;
+> > +	}
+> > +
+> >  	new_dir = debugfs_create_dir(name, root);
+> >  	dbgfs_dirs[dbgfs_nr_ctxs] = new_dir;
+> 
+> It would be simpler (and less racy) to check the debugfs_create_dir()
+> return value for IS_ERR()?
+> 
 
-Do they?
+Yes, if you _HAVE_ to know if the code works properly (i.e. because your
+feature totally depends on debugfs like damon does), or you have a
+potential duplicate name like this, then sure, check the return value
+and do something based on it.
 
-For arc, the arc_uncached_addr_space case can be easily handled by
-arch_ioremap, and the xtensa case looks very similar to that.
+It's odd enough that you should put a comment above the check just so I
+don't go and send a patch to delete it later on :)
 
-I'd really like to kill off arch definitions of ioremap going
-forward, as they should just be a special case of ioremap_prot
-by definition.
+thanks,
+
+greg k-h
