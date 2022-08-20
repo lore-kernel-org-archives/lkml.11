@@ -2,84 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4343FC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345875AbiHTL5Z (ORCPT
+        id S1345913AbiHTL6a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
+        Sat, 20 Aug 2022 07:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiHTL5V (ORCPT
+        with ESMTP id S1345813AbiHTL60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:57:21 -0400
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C45248E2;
-        Sat, 20 Aug 2022 04:57:20 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-333a4a5d495so182359727b3.10;
-        Sat, 20 Aug 2022 04:57:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=eFv+Oj3QaofeetDmZ1hWU31f01S4gXzOn+W40f2bcH8=;
-        b=Jh9VYy5RF6o3w+4t2LygfX4yCtFcAj+toPFoYCAvMWoNJCb340EE6H2jNoUVEER67j
-         Oof6U81HeY5G2lxcydW7TLSZp0DuQxsvl872ON+MxqNCD1MVfR2zqD58U7mGHJJxaRhs
-         dvLX2jNP7jWbeSgqfCwRXeoiV4ypDgLsQP+dzGmnF6zUt21JjPWT8dwKGLhyY9p6kqrm
-         qXCPEgRQJ17hi9oYKJ4jqe1g2DVaULlUy52kwKGAiBam4KFIIL5+5WAFwaikg7F41Ifq
-         JCobYAIBRVa9KCWJADGJjh7YpfvATF+irt6dGz27jdP944/yq4r39b1x1N0U5K16845Z
-         JAjw==
-X-Gm-Message-State: ACgBeo3V7U5nzltHxIOW19X4yw8aArUvdpQwyvHuc081/fxGuWgZ5GzK
-        7Ur1LUJkTQBMEkZ0jho3LPtXMbYgmUb8tj7CbHk=
-X-Google-Smtp-Source: AA6agR6zWHtnabZ6V306XrP13eJqyDVES8EsSaAH+ECiBaAuEnvGN7G48D/WRufhiU2j2MyLI1HC14c/WpW02memvng=
-X-Received: by 2002:a81:104e:0:b0:336:37f1:9686 with SMTP id
- 75-20020a81104e000000b0033637f19686mr12206283ywq.149.1660996639914; Sat, 20
- Aug 2022 04:57:19 -0700 (PDT)
+        Sat, 20 Aug 2022 07:58:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF4D1F2EB;
+        Sat, 20 Aug 2022 04:58:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B6799CE0DDB;
+        Sat, 20 Aug 2022 11:58:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D86EC433D6;
+        Sat, 20 Aug 2022 11:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660996702;
+        bh=IYMBEBmZvHHQ3M0wfJWctteV1udRO4RyU3hBgvn/yts=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nnNMkbHpeJ+yFppGPHQpoEiv1ReEAoUAuZUg8Ifae7i3GL9tOk2fIRO0THNcLWQxS
+         asWnR8FPikI5ZUYWN0BFOd+zUb/s6nYFATiZor6TTZMCabVDvVDzzwOjaifXnKLrtT
+         LuVJlGBvJ+a9XLY5SGtwo+h1gPuKEEferk0qEskq66BavYFFDIJ0tYpQcEDY2aQUA2
+         MfFhzSRxy/OeT0L/NuL7MG4D7gLJvjlInmrmpM6e/OFcbimTSzzMAvUmA3/F2rZ1oI
+         33zv8AtN9bwkbTmNImXoqtUANBV3/m6ZD1rNv2ktlB+sDLrG3kUap9D3k2hvapQQhc
+         Qe7CyZtHpxoDQ==
+Date:   Sat, 20 Aug 2022 13:08:56 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <william.gray@linaro.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Patrick Havelange <patrick.havelange@essensium.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        David Lechner <david@lechnology.com>
+Subject: Re: [PATCH] counter: Move symbols into COUNTER namespace
+Message-ID: <20220820130856.52c3ff04@jic23-huawei>
+In-Reply-To: <20220815220321.74161-1-william.gray@linaro.org>
+References: <20220815220321.74161-1-william.gray@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <f1fb1d84-85de-f3c5-0212-fcf0e9c0ccd2@samsung.com>
- <CGME20220812131216eucas1p266cfd4e51b59fc3cf8056474a6910094@eucas1p2.samsung.com>
- <20220812131202.1331238-1-daniel.lezcano@linaro.org> <ab708272-efe0-343e-2dfc-299187126a2a@samsung.com>
- <c0c5b306-9fd5-1048-ba08-044d292cbf7a@linaro.org>
-In-Reply-To: <c0c5b306-9fd5-1048-ba08-044d292cbf7a@linaro.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 20 Aug 2022 13:57:09 +0200
-Message-ID: <CAJZ5v0gL=k-1SxbfSSdoFYaTWk=YvY72d3r0oEyu9dZA5YJLbw@mail.gmail.com>
-Subject: Re: [PATCH] thermal/core: Fix lockdep_assert() warning
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux Samsung SoC <linux-samsung-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 3:54 PM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
->
-> On 12/08/2022 15:34, Marek Szyprowski wrote:
-> > On 12.08.2022 15:12, Daniel Lezcano wrote:
-> >> The function thermal_zone_device_is_enabled() must be called with the
-> >> thermal zone lock held. In the resume path, it is called without.
-> >>
-> >> As the thermal_zone_device_is_enabled() is also checked in
-> >> thermal_zone_device_update(), do the check in resume() function is
-> >> pointless, except for saving an extra initialization which does not
-> >> hurt if it is done in all the cases.
-> >>
-> >> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> >
-> > This fixes the warning I've reported. Feel free to add:
-> >
-> > Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >
-> > Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->
-> Great, thanks for testing
+On Mon, 15 Aug 2022 18:03:21 -0400
+William Breathitt Gray <william.gray@linaro.org> wrote:
 
-Do you want me to apply this for -rc3?
+> Counter subsystem symbols are only relevant to counter drivers. A
+> COUNTER namespace is created to control the availability of these
+> symbols to modules that import this namespace explicitly.
+> 
+> Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> Cc: Oleksij Rempel <linux@rempel-privat.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Cc: David Lechner <david@lechnology.com>
+> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+
+I'm kind of amazed the interface is this small :)
+
+Definitely a good thing to do.  Sometime soon I'll finish
+doing equivalent for IIO.
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  drivers/counter/104-quad-8.c            |  1 +
+>  drivers/counter/counter-chrdev.c        |  2 +-
+>  drivers/counter/counter-core.c          | 14 +++++++-------
+>  drivers/counter/ftm-quaddec.c           |  1 +
+>  drivers/counter/intel-qep.c             |  1 +
+>  drivers/counter/interrupt-cnt.c         |  1 +
+>  drivers/counter/microchip-tcb-capture.c |  1 +
+>  drivers/counter/stm32-lptimer-cnt.c     |  1 +
+>  drivers/counter/stm32-timer-cnt.c       |  1 +
+>  drivers/counter/ti-eqep.c               |  1 +
+>  10 files changed, 16 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+> index 62c2b7ac4339..1323edfbe40c 100644
+> --- a/drivers/counter/104-quad-8.c
+> +++ b/drivers/counter/104-quad-8.c
+> @@ -1241,3 +1241,4 @@ module_isa_driver(quad8_driver, num_quad8);
+>  MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+>  MODULE_DESCRIPTION("ACCES 104-QUAD-8 driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
+> index 69d340be9c93..4e71a19d7e6a 100644
+> --- a/drivers/counter/counter-chrdev.c
+> +++ b/drivers/counter/counter-chrdev.c
+> @@ -574,4 +574,4 @@ void counter_push_event(struct counter_device *const counter, const u8 event,
+>  	if (copied)
+>  		wake_up_poll(&counter->events_wait, EPOLLIN);
+>  }
+> -EXPORT_SYMBOL_GPL(counter_push_event);
+> +EXPORT_SYMBOL_NS_GPL(counter_push_event, COUNTER);
+> diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
+> index 938651f9e9e0..09c77afb33ca 100644
+> --- a/drivers/counter/counter-core.c
+> +++ b/drivers/counter/counter-core.c
+> @@ -73,7 +73,7 @@ void *counter_priv(const struct counter_device *const counter)
+>  
+>  	return &ch->privdata;
+>  }
+> -EXPORT_SYMBOL_GPL(counter_priv);
+> +EXPORT_SYMBOL_NS_GPL(counter_priv, COUNTER);
+>  
+>  /**
+>   * counter_alloc - allocate a counter_device
+> @@ -133,13 +133,13 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
+>  
+>  	return NULL;
+>  }
+> -EXPORT_SYMBOL_GPL(counter_alloc);
+> +EXPORT_SYMBOL_NS_GPL(counter_alloc, COUNTER);
+>  
+>  void counter_put(struct counter_device *counter)
+>  {
+>  	put_device(&counter->dev);
+>  }
+> -EXPORT_SYMBOL_GPL(counter_put);
+> +EXPORT_SYMBOL_NS_GPL(counter_put, COUNTER);
+>  
+>  /**
+>   * counter_add - complete registration of a counter
+> @@ -166,7 +166,7 @@ int counter_add(struct counter_device *counter)
+>  	/* implies device_add(dev) */
+>  	return cdev_device_add(&counter->chrdev, dev);
+>  }
+> -EXPORT_SYMBOL_GPL(counter_add);
+> +EXPORT_SYMBOL_NS_GPL(counter_add, COUNTER);
+>  
+>  /**
+>   * counter_unregister - unregister Counter from the system
+> @@ -188,7 +188,7 @@ void counter_unregister(struct counter_device *const counter)
+>  
+>  	mutex_unlock(&counter->ops_exist_lock);
+>  }
+> -EXPORT_SYMBOL_GPL(counter_unregister);
+> +EXPORT_SYMBOL_NS_GPL(counter_unregister, COUNTER);
+>  
+>  static void devm_counter_release(void *counter)
+>  {
+> @@ -223,7 +223,7 @@ struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv
+>  
+>  	return counter;
+>  }
+> -EXPORT_SYMBOL_GPL(devm_counter_alloc);
+> +EXPORT_SYMBOL_NS_GPL(devm_counter_alloc, COUNTER);
+>  
+>  /**
+>   * devm_counter_add - complete registration of a counter
+> @@ -244,7 +244,7 @@ int devm_counter_add(struct device *dev,
+>  
+>  	return devm_add_action_or_reset(dev, devm_counter_release, counter);
+>  }
+> -EXPORT_SYMBOL_GPL(devm_counter_add);
+> +EXPORT_SYMBOL_NS_GPL(devm_counter_add, COUNTER);
+>  
+>  #define COUNTER_DEV_MAX 256
+>  
+> diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
+> index 2a58582a9df4..aea6622a9b13 100644
+> --- a/drivers/counter/ftm-quaddec.c
+> +++ b/drivers/counter/ftm-quaddec.c
+> @@ -325,3 +325,4 @@ module_platform_driver(ftm_quaddec_driver);
+>  MODULE_LICENSE("GPL");
+>  MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com>");
+>  MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com>");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
+> index 47a6a9dfc9e8..af5942e66f7d 100644
+> --- a/drivers/counter/intel-qep.c
+> +++ b/drivers/counter/intel-qep.c
+> @@ -523,3 +523,4 @@ MODULE_AUTHOR("Jarkko Nikula <jarkko.nikula@linux.intel.com>");
+>  MODULE_AUTHOR("Raymond Tan <raymond.tan@intel.com>");
+>  MODULE_LICENSE("GPL");
+>  MODULE_DESCRIPTION("Intel Quadrature Encoder Peripheral driver");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+> index 3b13f56bbb11..5a11b65fc0e5 100644
+> --- a/drivers/counter/interrupt-cnt.c
+> +++ b/drivers/counter/interrupt-cnt.c
+> @@ -242,3 +242,4 @@ MODULE_ALIAS("platform:interrupt-counter");
+>  MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
+>  MODULE_DESCRIPTION("Interrupt counter driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+> index 00844445143b..f9dee15d9777 100644
+> --- a/drivers/counter/microchip-tcb-capture.c
+> +++ b/drivers/counter/microchip-tcb-capture.c
+> @@ -394,3 +394,4 @@ module_platform_driver(mchp_tc_driver);
+>  MODULE_AUTHOR("Kamel Bouhara <kamel.bouhara@bootlin.com>");
+>  MODULE_DESCRIPTION("Microchip TCB Capture driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+> index 68031d93ce89..d6b80b6dfc28 100644
+> --- a/drivers/counter/stm32-lptimer-cnt.c
+> +++ b/drivers/counter/stm32-lptimer-cnt.c
+> @@ -520,3 +520,4 @@ MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
+>  MODULE_ALIAS("platform:stm32-lptimer-counter");
+>  MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM counter driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+> index 5779ae7c73cf..9bf20a5d6bda 100644
+> --- a/drivers/counter/stm32-timer-cnt.c
+> +++ b/drivers/counter/stm32-timer-cnt.c
+> @@ -417,3 +417,4 @@ MODULE_AUTHOR("Benjamin Gaignard <benjamin.gaignard@st.com>");
+>  MODULE_ALIAS("platform:stm32-timer-counter");
+>  MODULE_DESCRIPTION("STMicroelectronics STM32 TIMER counter driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(COUNTER);
+> diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+> index 0489d26eb47c..b0f24cf3e891 100644
+> --- a/drivers/counter/ti-eqep.c
+> +++ b/drivers/counter/ti-eqep.c
+> @@ -456,3 +456,4 @@ module_platform_driver(ti_eqep_driver);
+>  MODULE_AUTHOR("David Lechner <david@lechnology.com>");
+>  MODULE_DESCRIPTION("TI eQEP counter driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(COUNTER);
+> 
+> base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+
