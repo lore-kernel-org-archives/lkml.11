@@ -2,122 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8F5C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA90C32774
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346337AbiHTM1u (ORCPT
+        id S1346379AbiHTMbW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 08:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
+        Sat, 20 Aug 2022 08:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344848AbiHTM1r (ORCPT
+        with ESMTP id S1345769AbiHTMbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 08:27:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB76543E8;
-        Sat, 20 Aug 2022 05:27:46 -0700 (PDT)
+        Sat, 20 Aug 2022 08:31:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552231054C;
+        Sat, 20 Aug 2022 05:31:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DBD27CE0E05;
-        Sat, 20 Aug 2022 12:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD14C433C1;
-        Sat, 20 Aug 2022 12:27:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB03A6123B;
+        Sat, 20 Aug 2022 12:31:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA29DC433D6;
+        Sat, 20 Aug 2022 12:31:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660998463;
-        bh=assOHwgQdKBmJy5Y6XWkbZif7DaKqia6uNgtfAA8UVY=;
+        s=k20201202; t=1660998675;
+        bh=Q7HkaVpw73+qdb/ZssCELVufl4/sqZYU7DccPj0VY0U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bMyKVb/N/JIQ9vcxfpfpLb0jkYMa6dvUqniv0ut1x7pN/QbxuNJTfrOu6AzWIFKz6
-         NtATJmFiUQ8ikRvezwCgb42wepJQIG/cIle1ET4M7cMuUmUyngai/vEoGLWNjG9nEF
-         Id+Xw+wOSz+eySeyYxSSsl1B4hSMxsHScapy6tR2Wx5LGqsGeTfnsvYIBwNpnGlmR7
-         8u1aA8Lu9zzmCUtTK9fJbowd1xdup7NGfig1nEn5NcXGUkA6A/Nix0nxhfd/NRVx0y
-         NpfzIj/lPb3PBafsX7tN3g9CeeYIjKr1qxZ2DZqli6Z3e318n1ULuQzNR3kvmy3Ttx
-         AzX0yVCtF70Lg==
-Date:   Sat, 20 Aug 2022 21:27:33 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 3/4] tracing/eprobes: Fix reading of string fields
-Message-Id: <20220820212733.f19ae9f07c0868af3a008077@kernel.org>
-In-Reply-To: <20220820014833.220833221@goodmis.org>
-References: <20220820014035.531145719@goodmis.org>
-        <20220820014833.220833221@goodmis.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
+        b=Av+9dCDcK4VGU/nX+lKWGQn5ubXXk/pyDBKca5v4mhpBRH/gOcf+Lhpf9VlEeIbGd
+         PdR7rTsPggcruxkjRHIwYBSM8gHLprIjNzZV9KHz3QQeRiVS/1gh7xoqH7o7yP5O3x
+         RKkzLXDtMhiwz1RYt+YU51k7e+lHQYy0u+NQZZWx2hsWlkPSvXJOUkXcNQClrs/gu/
+         VtrZlC82kool1Wx9agFCppyNaLE7Sj+MI7jF6UXheZp0FXKeq9opwnHFBGxJFlkPwr
+         5VKiLNhznhOgjDxxo/ZfQvNJvOmngKT0XWe5BOnnBI9GfLP5OD5SZfVGVlhvyUZEhE
+         uv7HUynxE3+bA==
+Date:   Sat, 20 Aug 2022 13:41:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 4/9] iio: adc: mcp3911: use resource-managed version
+ of iio_device_register
+Message-ID: <20220820134150.2b45339c@jic23-huawei>
+In-Reply-To: <20220815061625.35568-5-marcus.folkesson@gmail.com>
+References: <20220815061625.35568-1-marcus.folkesson@gmail.com>
+        <20220815061625.35568-5-marcus.folkesson@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 21:40:38 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Mon, 15 Aug 2022 08:16:20 +0200
+Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
 
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+> Keep using managed resources as much as possible.
 > 
-> Currently when an event probe (eprobe) hooks to a string field, it does
-> not display it as a string, but instead as a number. This makes the field
-> rather useless. Handle the different kinds of strings, dynamic, static,
-> relational/dynamic etc.
-> 
-> Now when a string field is used, the ":string" type can be used to display
-> it:
-> 
->   echo "e:sw sched/sched_switch comm=$next_comm:string" > dynamic_events
-
-Really nice!
-
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-
-Thank you!
-
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 > ---
->  kernel/trace/trace_eprobe.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
+>  drivers/iio/adc/mcp3911.c | 53 ++++++++++++---------------------------
+>  1 file changed, 16 insertions(+), 37 deletions(-)
 > 
-> diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
-> index 550671985fd1..a1d3423ab74f 100644
-> --- a/kernel/trace/trace_eprobe.c
-> +++ b/kernel/trace/trace_eprobe.c
-> @@ -311,6 +311,27 @@ static unsigned long get_event_field(struct fetch_insn *code, void *rec)
+> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+> index 890af7dca62d..7e2efe702e57 100644
+> --- a/drivers/iio/adc/mcp3911.c
+> +++ b/drivers/iio/adc/mcp3911.c
+> @@ -258,6 +258,13 @@ static int mcp3911_config(struct mcp3911 *adc)
+>  	return  mcp3911_write(adc, MCP3911_REG_CONFIG, configreg, 2);
+>  }
 >  
->  	addr = rec + field->offset;
->  
-> +	if (is_string_field(field)) {
-> +		switch (field->filter_type) {
-> +		case FILTER_DYN_STRING:
-> +			val = (unsigned long)(rec + (*(unsigned int *)addr & 0xffff));
-> +			break;
-> +		case FILTER_RDYN_STRING:
-> +			val = (unsigned long)(addr + (*(unsigned int *)addr & 0xffff));
-> +			break;
-> +		case FILTER_STATIC_STRING:
-> +			val = (unsigned long)addr;
-> +			break;
-> +		case FILTER_PTR_STRING:
-> +			val = (unsigned long)(*(char *)addr);
-> +			break;
-> +		default:
-> +			WARN_ON_ONCE(1);
-> +			return 0;
-> +		}
-> +		return val;
-> +	}
+> +static void mcp3911_cleanup_regulator(void *_adc)
+
+Missed this on previous versions, but why not pass
+the regulator pointer in as the parameter for the callback?
+
+static void mcp391_cleanup_regulator(void *reg)
+{
+	regulator_disable(adc->vref);
+}
+
+Note this can't use the new devm_regulator_get_enable()
+because we need access to the regulator within the driver.
+
+I can tidy this up whilst applying (or given it's really minor I might
+not bother :)
+
+Note we are stalled at the moment with this series on getting the
+fixes upstream.  I'll probably send that pull request shortly.
+
+> +{
+> +	struct mcp3911 *adc = _adc;
 > +
->  	switch (field->size) {
->  	case 1:
->  		if (field->is_signed)
-> -- 
-> 2.35.1
+> +	regulator_disable(adc->vref);
+> +}
+> +
+>  static int mcp3911_probe(struct spi_device *spi)
+>  {
+>  	struct iio_dev *indio_dev;
+> @@ -286,9 +293,14 @@ static int mcp3911_probe(struct spi_device *spi)
+>  		ret = regulator_enable(adc->vref);
+>  		if (ret)
+>  			return ret;
+> +
+> +		ret = devm_add_action_or_reset(&spi->dev,
+> +				mcp3911_cleanup_regulator, adc);
+> +		if (ret)
+> +			return ret;
+>  	}
+>  
+> -	adc->clki = devm_clk_get(&adc->spi->dev, NULL);
+> +	adc->clki = devm_clk_get_enabled(&adc->spi->dev, NULL);
+>  	if (IS_ERR(adc->clki)) {
+>  		if (PTR_ERR(adc->clki) == -ENOENT) {
+>  			adc->clki = NULL;
+> @@ -296,21 +308,13 @@ static int mcp3911_probe(struct spi_device *spi)
+>  			dev_err(&adc->spi->dev,
+>  				"failed to get adc clk (%ld)\n",
+>  				PTR_ERR(adc->clki));
+> -			ret = PTR_ERR(adc->clki);
+> -			goto reg_disable;
+> -		}
+> -	} else {
+> -		ret = clk_prepare_enable(adc->clki);
+> -		if (ret < 0) {
+> -			dev_err(&adc->spi->dev,
+> -				"Failed to enable clki: %d\n", ret);
+> -			goto reg_disable;
+> +			return PTR_ERR(adc->clki);
+>  		}
+>  	}
+>  
+>  	ret = mcp3911_config(adc);
+>  	if (ret)
+> -		goto clk_disable;
+> +		return ret;
+>  
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -322,31 +326,7 @@ static int mcp3911_probe(struct spi_device *spi)
+>  
+>  	mutex_init(&adc->lock);
+>  
+> -	ret = iio_device_register(indio_dev);
+> -	if (ret)
+> -		goto clk_disable;
+> -
+> -	return ret;
+> -
+> -clk_disable:
+> -	clk_disable_unprepare(adc->clki);
+> -reg_disable:
+> -	if (adc->vref)
+> -		regulator_disable(adc->vref);
+> -
+> -	return ret;
+> -}
+> -
+> -static void mcp3911_remove(struct spi_device *spi)
+> -{
+> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> -	struct mcp3911 *adc = iio_priv(indio_dev);
+> -
+> -	iio_device_unregister(indio_dev);
+> -
+> -	clk_disable_unprepare(adc->clki);
+> -	if (adc->vref)
+> -		regulator_disable(adc->vref);
+> +	return devm_iio_device_register(&adc->spi->dev, indio_dev);
+>  }
+>  
+>  static const struct of_device_id mcp3911_dt_ids[] = {
+> @@ -367,7 +347,6 @@ static struct spi_driver mcp3911_driver = {
+>  		.of_match_table = mcp3911_dt_ids,
+>  	},
+>  	.probe = mcp3911_probe,
+> -	.remove = mcp3911_remove,
+>  	.id_table = mcp3911_id,
+>  };
+>  module_spi_driver(mcp3911_driver);
 
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
