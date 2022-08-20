@@ -2,115 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAC9C28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5A6C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241454AbiHTAty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35862 "EHLO
+        id S243659AbiHTAzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241560AbiHTAtw (ORCPT
+        with ESMTP id S236835AbiHTAzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 20:49:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D51C101C57
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660956590;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mPu0DQxVRwEmhdXyi4XLwQIkOlrmj+flVHHMJnG7VVM=;
-        b=bSv4+t+rfoLjj4mO16YwkfokK1d0sYMRoEshthNO9/+nDuGb/pPgXmF3vqG+bpTJeXusGM
-        tlUJ5VpEbj2zFlpIMWWYPm8eucQlDOe4F65iHFDyeI7X0Njtxo0lxF9wwzj4rhczsvuo8V
-        vBXW+CLzhQs33ip9fvZgKHSagYaJZdw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-ekivVkyVM0izy3AZ4RrpYQ-1; Fri, 19 Aug 2022 20:49:45 -0400
-X-MC-Unique: ekivVkyVM0izy3AZ4RrpYQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6F9F9185A794;
-        Sat, 20 Aug 2022 00:49:45 +0000 (UTC)
-Received: from localhost (ovpn-12-17.pek2.redhat.com [10.72.12.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 607DA90A04;
-        Sat, 20 Aug 2022 00:49:44 +0000 (UTC)
-Date:   Sat, 20 Aug 2022 08:49:41 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, hch@infradead.org,
-        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 02/11] mm: ioremap: fixup the physical address
-Message-ID: <YwAvpa9odnkhBPXa@MiWiFi-R3L-srv>
-References: <20220801144029.57829-1-bhe@redhat.com>
- <20220801144029.57829-3-bhe@redhat.com>
- <YuvthDzuPlAwD/LA@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        Fri, 19 Aug 2022 20:55:21 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6279C107ADA
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:55:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660956920; x=1692492920;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ip43NlnItFb9tN3qkW7h+1wOC/V3hBtAT/G2mnv9ZTI=;
+  b=EY4NsOkyyKpFqwFY4b3u+ac8occd1J/i8vKOAlRQ2vqLpoXCs0DG8gzb
+   XhTUVuVk1+wELeDKAqGDInDNp3b4o8YtgSQsm2K0aqj5WS08fHsa//2Ud
+   1gYxF360crqaQvN+JFvvdhiYiPwUfo4Z9xuO359Q+WuNhcBaMDzYCHjnM
+   1W+yzoPvpenD7o5DBCkiweEAD9MWoXwUKqQyyYwJ4Nswdpjvnvqq+7Qkd
+   HR2fN8mSRtq2zMjTCw5bNETZ0GvBp0kDZF+hjRgPL0ELM6e/qAkmxk5BR
+   US44IpbRuLwwySs1fHQlItdE1bvTG6sxoTcF9R4DKDRxa3KHx8cM3qx7l
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="293920869"
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="293920869"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 17:55:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
+   d="scan'208";a="676626195"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Aug 2022 17:55:18 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oPCli-0001yB-0Q;
+        Sat, 20 Aug 2022 00:55:18 +0000
+Date:   Sat, 20 Aug 2022 08:54:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [intel-tdx:guest-hardening-rebased 16/36]
+ arch/x86/coco/tdx/tdx-tests.c:66:12: warning: no previous prototype for
+ 'kvm_unit_test_debug_init'
+Message-ID: <202208200809.O038j7ih-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YuvthDzuPlAwD/LA@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/04/22 at 06:02pm, Alexander Gordeev wrote:
-> On Mon, Aug 01, 2022 at 10:40:20PM +0800, Baoquan He wrote:
-> > This is a preparation patch, no functionality change.
-> 
-> There is, please see below.
-> 
-> > @@ -3,11 +3,17 @@
-> >  #include <linux/mm.h>
-> >  #include <linux/io.h>
-> >  
-> > -void __iomem *ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
-> > +void __iomem *
-> > +ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val)
-> >  {
-> > -	unsigned long last_addr = phys_addr + size - 1;
-> > +	unsigned long last_addr, offset, phys_addr = *paddr;
-> >  	int ret = -EINVAL;
-> >  
-> > +	offset = phys_addr & (~PAGE_MASK);
-> > +	phys_addr -= offset;
-> 
-> FWIW, phys_addr &= PAGE_MASK looks much more usual.
-> 
-> > @@ -11,13 +11,20 @@
-> >  #include <linux/io.h>
-> >  #include <linux/export.h>
-> >  
-> > -void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
-> > +void __iomem *ioremap_prot(phys_addr_t paddr, size_t size,
-> >  			   unsigned long prot)
-> >  {
-> >  	unsigned long offset, vaddr;
-> > -	phys_addr_t last_addr;
-> > +	phys_addr_t last_addr, phys_addr = paddr;
-> >  	struct vm_struct *area;
-> >  	void __iomem *base;
-> > +	unsigned long prot_val = prot;
-> 
-> Why prot_val is needed?
-> 
-> > +	base = ioremap_allowed(&phys_addr, size, &prot_val);
-> > +	if (IS_ERR(base))
-> > +		return NULL;
-> > +	else if (base)
-> > +		return base;
-> 
-> By moving ioremap_allowed() here you allow it to be called
-> before the wrap-around check, including architectures that
-> do not do fixups.
-> 
-> And now ioremap_allowed() semantics, prototype and name turn
-> less than obvious. Why not introduce a separate fixup callback?
+arch/x86/coco/tdx/Makefile
+arch/x86/coco/tdx/tdx-tests.c
+tree:   https://github.com/intel/tdx.git guest-hardening-rebased
+head:   d941f409a509c084250b50a3b5fc1c3c84a596a0
+commit: 5091d7c6068bf030df54dc48b303a1d25a7ef0a0 [16/36] x86/tdx-tests: Add a port of a kvm unit test
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220820/202208200809.O038j7ih-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/5091d7c6068bf030df54dc48b303a1d25a7ef0a0
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-hardening-rebased
+        git checkout 5091d7c6068bf030df54dc48b303a1d25a7ef0a0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
 
-I finally renamed ioremap_allowed()/iounmap_allowed() to arch_ioremap()
-and arch_iounmap(). I didn't introduce a separate fixup callback, and
-have added more explanation to log of patch 1~2, please check that.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+All warnings (new ones prefixed by >>):
+
+>> arch/x86/coco/tdx/tdx-tests.c:66:12: warning: no previous prototype for 'kvm_unit_test_debug_init' [-Wmissing-prototypes]
+      66 | int __init kvm_unit_test_debug_init(void)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/kvm_unit_test_debug_init +66 arch/x86/coco/tdx/tdx-tests.c
+
+    65	
+  > 66	int __init kvm_unit_test_debug_init(void)
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
