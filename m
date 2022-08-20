@@ -2,131 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099FAC28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D273C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244632AbiHTAGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S243139AbiHTAHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244540AbiHTAGR (ORCPT
+        with ESMTP id S244772AbiHTAHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 20:06:17 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D76D0776;
-        Fri, 19 Aug 2022 17:06:16 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id x63-20020a17090a6c4500b001fabbf8debfso6235770pjj.4;
-        Fri, 19 Aug 2022 17:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=nxQnXGbWeUUPNIxY2ClrZdjRX1n4kVW97+B7G71Nyxk=;
-        b=FiDAaYsGz7hLZHUr5TRe1+hLNY8sXUKqKeF9NTidO1I7sMJe6U3lOw7rZGDkXmaBmI
-         NKNrP0b+wENNk2FPiBQ+/1hLgk6FUcfGiFPeT57+EpvFUtvS1Ji++1wzsifEQTLaOWZt
-         oBM+IRmUF54ltTcJ2AvN+unAgvMvpfntWMMYFQ+7CZ9Il96jsHiDCMiKN7BHlAJEajTb
-         p2IHdK10JW6s+igtPYguZyhfqIPprvo01sIN8CpK1kOP8cBasARD4lDopEIK5tzt7CCF
-         kn5TZYkniYBzcets2kibnRmpZHs20WnVbp+ipD5gJtWMaDOLjZvGs/johB3VO9pAyYj7
-         qixQ==
+        Fri, 19 Aug 2022 20:07:19 -0400
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30F31156F2
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:07:12 -0700 (PDT)
+Received: by mail-pg1-f171.google.com with SMTP id v4so4832572pgi.10
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:07:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc;
-        bh=nxQnXGbWeUUPNIxY2ClrZdjRX1n4kVW97+B7G71Nyxk=;
-        b=0hMkHL459I8wV+B1BanAtvgt6x2Wb9wKTEKooCFADRs2mhyHeAksqsp+xmulfaCNoE
-         SseNk41D7zAR30L5PQbeNlq7EXv1oqYwy2c+ZKQ7XAmmhDRP9czZNrpUwOjBtNsMPHaY
-         UjpozA4HvF+2lu4iQD6s10qWdNK1BRmRI7NHM26c4Zaw3J4Lv2QJ3uJ4zBcEBu0LZbht
-         FiqQJJ33zAjhEAX2DDz6dUNl34Kc2pPqJ3hCHCoSzoQ3k1pLrNvMhOxeXBLPDNEVxCE5
-         MOsyXiqfRQe+CGgGz4EH9oSzaZgMS8gThGG2ezsaPKbz/nYY6H6F4uA54vW0bP5f9iFn
-         +v2Q==
-X-Gm-Message-State: ACgBeo1Ce0ACx17yA6F7f4H4+6oJgndfFwlQHD6AEU7UuFIp3r+ghxMd
-        +3+mvEZfEriKZb6rN3QbbBaOMcJjv6Q=
-X-Google-Smtp-Source: AA6agR6UYK3tExe1k4Rt1ZteumhmQog7XZZSZVte13IWVs74Gptbb7b3VJgdwz3eqOfizDP99iNakQ==
-X-Received: by 2002:a17:902:a70e:b0:172:c859:dcc1 with SMTP id w14-20020a170902a70e00b00172c859dcc1mr3335960plq.121.1660953975827;
-        Fri, 19 Aug 2022 17:06:15 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:a2f5])
-        by smtp.gmail.com with ESMTPSA id q12-20020a170902dacc00b0016d2d0ce376sm3672716plx.215.2022.08.19.17.06.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 17:06:15 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-From:   Tejun Heo <tj@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 7/7] cgroup: Implement cgroup_file_show()
-Date:   Fri, 19 Aug 2022 14:05:51 -1000
-Message-Id: <20220820000550.367085-8-tj@kernel.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220820000550.367085-1-tj@kernel.org>
-References: <20220820000550.367085-1-tj@kernel.org>
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=iNc0+qZK4maYA+Nyvb5N9XcmUuPrIeK5kHdMUPdhfyQ=;
+        b=VhZPAbeD7ZpWvXppNMo5H2Ei6IQLue+r+UWXc7QPYfENlJoew5V49Y/pf8BIcKeUbT
+         x0jznppvDRUqfI/hsnhQIS3Z0yZZ+LJTf39xGmjczqf+l8oZZkEk1MXhRyiwt2V698CC
+         mR5hMsnup/kG17YsgG+KKaRtYiW7PD8iWTFCCUhseozIYTpKaPZvW2NR7Ckj4aroXI5l
+         KHhIAG2dJkdbFz6o1wBMRmpTVvMVch6HDFUbNxNaG1Gwiu3hjC3tMBdNBkE+sidzSmYH
+         r+6MW5yMsBJ4WTENqF4LYYLBGtqhGJhVJcb3KnAF3szfX9h87ZDcDaeI9beBzkpMti9E
+         +7lQ==
+X-Gm-Message-State: ACgBeo35NAclOUuHe7xmu+CbsOxwJo2VXGFj/PkBW0efFTy7kRssKEBu
+        645R+k0FESnUWvSYFE3y2GQ=
+X-Google-Smtp-Source: AA6agR5W5yPSqIp9Ihl9JRxboxZBEiQ4B1dGEJ7js6ypI9pKF0QbEgpwOMV8Q0YnFVrN+eA4XmYEbQ==
+X-Received: by 2002:aa7:88d1:0:b0:52f:8fb8:5ec6 with SMTP id k17-20020aa788d1000000b0052f8fb85ec6mr10255695pff.34.1660954032019;
+        Fri, 19 Aug 2022 17:07:12 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id p18-20020a170902ead200b0016a6caacaefsm3682708pld.103.2022.08.19.17.07.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 17:07:11 -0700 (PDT)
+Message-ID: <12b231ea-dc7d-bb09-3986-32a07a63acd4@acm.org>
+Date:   Fri, 19 Aug 2022 17:07:09 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+From:   Bart Van Assche <bvanassche@acm.org>
+Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Isaac Manjarres <isaacmanjarres@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+References: <YvsoYzIhOtX9DOi2@google.com>
+ <20220816111311.GC1108868@roeck-us.net> <YvvQOBk9T3J1uX8k@google.com>
+ <20220817010559.GA1880847@roeck-us.net> <YvxAfiSOrzy7/c1J@google.com>
+ <20220818225932.GA3433999@roeck-us.net> <Yv7bd6Yl8+thp2CY@google.com>
+ <20220819112832.GA3106213@roeck-us.net> <Yv/MKymRC9O04Nqu@google.com>
+ <baa1f65a-d983-0518-3979-7099679995f2@acm.org>
+ <20220819220841.GA3230067@roeck-us.net>
+Content-Language: en-US
+In-Reply-To: <20220819220841.GA3230067@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add cgroup_file_show() which allows toggling visibility of a cgroup file
-using the new kernfs_deactivate(). This will be used to hide psi interface
-files on cgroups where it's disabled.
+On 8/19/22 15:08, Guenter Roeck wrote:
+> On Fri, Aug 19, 2022 at 01:01:29PM -0700, Bart Van Assche wrote:
+>> Since the issue has been observed in qemu, how about sharing the sysrq-t
+>> output? I recommend to collect that output as follows:
+>> * Send the serial console output to a file. This involves adding
+>> console=ttyS0,115200n8 to the kernel command line and using the proper qemu
+>> options to save the serial console output into a file.
+>> * Reproduce the hang and send the sysrq-t key sequence to qemu, e.g. as
+>> follows: virsh send-key ${vm_name} KEY_LEFTALT KEY_SYSRQ KEY_T
+>>
+> Unless I am missing something, this requires a virtio keyboard.
+> So far I have been unable to get this to work with qemu arm emulations.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Cc: Chengming Zhou <zhouchengming@bytedance.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
----
- include/linux/cgroup.h |  1 +
- kernel/cgroup/cgroup.c | 23 +++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
+That's unfortunate. Is there another way to collect call traces after
+the lockup has happened? Is it sufficient to enable the serial console
+and to monitor the serial console output? Is CONFIG_SOFTLOCKUP_DETECTOR=y
+sufficient? If not, how about converting the new wait calls in the SCSI
+code, e.g. as shown in the (totally untested) patch below?
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index ed53bfe7c46c..f61dd135efbe 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -114,6 +114,7 @@ int cgroup_add_dfl_cftypes(struct cgroup_subsys *ss, struct cftype *cfts);
- int cgroup_add_legacy_cftypes(struct cgroup_subsys *ss, struct cftype *cfts);
- int cgroup_rm_cftypes(struct cftype *cfts);
- void cgroup_file_notify(struct cgroup_file *cfile);
-+void cgroup_file_show(struct cgroup_file *cfile, bool show);
- 
- int task_cgroup_path(struct task_struct *task, char *buf, size_t buflen);
- int cgroupstats_build(struct cgroupstats *stats, struct dentry *dentry);
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index ffaccd6373f1..eb096499c72b 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -4339,6 +4339,29 @@ void cgroup_file_notify(struct cgroup_file *cfile)
- 	spin_unlock_irqrestore(&cgroup_file_kn_lock, flags);
- }
- 
-+/**
-+ * cgroup_file_show - show or hide a hidden cgroup file
-+ * @cfile: target cgroup_file obtained by setting cftype->file_offset
-+ * @show: whether to show or hide
-+ */
-+void cgroup_file_show(struct cgroup_file *cfile, bool show)
-+{
-+	struct kernfs_node *kn;
-+
-+	spin_lock_irq(&cgroup_file_kn_lock);
-+	kn = cfile->kn;
-+	kernfs_get(kn);
-+	spin_unlock_irq(&cgroup_file_kn_lock);
-+
-+	if (show)
-+		kernfs_activate(kn);
-+	else
-+		kernfs_deactivate(kn);
-+
-+	kernfs_put(kn);
-+}
-+
-+
- /**
-  * css_next_child - find the next child of a given css
-  * @pos: the current position (%NULL to initiate traversal)
--- 
-2.37.2
+Thanks,
 
+Bart.
+
+
+diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
+index 6c63672971f1..edd238384f1d 100644
+--- a/drivers/scsi/hosts.c
++++ b/drivers/scsi/hosts.c
+@@ -35,6 +35,7 @@
+  #include <linux/platform_device.h>
+  #include <linux/pm_runtime.h>
+  #include <linux/idr.h>
++#include <linux/sched/debug.h>
+  #include <scsi/scsi_device.h>
+  #include <scsi/scsi_host.h>
+  #include <scsi/scsi_transport.h>
+@@ -196,7 +197,11 @@ void scsi_remove_host(struct Scsi_Host *shost)
+  	 * unloaded and/or the host resources can be released. Hence wait until
+  	 * the dependent SCSI targets and devices are gone before returning.
+  	 */
+-	wait_event(shost->targets_wq, atomic_read(&shost->target_count) == 0);
++	while (wait_event_timeout(shost->targets_wq,
++			atomic_read(&shost->target_count) == 0, 60 * HZ) <= 0) {
++		show_state();
++		show_all_workqueues();
++	}
+
+  	scsi_mq_destroy_tags(shost);
+  }
+diff --git a/drivers/scsi/scsi_sysfs.c b/drivers/scsi/scsi_sysfs.c
+index 213ebc88f76a..1c17b6c53ab0 100644
+--- a/drivers/scsi/scsi_sysfs.c
++++ b/drivers/scsi/scsi_sysfs.c
+@@ -14,6 +14,7 @@
+  #include <linux/device.h>
+  #include <linux/pm_runtime.h>
+  #include <linux/bsg.h>
++#include <linux/sched/debug.h>
+
+  #include <scsi/scsi.h>
+  #include <scsi/scsi_device.h>
+@@ -1536,7 +1537,11 @@ static void __scsi_remove_target(struct scsi_target *starget)
+  	 * devices associated with @starget have been removed to prevent that
+  	 * a SCSI error handling callback function triggers a use-after-free.
+  	 */
+-	wait_event(starget->sdev_wq, atomic_read(&starget->sdev_count) == 0);
++	while (wait_event_timeout(starget->sdev_wq,
++			atomic_read(&starget->sdev_count) == 0, 60 * HZ) <= 0) {
++		show_state();
++		show_all_workqueues();
++	}
+  }
+
+  /**
