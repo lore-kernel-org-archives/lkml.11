@@ -2,113 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7D0C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 18:17:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222BAC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 18:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbiHTSRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 14:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52110 "EHLO
+        id S232824AbiHTSRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 14:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiHTSQm (ORCPT
+        with ESMTP id S231671AbiHTSQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 14:16:42 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421FD31DCB
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:16:41 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id t5so9131291edc.11
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:16:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=qVzfHbu5pGUMMhouEyZrkVnSBIn9SzY5DZdTT7h9U4g=;
-        b=AfXZ56h85+QxZ5KoQ2/jNFPLYZV3Lt2RitLHjiRAfa5VhgVuCnSnvhf+mh4Dxu8yBL
-         BVdZ8T11N4oSNt6rVgPKep8D2/CW2iyiOr9CkJZc1vZGjgXBAgd4KvJeECccHEFlqO7E
-         3jl9JzxDYIKrq5Rp2pMPn9VZg/xdV245vPgZX0JMw9SKmW47KXpPvHG55kNL/lbUbW+y
-         2+t/GSkKsOfxzDj2X8oBg+dZcCy1E6CjBTykdiVdZfH7VRUZYPpSvQXqxhvSnR3XxEQi
-         GXS4CxX3PJ1izIjxsXiAmvt/ICBSj27S5QFwQixwTjIcT/p8Vcg0RdJLLoiPbV4WvpeN
-         8cYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=qVzfHbu5pGUMMhouEyZrkVnSBIn9SzY5DZdTT7h9U4g=;
-        b=ALPyU7ueREnHZD5gO6G+Hk49Mx24jSuTpNlK/nSGjH2ogfNiwlJ/n/BSh+cQz5yP3a
-         jdnmeDWSAO+7Qw2TDoDBwxGA9iQiYpjOtH+X2Bp1OVepwUaVW09kpy9tzz34YU2gmYea
-         ozcQuZk89knJcKnE9PcUqcM/Hc7+4Iu69mzMVpxlp4enFVDWfisxM97ERUV3V2g8n89Y
-         ZMQNLJi9Qyake5SxXHO36NC95Wi7LNOwPDo7LtmBIyCy/Plz1IxVd6SJHBV9L8kyrY3u
-         Bb4QW5YXGWeoJUEPRH7e/83JAUcXdorzXzC5vRkKEyl9kTC66tuFEJdpAtZ6nXhHa6Jp
-         t+KA==
-X-Gm-Message-State: ACgBeo3AJNVmcXCoAI928AYrvO4j7omuIUVsO54o5nBi+oj2v24xKpOY
-        92VA6g7Bkzu/NNGH1ouwB7A36CJ1MUE=
-X-Google-Smtp-Source: AA6agR7O9ui7ABd1AbtCzkkjldF3wv5rwC1rytIM3lPLNFCSZ1xyv8CTpQAaY1mVA/a75M7t8Huijg==
-X-Received: by 2002:a05:6402:4312:b0:43d:b9c0:65ee with SMTP id m18-20020a056402431200b0043db9c065eemr10423578edc.205.1661019400934;
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69EF017071;
         Sat, 20 Aug 2022 11:16:40 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb77.dynamic.kabel-deutschland.de. [95.90.187.119])
-        by smtp.gmail.com with ESMTPSA id g2-20020a17090604c200b0072af890f52dsm3887833eja.88.2022.08.20.11.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Aug 2022 11:16:40 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 07/19] staging: r8188eu: rename rtw_os_xmit_resource_free()
-Date:   Sat, 20 Aug 2022 20:16:11 +0200
-Message-Id: <20220820181623.12497-8-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220820181623.12497-1-straube.linux@gmail.com>
-References: <20220820181623.12497-1-straube.linux@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=t0pyLnK8OrpfhUWATUbAE+IWUhh8PnntBsAGRXSYTts=; b=IhbwOvYcpUK7EBUTNf020L0ywn
+        KVC7WewJWw/Euj8lPlka2wIdLliFsuH3Qf3eMjYcLmYjSJvqacfqOV+4xulGbljEViFxivPWITHti
+        i+2jVOYLuWoNriMiI32kVue9YpeQ4Vm2ptXTtuEHZwpXhwMGX6pMqSvKq4ScuGNXiF4c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oPT18-00E3jH-DP; Sat, 20 Aug 2022 20:16:18 +0200
+Date:   Sat, 20 Aug 2022 20:16:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH net-next v1 7/7] ethtool: add interface to interact with
+ Ethernet Power Equipment
+Message-ID: <YwEk8h9C9XhT6Yyc@lunn.ch>
+References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+ <20220819120109.3857571-8-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819120109.3857571-8-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function rtw_os_xmit_resource_free() was moved from the os_dep
-directory. It looks like the driver was originaly written to support
-different operating systems. Obviously we do not need an extra 'os'
-in the function name that indicates that the function is operating
-system specific. Rename it to rtw_xmit_resource_free().
+On Fri, Aug 19, 2022 at 02:01:09PM +0200, Oleksij Rempel wrote:
+> Add interface to support Power Sourcing Equipment. At current step it
+> provides generic way to address all variants of PSE devices as defined
+> in IEEE 802.3-2018 but support only objects specified for IEEE 802.3-2018 104.4
+> PoDL Power Sourcing Equipment (PSE).
+> 
+> Currently supported and mandatory objects are:
+> IEEE 802.3-2018 30.15.1.1.3 aPoDLPSEPowerDetectionStatus
+> IEEE 802.3-2018 30.15.1.1.2 aPoDLPSEAdminState
+> IEEE 802.3-2018 30.15.1.2.1 acPoDLPSEAdminControl
+> 
+> This is minimal interface needed to control PSE on each separate
+> ethernet port but it provides not all mandatory objects specified in
+> IEEE 802.3-2018.
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_xmit.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> +static int pse_get_pse_attributs(struct net_device *dev,
+> +				 struct pse_reply_data *data)
+> +{
+> +	struct phy_device *phydev = dev->phydev;
+> +	int ret;
+> +
+> +	if (!phydev)
+> +		return -EOPNOTSUPP;
+> +
+> +	mutex_lock(&phydev->lock);
+> +	if (!phydev->psec) {
+> +		ret = -EOPNOTSUPP;
+> +		goto error_unlock;
+> +	}
+> +
+> +	ret = pse_podl_get_admin_sate(phydev->psec);
+> +	if (ret < 0)
+> +		goto error_unlock;
+> +
+> +	data->podl_pse_admin_state = ret;
+> +
+> +	ret = pse_podl_get_pw_d_status(phydev->psec);
+> +	if (ret < 0)
+> +		goto error_unlock;
+> +
+> +	data->podl_pse_pw_d_status = ret;
 
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index 426bf87a1404..eef1a27e84eb 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -50,8 +50,8 @@ static int rtw_xmit_resource_alloc(struct adapter *padapter, struct xmit_buf *px
- 	return _SUCCESS;
- }
- 
--static void rtw_os_xmit_resource_free(struct adapter *padapter, struct xmit_buf *pxmitbuf,
--				      u32 free_sz)
-+static void rtw_xmit_resource_free(struct adapter *padapter, struct xmit_buf *pxmitbuf,
-+				   u32 free_sz)
- {
- 	usb_free_urb(pxmitbuf->pxmit_urb);
- 	kfree(pxmitbuf->pallocated_buf);
-@@ -248,7 +248,7 @@ void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv)
- 	}
- 
- 	for (i = 0; i < NR_XMITBUFF; i++) {
--		rtw_os_xmit_resource_free(padapter, pxmitbuf, (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
-+		rtw_xmit_resource_free(padapter, pxmitbuf, (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
- 		pxmitbuf++;
- 	}
- 
-@@ -258,7 +258,7 @@ void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv)
- 
- 	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
- 	for (i = 0; i < num_xmit_extbuf; i++) {
--		rtw_os_xmit_resource_free(padapter, pxmitbuf, (max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
-+		rtw_xmit_resource_free(padapter, pxmitbuf, (max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
- 		pxmitbuf++;
- 	}
- 
--- 
-2.37.2
+I'm wondering how this is going to scale. At some point, i expect
+there will be an implementation that follows C45.2.9. I see 14 values
+which could be returned. I don't think 14 ops in the driver structure
+makes sense. Plus c30.15.1 defines other values.
+
+The nice thing about netlink is you can have as many or are little
+attributes in the message as you want. For cable testing, i made use
+of this. There is no standardisation, different PHYs offer different
+sorts of results. So i made the API flexible. The PHY puts whatever
+results it has into the message, and ethtool(1) just walks the message
+and prints what is in it.
+
+I'm wondering if we want a similar sort of API here?
+net/ethtool/pse-pd.c allocates the netlink messages, adds the header,
+and then passes it to the driver. The driver then uses helpers from
+ethtool to add whatever attributes it wants to the message. pse-pd
+then completes the message, and returns it to user space? This seems
+like it will scale better.
+
+     Andrew
 
