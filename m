@@ -2,70 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE902C32792
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC54C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344978AbiHTLdD (ORCPT
+        id S1343993AbiHTLdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
+        Sat, 20 Aug 2022 07:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243695AbiHTLdC (ORCPT
+        with ESMTP id S1345152AbiHTLdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:33:02 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B3380483;
-        Sat, 20 Aug 2022 04:33:01 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-33387bf0c4aso181332867b3.11;
-        Sat, 20 Aug 2022 04:33:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=s4YFkGtdXGzExhgNNdWzDxbHiVYa6fhYdbL1HlHh5fU=;
-        b=lPS13Jt9RTHcFpj8TMTDSTuzMOrMRdDaRI3b7EVWXimvXZm5y2akK5KuG5bZNclop/
-         aJ/O+GEBp926HDmYEvYPhSHRbdLS65tW+InCwHJg2dEcGE3ToYvuThl6lucbrbj1S4Fx
-         WXWAD+cgjis6rqz1RgKLSVye2YB0NP9SMAgmAHN1Er+WfK6crNyFpavt02ZzXm9JF67G
-         J33DllFWgpRkOucd55Qm6pykNBL2Wcgc1TuwdYT9Sq1wW08g27Ip9ScfZH+o6LJWEg6z
-         UFdCykfZglzY+ScyCESjd6worA3kGa9WEuA7zpnBgqBEGd7MfDnU3w9AxRVlbFLeNRBJ
-         J/CQ==
-X-Gm-Message-State: ACgBeo0zkdd3N85uHFBAr93IMEJ/pfIzzKe2GY/27E6SaTLiTNqk+QaL
-        LJBvfSW7xXGFv7xbVwCaZfFrgt324ktjv7YL5U4=
-X-Google-Smtp-Source: AA6agR5Cn9hLu3/OJLOHbF9qDGe+HULcGTi0pu1StW/GqWS7wETiRPmvIBgNCRbC09S0TF4cpuqDw9TMM8vXLNaWxME=
-X-Received: by 2002:a0d:cdc2:0:b0:335:debd:2b3d with SMTP id
- p185-20020a0dcdc2000000b00335debd2b3dmr11202523ywd.19.1660995180680; Sat, 20
- Aug 2022 04:33:00 -0700 (PDT)
+        Sat, 20 Aug 2022 07:33:18 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A0FF6E;
+        Sat, 20 Aug 2022 04:33:12 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8xHF13h7zkWKR;
+        Sat, 20 Aug 2022 19:29:45 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 20 Aug 2022 19:33:10 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 20 Aug 2022 19:33:09 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        "Hao Luo" <haoluo@goddogle.com>, Jiri Olsa <jolsa@kernel.org>,
+        Pu Lehui <pulehui@huawei.com>
+Subject: [PATCH bpf-next 0/2] Fix cgroup attach flags being assigned to effective progs
+Date:   Sat, 20 Aug 2022 20:02:32 +0800
+Message-ID: <20220820120234.2121044-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220812130645.14710-1-sbinding@opensource.cirrus.com>
- <YvatIg1ywD5EkxTk@paasikivi.fi.intel.com> <YvatSoqXEtI7oqUO@paasikivi.fi.intel.com>
-In-Reply-To: <YvatSoqXEtI7oqUO@paasikivi.fi.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 20 Aug 2022 13:32:49 +0200
-Message-ID: <CAJZ5v0j0-5YL0ip48NndWKRM7n59ppyjdoye4B5X5m1CrqKFDg@mail.gmail.com>
-Subject: Re: [PATCH v1] ACPI: Property: Fix type detection of unified integer
- reading functions
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        patches@opensource.cirrus.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 9:43 PM Sakari Ailus
-<sakari.ailus@linux.intel.com> wrote:
->
-> On Fri, Aug 12, 2022 at 07:42:26PM +0000, Sakari Ailus wrote:
-> > Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Attach flags is only valid for attached progs of this layer cgroup,
+but not for effective progs.
 
-This is still OK if you have reviewed the patch.
+Pu Lehui (2):
+  bpf, cgroup: Fix attach flags being assigned to effective progs
+  bpftool: Fix cgroup attach flags being assigned to effective progs
 
-> Should have been:
->
-> Tested-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+ kernel/bpf/cgroup.c        | 5 ++++-
+ tools/bpf/bpftool/cgroup.c | 9 +++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-Applied as 6.0-rc material, thanks!
+-- 
+2.25.1
+
