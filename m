@@ -2,80 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F73CC28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 02:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC87C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 03:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243600AbiHTC6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 22:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
+        id S243670AbiHTDE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 23:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242572AbiHTC6L (ORCPT
+        with ESMTP id S232439AbiHTDEY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 22:58:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A364DC4826;
-        Fri, 19 Aug 2022 19:58:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DABFB828A4;
-        Sat, 20 Aug 2022 02:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C0ECC433C1;
-        Sat, 20 Aug 2022 02:58:04 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-kernel@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] LoongArch: Select PCI_QUIRKS to avoid build error
-Date:   Sat, 20 Aug 2022 10:57:55 +0800
-Message-Id: <20220820025755.3110083-1-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
+        Fri, 19 Aug 2022 23:04:24 -0400
+X-Greylist: delayed 628 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 19 Aug 2022 20:04:20 PDT
+Received: from xilka.com (bbb.xilka.com [IPv6:2001:470:1f11:5a5:16da:e9ff:fe11:e54b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B4E5D0E0
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 20:04:18 -0700 (PDT)
+Received: from comer.internal (comer [IPv6:2001:470:1f11:5a5:a6ea:a72b:2712:4fe7] (may be forged))
+        (authenticated bits=0)
+        by xilka.com (8.17.1.9/8.17.1.9) with ESMTPSA id 27K2rkIB764576
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 20:53:47 -0600
+From:   Kelly Anderson <kelly@xilka.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Lenovo Ideapad 5 Pro-16ACH6 Laptop Updated GSCN33WW BIOS Slows Linux
+Date:   Fri, 19 Aug 2022 20:53:46 -0600
+Message-ID: <4981778.LvFx2qVVIh@comer.internal>
+Organization: Xilka
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PCI_LOONGSON is a mandatory for LoongArch and it is selected in Kconfig
-unconditionally, but its dependency PCI_QUIRKS is missing and may cause
-a build error when "make randconfig":
+Hi,
 
-   arch/loongarch/pci/acpi.c: In function 'pci_acpi_setup_ecam_mapping':
->> arch/loongarch/pci/acpi.c:103:29: error: 'loongson_pci_ecam_ops' undeclared (first use in this function)
-     103 |                 ecam_ops = &loongson_pci_ecam_ops;
-         |                             ^~~~~~~~~~~~~~~~~~~~~
-   arch/loongarch/pci/acpi.c:103:29: note: each undeclared identifier is reported only once for each function it appears in
+Please CC me with any response.
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for PCI_LOONGSON
-   Depends on [n]: PCI [=y] && (MACH_LOONGSON64 [=y] || COMPILE_TEST [=y]) && (OF [=y] || ACPI [=y]) && PCI_QUIRKS [=n]
-   Selected by [y]:
-   - LOONGARCH [=y]
+I updated my Ideapad 5 Pro 16ACH6 BIOS (AMD Ryzen 5800H) to GSCN33WW.  
+Performance under Linux dropped what seemed to be by a factor of 10.  It was 
+painful to use the machine.  I was using the latest 5.18.x kernels.  I tried 
+various things including dropping back to previous kernel versions to no 
+avail.  Finally I reverted to the previous BIOS verson GSCN32WW and the 
+performance returned.
 
-Fix it by selecting PCI_QUIRKS unconditionally, too.
+Here is the summary of changes for GSCN33WW.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Summary of changes
+==================
+General Information:
+GSCN33WW:
+BIOS Notification:
+1. Fixed
+  1) Fix Security level 2 fail issue.
+  2) 
+2. Add
+  1) NA
+3. Modified
+  1)NA
+EC Notification:
+  1). N/A
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index 4abc9a28aba4..26aeb1408e56 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -111,6 +111,7 @@ config LOONGARCH
- 	select PCI_ECAM if ACPI
- 	select PCI_LOONGSON
- 	select PCI_MSI_ARCH_FALLBACKS
-+	select PCI_QUIRKS
- 	select PERF_USE_VMALLOC
- 	select RTC_LIB
- 	select SMP
--- 
-2.31.1
+If there is anything I can to do help identify/fix the problem, please let me 
+know.
+
+Thanks
+
+
 
