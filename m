@@ -2,94 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99785C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 07:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FD2C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 07:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344203AbiHTHVj (ORCPT
+        id S1343630AbiHTHdR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 03:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
+        Sat, 20 Aug 2022 03:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343905AbiHTHVe (ORCPT
+        with ESMTP id S244415AbiHTHdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 03:21:34 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAFBC924F
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 00:21:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660980093; x=1692516093;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LVkN/7OajMKzoh/t6yHXQvHMGPc/fI2ZovmaIPzxWe8=;
-  b=CvZqG0qS97Be0mDSYJxHQ21xzEzFTchKEtGRywhaku9HQoHPQtVcXHa5
-   1pNPOreOpO0WEWI57/0wJgHGDwedaWwu1YDgWGoxoDzD5n5SCuyodnpi/
-   MN1+6CB9xU/tNGGyoRPLLw+3FAagwTwEUClSta1kU6SUhS0Wjd3S0NmOb
-   3KEvI12qSLYkweL7A58MU8b94phkiU9pw+Y3xJw3/B7nhNQpPrI0xN6UJ
-   MBVZPSKrJBl84aGEgcfBU/tpTdo/aRgbJLcUXiRRH31jyyPMXUAkk3+ZA
-   qUUar3zVUmGg/AEdaOOpn5txyV15qSnDO+loOCF6I2pjaL/u6j4PC2qsQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="319186295"
-X-IronPort-AV: E=Sophos;i="5.93,250,1654585200"; 
-   d="scan'208";a="319186295"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2022 00:21:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,250,1654585200"; 
-   d="scan'208";a="750759488"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Aug 2022 00:21:31 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPInS-0002JT-1e;
-        Sat, 20 Aug 2022 07:21:30 +0000
-Date:   Sat, 20 Aug 2022 15:21:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>, Fuad Tabba <tabba@google.com>
-Subject: arch/arm64/kvm/arm.c:52:1: sparse: sparse: symbol
- '__pcpu_scope_kvm_arm_hyp_stack_page' was not declared. Should it be static?
-Message-ID: <202208201541.xemzhBIO-lkp@intel.com>
+        Sat, 20 Aug 2022 03:33:15 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E25C47
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 00:33:12 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1660980789;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OXPB7dY7tQ2n85mgIrq2bkd3Z/lqPrZbbmrEZHKR2EI=;
+        b=V53qx512BBfkXrE3QHlAuCrjOL/BGRhH15a+RPQLzdh5ADOmo4WZzCYasXbWSLF7hQrROy
+        vzgnfu5PhZ7MljCwl1QuTRDtohzAPsG1odlzHbyoaNSseMMPQCu3EI9th7yo4q2B+Hygvm
+        W8put8C83HqTG+wE2Ncg5iamruWSeIw=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Subject: Re: [PATCH] mm: fix pgdat->kswap accessed concurrently
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Muchun Song <muchun.song@linux.dev>
+In-Reply-To: <20220820032506.126860-1-wangkefeng.wang@huawei.com>
+Date:   Sat, 20 Aug 2022 15:33:04 +0800
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>, Qian Cai <cai@lca.pw>,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <1E87F09C-4904-49E2-B45C-C408DD5F6F62@linux.dev>
+References: <20220820032506.126860-1-wangkefeng.wang@huawei.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   50cd95ac46548429e5bba7ca75cc97d11a697947
-commit: db129d486ebdf4e3168282236f9d9008b42cac7e KVM: arm64: Implement non-protected nVHE hyp stack unwinder
-date:   4 weeks ago
-config: arm64-randconfig-s042-20220820 (https://download.01.org/0day-ci/archive/20220820/202208201541.xemzhBIO-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=db129d486ebdf4e3168282236f9d9008b42cac7e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout db129d486ebdf4e3168282236f9d9008b42cac7e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kvm/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
 
-sparse warnings: (new ones prefixed by >>)
->> arch/arm64/kvm/arm.c:52:1: sparse: sparse: symbol '__pcpu_scope_kvm_arm_hyp_stack_page' was not declared. Should it be static?
+> On Aug 20, 2022, at 11:25, Kefeng Wang <wangkefeng.wang@huawei.com> =
+wrote:
+>=20
+> The pgdat->kswap could be accessed concurrently by kswapd_run() and
+> kcompactd(), it don't be protected by any lock, which leads to the
+> following null-ptr-deref,
+>=20
+>  vmscan: Failed to start kswapd on node 0
+>  ...
+>  BUG: KASAN: null-ptr-deref in kcompactd+0x440/0x504
+>  Read of size 8 at addr 0000000000000024 by task kcompactd0/37
+>=20
+>  CPU: 0 PID: 37 Comm: kcompactd0 Kdump: loaded Tainted: G           OE =
+    5.10.60 #1
+>  Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+>  Call trace:
+>   dump_backtrace+0x0/0x394
+>   show_stack+0x34/0x4c
+>   dump_stack+0x158/0x1e4
+>   __kasan_report+0x138/0x140
+>   kasan_report+0x44/0xdc
+>   __asan_load8+0x94/0xd0
+>   kcompactd+0x440/0x504
+>   kthread+0x1a4/0x1f0
+>   ret_from_fork+0x10/0x18
+>=20
+> Fix it by adding READ_ONCE()|WRITE_ONCE().
+>=20
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+> mm/compaction.c |  4 +++-
+> mm/vmscan.c     | 15 +++++++++------
+> 2 files changed, 12 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/mm/compaction.c b/mm/compaction.c
+> index 640fa76228dd..aa1cfe47f046 100644
+> --- a/mm/compaction.c
+> +++ b/mm/compaction.c
+> @@ -1983,7 +1983,9 @@ static inline bool is_via_compact_memory(int =
+order)
+>=20
+> static bool kswapd_is_running(pg_data_t *pgdat)
+> {
+> -	return pgdat->kswapd && task_is_running(pgdat->kswapd);
+> +	struct task_struct *t =3D READ_ONCE(pgdat->kswapd);
+> +
+> +	return t && task_is_running(t);
+> }
+>=20
+> /*
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index b2b1431352dc..9abba714249e 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -4642,16 +4642,19 @@ unsigned long shrink_all_memory(unsigned long =
+nr_to_reclaim)
+> void kswapd_run(int nid)
+> {
+> 	pg_data_t *pgdat =3D NODE_DATA(nid);
+> +	struct task_struct *t;
+>=20
+> -	if (pgdat->kswapd)
+> +	if (READ_ONCE(pgdat->kswapd))
+> 		return;
+>=20
+> -	pgdat->kswapd =3D kthread_run(kswapd, pgdat, "kswapd%d", nid);
+> -	if (IS_ERR(pgdat->kswapd)) {
+> +	t =3D kthread_run(kswapd, pgdat, "kswapd%d", nid);
+> +	if (IS_ERR(t)) {
+> 		/* failure at boot is fatal */
+> 		BUG_ON(system_state < SYSTEM_RUNNING);
+> 		pr_err("Failed to start kswapd on node %d\n", nid);
+> -		pgdat->kswapd =3D NULL;
+> +		WRITE_ONCE(pgdat->kswapd, NULL);
+> +	} else {
+> +		WRITE_ONCE(pgdat->kswapd, t);
+> 	}
+> }
 
-vim +/__pcpu_scope_kvm_arm_hyp_stack_page +52 arch/arm64/kvm/arm.c
+IIUC, the race is like the followings:
 
-    51	
-  > 52	DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-    53	unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
-    54	DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
-    55	
+CPU 0:					CPU 1:
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+kswapd_run()
+	pgdat->kswapd =3D kthread_run()
+	if (IS_ERR(pgdat->kswapd))
+					kswapd_is_running
+						// load pgdat->kswapd =
+and it is NOT NULL.
+		pgdat->kswapd =3D NULL
+						=
+task_is_running(pgdat->kswapd); // NULL pointer dereference
+
+So
+
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+
+Thanks.
+
+>=20
+> @@ -4661,11 +4664,11 @@ void kswapd_run(int nid)
+>  */
+> void kswapd_stop(int nid)
+> {
+> -	struct task_struct *kswapd =3D NODE_DATA(nid)->kswapd;
+> +	struct task_struct *kswapd =3D =
+READ_ONCE(NODE_DATA(nid)->kswapd);
+>=20
+> 	if (kswapd) {
+> 		kthread_stop(kswapd);
+> -		NODE_DATA(nid)->kswapd =3D NULL;
+> +		WRITE_ONCE(NODE_DATA(nid)->kswapd, NULL);
+> 	}
+> }
+>=20
+> --=20
+> 2.35.3
+>=20
+>=20
+
