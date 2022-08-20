@@ -2,169 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A38DC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 06:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248EBC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 06:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245476AbiHTGnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 02:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
+        id S244235AbiHTGn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 02:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245055AbiHTGnj (ORCPT
+        with ESMTP id S245060AbiHTGnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 02:43:39 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66FA12639
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 23:43:30 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id dc19so12351901ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 23:43:30 -0700 (PDT)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE1511163
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 23:43:26 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id o22so7916055edc.10
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 23:43:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=K+ACVRr2qvbdZdGfEXZ+98M4lRWQBPuEkPQm+EeZJtg=;
-        b=RN/MJth3KruMft+k48dYAhxZEs9O5v7vODTyzoqUQCsHDfmzq2p6yrUQnhmeBFCXXX
-         u6ESR83dZSLHVVf3p/EubuLTlCqaSoLlPvJzNt0phGHzBm2Ha6BGaLTCh5SWmVoQhYjy
-         ykEI6l+H6pUlT2DastachcsN4kcXcN+95aGlGPTE27hDnoF2GiRz3NXFWMfMpKf1zS9G
-         5X5BgZDF0ceTtWvwBwO4SO0FZLAxzeRVqhSBZXPObzjQXhdirmIt4fkrINg2GhWcNrEJ
-         BaW6J6IbmO/UEwT2PPXkQXz7ejq8UxdzJtzw/bfiFwCgsaddfdkMrDIQUz+IWu4U93y1
-         iShg==
+        bh=RU3vYRLuQKxt8Hd9Yyqo+KAgZMxn2BTVCKejZHVAHN4=;
+        b=m4g38oHu9ymHfkRcDWWXCQl6ixV1MIgEGjOhX2J3UVxDJJbt3clFcGElWf9db1K4BG
+         YjuRSCYTTPdDJTCBKY9sR4KUBiLA18t/WWndtYvSFv3+plqk6DLhC4j3V8TxlAkD2eJm
+         cW7LG0GsC5KOr+BQIHBTDuPMLb0aNcdQqat+tWDaLC8pGXQjBIEvIOUjEViNFK8yJEs0
+         FBo3mZxVASDaISqAJSU18RNEATql6+WWyRoVXdqFHXwPa9lUIEYAr+nJc4ck9qysTjIl
+         gAuWIY8VAMkLPAqkWjwle8RQFmR4iOqWdv/3E18E74gBU5FsTHn5cq5bbTZ/Iqc9Colv
+         uwYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=K+ACVRr2qvbdZdGfEXZ+98M4lRWQBPuEkPQm+EeZJtg=;
-        b=syKXtQoveW+gLsOhWuWYkqC8tx8qFb7zjEkJXFPkhYs+W6EuQt/G3M7B/rYuhZRMk3
-         ff6Ugf1/rQOM80Cu6EiMKx48uLQM3su20uOIpDp2OOu04ZTxXs6FCrSuF4BUR0r+/+Z8
-         wP9L37PE4gB5yDHgkCR/tzbItT+pYViiFjkDbEQPEW72PEigdjELbwUTQR/KPbUCbsBx
-         4qD266+xwUTGTZaUJflsulX2ULvEs7u7JLQjggTAKehEHYR3o0TEsi1gMPKAVG82rGol
-         Qc6eRLmef5YqUobN8YoCGscHdHhyH8CEOIYZB0Ubk33ZKORjzV5gXvtk1rumrPYkmMb6
-         NQEw==
-X-Gm-Message-State: ACgBeo21kCf3A5jphQhRY2g83Ya/lYMytrM7jHPTsAccN7KJLQAeQ5XH
-        Ow28jhbiOuScRLhMIl2Y48U=
-X-Google-Smtp-Source: AA6agR7j8mzhn0ltAl7QUMevwSp8OgzgbuPbEAr0O4S4Ihi6BzQD8boGfYzXSv+MsZPcYGfXGeeDFQ==
-X-Received: by 2002:a17:907:7f22:b0:73b:e53a:820d with SMTP id qf34-20020a1709077f2200b0073be53a820dmr6334613ejc.133.1660977809286;
-        Fri, 19 Aug 2022 23:43:29 -0700 (PDT)
+        bh=RU3vYRLuQKxt8Hd9Yyqo+KAgZMxn2BTVCKejZHVAHN4=;
+        b=Tgw5JRte94pw524gZPay0y9sR/0jXCrOthzz8lSq+EoKEnVaZpRerZCf5bn4UBVOlr
+         dRDub5cPdwVBkQInVxIaN5qxGVf86PXByfT7jwfUsqe5J35yATbDVvwmv0dbXF69rxW5
+         taSUNd8vfEIgYUsYlXeNBvqvR/9GrzSb802qOdPQb5r0o9rXdR/LZDM6evzqcvUsanfW
+         oTJqgChdbzzgvyIksxwcgQ0Pjjbg2gsKR/O20+8QZYSUUdZZDCb8sF9i+YJ82QkMqY4S
+         1KE/pq7p3K9TpSsdtowCNeHzETpK9Rjx3ozJLZc60y+1zflu4TzQWRNwE3LtSktX4U07
+         XSNg==
+X-Gm-Message-State: ACgBeo3Am/NPpeExnno2gkp582vpbAsNxLNTpp4qmZjB4jaMm2jy8+RU
+        5kS0/JBF7ISlZg3iVZ/ytmc=
+X-Google-Smtp-Source: AA6agR5RWErpONMzRQx8HXnACUqvwGadFt8Q5XrvObDaNqoCqCPunWpBvAJ942fOSHW0zg6Qmh21PQ==
+X-Received: by 2002:aa7:c956:0:b0:43b:206d:c283 with SMTP id h22-20020aa7c956000000b0043b206dc283mr4142574edt.381.1660977805089;
+        Fri, 19 Aug 2022 23:43:25 -0700 (PDT)
 Received: from nam-dell.vm.stuba.sk ([147.175.88.220])
-        by smtp.gmail.com with ESMTPSA id 27-20020a170906329b00b0073c0b87ba34sm2935816ejw.198.2022.08.19.23.43.28
+        by smtp.gmail.com with ESMTPSA id 27-20020a170906329b00b0073c0b87ba34sm2935816ejw.198.2022.08.19.23.43.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 23:43:29 -0700 (PDT)
+        Fri, 19 Aug 2022 23:43:24 -0700 (PDT)
 From:   Nam Cao <namcaov@gmail.com>
 To:     lkp@intel.com
 Cc:     Larry.Finger@lwfinger.net, gregkh@linuxfoundation.org,
         hdegoede@redhat.com, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
         namcaov@gmail.com
-Subject: [PATCH v2 4/4] staging: rtl8723bs: remove odm_NoiseMonitor.h and odm_NoiseMonitor.c
-Date:   Sat, 20 Aug 2022 08:42:46 +0200
-Message-Id: <2e60f0f5fed9812cd7a0ba70bf8073eb25dfc43e.1660977536.git.namcaov@gmail.com>
+Subject: [PATCH v2 0/4] remove useless files
+Date:   Sat, 20 Aug 2022 08:42:42 +0200
+Message-Id: <cover.1660977535.git.namcaov@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1660977535.git.namcaov@gmail.com>
-References: <cover.1660977535.git.namcaov@gmail.com>
+In-Reply-To: <202208200447.kdEhBy9a-lkp@intel.com>
+References: <202208200447.kdEhBy9a-lkp@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-because the content of these files is not used.
+Delete odm_NoiseMonitor.c and odm_NoiseMonitor.h because they are
+useless. The first 2 commits are preparation, and the final commit is
+actual removal.
 
-Signed-off-by: Nam Cao <namcaov@gmail.com>
----
- drivers/staging/rtl8723bs/hal/odm.h           |  1 -
- .../staging/rtl8723bs/hal/odm_NoiseMonitor.c  | 19 -----------
- .../staging/rtl8723bs/hal/odm_NoiseMonitor.h  | 32 -------------------
- drivers/staging/rtl8723bs/hal/odm_precomp.h   |  1 -
- 4 files changed, 53 deletions(-)
+v2: Add new patch to remove the file from Makefile, otherwise there is
+build error as reported by kernel test bot.
+
+Nam Cao (4):
+  staging: rtl8723bs: remove unused function ODM_InbandNoise_Monitor
+  staging: rtl8723bs: remove member noise_level from struct dm_odm_t
+  staging: rtl8723bs: remove odm_NoiseMonitor.o from Makefile
+  staging: rtl8723bs: remove odm_NoiseMonitor.h and odm_NoiseMonitor.c
+
+ drivers/staging/rtl8723bs/Makefile            |   1 -
+ drivers/staging/rtl8723bs/hal/odm.h           |   2 -
+ .../staging/rtl8723bs/hal/odm_NoiseMonitor.c  | 130 ------------------
+ .../staging/rtl8723bs/hal/odm_NoiseMonitor.h  |  39 ------
+ drivers/staging/rtl8723bs/hal/odm_precomp.h   |   1 -
+ 5 files changed, 173 deletions(-)
  delete mode 100644 drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.c
  delete mode 100644 drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.h
 
-diff --git a/drivers/staging/rtl8723bs/hal/odm.h b/drivers/staging/rtl8723bs/hal/odm.h
-index 033f22b0f394..fe9782d2d4fd 100644
---- a/drivers/staging/rtl8723bs/hal/odm.h
-+++ b/drivers/staging/rtl8723bs/hal/odm.h
-@@ -14,7 +14,6 @@
- #include "odm_DynamicBBPowerSaving.h"
- #include "odm_DynamicTxPower.h"
- #include "odm_CfoTracking.h"
--#include "odm_NoiseMonitor.h"
- 
- #define	TP_MODE		0
- #define	RSSI_MODE		1
-diff --git a/drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.c b/drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.c
-deleted file mode 100644
-index b85b323cf5bd..000000000000
---- a/drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.c
-+++ /dev/null
-@@ -1,19 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/******************************************************************************
-- *
-- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-- *
-- ******************************************************************************/
--
--#include "odm_precomp.h"
--
--/*  This function is for inband noise test utility only */
--/*  To obtain the inband noise level(dbm), do the following. */
--/*  1. disable DIG and Power Saving */
--/*  2. Set initial gain = 0x1a */
--/*  3. Stop updating idle time pwer report (for driver read) */
--/* - 0x80c[25] */
--
--#define Valid_Min				-35
--#define Valid_Max			10
--#define ValidCnt				5
-diff --git a/drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.h b/drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.h
-deleted file mode 100644
-index 01c5c524d4e0..000000000000
---- a/drivers/staging/rtl8723bs/hal/odm_NoiseMonitor.h
-+++ /dev/null
-@@ -1,32 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--/******************************************************************************
-- *
-- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-- *
-- *****************************************************************************/
--#ifndef	__ODMNOISEMONITOR_H__
--#define __ODMNOISEMONITOR_H__
--
--#define	ODM_MAX_CHANNEL_NUM					38/* 14+24 */
--struct noise_level {
--	/* u8 value_a, value_b; */
--	u8 value[MAX_RF_PATH];
--	/* s8 sval_a, sval_b; */
--	s8 sval[MAX_RF_PATH];
--
--	/* s32 noise_a = 0, noise_b = 0, sum_a = 0, sum_b = 0; */
--	/* s32 noise[ODM_RF_PATH_MAX]; */
--	s32 sum[MAX_RF_PATH];
--	/* u8 valid_cnt_a = 0, valid_cnt_b = 0, */
--	u8 valid[MAX_RF_PATH];
--	u8 valid_cnt[MAX_RF_PATH];
--
--};
--
--
--struct odm_noise_monitor {
--	s8 noise[MAX_RF_PATH];
--	s16 noise_all;
--};
--
--#endif
-diff --git a/drivers/staging/rtl8723bs/hal/odm_precomp.h b/drivers/staging/rtl8723bs/hal/odm_precomp.h
-index edce506022a5..2987857a8761 100644
---- a/drivers/staging/rtl8723bs/hal/odm_precomp.h
-+++ b/drivers/staging/rtl8723bs/hal/odm_precomp.h
-@@ -33,7 +33,6 @@
- #include "odm_DynamicBBPowerSaving.h"
- #include "odm_DynamicTxPower.h"
- #include "odm_CfoTracking.h"
--#include "odm_NoiseMonitor.h"
- #include "HalPhyRf.h"
- #include "HalPhyRf_8723B.h"/* for IQK, LCK, Power-tracking */
- #include "rtl8723b_hal.h"
 -- 
 2.25.1
 
