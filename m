@@ -2,102 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEA1C28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D7DC32792
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245044AbiHTAOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        id S241901AbiHTASD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244923AbiHTAOT (ORCPT
+        with ESMTP id S237749AbiHTASB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 20:14:19 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E427D5F10A
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:14:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660954458; x=1692490458;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iSU5B286wvSIq0QHjmGxNjuVlvWHlra8gctAd4LAcHA=;
-  b=bwE40cctzfR1jynJlUd20gjxGtjginR4JiJImmwu7CxInrwZ6uqQHa/w
-   f9J7Ar+bI/qllfCVI4EsULE2+w1fsCOSlUXbJs+jN59HUM3KgmPusjX9t
-   kd5/G5OfdESOGNe/cxjBmfzFHMWXrBlYIcJI+j3JzsFbnx2iqwt2svjOn
-   11rowto9j4Y0K+mlId1INwSCax/4QMWXMyWqmLBicTibdtJDU/obgf7Ze
-   jObz1fmDkYIqlQmOEovnPBykrUmWUZb3DhxPAVd0DeZM0m3EfixGPo8DA
-   aBf15qjHN/vJTitw3vabNOwNUQR1zTzvzl/DnadoT33t18EU48F+OylLt
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="276161358"
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="276161358"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 17:14:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="936397589"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 19 Aug 2022 17:14:16 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPC80-0001wZ-0s;
-        Sat, 20 Aug 2022 00:14:16 +0000
-Date:   Sat, 20 Aug 2022 08:13:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Subject: [intel-tdx:guest-hardening-rebased 13/36]
- arch/x86/coco/tdx/tdx.c:531:15: warning: no previous prototype for
- 'tdx_mmio_readq'
-Message-ID: <202208200852.sY5wUNQo-lkp@intel.com>
+        Fri, 19 Aug 2022 20:18:01 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B039113DC7
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:17:59 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id x25so5856042ljm.5
+        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:17:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=CNep9ry1VvhvpUTMySVEmMbXzxdlarH1IuCZVDew7EY=;
+        b=STdhnd7FenS1b/9kx+ca0KEU2L2sOkn+b8mag93WCl0qPu+9sR9XYsxscrOUHLFIXW
+         GKJ5YreWlZJNDH/GvF0kNzSLpKrGAgDGa3yeNCHlgddsdT12mr4MTuWH4aMH0LNKyvyo
+         T8YLdvUt+8pTVs4RzpUBpPNCbiulxOuR/0E7pZ1WWnIqfwHNVtEh2OsQNHQb7/xVLf9V
+         g4LmhTHvSXx9LTNeXZZYNYJnHdZLZqfkkQqePE29BoKzdNONUG62mQRE/fO53EwXs06V
+         /VoRUErLHTspzFL6Ilp0d76nDYnZwMshMeztaiSPzoKN2oujvwDqeAKwg7LdE+Mh755G
+         +DPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=CNep9ry1VvhvpUTMySVEmMbXzxdlarH1IuCZVDew7EY=;
+        b=JRMdw3R3R2zwB25ssiV4ICiTexo64wcwytijagI/zl10BffpN1BTPBDGRAyqMxWveO
+         A52+ZPWBYLXKEj9wZjpmEZXwLfP1en7MUVytOJd2FvIdCwnw4CAp2z2b/goCeGWrZCW0
+         1xuzL27x1T/FzEwACmngnD8m7gOlzqPiLJ5Mb8xAqQHe7Gi/Kwv5wBI1wl99sFKUEb84
+         WGXGjG5xf7ugZrvZvjZZNalGOXjOEcGKMKQXnjqL73VKKsfhKgpB/T+7OPvk5Td5OQ6u
+         HPYHrYXO1chjfDEITWrbr9Ws4I6DtCD2khHtu3NAsaXdW51HCI7aEVHje4rZPyWtwC40
+         yGHw==
+X-Gm-Message-State: ACgBeo3AvA7zWUOHFQZ1D3QkBj8U/KBLODiJHEXpcjtM3wfsyE/ME2Q5
+        CA76XxWuthPEgC4Ix3uExNA5ASF38AmsXIApDbNcFA==
+X-Google-Smtp-Source: AA6agR5vCpHra8bkWNKsBarpRm/oSNVSjlDC+Zg1UudxOWjm0l3lqikFaBMsBhmkIXCM5+ltokH4zlNOfJo4A1apOxc=
+X-Received: by 2002:a2e:84ca:0:b0:25d:77e0:2566 with SMTP id
+ q10-20020a2e84ca000000b0025d77e02566mr2983018ljh.78.1660954677321; Fri, 19
+ Aug 2022 17:17:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220819210737.763135-1-vipinsh@google.com> <YwAC1f5wTYpTdeh+@google.com>
+ <CAHVum0ecr7S9QS4+3kS3Yd-eQJ5ZY_GicQWurVFnAif6oOYhOg@mail.gmail.com>
+ <YwAP2dM/9vfjlAMb@google.com> <YwAVzzF2dZ2tKOUh@google.com>
+In-Reply-To: <YwAVzzF2dZ2tKOUh@google.com>
+From:   Vipin Sharma <vipinsh@google.com>
+Date:   Fri, 19 Aug 2022 17:17:20 -0700
+Message-ID: <CAHVum0cLUH0j1ZKEG-fPrh52xand4fQqR2heF0j5c4LncTFWOQ@mail.gmail.com>
+Subject: Re: [PATCH v2] KVM: selftests: Run dirty_log_perf_test on specific cpus
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     David Matlack <dmatlack@google.com>, pbonzini@redhat.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/x86/coco/tdx/tdx.c
-tree:   https://github.com/intel/tdx.git guest-hardening-rebased
-head:   d941f409a509c084250b50a3b5fc1c3c84a596a0
-commit: 0cf382195475412201e134e2925bb276445a8460 [13/36] x86/tdx: Enable direct iomap MMIO optimizations
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220820/202208200852.sY5wUNQo-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/0cf382195475412201e134e2925bb276445a8460
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-hardening-rebased
-        git checkout 0cf382195475412201e134e2925bb276445a8460
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
+On Fri, Aug 19, 2022 at 3:59 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Fri, Aug 19, 2022, David Matlack wrote:
+> > On Fri, Aug 19, 2022 at 03:20:06PM -0700, Vipin Sharma wrote:
+> > > On Fri, Aug 19, 2022 at 2:38 PM David Matlack <dmatlack@google.com> wrote:
+> > > > I think we should move all the logic to pin threads to perf_test_util.c.
+> > > > The only thing dirty_log_perf_test.c should do is pass optarg into
+> > > > perf_test_util.c. This will make it trivial for any other test based on
+> > > > pef_test_util.c to also use pinning.
+> > > >
+> > > > e.g. All a test needs to do to use pinning is add a flag to the optlist
+> > > > and add a case statement like:
+> > > >
+> > > >         case 'c':
+> > > >                 perf_test_setup_pinning(optarg);
+> > > >                 break;
+> > > >
+> > > > perf_test_setup_pinning() would:
+> > > >  - Parse the list and populate perf_test_vcpu_args with each vCPU's
+> > > >    assigned pCPU.
+> > > >  - Pin the current thread to it's assigned pCPU if one is provided.
+> > > >
+> > >
+> > > This will assume all tests have the same pinning requirement and
+> > > format. What if some tests have more than one worker threads after the
+> > > vcpus?
+> >
+> > Even if a test has other worker threads, this proposal would still be
+> > logically consistent. The flag is defined to only control the vCPU
+> > threads and the main threads. If some test has some other threads
+> > besides that, this flag will not affect them (which is exactly how it's
+> > defined to behave). If such a test wants to pin those other threads, it
+> > would make sense to have a test-specific flag for that pinning (and we
+> > can figure out the right way to do that if/when we encounter that
+> > situation).
+>
+> ...
+>
+> > Yeah and I also realized perf_test_setup_pinning() will need to know how
+> > many vCPUs there are so it can determine which element is the main
+> > thread's pCPU assignment.
+>
+> The "how many workers you got?" conundrum can be solved in the same way, e.g. just
+> have the caller pass in the number of workers it will create.
+>
+>         perf_test_setup_pinning(pin_string, nr_vcpus, NR_WORKERS);
+>
+> The only question is what semantics we should support for workers, e.g. do we
+> want to force an all-or-none approach or can the user pin a subset.  All-or-none
+> seems like it'd be the simplest to maintain and understand.  I.e. if -c is used,
+> then all vCPUs must be pinned, and either all workers or no workers are pinned.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Combining both of your suggestions to make sure everyone is on the same page:
+perf_test_setup_pinning(pin_string, nr_vcpus) API expects (nr_vcpus +
+1) entries in "pin_string", where it will use first nr_vcpus entries
+for vcpus and the one after that for caller thread cpu.
 
-All warnings (new ones prefixed by >>):
+In future if there is a need for common workers, then after nr_vcpus+1
+entries there will be entries for workers, having a predefined order
+as workers get added to the code.
 
-   arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for 'tdx_write_msr' [-Wmissing-prototypes]
-     298 | void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
-         |              ^~~~~~~~~~~~~
->> arch/x86/coco/tdx/tdx.c:531:15: warning: no previous prototype for 'tdx_mmio_readq' [-Wmissing-prototypes]
-     531 | unsigned long tdx_mmio_readq(void __iomem* addr)
-         |               ^~~~~~~~~~~~~~
+"pin_string" must always have AT LEAST (nr_vcpus + 1) entries. After
+that if there are more entries, then those will be used to assign cpus
+to common worker threads based on predefined order. perf_test_util
+should have a  way to know how many common workers there are. There
+can be more workers than entries, this is fine, those extra workers
+will not be pinned.
 
-
-vim +/tdx_mmio_readq +531 arch/x86/coco/tdx/tdx.c
-
-   530	
- > 531	unsigned long tdx_mmio_readq(void __iomem* addr)
-   532	{
-   533		unsigned long val;
-   534	
-   535		if (tdx_virt_mmio(8, false, (unsigned long)addr, &val))
-   536			return 0xffffffffffffffff;
-   537		return val;
-   538	}
-   539	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+If this is not desirable, let us hold on discussion when we actually
+get common workers, meanwhile, just keep nr_vcpus + 1 entries and work
+accordingly.
