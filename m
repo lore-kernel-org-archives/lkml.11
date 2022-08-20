@@ -2,250 +2,369 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AFFC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 454DBC32774
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344268AbiHTKXv (ORCPT
+        id S1344746AbiHTKYI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 06:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
+        Sat, 20 Aug 2022 06:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233583AbiHTKXt (ORCPT
+        with ESMTP id S1344629AbiHTKYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 06:23:49 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB7A31DED
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 03:23:46 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id s11so4931813qtx.6
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 03:23:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=GH7MacsqFe4ByHX40zFjzh3TPhnjs8RQ6MXRmazRC0o=;
-        b=Bum+rL0sbPfLVmi0o3ZRd4u+9nIwC96k40Sam2kAvyhGxinPEP1jMClSc8uGNRIm5D
-         U+tp+tzfLfy5cqWIqH2R+eI17ksutdChNVMv3Yx3pGircyEOu5vz8RkCkwP0pj6oRd+Y
-         fjgERy7+7LfbmpEBfMu/JnnNwz/h4hJYWe03P3FgUJNqmtx7Ay1+Csj5tjHu//2kqBP+
-         E/Q60WxxSQMU4HQcFgnb+p+qoKJKTl7ChaDbw3R16I2hYMXVCsySBNiHs9NlM+qWBqvi
-         Kn0wi/sEQpgJiAMt3j4PqJ3xN3Lmn7bNcV/nGcDtoAqlZ46Bmjdhvg18E+GYN1oyb2cX
-         eC6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=GH7MacsqFe4ByHX40zFjzh3TPhnjs8RQ6MXRmazRC0o=;
-        b=xLBrJ/K1VBaKv77CdglxpLRQI4FnvGSkmES8WCJO8yCdMjEZ9DzK6Jqu6PoxH3AyQj
-         baSdT66BsOeJdBxGYjLd8QHDTkNUDtOK2qZkxCpGqIyQJ6e8Mh91MtN5fBeTJmdxmEf5
-         CoKBa8o4wBbfQF58fQxXvG9qQ0Znq8dTvyFbBu7LJtPv0kNAO8FImLpoj7vA48R016Sa
-         8y3TSwuoYovAA7l78y7Pc4r1/KNkwxs6+RCOds3oYSx3y0HaNh79pKOe3rAJM6g2lobA
-         xE8t7yjr+Jn1BMhAOLj9cpAIJElMyF9KQsTFMTc2oA50FAv69nHkyFejJbndQ/bVtt6o
-         Mayw==
-X-Gm-Message-State: ACgBeo0KIkBe0VvhbRITpBF+CBZzJEsI+4CGMRi+rUBzr5Q0PE/vI2h/
-        d3pvNr7pTf2NG2ZDYj9iPHE8md0UPqXBVFHz
-X-Google-Smtp-Source: AA6agR7HTIUb4rx3W4ILkzrFYACE2jN65GdaNMfcGKFaJcv1cQA8k9JuE0LwrRMSsvPDL5DAjyattA==
-X-Received: by 2002:ac8:5948:0:b0:342:f500:2eb7 with SMTP id 8-20020ac85948000000b00342f5002eb7mr9302458qtz.483.1660991025577;
-        Sat, 20 Aug 2022 03:23:45 -0700 (PDT)
-Received: from ?IPv6:2601:153:901:9131:d0f3:7f7c:9506:88d2? ([2601:153:901:9131:d0f3:7f7c:9506:88d2])
-        by smtp.gmail.com with ESMTPSA id i12-20020ac85c0c000000b0031eb393aa45sm5172492qti.40.2022.08.20.03.23.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 20 Aug 2022 03:23:44 -0700 (PDT)
-Subject: Re: [BUG BISECT] phy: rockchip-inno-usb2: Sync initial otg state
-To:     Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     Markus Reichl <m.reichl@fivetechno.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220622003140.30365-1-pgwipeout@gmail.com>
- <88f2de00-32e3-ed74-082f-c0972a81f0f8@fivetechno.de>
- <CAMdYzYoTLjRW1FgwfizUu-+k0R4tCO78qYa7MEpgfz99aj3SvQ@mail.gmail.com>
- <ec3d2515-b2a2-8441-2e9a-a7fe664e048a@wolfvision.net>
- <CAMdYzYo1nm76ti3PCYk4DYtEnjWD731bybHaQV3ODBZi4SMvRg@mail.gmail.com>
- <88e9c256-b930-d26d-63b4-9d0f132ae962@wolfvision.net>
-From:   Peter Geis <pgwipeout@gmail.com>
-Message-ID: <3dd1a585-cf7e-033b-6c9b-f58dc43de6cb@gmail.com>
-Date:   Sat, 20 Aug 2022 06:23:40 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Sat, 20 Aug 2022 06:24:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00D46CD21;
+        Sat, 20 Aug 2022 03:24:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D7DC61128;
+        Sat, 20 Aug 2022 10:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F934C433D6;
+        Sat, 20 Aug 2022 10:23:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660991041;
+        bh=rTI7vxzDOM9MZjNW2fwEnIccXEq6YSB+Xp2WYNeNHM0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ioR9hsHaqBvV765f2/Wq6kyznmVS28tEayZqq+IKkQU+i9+OKl9k+kq25mFRH7aCY
+         WdD5dk6AETxr5OImv9FoxAG1W/IVvb3bPCb0T9vDLg/ZpZuVPTVi95eHMREhoGNvMg
+         D6Xl6x1X/RehdWcdDGnB4PlVVeEDuPF+NS7apFushbf9+4NbLApgMWddbBehM7PPWS
+         Ukv7ANrg8tUmaiWZYa4MANc4nayZHdvahDg2DuCX5wUQP6eFMBDlIoNoKPDdLRdzOq
+         /DeCNyi+rEcuqWfWcWsJEuLr2ay+44E0LqApt2NXXPgwdCR+pA3A/fwAvfpb7pzX0L
+         yXuQ0aq4mUw/w==
+Date:   Sat, 20 Aug 2022 11:34:36 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Mois, George" <George.Mois@analog.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lucas.p.stankus@gmail.com" <lucas.p.stankus@gmail.com>
+Subject: Re: [PATCH 2/2] drivers: iio: accel adxl312 and adxl314 support
+Message-ID: <20220820113436.40c24770@jic23-huawei>
+In-Reply-To: <SN6PR03MB3421435300309BCDD2D701EA946D9@SN6PR03MB3421.namprd03.prod.outlook.com>
+References: <20220816102828.182345-1-george.mois@analog.com>
+        <20220816102828.182345-3-george.mois@analog.com>
+        <20220816150958.00002431@huawei.com>
+        <SN6PR03MB3421435300309BCDD2D701EA946D9@SN6PR03MB3421.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <88e9c256-b930-d26d-63b4-9d0f132ae962@wolfvision.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 18 Aug 2022 10:11:16 +0000
+"Mois, George" <George.Mois@analog.com> wrote:
 
-
-On 8/17/2022 4:25 AM, Michael Riesch wrote:
-> Hi Peter,
+> Hi Jonathan,
 > 
-> On 8/16/22 17:27, Peter Geis wrote:
->> On Tue, Aug 16, 2022 at 11:20 AM Michael Riesch
->> <michael.riesch@wolfvision.net> wrote:
->>>
->>> Hi all,
->>>
->>> On 8/4/22 11:49, Peter Geis wrote:
->>>> On Tue, Aug 2, 2022 at 2:39 PM Markus Reichl <m.reichl@fivetechno.de> wrote:
->>>>>
->>>>> Hi,
->>>>>
->>>>> with linux-next-20220728 rk3399-roc-pc does not boot.
->>>>> Bisecting pointed to this commit.
->>>>> By reverting this commit the board boots again.
->>>>
->>>> Thank you for reporting this, someone was kind enough to reproduce the
->>>> problem on the rockpro64 and confirmed this is an issue. As I won't
->>>> have access to my hardware until next month, we should probably revert
->>>> this until the root cause can be identified.
->>>
->>> Just experienced this issue on my ROCK3 Model A board (RK3568) and
->>> reverting this commit solved it.
->>>
->>> Having the revert in v6.0-rc2 would be great -- if there is anything I
->>> can help to accelerate this please let me know.
->>
->> If this is now happening on rk356x where I know it works, it now
->> cements my theory that it's a symptom and not the actual problem.
->> Possibly a race condition with the grf and regmap code where it isn't
->> quite ready when called. This code path is called exactly the same way
->> later on when the irq fires.
->>
->> What config are you based on? I'm running a stripped down version of
->> the arm64_defconfig, but if you deviate from that it will be helpful
->> in reproducing the issue.
+> Thank you for your review!
 > 
-> I posted my Kconfig here: https://pastebin.com/P1As0W4k
+> Regards,
+> George
+> > 
+> > On Tue, 16 Aug 2022 13:28:28 +0300
+> > George Mois <george.mois@analog.com> wrote:
+> >   
+> > > ADXL312 and ADXL314 are small, thin, low power, 3-axis accelerometers
+> > > with high resolution (13-bit) measurement up to +/-12 g and +/- 200 g
+> > > respectively.
+> > >
+> > > Implement support for ADXL312 and ADXL314 by extending the ADXL313
+> > > driver.
+> > >
+> > > Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL312.pdf
+> > > Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL314.pdf
+> > >
+> > > Signed-off-by: George Mois <george.mois@analog.com>  
+> > 
+> > Hi George,
+> > 
+> > Various comments inline.
+> > 
+> > Thanks,
+> > 
+> > Jonathan  
+> > > ---
+> > >  drivers/iio/accel/adxl313.h      |  15 ++-
+> > >  drivers/iio/accel/adxl313_core.c | 164 +++++++++++++++++++++++--------
+> > >  drivers/iio/accel/adxl313_spi.c  |  40 +++++++-
+> > >  3 files changed, 173 insertions(+), 46 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/accel/adxl313.h b/drivers/iio/accel/adxl313.h
+> > > index 4415f2fc07e1..7428b1f7768f 100644
+> > > --- a/drivers/iio/accel/adxl313.h
+> > > +++ b/drivers/iio/accel/adxl313.h
+> > > @@ -26,6 +26,7 @@
+> > >  #define ADXL313_REG_FIFO_STATUS		0x39
+> > >
+> > >  #define ADXL313_DEVID0			0xAD
+> > > +#define ADXL313_DEVID0_ADXL312_314	0xE5
+> > >  #define ADXL313_DEVID1			0x1D
+> > >  #define ADXL313_PARTID			0xCB
+> > >  #define ADXL313_SOFT_RESET		0x52
+> > > @@ -37,18 +38,28 @@
+> > >  #define ADXL313_MEASUREMENT_MODE	BIT(3)
+> > >
+> > >  #define ADXL313_RANGE_MSK		GENMASK(1, 0)
+> > > -#define ADXL313_RANGE_4G		3
+> > > +#define ADXL313_RANGE_MAX		3
+> > >
+> > >  #define ADXL313_FULL_RES		BIT(3)
+> > >  #define ADXL313_SPI_3WIRE		BIT(6)
+> > >  #define ADXL313_I2C_DISABLE		BIT(6)
+> > >
+> > > +extern const struct regmap_access_table adxl312_readable_regs_table;
+> > >  extern const struct regmap_access_table adxl313_readable_regs_table;
+> > > +extern const struct regmap_access_table adxl314_readable_regs_table;
+> > >
+> > > +extern const struct regmap_access_table adxl312_writable_regs_table;
+> > >  extern const struct regmap_access_table adxl313_writable_regs_table;
+> > > +extern const struct regmap_access_table adxl314_writable_regs_table;
+> > > +
+> > > +enum adxl313_device_type {
+> > > +	ADXL312,
+> > > +	ADXL313,
+> > > +	ADXL314,
+> > > +};
+> > >
+> > >  int adxl313_core_probe(struct device *dev,
+> > >  		       struct regmap *regmap,
+> > > -		       const char *name,
+> > > +		       const struct spi_device_id *id,
+> > >  		       int (*setup)(struct device *, struct regmap *));
+> > >  #endif /* _ADXL313_H_ */
+> > > diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+> > > index afeef779e1d0..eea7d235950e 100644
+> > > --- a/drivers/iio/accel/adxl313_core.c
+> > > +++ b/drivers/iio/accel/adxl313_core.c
+> > > @@ -11,9 +11,17 @@
+> > >  #include <linux/iio/iio.h>
+> > >  #include <linux/module.h>
+> > >  #include <linux/regmap.h>
+> > > +#include <linux/spi/spi.h>  
+> > 
+> > Not in the core driver. This needs to be kept unware of the
+> > buses that migh be used.
+> >   
+> > >
+> > >  #include "adxl313.h"
+> > >
+> > > +static const struct regmap_range adxl312_readable_reg_range[] = {
+> > > +	regmap_reg_range(ADXL313_REG_DEVID0, ADXL313_REG_DEVID0),
+> > > +	regmap_reg_range(ADXL313_REG_OFS_AXIS(0), ADXL313_REG_OFS_AXIS(2)),
+> > > +	regmap_reg_range(ADXL313_REG_THRESH_ACT, ADXL313_REG_ACT_INACT_CTL),
+> > > +	regmap_reg_range(ADXL313_REG_BW_RATE, ADXL313_REG_FIFO_STATUS),
+> > > +};
+> > > +
+> > >  static const struct regmap_range adxl313_readable_reg_range[] = {
+> > >  	regmap_reg_range(ADXL313_REG_DEVID0, ADXL313_REG_XID),
+> > >  	regmap_reg_range(ADXL313_REG_SOFT_RESET, ADXL313_REG_SOFT_RESET),
+> > > @@ -22,12 +30,32 @@ static const struct regmap_range adxl313_readable_reg_range[] = {
+> > >  	regmap_reg_range(ADXL313_REG_BW_RATE, ADXL313_REG_FIFO_STATUS),
+> > >  };
+> > >
+> > > +const struct regmap_access_table adxl312_readable_regs_table = {
+> > > +	.yes_ranges = adxl312_readable_reg_range,
+> > > +	.n_yes_ranges = ARRAY_SIZE(adxl312_readable_reg_range),
+> > > +};
+> > > +EXPORT_SYMBOL_NS_GPL(adxl312_readable_regs_table, IIO_ADXL312);
+> > > +
+> > >  const struct regmap_access_table adxl313_readable_regs_table = {
+> > >  	.yes_ranges = adxl313_readable_reg_range,
+> > >  	.n_yes_ranges = ARRAY_SIZE(adxl313_readable_reg_range),
+> > >  };
+> > >  EXPORT_SYMBOL_NS_GPL(adxl313_readable_regs_table, IIO_ADXL313);
+> > >
+> > > +const struct regmap_access_table adxl314_readable_regs_table = {
+> > > +	.yes_ranges = adxl312_readable_reg_range,
+> > > +	.n_yes_ranges = ARRAY_SIZE(adxl312_readable_reg_range),
+> > > +};
+> > > +EXPORT_SYMBOL_NS_GPL(adxl314_readable_regs_table, IIO_ADXL314);
+> > > +
+> > > +static const struct regmap_range adxl312_writable_reg_range[] = {
+> > > +	regmap_reg_range(ADXL313_REG_OFS_AXIS(0), ADXL313_REG_OFS_AXIS(2)),
+> > > +	regmap_reg_range(ADXL313_REG_THRESH_ACT, ADXL313_REG_ACT_INACT_CTL),
+> > > +	regmap_reg_range(ADXL313_REG_BW_RATE, ADXL313_REG_INT_MAP),
+> > > +	regmap_reg_range(ADXL313_REG_DATA_FORMAT, ADXL313_REG_DATA_FORMAT),
+> > > +	regmap_reg_range(ADXL313_REG_FIFO_CTL, ADXL313_REG_FIFO_CTL),
+> > > +};
+> > > +
+> > >  static const struct regmap_range adxl313_writable_reg_range[] = {
+> > >  	regmap_reg_range(ADXL313_REG_SOFT_RESET, ADXL313_REG_SOFT_RESET),
+> > >  	regmap_reg_range(ADXL313_REG_OFS_AXIS(0), ADXL313_REG_OFS_AXIS(2)),
+> > > @@ -37,16 +65,30 @@ static const struct regmap_range adxl313_writable_reg_range[] = {
+> > >  	regmap_reg_range(ADXL313_REG_FIFO_CTL, ADXL313_REG_FIFO_CTL),
+> > >  };
+> > >
+> > > +const struct regmap_access_table adxl312_writable_regs_table = {
+> > > +	.yes_ranges = adxl312_writable_reg_range,
+> > > +	.n_yes_ranges = ARRAY_SIZE(adxl312_writable_reg_range),
+> > > +};
+> > > +EXPORT_SYMBOL_NS_GPL(adxl312_writable_regs_table, IIO_ADXL312);
+> > > +
+> > >  const struct regmap_access_table adxl313_writable_regs_table = {
+> > >  	.yes_ranges = adxl313_writable_reg_range,
+> > >  	.n_yes_ranges = ARRAY_SIZE(adxl313_writable_reg_range),
+> > >  };
+> > >  EXPORT_SYMBOL_NS_GPL(adxl313_writable_regs_table, IIO_ADXL313);
+> > >
+> > > +const struct regmap_access_table adxl314_writable_regs_table = {
+> > > +	.yes_ranges = adxl312_writable_reg_range,
+> > > +	.n_yes_ranges = ARRAY_SIZE(adxl312_writable_reg_range),
+> > > +};
+> > > +EXPORT_SYMBOL_NS_GPL(adxl314_writable_regs_table, IIO_ADXL314);
+> > > +
+> > >  struct adxl313_data {
+> > >  	struct regmap	*regmap;
+> > > +	const struct spi_device_id *id;
+> > > +	int scale_factor;
+> > >  	struct mutex	lock; /* lock to protect transf_buf */
+> > > -	__le16		transf_buf __aligned(IIO_DMA_MINALIGN);
+> > > +	__le16		transf_buf ____cacheline_aligned;  
+> > Check your patch for accidental reverts of other changes like this...
+> >   
+> > >  };
+> > >
+> > >  static const int adxl313_odr_freqs[][2] = {
+> > > @@ -156,12 +198,10 @@ static int adxl313_read_raw(struct iio_dev *indio_dev,
+> > >  		*val = sign_extend32(ret, chan->scan_type.realbits - 1);
+> > >  		return IIO_VAL_INT;
+> > >  	case IIO_CHAN_INFO_SCALE:
+> > > -		/*
+> > > -		 * Scale for any g range is given in datasheet as
+> > > -		 * 1024 LSB/g = 0.0009765625 * 9.80665 = 0.009576806640625 m/s^2
+> > > -		 */
+> > >  		*val = 0;
+> > > -		*val2 = 9576806;
+> > > +
+> > > +		*val2 = data->scale_factor;  
+> > I'd move this into a structure containing all the chip type specific data.
+> > Hence this would be
+> > data->chip.scale_factor.
+> >   
+> > > +
+> > >  		return IIO_VAL_INT_PLUS_NANO;
+> > >  	case IIO_CHAN_INFO_CALIBBIAS:
+> > >  		ret = regmap_read(data->regmap,
+> > > @@ -170,7 +210,7 @@ static int adxl313_read_raw(struct iio_dev *indio_dev,
+> > >  			return ret;
+> > >
+> > >  		/*
+> > > -		 * 8-bit resolution at +/- 0.5g, that is 4x accel data scale
+> > > +		 * 8-bit resolution at minimum range, that is 4x accel data scale
+> > >  		 * factor at full resolution
+> > >  		 */
+> > >  		*val = sign_extend32(regval, 7) * 4;
+> > > @@ -198,7 +238,7 @@ static int adxl313_write_raw(struct iio_dev *indio_dev,
+> > >  	switch (mask) {
+> > >  	case IIO_CHAN_INFO_CALIBBIAS:
+> > >  		/*
+> > > -		 * 8-bit resolution at +/- 0.5g, that is 4x accel data scale
+> > > +		 * 8-bit resolution at minimum range, that is 4x accel data scale
+> > >  		 * factor at full resolution
+> > >  		 */
+> > >  		if (clamp_val(val, -128 * 4, 127 * 4) != val)
+> > > @@ -223,14 +263,17 @@ static const struct iio_info adxl313_info = {
+> > >  static int adxl313_setup(struct device *dev, struct adxl313_data *data,
+> > >  			 int (*setup)(struct device *, struct regmap *))
+> > >  {
+> > > +	enum adxl313_device_type dev_type = data->id->driver_data;
+> > >  	unsigned int regval;
+> > >  	int ret;
+> > >
+> > > -	/* Ensures the device is in a consistent state after start up */
+> > > -	ret = regmap_write(data->regmap, ADXL313_REG_SOFT_RESET,
+> > > -			   ADXL313_SOFT_RESET);
+> > > -	if (ret)
+> > > -		return ret;
+> > > +	/* If ADXL313, ensures the device is in a consistent state after start up */
+> > > +	if (dev_type == ADXL313) {  
+> > 
+> > Add a flag to the chip_info structure suggested below for 'soft_reset' and
+> > base this decision on that.  The aim is to encode all the variations in chips
+> > in one place so adding future chips is isolated there.
+> >   
+> > > +		ret = regmap_write(data->regmap, ADXL313_REG_SOFT_RESET,
+> > > +				   ADXL313_SOFT_RESET);
+> > > +		if (ret)
+> > > +			return ret;
+> > > +	}
+> > >
+> > >  	if (setup) {
+> > >  		ret = setup(dev, data->regmap);
+> > > @@ -242,41 +285,54 @@ static int adxl313_setup(struct device *dev, struct adxl313_data *data,
+> > >  	if (ret)
+> > >  		return ret;
+> > >
+> > > -	if (regval != ADXL313_DEVID0) {
+> > > +	if (dev_type == ADXL313 && regval != ADXL313_DEVID0) {  
+> > 
+> > Obviously this predates your changes...
+> > Don't fail in this case.  Warn only.  We may be dealing with a newer compatible
+> > device that falls back to an the ADXL313 compatible in dt. It's fine to express
+> > we don't know what it is - particularly if ID matches something else, but
+> > not to fail as a result.
+> >   
 > 
-> FWIW the ROCK3 board has a switch to set the OTG port to device or host,
-> respectively. The NPE does not occur when the switch is set to host.
+> Is this change mandatory? I am asking this because we have setups that require
+> the driver to fail if not the correct device is plugged in or if there is no device
+> attached to the system. 
+
+Yes unfortunately.  There have been a couple of discussions with the device
+tree maintainers on this recently.
+The problem case is that a new compatible chip with a different device ID
+is introduced.  The expectation is that
+
+compatible = "newchip", "olderchip-with-otherwise identical software interfaces"
+will work with an old kernel that knows nothing about new chip.
+Note this extends to newer devices that add features but maintain backwards
+compatibility with older devices as well.  The idea is we get partial support
+in older kernels and the new compatible will be used only when new features
+are added.
+
+As a general rule new IIO drivers are tending to warn/info on unexpected IDs because
+there is a non trivial risk of the part being wrong. If they know the ID but
+it's for a different device they support, they should assume the device is
+the one the ID matches for (and warn that the DT is probably wrong for the
+board).
+
+There are corner cases that are fine for detecting 'no device' such as
+when we know the manufacturer doesn't use 0x00 or 0xff (likely false values on
+SPI) for device IDs. In those cases it is fine to fail on basis device
+isn't there.
+
 > 
-> Best regards,
-> Michael
+> Returning only warnings will cause the device  to probe, but abnormal values
+> to be produced. Moreover, most of the iio drivers perform a chip ID check and
+> return an error code if the physical device is not found.
 
-Good Afternoon Michael,
+We had this wrong the past unfortunately and haven't 'fixed' all drivers yet.
+However, note that I expect we will do this over time. If the DT is wrong then
+you are on your own. Correct solution is perform some form of detection in
+an early boot firmware (uboot or similar) and patch the DT appropriately.
+By the time Linux sees DT it should be correct for the board.
 
-Please try the following fix.
+> 
+> Wouldn't it be better to treat the situation of new compatible devices when
+> they appear?
 
-Very Respectfully,
-Peter Geis
+Unfortunately people insist on not upgrading their kernels as quick as new
+devices turn up in device trees + the intent is that there is no need to
+if the device is compatible with an older one (up to the ID).
 
-diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-index 0b1e9337ee8e..5fc7c374a6b4 100644
---- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-+++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -1169,6 +1169,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
-  			/* do initial sync of usb state */
-  			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
-  			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
-+			ret = 0;
-  		}
-  	}
-  
+Jonathan
 
 
 > 
->> We should revert it until it's isolated, as well as the patch setting
->> the rk356x to otg since it will again be broken. If someone could
->> weigh in here as well (I currently don't have access to my hardware)
->> it would be helpful.
->>
->>>
->>> Thanks and best regards,
->>> Michael
->>>
->>>>
->>>> Very Respectfully,
->>>> Peter Geis
->>>>
->>>>>
->>>>> [    2.398700] Unable to handle kernel NULL pointer dereference at virtual address
->>>>> 0000000000000008
->>>>> [    2.399517] Mem abort info:
->>>>> [    2.399772]   ESR = 0x0000000096000004
->>>>> [    2.400114]   EC = 0x25: DABT (current EL), IL = 32 bits
->>>>> [    2.400594]   SET = 0, FnV = 0
->>>>> [    2.400873]   EA = 0, S1PTW = 0
->>>>> [    2.401161]   FSC = 0x04: level 0 translation fault
->>>>> [    2.401602] Data abort info:
->>>>> [    2.401864]   ISV = 0, ISS = 0x00000004
->>>>> [    2.402212]   CM = 0, WnR = 0
->>>>> [    2.402484] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000001376000
->>>>> [    2.403071] [0000000000000008] pgd=0000000000000000, p4d=0000000000000000
->>>>> [    2.403687] Internal error: Oops: 96000004 [#1] SMP
->>>>> [    2.404130] Modules linked in: ip_tables x_tables ipv6 xhci_plat_hcd xhci_hcd
->>>>> dwc3 rockchipdrm drm_cma_helper analogix_dp dw_hdmi realtek drm_display_helper
->>>>> dwc3_of_simple dw_mipi_dsi ehci_platform ohci_platform ohci_hcd ehci_hcd
->>>>> drm_kms_helper dwmac_rk syscopyarea sysfillrect stmmac_platform sysimgblt
->>>>> fb_sys_fops usbcore stmmac pcs_xpcs drm phylink drm_panel_orientation_quirks
->>>>> [    2.407155] CPU: 4 PID: 71 Comm: kworker/4:6 Not tainted
->>>>> 5.19.0-rc8-next-20220728 #437
->>>>> [    2.407868] Hardware name: Firefly ROC-RK3399-PC Mezzanine Board (DT)
->>>>> [    2.408448] Workqueue: events rockchip_usb2phy_otg_sm_work
->>>>> [    2.408958] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>>>> [    2.411634] pc : rockchip_usb2phy_otg_sm_work+0x50/0x330
->>>>> [    2.414332] lr : process_one_work+0x1d8/0x380
->>>>> [    2.416948] sp : ffff800009373d60
->>>>> [    2.419406] x29: ffff800009373d60 x28: 0000000000000000 x27: 0000000000000000
->>>>> [    2.422199] x26: ffff0000f779fcb8 x25: ffff0000f77a3a05 x24: 000000000000000c
->>>>> [    2.424978] x23: 0000000000000000 x22: ffff0000010c8258 x21: ffff80000888ec10
->>>>> [    2.427768] x20: ffff0000010c82f0 x19: 000000000000000c x18: 0000000000000001
->>>>> [    2.430604] x17: 000000040044ffff x16: 00400034b5503510 x15: 0000000000000000
->>>>> [    2.433390] x14: ffff000000708000 x13: ffff8000eec96000 x12: 0000000034d4d91d
->>>>> [    2.436185] x11: 0000000000000000 x10: 0000000000000a10 x9 : ffff000001aa7a74
->>>>> [    2.438958] x8 : fefefefefefefeff x7 : 0000000000000018 x6 : ffff000001aa7a74
->>>>> [    2.441668] x5 : 000073746e657665 x4 : 000000000000002f x3 : ffff00000356c808
->>>>> [    2.444407] x2 : ffff800009373da4 x1 : 000000000000e2ac x0 : ffff80000888eb34
->>>>> [    2.447190] Call trace:
->>>>> [    2.449557]  rockchip_usb2phy_otg_sm_work+0x50/0x330
->>>>> [    2.452169]  process_one_work+0x1d8/0x380
->>>>> [    2.454684]  worker_thread+0x170/0x4e0
->>>>> [    2.457056]  kthread+0xd8/0xdc
->>>>> [    2.459354]  ret_from_fork+0x10/0x20
->>>>> [    2.461728] Code: 91037015 295be001 f9403c77 b940e413 (f94006e0)
->>>>> [    2.464338] ---[ end trace 0000000000000000 ]---
->>>>>
->>>>> Am 22.06.22 um 02:31 schrieb Peter Geis:
->>>>>> The initial otg state for the phy defaults to device mode. The actual
->>>>>> state isn't detected until an ID IRQ fires. Fix this by syncing the ID
->>>>>> state during initialization.
->>>>>>
->>>>>> Fixes: 51a9b2c03dd3 ("phy: rockchip-inno-usb2: Handle ID IRQ")
->>>>>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
->>>>>> ---
->>>>>>    drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 6 ++++++
->>>>>>    1 file changed, 6 insertions(+)
->>>>>>
->>>>>> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
->>>>>> index 6711659f727c..6e44069617df 100644
->>>>>> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
->>>>>> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
->>>>>> @@ -1162,6 +1162,12 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
->>>>>>                                        EXTCON_USB_HOST, &rport->event_nb);
->>>>>>                if (ret)
->>>>>>                        dev_err(rphy->dev, "register USB HOST notifier failed\n");
->>>>>> +
->>>>>> +             if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
->>>>>> +                     /* do initial sync of usb state */
->>>>>> +                     ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
->>>>>> +                     extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
->>>>>> +             }
->>>>>>        }
->>>>>>
->>>>>>    out:
->>>>>
->>>>> Gruß,
->>>>> --
->>>>> Markus Reichl
->>>>
->>>> _______________________________________________
->>>> Linux-rockchip mailing list
->>>> Linux-rockchip@lists.infradead.org
->>>> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+> > >  		dev_err(dev, "Invalid manufacturer ID: 0x%02x\n", regval);
+> > >  		return -ENODEV;
+> > >  	}
+
+
