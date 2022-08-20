@@ -2,98 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 354D5C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACFBC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345951AbiHTL6j (ORCPT
+        id S1345985AbiHTMAE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        Sat, 20 Aug 2022 08:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345917AbiHTL6e (ORCPT
+        with ESMTP id S1345953AbiHTMAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:58:34 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F9E2BB30
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:58:33 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id e2-20020a056e020b2200b002e1a5b67e29so4981215ilu.11
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:58:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=vy3gLv5pvPQlLz2bjwfmQURwI/ANJztqCqsTatb7lPc=;
-        b=q4kzDloJQLtQ4culHFUed4un1O0xbhzZwQf5Ud0mvNe1x+YUuCfQ9B0ydzB1YcGKSV
-         9Zdxz3/PBwbjrfX3NLda3BRKHYR7QFDAh5hl9PdrSnSca+JJNrhuenQ1Z/3SdLVZDv2+
-         dkQQZ1CdcErl2CBlaZGpyTJVG4Xuz51Jnnv1lDM/XZr7KWHwI86oyKf3irZ/UtsQpL7G
-         v/rdrNrGNWXLhRF0Y3r0WuE6WJDdOwkkLH5wq3olqD//A0Ba15s/kOgA7H6fuyTaohUd
-         gdJW5BCrF7nK5G+EW13Z82O0EyprDb1kkZEi5FgiBV/jCFFgmQJws4YaUISaBo9af+JA
-         uCSw==
-X-Gm-Message-State: ACgBeo0sVY4WVRXNWmd9OOACTxC5ID1cPsUmtBJwr/fXe9689+a9E09l
-        7bOM4G42KZETl0/hyEcrt2poXQrRuEkNTgjnYIpyQfPx1jU4
-X-Google-Smtp-Source: AA6agR42s0Q0/ClM39KKuAgSZ1cZ949PdC2kNOjk+fj2W/VpQvCJ6SFgRvV4AKLjivqd5ZqOQ3G3ZG2+U4IPcuN0qZnCCyqt7jZr
+        Sat, 20 Aug 2022 08:00:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795F2A3471;
+        Sat, 20 Aug 2022 05:00:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39558B80B3B;
+        Sat, 20 Aug 2022 11:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846CDC433D6;
+        Sat, 20 Aug 2022 11:59:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660996797;
+        bh=4c9RQckvVtKbqA8jOKUWqxYkOUjptVub6flApRLoGpg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oSGlIeXi0ciEQk4/SwDPbuyDW72z+R1sDceNpL1yKRIc7xv840/a3psLykf4nwgtS
+         wJP/Gbj6wSrDdzPlmqq+ko9FmJvHihoMZpnbcS8V4aO5PPjlv3jwV36WJH5x/Afa2W
+         nn6L19X8U/0M3fyP6cNdeeYIr0I9ul88wqTtP2husI6bOcSSqbxVo76+lIoSIIlhAT
+         0fWT76jNM+aoZ1DgmCUfZ6lvIStjZvFYtKO9Alpvt36qmP8VLiU/MlwZlapXRB6Xhg
+         PcW3thz7O5+IjYPfrefx4dh4yYosymy1xvKW0MwQItfbQgde8+TaMumvjPrM9/jfvS
+         rAz+HObnrJn3A==
+Date:   Sat, 20 Aug 2022 13:10:33 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Frede@cmslaser.com
+Subject: Re: [PATCH] iio: stx104: Move to addac subdirectory
+Message-ID: <20220820131033.038be32e@jic23-huawei>
+In-Reply-To: <20220815222921.138945-1-william.gray@linaro.org>
+References: <20220815222921.138945-1-william.gray@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:14c5:b0:689:5640:5b0f with SMTP id
- b5-20020a05660214c500b0068956405b0fmr3941282iow.70.1660996712989; Sat, 20 Aug
- 2022 04:58:32 -0700 (PDT)
-Date:   Sat, 20 Aug 2022 04:58:32 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000d0b1905e6aaef64@google.com>
-Subject: [syzbot] memory leak in vhci_write
-From:   syzbot <syzbot+8f819e36e01022991cfa@syzkaller.appspotmail.com>
-To:     johan.hedberg@gmail.com, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, 15 Aug 2022 18:29:21 -0400
+William Breathitt Gray <william.gray@linaro.org> wrote:
 
-syzbot found the following issue on:
+> The stx104 driver supports both ADC and DAC functionality.
+> 
+> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 
-HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1206e2d3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6e4b25d26c713a1b
-dashboard link: https://syzkaller.appspot.com/bug?extid=8f819e36e01022991cfa
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e8bd97080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=143c9fc3080000
+I don't care enough to audit all drivers and move them, but I'm
+fine with individual driver maintainers deciding they should be
+in a different category.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8f819e36e01022991cfa@syzkaller.appspotmail.com
+Applied.
 
-BUG: memory leak
-unreferenced object 0xffff88810d81ac00 (size 240):
-  comm "syz-executor219", pid 3615, jiffies 4294947117 (age 12.320s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff838733d9>] __alloc_skb+0x1f9/0x270 net/core/skbuff.c:418
-    [<ffffffff833f742f>] alloc_skb include/linux/skbuff.h:1257 [inline]
-    [<ffffffff833f742f>] bt_skb_alloc include/net/bluetooth/bluetooth.h:469 [inline]
-    [<ffffffff833f742f>] vhci_get_user drivers/bluetooth/hci_vhci.c:391 [inline]
-    [<ffffffff833f742f>] vhci_write+0x5f/0x230 drivers/bluetooth/hci_vhci.c:511
-    [<ffffffff815e398d>] call_write_iter include/linux/fs.h:2192 [inline]
-    [<ffffffff815e398d>] new_sync_write fs/read_write.c:491 [inline]
-    [<ffffffff815e398d>] vfs_write+0x42d/0x540 fs/read_write.c:578
-    [<ffffffff815e3cdd>] ksys_write+0x9d/0x160 fs/read_write.c:631
-    [<ffffffff845e0645>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff845e0645>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Thanks,
 
+> ---
+>  MAINTAINERS                         |  2 +-
+>  drivers/iio/adc/Kconfig             | 16 ----------------
+>  drivers/iio/adc/Makefile            |  1 -
+>  drivers/iio/addac/Kconfig           | 16 ++++++++++++++++
+>  drivers/iio/addac/Makefile          |  1 +
+>  drivers/iio/{adc => addac}/stx104.c |  0
+>  6 files changed, 18 insertions(+), 18 deletions(-)
+>  rename drivers/iio/{adc => addac}/stx104.c (100%)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index b8b6544ba27c..f4ef070f474a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1382,7 +1382,7 @@ APEX EMBEDDED SYSTEMS STX104 IIO DRIVER
+>  M:	William Breathitt Gray <william.gray@linaro.org>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+> -F:	drivers/iio/adc/stx104.c
+> +F:	drivers/iio/addac/stx104.c
+>  
+>  APM DRIVER
+>  M:	Jiri Kosina <jikos@kernel.org>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 5a3e8d9ae26c..e3c2881ed23a 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -1037,22 +1037,6 @@ config STMPE_ADC
+>  	  Say yes here to build support for ST Microelectronics STMPE
+>  	  built-in ADC block (stmpe811).
+>  
+> -config STX104
+> -	tristate "Apex Embedded Systems STX104 driver"
+> -	depends on PC104 && X86
+> -	select ISA_BUS_API
+> -	select GPIOLIB
+> -	help
+> -	  Say yes here to build support for the Apex Embedded Systems STX104
+> -	  integrated analog PC/104 card.
+> -
+> -	  This driver supports the 16 channels of single-ended (8 channels of
+> -	  differential) analog inputs, 2 channels of analog output, 4 digital
+> -	  inputs, and 4 digital outputs provided by the STX104.
+> -
+> -	  The base port addresses for the devices may be configured via the base
+> -	  array module parameter.
+> -
+>  config SUN4I_GPADC
+>  	tristate "Support for the Allwinner SoCs GPADC"
+>  	depends on IIO
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index c1a861a978ad..ab084094263b 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -89,7 +89,6 @@ obj-$(CONFIG_RICHTEK_RTQ6056) += rtq6056.o
+>  obj-$(CONFIG_RZG2L_ADC) += rzg2l_adc.o
+>  obj-$(CONFIG_SC27XX_ADC) += sc27xx_adc.o
+>  obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
+> -obj-$(CONFIG_STX104) += stx104.o
+>  obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
+>  obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
+>  obj-$(CONFIG_STM32_ADC) += stm32-adc.o
+> diff --git a/drivers/iio/addac/Kconfig b/drivers/iio/addac/Kconfig
+> index 138492362f20..fcf6d2269bfc 100644
+> --- a/drivers/iio/addac/Kconfig
+> +++ b/drivers/iio/addac/Kconfig
+> @@ -17,4 +17,20 @@ config AD74413R
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad74413r.
+>  
+> +config STX104
+> +	tristate "Apex Embedded Systems STX104 driver"
+> +	depends on PC104 && X86
+> +	select ISA_BUS_API
+> +	select GPIOLIB
+> +	help
+> +	  Say yes here to build support for the Apex Embedded Systems STX104
+> +	  integrated analog PC/104 card.
+> +
+> +	  This driver supports the 16 channels of single-ended (8 channels of
+> +	  differential) analog inputs, 2 channels of analog output, 4 digital
+> +	  inputs, and 4 digital outputs provided by the STX104.
+> +
+> +	  The base port addresses for the devices may be configured via the base
+> +	  array module parameter.
+> +
+>  endmenu
+> diff --git a/drivers/iio/addac/Makefile b/drivers/iio/addac/Makefile
+> index cfd4bbe64ad3..17de20ef0d8e 100644
+> --- a/drivers/iio/addac/Makefile
+> +++ b/drivers/iio/addac/Makefile
+> @@ -5,3 +5,4 @@
+>  
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_AD74413R) += ad74413r.o
+> +obj-$(CONFIG_STX104) += stx104.o
+> diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/addac/stx104.c
+> similarity index 100%
+> rename from drivers/iio/adc/stx104.c
+> rename to drivers/iio/addac/stx104.c
+> 
+> base-commit: b82217e73b5aa6db8453ad91b929ca2366e47184
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
