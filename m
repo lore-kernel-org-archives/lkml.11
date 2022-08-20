@@ -2,182 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B8BC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 07:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7B3C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 07:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiHUHBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 03:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50016 "EHLO
+        id S230019AbiHUHBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 03:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiHUHAz (ORCPT
+        with ESMTP id S229866AbiHUHAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 03:00:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D732AC45;
-        Sun, 21 Aug 2022 00:00:53 -0700 (PDT)
+        Sun, 21 Aug 2022 03:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DED2A97D;
+        Sun, 21 Aug 2022 00:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6988760DBD;
-        Sun, 21 Aug 2022 07:00:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8EFC433C1;
-        Sun, 21 Aug 2022 07:00:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE0A1B80BAB;
+        Sun, 21 Aug 2022 07:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EADCC433D6;
+        Sun, 21 Aug 2022 07:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661065252;
-        bh=s7VPN+oaTFY7tSucwup8RgiG7PYjh0syFZQzRlqgOaw=;
+        s=korg; t=1661065217;
+        bh=U3R0PXOVeBNi/aGM4YLPCESs8wspJ1yGJqt1ZsKx6+c=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R0gKFWBl92vaM8c14IH0U1+S5/n39gXQZ2UbLL0Jkn766oZu6uIVwaT+NIVvsHk7M
-         LhTKs4EbCnSOu03aCyXI5HtvdqbJ/XybyD8p5QISWpsjOp7NIiRmussrd0m2lNVcFY
-         dkORY8m+6w2be/NOcgUaQM3fsNgPiMYZVDcrLYVQ=
-Date:   Sat, 20 Aug 2022 20:28:11 +0200
+        b=x7Tf+AMVCgIQZwayiOfU/Y1dszhZX8/KbmuJcz/pS1ymQMDBPzGnQSi3kEHmunUhb
+         9crcz/ibXy39LqfgyrmoBMQ47F9XCVOGed0JyVtgzzLxH6mS2yrRHi+q9ClqBKgjcH
+         nz7755oseR7rTVc5iHnf51Hk3OcP10cEOgAQTzDY=
+Date:   Sat, 20 Aug 2022 20:16:07 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Nicholas Piggin <npiggin@gmail.com>,
-        =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.10 000/545] 5.10.137-rc1 review
-Message-ID: <YwEnu7ChHnkgWF00@kroah.com>
-References: <20220819153829.135562864@linuxfoundation.org>
- <CA+G9fYsj9ihvrUnMJ2zK-wLF6fcP6D6Kn7GRPqN3-BsrUVmr-Q@mail.gmail.com>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 0/6] 5.18.19-rc1 review
+Message-ID: <YwEk5xZ/wXWJMMUq@kroah.com>
+References: <20220819153710.430046927@linuxfoundation.org>
+ <YwCxc5gwpmGRBUL1@debian>
+ <CADVatmM_xDmAORG8J0KgrCOwmEyVKd7kc8VGQRHPaLZzifivhg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+G9fYsj9ihvrUnMJ2zK-wLF6fcP6D6Kn7GRPqN3-BsrUVmr-Q@mail.gmail.com>
+In-Reply-To: <CADVatmM_xDmAORG8J0KgrCOwmEyVKd7kc8VGQRHPaLZzifivhg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 02:11:53PM +0530, Naresh Kamboju wrote:
-> On Fri, 19 Aug 2022 at 21:16, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
+On Sat, Aug 20, 2022 at 11:32:36AM +0100, Sudip Mukherjee wrote:
+> On Sat, Aug 20, 2022 at 11:03 AM Sudip Mukherjee (Codethink)
+> <sudipm.mukherjee@gmail.com> wrote:
 > >
-> > This is the start of the stable review cycle for the 5.10.137 release.
-> > There are 545 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
+> > Hi Greg,
 > >
-> > Responses should be made by Sun, 21 Aug 2022 15:36:59 +0000.
-> > Anything received after that time might be too late.
+> > On Fri, Aug 19, 2022 at 05:40:12PM +0200, Greg Kroah-Hartman wrote:
+> > > -------------------
+> > > NOTE, this is the LAST 5.18.y stable release.  This tree will be
+> > > end-of-life after this one.  Please move to 5.19.y at this point in time
+> > > or let us know why that is not possible.
+> > > -------------------
+> > >
+> > > This is the start of the stable review cycle for the 5.18.19 release.
+> > > There are 6 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > >
+> > > Responses should be made by Sun, 21 Aug 2022 15:36:59 +0000.
+> > > Anything received after that time might be too late.
 > >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.137-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> > and the diffstat can be found below.
+> 
+> <snip>
+> 
 > >
-> > thanks,
+> > powerpc failure is not seen in mainline. Same error as csky and mips.
 > >
-> > greg k-h
+> > In function 'memcmp',
+> >     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:302:9,
+> >     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2002:15:
+> > ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+> >    44 | #define __underlying_memcmp     __builtin_memcmp
+> >       |                                 ^
+> > ./include/linux/fortify-string.h:404:16: note: in expansion of macro '__underlying_memcmp'
+> >   404 |         return __underlying_memcmp(p, q, size);
+> >       |                ^~~~~~~~~~~~~~~~~~~
+> > In function 'memcmp',
+> >     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:302:9,
+> >     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
+> > ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+> >    44 | #define __underlying_memcmp     __builtin_memcmp
+> >       |                                 ^
+> > ./include/linux/fortify-string.h:404:16: note: in expansion of macro '__underlying_memcmp'
+> >   404 |         return __underlying_memcmp(p, q, size);
+> >       |                ^~~~~~~~~~~~~~~~~~~
+> >
+> > I am bisecting now to find out what caused it.
 > 
-> Results from Linaro's test farm.
-> Following regression found on powerpc.
-> 
-> > Nicholas Piggin <npiggin@gmail.com>
-> >     KVM: PPC: Book3S HV: Remove virt mode checks from real mode handlers
-> 
-> The powerpc defconfig build failed on stable-rc 5.10 with gcc and clang.
-> 
-> In file included from arch/powerpc/kvm/book3s_xive.c:53:
-> arch/powerpc/kvm/book3s_xive.c:42:15: error: 'xive_vm_h_ipi' defined
-> but not used [-Werror=unused-function]
->    42 | #define X_PFX xive_vm_
->       |               ^~~~~~~~
-> arch/powerpc/kvm/book3s_xive_template.c:8:20: note: in definition of
-> macro 'XGLUE'
->     8 | #define XGLUE(a,b) a##b
->       |                    ^
-> arch/powerpc/kvm/book3s_xive_template.c:606:14: note: in expansion of
-> macro 'GLUE'
->   606 | X_STATIC int GLUE(X_PFX,h_ipi)(struct kvm_vcpu *vcpu, unsigned
-> long server,
->       |              ^~~~
-> arch/powerpc/kvm/book3s_xive_template.c:606:19: note: in expansion of
-> macro 'X_PFX'
->   606 | X_STATIC int GLUE(X_PFX,h_ipi)(struct kvm_vcpu *vcpu, unsigned
-> long server,
->       |                   ^~~~~
-> arch/powerpc/kvm/book3s_xive.c:42:15: error: 'xive_vm_h_eoi' defined
-> but not used [-Werror=unused-function]
->    42 | #define X_PFX xive_vm_
->       |               ^~~~~~~~
-> arch/powerpc/kvm/book3s_xive_template.c:8:20: note: in definition of
-> macro 'XGLUE'
->     8 | #define XGLUE(a,b) a##b
->       |                    ^
-> arch/powerpc/kvm/book3s_xive_template.c:501:14: note: in expansion of
-> macro 'GLUE'
->   501 | X_STATIC int GLUE(X_PFX,h_eoi)(struct kvm_vcpu *vcpu, unsigned
-> long xirr)
->       |              ^~~~
-> arch/powerpc/kvm/book3s_xive_template.c:501:19: note: in expansion of
-> macro 'X_PFX'
->   501 | X_STATIC int GLUE(X_PFX,h_eoi)(struct kvm_vcpu *vcpu, unsigned
-> long xirr)
->       |                   ^~~~~
-> arch/powerpc/kvm/book3s_xive.c:42:15: error: 'xive_vm_h_cppr' defined
-> but not used [-Werror=unused-function]
->    42 | #define X_PFX xive_vm_
->       |               ^~~~~~~~
-> arch/powerpc/kvm/book3s_xive_template.c:8:20: note: in definition of
-> macro 'XGLUE'
->     8 | #define XGLUE(a,b) a##b
->       |                    ^
-> arch/powerpc/kvm/book3s_xive_template.c:442:14: note: in expansion of
-> macro 'GLUE'
->   442 | X_STATIC int GLUE(X_PFX,h_cppr)(struct kvm_vcpu *vcpu,
-> unsigned long cppr)
->       |              ^~~~
-> arch/powerpc/kvm/book3s_xive_template.c:442:19: note: in expansion of
-> macro 'X_PFX'
->   442 | X_STATIC int GLUE(X_PFX,h_cppr)(struct kvm_vcpu *vcpu,
-> unsigned long cppr)
->       |                   ^~~~~
-> arch/powerpc/kvm/book3s_xive.c:42:15: error: 'xive_vm_h_ipoll' defined
-> but not used [-Werror=unused-function]
->    42 | #define X_PFX xive_vm_
->       |               ^~~~~~~~
-> arch/powerpc/kvm/book3s_xive_template.c:8:20: note: in definition of
-> macro 'XGLUE'
->     8 | #define XGLUE(a,b) a##b
->       |                    ^
-> arch/powerpc/kvm/book3s_xive_template.c:323:24: note: in expansion of
-> macro 'GLUE'
->   323 | X_STATIC unsigned long GLUE(X_PFX,h_ipoll)(struct kvm_vcpu
-> *vcpu, unsigned long server)
->       |                        ^~~~
-> arch/powerpc/kvm/book3s_xive_template.c:323:29: note: in expansion of
-> macro 'X_PFX'
->   323 | X_STATIC unsigned long GLUE(X_PFX,h_ipoll)(struct kvm_vcpu
-> *vcpu, unsigned long server)
->       |                             ^~~~~
-> arch/powerpc/kvm/book3s_xive.c:42:15: error: 'xive_vm_h_xirr' defined
-> but not used [-Werror=unused-function]
->    42 | #define X_PFX xive_vm_
->       |               ^~~~~~~~
-> arch/powerpc/kvm/book3s_xive_template.c:8:20: note: in definition of
-> macro 'XGLUE'
->     8 | #define XGLUE(a,b) a##b
->       |                    ^
-> arch/powerpc/kvm/book3s_xive_template.c:272:24: note: in expansion of
-> macro 'GLUE'
->   272 | X_STATIC unsigned long GLUE(X_PFX,h_xirr)(struct kvm_vcpu *vcpu)
->       |                        ^~~~
-> arch/powerpc/kvm/book3s_xive_template.c:272:29: note: in expansion of
-> macro 'X_PFX'
->   272 | X_STATIC unsigned long GLUE(X_PFX,h_xirr)(struct kvm_vcpu *vcpu)
->       |                             ^~~~~
-> cc1: all warnings being treated as errors
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
+> Introduced in v5.18.18 due to 11e008e59970 ("Bluetooth: L2CAP: Fix
+> l2cap_global_chan_by_psm regression").
+> But v5.19.y and mainline does not show the build failure as they also
+> have 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN
+> support").
 
-Thanks, I've dropped 2 powerpc kvm patches now that look to have caused
-this and will push out a -rc2 with that hopefully fixed up.
+Ick, that's a mess.  This is going to be the last 5.18 tree, so I'm just
+going to leave this alone...
+
+thanks,
 
 greg k-h
