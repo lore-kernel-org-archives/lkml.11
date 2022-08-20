@@ -2,248 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 354D5C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345913AbiHTL6a (ORCPT
+        id S1345951AbiHTL6j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        Sat, 20 Aug 2022 07:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345813AbiHTL60 (ORCPT
+        with ESMTP id S1345917AbiHTL6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:58:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF4D1F2EB;
-        Sat, 20 Aug 2022 04:58:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B6799CE0DDB;
-        Sat, 20 Aug 2022 11:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D86EC433D6;
-        Sat, 20 Aug 2022 11:58:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660996702;
-        bh=IYMBEBmZvHHQ3M0wfJWctteV1udRO4RyU3hBgvn/yts=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nnNMkbHpeJ+yFppGPHQpoEiv1ReEAoUAuZUg8Ifae7i3GL9tOk2fIRO0THNcLWQxS
-         asWnR8FPikI5ZUYWN0BFOd+zUb/s6nYFATiZor6TTZMCabVDvVDzzwOjaifXnKLrtT
-         LuVJlGBvJ+a9XLY5SGtwo+h1gPuKEEferk0qEskq66BavYFFDIJ0tYpQcEDY2aQUA2
-         MfFhzSRxy/OeT0L/NuL7MG4D7gLJvjlInmrmpM6e/OFcbimTSzzMAvUmA3/F2rZ1oI
-         33zv8AtN9bwkbTmNImXoqtUANBV3/m6ZD1rNv2ktlB+sDLrG3kUap9D3k2hvapQQhc
-         Qe7CyZtHpxoDQ==
-Date:   Sat, 20 Aug 2022 13:08:56 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Patrick Havelange <patrick.havelange@essensium.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kamel Bouhara <kamel.bouhara@bootlin.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        David Lechner <david@lechnology.com>
-Subject: Re: [PATCH] counter: Move symbols into COUNTER namespace
-Message-ID: <20220820130856.52c3ff04@jic23-huawei>
-In-Reply-To: <20220815220321.74161-1-william.gray@linaro.org>
-References: <20220815220321.74161-1-william.gray@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 20 Aug 2022 07:58:34 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F9E2BB30
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:58:33 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id e2-20020a056e020b2200b002e1a5b67e29so4981215ilu.11
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 04:58:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=vy3gLv5pvPQlLz2bjwfmQURwI/ANJztqCqsTatb7lPc=;
+        b=q4kzDloJQLtQ4culHFUed4un1O0xbhzZwQf5Ud0mvNe1x+YUuCfQ9B0ydzB1YcGKSV
+         9Zdxz3/PBwbjrfX3NLda3BRKHYR7QFDAh5hl9PdrSnSca+JJNrhuenQ1Z/3SdLVZDv2+
+         dkQQZ1CdcErl2CBlaZGpyTJVG4Xuz51Jnnv1lDM/XZr7KWHwI86oyKf3irZ/UtsQpL7G
+         v/rdrNrGNWXLhRF0Y3r0WuE6WJDdOwkkLH5wq3olqD//A0Ba15s/kOgA7H6fuyTaohUd
+         gdJW5BCrF7nK5G+EW13Z82O0EyprDb1kkZEi5FgiBV/jCFFgmQJws4YaUISaBo9af+JA
+         uCSw==
+X-Gm-Message-State: ACgBeo0sVY4WVRXNWmd9OOACTxC5ID1cPsUmtBJwr/fXe9689+a9E09l
+        7bOM4G42KZETl0/hyEcrt2poXQrRuEkNTgjnYIpyQfPx1jU4
+X-Google-Smtp-Source: AA6agR42s0Q0/ClM39KKuAgSZ1cZ949PdC2kNOjk+fj2W/VpQvCJ6SFgRvV4AKLjivqd5ZqOQ3G3ZG2+U4IPcuN0qZnCCyqt7jZr
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:14c5:b0:689:5640:5b0f with SMTP id
+ b5-20020a05660214c500b0068956405b0fmr3941282iow.70.1660996712989; Sat, 20 Aug
+ 2022 04:58:32 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 04:58:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000d0b1905e6aaef64@google.com>
+Subject: [syzbot] memory leak in vhci_write
+From:   syzbot <syzbot+8f819e36e01022991cfa@syzkaller.appspotmail.com>
+To:     johan.hedberg@gmail.com, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 18:03:21 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+Hello,
 
-> Counter subsystem symbols are only relevant to counter drivers. A
-> COUNTER namespace is created to control the availability of these
-> symbols to modules that import this namespace explicitly.
-> 
-> Cc: Patrick Havelange <patrick.havelange@essensium.com>
-> Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-> Cc: Oleksij Rempel <linux@rempel-privat.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
-> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: David Lechner <david@lechnology.com>
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+syzbot found the following issue on:
 
-I'm kind of amazed the interface is this small :)
+HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1206e2d3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6e4b25d26c713a1b
+dashboard link: https://syzkaller.appspot.com/bug?extid=8f819e36e01022991cfa
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e8bd97080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=143c9fc3080000
 
-Definitely a good thing to do.  Sometime soon I'll finish
-doing equivalent for IIO.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8f819e36e01022991cfa@syzkaller.appspotmail.com
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
->  drivers/counter/104-quad-8.c            |  1 +
->  drivers/counter/counter-chrdev.c        |  2 +-
->  drivers/counter/counter-core.c          | 14 +++++++-------
->  drivers/counter/ftm-quaddec.c           |  1 +
->  drivers/counter/intel-qep.c             |  1 +
->  drivers/counter/interrupt-cnt.c         |  1 +
->  drivers/counter/microchip-tcb-capture.c |  1 +
->  drivers/counter/stm32-lptimer-cnt.c     |  1 +
->  drivers/counter/stm32-timer-cnt.c       |  1 +
->  drivers/counter/ti-eqep.c               |  1 +
->  10 files changed, 16 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-> index 62c2b7ac4339..1323edfbe40c 100644
-> --- a/drivers/counter/104-quad-8.c
-> +++ b/drivers/counter/104-quad-8.c
-> @@ -1241,3 +1241,4 @@ module_isa_driver(quad8_driver, num_quad8);
->  MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
->  MODULE_DESCRIPTION("ACCES 104-QUAD-8 driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
-> index 69d340be9c93..4e71a19d7e6a 100644
-> --- a/drivers/counter/counter-chrdev.c
-> +++ b/drivers/counter/counter-chrdev.c
-> @@ -574,4 +574,4 @@ void counter_push_event(struct counter_device *const counter, const u8 event,
->  	if (copied)
->  		wake_up_poll(&counter->events_wait, EPOLLIN);
->  }
-> -EXPORT_SYMBOL_GPL(counter_push_event);
-> +EXPORT_SYMBOL_NS_GPL(counter_push_event, COUNTER);
-> diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-> index 938651f9e9e0..09c77afb33ca 100644
-> --- a/drivers/counter/counter-core.c
-> +++ b/drivers/counter/counter-core.c
-> @@ -73,7 +73,7 @@ void *counter_priv(const struct counter_device *const counter)
->  
->  	return &ch->privdata;
->  }
-> -EXPORT_SYMBOL_GPL(counter_priv);
-> +EXPORT_SYMBOL_NS_GPL(counter_priv, COUNTER);
->  
->  /**
->   * counter_alloc - allocate a counter_device
-> @@ -133,13 +133,13 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
->  
->  	return NULL;
->  }
-> -EXPORT_SYMBOL_GPL(counter_alloc);
-> +EXPORT_SYMBOL_NS_GPL(counter_alloc, COUNTER);
->  
->  void counter_put(struct counter_device *counter)
->  {
->  	put_device(&counter->dev);
->  }
-> -EXPORT_SYMBOL_GPL(counter_put);
-> +EXPORT_SYMBOL_NS_GPL(counter_put, COUNTER);
->  
->  /**
->   * counter_add - complete registration of a counter
-> @@ -166,7 +166,7 @@ int counter_add(struct counter_device *counter)
->  	/* implies device_add(dev) */
->  	return cdev_device_add(&counter->chrdev, dev);
->  }
-> -EXPORT_SYMBOL_GPL(counter_add);
-> +EXPORT_SYMBOL_NS_GPL(counter_add, COUNTER);
->  
->  /**
->   * counter_unregister - unregister Counter from the system
-> @@ -188,7 +188,7 @@ void counter_unregister(struct counter_device *const counter)
->  
->  	mutex_unlock(&counter->ops_exist_lock);
->  }
-> -EXPORT_SYMBOL_GPL(counter_unregister);
-> +EXPORT_SYMBOL_NS_GPL(counter_unregister, COUNTER);
->  
->  static void devm_counter_release(void *counter)
->  {
-> @@ -223,7 +223,7 @@ struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv
->  
->  	return counter;
->  }
-> -EXPORT_SYMBOL_GPL(devm_counter_alloc);
-> +EXPORT_SYMBOL_NS_GPL(devm_counter_alloc, COUNTER);
->  
->  /**
->   * devm_counter_add - complete registration of a counter
-> @@ -244,7 +244,7 @@ int devm_counter_add(struct device *dev,
->  
->  	return devm_add_action_or_reset(dev, devm_counter_release, counter);
->  }
-> -EXPORT_SYMBOL_GPL(devm_counter_add);
-> +EXPORT_SYMBOL_NS_GPL(devm_counter_add, COUNTER);
->  
->  #define COUNTER_DEV_MAX 256
->  
-> diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-> index 2a58582a9df4..aea6622a9b13 100644
-> --- a/drivers/counter/ftm-quaddec.c
-> +++ b/drivers/counter/ftm-quaddec.c
-> @@ -325,3 +325,4 @@ module_platform_driver(ftm_quaddec_driver);
->  MODULE_LICENSE("GPL");
->  MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com>");
->  MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com>");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-> index 47a6a9dfc9e8..af5942e66f7d 100644
-> --- a/drivers/counter/intel-qep.c
-> +++ b/drivers/counter/intel-qep.c
-> @@ -523,3 +523,4 @@ MODULE_AUTHOR("Jarkko Nikula <jarkko.nikula@linux.intel.com>");
->  MODULE_AUTHOR("Raymond Tan <raymond.tan@intel.com>");
->  MODULE_LICENSE("GPL");
->  MODULE_DESCRIPTION("Intel Quadrature Encoder Peripheral driver");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-> index 3b13f56bbb11..5a11b65fc0e5 100644
-> --- a/drivers/counter/interrupt-cnt.c
-> +++ b/drivers/counter/interrupt-cnt.c
-> @@ -242,3 +242,4 @@ MODULE_ALIAS("platform:interrupt-counter");
->  MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
->  MODULE_DESCRIPTION("Interrupt counter driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
-> index 00844445143b..f9dee15d9777 100644
-> --- a/drivers/counter/microchip-tcb-capture.c
-> +++ b/drivers/counter/microchip-tcb-capture.c
-> @@ -394,3 +394,4 @@ module_platform_driver(mchp_tc_driver);
->  MODULE_AUTHOR("Kamel Bouhara <kamel.bouhara@bootlin.com>");
->  MODULE_DESCRIPTION("Microchip TCB Capture driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
-> index 68031d93ce89..d6b80b6dfc28 100644
-> --- a/drivers/counter/stm32-lptimer-cnt.c
-> +++ b/drivers/counter/stm32-lptimer-cnt.c
-> @@ -520,3 +520,4 @@ MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
->  MODULE_ALIAS("platform:stm32-lptimer-counter");
->  MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM counter driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-> index 5779ae7c73cf..9bf20a5d6bda 100644
-> --- a/drivers/counter/stm32-timer-cnt.c
-> +++ b/drivers/counter/stm32-timer-cnt.c
-> @@ -417,3 +417,4 @@ MODULE_AUTHOR("Benjamin Gaignard <benjamin.gaignard@st.com>");
->  MODULE_ALIAS("platform:stm32-timer-counter");
->  MODULE_DESCRIPTION("STMicroelectronics STM32 TIMER counter driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(COUNTER);
-> diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-> index 0489d26eb47c..b0f24cf3e891 100644
-> --- a/drivers/counter/ti-eqep.c
-> +++ b/drivers/counter/ti-eqep.c
-> @@ -456,3 +456,4 @@ module_platform_driver(ti_eqep_driver);
->  MODULE_AUTHOR("David Lechner <david@lechnology.com>");
->  MODULE_DESCRIPTION("TI eQEP counter driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(COUNTER);
-> 
-> base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+BUG: memory leak
+unreferenced object 0xffff88810d81ac00 (size 240):
+  comm "syz-executor219", pid 3615, jiffies 4294947117 (age 12.320s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff838733d9>] __alloc_skb+0x1f9/0x270 net/core/skbuff.c:418
+    [<ffffffff833f742f>] alloc_skb include/linux/skbuff.h:1257 [inline]
+    [<ffffffff833f742f>] bt_skb_alloc include/net/bluetooth/bluetooth.h:469 [inline]
+    [<ffffffff833f742f>] vhci_get_user drivers/bluetooth/hci_vhci.c:391 [inline]
+    [<ffffffff833f742f>] vhci_write+0x5f/0x230 drivers/bluetooth/hci_vhci.c:511
+    [<ffffffff815e398d>] call_write_iter include/linux/fs.h:2192 [inline]
+    [<ffffffff815e398d>] new_sync_write fs/read_write.c:491 [inline]
+    [<ffffffff815e398d>] vfs_write+0x42d/0x540 fs/read_write.c:578
+    [<ffffffff815e3cdd>] ksys_write+0x9d/0x160 fs/read_write.c:631
+    [<ffffffff845e0645>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845e0645>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
