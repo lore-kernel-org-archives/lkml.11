@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA67C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 18:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB59C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 18:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbiHTSRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 14:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
+        id S234217AbiHTSRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 14:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231398AbiHTSQq (ORCPT
+        with ESMTP id S232185AbiHTSQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 14:16:46 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5406E30F64
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:16:45 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id t5so9131369edc.11
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:16:45 -0700 (PDT)
+        Sat, 20 Aug 2022 14:16:51 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983DE31DCB
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:16:46 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id a22so9134499edj.5
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:16:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=tlMFx2z0JvLnlziapMufzUhDKuW3EwLTT6t3dqkzUYs=;
-        b=QiXUYODOT64yakclYO6S8gLkVQ6g5lz4PJ1CZvM7CvggGkJbRDBczDrfv0+wiYx9Bi
-         Ec8NdlIPgNC1n2g0AhUlK268Uecvfqv2mGDzP1/tQoN08kcuqqUrIkOWfrnebjnDMHVk
-         H04cLaT31VaYu3DV9J6Lz7Yl2UWdCQhLwzyVy5YK1sD/b4zsFPmVz9qXF7MwHVJ7Mqdr
-         BpL13pt//ZRiHFM760XtR4Z7868WFpR64/uDrQkTyEuxhHZ8jGjsECVQMnRtHOhjkzd0
-         f/gH/gD9KdN82rlclguJYN5L2dz8kSwnX1NF0f5F3DgsbqSoMXJQiyo5pkwcKG2y44Im
-         c8xg==
+        bh=+gbZ+oN4SNG8rEc+ME/YtcZCnc3X1ePwf/x65RNZ3kM=;
+        b=BYZya6PP+0hwGkgRVKYMSNMHtfJxzJNgNXJCkJuXFR/ELJZ2PgABp0Sn/DYTU+7NGW
+         GT9/YKIWzsuWjUVvjCLL2FJA+/k5ZHuxAG8DsVdz+/Ba95l93eWcJ6pfyW5RLDQ+dD+h
+         dI0NjeplNbn7qM9Ql4RasukxulLInv5PjQ0LHO7R3zxyp262TxKAjJQSLBVDmpanG++U
+         Y6lBSuFzdo7jejWgwxHwY5AXE+KZtIcd43Dh4v+3gQ471Ggxx3ElwfCSW6DLbddHFKwd
+         SC7c/XhPoDGMUKa1ULhXhBRdmxS7j4nRrdNXZ5GQ6uN81aVHA4J26HnCm6tm2VJAjNz9
+         7WxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=tlMFx2z0JvLnlziapMufzUhDKuW3EwLTT6t3dqkzUYs=;
-        b=fBLvIRat78bhoLnJXlYBwXOMtqQa5l3y2PV3/c1/LlF7cY3mWkOSyLiKEfdnoiKwDk
-         JNW0JGkMp3O7KA3LsMktPnAQ0SS/LNJ406eSUltdX4048Ei7BkHsKaeJLK+L21WyUpr/
-         41A9UeaMkuj7GVErs+T7sU8WH+N8MCg9XjbSRpjkVAFWiLzD/xz+VJW9N91LyT2if4Wt
-         129bcsR05ivipbm1iVnQA9VSRUQ/Xoi61hZRmxm0Nsjj4qayOsNRlSK72ouQyrTo2Ypf
-         p2Kd1bexQ32wczDg6++9uWy2ZtSYk/hoFBWUIoQW9vH6Ilk2mAxbqvd1W7R0fkZ34u5U
-         jz/w==
-X-Gm-Message-State: ACgBeo3H86/w63vdNIWTJVzvqS+7egpTKchp2G4Ch27yIjrQaXL89oEe
-        8j8R0viDDc9UamhXMN1ueaU=
-X-Google-Smtp-Source: AA6agR6I6IJYWnxPzBp2530EXNKAgGiNN8Ww81N5ix3KRcfivHZtsfooZ6C+kcj6P7sWwtrPc1zZ/g==
-X-Received: by 2002:a05:6402:350e:b0:446:145d:a3bb with SMTP id b14-20020a056402350e00b00446145da3bbmr10066463edd.23.1661019403855;
-        Sat, 20 Aug 2022 11:16:43 -0700 (PDT)
+        bh=+gbZ+oN4SNG8rEc+ME/YtcZCnc3X1ePwf/x65RNZ3kM=;
+        b=FedY9WVNvj3+EgatMYZz0zPgi/ZzHlr97pXtmsnsnjqcjXGUB0QyojsPev+NJPWu10
+         BU3aX34/A+OGMzyL1SN5z6UEAiXNgeSVza8AgC8AVrooZEuw/XqzzHeusK7yjdo6BxP3
+         1MTc0n3W7JTuGfBUOQrURsa2NPF0TNn687F+vDVK35APLOFGAveUW8q82lWvhYzfAP2w
+         pjQNSPxtfGFffYMB/EH134CImI1sZY7mn09UTY3sFob+5NYOsJfcqNwefLQ877Kx48zb
+         VLJVTfMfEmsX3ny4rxH2KffY3W55RIeYkvb9/yUi5dWcTpnQyBt3RArWOnBN/6YNJXdt
+         rYvw==
+X-Gm-Message-State: ACgBeo04HTgDb06TIIRAwWtkZ+L0ggNjOH0t5M6u9achZzhAt9QMHqCc
+        buFPLaJsyB866xBNx5MWEjI=
+X-Google-Smtp-Source: AA6agR51MlTVkECMOkCcfSBY/eKRePWM2JMEl8QhB9bsKxUbI9ainFG0dFWvrfWTo1X0qGZRso32ow==
+X-Received: by 2002:a05:6402:451:b0:446:7349:f9e8 with SMTP id p17-20020a056402045100b004467349f9e8mr3043070edw.180.1661019405215;
+        Sat, 20 Aug 2022 11:16:45 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb77.dynamic.kabel-deutschland.de. [95.90.187.119])
-        by smtp.gmail.com with ESMTPSA id g2-20020a17090604c200b0072af890f52dsm3887833eja.88.2022.08.20.11.16.43
+        by smtp.gmail.com with ESMTPSA id g2-20020a17090604c200b0072af890f52dsm3887833eja.88.2022.08.20.11.16.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Aug 2022 11:16:43 -0700 (PDT)
+        Sat, 20 Aug 2022 11:16:44 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 11/19] staging: r8188eu: rename _rtw_pktfile_read()
-Date:   Sat, 20 Aug 2022 20:16:15 +0200
-Message-Id: <20220820181623.12497-12-straube.linux@gmail.com>
+Subject: [PATCH 13/19] staging: r8188eu: move struct pkt_file to rtw_xmit.h
+Date:   Sat, 20 Aug 2022 20:16:17 +0200
+Message-Id: <20220820181623.12497-14-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220820181623.12497-1-straube.linux@gmail.com>
 References: <20220820181623.12497-1-straube.linux@gmail.com>
@@ -65,80 +65,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need to prefix the function name of _rtw_pktfile_read()
-with an underscore. Rename it to rtw_pktfile_read().
+The code that uses struct pkt_file has been moved to rtw_xmit.c.
+Move the structure definition to rtw_xmit.h.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_xmit.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/staging/r8188eu/include/rtw_xmit.h   | 9 +++++++++
+ drivers/staging/r8188eu/include/xmit_osdep.h | 9 ---------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index 26bf300e672b..51672984156b 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -427,7 +427,7 @@ static uint rtw_remainder_len(struct pkt_file *pfile)
- 	       (size_t)(pfile->buf_start));
- }
+diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
+index 034a9f8f51c9..0e9471fb19e4 100644
+--- a/drivers/staging/r8188eu/include/rtw_xmit.h
++++ b/drivers/staging/r8188eu/include/rtw_xmit.h
+@@ -304,6 +304,15 @@ struct	xmit_priv {
+ 	struct submit_ctx ack_tx_ops;
+ };
  
--static uint _rtw_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
-+static uint rtw_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
- {
- 	uint	len = 0;
++struct pkt_file {
++	struct sk_buff *pkt;
++	size_t pkt_len;	 /* the remainder length of the open_file */
++	unsigned char *cur_buffer;
++	u8 *buf_start;
++	u8 *cur_addr;
++	size_t buf_len;
++};
++
+ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv);
+ s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv,
+ 			 struct xmit_buf *pxmitbuf);
+diff --git a/drivers/staging/r8188eu/include/xmit_osdep.h b/drivers/staging/r8188eu/include/xmit_osdep.h
+index bcecf0bb2b18..612cdab52a9f 100644
+--- a/drivers/staging/r8188eu/include/xmit_osdep.h
++++ b/drivers/staging/r8188eu/include/xmit_osdep.h
+@@ -7,15 +7,6 @@
+ #include "osdep_service.h"
+ #include "drv_types.h"
  
-@@ -450,11 +450,11 @@ static void set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
- 	s32 user_prio = 0;
- 
- 	rtw_open_pktfile(ppktfile->pkt, ppktfile);
--	_rtw_pktfile_read(ppktfile, (unsigned char *)&etherhdr, ETH_HLEN);
-+	rtw_pktfile_read(ppktfile, (unsigned char *)&etherhdr, ETH_HLEN);
- 
- 	/*  get user_prio from IP hdr */
- 	if (pattrib->ether_type == 0x0800) {
--		_rtw_pktfile_read(ppktfile, (u8 *)&ip_hdr, sizeof(ip_hdr));
-+		rtw_pktfile_read(ppktfile, (u8 *)&ip_hdr, sizeof(ip_hdr));
- /* 		user_prio = (ntohs(ip_hdr.tos) >> 5) & 0x3; */
- 		user_prio = ip_hdr.tos >> 5;
- 	} else if (pattrib->ether_type == 0x888e) {
-@@ -484,7 +484,7 @@ static s32 update_attrib(struct adapter *padapter, struct sk_buff *pkt, struct p
- 
- 
- 	rtw_open_pktfile(pkt, &pktfile);
--	_rtw_pktfile_read(&pktfile, (u8 *)&etherhdr, ETH_HLEN);
-+	rtw_pktfile_read(&pktfile, (u8 *)&etherhdr, ETH_HLEN);
- 
- 	pattrib->ether_type = ntohs(etherhdr.h_proto);
- 
-@@ -512,7 +512,7 @@ static s32 update_attrib(struct adapter *padapter, struct sk_buff *pkt, struct p
- 		/*  to prevent DHCP protocol fail */
- 		u8 tmp[24];
- 
--		_rtw_pktfile_read(&pktfile, &tmp[0], 24);
-+		rtw_pktfile_read(&pktfile, &tmp[0], 24);
- 		pattrib->dhcp_pkt = 0;
- 		if (pktfile.pkt_len > 282) {/* MINIMUM_DHCP_PACKET_SIZE) { */
- 			if (((tmp[21] == 68) && (tmp[23] == 67)) ||
-@@ -963,7 +963,7 @@ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct
- 	}
- 
- 	rtw_open_pktfile(pkt, &pktfile);
--	_rtw_pktfile_read(&pktfile, NULL, pattrib->pkt_hdrlen);
-+	rtw_pktfile_read(&pktfile, NULL, pattrib->pkt_hdrlen);
- 
- 	frg_inx = 0;
- 	frg_len = pxmitpriv->frag_len - 4;/* 2346-4 = 2342 */
-@@ -1021,9 +1021,9 @@ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct
- 
- 		if (bmcst) {
- 			/*  don't do fragment to broadcast/multicast packets */
--			mem_sz = _rtw_pktfile_read(&pktfile, pframe, pattrib->pktlen);
-+			mem_sz = rtw_pktfile_read(&pktfile, pframe, pattrib->pktlen);
- 		} else {
--			mem_sz = _rtw_pktfile_read(&pktfile, pframe, mpdu_len);
-+			mem_sz = rtw_pktfile_read(&pktfile, pframe, mpdu_len);
- 		}
- 
- 		pframe += mem_sz;
+-struct pkt_file {
+-	struct sk_buff *pkt;
+-	size_t pkt_len;	 /* the remainder length of the open_file */
+-	unsigned char *cur_buffer;
+-	u8 *buf_start;
+-	u8 *cur_addr;
+-	size_t buf_len;
+-};
+-
+ extern int rtw_ht_enable;
+ extern int rtw_cbw40_enable;
+ extern int rtw_ampdu_enable;/* for enable tx_ampdu */
 -- 
 2.37.2
 
