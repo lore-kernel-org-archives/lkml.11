@@ -2,95 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F17C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B5C8C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345046AbiHTMH1 (ORCPT
+        id S1346168AbiHTMHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 08:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        Sat, 20 Aug 2022 08:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346075AbiHTMHW (ORCPT
+        with ESMTP id S1346075AbiHTMHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 08:07:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83F39D126;
-        Sat, 20 Aug 2022 05:07:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82859B80B8B;
-        Sat, 20 Aug 2022 12:07:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FFFC433C1;
-        Sat, 20 Aug 2022 12:07:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660997238;
-        bh=ET+Eoevr87hUV2gzJcF2VdzryEshL8SZbQM1YaN7lUc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Mu0IER8MeSaURN+xVaCZP5DTyTFbAjgJUHn8FU4EvDvbCnTbGh5mZjZpS6EaOUTWj
-         /+7+KV1mOaWpPRvtZBJsv11uEO6Hi7ZCq/3qWAv4yxEyM+ZQYzAIMjSYI0sXxiNBBF
-         hhB/nE0KZtNqwLp3RomqB/knThT3xUknX693mhevrna0oXgwxRYqvqNJ9vCVLeSFvp
-         GIqPsY09eiJhCZy6bT7sD9UaCQuHy55Mli5LTxiWeMvXAyaUPECma0oICqpYyHeg7n
-         ajPBOwuUWT4twuhtyLj23v1j4pTi1ScHzrHXOu+wx0//fIqraS8Zkb7ZqQsjZxJASf
-         GxRtIytoZylMA==
-Date:   Sat, 20 Aug 2022 13:17:54 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Joe Simmons-Talbott <joetalbott@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: Avoid multiple line dereference for mask
-Message-ID: <20220820131754.729d59a9@jic23-huawei>
-In-Reply-To: <20220819182012.219523-1-joetalbott@gmail.com>
-References: <20220819182012.219523-1-joetalbott@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 20 Aug 2022 08:07:43 -0400
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5F89D8DC;
+        Sat, 20 Aug 2022 05:07:42 -0700 (PDT)
+Received: by mail-qk1-f172.google.com with SMTP id a15so4969230qko.4;
+        Sat, 20 Aug 2022 05:07:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=ZR3FjkuW5iiRmrC3UtyKJcWdpW3MmZDZj9swwhPKMYc=;
+        b=rp6S5kJjVnCfxZ5P9jvbRMsH3JlGSy9gU+JfOWDu3mLvKbRu73WMviujk4xjNfelX/
+         E1RFIToF1u2Mnnt/X1ryStwf1mWNwPOrc9NwnbGIFcFlKC5LcgmzcvEAUWXQvKu9DjrE
+         JglnmkFJJnsb/qJDuAGAeh+N7KgQqDyZbFLZrDz/DSULUzvhxVQSlkVhKJmjq1Ev9DGg
+         +INL6VhOB56O4YJFvWX5C91oSTscTesA/rdCZhtR/1DDpaNyj0IfollTvTBOmBxJCaPi
+         +Ke9mmIpI37jdb0rXW8dgcGukyNNJmofoGHqh+8XIWmmMo60jT3S5wv90C3dtx2PWpYS
+         I0Jg==
+X-Gm-Message-State: ACgBeo0P+Gra8mBAlOKGNtix+YblxEN/Yk/BlvZkvwuA/R2kkJqVm1a+
+        9ONo/pC1szYHJ5qtKnkts3GSEgF4+JYgmg==
+X-Google-Smtp-Source: AA6agR4McFE7kFk21ae3mwT40DfQrXDhm+/AmmQfbaS42RIIm7LZvKeH/9Qx/wLvvvCjGAq1McqgIQ==
+X-Received: by 2002:a05:620a:12bc:b0:6bb:2f73:beab with SMTP id x28-20020a05620a12bc00b006bb2f73beabmr7845941qki.546.1660997260997;
+        Sat, 20 Aug 2022 05:07:40 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id n18-20020a05620a295200b006b9593e2f68sm6496432qkp.4.2022.08.20.05.07.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Aug 2022 05:07:40 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-3376851fe13so149793297b3.6;
+        Sat, 20 Aug 2022 05:07:39 -0700 (PDT)
+X-Received: by 2002:a81:f47:0:b0:31f:434b:5ee with SMTP id 68-20020a810f47000000b0031f434b05eemr12132492ywp.383.1660997259528;
+ Sat, 20 Aug 2022 05:07:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220815151451.23293-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <e9b00bb5-bb78-091f-9c10-96c156690469@microchip.com> <CAMuHMdUGttswcSGeOdrJLeoZLmoeKhm7R82L-3wLJnagmZ4dBA@mail.gmail.com>
+ <47cec683-dc17-7aa2-3511-b0244020d571@microchip.com>
+In-Reply-To: <47cec683-dc17-7aa2-3511-b0244020d571@microchip.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sat, 20 Aug 2022 14:07:28 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUSud4-0ercQe3cyg1RXqg4DKTfgvPh5wc8ibca6dyDKQ@mail.gmail.com>
+Message-ID: <CAMuHMdUSud4-0ercQe3cyg1RXqg4DKTfgvPh5wc8ibca6dyDKQ@mail.gmail.com>
+Subject: Re: [PATCH v2 5/8] riscv: dts: renesas: Add initial devicetree for
+ Renesas RZ/Five SoC
+To:     Conor Dooley <Conor.Dooley@microchip.com>
+Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar Lad <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 14:20:12 -0400
-Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
+Hi Conor,
 
-> Prefer lines > 80 characters over splitting dereferences across multiple
-> lines. Reported by checkpatch.pl.
-> 
-> Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
-Applied to the togreg branch of iio.git which will get pushed out initially
-as testing for all the normal reasons...
+On Sat, Aug 20, 2022 at 10:49 AM <Conor.Dooley@microchip.com> wrote:
+> On 20/08/2022 09:45, Geert Uytterhoeven wrote:
+> > On Fri, Aug 19, 2022 at 8:40 PM <Conor.Dooley@microchip.com> wrote:
+> >> On 15/08/2022 16:14, Lad Prabhakar wrote:
+> >>> Add initial device tree for Renesas RZ/Five RISC-V CPU Core (AX45MP
+> >>> Single).
+> >>>
+> >>> Below is the list of IP blocks added in the initial SoC DTSI which can be
+> >>> used to boot via initramfs on RZ/Five SMARC EVK:
+> >>> - AX45MP CPU
+> >>> - CPG
+> >>> - PINCTRL
+> >>> - PLIC
+> >>> - SCIF0
+> >>> - SYSC
+> >>>
+> >>> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Jonathan
+> >> That aside, by convention so far we have put things like extals or
+> >> reference clocks below the /cpus node. Could you do the same here too
+> >> please?
+> >
+> > Really? We've been putting them at the root node for a long time,
+> > since the separate "clocks" grouping subnode was deprecated.
+> > The extal-clk is not even part of the SoC, so it should definitely
+> > not be under the /cpus node.
+>
+> Under may have been a confusing choice of words, I meant "physically"
+> under it in the file. Maybe after would have been a better choice of
+> words? I wasn't suggesting you put it inside the CPUs node.
+> Does that make more sense?
 
-> ---
-> changes in v2:
-> * Don't use a temporary variable.
-> 
->  drivers/iio/industrialio-core.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 67d3d01d2dac..d38623c046cc 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -1303,8 +1303,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  
->  	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
->  						  IIO_SEPARATE,
-> -						  &chan->
-> -						  info_mask_separate_available);
-> +						  &chan->info_mask_separate_available);
->  	if (ret < 0)
->  		return ret;
->  	attrcount += ret;
-> @@ -1318,8 +1317,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  
->  	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
->  						  IIO_SHARED_BY_TYPE,
-> -						  &chan->
-> -						  info_mask_shared_by_type_available);
-> +						  &chan->info_mask_shared_by_type_available);
->  	if (ret < 0)
->  		return ret;
->  	attrcount += ret;
+Oh right, you mean the order of the nodes. Yes, "extal-clk" should
+be after "cpus", following alphabetical sort order, as the nodes have no
+unit addresses.
 
+Sorry for missing that in my review.  I also misread "below"
+(in Dutch there is only a single word for "below" and "under" ;-)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
