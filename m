@@ -2,177 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEA1C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38F5C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345332AbiHTKyu (ORCPT
+        id S1345433AbiHTKzX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 06:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
+        Sat, 20 Aug 2022 06:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344492AbiHTKy0 (ORCPT
+        with ESMTP id S1344182AbiHTKzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 06:54:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EFF92F64;
-        Sat, 20 Aug 2022 03:54:24 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M8wPW6pLhzXdcp;
-        Sat, 20 Aug 2022 18:50:07 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 20 Aug 2022 18:54:22 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 20 Aug
- 2022 18:54:21 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <jack@suse.com>, <tytso@mit.edu>, <brauner@kernel.org>
-CC:     <linux-fsdevel@vger.kernel.org>, <linux-ext4@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <chengzhihao1@huawei.com>,
-        <yukuai3@huawei.com>
-Subject: [PATCH 3/3] quota: Add more checking after reading from quota file
-Date:   Sat, 20 Aug 2022 19:05:14 +0800
-Message-ID: <20220820110514.881373-4-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220820110514.881373-1-chengzhihao1@huawei.com>
-References: <20220820110514.881373-1-chengzhihao1@huawei.com>
+        Sat, 20 Aug 2022 06:55:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1B39AF94
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 03:55:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F6B4B8013A
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 10:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB381C433D6;
+        Sat, 20 Aug 2022 10:55:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660992913;
+        bh=3N+NDI2cJKh99li5pLUDKXcxy68n6z1/LP/ToJrkZTg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mN+Ksxc2YnQIljxsn1KYA946GXSecuBUHJZgu9vmtUcaRpOCEvidcVsRanc/EYlAZ
+         zvSM4RhT6UxCWmLHN3BQE2dSwWHdV70BUZFY6uJ9F0g5l5VZ6+maBCkngsl5hVNyy+
+         8KFe94cU9OjV/d57FF4HJ6X30Bn+phJPA861qYCidDPfhWpSdACNDvbwSmmNMkKyJl
+         CcibQczNDY+20GaJlKgQUHd3xWgYHaLBZ1cEYiSriA4vRFjuiS00IwTq/Z7vPTPtFB
+         HxidjPFAI1dgYmtaKjwAmf5fO/l5hDHTA6+UEFb3lIrVAloCNOI00S449zcXRoOAWV
+         3LW0t29D6lvnQ==
+Received: by pali.im (Postfix)
+        id 3FEF75D0; Sat, 20 Aug 2022 12:55:10 +0200 (CEST)
+Date:   Sat, 20 Aug 2022 12:55:10 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Segher Boessenkool <segher@kernel.crashing.org>
+Subject: Re: [PATCH v1 2/5] powerpc/32: Don't always pass -mcpu=powerpc to
+ the compiler
+Message-ID: <20220820105510.psagglbbfyve53fc@pali>
+References: <8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu>
+ <d4df724691351531bf46d685d654689e5dfa0d74.1657549153.git.christophe.leroy@csgroup.eu>
+ <20220818174634.6nkzcztzn6uqcrzg@pali>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220818174634.6nkzcztzn6uqcrzg@pali>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It would be better to do more sanity checking (eg. dqdh_entries,
-block no.) for the content read from quota file, which can prevent
-corrupting the quota file.
+On Thursday 18 August 2022 19:46:34 Pali Rohár wrote:
+> On Monday 11 July 2022 16:19:30 Christophe Leroy wrote:
+> > Since commit 4bf4f42a2feb ("powerpc/kbuild: Set default generic
+> > machine type for 32-bit compile"), when building a 32 bits kernel
+> > with a bi-arch version of GCC, or when building a book3s/32 kernel,
+> > the option -mcpu=powerpc is passed to GCC at all time, relying on it
+> > being eventually overriden by a subsequent -mcpu=xxxx.
+> > 
+> > But when building the same kernel with a 32 bits only version of GCC,
+> > that is not done, relying on gcc being built with the expected default
+> > CPU.
+> > 
+> > This logic has two problems. First, it is a bit fragile to rely on
+> > whether the GCC version is bi-arch or not, because today we can have
+> > bi-arch versions of GCC configured with a 32 bits default. Second,
+> > there are some versions of GCC which don't support -mcpu=powerpc,
+> > for instance for e500 SPE-only versions.
+> > 
+> > So, stop relying on this approximative logic and allow the user to
+> > decide whether he/she wants to use the toolchain's default CPU or if
+> > he/she wants to set one, and allow only possible CPUs based on the
+> > selected target.
+> 
+> Hello! Exactly same issue is still in file arch/powerpc/boot/Makefile:
+> 
+>   ifdef CONFIG_PPC64_BOOT_WRAPPER
+>   ifdef CONFIG_CPU_LITTLE_ENDIAN
+>   BOOTCFLAGS	+= -m64 -mcpu=powerpc64le
+>   else
+>   BOOTCFLAGS	+= -m64 -mcpu=powerpc64
+>   endif
+>   else
+>   BOOTCFLAGS	+= -m32 -mcpu=powerpc
+>   endif
+> 
+> It cause compile error:
+> 
+>   make ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnuspe- mpc85xx_smp_defconfig uImage
+>   ...
+>     BOOTAS  arch/powerpc/boot/crt0.o
+>   powerpc-linux-gnuspe-gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
+>   powerpc-linux-gnuspe-gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
+>   make[1]: *** [arch/powerpc/boot/Makefile:231: arch/powerpc/boot/crt0.o] Error 1
 
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- fs/quota/quota_tree.c | 43 +++++++++++++++++++++++++++++++++----------
- 1 file changed, 33 insertions(+), 10 deletions(-)
+Now I have sent patch for this issue:
+https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20220820105200.30425-1-pali@kernel.org/
 
-diff --git a/fs/quota/quota_tree.c b/fs/quota/quota_tree.c
-index efbdef9fbcf3..bca71640d0ae 100644
---- a/fs/quota/quota_tree.c
-+++ b/fs/quota/quota_tree.c
-@@ -71,12 +71,12 @@ static ssize_t write_blk(struct qtree_mem_dqinfo *info, uint blk, char *buf)
- 	return ret;
- }
- 
--static inline int do_check_range(struct super_block *sb, uint val,
--				 uint min_val, uint max_val)
-+static inline int do_check_range(struct super_block *sb, const char *val_name,
-+				 uint val, uint min_val, uint max_val)
- {
- 	if (val < min_val || val >= max_val) {
--		quota_error(sb, "Getting block %u out of range %u-%u",
--			    val, min_val, max_val);
-+		quota_error(sb, "Getting %s %u out of range %u-%u",
-+			    val_name, val, min_val, max_val);
- 		return -EUCLEAN;
- 	}
- 
-@@ -90,11 +90,13 @@ static int check_free_block(struct qtree_mem_dqinfo *info,
- 	uint nextblk, prevblk;
- 
- 	nextblk = le32_to_cpu(dh->dqdh_next_free);
--	err = do_check_range(info->dqi_sb, nextblk, 0, info->dqi_blocks);
-+	err = do_check_range(info->dqi_sb, "dqdh_next_free", nextblk, 0,
-+			     info->dqi_blocks);
- 	if (err)
- 		return err;
- 	prevblk = le32_to_cpu(dh->dqdh_prev_free);
--	err = do_check_range(info->dqi_sb, prevblk, 0, info->dqi_blocks);
-+	err = do_check_range(info->dqi_sb, "dqdh_prev_free", prevblk, 0,
-+			     info->dqi_blocks);
- 	if (err)
- 		return err;
- 
-@@ -268,6 +270,11 @@ static uint find_free_dqentry(struct qtree_mem_dqinfo *info,
- 		*err = check_free_block(info, dh);
- 		if (*err)
- 			goto out_buf;
-+		*err = do_check_range(info->dqi_sb, "dqdh_entries",
-+				      le16_to_cpu(dh->dqdh_entries), 0,
-+				      qtree_dqstr_in_blk(info));
-+		if (*err)
-+			goto out_buf;
- 	} else {
- 		blk = get_free_dqblk(info);
- 		if ((int)blk < 0) {
-@@ -349,6 +356,10 @@ static int do_insert_tree(struct qtree_mem_dqinfo *info, struct dquot *dquot,
- 	}
- 	ref = (__le32 *)buf;
- 	newblk = le32_to_cpu(ref[get_index(info, dquot->dq_id, depth)]);
-+	ret = do_check_range(dquot->dq_sb, "block", newblk, 0,
-+			     info->dqi_blocks);
-+	if (ret)
-+		goto out_buf;
- 	if (!newblk)
- 		newson = 1;
- 	if (depth == info->dqi_qtree_depth - 1) {
-@@ -461,6 +472,11 @@ static int free_dqentry(struct qtree_mem_dqinfo *info, struct dquot *dquot,
- 	}
- 	dh = (struct qt_disk_dqdbheader *)buf;
- 	ret = check_free_block(info, dh);
-+	if (ret)
-+		goto out_buf;
-+	ret = do_check_range(info->dqi_sb, "dqdh_entries",
-+			     le16_to_cpu(dh->dqdh_entries), 1,
-+			     qtree_dqstr_in_blk(info) + 1);
- 	if (ret)
- 		goto out_buf;
- 	le16_add_cpu(&dh->dqdh_entries, -1);
-@@ -519,7 +535,7 @@ static int remove_tree(struct qtree_mem_dqinfo *info, struct dquot *dquot,
- 		goto out_buf;
- 	}
- 	newblk = le32_to_cpu(ref[get_index(info, dquot->dq_id, depth)]);
--	ret = do_check_range(dquot->dq_sb, newblk, QT_TREEOFF,
-+	ret = do_check_range(dquot->dq_sb, "block", newblk, QT_TREEOFF,
- 			     info->dqi_blocks);
- 	if (ret)
- 		goto out_buf;
-@@ -623,7 +639,8 @@ static loff_t find_tree_dqentry(struct qtree_mem_dqinfo *info,
- 	blk = le32_to_cpu(ref[get_index(info, dquot->dq_id, depth)]);
- 	if (!blk)	/* No reference? */
- 		goto out_buf;
--	ret = do_check_range(dquot->dq_sb, blk, QT_TREEOFF, info->dqi_blocks);
-+	ret = do_check_range(dquot->dq_sb, "block", blk, QT_TREEOFF,
-+			     info->dqi_blocks);
- 	if (ret)
- 		goto out_buf;
- 
-@@ -739,7 +756,13 @@ static int find_next_id(struct qtree_mem_dqinfo *info, qid_t *id,
- 		goto out_buf;
- 	}
- 	for (i = __get_index(info, *id, depth); i < epb; i++) {
--		if (ref[i] == cpu_to_le32(0)) {
-+		uint blk_no = le32_to_cpu(ref[i]);
-+
-+		ret = do_check_range(info->dqi_sb, "block", blk_no, 0,
-+				     info->dqi_blocks);
-+		if (ret)
-+			goto out_buf;
-+		if (blk_no == 0) {
- 			*id += level_inc;
- 			continue;
- 		}
-@@ -747,7 +770,7 @@ static int find_next_id(struct qtree_mem_dqinfo *info, qid_t *id,
- 			ret = 0;
- 			goto out_buf;
- 		}
--		ret = find_next_id(info, id, le32_to_cpu(ref[i]), depth + 1);
-+		ret = find_next_id(info, id, blk_no, depth + 1);
- 		if (ret != -ENOENT)
- 			break;
- 	}
--- 
-2.31.1
-
+> > Reported-by: Pali Rohár <pali@kernel.org>
+> > Tested-by: Pali Rohár <pali@kernel.org>
+> > Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> > Cc: Segher Boessenkool <segher@kernel.crashing.org>
+> > Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> > ---
+> >  arch/powerpc/Makefile                  | 26 +-------------------------
+> >  arch/powerpc/platforms/Kconfig.cputype | 21 ++++++++++++++++++---
+> >  2 files changed, 19 insertions(+), 28 deletions(-)
