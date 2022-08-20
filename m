@@ -2,170 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05821C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 09:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7D0C32772
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 09:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344120AbiHTJRa (ORCPT
+        id S1344227AbiHTJW2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 05:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        Sat, 20 Aug 2022 05:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245610AbiHTJR2 (ORCPT
+        with ESMTP id S244085AbiHTJW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 05:17:28 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2600EB4430;
-        Sat, 20 Aug 2022 02:17:27 -0700 (PDT)
-Received: from grover.sesame (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 27K9FiMT016772;
-        Sat, 20 Aug 2022 18:15:45 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 27K9FiMT016772
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1660986945;
-        bh=glgIgnJUMeQe50tvir8Ek5DaeBa3aOrLyRwpvBGrA5U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNAywnC3zXjmIR5Unupj1THTqtQHOnJZgWWx3h0dO5BK5TtQy4DMt1Ib+dcjVFIsF
-         ZjF/5TrIDby4TGaCMMD7eSelhn0Y7UxpOw03rdp/RryDnthOCoq71En1ozM449U+2e
-         8QOqGQa7+YKmotEjN8wuWbpyxyawhKjz2XfRwfWpvVovNKJdEIcZnrquwePHPu6jUQ
-         SXbUfuAZ4/Uwyd4Sc0VEVgaNUSgJxx6x4uM5h6k7o014HZ/Mg+HrGlcGO9KNTajiRi
-         EcCqMx0zxIUzQTUZ94KtR+3eokQxeF75T94j0mI2g1BdDB4sB56s1hFNJjpw0YhBvO
-         vW7pLFSw3FULw==
-X-Nifty-SrcIP: [133.32.182.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] kbuild: check sha1sum just once for each atomic header
-Date:   Sat, 20 Aug 2022 18:15:29 +0900
-Message-Id: <20220820091531.682096-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220820091531.682096-1-masahiroy@kernel.org>
-References: <20220820091531.682096-1-masahiroy@kernel.org>
+        Sat, 20 Aug 2022 05:22:26 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7D1B69C7;
+        Sat, 20 Aug 2022 02:22:23 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VMj1MZi_1660987338;
+Received: from 192.168.31.65(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VMj1MZi_1660987338)
+          by smtp.aliyun-inc.com;
+          Sat, 20 Aug 2022 17:22:19 +0800
+Message-ID: <da9573d7-cc79-1a75-da52-480c9aac827e@linux.alibaba.com>
+Date:   Sat, 20 Aug 2022 17:22:19 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v3] cachefiles: fix error return code in
+ cachefiles_ondemand_copen()
+Content-Language: en-US
+To:     Sun Ke <sunke32@huawei.com>, dhowells@redhat.com
+Cc:     linux-cachefs@redhat.com, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-fsdevel@vger.kernel.org
+References: <20220818125038.2247720-1-sunke32@huawei.com>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <20220818125038.2247720-1-sunke32@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is unneeded to check the sha1sum every time.
 
-Create the timestamp files to manage it.
 
-Add '.' to vmlinux-alldirs because 'make clean' must visit ./Kbuild
-to clean up the timestamp files.
+On 8/18/22 8:50 PM, Sun Ke wrote:
+> The cache_size field of copen is specified by the user daemon.
+> If cache_size < 0, then the OPEN request is expected to fail,
+> while copen itself shall succeed. However, returning 0 is indeed
+> unexpected when cache_size is an invalid error code.
+> 
+> Fix this by returning error when cache_size is an invalid error code.
+> 
+> Fixes: c8383054506c ("cachefiles: notify the user daemon when looking up cookie")
+> Signed-off-by: Sun Ke <sunke32@huawei.com>
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+LGTM.
 
- Kbuild                          | 33 ++++++++++++++++++++++++---------
- Makefile                        |  2 +-
- scripts/atomic/check-atomics.sh | 33 ---------------------------------
- 3 files changed, 25 insertions(+), 43 deletions(-)
- delete mode 100755 scripts/atomic/check-atomics.sh
+Reviewed-by: Jingbo Xu <jefflexu@linux.alibaba.com>
 
-diff --git a/Kbuild b/Kbuild
-index e122d93cee32..0b9e8a16a621 100644
---- a/Kbuild
-+++ b/Kbuild
-@@ -43,17 +43,32 @@ PHONY += missing-syscalls
- missing-syscalls: scripts/checksyscalls.sh $(offsets-file)
- 	$(call cmd,syscalls)
- 
--# Check atomic headers are up-to-date
--
--quiet_cmd_atomics = CALL    $<
--      cmd_atomics = $(CONFIG_SHELL) $<
--
--PHONY += old-atomics
--old-atomics: scripts/atomic/check-atomics.sh
--	$(call cmd,atomics)
-+# Check the manual modification of atomic headers
-+
-+quiet_cmd_check_sha1 = CHKSHA1 $<
-+      cmd_check_sha1 = \
-+	if ! command -v sha1sum >/dev/null; then \
-+		echo "warning: cannot check the header due to sha1sum missing"; \
-+		exit 0; \
-+	fi; \
-+	if [ "$$(sed -n '$$s:// ::p' $<)" != \
-+	     "$$(sed '$$d' $< | sha1sum | sed 's/ .*//')" ]; then \
-+		echo "error: $< has been modified." >&2; \
-+		exit 1; \
-+	fi; \
-+	touch $@
-+
-+atomic-checks += $(addprefix $(obj)/.checked-, \
-+	  atomic-arch-fallback.h \
-+	  atomic-instrumented.h \
-+	  atomic-long.h)
-+
-+targets += $(atomic-checks)
-+$(atomic-checks): $(obj)/.checked-%: include/linux/atomic/%  FORCE
-+	$(call if_changed,check_sha1)
- 
- # A phony target that depends on all the preparation targets
- 
- PHONY += prepare
--prepare: $(offsets-file) missing-syscalls old-atomics
-+prepare: $(offsets-file) missing-syscalls $(atomic-checks)
- 	@:
-diff --git a/Makefile b/Makefile
-index 4fcced0d3907..d8ca0738b9e1 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1109,7 +1109,7 @@ vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, \
- 		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
- 		     $(libs-y) $(libs-m)))
- 
--vmlinux-alldirs	:= $(sort $(vmlinux-dirs) Documentation \
-+vmlinux-alldirs	:= $(sort $(vmlinux-dirs) Documentation . \
- 		     $(patsubst %/,%,$(filter %/, $(core-) \
- 			$(drivers-) $(libs-))))
- 
-diff --git a/scripts/atomic/check-atomics.sh b/scripts/atomic/check-atomics.sh
-deleted file mode 100755
-index 0e7bab3eb0d1..000000000000
---- a/scripts/atomic/check-atomics.sh
-+++ /dev/null
-@@ -1,33 +0,0 @@
--#!/bin/sh
--# SPDX-License-Identifier: GPL-2.0
--#
--# Check if atomic headers are up-to-date
--
--ATOMICDIR=$(dirname $0)
--ATOMICTBL=${ATOMICDIR}/atomics.tbl
--LINUXDIR=${ATOMICDIR}/../..
--
--echo '' | sha1sum - > /dev/null 2>&1
--if [ $? -ne 0 ]; then
--	printf "sha1sum not available, skipping atomic header checks.\n"
--	exit 0
--fi
--
--cat <<EOF |
--linux/atomic/atomic-instrumented.h
--linux/atomic/atomic-long.h
--linux/atomic/atomic-arch-fallback.h
--EOF
--while read header; do
--	OLDSUM="$(tail -n 1 ${LINUXDIR}/include/${header})"
--	OLDSUM="${OLDSUM#// }"
--
--	NEWSUM="$(sed '$d' ${LINUXDIR}/include/${header} | sha1sum)"
--	NEWSUM="${NEWSUM%% *}"
--
--	if [ "${OLDSUM}" != "${NEWSUM}" ]; then
--		printf "warning: generated include/${header} has been modified.\n"
--	fi
--done
--
--exit 0
+> ---
+> v3: update the commit log suggested by Jingbo.
+> 
+>  fs/cachefiles/ondemand.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
+> index 1fee702d5529..ea8a1e8317d9 100644
+> --- a/fs/cachefiles/ondemand.c
+> +++ b/fs/cachefiles/ondemand.c
+> @@ -159,7 +159,7 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
+>  	/* fail OPEN request if daemon reports an error */
+>  	if (size < 0) {
+>  		if (!IS_ERR_VALUE(size))
+> -			size = -EINVAL;
+> +			ret = size = -EINVAL;
+>  		req->error = size;
+>  		goto out;
+>  	}
+
 -- 
-2.34.1
-
+Thanks,
+Jingbo
