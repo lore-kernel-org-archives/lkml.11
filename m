@@ -2,117 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF294C32774
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 06:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE2AC32772
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 06:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244779AbiHTG0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 02:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        id S244900AbiHTGaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 02:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiHTG0T (ORCPT
+        with ESMTP id S229458AbiHTGaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 02:26:19 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A807A0620;
-        Fri, 19 Aug 2022 23:26:17 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id e4so4784531qvr.2;
-        Fri, 19 Aug 2022 23:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=O5H3NCo6c2sI896OI2qUmNcKpYKB6FY4w84s2zmB7Rs=;
-        b=Lb0kfgEtqSO3013nnlp+S0yRzBttPC++241BWvhKSn+GXL00V6kt21m4BMWAxRJFK/
-         cDxGKgn1kNbrHgBlp7x1BBVvR0s9fsAaBbyaFVpTaBzIboUpiM9orInc/pwJhCy7J9H9
-         aTsOwBuqGsxgLo+E40u6uuTEZLe/QA2DjLDg7YddAsJNccTXKX8WywSiuWwVbQpINz2G
-         Pf8CzGJtgUPL5sluADNfwvg3QrPBepJ4k8uSQJCJ9ktDX1OGqQyvKbPYkGMWdpTCWKvc
-         BlOR/f9Qz0rhCQO1pkBJFI8DjPrpco71I79Nc0frKtRA+FVt50kmQaNiXb6zBipdeVsg
-         RTuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=O5H3NCo6c2sI896OI2qUmNcKpYKB6FY4w84s2zmB7Rs=;
-        b=QMXG+abDdJGtaBioGIchvUdAec3+1A9B5fSnu3ROIgWxkLUB4DJIQUmKVeMEy4Tu37
-         BZ9J98I/5MOhGfD7lCqF4GfNwTOy+RPqBWTkQu6JQL8nklxfEDbnwbdm8+/oIA+cGG4j
-         BM7gz9QMWpdoA3uPPL2FBSjDvV/9MLfZzAQLS/LPMnpIdPQDdEBUlupimE6rI9UnQDm9
-         Bm6Bn1zqFx+w0kMRE1ufgEwjKYZhKO+hdbWZ37Ozi4m7vTDk9l4YrbL/5YtFBkRlh6Yj
-         ub8xSQ7/SN3d+/2D/nMTjOjPjuVmphUcKAOdKa2z6CWFyynZSS/XFk/UzkZr5po8oJ9i
-         MvaA==
-X-Gm-Message-State: ACgBeo32O5X3WV6xwFD5R4eSyPiC2wFLKlaefVmzcQTnAokABGGe4cp6
-        QiULS6qAWV0u+XxGe48vrA1kHsqz5/dFoCjbFKIuF1sL4WDUGQ==
-X-Google-Smtp-Source: AA6agR5QgnHrLpN2Efk0XEZzPevv0FTuknu/RAE+BFD1IzTaB3gETMoBoPzR8yK4zZhIhIA+6mYmdWUvIMo0dtOZ9N4=
-X-Received: by 2002:a05:6214:e69:b0:476:b991:586f with SMTP id
- jz9-20020a0562140e6900b00476b991586fmr8793340qvb.48.1660976776589; Fri, 19
- Aug 2022 23:26:16 -0700 (PDT)
+        Sat, 20 Aug 2022 02:30:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16671B07D5;
+        Fri, 19 Aug 2022 23:30:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DB20B816D8;
+        Sat, 20 Aug 2022 06:30:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93670C433D6;
+        Sat, 20 Aug 2022 06:30:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660977005;
+        bh=exw9SaJCeUBSW+rAlqqy1BP9+7K2rYOmxA+Xh9R+Nq0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b5NT79YbNyPjFdB4bBd8t4YdMnsd1MPYnXk/VkXf0a87BMDe8xt9nONiAGBoQpO+x
+         gWkIHPzAUqqRUw4iLgLeIoCBY8nuG5L8EQYRzfiDFG0cRnhHaU/PIF1zgYwyRJ2aml
+         dlg2Z/ZuvyGKYVkiqA4mbt1Y7f/LTRn00JkPUwnugRVvb++KVf+oJRdPmePwAHP+v2
+         x7WT9nhLq/ONVNJrvWTW8EoddcY+x0VHIk/SWujf1slF7cI/QYrMeVbSxawDu2uP8z
+         0CQJRssrI7/0yOdvo1umy0pJozI5fe+MI0nhA56yBt6qgkqCd3jQzMDGBKgzxqpW+b
+         uTqfzavu573qA==
+Date:   Sat, 20 Aug 2022 08:30:01 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Jan Dabros <jsd@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
+        mika.westerberg@linux.intel.com, rrangel@chromium.org,
+        mw@semihalf.com, upstream@semihalf.com
+Subject: Re: [PATCH v2] i2c: designware: Introduce semaphore reservation
+ timer to AMDPSP driver
+Message-ID: <YwB/aWRxyemPay58@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jarkko.nikula@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
+        rrangel@chromium.org, mw@semihalf.com, upstream@semihalf.com
+References: <20220812071526.414285-1-jsd@semihalf.com>
 MIME-Version: 1.0
-References: <cover.1660934107.git.mazziesaccount@gmail.com>
- <3fd11489356b1c73a3d7b4bd9dec7e12c9fe8788.1660934107.git.mazziesaccount@gmail.com>
- <CAHp75VePr790pXZ5AiRnrPmxkOgZ3YKRTbABE6dvk+udQYrXGA@mail.gmail.com> <795d16f2-4dee-7492-4a87-e928020efebe@fi.rohmeurope.com>
-In-Reply-To: <795d16f2-4dee-7492-4a87-e928020efebe@fi.rohmeurope.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 20 Aug 2022 09:25:40 +0300
-Message-ID: <CAHp75VdGhXpD8YgwkVPLCBEMmupBiTDS4FChocJFVo+BBZ-2KA@mail.gmail.com>
-Subject: Re: [PATCH v3 08/14] iio: bmg160_core: Simplify using devm_regulator_*get_enable()
-To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Xiang wangx <wangxiang@cdjrlc.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tK4/di2mPXFHr9ge"
+Content-Disposition: inline
+In-Reply-To: <20220812071526.414285-1-jsd@semihalf.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 9:19 AM Vaittinen, Matti
-<Matti.Vaittinen@fi.rohmeurope.com> wrote:
-> On 8/20/22 02:30, Andy Shevchenko wrote:
-> > On Fri, Aug 19, 2022 at 10:21 PM Matti Vaittinen
-> > <mazziesaccount@gmail.com> wrote:
 
-...
+--tK4/di2mPXFHr9ge
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> >>          struct bmg160_data *data;
-> >>          struct iio_dev *indio_dev;
-> >>          int ret;
-> >> +       static const char * const regulators[] = {"vdd", "vddio"};
-> >
-> > Please, keep this following the "longest line first" rule. Note, in
->
-> This was not following the (IMO slightly silly) rule even prior my
-> patch. I can for sure move my line up - but that won't give you the
-> "reverse X-mas tree".
+On Fri, Aug 12, 2022 at 09:15:26AM +0200, Jan Dabros wrote:
+> In order to optimize performance, limit amount of back and forth
+> transactions between x86 and PSP. This is done by introduction of
+> semaphore reservation period - that is window in which x86 isn't
+> releasing the bus immediately after each I2C transaction.
+>=20
+> In order to protect PSP from being starved while waiting for
+> arbitration, after a programmed time bus is automatically released by a
+> deferred function.
+>=20
+> Signed-off-by: Jan Dabros <jsd@semihalf.com>
 
-What do you mean by this? In the above case the rule does exactly give
-you "reversed xmas tree order". What did I miss?
+Fixed this checkpatch check:
 
-> I don't have any real objections on changing the styling though - I
-> don't expect this to be merged before the dependency is in rc1 - so I
-> guess I will anyways need to respin this for next cycle. I can do the
-> styling then.
+CHECK: Blank lines aren't necessary after an open brace '{'
+#60: FILE: drivers/i2c/busses/i2c-designware-amdpsp.c:265:
 
-Fine with me.
+and applied to for-next, thanks!
 
-> > this case you even can move it out of the function, so we will see
-> > clearly that this is (not a hidden) global variable.
->
-> Here I do disagree with you. Moving the array out of the function makes
-> it _much_ less obvious it is not used outside this function. Reason for
-> making is "static const" is to allow the data be placed in read-only
-> area (thanks to Guenter who originally gave me this tip).
 
-"static" in C language means two things (that's what come to my mind):
-- for functions this tells that a function is not used outside of the module;
-- for variables that it is a _global_ variable.
+--tK4/di2mPXFHr9ge
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Hiding static inside functions is not a good coding practice since it
-hides scope of the variable. And if you look into the kernel code, I
-believe the use you are proposing is in minority.
+-----BEGIN PGP SIGNATURE-----
 
--- 
-With Best Regards,
-Andy Shevchenko
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMAf2kACgkQFA3kzBSg
+KbYzCQ//VDhWJ7L1FK7lI9PMNeLt++3U7DLDOvK9Uf9aKHfEBwItpIahAiPW3TMv
+dk/kMaQ5sylz71wLuGPUJs/6dgpqh15GgkCEoGQXGzBdx/NcHny4Injov6kSm8Yp
+OKDDlEiBk92uWg0w+CVTbxE2uZQLJAFWuW/rTCeYzhAwvPiC+HtoEVEaU75hdvA2
+hLShevvFllZfclONwxF0dg5uVBPukQ4HJowSMG2qzo7IdLdBjqIcF7drD2/o57rR
+ldtnKk0ozrn1s/qmnsZKtLJdf22BEpxtdKhSfxTkN/hOIZ6V+bBlO841sPlOM/Xl
+SpT+iqapG7G0sP2gOY0SyGI/b1Pk4bbMs0Gx3EOmedFy8FANKlBvh1Xl6jMfkizy
+gvSJmuZ0VeSa+HSr3LNdAhEVGIYAF7EsQykaUt+GHRG2cUr39/RFlW59eYIEe4RO
+fVoJdFS+zDu/K5xOsSsevgcOORc2OTtjiEl8aAeCAogOmiHmeQCoESlswe2S4Yih
+NxX3ANwuR+CD5mLVIJkPoBmeVyLA+pvoiKHTQWkD0g6iO0ecs13t+GY6TaEzHN/t
+qsHBdec/LDxmyBOHrLIKekJ4/G8rpFsQAvSymQA95OsQWV9lapp0VEACOd3ADCmL
+ba/Fq6IyTAm2TPHz8qnidAtr7+EvsnfvQA2fkWCBtMaO17oFymY=
+=P1Al
+-----END PGP SIGNATURE-----
+
+--tK4/di2mPXFHr9ge--
