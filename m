@@ -2,122 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC06C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 13:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35590C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 13:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346626AbiHTNEr (ORCPT
+        id S1347005AbiHTNEw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 09:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
+        Sat, 20 Aug 2022 09:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346698AbiHTNEU (ORCPT
+        with ESMTP id S1346877AbiHTNEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 09:04:20 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A58BBB
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 06:03:11 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ca13so2069202ejb.9
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 06:03:11 -0700 (PDT)
+        Sat, 20 Aug 2022 09:04:22 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096CF30F58
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 06:03:35 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 2so560887edx.2
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 06:03:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=mj3vgiQsizW8HcDdV2yPhC8+tmGtdrhf0eIAkG4C9kM=;
-        b=eHsT7JjQBOBFnj6S/rmP/+5OqeN3pzoErYUpxYdz9SW85nC8fPDzBpEIwEcEfUgIEn
-         ken7VkhQYW8lbpbrxGxV3idxk3t8Rdtd4qJhtGNbP9wjgV7z9YQCM6KSmjkgmMautLtj
-         YdfuzvPpRQlFpdeSCdeiFnJea/MI4a/x6B2uLTcPeA/G4ogDL1YC4bV0OS1GshHyPsWE
-         xqBgX1Gsd2MWFH/xei427N9Q7/wEFt0fFOad0FEbdEOHB+VWpMBxQD0/4SnS5lTK3hd2
-         ke7chTojyl0dB7NjnwusjDvCpWUlor/P2Zv3ug6WKjsHRWUZoEVrNtuC7f1JGCJGQ0Mp
-         0wwg==
+        bh=CIf1UQ7wZDxtwHlexp9HkgJf1IFsvLbw7syWYroias8=;
+        b=qrRWr7v3lFQn1/6oFfneCHQ5v6efTvX/LCWg1MNaV09YcE2YYNmo7oOd87zq0PcirJ
+         MD32ETYxBZ6c8DNusvjfieY506IFMBy9HTOaLbvpMiMTCXRcFkO92ugkbPBM20oqymGA
+         2rqbOMC3qPEyK2HMlWeCOwbjUB92p9kZ1v5qECw87FrXF9SH55jNWwS38HPc4hYUO8+n
+         OCdZPK7RK/LInpSfXY2WBpTbEp5eNOWI2BP/Ze/Ln6tU8UapYsP/u/HPQB4PWr9NyWxe
+         GEylC8ACDz/ajSnrWODLr+bg8LllgCfOq6/8rE32wajF/FycyZjc7hflSiWySuBPptDh
+         lPjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=mj3vgiQsizW8HcDdV2yPhC8+tmGtdrhf0eIAkG4C9kM=;
-        b=NQvoxsmPhrAodxOR/wd5tgzpjNJLXrBN0/6ZknVuZW1fgahXS5cD24kKNZH9uTbg6K
-         1ofxbhq6sPddWXNQRMb6/eq/uHllBLN+8jczyLuQtJFeYDrDfN6D+EJ0e8PqMnXbkAzI
-         Csglfnm68Iy8IVINwrJF73PaHi1mPiDfYje0iEKPLOCMM6D/iedHr5b8xS9li8uAc5d9
-         AS6HHn3jYSIkIDBUkXbwZgTqMvl9XKJpQKIGuOmBso/8cqditqUxrFvFx2zzPUGrvUlZ
-         200QAb50JUDrOwGXhFTzdItpkeON2f8O8knMZ8cj3PaO8VQpvROJoR+xXHvlqplqu/eX
-         CX8Q==
-X-Gm-Message-State: ACgBeo2BbNaPSb/mdrmA2HCV+SezBndujUbt496ZujqxhKOwYl6EFrhd
-        bJbQ+PsHHFxc6w/UjWBbJGU=
-X-Google-Smtp-Source: AA6agR5v5eY7Y/E/SS5QAqboF224jjLrl53RO616vkad8sYCl4aEtNPHhSq5yh7VmEp8B/23KcuAKg==
-X-Received: by 2002:a17:907:c05:b0:73d:6e0a:8d22 with SMTP id ga5-20020a1709070c0500b0073d6e0a8d22mr289730ejc.646.1661000589493;
-        Sat, 20 Aug 2022 06:03:09 -0700 (PDT)
+        bh=CIf1UQ7wZDxtwHlexp9HkgJf1IFsvLbw7syWYroias8=;
+        b=5LUd5IhehyBW1VPb2nzJx352ZcJtInwL8M4J5jjjO3OTWIGC5bNohOYqVRhEPkc2m4
+         tSjjZiHX/EKmnjo3zB9Ho4J9IsiTbP3hMaV6Su0u5WDPlpXZqyyNfHQ4YLxf1VftJWiL
+         iUGPuoqYibJ44tmSqrvcEvWkUBr5faBIHRwrb6H/Af7sxlKZi414IFqBw0r8qSW9SZ5O
+         rqmPYhhooO0vFn0RXF/AWPkHACKI/XYplg0Y9vMeNNu3QpkeeiIkehSIpUTy6hp27Fsw
+         U7gSxnoli2gtU4YJ7e11ndsSB/4cJ1YK36xTMdC1P+JD4vsWcSvBV/fHnZhQWocPq7LM
+         dBKA==
+X-Gm-Message-State: ACgBeo3Dlkr+UKHvvqIX2vOPMajVUdI70OQY+usaX/wtOoTBffsZWije
+        ob3e49DsNw4e+V7G/TOxoaO5umTnIc4=
+X-Google-Smtp-Source: AA6agR60GQbKpgmA5lfyLXzR41EMjfqjJuGBHfpk3A2xe9iyS2fLNGwaWEXiLCMkKurM5mgNYrl8Rw==
+X-Received: by 2002:a05:6402:451:b0:446:7349:f9e8 with SMTP id p17-20020a056402045100b004467349f9e8mr2300969edw.180.1661000613620;
+        Sat, 20 Aug 2022 06:03:33 -0700 (PDT)
 Received: from [192.168.1.100] (p54a07b82.dip0.t-ipconnect.de. [84.160.123.130])
-        by smtp.gmail.com with ESMTPSA id f19-20020a17090631d300b0073d05a03347sm2218618ejf.89.2022.08.20.06.03.08
+        by smtp.gmail.com with ESMTPSA id eo10-20020a056402530a00b00445a06b6920sm4552605edb.17.2022.08.20.06.03.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 20 Aug 2022 06:03:09 -0700 (PDT)
-Message-ID: <c8ead88c-853e-c7b6-e2cf-1d210e5ada02@gmail.com>
-Date:   Sat, 20 Aug 2022 15:03:08 +0200
+        Sat, 20 Aug 2022 06:03:33 -0700 (PDT)
+Message-ID: <481a3612-6f33-8584-8c71-aa62e98ab668@gmail.com>
+Date:   Sat, 20 Aug 2022 15:03:32 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH] staging: r8188eu: remove ODM_ConfigRFWithHeaderFile()
+Subject: Re: [PATCH] staging: r8188eu: remove ioctl_cfg80211.h
 Content-Language: en-US
-To:     Michael Straube <straube.linux@gmail.com>,
-        gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220819182359.24141-1-straube.linux@gmail.com>
+To:     Nam Cao <namcaov@gmail.com>, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        phil@philpotter.co.uk, Larry.Finger@lwfinger.net,
+        paskripkin@gmail.com
+References: <20220818195454.11822-1-namcaov@gmail.com>
 From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-In-Reply-To: <20220819182359.24141-1-straube.linux@gmail.com>
+In-Reply-To: <20220818195454.11822-1-namcaov@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/19/22 20:23, Michael Straube wrote:
-> The function ODM_ConfigRFWithHeaderFile() is just a wrapper around
-> ODM_ReadAndConfig_RadioA_1T_8188E(). Remove the wrapper and call
-> ODM_ReadAndConfig_RadioA_1T_8188E() directly.
+On 8/18/22 21:54, Nam Cao wrote:
+> Remove header file ioctl_cfg80211.h because it is not used.
 > 
-> Signed-off-by: Michael Straube <straube.linux@gmail.com>
+> Signed-off-by: Nam Cao <namcaov@gmail.com>
 > ---
->   drivers/staging/r8188eu/hal/odm_HWConfig.c     | 5 -----
->   drivers/staging/r8188eu/hal/rtl8188e_rf6052.c  | 2 +-
->   drivers/staging/r8188eu/include/odm_HWConfig.h | 1 -
->   3 files changed, 1 insertion(+), 7 deletions(-)
+>   .../staging/r8188eu/include/ioctl_cfg80211.h  | 89 -------------------
+>   1 file changed, 89 deletions(-)
+>   delete mode 100644 drivers/staging/r8188eu/include/ioctl_cfg80211.h
 > 
-> diff --git a/drivers/staging/r8188eu/hal/odm_HWConfig.c b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-> index 54cc3d7789cd..035d94b3458e 100644
-> --- a/drivers/staging/r8188eu/hal/odm_HWConfig.c
-> +++ b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-> @@ -347,8 +347,3 @@ void ODM_PhyStatusQuery(struct odm_dm_struct *dm_odm,
->   	odm_RxPhyStatus92CSeries_Parsing(dm_odm, pPhyInfo, pPhyStatus, pPktinfo, adapt);
->   	odm_Process_RSSIForDM(dm_odm, pPhyInfo, pPktinfo);
->   }
+> diff --git a/drivers/staging/r8188eu/include/ioctl_cfg80211.h b/drivers/staging/r8188eu/include/ioctl_cfg80211.h
+> deleted file mode 100644
+> index 738f645f9bbc..000000000000
+> --- a/drivers/staging/r8188eu/include/ioctl_cfg80211.h
+> +++ /dev/null
+> @@ -1,89 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+> -/* Copyright(c) 2007 - 2011 Realtek Corporation. i*/
 > -
-> -enum HAL_STATUS ODM_ConfigRFWithHeaderFile(struct odm_dm_struct *dm_odm)
-> -{
-> -	return ODM_ReadAndConfig_RadioA_1T_8188E(dm_odm);
-> -}
-> diff --git a/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c b/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
-> index d043b7bc4142..237232432f37 100644
-> --- a/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
-> +++ b/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
-> @@ -396,7 +396,7 @@ static int phy_RF6052_Config_ParaFile(struct adapter *Adapter)
->   	udelay(1);/* PlatformStallExecution(1); */
->   
->   	/*----Initialize RF fom connfiguration file----*/
-> -	if (HAL_STATUS_FAILURE == ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv))
-> +	if (ODM_ReadAndConfig_RadioA_1T_8188E(&pHalData->odmpriv) == HAL_STATUS_FAILURE)
->   		rtStatus = _FAIL;
->   
->   	/*----Restore RFENV control type----*/;
-> diff --git a/drivers/staging/r8188eu/include/odm_HWConfig.h b/drivers/staging/r8188eu/include/odm_HWConfig.h
-> index b37962edb2ed..3f7185780e87 100644
-> --- a/drivers/staging/r8188eu/include/odm_HWConfig.h
-> +++ b/drivers/staging/r8188eu/include/odm_HWConfig.h
-> @@ -66,5 +66,4 @@ void ODM_PhyStatusQuery(struct odm_dm_struct *pDM_Odm,
->   			struct odm_per_pkt_info *pPktinfo,
->   			struct adapter *adapt);
->   
-> -enum HAL_STATUS ODM_ConfigRFWithHeaderFile(struct odm_dm_struct *pDM_Odm);
->   #endif
+> -#ifndef __IOCTL_CFG80211_H__
+> -#define __IOCTL_CFG80211_H__
+> -
+> -struct rtw_wdev_invit_info {
+> -	u8 token;
+> -	u8 flags;
+> -	u8 status;
+> -	u8 req_op_ch;
+> -	u8 rsp_op_ch;
+> -};
+> -
+> -#define rtw_wdev_invit_info_init(invit_info) \
+> -	do { \
+> -		(invit_info)->token = 0; \
+> -		(invit_info)->flags = 0x00; \
+> -		(invit_info)->status = 0xff; \
+> -		(invit_info)->req_op_ch = 0; \
+> -		(invit_info)->rsp_op_ch = 0; \
+> -	} while (0)
+> -
+> -struct rtw_wdev_priv {
+> -	struct wireless_dev *rtw_wdev;
+> -
+> -	struct adapter *padapter;
+> -
+> -	struct cfg80211_scan_request *scan_request;
+> -	spinlock_t scan_req_lock;
+> -
+> -	struct net_device *pmon_ndev;/* for monitor interface */
+> -	char ifname_mon[IFNAMSIZ + 1]; /* name of monitor interface */
+> -
+> -	u8 p2p_enabled;
+> -
+> -	u8 provdisc_req_issued;
+> -
+> -	struct rtw_wdev_invit_info invit_info;
+> -
+> -	u8 bandroid_scan;
+> -	bool block;
+> -	bool power_mgmt;
+> -};
+> -
+> -#define wdev_to_priv(w) ((struct rtw_wdev_priv *)(wdev_priv(w)))
+> -
+> -#define wiphy_to_wdev(x)				\
+> -((struct wireless_dev *)(((struct rtw_wdev_priv *)wiphy_priv(x))->rtw_wdev))
+> -
+> -int rtw_wdev_alloc(struct adapter *padapter, struct device *dev);
+> -void rtw_wdev_free(struct wireless_dev *wdev);
+> -void rtw_wdev_unregister(struct wireless_dev *wdev);
+> -
+> -void rtw_cfg80211_init_wiphy(struct adapter *padapter);
+> -
+> -void rtw_cfg80211_surveydone_event_callback(struct adapter *padapter);
+> -
+> -void rtw_cfg80211_indicate_connect(struct adapter *padapter);
+> -void rtw_cfg80211_indicate_disconnect(struct adapter *padapter);
+> -void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv,
+> -				     bool aborted);
+> -
+> -void rtw_cfg80211_indicate_sta_assoc(struct adapter *padapter,
+> -				     u8 *pmgmt_frame, uint frame_len);
+> -void rtw_cfg80211_indicate_sta_disassoc(struct adapter *padapter,
+> -					unsigned char *da,
+> -					unsigned short reason);
+> -
+> -void rtw_cfg80211_issue_p2p_provision_request(struct adapter *padapter,
+> -					      const u8 *buf, size_t len);
+> -void rtw_cfg80211_rx_p2p_action_public(struct adapter *padapter,
+> -				       u8 *pmgmt_frame, uint frame_len);
+> -void rtw_cfg80211_rx_action_p2p(struct adapter *padapter, u8 *pmgmt_frame,
+> -				uint frame_len);
+> -void rtw_cfg80211_rx_action(struct adapter *adapter, u8 *frame,
+> -			    uint frame_len, const char *msg);
+> -
+> -int rtw_cfg80211_set_mgnt_wpsp2pie(struct net_device *net,
+> -				   char *buf, int len, int type);
+> -
+> -bool rtw_cfg80211_pwr_mgmt(struct adapter *adapter);
+> -
+> -#define rtw_cfg80211_rx_mgmt(dev, freq, sig_dbm, buf, len, gfp)		\
+> -	cfg80211_rx_mgmt(dev, freq, sig_dbm, buf, len, gfp)
+> -#define rtw_cfg80211_send_rx_assoc(dev, bss, buf, len)			\
+> -	cfg80211_send_rx_assoc(dev, bss, buf, len)
+> -
+> -#endif /* __IOCTL_CFG80211_H__ */
 
 Tested-by: Philipp Hortmann <philipp.g.hortmann@gmail.com> # Edimax N150
