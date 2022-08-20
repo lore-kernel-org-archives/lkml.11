@@ -2,173 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F17C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 08:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF86C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 08:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343918AbiHTIJW (ORCPT
+        id S1344015AbiHTIJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 04:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
+        Sat, 20 Aug 2022 04:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343731AbiHTIJL (ORCPT
+        with ESMTP id S1343587AbiHTIJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 04:09:11 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597C845044;
-        Sat, 20 Aug 2022 01:09:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660982920; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=EhvwNYOEg474UV2LgtdxYXDxjL9EMMV5Xk2fSRhCi6ChNrZ+UWIwZ8L84uTOCTnQ7zQXFgi/3JRQaBqJvY6BKAQIR3reBkGePZ2B2GW8lv9wsohq9VrZWTLuowUOYgULnkEENVkuKwxj+9eXxanFmcMOdnKrBAsaHkdpTJU9Kug=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660982920; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=6aqR9O1ypsm2Ib82yZoFMp4k7R74DV794Aen1osXdYY=; 
-        b=kTKXPN8qyfHzGOVje9qmJE+J1p5D7WMNDmqx0seACv/wvQJpRhR6YYMGeIEIbo7d1r82VzYwBYZwXuW+QCHqhfVG4TKcZ6STTFuht7Tsq4mAKaao/Fur+PLCFZr14CNPLgpPNqUhKpawtEgvhDI9IRVpSwSN5dHF1YE+tSauLS0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660982920;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=6aqR9O1ypsm2Ib82yZoFMp4k7R74DV794Aen1osXdYY=;
-        b=HK0MA+5Rl/kZGQ0l/Uy0/37/dHcq+DzUPerke/284vfWGbPzUf9tb9hrD9s8Op7a
-        pC0BkGWjHMsXIWIrWZtpaNW7W/y1LNDb2191ZJIqwbRpHJUZ0ntvw98ebLgaeRZLsfB
-        89q1zdur9xHiBh6rG2F3pYdRktRUFl/pQgKpsLks=
-Received: from arinc9-PC.lan (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1660982919579888.5977647355193; Sat, 20 Aug 2022 01:08:39 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        Sat, 20 Aug 2022 04:09:15 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BF24C609
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:09:11 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id a16so531271lfs.3
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 01:09:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=r4JTYj9qmkeOKWKWcNromnFZjQXRdXfr4tTRKL0mYFE=;
+        b=oGNYyYCcVgvXroyrv+4hnMFb+02o65cSD2yyvYiCVdDkCye17udVFugCaCkx3Ur+xp
+         TUxLu1wwOa57RiMmdLaD9xhRmKtMTJrHINTLUkDfU/xW6FR4bq8efSBZ1B8kYmizYWxz
+         6I6PGR2zKJzT1ajvwOamDEs3TYYxIHfI0Lwhg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=r4JTYj9qmkeOKWKWcNromnFZjQXRdXfr4tTRKL0mYFE=;
+        b=EG0JROBQnmIKq2kWMqCsT/m0VOAYQX6HJszdAgJNwERwzKSU5vvMcMprvJZxU2pZ/r
+         lArpviUh5YGR9i5WLmfar7JFSlQe5BaTLR08X750gloLUKEiuonIOjUb7rCJ6rwuxavV
+         KcrPt7i/gtQiLQPJFDH3tcEpivxG/YQQCz+1rccjl/dJDMkjjGkfcQSxOHAHAGewP0oc
+         QCXbni+s0RPiDupG3/C8jR/Hre6gsd0RxPzoX6rOLyIL2Yc+Lsb2OrhPMGBb2n+1u1V8
+         +NN9Dgs6RFmYURUdJ0iLePp0aqJl0L3RU2e90FUZ9/a88RDAsC3/8qVxhJ4SEW+mov7X
+         JNMg==
+X-Gm-Message-State: ACgBeo3jNJ4wcmg+WGlzwd0CSC+Y/I0v6tah4hf3pksY/I3IFqbbPXaj
+        YkrunBmwrkf+069U5k/WcEhuoKhnRSxHlBogNQ7xsw==
+X-Google-Smtp-Source: AA6agR7PSoYIN75wd+y8b/Q6GRXwfuKkotsd2MunPjbhD7CdjOdzrRz2E3RO7zy/zImiU20Jqng14NZ3NZiprHtRLxQ=
+X-Received: by 2002:a05:6512:3503:b0:48a:6060:5ebb with SMTP id
+ h3-20020a056512350300b0048a60605ebbmr3481578lfs.429.1660982950073; Sat, 20
+ Aug 2022 01:09:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220817143529.257908-1-dario.binacchi@amarulasolutions.com>
+ <20220817143529.257908-2-dario.binacchi@amarulasolutions.com> <b851147b-6453-c19e-7c31-a9cf8f87c1a4@linaro.org>
+In-Reply-To: <b851147b-6453-c19e-7c31-a9cf8f87c1a4@linaro.org>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Sat, 20 Aug 2022 10:08:58 +0200
+Message-ID: <CABGWkvomGpo9zWi59YNYfRfzAZZ90D9_HaiVV3Gs_x_eQ59e5A@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/4] dt-bindings: net: can: add STM32 bxcan DT bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Dario Binacchi <dariobin@libero.it>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v4 5/6] dt-bindings: net: dsa: mediatek,mt7530: define phy-mode for switch models
-Date:   Sat, 20 Aug 2022 11:07:57 +0300
-Message-Id: <20220820080758.9829-6-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220820080758.9829-1-arinc.unal@arinc9.com>
-References: <20220820080758.9829-1-arinc.unal@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+        Wolfgang Grandegger <wg@grandegger.com>,
+        devicetree@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define acceptable phy-mode values for the CPU port of mt7530 and mt7531
-switches. Remove relevant information from the description of the binding.
+Hi Krzysztof,
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 61 +++++++++++++++----
- 1 file changed, 50 insertions(+), 11 deletions(-)
+On Thu, Aug 18, 2022 at 10:22 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 17/08/2022 17:35, Dario Binacchi wrote:
+> > Add documentation of device tree bindings for the STM32 basic extended
+> > CAN (bxcan) controller.
+> >
+> > Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+>
+> You do not need two SoBs. Keep only one, matching the From field.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index 7c4374e16f96..eff2f0c6182e 100644
---- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -49,17 +49,6 @@ description: |
-   * mt7621: phy-mode = "rgmii-txid";
-   * mt7623: phy-mode = "rgmii";
- 
--  CPU-Ports need a phy-mode property:
--    Allowed values on mt7530 and mt7621:
--      - "rgmii"
--      - "trgmii"
--    On mt7531:
--      - "1000base-x"
--      - "2500base-x"
--      - "rgmii"
--      - "sgmii"
--
--
- properties:
-   compatible:
-     oneOf:
-@@ -154,6 +143,30 @@ $defs:
-                   items:
-                     - const: cpu
-             then:
-+              if:
-+                properties:
-+                  reg:
-+                    const: 5
-+              then:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - gmii
-+                      - mii
-+                      - rgmii
-+              else:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - rgmii
-+                      - trgmii
-+
-+              properties:
-+                reg:
-+                  enum:
-+                    - 5
-+                    - 6
-+
-               required:
-                 - phy-mode
- 
-@@ -169,6 +182,32 @@ $defs:
-                   items:
-                     - const: cpu
-             then:
-+              if:
-+                properties:
-+                  reg:
-+                    const: 5
-+              then:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - 1000base-x
-+                      - 2500base-x
-+                      - rgmii
-+                      - sgmii
-+              else:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - 1000base-x
-+                      - 2500base-x
-+                      - sgmii
-+
-+              properties:
-+                reg:
-+                  enum:
-+                    - 5
-+                    - 6
-+
-               required:
-                 - phy-mode
- 
+I started implementing this driver in my spare time, so my intention
+was to keep track of it.
+
+>
+> > ---
+> >
+> >  .../devicetree/bindings/net/can/st,bxcan.yaml | 139 ++++++++++++++++++
+> >  1 file changed, 139 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/can/st,bxcan.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/can/st,bxcan.yaml b/Documentation/devicetree/bindings/net/can/st,bxcan.yaml
+> > new file mode 100644
+> > index 000000000000..f4cfd26e4785
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/can/st,bxcan.yaml
+>
+> File name like compatible, so st,stm32-bxcan-core.yaml (or some other
+> name, see comment later)
+
+>
+> > @@ -0,0 +1,139 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/can/st,bxcan.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: STMicroelectronics bxCAN controller Device Tree Bindings
+>
+> s/Device Tree Bindings//
+
+>
+> > +
+> > +description: STMicroelectronics BxCAN controller for CAN bus
+> > +
+> > +maintainers:
+> > +  - Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> > +
+> > +allOf:
+> > +  - $ref: can-controller.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - st,stm32-bxcan-core
+>
+> compatibles are supposed to be specific. If this is some type of
+> micro-SoC, then it should have its name/number. If it is dedicated
+> device, is the final name bxcan core? Google says  the first is true, so
+> you miss specific device part.
+
+I don't know if I understand correctly, I hope the change in version 2
+is what you requested.
+
+>
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  resets:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    description:
+> > +      Input clock for registers access
+> > +    maxItems: 1
+> > +
+> > +  '#address-cells':
+> > +    const: 1
+> > +
+> > +  '#size-cells':
+> > +    const: 0
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - resets
+> > +  - clocks
+> > +  - '#address-cells'
+> > +  - '#size-cells'
+> > +
+> > +additionalProperties: false
+> > +
+> > +patternProperties:
+>
+> This goes after "properties: in top level (before "required").
+>
+> > +  "^can@[0-9]+$":
+> > +    type: object
+> > +    description:
+> > +      A CAN block node contains two subnodes, representing each one a CAN
+> > +      instance available on the machine.
+> > +
+> > +    properties:
+> > +      compatible:
+> > +        enum:
+> > +          - st,stm32-bxcan
+>
+> Why exactly do you need compatible for the child? Is it an entierly
+> separate device?
+
+I took inspiration from other drivers for ST microcontroller
+peripherals (e. g. drivers/iio/adc/stm32-adc-core.c,
+drivers/iio/adc/stm32-adc.c) where
+some resources are shared between the peripheral instances. In the
+case of CAN, master (CAN1) and slave (CAN2) share the registers for
+configuring the filters and the clock.
+In the core module you can find the functions about the shared
+resources, while the childrens implement the driver.
+
+>
+> Comments about specific part are applied here as well.
+>
+> > +
+> > +      master:
+>
+> Is this a standard property?
+
+no
+
+> I don't see it anywhere else. Non-standard
+> properties require vendor prefix.
+
+ok, you'll find it in V2.
+
+Thanks and regards,
+Dario
+
+>
+> > +        description:
+> > +          Master and slave mode of the bxCAN peripheral is only relevant
+> > +          if the chip has two CAN peripherals. In that case they share
+> > +          some of the required logic, and that means you cannot use the
+> > +          slave CAN without the master CAN.
+> > +        type: boolean
+> > +
+> > +      reg:
+> > +        description: |
+> > +          Offset of CAN instance in CAN block. Valid values are:
+> > +            - 0x0:   CAN1
+> > +            - 0x400: CAN2
+> > +        maxItems: 1
+> > +
+> > +      interrupts:
+> > +        items:
+> > +          - description: transmit interrupt
+> > +          - description: FIFO 0 receive interrupt
+> > +          - description: FIFO 1 receive interrupt
+> > +          - description: status change error interrupt
+> > +
+> > +      interrupt-names:
+> > +        items:
+> > +          - const: tx
+> > +          - const: rx0
+> > +          - const: rx1
+> > +          - const: sce
+> > +
+> > +      resets:
+> > +        maxItems: 1
+> > +
+> > +      clocks:
+> > +        description:
+> > +          Input clock for registers access
+> > +        maxItems: 1
+> > +
+> > +    additionalProperties: false
+> > +
+> > +    required:
+> > +      - compatible
+> > +      - reg
+> > +      - interrupts
+> > +      - resets
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/clock/stm32fx-clock.h>
+> > +    #include <dt-bindings/mfd/stm32f4-rcc.h>
+> > +
+> > +    can: can@40006400 {
+> > +        compatible = "st,stm32-bxcan-core";
+> > +        reg = <0x40006400 0x800>;
+> > +        resets = <&rcc STM32F4_APB1_RESET(CAN1)>;
+> > +        clocks = <&rcc 0 STM32F4_APB1_CLOCK(CAN1)>;
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +        status = "disabled";
+>
+> No status in examples.
+>
+> > +
+> > +        can1: can@0 {
+> > +            compatible = "st,stm32-bxcan";
+> > +            reg = <0x0>;
+> > +            interrupts = <19>, <20>, <21>, <22>;
+> > +            interrupt-names = "tx", "rx0", "rx1", "sce";
+> > +            resets = <&rcc STM32F4_APB1_RESET(CAN1)>;
+> > +            master;
+> > +            status = "disabled";
+>
+> No status in examples.
+>
+>
+> > +        };
+> > +
+> > +        can2: can@400 {
+> > +            compatible = "st,stm32-bxcan";
+> > +            reg = <0x400>;
+> > +            interrupts = <63>, <64>, <65>, <66>;
+> > +            interrupt-names = "tx", "rx0", "rx1", "sce";
+> > +            resets = <&rcc STM32F4_APB1_RESET(CAN2)>;
+> > +            clocks = <&rcc 0 STM32F4_APB1_CLOCK(CAN2)>;
+> > +            status = "disabled";
+>
+> No status in examples.
+>
+> > +        };
+> > +    };
+>
+>
+> Best regards,
+> Krzysztof
+
+
+
 -- 
-2.34.1
 
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
