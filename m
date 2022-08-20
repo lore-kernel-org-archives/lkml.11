@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E896C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 13:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 137D5C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 13:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347614AbiHTNoK (ORCPT
+        id S1347658AbiHTNoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 09:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
+        Sat, 20 Aug 2022 09:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346959AbiHTNny (ORCPT
+        with ESMTP id S1347007AbiHTNny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 09:43:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C9824F04;
-        Sat, 20 Aug 2022 06:43:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F028D252BE;
+        Sat, 20 Aug 2022 06:43:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6996CB80CE0;
-        Sat, 20 Aug 2022 13:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099B9C43147;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B0C9B80CE5;
+        Sat, 20 Aug 2022 13:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7601CC43150;
         Sat, 20 Aug 2022 13:43:47 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oPOld-005AMx-0O;
+        id 1oPOld-005AOb-2C;
         Sat, 20 Aug 2022 09:44:01 -0400
-Message-ID: <20220820134400.959640191@goodmis.org>
+Message-ID: <20220820134401.513062765@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 20 Aug 2022 09:43:19 -0400
+Date:   Sat, 20 Aug 2022 09:43:22 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
@@ -37,7 +37,7 @@ Cc:     Ingo Molnar <mingo@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
         Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
-Subject: [PATCH v2 3/6] tracing/eprobes: Fix reading of string fields
+Subject: [PATCH v2 6/6] tracing: Have filter accept "common_cpu" to be consistent
 References: <20220820134316.156058831@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,55 +47,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Currently when an event probe (eprobe) hooks to a string field, it does
-not display it as a string, but instead as a number. This makes the field
-rather useless. Handle the different kinds of strings, dynamic, static,
-relational/dynamic etc.
+Make filtering consistent with histograms. As "cpu" can be a field of an
+event, allow for "common_cpu" to keep it from being confused with the
+"cpu" field of the event.
 
-Now when a string field is used, the ":string" type can be used to display
-it:
-
-  echo "e:sw sched/sched_switch comm=$next_comm:string" > dynamic_events
+Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
 
 Cc: stable@vger.kernel.org
-Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_eprobe.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ kernel/trace/trace_events.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
-index 550671985fd1..a1d3423ab74f 100644
---- a/kernel/trace/trace_eprobe.c
-+++ b/kernel/trace/trace_eprobe.c
-@@ -311,6 +311,27 @@ static unsigned long get_event_field(struct fetch_insn *code, void *rec)
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 181f08186d32..0356cae0cf74 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -176,6 +176,7 @@ static int trace_define_generic_fields(void)
  
- 	addr = rec + field->offset;
+ 	__generic_field(int, CPU, FILTER_CPU);
+ 	__generic_field(int, cpu, FILTER_CPU);
++	__generic_field(int, common_cpu, FILTER_CPU);
+ 	__generic_field(char *, COMM, FILTER_COMM);
+ 	__generic_field(char *, comm, FILTER_COMM);
  
-+	if (is_string_field(field)) {
-+		switch (field->filter_type) {
-+		case FILTER_DYN_STRING:
-+			val = (unsigned long)(rec + (*(unsigned int *)addr & 0xffff));
-+			break;
-+		case FILTER_RDYN_STRING:
-+			val = (unsigned long)(addr + (*(unsigned int *)addr & 0xffff));
-+			break;
-+		case FILTER_STATIC_STRING:
-+			val = (unsigned long)addr;
-+			break;
-+		case FILTER_PTR_STRING:
-+			val = (unsigned long)(*(char *)addr);
-+			break;
-+		default:
-+			WARN_ON_ONCE(1);
-+			return 0;
-+		}
-+		return val;
-+	}
-+
- 	switch (field->size) {
- 	case 1:
- 		if (field->is_signed)
 -- 
 2.35.1
