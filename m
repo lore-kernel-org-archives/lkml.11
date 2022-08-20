@@ -2,109 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 875C9C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 387CDC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345052AbiHTK2s (ORCPT
+        id S1345097AbiHTK2v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 06:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
+        Sat, 20 Aug 2022 06:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233477AbiHTK2f (ORCPT
+        with ESMTP id S241503AbiHTK2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 06:28:35 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4621B33E33
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 03:28:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660991312; x=1692527312;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7X0MsbAZ7WZatX6iWC3r8BErgKmsmjeytsGFjw5sf34=;
-  b=bsQgRYIPnpeD9vjsYrPcZRp8dr09JBbdzB+67rLGhS/T2pfn9G8SXF8M
-   Bnumh9C3EqBm6fEDNh0Cap3BBUCFmMQch3C9wD8TjfkP/s/K5ivzUxAbr
-   juzMv12mBecOvByA9m7BSF5cowCjUY4o5rcjYf18R5ldAV9o5lOaNiBmj
-   dXEA35US2cnHtOAmXeftyyyDFskZksQo5y6zR9qcM/7so7L3dP3ex/x5A
-   +UpKWyeaOWV1BlZaYrHAGB5RlrdjVh6EDy7/Xfa9s3czlDh8n9YwbkwI1
-   qNQsqmVWDAJCSqTYfcYGAUcmvF7w4elckzDGGa0+CCORGGARqCm1qb8p0
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="280131619"
-X-IronPort-AV: E=Sophos;i="5.93,251,1654585200"; 
-   d="scan'208";a="280131619"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2022 03:28:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,251,1654585200"; 
-   d="scan'208";a="641518655"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 20 Aug 2022 03:28:27 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPLiM-0002UJ-35;
-        Sat, 20 Aug 2022 10:28:26 +0000
-Date:   Sat, 20 Aug 2022 18:28:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Huang Ying <ying.huang@intel.com>
-Subject: [ammarfaizi2-block:akpm/mm/mm-unstable 101/170] mm/memory.c:68:10:
- fatal error: linux/memory-tiers.h: No such file or directory
-Message-ID: <202208201850.nGhRnTHY-lkp@intel.com>
+        Sat, 20 Aug 2022 06:28:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2912C40BE5;
+        Sat, 20 Aug 2022 03:28:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B844C61128;
+        Sat, 20 Aug 2022 10:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 057D7C433D7;
+        Sat, 20 Aug 2022 10:28:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660991315;
+        bh=BfeRXrXK+kyAATA3rrD7DNtJBTOICyTG3ENmWC40kJw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U2H3QtvFpVNEciH1WtySMYZsnaQJiuDNmwW3V8xZkYT0ZwMVQwgnWnt304CfGooPp
+         aTkiOPAOoJlTo1251krr6e2ou6u9aRZh9DGgCurLraTPBUEGpOnbRcf5PPZBrQc6Jo
+         fSRSefBXYORAQKflTiQq00j82dOzqK/iVSrPGuLc=
+Date:   Sat, 20 Aug 2022 12:28:42 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 01/10] x86/mtrr: fix MTRR fixup on APs
+Message-ID: <YwC3Wmj2Fq11EWVg@kroah.com>
+References: <20220820092533.29420-1-jgross@suse.com>
+ <20220820092533.29420-2-jgross@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220820092533.29420-2-jgross@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block akpm/mm/mm-unstable
-head:   1b745fa43c32e6a6ffb4d922114d75019830a9e2
-commit: 71c09d5dbc03732b9f98485edc03c272e7e8a79c [101/170] memory-tiering-hot-page-selection-with-hint-page-fault-latency-fix.txt
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20220820/202208201850.nGhRnTHY-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/71c09d5dbc03732b9f98485edc03c272e7e8a79c
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block akpm/mm/mm-unstable
-        git checkout 71c09d5dbc03732b9f98485edc03c272e7e8a79c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+On Sat, Aug 20, 2022 at 11:25:24AM +0200, Juergen Gross wrote:
+> When booting or resuming the system MTRR state is saved on the boot
+> processor and then this state is loaded into MTRRs of all other cpus.
+> During update of the MTRRs the MTRR mechanism needs to be disabled by
+> writing the related MSR. The old contents of this MSR are saved in a
+> set of static variables and later those static variables are used to
+> restore the MSR.
+> 
+> In case the MSR contents need to be modified on a cpu due to the MSR
+> not having been initialized properly by the BIOS, the related update
+> function is modifying the static variables accordingly.
+> 
+> Unfortunately the MTRR state update is usually running on all cpus
+> at the same time, so using just one set of static variables for all
+> cpus is racy in case the MSR contents differ across cpus.
+> 
+> Fix that by using percpu variables for saving the MSR contents.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Juergen Gross <jgross@suse.com>
+> ---
+> I thought adding a "Fixes:" tag for the kernel's initial git commit
+> would maybe be entertaining, but without being really helpful.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+So that means I will just do a "best guess" as to how far to backport
+things.  Hopefully I guess well...
 
-Note: the ammarfaizi2-block/akpm/mm/mm-unstable HEAD 1b745fa43c32e6a6ffb4d922114d75019830a9e2 builds fine.
-      It only hurts bisectability.
+thanks,
 
-All errors (new ones prefixed by >>):
-
->> mm/memory.c:68:10: fatal error: linux/memory-tiers.h: No such file or directory
-      68 | #include <linux/memory-tiers.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
-
-
-vim +68 mm/memory.c
-
-  > 68	#include <linux/memory-tiers.h>
-    69	#include <linux/string.h>
-    70	#include <linux/debugfs.h>
-    71	#include <linux/userfaultfd_k.h>
-    72	#include <linux/dax.h>
-    73	#include <linux/oom.h>
-    74	#include <linux/numa.h>
-    75	#include <linux/perf_event.h>
-    76	#include <linux/ptrace.h>
-    77	#include <linux/vmalloc.h>
-    78	#include <linux/sched/sysctl.h>
-    79	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
