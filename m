@@ -2,132 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AF1C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF44C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 10:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345506AbiHTK5b (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 06:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
+        id S233477AbiHTK7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 06:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242181AbiHTK52 (ORCPT
+        with ESMTP id S239636AbiHTK7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 06:57:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3369AB4CA;
-        Sat, 20 Aug 2022 03:57:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EDF0B8013A;
-        Sat, 20 Aug 2022 10:57:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA53FC433D6;
-        Sat, 20 Aug 2022 10:57:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660993045;
-        bh=t9TrnVLg82eOpnDHYS5OXuXu5i5KySThSf4t2UHKIAE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hJpB4b0+VZQaUhaYR+3cSFfCPCD2bjVONnEz3/ju12D2q/SUNFhSxD8EIMlgHZ781
-         KB7KgS2FLMDOfKdPrfSdzEML9ZUaPal/YvxVHaUF83QTY7Ftq4PQrUIiU01/z1sawX
-         UU/PqR+rCSoNnU2pycRaNGqG3TgBlHP7L0b8Crj9LUF7i0vB3zshTOS3Nxzm0SLOmf
-         LfIDESKn/bx1bTuH2V8bOLYqhjBgw4Lr/nz70k7eF1m+QoKzkhVXu2CM1qkfA92LgH
-         E6xXiVE0bQgY+OU/PYaQUobm/MjkRxjw4WELAk5ONMNNu8SMQts0wPRtcMapO3s/RH
-         QsEGSKF8lihCw==
-Date:   Sat, 20 Aug 2022 12:08:00 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>, kernel@axis.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: buffer: Silence lock nesting splat
-Message-ID: <20220820120800.519b5eb5@jic23-huawei>
-In-Reply-To: <CAHp75VebQfdHrfYTmF0w9M556ZV8fG5jJ2rAN5a3mrB1mbvOQw@mail.gmail.com>
-References: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
-        <CAHp75VebQfdHrfYTmF0w9M556ZV8fG5jJ2rAN5a3mrB1mbvOQw@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 20 Aug 2022 06:59:33 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06D648E95
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 03:59:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660993171; x=1692529171;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6bvnfTT4/t+5ClYUhDOG/MQcIDUXZ10fpoddRgksaJw=;
+  b=i0UYoP9mkklpLYNgkV4T6BPtHZSIjTPd7dJwjarMHfHq2wHEj8LYqP15
+   tr1XUHTqoYJ4FtWruTBvAxIACVcaH3iaoJeXVZYDJjSk5sRBvG/VhDJXT
+   s7sU1H4QYYmTJVdDkemQp0/ImvLzc0TptFKKMNWpiaqHznKBLLIRm82oj
+   FfbYVuo4KIk1hq5TUPTSTvXu7IOGh2uqicUUmJkjF69NMLBYREJQkc/Sn
+   xywc2oijykIoM4J569S2BJJDbdVYOXcXfCD0EcaIRn9qGu8gW19KB2fB2
+   ho/qA2A4sBx18CUF52nlmXF4HwQMbGgmLCuZHBXA03z7iDYyjOdI6d/dq
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="293954172"
+X-IronPort-AV: E=Sophos;i="5.93,251,1654585200"; 
+   d="scan'208";a="293954172"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2022 03:59:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,251,1654585200"; 
+   d="scan'208";a="584947572"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 20 Aug 2022 03:59:29 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oPMCO-0002XD-37;
+        Sat, 20 Aug 2022 10:59:28 +0000
+Date:   Sat, 20 Aug 2022 18:58:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jgunthorpe:iommufd 10/14] drivers/iommu/iommufd/device.c:59:
+ warning: expecting prototype for iommufd_bind_device(). Prototype was for
+ iommufd_device_bind() instead
+Message-ID: <202208201856.H1yTyIFO-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 11:03:55 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+tree:   https://github.com/jgunthorpe/linux iommufd
+head:   6624f48e554fe6a880b261074a1c9580dc9b5384
+commit: e6ea33b10e22b67a040cb8bbe1068528adab762a [10/14] iommufd: Add kAPI toward external drivers for physical devices
+config: s390-randconfig-r035-20220820 (https://download.01.org/0day-ci/archive/20220820/202208201856.H1yTyIFO-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 0ac597f3cacf60479ffd36b03766fa7462dabd78)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/jgunthorpe/linux/commit/e6ea33b10e22b67a040cb8bbe1068528adab762a
+        git remote add jgunthorpe https://github.com/jgunthorpe/linux
+        git fetch --no-tags jgunthorpe iommufd
+        git checkout e6ea33b10e22b67a040cb8bbe1068528adab762a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-> On Tue, Aug 16, 2022 at 1:30 PM Vincent Whitchurch
-> <vincent.whitchurch@axis.com> wrote:
-> >
-> > If an IIO driver uses callbacks from another IIO driver and calls
-> > iio_channel_start_all_cb() from one of its buffer setup ops, then
-> > lockdep complains due to the lock nesting, as in the below example with
-> > lmp91000.  Since the locks are being taken on different IIO devices,
-> > there is no actual deadlock, so add lock nesting annotation to silence
-> > the spurious warning.
-> >
-> >  ============================================
-> >  WARNING: possible recursive locking detected
-> >  6.0.0-rc1+ #10 Not tainted
-> >  --------------------------------------------
-> >  python3/23 is trying to acquire lock:
-> >  0000000064c944c0 (&indio_dev->mlock){+.+.}-{3:3}, at: iio_update_buffers+0x62/0x180
-> >
-> >  but task is already holding lock:
-> >  00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
-> >
-> >  other info that might help us debug this:
-> >   Possible unsafe locking scenario:
-> >
-> >         CPU0
-> >         ----
-> >    lock(&indio_dev->mlock);
-> >    lock(&indio_dev->mlock);
-> >
-> >   *** DEADLOCK ***
-> >
-> >   May be due to missing lock nesting notation
-> >
-> >  5 locks held by python3/23:
-> >   #0: 00000000636b5420 (sb_writers#5){.+.+}-{0:0}, at: ksys_write+0x67/0x100
-> >   #1: 0000000064c19280 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x13a/0x270
-> >   #2: 0000000064c3d9e0 (kn->active#14){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x149/0x270
-> >   #3: 00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
-> >   #4: 0000000064c945c8 (&iio_dev_opaque->info_exist_lock){+.+.}-{3:3}, at: iio_update_buffers+0x4f/0x180
-> >
-> >  stack backtrace:
-> >  CPU: 0 PID: 23 Comm: python3 Not tainted 6.0.0-rc1+ #10
-> >  Call Trace:
-> >   dump_stack+0x1a/0x1c
-> >   __lock_acquire.cold+0x407/0x42d
-> >   lock_acquire+0x1ed/0x310
-> >   __mutex_lock+0x72/0xde0
-> >   mutex_lock_nested+0x1d/0x20
-> >   iio_update_buffers+0x62/0x180
-> >   iio_channel_start_all_cb+0x1c/0x20 [industrialio_buffer_cb]
-> >   lmp91000_buffer_postenable+0x1b/0x20 [lmp91000]
-> >   __iio_update_buffers+0x50b/0xd80
-> >   enable_store+0x81/0x100
-> >   dev_attr_store+0xf/0x20
-> >   sysfs_kf_write+0x4c/0x70
-> >   kernfs_fop_write_iter+0x179/0x270
-> >   new_sync_write+0x99/0x120
-> >   vfs_write+0x2c1/0x470
-> >   ksys_write+0x67/0x100
-> >   sys_write+0x10/0x20  
-> 
-> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-mesages
-> 
-> On top of that, Fixes tag?
-It's going to be tricky to identify - the interface predates usecases that were IIO
-drivers by a long way.  I guess introduction of first IIO driver that used
-a callback buffer? No idea which one that was :(
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> 
-> > Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>  
-> 
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
+All warnings (new ones prefixed by >>):
 
+   drivers/iommu/iommufd/device.c:59: warning: Function parameter or member 'dev' not described in 'iommufd_device_bind'
+>> drivers/iommu/iommufd/device.c:59: warning: expecting prototype for iommufd_bind_device(). Prototype was for iommufd_device_bind() instead
+
+
+vim +59 drivers/iommu/iommufd/device.c
+
+    40	
+    41	/**
+    42	 * iommufd_bind_device - Bind a physical device to an iommu fd
+    43	 * @ictx: iommufd file descriptor
+    44	 * @pdev: Pointer to a physical PCI device struct
+    45	 * @id: Output ID number to return to userspace for this device
+    46	 *
+    47	 * A successful bind establishes an ownership over the device and returns
+    48	 * struct iommufd_device pointer, otherwise returns error pointer.
+    49	 *
+    50	 * A driver using this API must set driver_managed_dma and must not touch
+    51	 * the device until this routine succeeds and establishes ownership.
+    52	 *
+    53	 * Binding a PCI device places the entire RID under iommufd control.
+    54	 *
+    55	 * The caller must undo this with iommufd_unbind_device()
+    56	 */
+    57	struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+    58						   struct device *dev, u32 *id)
+  > 59	{
+    60		struct iommufd_device *idev;
+    61		struct iommu_group *group;
+    62		int rc;
+    63	
+    64	       /*
+    65	        * iommufd always sets IOMMU_CACHE because we offer no way for userspace
+    66	        * to restore cache coherency.
+    67	        */
+    68		if (!iommu_capable(dev->bus, IOMMU_CAP_CACHE_COHERENCY))
+    69			return ERR_PTR(-EINVAL);
+    70	
+    71		group = iommu_group_get(dev);
+    72		if (!group)
+    73			return ERR_PTR(-ENODEV);
+    74	
+    75		/*
+    76		 * FIXME: Use a device-centric iommu api, this won't work with
+    77		 * multi-device groups
+    78		 */
+    79		rc = iommu_group_claim_dma_owner(group, ictx);
+    80		if (rc)
+    81			goto out_group_put;
+    82	
+    83		idev = iommufd_object_alloc(ictx, idev, IOMMUFD_OBJ_DEVICE);
+    84		if (IS_ERR(idev)) {
+    85			rc = PTR_ERR(idev);
+    86			goto out_release_owner;
+    87		}
+    88		idev->ictx = ictx;
+    89		iommufd_ctx_get(ictx);
+    90		idev->dev = dev;
+    91		/* The calling driver is a user until iommufd_device_unbind() */
+    92		refcount_inc(&idev->obj.users);
+    93		/* group refcount moves into iommufd_device */
+    94		idev->group = group;
+    95	
+    96		/*
+    97		 * If the caller fails after this success it must call
+    98		 * iommufd_unbind_device() which is safe since we hold this refcount.
+    99		 * This also means the device is a leaf in the graph and no other object
+   100		 * can take a reference on it.
+   101		 */
+   102		iommufd_object_finalize(ictx, &idev->obj);
+   103		*id = idev->obj.id;
+   104		return idev;
+   105	
+   106	out_release_owner:
+   107		iommu_group_release_dma_owner(group);
+   108	out_group_put:
+   109		iommu_group_put(group);
+   110		return ERR_PTR(rc);
+   111	}
+   112	EXPORT_SYMBOL_GPL(iommufd_device_bind);
+   113	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
