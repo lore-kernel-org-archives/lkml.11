@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D29DC28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EF8C32792
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245697AbiHTAzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        id S244844AbiHTA5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240711AbiHTAzX (ORCPT
+        with ESMTP id S239909AbiHTA5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 20:55:23 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8591DFAE
-        for <linux-kernel@vger.kernel.org>; Fri, 19 Aug 2022 17:55:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660956921; x=1692492921;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jQCFueG72K1/IsvlQP1m+Io0jjK+0RV4Mz5A/fOkDSw=;
-  b=JNVLMWO46SLWINMCoAA/XBCQli/RHD3txPK53AMVr9A2PWAkbNUos8x8
-   DIFM3y1kz5lwBs4bxCY1zAxD6NUGPsXUIypQSv9TOlTqnPSEYkjhbpDGH
-   w2oQ863CIeCk4Zt8L9arfh6UaICoM3gpbc0usHwLEYBuoKcQDjVLo0TJO
-   4m3qrNs7MKnFkZZ6THdyTXMVBpaTqv1QQ1kat9xKzyh9yS6slT/DjBc7/
-   aP6yyXZP47sERO1wR79528XzQChRZdKZPzWRprS3+4FQM5z+RuAxyrtqm
-   O7LTbFhdlu8lREWcJ1FD7PPQWB7ZiiU5cyV7P+IV3Nu0uc7EcABIff5Ue
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10444"; a="293920871"
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="293920871"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 17:55:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,249,1654585200"; 
-   d="scan'208";a="676626196"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 19 Aug 2022 17:55:18 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPCli-0001yD-0U;
-        Sat, 20 Aug 2022 00:55:18 +0000
-Date:   Sat, 20 Aug 2022 08:54:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Subject: [intel-tdx:guest-hardening-rebased 13/36]
- arch/x86/coco/tdx/tdx.c:531:15: warning: no previous prototype for function
- 'tdx_mmio_readq'
-Message-ID: <202208200846.ns0LqPhB-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Fri, 19 Aug 2022 20:57:15 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E6BE107D8A;
+        Fri, 19 Aug 2022 17:57:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=4ginwr7HYN3S4UBiB6
+        IChkqn6tiWIxhJ8/YP+ouQkxc=; b=BcKdSvrNOpSP6XBx4Kq7gg2FpMRIxCSOy9
+        XrbeUrauyJkAWw3ITUybp1GZszFPQPpnRoIS23jOuhl+pJFa+yHUx63f41h++tVP
+        YngnYcRH9D/aLsTmITWZy/C+7u3JmmmuGf6swBZmAgtUQaPmCPiBU2NsEcWygF/H
+        hvD3ZWw2Y=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp1 (Coremail) with SMTP id GdxpCgCnxtZcMQBjTCv_Vw--.51024S2;
+        Sat, 20 Aug 2022 08:57:00 +0800 (CST)
+From:   huanglei <huanglei814@163.com>
+To:     laurent.pinchart@ideasonboard.com
+Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huanglei <huanglei@kylinos.cn>
+Subject: [PATCH v3] media: uvcvideo: limit power line control for Sonix Technology
+Date:   Sat, 20 Aug 2022 08:56:58 +0800
+Message-Id: <20220820005658.21456-1-huanglei814@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: GdxpCgCnxtZcMQBjTCv_Vw--.51024S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Zw1fJFW8XF1UZr45JF4fZrb_yoW8WFWUpr
+        4kGayFyrW8GrWfuw17X3yDuFy5u3Z3GaySkF43Gws09F93Cr97WF9FyFyqkay2yF1IyF12
+        qr1kt39Ig3W5Kr7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UNNV9UUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: xkxd0wxohlmiqu6rljoofrz/1tbisB1j9lUMUKv3XgAAsz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/x86/coco/tdx/tdx.c
-tree:   https://github.com/intel/tdx.git guest-hardening-rebased
-head:   d941f409a509c084250b50a3b5fc1c3c84a596a0
-commit: 0cf382195475412201e134e2925bb276445a8460 [13/36] x86/tdx: Enable direct iomap MMIO optimizations
-config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220820/202208200846.ns0LqPhB-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 0ac597f3cacf60479ffd36b03766fa7462dabd78)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/0cf382195475412201e134e2925bb276445a8460
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-hardening-rebased
-        git checkout 0cf382195475412201e134e2925bb276445a8460
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
+From: huanglei <huanglei@kylinos.cn>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+The device does not implement the power line control correctly. Add a
+corresponding control mapping override.
 
-All warnings (new ones prefixed by >>):
+Bus 003 Device 003: ID 3277:0072 Sonix Technology Co., Ltd. USB 2.0 Camera
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass          239 Miscellaneous Device
+  bDeviceSubClass         2
+  bDeviceProtocol         1 Interface Association
+  bMaxPacketSize0        64
+  idVendor           0x3277
+  idProduct          0x0072
+  bcdDevice            1.00
+  iManufacturer           2 Sonix Technology Co., Ltd.
+  iProduct                1 USB 2.0 Camera
+  iSerial                 3 REV0001
+  bNumConfigurations      1
 
-   arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for function 'tdx_write_msr' [-Wmissing-prototypes]
-   void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
-                ^
-   arch/x86/coco/tdx/tdx.c:298:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
-   ^
-   static 
->> arch/x86/coco/tdx/tdx.c:531:15: warning: no previous prototype for function 'tdx_mmio_readq' [-Wmissing-prototypes]
-   unsigned long tdx_mmio_readq(void __iomem* addr)
-                 ^
-   arch/x86/coco/tdx/tdx.c:531:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   unsigned long tdx_mmio_readq(void __iomem* addr)
-   ^
-   static 
-   2 warnings generated.
+Signed-off-by: huanglei <huanglei@kylinos.cn>
+---
+ drivers/media/usb/uvc/uvc_driver.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-
-vim +/tdx_mmio_readq +531 arch/x86/coco/tdx/tdx.c
-
-   530	
- > 531	unsigned long tdx_mmio_readq(void __iomem* addr)
-   532	{
-   533		unsigned long val;
-   534	
-   535		if (tdx_virt_mmio(8, false, (unsigned long)addr, &val))
-   536			return 0xffffffffffffffff;
-   537		return val;
-   538	}
-   539	
-
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index 9c05776f11d1..e8f823685139 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -3264,6 +3264,15 @@ static const struct usb_device_id uvc_ids[] = {
+ 	  .bInterfaceSubClass	= 1,
+ 	  .bInterfaceProtocol	= 0,
+ 	  .driver_info		= UVC_INFO_QUIRK(UVC_QUIRK_FORCE_BPP) },
++	/* Sonix Technology USB 2.0 Camera */
++	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
++				| USB_DEVICE_ID_MATCH_INT_INFO,
++	  .idVendor		= 0x3277,
++	  .idProduct		= 0x0072,
++	  .bInterfaceClass	= USB_CLASS_VIDEO,
++	  .bInterfaceSubClass	= 1,
++	  .bInterfaceProtocol	= 0,
++	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
+ 	/* Acer EasyCamera */
+ 	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
+ 				| USB_DEVICE_ID_MATCH_INT_INFO,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
+
