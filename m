@@ -2,118 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB95AC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 15:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA91C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 15:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344543AbiHTP2u (ORCPT
+        id S1345396AbiHTPbZ convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 11:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35388 "EHLO
+        Sat, 20 Aug 2022 11:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiHTP2s (ORCPT
+        with ESMTP id S229605AbiHTPbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 11:28:48 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFDF564C9;
-        Sat, 20 Aug 2022 08:28:45 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id F3E4781A20;
-        Sat, 20 Aug 2022 15:28:43 +0000 (UTC)
-Received: from pdx1-sub0-mail-a210.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 3ADB681ACC;
-        Sat, 20 Aug 2022 15:28:43 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661009323; a=rsa-sha256;
-        cv=none;
-        b=7rvQN60sBIVjy7AkpTrUqnCxfXeG0cUm9Q/9sd1Zj2R90grliw+OmbQ7KTHcgllwcURX9O
-        kkyKxMktGnoni+i+yvHmP+47NfpTpzptRWjRdMgeNbJdgQFHt/pDMYyRDay24ZLsEjI/Gq
-        pH/CoCpevchzKufW/GWj+uNllY6UdMHyTXSGMoBXoWqO0ZP5CK7vmeHQS44feDXja2Ase/
-        PiYNDam0P+ubTGkvBgtAK8K6Lj7LlkUjGc3Nc1HlLf+XbzXO8rsUuykBvwOQWni727tvxH
-        VSs1MQwu14xqK95+wRNtdaxfG5N2+3vdJhHIoBz5thrzgRkIQC9FL0cxMhsFgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661009323;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=SLgPsu0bpwJo2yzzcZFJyYYI3Z1xx8Vz41AtkGRgplE=;
-        b=rb7EuImPAXq73OTykiCXNYMC+LO4wwZjGaqci3/b6DHeCUzSBslV3IfGNSUs2idBMtNKWZ
-        6euvGi1VWNtu6we7M69JJYC+uBdsTQS4kCu4DG/eyBdvywS5O7dDkcUUs59UeIhkGEIqfb
-        IMSm/Mg3hXftm3R9HApHG/M7jUrpxdem7G1tbkBEak4uAc3jgJfrH186UuUnJvAmtC2JSU
-        uPkQwQZYLk2t+jBZVPau5Ls9KqnxuJSahcNmWc/mknYs321wcSwR7+C1EfYcpWtia0EnDt
-        oxRUo7ZoCSdXnltXTY0j6vcbjg7oLL6b/vJR0dxAiOKTcsALIFvXPLgc3XC4zw==
-ARC-Authentication-Results: i=1;
-        rspamd-769cfffc99-pl9xh;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Keen-Bitter: 287036c97cafc95e_1661009323837_324093453
-X-MC-Loop-Signature: 1661009323837:942968739
-X-MC-Ingress-Time: 1661009323837
-Received: from pdx1-sub0-mail-a210.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.115.45.14 (trex/6.7.1);
-        Sat, 20 Aug 2022 15:28:43 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a210.dreamhost.com (Postfix) with ESMTPSA id 4M92Zy1C3XzH9;
-        Sat, 20 Aug 2022 08:28:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661009323;
-        bh=SLgPsu0bpwJo2yzzcZFJyYYI3Z1xx8Vz41AtkGRgplE=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=fHxoD6rXRIqgJrjKNKsIW6+ui5Ph6YXviotJnFjL1rU6l5SMz+1mhqUe3TZ09rHeb
-         ONUC9V5T9h/dtCH0EdaNZ965uxF5+8bz76NV0MmxOURYn08zbfFNvOXfvacIb/iOY4
-         uPt5Zf1x/WK9RLPUbfC+Zbbc5K+9iqm6ueDFpbamNd0GdEnP209G1qumZEqdLjoNLV
-         F5Kj0bd94jYtdilG1Ay7kHm1F3ecmLmhKx+W5pnIS5Xn7c8jyLMiI2FwiWWeq0weUZ
-         R9dbOlabfh3KmSIwm7tUK3RXJxZhFAGthbN8QeInfkyJ43wc10+EBe7jGK3UMpzCaf
-         P0e+AkEa/m1vA==
-Date:   Sat, 20 Aug 2022 08:10:48 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     linux-arch@vger.kernel.org, dan.j.williams@intel.com,
-        peterz@infradead.org, mark.rutland@arm.com, dave.jiang@intel.com,
-        Jonathan.Cameron@huawei.com, a.manzanares@samsung.com,
-        bwidawsk@kernel.org, alison.schofield@intel.com,
-        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arch/cacheflush: Introduce flush_all_caches()
-Message-ID: <20220820151048.cfpkqhut5z6wa6yk@offworld>
-References: <20220819171024.1766857-1-dave@stgolabs.net>
- <YwAo1Ec13hjiBOat@iweiny-desk3>
+        Sat, 20 Aug 2022 11:31:22 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B867697A
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 08:31:21 -0700 (PDT)
+Received: from [192.168.0.105] (unknown [136.169.224.60])
+        by mail.ispras.ru (Postfix) with ESMTPSA id CFF9740D403D;
+        Sat, 20 Aug 2022 15:31:19 +0000 (UTC)
+Message-ID: <6228a437bb9d7f677f5e97973518bcd555bc2a07.camel@ispras.ru>
+Subject: [POSSIBLE BUG] Dereferencing of NULL pointer
+From:   Rustam Subkhankulov <subkhankulov@ispras.ru>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
+Date:   Sat, 20 Aug 2022 20:30:56 +0300
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YwAo1Ec13hjiBOat@iweiny-desk3>
-User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022, Ira Weiny wrote:
+Version: 6.0-rc1
 
->Did you mean "must"?
+Description: 
 
-Yep.
+In function 'privcmd_ioctl_dm_op' (drivers/xen/privcmd.c: 615)return
+value of 'kcalloc' with GFP_KERNEL flag is assigned to "pages"
+variable. GFP_KERNEL flag does not guarantee, that the return value
+will not be NULL. In that case, there is a jump to the "out" label. 
 
->> + * such as those which caches are in a consistent state. The
->> + * caller can verify the situation early on.
->> + */
->> +#ifndef flush_all_caches
->> +# define flush_all_caches_capable() false
->> +static inline void flush_all_caches(void)
->> +{
->> +	WARN_ON_ONCE("cache invalidation required\n");
->> +}
->
->With the addition of flush_all_caches_capable() will flush_all_caches() ever be
->called?
+---------------------------------------------------------------------
+667	pages = kcalloc(nr_pages, sizeof(*pages), GFP_KERNEL);
+668	if (!pages) {
+669		rc = -ENOMEM;
+670		goto out;
+671	}
+---------------------------------------------------------------------
 
-No, it should not. Hence you get a splat if you call it bogusly.
+Variable 'pages' is passed to function 'unpin_user_pages_dirty_lock' as
+1st parameter at [drivers/xen/privcmd.c: 695].
+
+---------------------------------------------------------------------
+694	out:
+695		unlock_pages(pages, nr_pages);
+---------------------------------------------------------------------
+
+Then, variable 'pages' is passed to function
+'unpin_user_pages_dirty_lock' as 1st parameter at
+[drivers/xen/privcmd.c: 612].
+
+---------------------------------------------------------------------
+610	static void unlock_pages(struct page *pages[], unsigned int
+nr_pages)
+611	{
+612		unpin_user_pages_dirty_lock(pages, nr_pages, true);
+613	}
+---------------------------------------------------------------------
+
+'pages' and 'npages' are passed as parameters to function
+'sanity_check_pinned_pages' at [mm/gup.c: 311].
+
+---------------------------------------------------------------------
+299	void unpin_user_pages_dirty_lock(struct page **pages, unsigned
+long npages,
+300					 bool make_dirty)
+301	{
+302		unsigned long i;
+303     struct folio *folio;
+304     unsigned int nr;
+305		
+306		if (!make_dirty) {
+307			unpin_user_pages(pages, npages);
+308			return;
+309		}
+310
+311		sanity_check_pinned_pages(pages, npages);
+---------------------------------------------------------------------
+
+In function 'sanity_check_pinned_pages', if
+(IS_ENABLED(CONFIG_DEBUG_VM)) and (npages > 0), NULL pointer 'pages' is
+dereferenced at [mm/gup.c: 51].
+
+---------------------------------------------------------------------
+32	static inline void sanity_check_pinned_pages(struct page
+**pages,
+33						     unsigned long
+npages)
+34	{
+35		if (!IS_ENABLED(CONFIG_DEBUG_VM))
+36			return;
+..
+50		for (; npages; npages--, pages++) {
+51			struct page *page = *pages;
+								^^^^^^
+^
+---------------------------------------------------------------------
+
+Else if (!IS_ENABLED(CONFIG_DEBUG_VM)) and (npages > 0) function
+'gup_folio_next' is called with 'pages' and 'npages' as parameters at
+[mm/gup.c: 311].
+
+---------------------------------------------------------------------
+312		for (i = 0; i < npages; i += nr) {
+313			folio = gup_folio_next(pages, npages, i, &nr);
+---------------------------------------------------------------------
+
+In function 'gup_folio_next' NULL pointer 'list' is dereferenced at
+[mm/gup.c: 263].
+
+---------------------------------------------------------------------
+262	static inline struct folio *gup_folio_next(struct page **list,
+263			unsigned long npages, unsigned long i,
+unsigned int *ntails)
+264	{
+265		struct folio *folio = page_folio(list[i]);
+								
+		^^^^^^^^^
+---------------------------------------------------------------------
+
