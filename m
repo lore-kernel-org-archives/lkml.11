@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB96C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 09:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB0FC38159
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 09:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344656AbiHTJZy (ORCPT
+        id S1344745AbiHTJZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 05:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47112 "EHLO
+        Sat, 20 Aug 2022 05:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244085AbiHTJZk (ORCPT
+        with ESMTP id S1344302AbiHTJZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 05:25:40 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA20A5FAD7;
-        Sat, 20 Aug 2022 02:25:38 -0700 (PDT)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851065AA10
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 02:25:39 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 25C021FA75;
-        Sat, 20 Aug 2022 09:25:37 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 206943435A;
+        Sat, 20 Aug 2022 09:25:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1660987537; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1660987538; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dNonIY2eSN2qALXA1xwqca8n1uiC2OZmHsAoG2ku6S4=;
-        b=V/DSldnei2N0b/QjoZVHWD91fOusf/NBo0/8KqkWOsov44+Zf25qNDINpw+6cJHaFuWV2n
-        sIcrQI04yUJyzSgBFXyN9sl+qQyIuu1oi2bh6+M/3sIkYTYNpNHAkgh4E1QpuICJVDdhgt
-        BKvehrmm4SOtEce3Ucp+OllxKvMFKgI=
+        bh=JDumrHgKrBNPtMTfhWyZ4csCcjK0/8ieooTma4S3Dm8=;
+        b=svZxP+pm6baKT31kYNqJaURbLddSo6zE8EiJggJc9DT217A0hg390iq3f4fncdBUcVjmeD
+        jA9kPvyw+AeFUXDl4ip2lT+++L70em15XET/aD6NthQMWxb6VQGxPoH0qTsjd1wix0sK+s
+        Yx+szNaUm2d2QxYpP2p6nI5l9fCYuh0=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D0E1B13440;
-        Sat, 20 Aug 2022 09:25:36 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C94FE13440;
+        Sat, 20 Aug 2022 09:25:37 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id 6DubMZCoAGPJMAAAMHmgww
-        (envelope-from <jgross@suse.com>); Sat, 20 Aug 2022 09:25:36 +0000
+        id 8G7BL5GoAGPJMAAAMHmgww
+        (envelope-from <jgross@suse.com>); Sat, 20 Aug 2022 09:25:37 +0000
 From:   Juergen Gross <jgross@suse.com>
 To:     xen-devel@lists.xenproject.org, x86@kernel.org,
         linux-kernel@vger.kernel.org
@@ -48,10 +48,10 @@ Cc:     Juergen Gross <jgross@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, stable@vger.kernel.org
-Subject: [PATCH v2 01/10] x86/mtrr: fix MTRR fixup on APs
-Date:   Sat, 20 Aug 2022 11:25:24 +0200
-Message-Id: <20220820092533.29420-2-jgross@suse.com>
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH v2 04/10] x86: move some code out of arch/x86/kernel/cpu/mtrr
+Date:   Sat, 20 Aug 2022 11:25:27 +0200
+Message-Id: <20220820092533.29420-5-jgross@suse.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220820092533.29420-1-jgross@suse.com>
 References: <20220820092533.29420-1-jgross@suse.com>
@@ -61,112 +61,306 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When booting or resuming the system MTRR state is saved on the boot
-processor and then this state is loaded into MTRRs of all other cpus.
-During update of the MTRRs the MTRR mechanism needs to be disabled by
-writing the related MSR. The old contents of this MSR are saved in a
-set of static variables and later those static variables are used to
-restore the MSR.
+Prepare making PAT and MTRR support independent from each other by
+moving some code needed by both out of the MTRR specific sources.
 
-In case the MSR contents need to be modified on a cpu due to the MSR
-not having been initialized properly by the BIOS, the related update
-function is modifying the static variables accordingly.
-
-Unfortunately the MTRR state update is usually running on all cpus
-at the same time, so using just one set of static variables for all
-cpus is racy in case the MSR contents differ across cpus.
-
-Fix that by using percpu variables for saving the MSR contents.
-
-Cc: stable@vger.kernel.org
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
-I thought adding a "Fixes:" tag for the kernel's initial git commit
-would maybe be entertaining, but without being really helpful.
-The percpu variables were preferred over on-stack ones in order to
-avoid more code churn in followup patches decoupling PAT from MTRR
-support.
 V2:
-- new patch
+- move code from cpu/common.c to cpu/cacheinfo.c (Boris Petkov)
 ---
- arch/x86/kernel/cpu/mtrr/generic.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/cacheinfo.h   |  3 ++
+ arch/x86/include/asm/mtrr.h        |  4 ++
+ arch/x86/kernel/cpu/cacheinfo.c    | 77 ++++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/mtrr/generic.c | 80 ++++--------------------------
+ 4 files changed, 93 insertions(+), 71 deletions(-)
 
+diff --git a/arch/x86/include/asm/cacheinfo.h b/arch/x86/include/asm/cacheinfo.h
+index 1aeafa9888f7..313a6920d0f9 100644
+--- a/arch/x86/include/asm/cacheinfo.h
++++ b/arch/x86/include/asm/cacheinfo.h
+@@ -10,4 +10,7 @@ extern unsigned int cache_generic;
+ void cacheinfo_amd_init_llc_id(struct cpuinfo_x86 *c, int cpu);
+ void cacheinfo_hygon_init_llc_id(struct cpuinfo_x86 *c, int cpu);
+ 
++void cache_disable(void);
++void cache_enable(void);
++
+ #endif /* _ASM_X86_CACHEINFO_H */
+diff --git a/arch/x86/include/asm/mtrr.h b/arch/x86/include/asm/mtrr.h
+index 76d726074c16..12a16caed395 100644
+--- a/arch/x86/include/asm/mtrr.h
++++ b/arch/x86/include/asm/mtrr.h
+@@ -48,6 +48,8 @@ extern void mtrr_aps_init(void);
+ extern void mtrr_bp_restore(void);
+ extern int mtrr_trim_uncached_memory(unsigned long end_pfn);
+ extern int amd_special_default_mtrr(void);
++void mtrr_disable(void);
++void mtrr_enable(void);
+ #  else
+ static inline u8 mtrr_type_lookup(u64 addr, u64 end, u8 *uniform)
+ {
+@@ -87,6 +89,8 @@ static inline void mtrr_centaur_report_mcr(int mcr, u32 lo, u32 hi)
+ #define set_mtrr_aps_delayed_init() do {} while (0)
+ #define mtrr_aps_init() do {} while (0)
+ #define mtrr_bp_restore() do {} while (0)
++#define mtrr_disable() do {} while (0)
++#define mtrr_enable() do {} while (0)
+ #  endif
+ 
+ #ifdef CONFIG_COMPAT
+diff --git a/arch/x86/kernel/cpu/cacheinfo.c b/arch/x86/kernel/cpu/cacheinfo.c
+index 3b05d3ade7a6..47e2c72fa8a4 100644
+--- a/arch/x86/kernel/cpu/cacheinfo.c
++++ b/arch/x86/kernel/cpu/cacheinfo.c
+@@ -20,6 +20,8 @@
+ #include <asm/cacheinfo.h>
+ #include <asm/amd_nb.h>
+ #include <asm/smp.h>
++#include <asm/mtrr.h>
++#include <asm/tlbflush.h>
+ 
+ #include "cpu.h"
+ 
+@@ -1043,3 +1045,78 @@ int populate_cache_leaves(unsigned int cpu)
+ 
+ 	return 0;
+ }
++
++/*
++ * Disable and enable caches. Needed for changing MTRRs and the PAT MSR.
++ *
++ * Since we are disabling the cache don't allow any interrupts,
++ * they would run extremely slow and would only increase the pain.
++ *
++ * The caller must ensure that local interrupts are disabled and
++ * are reenabled after cache_enable() has been called.
++ */
++static unsigned long saved_cr4;
++static DEFINE_RAW_SPINLOCK(cache_disable_lock);
++
++void cache_disable(void) __acquires(cache_disable_lock)
++{
++	unsigned long cr0;
++
++	/*
++	 * Note that this is not ideal
++	 * since the cache is only flushed/disabled for this CPU while the
++	 * MTRRs are changed, but changing this requires more invasive
++	 * changes to the way the kernel boots
++	 */
++
++	raw_spin_lock(&cache_disable_lock);
++
++	/* Enter the no-fill (CD=1, NW=0) cache mode and flush caches. */
++	cr0 = read_cr0() | X86_CR0_CD;
++	write_cr0(cr0);
++
++	/*
++	 * Cache flushing is the most time-consuming step when programming
++	 * the MTRRs. Fortunately, as per the Intel Software Development
++	 * Manual, we can skip it if the processor supports cache self-
++	 * snooping.
++	 */
++	if (!static_cpu_has(X86_FEATURE_SELFSNOOP))
++		wbinvd();
++
++	/* Save value of CR4 and clear Page Global Enable (bit 7) */
++	if (boot_cpu_has(X86_FEATURE_PGE)) {
++		saved_cr4 = __read_cr4();
++		__write_cr4(saved_cr4 & ~X86_CR4_PGE);
++	}
++
++	/* Flush all TLBs via a mov %cr3, %reg; mov %reg, %cr3 */
++	count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ALL);
++	flush_tlb_local();
++
++	if (boot_cpu_has(X86_FEATURE_MTRR))
++		mtrr_disable();
++
++	/* Again, only flush caches if we have to. */
++	if (!static_cpu_has(X86_FEATURE_SELFSNOOP))
++		wbinvd();
++}
++
++void cache_enable(void) __releases(cache_disable_lock)
++{
++	/* Flush TLBs (no need to flush caches - they are disabled) */
++	count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ALL);
++	flush_tlb_local();
++
++	if (boot_cpu_has(X86_FEATURE_MTRR))
++		mtrr_enable();
++
++	/* Enable caches */
++	write_cr0(read_cr0() & ~X86_CR0_CD);
++
++	/* Restore value of CR4 */
++	if (boot_cpu_has(X86_FEATURE_PGE))
++		__write_cr4(saved_cr4);
++
++	raw_spin_unlock(&cache_disable_lock);
++}
 diff --git a/arch/x86/kernel/cpu/mtrr/generic.c b/arch/x86/kernel/cpu/mtrr/generic.c
-index 558108296f3c..3d185fcf08ca 100644
+index 3c3c7919de5b..a9ac159b1566 100644
 --- a/arch/x86/kernel/cpu/mtrr/generic.c
 +++ b/arch/x86/kernel/cpu/mtrr/generic.c
-@@ -679,7 +679,8 @@ static bool set_mtrr_var_ranges(unsigned int index, struct mtrr_var_range *vr)
- 	return changed;
+@@ -10,6 +10,7 @@
+ #include <linux/mm.h>
+ 
+ #include <asm/processor-flags.h>
++#include <asm/cacheinfo.h>
+ #include <asm/cpufeature.h>
+ #include <asm/tlbflush.h>
+ #include <asm/mtrr.h>
+@@ -396,9 +397,6 @@ print_fixed(unsigned base, unsigned step, const mtrr_type *types)
+ 	}
  }
  
--static u32 deftype_lo, deftype_hi;
-+static DEFINE_PER_CPU(u32, deftype_lo);
-+static DEFINE_PER_CPU(u32, deftype_hi);
- 
- /**
-  * set_mtrr_state - Set the MTRR state for this CPU.
-@@ -691,6 +692,7 @@ static unsigned long set_mtrr_state(void)
+-static void prepare_set(void);
+-static void post_set(void);
+-
+ static void __init print_mtrr_state(void)
  {
- 	unsigned long change_mask = 0;
  	unsigned int i;
-+	u32 *lo = this_cpu_ptr(&deftype_lo);
+@@ -450,11 +448,11 @@ void __init mtrr_bp_pat_init(void)
+ 	unsigned long flags;
  
- 	for (i = 0; i < num_var_ranges; i++) {
- 		if (set_mtrr_var_ranges(i, &mtrr_state.var_ranges[i]))
-@@ -704,10 +706,10 @@ static unsigned long set_mtrr_state(void)
- 	 * Set_mtrr_restore restores the old value of MTRRdefType,
- 	 * so to set it we fiddle with the saved value:
- 	 */
--	if ((deftype_lo & 0xff) != mtrr_state.def_type
--	    || ((deftype_lo & 0xc00) >> 10) != mtrr_state.enabled) {
-+	if ((*lo & 0xff) != mtrr_state.def_type
-+	    || ((*lo & 0xc00) >> 10) != mtrr_state.enabled) {
+ 	local_irq_save(flags);
+-	prepare_set();
++	cache_disable();
  
--		deftype_lo = (deftype_lo & ~0xcff) | mtrr_state.def_type |
-+		*lo = (*lo & ~0xcff) | mtrr_state.def_type |
- 			     (mtrr_state.enabled << 10);
- 		change_mask |= MTRR_CHANGE_MASK_DEFTYPE;
- 	}
-@@ -729,6 +731,8 @@ static DEFINE_RAW_SPINLOCK(set_atomicity_lock);
- static void prepare_set(void) __acquires(set_atomicity_lock)
+ 	pat_init();
+ 
+-	post_set();
++	cache_enable();
+ 	local_irq_restore(flags);
+ }
+ 
+@@ -717,85 +715,25 @@ static unsigned long set_mtrr_state(void)
+ 	return change_mask;
+ }
+ 
+-
+-static unsigned long cr4;
+-static DEFINE_RAW_SPINLOCK(set_atomicity_lock);
+-
+-/*
+- * Since we are disabling the cache don't allow any interrupts,
+- * they would run extremely slow and would only increase the pain.
+- *
+- * The caller must ensure that local interrupts are disabled and
+- * are reenabled after post_set() has been called.
+- */
+-static void prepare_set(void) __acquires(set_atomicity_lock)
++void mtrr_disable(void)
  {
- 	unsigned long cr0;
-+	u32 *lo = this_cpu_ptr(&deftype_lo);
-+	u32 *hi = this_cpu_ptr(&deftype_hi);
+-	unsigned long cr0;
+ 	u32 *lo = this_cpu_ptr(&deftype_lo);
+ 	u32 *hi = this_cpu_ptr(&deftype_hi);
  
- 	/*
- 	 * Note that this is not ideal
-@@ -763,10 +767,10 @@ static void prepare_set(void) __acquires(set_atomicity_lock)
- 	flush_tlb_local();
- 
+-	/*
+-	 * Note that this is not ideal
+-	 * since the cache is only flushed/disabled for this CPU while the
+-	 * MTRRs are changed, but changing this requires more invasive
+-	 * changes to the way the kernel boots
+-	 */
+-
+-	raw_spin_lock(&set_atomicity_lock);
+-
+-	/* Enter the no-fill (CD=1, NW=0) cache mode and flush caches. */
+-	cr0 = read_cr0() | X86_CR0_CD;
+-	write_cr0(cr0);
+-
+-	/*
+-	 * Cache flushing is the most time-consuming step when programming
+-	 * the MTRRs. Fortunately, as per the Intel Software Development
+-	 * Manual, we can skip it if the processor supports cache self-
+-	 * snooping.
+-	 */
+-	if (!static_cpu_has(X86_FEATURE_SELFSNOOP))
+-		wbinvd();
+-
+-	/* Save value of CR4 and clear Page Global Enable (bit 7) */
+-	if (boot_cpu_has(X86_FEATURE_PGE)) {
+-		cr4 = __read_cr4();
+-		__write_cr4(cr4 & ~X86_CR4_PGE);
+-	}
+-
+-	/* Flush all TLBs via a mov %cr3, %reg; mov %reg, %cr3 */
+-	count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ALL);
+-	flush_tlb_local();
+-
  	/* Save MTRR state */
--	rdmsr(MSR_MTRRdefType, deftype_lo, deftype_hi);
-+	rdmsr(MSR_MTRRdefType, *lo, *hi);
+ 	rdmsr(MSR_MTRRdefType, *lo, *hi);
  
  	/* Disable MTRRs, and set the default type to uncached */
--	mtrr_wrmsr(MSR_MTRRdefType, deftype_lo & ~0xcff, deftype_hi);
-+	mtrr_wrmsr(MSR_MTRRdefType, *lo & ~0xcff, *hi);
+ 	mtrr_wrmsr(MSR_MTRRdefType, *lo & ~0xcff, *hi);
+-
+-	/* Again, only flush caches if we have to. */
+-	if (!static_cpu_has(X86_FEATURE_SELFSNOOP))
+-		wbinvd();
+ }
  
- 	/* Again, only flush caches if we have to. */
- 	if (!static_cpu_has(X86_FEATURE_SELFSNOOP))
-@@ -775,12 +779,15 @@ static void prepare_set(void) __acquires(set_atomicity_lock)
- 
- static void post_set(void) __releases(set_atomicity_lock)
+-static void post_set(void) __releases(set_atomicity_lock)
++void mtrr_enable(void)
  {
-+	u32 *lo = this_cpu_ptr(&deftype_lo);
-+	u32 *hi = this_cpu_ptr(&deftype_hi);
-+
- 	/* Flush TLBs (no need to flush caches - they are disabled) */
- 	count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ALL);
- 	flush_tlb_local();
+ 	u32 *lo = this_cpu_ptr(&deftype_lo);
+ 	u32 *hi = this_cpu_ptr(&deftype_hi);
  
+-	/* Flush TLBs (no need to flush caches - they are disabled) */
+-	count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ALL);
+-	flush_tlb_local();
+-
  	/* Intel (P6) standard MTRRs */
--	mtrr_wrmsr(MSR_MTRRdefType, deftype_lo, deftype_hi);
-+	mtrr_wrmsr(MSR_MTRRdefType, *lo, *hi);
+ 	mtrr_wrmsr(MSR_MTRRdefType, *lo, *hi);
+-
+-	/* Enable caches */
+-	write_cr0(read_cr0() & ~X86_CR0_CD);
+-
+-	/* Restore value of CR4 */
+-	if (boot_cpu_has(X86_FEATURE_PGE))
+-		__write_cr4(cr4);
+-	raw_spin_unlock(&set_atomicity_lock);
+ }
  
- 	/* Enable caches */
- 	write_cr0(read_cr0() & ~X86_CR0_CD);
+ static void generic_set_all(void)
+@@ -804,7 +742,7 @@ static void generic_set_all(void)
+ 	unsigned long flags;
+ 
+ 	local_irq_save(flags);
+-	prepare_set();
++	cache_disable();
+ 
+ 	/* Actually set the state */
+ 	mask = set_mtrr_state();
+@@ -812,7 +750,7 @@ static void generic_set_all(void)
+ 	/* also set PAT */
+ 	pat_init();
+ 
+-	post_set();
++	cache_enable();
+ 	local_irq_restore(flags);
+ 
+ 	/* Use the atomic bitops to update the global mask */
+@@ -843,7 +781,7 @@ static void generic_set_mtrr(unsigned int reg, unsigned long base,
+ 	vr = &mtrr_state.var_ranges[reg];
+ 
+ 	local_irq_save(flags);
+-	prepare_set();
++	cache_disable();
+ 
+ 	if (size == 0) {
+ 		/*
+@@ -862,7 +800,7 @@ static void generic_set_mtrr(unsigned int reg, unsigned long base,
+ 		mtrr_wrmsr(MTRRphysMask_MSR(reg), vr->mask_lo, vr->mask_hi);
+ 	}
+ 
+-	post_set();
++	cache_enable();
+ 	local_irq_restore(flags);
+ }
+ 
 -- 
 2.35.3
 
