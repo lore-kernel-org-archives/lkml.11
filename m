@@ -2,120 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8B6C28D13
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BC6C28D13
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 00:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244741AbiHTAGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 19 Aug 2022 20:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        id S244763AbiHTAGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 19 Aug 2022 20:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244394AbiHTAGN (ORCPT
+        with ESMTP id S241454AbiHTAGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 19 Aug 2022 20:06:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29DDC57B6;
-        Fri, 19 Aug 2022 17:06:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3ECF5CE2836;
-        Sat, 20 Aug 2022 00:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D478C433C1;
-        Sat, 20 Aug 2022 00:06:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660953968;
-        bh=bmY/rIg42sR+LftATW/o/kfBdIvBcTzPrp7h7embqQk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K39ZSV5fNmgcRWBMZwUdCZgWzZRx4KVPEHSqxIley39L2Z2hiBNBanX22WpWOfWNs
-         d15Ey+rZNSUwYf9js/7cqs3A2H+wTTFG5Ulkcy2RBlXLdCbePeSt/bQ6E6l4p/9SQ8
-         5Z8Ootp22+495DSeGwxqd6Zey02VUyOk2E8NmN5bnBdBNvz/ATRGex/EvcGPFBBDqH
-         VWc0FYVM4JTIZR6ahlo6DQ557864VIumRlzwgMuKA4bMr4nvtcd5M74wghck1FjlAp
-         HNWOgSTuJ7GIeSjlruT3QD0a7HzWwm2oGlU1QsG4ts4QbGQiWKUrmeFQbyTMBzplYu
-         tBO/GigY85Mow==
-Date:   Fri, 19 Aug 2022 17:06:06 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Keith Busch <kbusch@kernel.org>
-Subject: Re: [PATCH v4 6/9] f2fs: don't allow DIO reads but not DIO writes
-Message-ID: <YwAlbsorBsshkxfU@google.com>
-References: <20220722071228.146690-1-ebiggers@kernel.org>
- <20220722071228.146690-7-ebiggers@kernel.org>
- <YtyoF89iOg8gs7hj@google.com>
- <Yt7dCcG0ns85QqJe@sol.localdomain>
- <YuXyKh8Zvr56rR4R@google.com>
- <YvrrEcw4E+rpDLwM@sol.localdomain>
+        Fri, 19 Aug 2022 20:06:15 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767B9C57B6;
+        Fri, 19 Aug 2022 17:06:14 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id w11-20020a17090a380b00b001f73f75a1feso8918714pjb.2;
+        Fri, 19 Aug 2022 17:06:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=r0urdVAKZH+r97LU3eOMfx4g8PQ8jLK6FF0zKigNvZ0=;
+        b=F7WRHYVzB80o6Xs6BYj6XMW/5FwBtQufwFCIMWXu/epIA+D3qleqo0x7CGMZpQKrGL
+         Gmm3LkWQrH459OnhELRx5LWskchgCoR3eWcdPrP0+AmgTZF6w+89jQ7g59hZQCTcl2Lz
+         H0rEdxct6WCXlj0FfoC/JC4deTu5HW/y+uPpcyHBkKSDmyveedHlPsvPhofK8KMICn1r
+         waaUtsCgubmfywXryDGDg3ggKNS/XrgTLr0vBCbCaxd5gigcQMqPiP6emelbsDB1F3Ts
+         Mj5qOY2iw2/GSwuhlMUGS+J0c27FWLT4PL3xelDKwoQEdhTZdnO4MZ2XTVICqgYSLO7e
+         hxqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=r0urdVAKZH+r97LU3eOMfx4g8PQ8jLK6FF0zKigNvZ0=;
+        b=LkUMjl4qdvqDbShPdgONvL2iNV7GhyVu5//NTt0sFku+g277rJMEELpfvKMAsjFGvZ
+         liWOb+JVRU7R39aTTL61zK8n4FngW+XZ195Z++qgvJGo5vSi3J7ALnEjEa6+FChVl0/R
+         eFZmEcFPmvVninF6w5kWXuzMHUvHYFgb4JKKU+N6iwnV2kyXjW0XU2WWIgPLMBxSn/gt
+         rTv5R527LX8aPW/5XngxV0YfvzZmJm7qJR3jwi+Lfvbjd8EAFYV+sHns+14w/Sx4eM6P
+         dfVQKppcalTwvNpKEG7o5qZLsLh30gbuouMKi9VNF24bPv1QlY7EaPDFljMnhiWKBSfx
+         mx+w==
+X-Gm-Message-State: ACgBeo1/3TLK8Rl02aW3BvIMzP5eGJh4jv25Kn/leycp/L3P7iakZWoV
+        gVG8JHbbJTfGaJGwC8Pn7cU=
+X-Google-Smtp-Source: AA6agR65e1YvovHGewqdWxEyf+s95nV04zXCKXFK1+we8tiYqDmHn0f1gDC1TK6V2ZKGNWIQE9X8+w==
+X-Received: by 2002:a17:902:b28c:b0:172:cfe4:bd2b with SMTP id u12-20020a170902b28c00b00172cfe4bd2bmr1076728plr.44.1660953973499;
+        Fri, 19 Aug 2022 17:06:13 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:a2f5])
+        by smtp.gmail.com with ESMTPSA id i25-20020a631319000000b0041d9e78de05sm3280960pgl.73.2022.08.19.17.06.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 17:06:13 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+From:   Tejun Heo <tj@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 6/7] kernfs: Allow kernfs nodes to be deactivated and re-activated
+Date:   Fri, 19 Aug 2022 14:05:50 -1000
+Message-Id: <20220820000550.367085-7-tj@kernel.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220820000550.367085-1-tj@kernel.org>
+References: <20220820000550.367085-1-tj@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvrrEcw4E+rpDLwM@sol.localdomain>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/15, Eric Biggers wrote:
-> On Sat, Jul 30, 2022 at 08:08:26PM -0700, Jaegeuk Kim wrote:
-> > On 07/25, Eric Biggers wrote:
-> > > On Sat, Jul 23, 2022 at 07:01:59PM -0700, Jaegeuk Kim wrote:
-> > > > On 07/22, Eric Biggers wrote:
-> > > > > From: Eric Biggers <ebiggers@google.com>
-> > > > > 
-> > > > > Currently, if an f2fs filesystem is mounted with the mode=lfs and
-> > > > > io_bits mount options, DIO reads are allowed but DIO writes are not.
-> > > > > Allowing DIO reads but not DIO writes is an unusual restriction, which
-> > > > > is likely to be surprising to applications, namely any application that
-> > > > > both reads and writes from a file (using O_DIRECT).  This behavior is
-> > > > > also incompatible with the proposed STATX_DIOALIGN extension to statx.
-> > > > > Given this, let's drop the support for DIO reads in this configuration.
-> > > > 
-> > > > IIRC, we allowed DIO reads since applications complained a lower performance.
-> > > > So, I'm afraid this change will make another confusion to users. Could
-> > > > you please apply the new bahavior only for STATX_DIOALIGN?
-> > > > 
-> > > 
-> > > Well, the issue is that the proposed STATX_DIOALIGN fields cannot represent this
-> > > weird case where DIO reads are allowed but not DIO writes.  So the question is
-> > > whether this case actually matters, in which case we should make STATX_DIOALIGN
-> > > distinguish between DIO reads and DIO writes, or whether it's some odd edge case
-> > > that doesn't really matter, in which case we could just fix it or make
-> > > STATX_DIOALIGN report that DIO is unsupported.  I was hoping that you had some
-> > > insight here.  What sort of applications want DIO reads but not DIO writes?
-> > > Is this common at all?
-> > 
-> > I think there's no specific application to use the LFS mode at this
-> > moment, but I'd like to allow DIO read for zoned device which will be
-> > used for Android devices.
-> > 
-> 
-> So if the zoned device feature becomes widely adopted, then STATX_DIOALIGN will
-> be useless on all Android devices?  That sounds undesirable. 
+Currently, kernfs nodes can be created deactivated and activated later to
+allow creation of multiple nodes to succeed or fail as a group. Extend this
+capability so that kernfs nodes can be deactivated and re-activated anytime
+and however many times. This can be used to toggle interface files for
+features which can be dynamically turned on and off.
 
-Do you have a plan to adopt STATX_DIOALIGN in android?
+kernfs_activate()'s skip conditions are updated so that it doesn't ignore
+re-activations and suppress re-activations of files which are being removed.
 
-> Are you sure that
-> supporting DIO reads but not DIO writes actually works?  Does it not cause
-> problems for existing applications?
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: Chengming Zhou <zhouchengming@bytedance.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+---
+ fs/kernfs/dir.c        | 89 ++++++++++++++++++++++++++++++------------
+ include/linux/kernfs.h |  2 +
+ 2 files changed, 65 insertions(+), 26 deletions(-)
 
-I haven't heard any issue so far.
+diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
+index f857731598cd..6db031362585 100644
+--- a/fs/kernfs/dir.c
++++ b/fs/kernfs/dir.c
+@@ -483,7 +483,7 @@ static bool kernfs_drain(struct kernfs_node *kn)
+ 	 * worrying about draining.
+ 	 */
+ 	if (atomic_read(&kn->active) == KN_DEACTIVATED_BIAS &&
+-	    kernfs_should_drain_open_files(kn))
++	    !kernfs_should_drain_open_files(kn))
+ 		return false;
+ 
+ 	up_write(&root->kernfs_rwsem);
+@@ -1321,14 +1321,15 @@ static struct kernfs_node *kernfs_next_descendant_post(struct kernfs_node *pos,
+ }
+ 
+ /**
+- * kernfs_activate - activate a node which started deactivated
++ * kernfs_activate - activate a node's subtree
+  * @kn: kernfs_node whose subtree is to be activated
+  *
+- * If the root has KERNFS_ROOT_CREATE_DEACTIVATED set, a newly created node
+- * needs to be explicitly activated.  A node which hasn't been activated
+- * isn't visible to userland and deactivation is skipped during its
+- * removal.  This is useful to construct atomic init sequences where
+- * creation of multiple nodes should either succeed or fail atomically.
++ * If newly created on a root w/ %KERNFS_ROOT_CREATE_DEACTIVATED or after a
++ * kernfs_deactivate() call, @kn is deactivated and invisible to userland. This
++ * function activates all nodes in @kn's inclusive subtree making them visible.
++ *
++ * %KERNFS_ROOT_CREATE_DEACTIVATED is useful when constructing init sequences
++ * where creation of multiple nodes should either succeed or fail atomically.
+  *
+  * The caller is responsible for ensuring that this function is not called
+  * after kernfs_remove*() is invoked on @kn.
+@@ -1342,7 +1343,7 @@ void kernfs_activate(struct kernfs_node *kn)
+ 
+ 	pos = NULL;
+ 	while ((pos = kernfs_next_descendant_post(pos, kn))) {
+-		if (pos->flags & KERNFS_ACTIVATED)
++		if (kernfs_active(pos) || (kn->flags & KERNFS_REMOVING))
+ 			continue;
+ 
+ 		WARN_ON_ONCE(pos->parent && RB_EMPTY_NODE(&pos->rb));
+@@ -1355,6 +1356,58 @@ void kernfs_activate(struct kernfs_node *kn)
+ 	up_write(&root->kernfs_rwsem);
+ }
+ 
++static void kernfs_deactivate_locked(struct kernfs_node *kn, bool removing)
++{
++	struct kernfs_root *root = kernfs_root(kn);
++	struct kernfs_node *pos;
++
++	lockdep_assert_held_write(&root->kernfs_rwsem);
++
++	/* prevent any new usage under @kn by deactivating all nodes */
++	pos = NULL;
++	while ((pos = kernfs_next_descendant_post(pos, kn))) {
++		if (kernfs_active(pos))
++			atomic_add(KN_DEACTIVATED_BIAS, &pos->active);
++		if (removing)
++			pos->flags |= KERNFS_REMOVING;
++	}
++
++	/*
++	 * No new active usage can be created. Drain existing ones. As
++	 * kernfs_drain() may drop kernfs_rwsem temporarily, pin @pos so that it
++	 * doesn't go away underneath us.
++	 *
++	 * If kernfs_rwsem was released, restart from the beginning. Forward
++	 * progress is guaranteed as a drained node is guaranteed to stay
++	 * drained. In the unlikely case that the loop restart ever becomes a
++	 * problem, we should be able to work around by batching up the
++	 * draining.
++	 */
++	pos = NULL;
++	while ((pos = kernfs_next_descendant_post(pos, kn))) {
++		kernfs_get(pos);
++		if (kernfs_drain(pos))
++			pos = NULL;
++		kernfs_put(pos);
++	}
++}
++
++/**
++ * kernfs_deactivate - deactivate a node's subtree
++ * @kn: kernfs_node whose subtree is to be deactivated
++ *
++ * Deactivate @kn's inclusive subtree. On return, the subtree is invisible to
++ * userland and there are no in-flight file operations.
++ */
++void kernfs_deactivate(struct kernfs_node *kn)
++{
++	struct kernfs_root *root = kernfs_root(kn);
++
++	down_write(&root->kernfs_rwsem);
++	kernfs_deactivate_locked(kn, false);
++	up_write(&root->kernfs_rwsem);
++}
++
+ static void __kernfs_remove(struct kernfs_node *kn)
+ {
+ 	struct kernfs_node *pos;
+@@ -1374,26 +1427,12 @@ static void __kernfs_remove(struct kernfs_node *kn)
+ 
+ 	pr_debug("kernfs %s: removing\n", kn->name);
+ 
+-	/* prevent any new usage under @kn by deactivating all nodes */
+-	pos = NULL;
+-	while ((pos = kernfs_next_descendant_post(pos, kn)))
+-		if (kernfs_active(pos))
+-			atomic_add(KN_DEACTIVATED_BIAS, &pos->active);
++	kernfs_deactivate_locked(kn, true);
+ 
+-	/* deactivate and unlink the subtree node-by-node */
++	/* unlink the subtree node-by-node */
+ 	do {
+ 		pos = kernfs_leftmost_descendant(kn);
+ 
+-		/*
+-		 * kernfs_drain() may drop kernfs_rwsem temporarily and @pos's
+-		 * base ref could have been put by someone else by the time
+-		 * the function returns.  Make sure it doesn't go away
+-		 * underneath us.
+-		 */
+-		kernfs_get(pos);
+-
+-		kernfs_drain(pos);
+-
+ 		/*
+ 		 * kernfs_unlink_sibling() succeeds once per node.  Use it
+ 		 * to decide who's responsible for cleanups.
+@@ -1410,8 +1449,6 @@ static void __kernfs_remove(struct kernfs_node *kn)
+ 
+ 			kernfs_put(pos);
+ 		}
+-
+-		kernfs_put(pos);
+ 	} while (pos != kn);
+ }
+ 
+diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
+index 367044d7708c..657eea1395b6 100644
+--- a/include/linux/kernfs.h
++++ b/include/linux/kernfs.h
+@@ -112,6 +112,7 @@ enum kernfs_node_flag {
+ 	KERNFS_SUICIDED		= 0x0800,
+ 	KERNFS_EMPTY_DIR	= 0x1000,
+ 	KERNFS_HAS_RELEASE	= 0x2000,
++	KERNFS_REMOVING		= 0x4000,
+ };
+ 
+ /* @flags for kernfs_create_root() */
+@@ -429,6 +430,7 @@ struct kernfs_node *kernfs_create_link(struct kernfs_node *parent,
+ 				       const char *name,
+ 				       struct kernfs_node *target);
+ void kernfs_activate(struct kernfs_node *kn);
++void kernfs_deactivate(struct kernfs_node *kn);
+ void kernfs_remove(struct kernfs_node *kn);
+ void kernfs_break_active_protection(struct kernfs_node *kn);
+ void kernfs_unbreak_active_protection(struct kernfs_node *kn);
+-- 
+2.37.2
 
-> 
-> What we need to do is make a decision about whether this means we should build
-> in a stx_dio_direction field (indicating no support / readonly support /
-> writeonly support / readwrite support) into the API from the beginning.  If we
-> don't do that, then I don't think we could simply add such a field later, as the
-> statx_dio_*_align fields will have already been assigned their meaning.  I think
-> we'd instead have to "duplicate" the API, with STATX_DIOROALIGN and
-> statx_dio_ro_*_align fields.  That seems uglier than building a directional
-> indicator into the API from the beginning.  On the other hand, requiring all
-> programs to check stx_dio_direction would add complexity to using the API.
-> 
-> Any thoughts on this?
-
-I haven't seen the details of the implementation tho, why not supporting it
-only if filesystem has the same DIO RW policy?
-
-> 
-> - Eric
