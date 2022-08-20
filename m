@@ -2,187 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA90C32774
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A852DC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 12:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346379AbiHTMbW (ORCPT
+        id S1346399AbiHTMcD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 08:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
+        Sat, 20 Aug 2022 08:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345769AbiHTMbT (ORCPT
+        with ESMTP id S1345561AbiHTMb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 08:31:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552231054C;
-        Sat, 20 Aug 2022 05:31:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB03A6123B;
-        Sat, 20 Aug 2022 12:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA29DC433D6;
-        Sat, 20 Aug 2022 12:31:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660998675;
-        bh=Q7HkaVpw73+qdb/ZssCELVufl4/sqZYU7DccPj0VY0U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Av+9dCDcK4VGU/nX+lKWGQn5ubXXk/pyDBKca5v4mhpBRH/gOcf+Lhpf9VlEeIbGd
-         PdR7rTsPggcruxkjRHIwYBSM8gHLprIjNzZV9KHz3QQeRiVS/1gh7xoqH7o7yP5O3x
-         RKkzLXDtMhiwz1RYt+YU51k7e+lHQYy0u+NQZZWx2hsWlkPSvXJOUkXcNQClrs/gu/
-         VtrZlC82kool1Wx9agFCppyNaLE7Sj+MI7jF6UXheZp0FXKeq9opwnHFBGxJFlkPwr
-         5VKiLNhznhOgjDxxo/ZfQvNJvOmngKT0XWe5BOnnBI9GfLP5OD5SZfVGVlhvyUZEhE
-         uv7HUynxE3+bA==
-Date:   Sat, 20 Aug 2022 13:41:50 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        Sat, 20 Aug 2022 08:31:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC83E6BCD2
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 05:31:57 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oPNdn-0005aE-Mi; Sat, 20 Aug 2022 14:31:51 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oPNdk-0002pe-TW; Sat, 20 Aug 2022 14:31:48 +0200
+Date:   Sat, 20 Aug 2022 14:31:48 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     devicetree@vger.kernel.org, kernel@pengutronix.de,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 4/9] iio: adc: mcp3911: use resource-managed version
- of iio_device_register
-Message-ID: <20220820134150.2b45339c@jic23-huawei>
-In-Reply-To: <20220815061625.35568-5-marcus.folkesson@gmail.com>
-References: <20220815061625.35568-1-marcus.folkesson@gmail.com>
-        <20220815061625.35568-5-marcus.folkesson@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        David Jander <david@protonic.nl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next v1 7/7] ethtool: add interface to interact with
+ Ethernet Power Equipment
+Message-ID: <20220820123148.GH10138@pengutronix.de>
+References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+ <20220819120109.3857571-8-o.rempel@pengutronix.de>
+ <Yv/9XVjRaa5jwpBo@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yv/9XVjRaa5jwpBo@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 08:16:20 +0200
-Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
-
-> Keep using managed resources as much as possible.
+On Fri, Aug 19, 2022 at 11:15:09PM +0200, Andrew Lunn wrote:
+> > $ ip l
+> > ...
+> > 5: t1l1@eth0: <BROADCAST,MULTICAST> ..
+> > ...
+> > 
+> > $ ethtool --show-pse t1l1
+> > PSE attributs for t1l1:
+> > PoDL PSE Admin State: disabled
+> > PoDL PSE Power Detection Status: disabled
+> > 
+> > $ ethtool --set-pse t1l1 podl-pse-admin-control enable
+> > $ ethtool --show-pse t1l1
+> > PSE attributs for t1l1:
+> > PoDL PSE Admin State: enabled
+> > PoDL PSE Power Detection Status: delivering power
 > 
-> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ---
->  drivers/iio/adc/mcp3911.c | 53 ++++++++++++---------------------------
->  1 file changed, 16 insertions(+), 37 deletions(-)
+> Here you seem to indicate that delivering power is totally independent
+> of the interface admin status, <BROADCAST,MULTICAST>. The interface is
+> admin down, yet you can make it deliver power. I thought there might
+> be a link between interface admin status and power? Do the standards
+> say anything about this? Is there some sort of industrial norm?
 > 
-> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-> index 890af7dca62d..7e2efe702e57 100644
-> --- a/drivers/iio/adc/mcp3911.c
-> +++ b/drivers/iio/adc/mcp3911.c
-> @@ -258,6 +258,13 @@ static int mcp3911_config(struct mcp3911 *adc)
->  	return  mcp3911_write(adc, MCP3911_REG_CONFIG, configreg, 2);
->  }
->  
-> +static void mcp3911_cleanup_regulator(void *_adc)
+> I'm also wondering about the defaults. It seems like the defaults you
+> are proposing is power is off by default, and you have to use ethtool
+> to enable power. That does not seem like the most friendly
+> settings. Why not an 'auto' mode where if the PHY has PoDL PSE
+> capabilities, on ifup it is enabled, on ifdown it is disabled? And you
+> can put it into a 'manual' mode where you control it independent of
+> administrative status of the interface?
 
-Missed this on previous versions, but why not pass
-the regulator pointer in as the parameter for the callback?
+Hm. I would say, safe option is to enable PSE manually. Here are my
+reasons:
+- some system may require to have power be enabled on boot, before we
+  start to care about administrative state of the interface.
+- in some cases powered device should stay enabled, even if we do
+  ifup/ifdown
 
-static void mcp391_cleanup_regulator(void *reg)
-{
-	regulator_disable(adc->vref);
-}
+I assume, safe defaults should be:
+- keep PSE always off, except system was configured to enable it on
+  boot.
+- keep PSE on after it was enabled, even on if up/down
+- bind PSE admin state to the interface state only if user explicitly
+  requested it.
 
-Note this can't use the new devm_regulator_get_enable()
-because we need access to the regulator within the driver.
+At this round is only default, manual mode is implemented. Automatic
+mode can be added later if needed.
 
-I can tidy this up whilst applying (or given it's really minor I might
-not bother :)
+These are my points, but i'm open for discussion.
 
-Note we are stalled at the moment with this series on getting the
-fixes upstream.  I'll probably send that pull request shortly.
-
-> +{
-> +	struct mcp3911 *adc = _adc;
-> +
-> +	regulator_disable(adc->vref);
-> +}
-> +
->  static int mcp3911_probe(struct spi_device *spi)
->  {
->  	struct iio_dev *indio_dev;
-> @@ -286,9 +293,14 @@ static int mcp3911_probe(struct spi_device *spi)
->  		ret = regulator_enable(adc->vref);
->  		if (ret)
->  			return ret;
-> +
-> +		ret = devm_add_action_or_reset(&spi->dev,
-> +				mcp3911_cleanup_regulator, adc);
-> +		if (ret)
-> +			return ret;
->  	}
->  
-> -	adc->clki = devm_clk_get(&adc->spi->dev, NULL);
-> +	adc->clki = devm_clk_get_enabled(&adc->spi->dev, NULL);
->  	if (IS_ERR(adc->clki)) {
->  		if (PTR_ERR(adc->clki) == -ENOENT) {
->  			adc->clki = NULL;
-> @@ -296,21 +308,13 @@ static int mcp3911_probe(struct spi_device *spi)
->  			dev_err(&adc->spi->dev,
->  				"failed to get adc clk (%ld)\n",
->  				PTR_ERR(adc->clki));
-> -			ret = PTR_ERR(adc->clki);
-> -			goto reg_disable;
-> -		}
-> -	} else {
-> -		ret = clk_prepare_enable(adc->clki);
-> -		if (ret < 0) {
-> -			dev_err(&adc->spi->dev,
-> -				"Failed to enable clki: %d\n", ret);
-> -			goto reg_disable;
-> +			return PTR_ERR(adc->clki);
->  		}
->  	}
->  
->  	ret = mcp3911_config(adc);
->  	if (ret)
-> -		goto clk_disable;
-> +		return ret;
->  
->  	indio_dev->name = spi_get_device_id(spi)->name;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> @@ -322,31 +326,7 @@ static int mcp3911_probe(struct spi_device *spi)
->  
->  	mutex_init(&adc->lock);
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret)
-> -		goto clk_disable;
-> -
-> -	return ret;
-> -
-> -clk_disable:
-> -	clk_disable_unprepare(adc->clki);
-> -reg_disable:
-> -	if (adc->vref)
-> -		regulator_disable(adc->vref);
-> -
-> -	return ret;
-> -}
-> -
-> -static void mcp3911_remove(struct spi_device *spi)
-> -{
-> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> -	struct mcp3911 *adc = iio_priv(indio_dev);
-> -
-> -	iio_device_unregister(indio_dev);
-> -
-> -	clk_disable_unprepare(adc->clki);
-> -	if (adc->vref)
-> -		regulator_disable(adc->vref);
-> +	return devm_iio_device_register(&adc->spi->dev, indio_dev);
->  }
->  
->  static const struct of_device_id mcp3911_dt_ids[] = {
-> @@ -367,7 +347,6 @@ static struct spi_driver mcp3911_driver = {
->  		.of_match_table = mcp3911_dt_ids,
->  	},
->  	.probe = mcp3911_probe,
-> -	.remove = mcp3911_remove,
->  	.id_table = mcp3911_id,
->  };
->  module_spi_driver(mcp3911_driver);
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
