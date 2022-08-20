@@ -2,88 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7758C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 18:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 131B9C32789
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 18:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbiHTSAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 14:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
+        id S231292AbiHTSBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 14:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiHTSAh (ORCPT
+        with ESMTP id S229517AbiHTSBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 14:00:37 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3C62A710
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:00:36 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id u15so5522141ejt.6
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:00:36 -0700 (PDT)
+        Sat, 20 Aug 2022 14:01:47 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EC62A710
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:01:45 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id q2so6993639edb.6
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:01:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=dWDV/5GVcx0ceVlPM2V+MXtiSomLloUDOadV6lqtfMg=;
-        b=JiEBkifvfg0lWSRIxGwa+OENQ+A+yfxE3zt8rjdb/C/QQhREWZifNHSEEWG51lNFoR
-         egp/MFromiOsaLYfI2u1yWKIdkgNy1lFRnL8obL1p5piurJ8vfKOzI12VPklVAnnOr4h
-         JqIlugN2d7y3B2kzkAzq8HHFC6IOsAVEv7AXQTn8Db+wuhy4UgbHXK75Y+Z8iKjNTgTn
-         mgqYFOj/P52jfp+W6TlsCUNWaXnw2ZBedihrHhyf45omFxKnIHsuZYEjKTcb0nHeaw34
-         RjtQK/KHiKZ+AFKqakDs6Fv9Od5+we5R/nir2k1Z12zZsWc/NcOZYZsRa5tgt8FBp2Gp
-         PKiw==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=G+grvKBjCAQ23nLTFvq8USGall6C9xqY2mA86Y/AIhg=;
+        b=SYklTh+ZwnMHWr4R06atDe3bNDPz4t2IeKWXhf7HPywfl6qH94d9DSEihQoh0xngE0
+         XKWaUMFaQk9rTFuW/5QCgAlRDnxEc2e5l7rgkgu+L9A1qk4JMZv0EYyBB0jYVnvx9jg6
+         lKj6YE42n9OLAQdDgjl0d/ayYaY3d/MdB07LY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=dWDV/5GVcx0ceVlPM2V+MXtiSomLloUDOadV6lqtfMg=;
-        b=HwHRhKc9Epm2I1wg4VezVxtBSfxSnq53fbM5nzUrhrrgD3UMwsB7fifu788UHbD2u/
-         G+JFHUJfFaGzGT4oaM7Cv9reyQ3aiTMV9HfDds40yjVo8ekCp6cFwOdjHWhhdmqh5UoN
-         VQnFDeq/DHLP6FCMoG4b4uaf5bnmcj2bSXUtA/OKGrx/FhW6jn1I1/60Degen1KQPYuo
-         TTktD0pBq79O118n0LHRP7XFBgRxbCFQZzCmnMAZMirtx0yyxJdiz2bH1fDHhW5JVg43
-         2kAN8hkXDmWNS3J/WA216PaSwTbNdimsUwx0e4oLjm4cWZnT+q/RZ68D8o/fpcoJb0He
-         K52g==
-X-Gm-Message-State: ACgBeo16dTApeiv4Iq61+akF1CftNubv6xki2UkFa76H9cJ8C/vTpps5
-        DwOU0Shvc1vMeMkJS3SXP0s=
-X-Google-Smtp-Source: AA6agR727ufje9R4miZjxMKOqFBcm7cPFP4BNgnDN69z8tkeYwUpFtDqh6qCLsiin3KTUKI8kTQByg==
-X-Received: by 2002:a17:907:1c1f:b0:73d:6883:9869 with SMTP id nc31-20020a1709071c1f00b0073d68839869mr1894852ejc.241.1661018434912;
-        Sat, 20 Aug 2022 11:00:34 -0700 (PDT)
-Received: from nam-dell.vm.stuba.sk ([147.175.88.220])
-        by smtp.gmail.com with ESMTPSA id x19-20020aa7d6d3000000b00445e037345csm4938841edr.14.2022.08.20.11.00.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Aug 2022 11:00:34 -0700 (PDT)
-From:   Nam Cao <namcaov@gmail.com>
-To:     hdegoede@redhat.com
-Cc:     Larry.Finger@lwfinger.net, gregkh@linuxfoundation.org,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, lkp@intel.com, namcaov@gmail.com
-Subject: [PATCH v3 2/3] staging: rtl8723bs: remove member noise_level from struct dm_odm_t
-Date:   Sat, 20 Aug 2022 20:00:03 +0200
-Message-Id: <5a8256d3823baaa72775da80d821749dfbda7ad4.1661018051.git.namcaov@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1661018051.git.namcaov@gmail.com>
-References: <cover.1661018051.git.namcaov@gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=G+grvKBjCAQ23nLTFvq8USGall6C9xqY2mA86Y/AIhg=;
+        b=vNCC6dZDu4qp7+efMplqyDri0cyW3y2Zc8Nh+ZozKz7mY2jIS/aZoS6laAkytJHhM7
+         cmNN3QuCG/hBQum/t9sKrLieWJTgsnSgWzZrcg9d7vSWl9hS4JQwi1gdLvMeEj7HQxDg
+         Zwv8ZC7jelJyb4a6CdRZ95clEs6ywLe3OukeDI5qFL/vjzheSQO5aNwuQ4nOctKqKJeP
+         /GHdfotlOXxPUlqqmBeXFIpvC5HJ5rkB+CzUo8JX56kSda3iTdrD7vGYKpj1B1PdcJ/W
+         AhWy2IPp+OstBfb5O3s3SyKxUy+zfM3DRVVDKQbZ2uTzuEzeBvKZGNDO6qj0Mfnq6dAG
+         Flaw==
+X-Gm-Message-State: ACgBeo01n7E5BiioVrqMDoD4KoZMINKBNx2ayR8P4fhNbQexYJAdA4uV
+        n34/GLIluW2p8He8ntK6loluSsibzr9xuE9b
+X-Google-Smtp-Source: AA6agR5HrotqV9J9b+deO3buxyUeeIGdz6flLVNy78GMXkIu2an4AiuigWZr/XprPfrI1M81yZtiAg==
+X-Received: by 2002:a05:6402:5008:b0:440:941a:93c3 with SMTP id p8-20020a056402500800b00440941a93c3mr10331093eda.47.1661018503279;
+        Sat, 20 Aug 2022 11:01:43 -0700 (PDT)
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
+        by smtp.gmail.com with ESMTPSA id kx26-20020a170907775a00b0073cb0801104sm2870471ejc.147.2022.08.20.11.01.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Aug 2022 11:01:42 -0700 (PDT)
+Received: by mail-wm1-f47.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso3964985wmb.2
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 11:01:42 -0700 (PDT)
+X-Received: by 2002:a05:600c:2195:b0:3a6:b3c:c100 with SMTP id
+ e21-20020a05600c219500b003a60b3cc100mr7623351wme.8.1661018502110; Sat, 20 Aug
+ 2022 11:01:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YwBWJYU9BjnGBy2c@ZenIV> <20220820033730.1498392-1-viro@zeniv.linux.org.uk>
+ <20220820033730.1498392-4-viro@zeniv.linux.org.uk>
+In-Reply-To: <20220820033730.1498392-4-viro@zeniv.linux.org.uk>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 20 Aug 2022 11:01:26 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgLzPq42K8w8M6u__p8fu-FbN6VwvhE3Vvu9n_Pb0kwUQ@mail.gmail.com>
+Message-ID: <CAHk-=wgLzPq42K8w8M6u__p8fu-FbN6VwvhE3Vvu9n_Pb0kwUQ@mail.gmail.com>
+Subject: Re: [PATCH 4/7] termios: consolidate values for VDISCARD in INIT_C_CC
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-because it is not used.
+On Fri, Aug 19, 2022 at 8:37 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> However, util-linux still resets it to ^O on any architecture,
+> ^O is the historical value, kernel ignores it anyway and finally,
+> Linus said "Just change everybody to do the same, nobody cares
+> about VDISCARD".
 
-Signed-off-by: Nam Cao <namcaov@gmail.com>
----
- drivers/staging/rtl8723bs/hal/odm.h | 1 -
- 1 file changed, 1 deletion(-)
+Heh. Grepping for DISCARD_CHAR() shows that there literally doesn't
+seem to be any user.
 
-diff --git a/drivers/staging/rtl8723bs/hal/odm.h b/drivers/staging/rtl8723bs/hal/odm.h
-index 19cfc2915458..033f22b0f394 100644
---- a/drivers/staging/rtl8723bs/hal/odm.h
-+++ b/drivers/staging/rtl8723bs/hal/odm.h
-@@ -863,7 +863,6 @@ struct dm_odm_t { /* DM_Out_Source_Dynamic_Mechanism_Structure */
- 	u8 Adaptivity_IGI_upper;
- 	u8 NHM_cnt_0;
- 
--	struct odm_noise_monitor noise_level;/* ODM_MAX_CHANNEL_NUM]; */
- 	/*  */
- 	/* 2 Define STA info. */
- 	/*  _ODM_STA_INFO */
--- 
-2.25.1
+I  guess some user space program could care what the initial value is,
+but it seems very unlikely.
 
+                Linus
