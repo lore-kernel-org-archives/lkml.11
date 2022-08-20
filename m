@@ -2,134 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D31EDC25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D83C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 20 Aug 2022 11:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344938AbiHTLL4 (ORCPT
+        id S1344891AbiHTLSg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 07:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
+        Sat, 20 Aug 2022 07:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241900AbiHTLLw (ORCPT
+        with ESMTP id S241192AbiHTLSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 07:11:52 -0400
+        Sat, 20 Aug 2022 07:18:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1532082F99;
-        Sat, 20 Aug 2022 04:11:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB7217585;
+        Sat, 20 Aug 2022 04:18:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D406112F;
-        Sat, 20 Aug 2022 11:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4365FC433C1;
-        Sat, 20 Aug 2022 11:11:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF628611B6;
+        Sat, 20 Aug 2022 11:18:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E52CAC433D6;
+        Sat, 20 Aug 2022 11:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660993911;
-        bh=y2vku3FvPEfhoYdiY4rx+MWU5/bKcGIj2zg4fjtZwDw=;
+        s=k20201202; t=1660994309;
+        bh=kELYW5Oc9wfTfaOtjKzFb+oTCYYXKgWBwjVIEpvSZzo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cfDBajFqZs2e5jtj1TVRYAWlgl/C7kQU5PFChAh8IJpnpCN/5P+F3RhJmgmkt/Mtv
-         HUkiqt0GmzzaQ8+q/5nxxKqKe13ld6PlexUmE63OLTd3mWpgljCWR/ndsk9mO0iG1i
-         8b303WgAlYaQVCDggRWNBXlHi1eHw2PkUlxLjxWBgkQVJ+Zr801w+jf8PPgJgBX7nK
-         RBgqOc0PAlJ2lWpXl/plS1imOt2ILBHDMjZ6+RWc20qXjrrN2/NL3Y0I3d2lqXGc5z
-         YQmd+ud0rxT71I+9XZUfID7uuYERty50h8+GuIMMeIK++8XL0mlGVcFo1yxZPdQHUq
-         1sD8hcWYCkmKw==
-Date:   Sat, 20 Aug 2022 12:22:26 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Xiang wangx <wangxiang@cdjrlc.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 08/14] iio: bmg160_core: Simplify using
- devm_regulator_*get_enable()
-Message-ID: <20220820122226.7f7d1b1a@jic23-huawei>
-In-Reply-To: <3fd11489356b1c73a3d7b4bd9dec7e12c9fe8788.1660934107.git.mazziesaccount@gmail.com>
-References: <cover.1660934107.git.mazziesaccount@gmail.com>
-        <3fd11489356b1c73a3d7b4bd9dec7e12c9fe8788.1660934107.git.mazziesaccount@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
+        b=OKXpMSJ9vYjGxuMUK4WJCfaAgKUhsdFoXl0ESYoKwLeALqiPaBRqsnKgNy1y5tfVP
+         POuAAe/pRp8raThz+MWKIPZRQrOyQB+ALR/sYsTCh7ob5Ljs8mWQIA8CcPVFMf5UFO
+         qPhDg/8ih9B8aOMwhyWY6ohhs4p04ONPQAGpi4y0z9i/3tdZimjcpPS7keVMAFSpnZ
+         7NIeYCwSXRNaLAat5bRKCDrVVFnhFvbJxEc6MoC1+f6ERSgarAks05rB54cL/UyB6f
+         PXtDQniCITsSOKNxr4Cxr/oMF/1P3tvLOGpKwn7OhzEUOpsUdfh8q8tWfRbV6c5XZK
+         vZ52Htn66kgHw==
+Date:   Sat, 20 Aug 2022 20:18:24 +0900
+From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH 2/4] tracing/eprobes: Do not hardcode $comm as a string
+Message-Id: <20220820201824.5637c4feff4a7674aebde60a@kernel.org>
+In-Reply-To: <20220820014833.035925907@goodmis.org>
+References: <20220820014035.531145719@goodmis.org>
+        <20220820014833.035925907@goodmis.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 22:19:31 +0300
-Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+On Fri, 19 Aug 2022 21:40:37 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-> Use devm_regulator_bulk_get_enable() instead of open coded bulk-get,
-> bulk-enable, add-action-to-disable-at-detach - pattern.
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 > 
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> The variable $comm is hard coded as a string, which is true for both
+> kprobes and uprobes, but for event probes (eprobes) it is a field name. In
+> most cases the "comm" field would be a string, but there's no guarantee of
+> that fact.
 > 
+> Do not assume that comm is a string. Not to mention, it currently forces
+> comm fields to fault, as string processing for event probes is currently
+> broken.
+
+Indeed. There should be an event argument which names "comm".
+Eprobe might refer it. BTW, does eprobe use any special common fields?
+I originally introduced "$" variable for such special variables.
+
+Thank you,
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 > ---
-> v2 => v3
-> Split to own patch.
-> ---
->  drivers/iio/gyro/bmg160_core.c | 24 +++---------------------
->  1 file changed, 3 insertions(+), 21 deletions(-)
+>  kernel/trace/trace_probe.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> index cedd9f02ea21..baa80980c99f 100644
-> --- a/drivers/iio/gyro/bmg160_core.c
-> +++ b/drivers/iio/gyro/bmg160_core.c
-> @@ -93,7 +93,6 @@
+> diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
+> index dec657af363c..23dcd52ad45c 100644
+> --- a/kernel/trace/trace_probe.c
+> +++ b/kernel/trace/trace_probe.c
+> @@ -622,9 +622,10 @@ static int traceprobe_parse_probe_arg_body(const char *argv, ssize_t *size,
 >  
->  struct bmg160_data {
->  	struct regmap *regmap;
-> -	struct regulator_bulk_data regulators[2];
->  	struct iio_trigger *dready_trig;
->  	struct iio_trigger *motion_trig;
->  	struct iio_mount_matrix orientation;
-> @@ -1067,19 +1066,13 @@ static const char *bmg160_match_acpi_device(struct device *dev)
->  	return dev_name(dev);
->  }
->  
-> -static void bmg160_disable_regulators(void *d)
-> -{
-> -	struct bmg160_data *data = d;
-> -
-> -	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
-> -}
-> -
->  int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
->  		      const char *name)
->  {
->  	struct bmg160_data *data;
->  	struct iio_dev *indio_dev;
->  	int ret;
-> +	static const char * const regulators[] = {"vdd", "vddio"};
+>  	/*
+>  	 * Since $comm and immediate string can not be dereferenced,
+> -	 * we can find those by strcmp.
+> +	 * we can find those by strcmp. But ignore for eprobes.
+>  	 */
+> -	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
+> +	if (!(flags & TPARG_FL_TPOINT) &&
+> +	    strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
+>  		/* The type of $comm must be "string", and not an array. */
+>  		if (parg->count || (t && strcmp(t, "string")))
+>  			goto out;
+> -- 
+> 2.35.1
 
-As in previous, small preference for spaces after { and before }
 
->  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -1090,22 +1083,11 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
->  	data->irq = irq;
->  	data->regmap = regmap;
->  
-> -	data->regulators[0].supply = "vdd";
-> -	data->regulators[1].supply = "vddio";
-> -	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(data->regulators),
-> -				      data->regulators);
-> +	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(regulators),
-> +					     regulators);
->  	if (ret)
->  		return dev_err_probe(dev, ret, "Failed to get regulators\n");
->  
-> -	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
-> -				    data->regulators);
-> -	if (ret)
-> -		return ret;
-> -
-> -	ret = devm_add_action_or_reset(dev, bmg160_disable_regulators, data);
-> -	if (ret)
-> -		return ret;
-> -
->  	ret = iio_read_mount_matrix(dev, &data->orientation);
->  	if (ret)
->  		return ret;
-
+-- 
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
