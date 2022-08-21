@@ -2,148 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F89C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 12:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EC9C32772
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 13:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbiHUM6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 08:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        id S230239AbiHUNIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 09:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiHUM57 (ORCPT
+        with ESMTP id S230001AbiHUNIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 08:57:59 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACD416586;
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id p18so7725936plr.8;
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ClDyou4gGsGQygKcng/+QxuCvSmLH/T0LzzWygeLDxo=;
-        b=DzldWQk3w9CMSvh7wXhDSN2aWrVFsSkaBRGf4hK4iF8emTltMf6t9vv/FAHY7jMDtu
-         el0UZKoheRtu+4Voxc4ucu9UeGmKyi36kc1ikmO3qZeg/IDmqUXbgu2+JIO5SYvgDsDV
-         whKmYSSy4uCsEljwlCehrxkdvcU6yFnAz1DKRRGqEpCIzE0GDAtbEPqOMID3va+luviN
-         jArWd8Y8HWPBo1CuVbX7o/n5GclujeIVWDaHTS/Hoe+Qom6y2Bu+4u7n0WnhO4/TU5fd
-         xZ4A7e7akZ3DQmvbwVLiAQm3bhRqzJOUUzacClaY+nc7bmurtMaSveF/FlownKYUmxk6
-         y9Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ClDyou4gGsGQygKcng/+QxuCvSmLH/T0LzzWygeLDxo=;
-        b=ws3eKOWqZZji1OuaXIoDq4ZHV9Ydl9EOkJQzrOsAki21oG3+I0XWFfAqBVRGe3bCw/
-         DkO64WqCEn51L/eNifur6DOyn6KiXEe+ZE9PqIVS52VLi03Kz5aip7MjDBmvKvYbzA7Q
-         oWyUf09Luctwg8v8OwzZYthUMxyqduKzl13PnYJ2lorM7I8nDiIYKUSEUVb60yB0D8p1
-         2+5Y5nGGWVu56l816c+fEIPpxdbci7XK4KdDncBRp0jEnyhxJ9/l2ksjctwo10iuGtRQ
-         GpqjXVICONxiAcR1paYNHZwKLLFJbYTmaX4eK7HWGh1cBf9haaZhK/jysfk2vROmXASB
-         UHjg==
-X-Gm-Message-State: ACgBeo3EjlmLBrdMCEkAmiwBc3/5F/cJDNr7Eg70MlYA+1PsAqXnxSqL
-        bWthtHn+pLdzsCJECvQE7tU=
-X-Google-Smtp-Source: AA6agR5zia5vYqSnvV68J6GwqVaSGboCXGZgtlbolLgoa4BnlG/hWEgaBeCsm/Hs81I1xoN/q9BBAg==
-X-Received: by 2002:a17:903:1246:b0:171:5033:85c with SMTP id u6-20020a170903124600b001715033085cmr15798412plh.146.1661086677425;
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-Received: from localhost ([36.112.204.208])
-        by smtp.gmail.com with ESMTPSA id iw11-20020a170903044b00b0016d150c6c6dsm6374211plb.45.2022.08.21.05.57.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        paskripkin@gmail.com, skhan@linuxfoundation.org,
-        18801353760@163.com, Hawkins Jiawei <yin31149@gmail.com>
-Subject: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
-Date:   Sun, 21 Aug 2022 20:57:50 +0800
-Message-Id: <20220821125751.4185-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <000000000000ce327f05d537ebf7@google.com>
-References: <000000000000ce327f05d537ebf7@google.com>
+        Sun, 21 Aug 2022 09:08:45 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE316EE31
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 06:08:38 -0700 (PDT)
+Received: from [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd] (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 84C9230F30D;
+        Sun, 21 Aug 2022 15:08:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1661087316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VjhSlZPk0mEuD8Fpe39Gjeez86YTbyIidGAdgcUUEDI=;
+        b=QSPUd/az8VzLjaK/XtMtlnrwqhU71MYB2nfTW317knMoxmV3OZFSBOH1Br5UMEOR34bshQ
+        IZHsZvw0yT0xUEb+VSwPN55OGKN8IjP+iZ8ut42PPU63UE1wKq0omrmUwVs7+yEgplGlIu
+        JZ62JzAU4oKgvfQqX/51PxAH2QRYHyze3ZBWgH5po32Zr2b3MeuBz89G0yox8SuAwb1p9U
+        J+j39raaKN4WRwH8im5hmUa3lyzJWpboc156e97L/XxzUFW9J3g/ESwes2nYnEvsYWJC2q
+        jiYDhXevvwzbYuPKVhwikNU5tb8L99TXMsIlwqfHXPwbiit6IN8DcHMxGOiwng==
+Message-ID: <9f28529005867512105182f8fa2b0f7b0d14b30d.camel@svanheule.net>
+Subject: Re: [PATCH v2 1/5] lib/test_cpumask: drop cpu_possible_mask full
+ test
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Brendan Higgins <brendan.higgins@linux.dev>,
+        David Gow <davidgow@google.com>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        =?ISO-8859-1?Q?Ma=EDra?= Canal <mairacanal@riseup.net>,
+        linux-kernel@vger.kernel.org
+Date:   Sun, 21 Aug 2022 15:08:33 +0200
+In-Reply-To: <YwFToOOFKsr/mL7X@yury-laptop>
+References: <cover.1661007338.git.sander@svanheule.net>
+         <6dfd4d3a4d77f97f13ab3f22bc53c96c38ba908e.1661007339.git.sander@svanheule.net>
+         <YwFToOOFKsr/mL7X@yury-laptop>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reports bad unlock balance bug as follows:
-------------[ cut here ]------------
-WARNING: bad unlock balance detected!
-syz-executor.0/4094 is trying to release lock (&call->user_mutex) at:
-[<ffffffff87c1d8d1>] rxrpc_do_sendmsg+0x851/0x1110 net/rxrpc/sendmsg.c:754
-but there are no more locks to release!
+Hi Yury,
 
-other info that might help us debug this:
-no locks held by syz-executor.0/4094.
+On Sat, 2022-08-20 at 14:35 -0700, Yury Norov wrote:
+> On Sat, Aug 20, 2022 at 05:03:09PM +0200, Sander Vanheule wrote:
+> > When the number of CPUs that can possibly be brought online is known at
+> > boot time, e.g. when HOTPLUG is disabled, nr_cpu_ids may be smaller tha=
+n
+> > NR_CPUS. In that case, cpu_possible_mask would not be completely filled=
+,
+> > and cpumask_full(cpu_possible_mask) can return false for valid system
+> > configurations.
+>=20
+> It doesn't mean we can just give up. You can check validity of possible
+> cpumask like this:=20
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KUNIT_EXPECT_EQ(test, nr_cpu_i=
+ds, cpumask_first_zero(&mask_all))
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KUNIT_EXPECT_EQ(test, NR_CPUS,=
+ cpumask_first(&mask_all))
 
-stack backtrace:
-[...]
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x57/0x7d lib/dump_stack.c:106
- print_unlock_imbalance_bug include/trace/events/lock.h:69 [inline]
- __lock_release kernel/locking/lockdep.c:5333 [inline]
- lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5686
- __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:907
- rxrpc_do_sendmsg+0x851/0x1110 net/rxrpc/sendmsg.c:754
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xab/0xe0 net/socket.c:734
- ____sys_sendmsg+0x5c2/0x7a0 net/socket.c:2485
- ___sys_sendmsg+0xdb/0x160 net/socket.c:2539
- __sys_sendmsg+0xc3/0x160 net/socket.c:2568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
- [...]
- </TASK>
-------------------------------------
+Did you mean cpu_possible_mask, or mask_all?
 
-When kernel wants to send a message through an RxRPC socket in
-rxrpc_do_sendmsg(), kernel should hold the call->user_mutex lock,
-or it will triggers bug when releasing this lock before returning
-from rxrpc_do_sendmsg().
+For cpu_possible_mask, these tests are in test_cpumask_first(), albeit unde=
+r a
+slightly different form. Together with the tests in test_cpumask_weight() a=
+nd
+test_cpumask_last(), cpu_possible_mask is already one of the more constrain=
+ed
+masks.
 
-Yet the problem is that during rxrpc_do_sendmsg(), kernel may call
-rxrpc_wait_for_tx_window_intr() to wait for space to appear in the
-tx queue or a signal to occur. When kernel fails the
-mutex_lock_interruptible(), kernel will returns from the
-rxrpc_wait_for_tx_window_intr() without acquiring the mutex lock, then
-triggers bug when releasing the mutex lock in rxrpc_do_sendmsg().
+For mask_all, the mask is filled up with nr_cpumask_bits <=3D NR_CPUS. I co=
+uld add
+cpumask_first(), cpumask_first_zero(), and cpumask_last() tests though.
 
-This patch solves it by acquiring the call->user_mutex lock, when
-kernel fails the mutex_lock_interruptible() before returning from
-the rxrpc_wait_for_tx_window_intr().
+More tests could be also added for cpu_all_mask, since this does have all
+NR_CPUS bits set, but I think that belongs in a separate patch.
 
-Reported-and-tested-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
----
- net/rxrpc/sendmsg.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I think the extra mask_all and cpu_all_mask test are out of scope for this
+patch, but they could be added in another patch (for 6.1).
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 1d38e279e2ef..e13043d357d5 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -53,8 +53,10 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
- 		trace_rxrpc_transmit(call, rxrpc_transmit_wait);
- 		mutex_unlock(&call->user_mutex);
- 		*timeo = schedule_timeout(*timeo);
--		if (mutex_lock_interruptible(&call->user_mutex) < 0)
-+		if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-+			mutex_lock(&call->user_mutex);
- 			return sock_intr_errno(*timeo);
-+		}
- 	}
- }
- 
--- 
-2.25.1
+Best,
+Sander
+
+> =C2=A0
+> > Fixes: c41e8866c28c ("lib/test: introduce cpumask KUnit test suite")
+> > Link:
+> > https://lore.kernel.org/lkml/346cb279-8e75-24b0-7d12-9803f2b41c73@riseu=
+p.net/
+> > Reported-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
+> > Signed-off-by: Sander Vanheule <sander@svanheule.net>
+> > Tested-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
+> > Reviewed-by: David Gow <davidgow@google.com>
+> > ---
+> > Changes in v2:
+> > Rewrite commit message to explain why this test is wrong
+> >=20
+> > =C2=A0lib/test_cpumask.c | 1 -
+> > =C2=A01 file changed, 1 deletion(-)
+> >=20
+> > diff --git a/lib/test_cpumask.c b/lib/test_cpumask.c
+> > index a31a1622f1f6..4ebf9f5805f3 100644
+> > --- a/lib/test_cpumask.c
+> > +++ b/lib/test_cpumask.c
+> > @@ -54,7 +54,6 @@ static cpumask_t mask_all;
+> > =C2=A0static void test_cpumask_weight(struct kunit *test)
+> > =C2=A0{
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_TRUE(test,=
+ cpumask_empty(&mask_empty));
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_TRUE(test, cpum=
+ask_full(cpu_possible_mask));
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_TRUE(test,=
+ cpumask_full(&mask_all));
+> > =C2=A0
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_EQ(test, 0=
+, cpumask_weight(&mask_empty));
+> > --=20
+> > 2.37.2
 
