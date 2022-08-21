@@ -2,104 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8801FC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 16:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5205FC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 16:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230358AbiHUQXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 12:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
+        id S230446AbiHUQdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 12:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiHUQXl (ORCPT
+        with ESMTP id S229652AbiHUQdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 12:23:41 -0400
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87499DEC8;
-        Sun, 21 Aug 2022 09:23:38 -0700 (PDT)
-Received: from [192.168.1.103] (31.173.81.121) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Sun, 21 Aug
- 2022 19:23:30 +0300
-Subject: Re: [PATCH] mips/sgi-ip22: fix repeated words in comments
-To:     wangjianli <wangjianli@cdjrlc.com>, <tsbogend@alpha.franken.de>
-CC:     <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220821150246.51164-1-wangjianli@cdjrlc.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <65dfa7d7-3e2c-c968-4550-d78226e3b2f6@omp.ru>
-Date:   Sun, 21 Aug 2022 19:23:30 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Sun, 21 Aug 2022 12:33:20 -0400
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6231142
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 09:33:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cK2+O3VjoIP+dBHuVJLTFqcdAxz4KQX5VWju7aZI310=; b=Z1EozxXmo9Qb2u1ChE243s0BYB
+        Pj0pgGlbPH6MlYUKB01Yz/YJIgGauKbAKX/1LEeEV638+i0xLqyt6UfvHNuNxfhHC4+zx2ML+K76n
+        RmL7BP3U23eMyj290TFVdJbQpuBeDEaPKQrpqxxFNC22KfONX0XYH3psnbLxsmAT8GY6LibqIyQLW
+        dLhOfhpooHFyjE2diYfifT/djb4VNH3IhtRWanrdEFszrDaN63SR3Q5tf9oD6pq342dtO/7NvDZvZ
+        +2UuUBq7bgyVS6+pRfkHBpmQlPNgjETA/Tn3mJH4lBIuMQ3+pVWQ3R3j/BrlSX+d/XjpeO79vjRs2
+        d2dJ4I3w==;
+Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=59050)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1oPnsy-0005ky-4O; Sun, 21 Aug 2022 18:33:16 +0200
+Message-ID: <987d6114-5fcb-d668-3b0d-ad6d8723dfdb@tronnes.org>
+Date:   Sun, 21 Aug 2022 18:33:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220821150246.51164-1-wangjianli@cdjrlc.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 00/35] drm: Analog TV Improvements
+To:     Maxime Ripard <maxime@cerno.tech>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [31.173.81.121]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/21/2022 16:01:40
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 172304 [Aug 20 2022]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 495 495 bb4e71e2e9e23696ab912b286436360a94c9b107
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.81.121 in (user)
- b.barracudacentral.org}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.81.121 in (user)
- dbl.spamhaus.org}
-X-KSE-AntiSpam-Info: omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;31.173.81.121:7.7.1
-X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.81.121
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 08/21/2022 16:05:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 8/21/2022 2:00:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/21/22 6:02 PM, wangjianli wrote:
 
->  Delete the redundant word 'in'.
 
-   You're dropping 'of' instead. :-)
-
+Den 29.07.2022 18.34, skrev Maxime Ripard:
+> Hi,
 > 
-> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
-> ---
->  arch/mips/sgi-ip22/ip22-gio.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Here's a series aiming at improving the command line named modes support,
+> and more importantly how we deal with all the analog TV variants.
 > 
-> diff --git a/arch/mips/sgi-ip22/ip22-gio.c b/arch/mips/sgi-ip22/ip22-gio.c
-> index 38d12f417e48..03d96638f957 100644
-> --- a/arch/mips/sgi-ip22/ip22-gio.c
-> +++ b/arch/mips/sgi-ip22/ip22-gio.c
-> @@ -41,7 +41,7 @@ static struct device gio_bus = {
->  /**
->   * gio_match_device - Tell if an of_device structure has a matching
->   * gio_match structure
-> - * @ids: array of of device match structures to search in
-> + * @ids: array of device match structures to search in
->   * @dev: the of device structure to match against
->   *
->   * Used by a driver to check whether an of_device present in the
+> The named modes support were initially introduced to allow to specify the
+> analog TV mode to be used.
+> 
+> However, this was causing multiple issues:
+> 
+>   * The mode name parsed on the command line was passed directly to the
+>     driver, which had to figure out which mode it was suppose to match;
+> 
+>   * Figuring that out wasn't really easy, since the video= argument or what
+>     the userspace might not even have a name in the first place, but
+>     instead could have passed a mode with the same timings;
+> 
+>   * The fallback to matching on the timings was mostly working as long as
+>     we were supporting one 525 lines (most likely NSTC) and one 625 lines
+>     (PAL), but couldn't differentiate between two modes with the same
+>     timings (NTSC vs PAL-M vs NSTC-J for example); 
+> 
+>   * There was also some overlap with the tv mode property registered by 
+>     drm_mode_create_tv_properties(), but named modes weren't interacting
+>     with that property at all.
+> 
+>   * Even though that property was generic, its possible values were
+>     specific to each drivers, which made some generic support difficult.
+> 
+> Thus, I chose to tackle in multiple steps:
+> 
+>   * A new TV norm property was introduced, with generic values, each driver
+>     reporting through a bitmask what standard it supports to the userspace;
+> 
+>   * This option was added to the command line parsing code to be able to
+>     specify it on the kernel command line, and new atomic_check and reset
+>     helpers were created to integrate properly into atomic KMS;
+> 
+>   * The named mode parsing code is now creating a proper display mode for
+>     the given named mode, and the TV standard will thus be part of the
+>     connector state;
+> 
+>   * Two drivers were converted and tested for now (vc4 and sun4i), with
+>     some backward compatibility code to translate the old TV mode to the
+>     new TV mode;
+> 
+> Unit tests were created along the way. Nouveau, ch7006 and gud are
+> currently broken for now since I expect that work to be reworked fairly
+> significantly. I'm also not entirely sure about how to migrate GUD to the
+> new property.
+> 
+> Let me know what you think,
+> Maxime
 > 
 
-MBR, Sergey
+I don't know if it's related to this patchset or not, but I do get this:
+
+pi@pi4t:~ $ sudo dmesg -C && sudo modprobe -r vc4 && sudo modprobe vc4
+&& dmesg
+[  430.066211] Console: switching to colour dummy device 80x30
+[  431.294788] vc4-drm gpu: bound fe400000.hvs (ops vc4_hvs_ops [vc4])
+[  431.295115] vc4-drm gpu: bound fec13000.vec (ops vc4_vec_ops [vc4])
+[  431.295467] vc4-drm gpu: bound fe004000.txp (ops vc4_txp_ops [vc4])
+[  431.295804] vc4-drm gpu: bound fec12000.pixelvalve (ops vc4_crtc_ops
+[vc4])
+[  431.298895] [drm] Initialized vc4 0.0.0 20140616 for gpu on minor 0
+[  441.444250] vc4-drm gpu: [drm] *ERROR* [CRTC:68:crtc-1] flip_done
+timed out
+[  441.446529] Console: switching to colour frame buffer device 90x30
+[  451.684321] vc4-drm gpu: [drm] *ERROR* flip_done timed out
+[  451.684347] vc4-drm gpu: [drm] *ERROR* [CRTC:68:crtc-1] commit wait
+timed out
+[  461.924255] vc4-drm gpu: [drm] *ERROR* flip_done timed out
+[  461.924281] vc4-drm gpu: [drm] *ERROR* [CONNECTOR:45:Composite-1]
+commit wait timed out
+[  472.164006] vc4-drm gpu: [drm] *ERROR* flip_done timed out
+[  472.164031] vc4-drm gpu: [drm] *ERROR* [PLANE:61:plane-1] commit wait
+timed out
+[  482.403877] vc4-drm gpu: [drm] *ERROR* flip_done timed out
+[  482.403903] vc4-drm gpu: [drm] *ERROR* Timed out waiting for commit
+[  492.643799] vc4-drm gpu: [drm] *ERROR* [CRTC:68:crtc-1] flip_done
+timed out
+[  492.647073] vc4-drm gpu: [drm] fb0: vc4drmfb frame buffer device
+
+Noralf.
