@@ -2,50 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD42C28D13
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 14:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 455C0C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 14:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbiHUO0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 10:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S230204AbiHUO1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 10:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiHUO0O (ORCPT
+        with ESMTP id S229460AbiHUO1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 10:26:14 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93681A38D;
-        Sun, 21 Aug 2022 07:26:13 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 600F767373; Sun, 21 Aug 2022 16:26:10 +0200 (CEST)
-Date:   Sun, 21 Aug 2022 16:26:10 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     "Alan J. Wylie" <alan@wylie.me.uk>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: Regression in 5.19.0: USB errors during boot
-Message-ID: <20220821142610.GA2979@lst.de>
-References: <25342.20092.262450.330346@wylie.me.uk> <Yv5Q8gDvVTGOHd8k@kroah.com> <20220821062345.GA26598@lst.de> <25345.60162.942383.502797@wylie.me.uk>
+        Sun, 21 Aug 2022 10:27:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712461ADA5
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 07:27:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BF8760EA0
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 14:27:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3276EC433D7;
+        Sun, 21 Aug 2022 14:27:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661092052;
+        bh=w/PkrSzM/YSb7wa9LQoXCP3wB1H/7EbaPvzXWLdFQ+4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=P4l2sSNSRd6fKLtyuxgZwmpLCFeiqXTLY9U4TL0OmoXNDrsHG8VL38AT2ZluD2vJB
+         NNSWMuaqhAH37SPiydGhEUaxFg3JVs8RekJDNEx/h9ZIUNfhFB5etI0WQJJYQkCoZK
+         bM/9xz6vyNEntdsT+ver8E+Xaudsb7vliVcdpIB6gqOUg2XFUDNb7B7lqJ3lmD7JB5
+         Dg7Itif42nhm+IhpXPwJbrGoQ2NScayiwYBp15qlKVa5FyroK2ETTQaQ1oX3Eh3vsf
+         AX7Ei1U9ofCYz1VImXqyZuZI1Mq10eJe/lCuG3KVdHF+gxTs7m9F89Aa7gz73VXzUE
+         ywmHsn++m3hpA==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] riscv: compat: s/failed/unsupported if compat mode isn't supported
+Date:   Sun, 21 Aug 2022 22:18:19 +0800
+Message-Id: <20220821141819.3804-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <25345.60162.942383.502797@wylie.me.uk>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 09:21:22AM +0100, Alan J. Wylie wrote:
-> Comparing with another AMD system that doesn't show the problem,
-> I see that CONFIG_GART_IOMMU is only set on the one with the problem.
-> 
-> The configs have just had "make oldconfig" run on them for years, I
-> have no idea why one has it set.
-> 
-> Clearing it fixes the problem!
+When compat mode isn't supported(I believe this is the most case now),
+kernel will emit somthing as:
+[    0.050407] riscv: ELF compat mode failed
 
-Thanks for confirming my suspicion.  I'd still like to fix the issue
-with CONFIG_GART_IOMMU enabled once I've tracked it down.  Would you
-be willing to test patches?
+This msg may make users think there's something wrong with the kernel
+itself, replace "failed" with "unsupported" to make it clear. In fact
+this is the real compat_mode_supported meaning. After the patch, the
+msg would be:
+[    0.050407] riscv: ELF compat mode unsupported
+
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ arch/riscv/kernel/process.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/riscv/kernel/process.c b/arch/riscv/kernel/process.c
+index ceb9ebab6558..b0c63e8e867e 100644
+--- a/arch/riscv/kernel/process.c
++++ b/arch/riscv/kernel/process.c
+@@ -105,7 +105,7 @@ static int __init compat_mode_detect(void)
+ 	csr_write(CSR_STATUS, tmp);
+ 
+ 	pr_info("riscv: ELF compat mode %s",
+-			compat_mode_supported ? "supported" : "failed");
++			compat_mode_supported ? "supported" : "unsupported");
+ 
+ 	return 0;
+ }
+-- 
+2.34.1
+
