@@ -2,330 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E4A0C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 02:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A636C32796
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 03:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234380AbiHUCte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 22:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
+        id S236461AbiHUDEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 23:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiHUCtc (ORCPT
+        with ESMTP id S230438AbiHUDEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 22:49:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A22F24095;
-        Sat, 20 Aug 2022 19:49:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 49C30CE0064;
-        Sun, 21 Aug 2022 02:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE789C433C1;
-        Sun, 21 Aug 2022 02:49:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661050166;
-        bh=NQPXhFg5BdDMCFze1MKNJpNFjVXRqm3HsERWvMoSabM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XKuC0yjUscAd/eUyEE1EjadDmF3GHpY/cvLE/6fWiT7zxCnfwPvuW7Xsr7VEuPNe8
-         MQlr6Q5BHAFakIxpZp/JQJURCXgFoTc+xCpcxTOjL4Q0NynwvyNqKneyoPTxZFzEOk
-         KhujIUin8/g9aQVBhILKs1bAsC7wjDDv/cfda6E6HRjnjue/jNOdGmictDM98fbrD0
-         RUO1UJYDioF5NsXGB7eyQAiqg/V8dqFSVDlngU//RWUTC5vfNVC/9wekCZFg6lya3i
-         F31/VjZwsRwy6+IXo7ifE4OvTw85JNfsivSa93ykKVd9+RP+iZ4pbWcv9x0YBXi4vu
-         sggPxJQOfoTQQ==
-Date:   Sun, 21 Aug 2022 10:49:19 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        s.hauer@pengutronix.de, l.stach@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        p.zabel@pengutronix.de, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        aisheng.dong@nxp.com, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V6 3/6] soc: imx: add i.MX93 SRC power domain driver
-Message-ID: <20220821024919.GJ149610@dragon>
-References: <20220719073541.197788-1-peng.fan@oss.nxp.com>
- <20220719073541.197788-4-peng.fan@oss.nxp.com>
+        Sat, 20 Aug 2022 23:04:32 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B5B29CB7
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 20:04:29 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id o5-20020a056e02102500b002ddcc65029cso5915965ilj.8
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 20:04:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=jRBWuLdM1EBsh9fGJskfn3SdJVJbiNRBKCYhxTrPs90=;
+        b=25Sbfi8Nj/wUrc5y2LBh3pLaQreR+zosXCpGuuKr5oD275RMeZ3wHkjW9XMPau+yUK
+         ALMrmAGvHFY8dCDZ3gCYNmZp1RAoCJITvBxzVbA0uZEf8JbydescyinJ2KcfOPnY5T16
+         BVWIJSqPnfknJA3ocZA2fwm3KUqmwRUQns7lFTXPQIfBokhaOA5nNIc6jb2dmxGdCuqq
+         TbLNzfeGvkzxq1IAHypSPMkvU5YIZNTB0AMHORHOgxsmaP60WpFmIlylYyqFv8CxL053
+         GwHEjujITboXfr6kspmrRvqSz5hCQ7EVxVkTUk21WlXcqRGHKO45xD9lFwzzvlo7keOo
+         CkHQ==
+X-Gm-Message-State: ACgBeo2RMH17gTXw1Kl/dmkguVK47sL66ir4wPesOlNpXD9xM7XVJvuj
+        V8LJXltX66k9uMA9Z8/+eSQN0xxTgGszRGfE3a9bgqH6h5iB
+X-Google-Smtp-Source: AA6agR7kKuxsfgVKNd2pa8UruiSSQNnhTiIjFIutfOPUJZNZecbBr2VPcYKvMWYXO/ee8ib6NHyP4+3boRjuDh1YRn0jFvEneLyj
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719073541.197788-4-peng.fan@oss.nxp.com>
+X-Received: by 2002:a02:860d:0:b0:345:b478:a611 with SMTP id
+ e13-20020a02860d000000b00345b478a611mr6578685jai.95.1661051068556; Sat, 20
+ Aug 2022 20:04:28 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 20:04:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e52b0905e6b796d3@google.com>
+Subject: [syzbot] linux-next boot error: BUG: unable to handle kernel paging
+ request in insert_header
+From:   syzbot <syzbot+3dfa69b62d31d2321e39@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, keescook@chromium.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org, mcgrof@kernel.org,
+        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com,
+        yzaikin@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:35:38PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Support controlling power domain managed by System Reset
-> Controller(SRC). Current supported power domain is mediamix power
-> domain.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/soc/imx/Kconfig     |   8 ++
->  drivers/soc/imx/Makefile    |   1 +
->  drivers/soc/imx/imx93-pd.c  | 163 ++++++++++++++++++++++++++++++++++++
->  drivers/soc/imx/imx93-src.c |  32 +++++++
+Hello,
 
-Shouldn't a reset driver go to drivers/reset/?
+syzbot found the following issue on:
 
->  4 files changed, 204 insertions(+)
->  create mode 100644 drivers/soc/imx/imx93-pd.c
->  create mode 100644 drivers/soc/imx/imx93-src.c
-> 
-> diff --git a/drivers/soc/imx/Kconfig b/drivers/soc/imx/Kconfig
-> index a840494e849a..4b906791d6c7 100644
-> --- a/drivers/soc/imx/Kconfig
-> +++ b/drivers/soc/imx/Kconfig
-> @@ -20,4 +20,12 @@ config SOC_IMX8M
->  	  support, it will provide the SoC info like SoC family,
->  	  ID and revision etc.
->  
-> +config SOC_IMX9
-> +	tristate "i.MX9 SoC family support"
-> +	depends on ARCH_MXC || COMPILE_TEST
-> +	default ARCH_MXC && ARM64
-> +	select SOC_BUS
-> +	help
-> +	  If you say yes here, you get support for the NXP i.MX9 family
-> +
->  endmenu
-> diff --git a/drivers/soc/imx/Makefile b/drivers/soc/imx/Makefile
-> index 63cd29f6d4d2..a0baa2a01adb 100644
-> --- a/drivers/soc/imx/Makefile
-> +++ b/drivers/soc/imx/Makefile
-> @@ -7,3 +7,4 @@ obj-$(CONFIG_IMX_GPCV2_PM_DOMAINS) += gpcv2.o
->  obj-$(CONFIG_SOC_IMX8M) += soc-imx8m.o
->  obj-$(CONFIG_SOC_IMX8M) += imx8m-blk-ctrl.o
->  obj-$(CONFIG_SOC_IMX8M) += imx8mp-blk-ctrl.o
-> +obj-$(CONFIG_SOC_IMX9) += imx93-src.o imx93-pd.o
-> diff --git a/drivers/soc/imx/imx93-pd.c b/drivers/soc/imx/imx93-pd.c
-> new file mode 100644
-> index 000000000000..48437c303b78
-> --- /dev/null
-> +++ b/drivers/soc/imx/imx93-pd.c
-> @@ -0,0 +1,163 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright 2022 NXP
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/of_device.h>
-> +#include <linux/delay.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_domain.h>
-> +
-> +#define MIX_SLICE_SW_CTRL_OFF		0x20
-> +#define SLICE_SW_CTRL_PSW_CTRL_OFF_MASK	BIT(4)
-> +#define SLICE_SW_CTRL_PDN_SOFT_MASK	BIT(31)
-> +
-> +#define MIX_FUNC_STAT_OFF		0xB4
-> +
-> +#define FUNC_STAT_PSW_STAT_MASK		BIT(0)
-> +#define FUNC_STAT_RST_STAT_MASK		BIT(2)
-> +#define FUNC_STAT_ISO_STAT_MASK		BIT(4)
-> +
-> +struct imx93_power_domain {
-> +	struct generic_pm_domain genpd;
-> +	struct device *dev;
-> +	void __iomem *addr;
-> +	struct clk_bulk_data *clks;
-> +	int num_clks;
-> +	bool init_off;
-> +};
-> +
-> +#define to_imx93_pd(_genpd) container_of(_genpd, struct imx93_power_domain, genpd)
-> +
-> +static int imx93_pd_on(struct generic_pm_domain *genpd)
-> +{
-> +	struct imx93_power_domain *domain = to_imx93_pd(genpd);
-> +	void __iomem *addr = domain->addr;
-> +	u32 val;
-> +	int ret;
-> +
-> +	ret = clk_bulk_prepare_enable(domain->num_clks, domain->clks);
-> +	if (ret) {
-> +		dev_err(domain->dev, "failed to enable clocks for domain: %s\n", genpd->name);
-> +		return ret;
-> +	}
-> +
-> +	val = readl(addr + MIX_SLICE_SW_CTRL_OFF);
-> +	val &= ~SLICE_SW_CTRL_PDN_SOFT_MASK;
-> +	writel(val, addr + MIX_SLICE_SW_CTRL_OFF);
-> +
-> +	ret = readl_poll_timeout(addr + MIX_FUNC_STAT_OFF, val,
-> +				 !(val & FUNC_STAT_ISO_STAT_MASK), 1, 10000);
-> +	if (ret) {
-> +		dev_err(domain->dev, "pd_on timeout: name: %s, stat: %x\n", genpd->name, val);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int imx93_pd_off(struct generic_pm_domain *genpd)
-> +{
-> +	struct imx93_power_domain *domain = to_imx93_pd(genpd);
-> +	void __iomem *addr = domain->addr;
-> +	int ret;
-> +	u32 val;
-> +
-> +	/* Power off MIX */
-> +	val = readl(addr + MIX_SLICE_SW_CTRL_OFF);
-> +	val |= SLICE_SW_CTRL_PDN_SOFT_MASK;
-> +	writel(val, addr + MIX_SLICE_SW_CTRL_OFF);
-> +
-> +	ret = readl_poll_timeout(addr + MIX_FUNC_STAT_OFF, val,
-> +				 val & FUNC_STAT_PSW_STAT_MASK, 1, 1000);
-> +	if (ret) {
-> +		dev_err(domain->dev, "pd_off timeout: name: %s, stat: %x\n", genpd->name, val);
-> +		return ret;
-> +	}
-> +
-> +	clk_bulk_disable_unprepare(domain->num_clks, domain->clks);
-> +
-> +	return 0;
-> +};
-> +
-> +static int imx93_pd_remove(struct platform_device *pdev)
-> +{
-> +	struct imx93_power_domain *domain = platform_get_drvdata(pdev);
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *np = dev->of_node;
-> +
-> +	if (!domain->init_off)
-> +		clk_bulk_disable_unprepare(domain->num_clks, domain->clks);
-> +
-> +	of_genpd_del_provider(np);
-> +	pm_genpd_remove(&domain->genpd);
-> +
-> +	return 0;
-> +}
-> +
-> +static int imx93_pd_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *np = dev->of_node;
-> +	struct imx93_power_domain *domain;
-> +	int ret;
-> +
-> +	domain = devm_kzalloc(dev, sizeof(*domain), GFP_KERNEL);
-> +	if (!domain)
-> +		return -ENOMEM;
+HEAD commit:    e1084bacab44 Add linux-next specific files for 20220816
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1128e50d080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2f5fa747986be53a
+dashboard link: https://syzkaller.appspot.com/bug?extid=3dfa69b62d31d2321e39
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Have a newline.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+3dfa69b62d31d2321e39@syzkaller.appspotmail.com
 
-> +	domain->addr = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(domain->addr))
-> +		return PTR_ERR(domain->addr);
-> +
-> +
+input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
+ACPI: button: Sleep Button [SLPF]
+ACPI: \_SB_.LNKC: Enabled at IRQ 11
+virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
+ACPI: \_SB_.LNKD: Enabled at IRQ 10
+virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
+ACPI: \_SB_.LNKB: Enabled at IRQ 10
+virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
+virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
+N_HDLC line discipline registered with maxframe=4096
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
+00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
+Non-volatile memory driver v1.3
+Linux agpgart interface v0.103
+ACPI: bus type drm_connector registered
+[drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+[drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+Console: switching to colour frame buffer device 128x48
+platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
+usbcore: registered new interface driver udl
+brd: module loaded
+loop: module loaded
+zram: Added device: zram0
+null_blk: disk nullb0 created
+null_blk: module loaded
+Guest personality initialized and is inactive
+VMCI host device registered (name=vmci, major=10, minor=119)
+Initialized host personality
+usbcore: registered new interface driver rtsx_usb
+usbcore: registered new interface driver viperboard
+usbcore: registered new interface driver dln2
+usbcore: registered new interface driver pn533_usb
+nfcsim 0.2 initialized
+usbcore: registered new interface driver port100
+usbcore: registered new interface driver nfcmrvl
+Loading iSCSI transport class v2.0-870.
+scsi host0: Virtio SCSI HBA
+st: Version 20160209, fixed bufsize 32768, s/g segs 256
+Rounding down aligned max_sectors from 4294967295 to 4294967288
+db_root: cannot open: /etc/target
+slram: not enough parameters.
+ftl_cs: FTL header not found.
+wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
+MACsec IEEE 802.1AE
+tun: Universal TUN/TAP device driver, 1.6
+BUG: unable to handle page fault for address: ffffdc00116021f8
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-next-20220816-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:strlen+0x1a/0x90 lib/string.c:487
+Code: e8 0b e9 a5 fd 48 8b 74 24 08 48 8b 3c 24 eb c0 48 b8 00 00 00 00 00 fc ff df 48 89 fa 55 48 89 fd 48 c1 ea 03 53 48 83 ec 08 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 04 84 c0 75 48 80 7d 00 00
+RSP: 0000:ffffc90000067588 EFLAGS: 00010296
+RAX: dffffc0000000000 RBX: ffff888020740008 RCX: 0000000000000000
+RDX: 1fffe000116021f8 RSI: ffff888147656000 RDI: ffff00008b010fc0
+RBP: ffff00008b010fc0 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff88814018d600
+R13: ffff8881476560b0 R14: 0000000000000013 R15: ffff00008b010fc0
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc00116021f8 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __fortify_strlen include/linux/fortify-string.h:141 [inline]
+ insert_entry fs/proc/proc_sysctl.c:164 [inline]
+ insert_header+0x2c0/0xf90 fs/proc/proc_sysctl.c:259
+ __register_sysctl_table+0x6fb/0x10a0 fs/proc/proc_sysctl.c:1379
+ __devinet_sysctl_register+0x156/0x280 net/ipv4/devinet.c:2586
+ devinet_sysctl_register net/ipv4/devinet.c:2626 [inline]
+ devinet_sysctl_register+0x160/0x230 net/ipv4/devinet.c:2616
+ inetdev_init+0x286/0x580 net/ipv4/devinet.c:279
+ inetdev_event+0xa85/0x1610 net/ipv4/devinet.c:1534
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1945
+ call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+ call_netdevice_notifiers net/core/dev.c:1997 [inline]
+ register_netdevice+0x1127/0x1680 net/core/dev.c:10103
+ virtnet_probe+0x1378/0x2f30 drivers/net/virtio_net.c:3929
+ virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
+ call_driver_probe drivers/base/dd.c:530 [inline]
+ really_probe+0x249/0xb90 drivers/base/dd.c:609
+ __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:748
+ driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:778
+ __driver_attach+0x223/0x550 drivers/base/dd.c:1150
+ bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
+ bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
+ driver_register+0x220/0x3a0 drivers/base/driver.c:240
+ virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
+ do_one_initcall+0xfe/0x650 init/main.c:1299
+ do_initcall_level init/main.c:1374 [inline]
+ do_initcalls init/main.c:1390 [inline]
+ do_basic_setup init/main.c:1409 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1616
+ kernel_init+0x1a/0x1d0 init/main.c:1505
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+CR2: ffffdc00116021f8
+---[ end trace 0000000000000000 ]---
+RIP: 0010:strlen+0x1a/0x90 lib/string.c:487
+Code: e8 0b e9 a5 fd 48 8b 74 24 08 48 8b 3c 24 eb c0 48 b8 00 00 00 00 00 fc ff df 48 89 fa 55 48 89 fd 48 c1 ea 03 53 48 83 ec 08 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 04 84 c0 75 48 80 7d 00 00
+RSP: 0000:ffffc90000067588 EFLAGS: 00010296
+RAX: dffffc0000000000 RBX: ffff888020740008 RCX: 0000000000000000
+RDX: 1fffe000116021f8 RSI: ffff888147656000 RDI: ffff00008b010fc0
+RBP: ffff00008b010fc0 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff88814018d600
+R13: ffff8881476560b0 R14: 0000000000000013 R15: ffff00008b010fc0
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc00116021f8 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	e8 0b e9 a5 fd       	callq  0xfda5e910
+   5:	48 8b 74 24 08       	mov    0x8(%rsp),%rsi
+   a:	48 8b 3c 24          	mov    (%rsp),%rdi
+   e:	eb c0                	jmp    0xffffffd0
+  10:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  17:	fc ff df
+  1a:	48 89 fa             	mov    %rdi,%rdx
+  1d:	55                   	push   %rbp
+  1e:	48 89 fd             	mov    %rdi,%rbp
+  21:	48 c1 ea 03          	shr    $0x3,%rdx
+  25:	53                   	push   %rbx
+  26:	48 83 ec 08          	sub    $0x8,%rsp
+* 2a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
+  2e:	48 89 fa             	mov    %rdi,%rdx
+  31:	83 e2 07             	and    $0x7,%edx
+  34:	38 d0                	cmp    %dl,%al
+  36:	7f 04                	jg     0x3c
+  38:	84 c0                	test   %al,%al
+  3a:	75 48                	jne    0x84
+  3c:	80 7d 00 00          	cmpb   $0x0,0x0(%rbp)
 
-One newline is enough.
 
-> +	domain->num_clks = devm_clk_bulk_get_all(dev, &domain->clks);
-> +	if (domain->num_clks < 0)
-> +		return dev_err_probe(dev, domain->num_clks, "Failed to get domain's clocks\n");
-> +
-> +	domain->genpd.name = dev_name(dev);
-> +	domain->genpd.power_off = imx93_pd_off;
-> +	domain->genpd.power_on = imx93_pd_on;
-> +	domain->dev = dev;
-> +
-> +	domain->init_off = readl(domain->addr + MIX_FUNC_STAT_OFF) & FUNC_STAT_ISO_STAT_MASK;
-> +	/* Just to sync the status of hardware */
-> +	if (!domain->init_off) {
-> +		ret = clk_bulk_prepare_enable(domain->num_clks, domain->clks);
-> +		if (ret) {
-> +			dev_err(domain->dev, "failed to enable clocks for domain: %s\n",
-> +				domain->genpd.name);
-> +			return 0;
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-This is a case of success?
-
-> +		}
-> +	}
-> +
-> +	ret = pm_genpd_init(&domain->genpd, NULL, domain->init_off);
-> +	if (ret)
-> +		return ret;
-> +
-> +	platform_set_drvdata(pdev, domain);
-> +
-> +	return of_genpd_add_provider_simple(np, &domain->genpd);
-> +}
-> +
-> +static const struct of_device_id imx93_dt_ids[] = {
-> +	{ .compatible = "fsl,imx93-src-slice" },
-> +	{ }
-> +};
-
-MODULE_DEVICE_TABLE()?
-
-Shawn
-
-> +
-> +static struct platform_driver imx93_power_domain_driver = {
-> +	.driver = {
-> +		.name	= "imx93_power_domain",
-> +		.owner	= THIS_MODULE,
-> +		.of_match_table = imx93_dt_ids,
-> +	},
-> +	.probe = imx93_pd_probe,
-> +	.remove = imx93_pd_remove,
-> +};
-> +module_platform_driver(imx93_power_domain_driver);
-> +
-> +MODULE_AUTHOR("Peng Fan <peng.fan@nxp.com>");
-> +MODULE_DESCRIPTION("NXP i.MX93 power domain driver");
-> +MODULE_LICENSE("GPL");
-
-"GPL v2" since you have "SPDX-License-Identifier: GPL-2.0" claimed in
-the beginning?
-
-Shawn
-
-> diff --git a/drivers/soc/imx/imx93-src.c b/drivers/soc/imx/imx93-src.c
-> new file mode 100644
-> index 000000000000..6f14c241538e
-> --- /dev/null
-> +++ b/drivers/soc/imx/imx93-src.c
-> @@ -0,0 +1,32 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright 2022 NXP
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/platform_device.h>
-> +
-> +static int imx93_src_probe(struct platform_device *pdev)
-> +{
-> +	return devm_of_platform_populate(&pdev->dev);
-> +}
-> +
-> +static const struct of_device_id imx93_dt_ids[] = {
-> +	{ .compatible = "fsl,imx93-src" },
-> +	{ }
-> +};
-> +
-> +static struct platform_driver imx93_src_driver = {
-> +	.driver = {
-> +		.name	= "imx93_src",
-> +		.owner	= THIS_MODULE,
-> +		.of_match_table = imx93_dt_ids,
-> +	},
-> +	.probe = imx93_src_probe,
-> +};
-> +module_platform_driver(imx93_src_driver);
-> +
-> +MODULE_AUTHOR("Peng Fan <peng.fan@nxp.com>");
-> +MODULE_DESCRIPTION("NXP i.MX93 src driver");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.25.1
-> 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
