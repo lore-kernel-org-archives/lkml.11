@@ -2,110 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B124C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 18:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47485C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 18:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbiHUSSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 14:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S229982AbiHUSS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 14:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231655AbiHUSSu (ORCPT
+        with ESMTP id S231680AbiHUSSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 14:18:50 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B1B15FF5;
-        Sun, 21 Aug 2022 11:18:49 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id y15so4438886pfr.9;
-        Sun, 21 Aug 2022 11:18:49 -0700 (PDT)
+        Sun, 21 Aug 2022 14:18:55 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C571BEB1;
+        Sun, 21 Aug 2022 11:18:53 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id l19so5647216ljg.8;
+        Sun, 21 Aug 2022 11:18:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=oSgkN+dTN7nRZb20JasKAqJ/0pKCu6M2zNDhcnKlGu0=;
-        b=MkZHKAGKHan5H72D8tPjvl3t5B0A1ynHIQaPnJRJ5crpXL2QupZxn+K5xNrx16Jowe
-         T8gGwT9SKtRepT3P1aZFte+0Fu4PCMbqwqf/I2pL5Oj7WdW2FWmJ1dafGEsMI46JAZed
-         CjLfcNP1U+8SAIAe2NdElNpU/XaECGX77/aNshLSGmH3yo5QZUBVsbG55lCQkxSfBEmo
-         ktbahVOVyTLG5IStMa+S3UEG0T3v6983R4ptNSKz1WlJkOIV4ieio6MMTZ9S6ZSvNLkx
-         re5Sz1ZHevGLSNH80ua19vTRoQIC4NYZSAK4LPtqwOXPH02oMly8hfL8F0f225yicMtY
-         CYZg==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=+DXF8MmCRRjjXsat+fPLoT8WiOSQ/UNg64Pi/BRjUh0=;
+        b=gxHVJaVkS2jGAor5Dygezerqw/TCX4qeK9cA9h4n1VJZUu4ZiF1uqs7EQnB9+GIfnT
+         QbHykg5UDkiCP5kfv0ShFiBNvKTeaJirifd8mWTGwZuIW0IkqL7JPmson4C67LgVgq0L
+         kC9rhQXchKtlZEu7JQSPEAxRQnWCUOwGUhxWweNSNUIltF59/dg2UvZfw9RukjN9nG+G
+         iQ7cKlhT9HpkpkLfPR9keaB0ZLu4MD3HbbhsF+rElrW+LNCUkmc+ae4J0OObfQHW6MFy
+         EN3CZm50wK9Pn3c1WC/g/eC3G/eRpc4Z0NSATgTlrYMXAMp4hkU0NngBeKYbvUUECjB1
+         3+yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=oSgkN+dTN7nRZb20JasKAqJ/0pKCu6M2zNDhcnKlGu0=;
-        b=xLz70WE9aM++Ajp++4KNCTjNbilSA44yfkTSl7sb3qa6gh6mWp/aWHz3SHIXjZKgKM
-         gOzfSjCLjmiNlrXxkoGrKoKxCMRyS7f1kQo/EKHH1+PfdebJa8kN2sB6Z+G96Fpzx33K
-         0eclWJUsdQ/c6KA/hF+LIv5zaBLaDALWIZBGv4nlf8XpHILXDIPieundZUbdb9Np5Y2W
-         lGBhAMUSwHrUveKz9D3dc8xfVUqZOrH1rbSw6FJsbhArlH4VjkQgzsTKTrcm1RQKT+2Z
-         7u03Pn5OKNmnkVYeRCtc8AUJsmXSSYmcD4a+ECW8wNCAybTdvOUsNMY39YcTIYnWSd3f
-         YeFw==
-X-Gm-Message-State: ACgBeo1cAx/emiBQoFPEY78qx+ZqSXDeZz0ZpYC+1yaMSeeJw6FTBY6h
-        nnatZPxVWN8BNkj4oP0SvZyZse5f/0g=
-X-Google-Smtp-Source: AA6agR6WWMc3ZkdxZ/qB/4q1PzNtoY5Nih3Ar2rTZXIOvK3bglEb6Kp9bCIcl/7BDvowbchcx6VF7Q==
-X-Received: by 2002:a63:5b4f:0:b0:426:9c52:a1f with SMTP id l15-20020a635b4f000000b004269c520a1fmr14188278pgm.511.1661105928539;
-        Sun, 21 Aug 2022 11:18:48 -0700 (PDT)
-Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
-        by smtp.gmail.com with ESMTPSA id p27-20020aa79e9b000000b00535bed953e8sm7147739pfq.94.2022.08.21.11.18.47
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=+DXF8MmCRRjjXsat+fPLoT8WiOSQ/UNg64Pi/BRjUh0=;
+        b=oj0uY6k5xPWVBPU6tc6cgG7HUuFaNfoRRSvyO6g0ccpsOEalcPqgF1Rp6FkHBP1i93
+         7+BfcXmbLyNDddr7VBR/OtY8glSo1TdNpwurTHZUcyeysW0lO9V9ZtueRsjT+FTEnMJr
+         L1+6J2defMss47g3qK2JqhvZFOvPwd+wDGZhgpnuW1ovZKNNW17jTE80xLgLLAsOuj+h
+         DzG97UweKf/f5s9wCN17vpHz2psgyLuWUt+m92yZWynGGhfB88sDdfGk7fmuvhebD3DT
+         VS8npN48WAdCeS0nXaaEb6REntl9RJmJNjRzXaAqK+tuurCi9F4WPA+O1mp/1gcyt8Yl
+         a3lg==
+X-Gm-Message-State: ACgBeo2t0ZK+jrqqmmWEP3hsrOGmO9CIToZcXJPm24vK6qOUKhZcoTqS
+        SzpsS2eSjHuoUlAFvk14Zlg=
+X-Google-Smtp-Source: AA6agR4LxdBTHgY9SQsNBQGfG9qgAtgi7b6nH0XV/rU0I4UFYnrkkfNkqpIYMn3puy2rOgwG93TW1A==
+X-Received: by 2002:a05:651c:1720:b0:261:bfb0:f832 with SMTP id be32-20020a05651c172000b00261bfb0f832mr3041473ljb.346.1661105932043;
+        Sun, 21 Aug 2022 11:18:52 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id v15-20020ac258ef000000b0048b08f0c4e9sm853254lfo.176.2022.08.21.11.18.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Aug 2022 11:18:47 -0700 (PDT)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        Rob Clark <robdclark@chromium.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/5] iommu/arm-smmu-qcom: Fix indentation
-Date:   Sun, 21 Aug 2022 11:19:02 -0700
-Message-Id: <20220821181917.1188021-2-robdclark@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220821181917.1188021-1-robdclark@gmail.com>
-References: <20220821181917.1188021-1-robdclark@gmail.com>
+        Sun, 21 Aug 2022 11:18:51 -0700 (PDT)
+Date:   Sun, 21 Aug 2022 21:18:48 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Brad Larson <brad@pensando.io>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, adrian.hunter@intel.com,
+        alcooperx@gmail.com, andy.shevchenko@gmail.com, arnd@arndb.de,
+        blarson@amd.com, brijeshkumar.singh@amd.com,
+        catalin.marinas@arm.com, gsomlo@gmail.com, gerg@linux-m68k.org,
+        krzk@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee.jones@linaro.org, broonie@kernel.org,
+        yamada.masahiro@socionext.com, p.zabel@pengutronix.de,
+        piotrs@cadence.com, p.yadav@ti.com, rdunlap@infradead.org,
+        robh+dt@kernel.org, samuel@sholland.org,
+        suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
+        ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 12/17] spi: dw: Add support for AMD Pensando Elba SoC
+Message-ID: <20220821181848.cxjpv2f4cqvdtnq3@mobilestation>
+References: <20220820195750.70861-1-brad@pensando.io>
+ <20220820195750.70861-13-brad@pensando.io>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220820195750.70861-13-brad@pensando.io>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+On Sat, Aug 20, 2022 at 12:57:45PM -0700, Brad Larson wrote:
+> From: Brad Larson <blarson@amd.com>
+> 
+> The AMD Pensando Elba SoC includes a DW apb_ssi v4 controller
+> with device specific chip-select control.  The Elba SoC
+> provides four chip-selects where the native DW IP supports
+> two chip-selects.  The Elba DW_SPI instance has two native
+> CS signals that are always overridden.
+> 
+> Signed-off-by: Brad Larson <blarson@amd.com>
+> ---
+>  drivers/spi/spi-dw-mmio.c | 77 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 77 insertions(+)
+> 
+> diff --git a/drivers/spi/spi-dw-mmio.c b/drivers/spi/spi-dw-mmio.c
+> index 26c40ea6dd12..36b8c5e10bb3 100644
+> --- a/drivers/spi/spi-dw-mmio.c
+> +++ b/drivers/spi/spi-dw-mmio.c
+> @@ -53,6 +53,24 @@ struct dw_spi_mscc {
+>  	void __iomem        *spi_mst; /* Not sparx5 */
+>  };
+>  
+> +struct dw_spi_elba {
+> +	struct regmap *syscon;
+> +};
+> +
+> +/*
+> + * Elba SoC does not use ssi, pin override is used for cs 0,1 and
+> + * gpios for cs 2,3 as defined in the device tree.
+> + *
+> + * cs:  |       1               0
+> + * bit: |---3-------2-------1-------0
+> + *      |  cs1   cs1_ovr   cs0   cs0_ovr
+> + */
+> +#define ELBA_SPICS_REG			0x2468
+> +#define ELBA_SPICS_SHIFT(cs)		(2 * (cs))
+> +#define ELBA_SPICS_MASK(cs)		(0x3 << ELBA_SPICS_SHIFT(cs))
+> +#define ELBA_SPICS_SET(cs, val)	\
+> +			((((val) << 1) | 0x1) << ELBA_SPICS_SHIFT(cs))
 
-Plus typo.
+Please take the @Andy' notes into account:
+https://lore.kernel.org/lkml/CAHp75Vex0VkECYd=kY0m6=jXBYSXg2UFu7vn271+Q49WZn22GA@mail.gmail.com/
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- include/linux/adreno-smmu-priv.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+One more nitpick below.
 
-diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
-index c637e0997f6d..ac4c2c0ab724 100644
---- a/include/linux/adreno-smmu-priv.h
-+++ b/include/linux/adreno-smmu-priv.h
-@@ -37,7 +37,7 @@ struct adreno_smmu_fault_info {
- /**
-  * struct adreno_smmu_priv - private interface between adreno-smmu and GPU
-  *
-- * @cookie:        An opque token provided by adreno-smmu and passed
-+ * @cookie:        An opaque token provided by adreno-smmu and passed
-  *                 back into the callbacks
-  * @get_ttbr1_cfg: Get the TTBR1 config for the GPUs context-bank
-  * @set_ttbr0_cfg: Set the TTBR0 config for the GPUs context bank.  A
-@@ -61,12 +61,12 @@ struct adreno_smmu_fault_info {
-  * it's domain.
-  */
- struct adreno_smmu_priv {
--    const void *cookie;
--    const struct io_pgtable_cfg *(*get_ttbr1_cfg)(const void *cookie);
--    int (*set_ttbr0_cfg)(const void *cookie, const struct io_pgtable_cfg *cfg);
--    void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
--    void (*set_stall)(const void *cookie, bool enabled);
--    void (*resume_translation)(const void *cookie, bool terminate);
-+	const void *cookie;
-+	const struct io_pgtable_cfg *(*get_ttbr1_cfg)(const void *cookie);
-+	int (*set_ttbr0_cfg)(const void *cookie, const struct io_pgtable_cfg *cfg);
-+	void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
-+	void (*set_stall)(const void *cookie, bool enabled);
-+	void (*resume_translation)(const void *cookie, bool terminate);
- };
- 
- #endif /* __ADRENO_SMMU_PRIV_H */
--- 
-2.37.2
+> +
+>  /*
+>   * The Designware SPI controller (referred to as master in the documentation)
+>   * automatically deasserts chip select when the tx fifo is empty. The chip
+> @@ -237,6 +255,64 @@ static int dw_spi_canaan_k210_init(struct platform_device *pdev,
+>  	return 0;
+>  }
+>  
+> +static void dw_spi_elba_override_cs(struct dw_spi_elba *dwselba, int cs, int enable)
+> +{
+> +	regmap_update_bits(dwselba->syscon, ELBA_SPICS_REG, ELBA_SPICS_MASK(cs),
+> +			   ELBA_SPICS_SET(cs, enable));
+> +}
+> +
+> +static void dw_spi_elba_set_cs(struct spi_device *spi, bool enable)
+> +{
+> +	struct dw_spi *dws = spi_master_get_devdata(spi->master);
+> +	struct dw_spi_mmio *dwsmmio = container_of(dws, struct dw_spi_mmio, dws);
+> +	struct dw_spi_elba *dwselba = dwsmmio->priv;
+> +	u8 cs;
+> +
+> +	cs = spi->chip_select;
+> +	if (cs < 2)
+> +		dw_spi_elba_override_cs(dwselba, spi->chip_select, enable);
+> +
+> +	/*
+> +	 * The DW SPI controller needs a native CS bit selected to start
+> +	 * the serial engine.
+> +	 */
+> +	spi->chip_select = 0;
+> +	dw_spi_set_cs(spi, enable);
+> +	spi->chip_select = cs;
+> +}
+> +
+> +static int dw_spi_elba_init(struct platform_device *pdev,
+> +			    struct dw_spi_mmio *dwsmmio)
+> +{
+> +	const char *syscon_name = "amd,pensando-elba-syscon";
+> +	struct device_node *np = pdev->dev.of_node;
 
+> +	struct device_node *node;
+> +	struct dw_spi_elba *dwselba;
+
+Please, use the reverse xmas tree order of the local variables
+as the rest of the driver mainly implies.
+
+-Sergey
+
+> +	struct regmap *regmap;
+> +
+> +	node = of_parse_phandle(np, syscon_name, 0);
+> +	if (!node) {
+> +		dev_err(&pdev->dev, "failed to find %s\n", syscon_name);
+> +		return -ENODEV;
+> +	}
+> +
+> +	regmap = syscon_node_to_regmap(node);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&pdev->dev, "syscon regmap lookup failed\n");
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	dwselba = devm_kzalloc(&pdev->dev, sizeof(*dwselba), GFP_KERNEL);
+> +	if (!dwselba)
+> +		return -ENOMEM;
+> +
+> +	dwselba->syscon = regmap;
+> +	dwsmmio->priv = dwselba;
+> +	dwsmmio->dws.set_cs = dw_spi_elba_set_cs;
+> +
+> +	return 0;
+> +}
+> +
+>  static int dw_spi_mmio_probe(struct platform_device *pdev)
+>  {
+>  	int (*init_func)(struct platform_device *pdev,
+> @@ -352,6 +428,7 @@ static const struct of_device_id dw_spi_mmio_of_match[] = {
+>  	{ .compatible = "intel,thunderbay-ssi", .data = dw_spi_intel_init},
+>  	{ .compatible = "microchip,sparx5-spi", dw_spi_mscc_sparx5_init},
+>  	{ .compatible = "canaan,k210-spi", dw_spi_canaan_k210_init},
+> +	{ .compatible = "amd,pensando-elba-spi", .data = dw_spi_elba_init},
+>  	{ /* end of table */}
+>  };
+>  MODULE_DEVICE_TABLE(of, dw_spi_mmio_of_match);
+> -- 
+> 2.17.1
+> 
