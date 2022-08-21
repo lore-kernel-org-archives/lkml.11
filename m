@@ -2,55 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B767C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6653DC32789
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbiHUGy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 02:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
+        id S229680AbiHUG5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 02:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHUGyz (ORCPT
+        with ESMTP id S229379AbiHUG5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 02:54:55 -0400
+        Sun, 21 Aug 2022 02:57:36 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8228F1D30F
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:54:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDDD1D32B
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:57:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=nQM4oPZzphwSDtvEtGpl2bA0fG0oLY3le8thgzAQhNg=; b=JkBhF3nreFwoDyib/sG7ENabdx
-        k1OH4BrKOFhNgvArnk8jflKPqMmepsbcKLRKbrMOzyefREECHQ+Z9RpxfesTxBwS3scFav+XbbCYa
-        ziJLi8YLh1xEG6QcZ4PLKiBgzVAOxFEF/+nanDmU0sXUaKtUXEl1NnGhjeeGJuhYmTjrkjQzbgn+Z
-        CbTu5OsA+o3IgGYU86+2J+G1apP3lg7jZzOEbk0929IeKT8vS07hIZLVQes2frPFBQ+NOx++uyQNO
-        Q0APSZhun1pSiXyU+dgbDyg51DWXm6UAwduXkwpKVHNhJNkHkErgRCGCyWDsFBqWnO6mRLelWjckL
-        k6zX/QtA==;
+        bh=tbA8GPJvpZPjyT8xHzEYgyx5w9Okhk3popffrDAY7oI=; b=YQLHw+2HeEkLn1TFXnAvnkNWuQ
+        CMyJ6wld0ZyFCBh86KeBcBe+lLp2TWnlT6BiMubAZLJ0ABQA26Nhcz7LIp4ysQytdifnmFp/uPWab
+        majGosilWVAwMpzMrnkoxMRXSsB1DVftzKSWOvBM/sna7VtHeYFEGArhRaH/wJyqe0nMdgy0L0Ha6
+        QtYT1Xby+15OePctot8MDtVp27E8nBpwmzewLKX6qX2Yz2Aadsae2jvS+LFIsaFbdRkntWv6B4g0Y
+        ouqQQjGQb4h7XHQHzTsUbVEvMjB0sdNSsziNUhkgiYus8hjbVwXhS9jOvm5AH0kqlhBikY4I458hD
+        0K1JB16A==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oPerG-006zaX-KB; Sun, 21 Aug 2022 06:54:54 +0000
-Date:   Sat, 20 Aug 2022 23:54:54 -0700
+        id 1oPetl-0071xF-ID; Sun, 21 Aug 2022 06:57:30 +0000
+Date:   Sat, 20 Aug 2022 23:57:29 -0700
 From:   Christoph Hellwig <hch@infradead.org>
 To:     Baoquan He <bhe@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         akpm@linux-foundation.org, hch@infradead.org,
         agordeev@linux.ibm.com, wangkefeng.wang@huawei.com,
         linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 02/11] mm: ioremap: fixup the physical address and
- page prot
-Message-ID: <YwHWvjoZF1V4FSlW@infradead.org>
+Subject: Re: [PATCH v2 03/11] mm: ioremap: allow ARCH to have its own ioremap
+ definition
+Message-ID: <YwHXWdycBZr+bluG@infradead.org>
 References: <20220820003125.353570-1-bhe@redhat.com>
- <20220820003125.353570-3-bhe@redhat.com>
+ <20220820003125.353570-4-bhe@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220820003125.353570-3-bhe@redhat.com>
+In-Reply-To: <20220820003125.353570-4-bhe@redhat.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot);
-> +void __iomem *
-> +arch_ioremap(phys_addr_t *paddr, size_t size, unsigned long *prot_val);
+On Sat, Aug 20, 2022 at 08:31:17AM +0800, Baoquan He wrote:
+> Architectures like xtensa, arc, can be converted to GENERIC_IOREMAP,
+> to take standard ioremap_prot() and ioremap_xxx() way. But they have
+> ARCH specific handling for ioremap() method, than standard ioremap()
+> method.
 
-It seems a bit odd to do this in two steps vs just doing the entire
-change in the first patch.  Any good reason for that?
+Do they?
+
+For arc, the arc_uncached_addr_space case can be easily handled by
+arch_ioremap, and the xtensa case looks very similar to that.
+
+I'd really like to kill off arch definitions of ioremap going
+forward, as they should just be a special case of ioremap_prot
+by definition.
