@@ -2,952 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55644C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 01:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D6AC25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 01:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236996AbiHUBDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 21:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        id S236847AbiHUBE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 21:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235646AbiHUBCo (ORCPT
+        with ESMTP id S237336AbiHUBEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 21:02:44 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F7F2253C;
-        Sat, 20 Aug 2022 18:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=ASeZ8i5iZYXxqtaxLsCUU5uCYtisqTL0lvOz2z36OWw=; b=CG4NcWs0U6Z2txhhYBw0BVPU29
-        9td9K4iUkoyA/pEGpjnuX2OCmdpN0Nu/I08Rw/oHetxMEypY6hStwsCMva5d+IVCwHdhfbfmSJL/w
-        SJmqCreI1f6vc9Non7YIS5NvnIXVnjwcmfODX4pCKKVNSBJZaCrzpgYmyInuljd6VnEr0ufkU9+cM
-        68f5KNbXCI/ythY9iTTCwCP6AMnQm4ubzwEmr8O/yn0IWBKbf0RrLb7d09Tp/L+Iu7KXDH/0z3r4o
-        c3Xz2KNB/HO4XRU769uaddoNZ2f7XBGtBv5WjNSBhXDBtJBfn/jB4NYTO3cKTC7F2d6HipYm1BtMx
-        3RWP5N0Q==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oPZMN-006WIq-NT;
-        Sun, 21 Aug 2022 01:02:39 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     linux-arch@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v2 3/8] termios: uninline conversion helpers
-Date:   Sun, 21 Aug 2022 02:02:34 +0100
-Message-Id: <20220821010239.1554132-3-viro@zeniv.linux.org.uk>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220821010239.1554132-1-viro@zeniv.linux.org.uk>
-References: <YwF8vibZ2/Xz7a/g@ZenIV>
- <20220821010239.1554132-1-viro@zeniv.linux.org.uk>
+        Sat, 20 Aug 2022 21:04:39 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E9F140ED
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 18:04:25 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id o9-20020a056e0214c900b002dc29c288bfso5800579ilk.3
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 18:04:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=c+ysmxoPi5wLTW8ulkljidwSbpOY/TRUbnPZN/sjKuQ=;
+        b=llYl7dEfsqAZEHLu9XnA4mN6idzmIOBBAL+bxPoltTwMI4rw4m9p9uFqus2RosCVs4
+         mQ1ORbENMNpDqfh601F5rCeqVSlvmvMofFvPS24kfeTsTMQIaNGvFMmn7XWQ7STXOmqH
+         pAnoC0bONlsJWoX+EalWg5TI9IGgzlrCPEcvpzAINc3H2hj7W+TpgHHsMowhh5fmCvQT
+         eO1YroGUNrDWS8Rq0J5TCR6NnpGD9LjGRsRsojGxBJbgvvAtURtwtjwMDgYbgl4dDdOU
+         Zzasg6qhY16ihR15czkEMFMFLFpO9BzRDaWoTrAYzuQaEvJzgeZQY240bnV488JTiWIW
+         jYBw==
+X-Gm-Message-State: ACgBeo0Bi31ZX/7AtPrDqGz+GVYN0nf0vRbnarMvJdc579psUghePNOZ
+        2zo07zDevy5GyoUalB0XKeda9lC6rb+TnxGJraulig9nXSe2
+X-Google-Smtp-Source: AA6agR5pV9wew+rVsP+QRsT6GcNoMxauAbIF6Qgc0I4IDunu6jDIBV/K0BBAUDEH8qW6uP9JL+kdjqt/WEOUSie/SFGMC/rQ4v/k
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: Al Viro <viro@ftp.linux.org.uk>
+X-Received: by 2002:a05:6638:3015:b0:341:de68:602c with SMTP id
+ r21-20020a056638301500b00341de68602cmr6412311jak.10.1661043865222; Sat, 20
+ Aug 2022 18:04:25 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 18:04:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008b056305e6b5e93a@google.com>
+Subject: [syzbot] upstream boot error: BUG: unable to handle kernel NULL
+ pointer dereference in qlist_free_all
+From:   syzbot <syzbot+6927c4059ebce5111574@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tj@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-default go into drivers/tty/tty_ioctl.c, unusual - into
-arch/*/kernel/termios.c (only alpha and sparc have those).
+Hello,
 
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+syzbot found the following issue on:
+
+HEAD commit:    3cc40a443a04 Merge tag 'nios2_fixes_v6.0' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10938a47080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e706e91b2a433db
+dashboard link: https://syzkaller.appspot.com/bug?extid=6927c4059ebce5111574
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6927c4059ebce5111574@syzkaller.appspotmail.com
+
+BUG: kernel NULL pointer dereference, address: 0000000000000018
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 0 P4D 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 2972 Comm: udevadm Not tainted 6.0.0-rc1-syzkaller-00017-g3cc40a443a04 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:qlink_to_cache mm/kasan/quarantine.c:131 [inline]
+RIP: 0010:qlist_free_all+0x13b/0x1b0 mm/kasan/quarantine.c:184
+Code: ff ff 48 c1 e5 06 48 01 c5 48 8b 45 08 a8 01 75 79 66 90 48 89 ef e8 84 fe ff ff 48 8b 00 f6 c4 02 b8 00 00 00 00 48 0f 44 e8 <4c> 8b 7d 18 e9 39 ff ff ff 48 8b 04 24 48 c7 40 08 00 00 00 00 48
+RSP: 0018:ffffc900030afc28 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff888000006301 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff8136e5f4 RDI: ffffea0000000180
+RBP: 0000000000000000 R08: 0000000000000007 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88801bde3000 R14: ffff88801bde3000 R15: 0000000000000000
+FS:  00007fb5f1aa9840(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000018 CR3: 000000007cefe000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0x97/0xb0 mm/kasan/common.c:447
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:727 [inline]
+ slab_alloc mm/slab.c:3294 [inline]
+ __do_kmalloc mm/slab.c:3684 [inline]
+ __kmalloc+0x315/0x4a0 mm/slab.c:3695
+ kmalloc include/linux/slab.h:605 [inline]
+ kernfs_fop_write_iter+0x231/0x610 fs/kernfs/file.c:331
+ call_write_iter include/linux/fs.h:2187 [inline]
+ new_sync_write fs/read_write.c:491 [inline]
+ vfs_write+0x9e9/0xdd0 fs/read_write.c:578
+ ksys_write+0x127/0x250 fs/read_write.c:631
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fb5f17259a3
+Code: 8b 15 d9 f4 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
+RSP: 002b:00007fff80b14e48 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007fff80b16f41 RCX: 00007fb5f17259a3
+RDX: 0000000000000003 RSI: 00007fff80b16f41 RDI: 0000000000000003
+RBP: 000055910f241e30 R08: 0000000000000000 R09: 00007fb5f17f5a60
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007fff80b14e58 R14: 0000000000000000 R15: 000055910e4de0b4
+ </TASK>
+Modules linked in:
+CR2: 0000000000000018
+---[ end trace 0000000000000000 ]---
+RIP: 0010:qlink_to_cache mm/kasan/quarantine.c:131 [inline]
+RIP: 0010:qlist_free_all+0x13b/0x1b0 mm/kasan/quarantine.c:184
+Code: ff ff 48 c1 e5 06 48 01 c5 48 8b 45 08 a8 01 75 79 66 90 48 89 ef e8 84 fe ff ff 48 8b 00 f6 c4 02 b8 00 00 00 00 48 0f 44 e8 <4c> 8b 7d 18 e9 39 ff ff ff 48 8b 04 24 48 c7 40 08 00 00 00 00 48
+RSP: 0018:ffffc900030afc28 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff888000006301 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff8136e5f4 RDI: ffffea0000000180
+RBP: 0000000000000000 R08: 0000000000000007 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88801bde3000 R14: ffff88801bde3000 R15: 0000000000000000
+FS:  00007fb5f1aa9840(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000018 CR3: 000000007cefe000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	ff 48 c1             	decl   -0x3f(%rax)
+   3:	e5 06                	in     $0x6,%eax
+   5:	48 01 c5             	add    %rax,%rbp
+   8:	48 8b 45 08          	mov    0x8(%rbp),%rax
+   c:	a8 01                	test   $0x1,%al
+   e:	75 79                	jne    0x89
+  10:	66 90                	xchg   %ax,%ax
+  12:	48 89 ef             	mov    %rbp,%rdi
+  15:	e8 84 fe ff ff       	callq  0xfffffe9e
+  1a:	48 8b 00             	mov    (%rax),%rax
+  1d:	f6 c4 02             	test   $0x2,%ah
+  20:	b8 00 00 00 00       	mov    $0x0,%eax
+  25:	48 0f 44 e8          	cmove  %rax,%rbp
+* 29:	4c 8b 7d 18          	mov    0x18(%rbp),%r15 <-- trapping instruction
+  2d:	e9 39 ff ff ff       	jmpq   0xffffff6b
+  32:	48 8b 04 24          	mov    (%rsp),%rax
+  36:	48 c7 40 08 00 00 00 	movq   $0x0,0x8(%rax)
+  3d:	00
+  3e:	48                   	rex.W
+
+
 ---
- arch/alpha/include/asm/termios.h   |  77 ++--------------
- arch/alpha/kernel/Makefile         |   2 +-
- arch/alpha/kernel/termios.c        |  57 ++++++++++++
- arch/ia64/include/asm/termios.h    |  41 ++-------
- arch/mips/include/asm/termios.h    |  84 ++----------------
- arch/parisc/include/asm/termios.h  |  41 ++-------
- arch/sparc/include/asm/termios.h   | 136 ++---------------------------
- arch/sparc/kernel/Makefile         |   4 +-
- arch/sparc/kernel/termios.c        | 115 ++++++++++++++++++++++++
- drivers/tty/tty_ioctl.c            |  74 ++++++++++++++++
- include/asm-generic/termios-base.h |  69 ++-------------
- include/asm-generic/termios.h      |  42 ++-------
- 12 files changed, 294 insertions(+), 448 deletions(-)
- create mode 100644 arch/alpha/kernel/termios.c
- create mode 100644 arch/sparc/kernel/termios.c
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/arch/alpha/include/asm/termios.h b/arch/alpha/include/asm/termios.h
-index b7c77bb1bfd2..bafbb0090024 100644
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -12,76 +12,11 @@
- */
- #define INIT_C_CC "\004\000\000\177\027\025\022\000\003\034\032\000\021\023\026\025\001\000"
- 
--/*
-- * Translate a "termio" structure into a "termios". Ugh.
-- */
--
--#define user_termio_to_kernel_termios(a_termios, u_termio)			\
--({										\
--	struct ktermios *k_termios = (a_termios);				\
--	struct termio k_termio;							\
--	int canon, ret;								\
--										\
--	ret = copy_from_user(&k_termio, u_termio, sizeof(k_termio));		\
--	if (!ret) {								\
--		/* Overwrite only the low bits.  */				\
--		*(unsigned short *)&k_termios->c_iflag = k_termio.c_iflag;	\
--		*(unsigned short *)&k_termios->c_oflag = k_termio.c_oflag;	\
--		*(unsigned short *)&k_termios->c_cflag = k_termio.c_cflag;	\
--		*(unsigned short *)&k_termios->c_lflag = k_termio.c_lflag;	\
--		canon = k_termio.c_lflag & ICANON;				\
--										\
--		k_termios->c_cc[VINTR]  = k_termio.c_cc[_VINTR];		\
--		k_termios->c_cc[VQUIT]  = k_termio.c_cc[_VQUIT];		\
--		k_termios->c_cc[VERASE] = k_termio.c_cc[_VERASE];		\
--		k_termios->c_cc[VKILL]  = k_termio.c_cc[_VKILL];		\
--		k_termios->c_cc[VEOL2]  = k_termio.c_cc[_VEOL2];		\
--		k_termios->c_cc[VSWTC]  = k_termio.c_cc[_VSWTC];		\
--		k_termios->c_cc[canon ? VEOF : VMIN]  = k_termio.c_cc[_VEOF];	\
--		k_termios->c_cc[canon ? VEOL : VTIME] = k_termio.c_cc[_VEOL];	\
--	}									\
--	ret;									\
--})
--
--/*
-- * Translate a "termios" structure into a "termio". Ugh.
-- *
-- * Note the "fun" _VMIN overloading.
-- */
--#define kernel_termios_to_user_termio(u_termio, a_termios)		\
--({									\
--	struct ktermios *k_termios = (a_termios);			\
--	struct termio k_termio;						\
--	int canon;							\
--									\
--	k_termio.c_iflag = k_termios->c_iflag;				\
--	k_termio.c_oflag = k_termios->c_oflag;				\
--	k_termio.c_cflag = k_termios->c_cflag;				\
--	canon = (k_termio.c_lflag = k_termios->c_lflag) & ICANON;	\
--									\
--	k_termio.c_line = k_termios->c_line;				\
--	k_termio.c_cc[_VINTR]  = k_termios->c_cc[VINTR];		\
--	k_termio.c_cc[_VQUIT]  = k_termios->c_cc[VQUIT];		\
--	k_termio.c_cc[_VERASE] = k_termios->c_cc[VERASE];		\
--	k_termio.c_cc[_VKILL]  = k_termios->c_cc[VKILL];		\
--	k_termio.c_cc[_VEOF]   = k_termios->c_cc[canon ? VEOF : VMIN];	\
--	k_termio.c_cc[_VEOL]   = k_termios->c_cc[canon ? VEOL : VTIME];	\
--	k_termio.c_cc[_VEOL2]  = k_termios->c_cc[VEOL2];		\
--	k_termio.c_cc[_VSWTC]  = k_termios->c_cc[VSWTC];		\
--									\
--	copy_to_user(u_termio, &k_termio, sizeof(k_termio));		\
--})
--
--#define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios2))
--
--#define kernel_termios_to_user_termios(u, k) \
--	copy_to_user(u, k, sizeof(struct termios2))
--
--#define user_termios_to_kernel_termios_1(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
--
--#define kernel_termios_to_user_termios_1(u, k) \
--	copy_to_user(u, k, sizeof(struct termios))
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- 
- #endif	/* _ALPHA_TERMIOS_H */
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 5a74581bf0ee..61e3b42b8322 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -9,7 +9,7 @@ ccflags-y	:= -Wno-sign-compare
- 
- obj-y    := entry.o traps.o process.o osf_sys.o irq.o \
- 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
--	    systbls.o err_common.o io.o bugs.o
-+	    systbls.o err_common.o io.o bugs.o termios.o
- 
- obj-$(CONFIG_VGA_HOSE)	+= console.o
- obj-$(CONFIG_SMP)	+= smp.o
-diff --git a/arch/alpha/kernel/termios.c b/arch/alpha/kernel/termios.c
-new file mode 100644
-index 000000000000..1534f39cb9fe
---- /dev/null
-+++ b/arch/alpha/kernel/termios.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/uaccess.h>
-+#include <linux/termios.h>
-+
-+int user_termio_to_kernel_termios(struct ktermios *termios,
-+						struct termio __user *termio)
-+{
-+	struct termio v;
-+	bool canon;
-+
-+	if (copy_from_user(&v, termio, sizeof(struct termio)))
-+		return -EFAULT;
-+
-+	termios->c_iflag = (0xffff0000 & termios->c_iflag) | v.c_iflag;
-+	termios->c_oflag = (0xffff0000 & termios->c_oflag) | v.c_oflag;
-+	termios->c_cflag = (0xffff0000 & termios->c_cflag) | v.c_cflag;
-+	termios->c_lflag = (0xffff0000 & termios->c_lflag) | v.c_lflag;
-+	termios->c_line = (0xffff0000 & termios->c_lflag) | v.c_line;
-+
-+	canon = v.c_lflag & ICANON;
-+	termios->c_cc[VINTR]  = v.c_cc[_VINTR];
-+	termios->c_cc[VQUIT]  = v.c_cc[_VQUIT];
-+	termios->c_cc[VERASE] = v.c_cc[_VERASE];
-+	termios->c_cc[VKILL]  = v.c_cc[_VKILL];
-+	termios->c_cc[VEOL2]  = v.c_cc[_VEOL2];
-+	termios->c_cc[VSWTC]  = v.c_cc[_VSWTC];
-+	termios->c_cc[canon ? VEOF : VMIN]  = v.c_cc[_VEOF];
-+	termios->c_cc[canon ? VEOL : VTIME] = v.c_cc[_VEOL];
-+
-+	return 0;
-+}
-+
-+int kernel_termios_to_user_termio(struct termio __user *termio,
-+						struct ktermios *termios)
-+{
-+	struct termio v;
-+	bool canon;
-+
-+	memset(&v, 0, sizeof(struct termio));
-+	v.c_iflag = termios->c_iflag;
-+	v.c_oflag = termios->c_oflag;
-+	v.c_cflag = termios->c_cflag;
-+	v.c_lflag = termios->c_lflag;
-+	v.c_line = termios->c_line;
-+
-+	canon = v.c_lflag & ICANON;
-+	v.c_cc[_VINTR]  = termios->c_cc[VINTR];
-+	v.c_cc[_VQUIT]  = termios->c_cc[VQUIT];
-+	v.c_cc[_VERASE] = termios->c_cc[VERASE];
-+	v.c_cc[_VKILL]  = termios->c_cc[VKILL];
-+	v.c_cc[_VEOF]   = termios->c_cc[canon ? VEOF : VMIN];
-+	v.c_cc[_VEOL]   = termios->c_cc[canon ? VEOL : VTIME];
-+	v.c_cc[_VEOL2]  = termios->c_cc[VEOL2];
-+	v.c_cc[_VSWTC]  = termios->c_cc[VSWTC];
-+
-+	return copy_to_user(termio, &v, sizeof(struct termio));
-+}
-diff --git a/arch/ia64/include/asm/termios.h b/arch/ia64/include/asm/termios.h
-index 589c026444cc..e7b2654aeb6f 100644
---- a/arch/ia64/include/asm/termios.h
-+++ b/arch/ia64/include/asm/termios.h
-@@ -19,40 +19,11 @@
- */
- #define INIT_C_CC "\003\034\177\025\004\0\1\0\021\023\032\0\022\017\027\026\0"
- 
--/*
-- * Translate a "termio" structure into a "termios". Ugh.
-- */
--#define SET_LOW_TERMIOS_BITS(termios, termio, x) {	\
--	unsigned short __tmp;				\
--	get_user(__tmp,&(termio)->x);			\
--	*(unsigned short *) &(termios)->x = __tmp;	\
--}
--
--#define user_termio_to_kernel_termios(termios, termio)		\
--({								\
--	SET_LOW_TERMIOS_BITS(termios, termio, c_iflag);		\
--	SET_LOW_TERMIOS_BITS(termios, termio, c_oflag);		\
--	SET_LOW_TERMIOS_BITS(termios, termio, c_cflag);		\
--	SET_LOW_TERMIOS_BITS(termios, termio, c_lflag);		\
--	copy_from_user((termios)->c_cc, (termio)->c_cc, NCC);	\
--})
--
--/*
-- * Translate a "termios" structure into a "termio". Ugh.
-- */
--#define kernel_termios_to_user_termio(termio, termios)		\
--({								\
--	put_user((termios)->c_iflag, &(termio)->c_iflag);	\
--	put_user((termios)->c_oflag, &(termio)->c_oflag);	\
--	put_user((termios)->c_cflag, &(termio)->c_cflag);	\
--	put_user((termios)->c_lflag, &(termio)->c_lflag);	\
--	put_user((termios)->c_line,  &(termio)->c_line);	\
--	copy_to_user((termio)->c_cc, (termios)->c_cc, NCC);	\
--})
--
--#define user_termios_to_kernel_termios(k, u) copy_from_user(k, u, sizeof(struct termios2))
--#define kernel_termios_to_user_termios(u, k) copy_to_user(u, k, sizeof(struct termios2))
--#define user_termios_to_kernel_termios_1(k, u) copy_from_user(k, u, sizeof(struct termios))
--#define kernel_termios_to_user_termios_1(u, k) copy_to_user(u, k, sizeof(struct termios))
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- 
- #endif /* _ASM_IA64_TERMIOS_H */
-diff --git a/arch/mips/include/asm/termios.h b/arch/mips/include/asm/termios.h
-index bc29eeacc55a..5e8c9d137dee 100644
---- a/arch/mips/include/asm/termios.h
-+++ b/arch/mips/include/asm/termios.h
-@@ -23,83 +23,11 @@
- 
- #include <linux/string.h>
- 
--/*
-- * Translate a "termio" structure into a "termios". Ugh.
-- */
--static inline int user_termio_to_kernel_termios(struct ktermios *termios,
--	struct termio __user *termio)
--{
--	unsigned short iflag, oflag, cflag, lflag;
--	unsigned int err;
--
--	if (!access_ok(termio, sizeof(struct termio)))
--		return -EFAULT;
--
--	err = __get_user(iflag, &termio->c_iflag);
--	termios->c_iflag = (termios->c_iflag & 0xffff0000) | iflag;
--	err |=__get_user(oflag, &termio->c_oflag);
--	termios->c_oflag = (termios->c_oflag & 0xffff0000) | oflag;
--	err |=__get_user(cflag, &termio->c_cflag);
--	termios->c_cflag = (termios->c_cflag & 0xffff0000) | cflag;
--	err |=__get_user(lflag, &termio->c_lflag);
--	termios->c_lflag = (termios->c_lflag & 0xffff0000) | lflag;
--	err |=__get_user(termios->c_line, &termio->c_line);
--	if (err)
--		return -EFAULT;
--
--	if (__copy_from_user(termios->c_cc, termio->c_cc, NCC))
--		return -EFAULT;
--
--	return 0;
--}
--
--/*
-- * Translate a "termios" structure into a "termio". Ugh.
-- */
--static inline int kernel_termios_to_user_termio(struct termio __user *termio,
--	struct ktermios *termios)
--{
--	int err;
--
--	if (!access_ok(termio, sizeof(struct termio)))
--		return -EFAULT;
--
--	err = __put_user(termios->c_iflag, &termio->c_iflag);
--	err |= __put_user(termios->c_oflag, &termio->c_oflag);
--	err |= __put_user(termios->c_cflag, &termio->c_cflag);
--	err |= __put_user(termios->c_lflag, &termio->c_lflag);
--	err |= __put_user(termios->c_line, &termio->c_line);
--	if (err)
--		return -EFAULT;
--
--	if (__copy_to_user(termio->c_cc, termios->c_cc, NCC))
--		return -EFAULT;
--
--	return 0;
--}
--
--static inline int user_termios_to_kernel_termios(struct ktermios __user *k,
--	struct termios2 *u)
--{
--	return copy_from_user(k, u, sizeof(struct termios2)) ? -EFAULT : 0;
--}
--
--static inline int kernel_termios_to_user_termios(struct termios2 __user *u,
--	struct ktermios *k)
--{
--	return copy_to_user(u, k, sizeof(struct termios2)) ? -EFAULT : 0;
--}
--
--static inline int user_termios_to_kernel_termios_1(struct ktermios *k,
--	struct termios __user *u)
--{
--	return copy_from_user(k, u, sizeof(struct termios)) ? -EFAULT : 0;
--}
--
--static inline int kernel_termios_to_user_termios_1(struct termios __user *u,
--	struct ktermios *k)
--{
--	return copy_to_user(u, k, sizeof(struct termios)) ? -EFAULT : 0;
--}
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- 
- #endif /* _ASM_TERMIOS_H */
-diff --git a/arch/parisc/include/asm/termios.h b/arch/parisc/include/asm/termios.h
-index cded9dc90c1b..fe21bad7d2b1 100644
---- a/arch/parisc/include/asm/termios.h
-+++ b/arch/parisc/include/asm/termios.h
-@@ -13,40 +13,11 @@
- */
- #define INIT_C_CC "\003\034\177\025\004\0\1\0\021\023\032\0\022\017\027\026\0"
- 
--/*
-- * Translate a "termio" structure into a "termios". Ugh.
-- */
--#define SET_LOW_TERMIOS_BITS(termios, termio, x) { \
--	unsigned short __tmp; \
--	get_user(__tmp,&(termio)->x); \
--	*(unsigned short *) &(termios)->x = __tmp; \
--}
--
--#define user_termio_to_kernel_termios(termios, termio) \
--({ \
--	SET_LOW_TERMIOS_BITS(termios, termio, c_iflag); \
--	SET_LOW_TERMIOS_BITS(termios, termio, c_oflag); \
--	SET_LOW_TERMIOS_BITS(termios, termio, c_cflag); \
--	SET_LOW_TERMIOS_BITS(termios, termio, c_lflag); \
--	copy_from_user((termios)->c_cc, (termio)->c_cc, NCC); \
--})
--
--/*
-- * Translate a "termios" structure into a "termio". Ugh.
-- */
--#define kernel_termios_to_user_termio(termio, termios) \
--({ \
--	put_user((termios)->c_iflag, &(termio)->c_iflag); \
--	put_user((termios)->c_oflag, &(termio)->c_oflag); \
--	put_user((termios)->c_cflag, &(termio)->c_cflag); \
--	put_user((termios)->c_lflag, &(termio)->c_lflag); \
--	put_user((termios)->c_line,  &(termio)->c_line); \
--	copy_to_user((termio)->c_cc, (termios)->c_cc, NCC); \
--})
--
--#define user_termios_to_kernel_termios(k, u) copy_from_user(k, u, sizeof(struct termios2))
--#define kernel_termios_to_user_termios(u, k) copy_to_user(u, k, sizeof(struct termios2))
--#define user_termios_to_kernel_termios_1(k, u) copy_from_user(k, u, sizeof(struct termios))
--#define kernel_termios_to_user_termios_1(u, k) copy_to_user(u, k, sizeof(struct termios))
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- 
- #endif	/* _PARISC_TERMIOS_H */
-diff --git a/arch/sparc/include/asm/termios.h b/arch/sparc/include/asm/termios.h
-index 4a558efdfa93..03bcb6e6abe8 100644
---- a/arch/sparc/include/asm/termios.h
-+++ b/arch/sparc/include/asm/termios.h
-@@ -5,17 +5,6 @@
- #include <uapi/asm/termios.h>
- 
- 
--/*
-- * c_cc characters in the termio structure.  Oh, how I love being
-- * backwardly compatible.  Notice that character 4 and 5 are
-- * interpreted differently depending on whether ICANON is set in
-- * c_lflag.  If it's set, they are used as _VEOF and _VEOL, otherwise
-- * as _VMIN and V_TIME.  This is for compatibility with OSF/1 (which
-- * is compatible with sysV)...
-- */
--#define _VMIN	4
--#define _VTIME	5
--
- /*	intr=^C		quit=^\		erase=del	kill=^U
- 	eof=^D		eol=\0		eol2=\0		sxtc=\0
- 	start=^Q	stop=^S		susp=^Z		dsusp=^Y
-@@ -24,124 +13,11 @@
- */
- #define INIT_C_CC "\003\034\177\025\004\000\000\000\021\023\032\031\022\025\027\026\001"
- 
--/*
-- * Translate a "termio" structure into a "termios". Ugh.
-- */
--#define user_termio_to_kernel_termios(termios, termio) \
--({ \
--	unsigned short tmp; \
--	int err; \
--	err = get_user(tmp, &(termio)->c_iflag); \
--	(termios)->c_iflag = (0xffff0000 & ((termios)->c_iflag)) | tmp; \
--	err |= get_user(tmp, &(termio)->c_oflag); \
--	(termios)->c_oflag = (0xffff0000 & ((termios)->c_oflag)) | tmp; \
--	err |= get_user(tmp, &(termio)->c_cflag); \
--	(termios)->c_cflag = (0xffff0000 & ((termios)->c_cflag)) | tmp; \
--	err |= get_user(tmp, &(termio)->c_lflag); \
--	(termios)->c_lflag = (0xffff0000 & ((termios)->c_lflag)) | tmp; \
--	err |= copy_from_user((termios)->c_cc, (termio)->c_cc, NCC); \
--	err; \
--})
--
--/*
-- * Translate a "termios" structure into a "termio". Ugh.
-- *
-- * Note the "fun" _VMIN overloading.
-- */
--#define kernel_termios_to_user_termio(termio, termios) \
--({ \
--	int err; \
--	err  = put_user((termios)->c_iflag, &(termio)->c_iflag); \
--	err |= put_user((termios)->c_oflag, &(termio)->c_oflag); \
--	err |= put_user((termios)->c_cflag, &(termio)->c_cflag); \
--	err |= put_user((termios)->c_lflag, &(termio)->c_lflag); \
--	err |= put_user((termios)->c_line,  &(termio)->c_line); \
--	err |= copy_to_user((termio)->c_cc, (termios)->c_cc, NCC); \
--	if (!((termios)->c_lflag & ICANON)) { \
--		err |= put_user((termios)->c_cc[VMIN], &(termio)->c_cc[_VMIN]); \
--		err |= put_user((termios)->c_cc[VTIME], &(termio)->c_cc[_VTIME]); \
--	} \
--	err; \
--})
--
--#define user_termios_to_kernel_termios(k, u) \
--({ \
--	int err; \
--	err  = get_user((k)->c_iflag, &(u)->c_iflag); \
--	err |= get_user((k)->c_oflag, &(u)->c_oflag); \
--	err |= get_user((k)->c_cflag, &(u)->c_cflag); \
--	err |= get_user((k)->c_lflag, &(u)->c_lflag); \
--	err |= get_user((k)->c_line,  &(u)->c_line); \
--	err |= copy_from_user((k)->c_cc, (u)->c_cc, NCCS); \
--	if ((k)->c_lflag & ICANON) { \
--		err |= get_user((k)->c_cc[VEOF], &(u)->c_cc[VEOF]); \
--		err |= get_user((k)->c_cc[VEOL], &(u)->c_cc[VEOL]); \
--	} else { \
--		err |= get_user((k)->c_cc[VMIN],  &(u)->c_cc[_VMIN]); \
--		err |= get_user((k)->c_cc[VTIME], &(u)->c_cc[_VTIME]); \
--	} \
--	err |= get_user((k)->c_ispeed,  &(u)->c_ispeed); \
--	err |= get_user((k)->c_ospeed,  &(u)->c_ospeed); \
--	err; \
--})
--
--#define kernel_termios_to_user_termios(u, k) \
--({ \
--	int err; \
--	err  = put_user((k)->c_iflag, &(u)->c_iflag); \
--	err |= put_user((k)->c_oflag, &(u)->c_oflag); \
--	err |= put_user((k)->c_cflag, &(u)->c_cflag); \
--	err |= put_user((k)->c_lflag, &(u)->c_lflag); \
--	err |= put_user((k)->c_line, &(u)->c_line); \
--	err |= copy_to_user((u)->c_cc, (k)->c_cc, NCCS); \
--	if (!((k)->c_lflag & ICANON)) { \
--		err |= put_user((k)->c_cc[VMIN],  &(u)->c_cc[_VMIN]); \
--		err |= put_user((k)->c_cc[VTIME], &(u)->c_cc[_VTIME]); \
--	} else { \
--		err |= put_user((k)->c_cc[VEOF], &(u)->c_cc[VEOF]); \
--		err |= put_user((k)->c_cc[VEOL], &(u)->c_cc[VEOL]); \
--	} \
--	err |= put_user((k)->c_ispeed, &(u)->c_ispeed); \
--	err |= put_user((k)->c_ospeed, &(u)->c_ospeed); \
--	err; \
--})
--
--#define user_termios_to_kernel_termios_1(k, u) \
--({ \
--	int err; \
--	err  = get_user((k)->c_iflag, &(u)->c_iflag); \
--	err |= get_user((k)->c_oflag, &(u)->c_oflag); \
--	err |= get_user((k)->c_cflag, &(u)->c_cflag); \
--	err |= get_user((k)->c_lflag, &(u)->c_lflag); \
--	err |= get_user((k)->c_line,  &(u)->c_line); \
--	err |= copy_from_user((k)->c_cc, (u)->c_cc, NCCS); \
--	if ((k)->c_lflag & ICANON) { \
--		err |= get_user((k)->c_cc[VEOF], &(u)->c_cc[VEOF]); \
--		err |= get_user((k)->c_cc[VEOL], &(u)->c_cc[VEOL]); \
--	} else { \
--		err |= get_user((k)->c_cc[VMIN],  &(u)->c_cc[_VMIN]); \
--		err |= get_user((k)->c_cc[VTIME], &(u)->c_cc[_VTIME]); \
--	} \
--	err; \
--})
--
--#define kernel_termios_to_user_termios_1(u, k) \
--({ \
--	int err; \
--	err  = put_user((k)->c_iflag, &(u)->c_iflag); \
--	err |= put_user((k)->c_oflag, &(u)->c_oflag); \
--	err |= put_user((k)->c_cflag, &(u)->c_cflag); \
--	err |= put_user((k)->c_lflag, &(u)->c_lflag); \
--	err |= put_user((k)->c_line, &(u)->c_line); \
--	err |= copy_to_user((u)->c_cc, (k)->c_cc, NCCS); \
--	if (!((k)->c_lflag & ICANON)) { \
--		err |= put_user((k)->c_cc[VMIN],  &(u)->c_cc[_VMIN]); \
--		err |= put_user((k)->c_cc[VTIME], &(u)->c_cc[_VTIME]); \
--	} else { \
--		err |= put_user((k)->c_cc[VEOF], &(u)->c_cc[VEOF]); \
--		err |= put_user((k)->c_cc[VEOL], &(u)->c_cc[VEOL]); \
--	} \
--	err; \
--})
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- 
- #endif /* _SPARC_TERMIOS_H */
-diff --git a/arch/sparc/kernel/Makefile b/arch/sparc/kernel/Makefile
-index d3a0e072ebe8..620c0c5b749b 100644
---- a/arch/sparc/kernel/Makefile
-+++ b/arch/sparc/kernel/Makefile
-@@ -87,12 +87,13 @@ obj-$(CONFIG_SPARC64_SMP) += hvtramp.o
- obj-y                     += auxio_$(BITS).o
- obj-$(CONFIG_SUN_PM)      += apc.o pmc.o
- 
-+obj-y                     += termios.o
-+
- obj-$(CONFIG_MODULES)     += module.o
- obj-$(CONFIG_MODULES)     += sparc_ksyms.o
- obj-$(CONFIG_SPARC_LED)   += led.o
- obj-$(CONFIG_KGDB)        += kgdb_$(BITS).o
- 
--
- obj-$(CONFIG_DYNAMIC_FTRACE) += ftrace.o
- obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += ftrace.o
- 
-@@ -104,6 +105,7 @@ obj-$(CONFIG_SPARC64_PCI)    += pci_psycho.o pci_sabre.o pci_schizo.o
- obj-$(CONFIG_SPARC64_PCI)    += pci_sun4v.o pci_sun4v_asm.o pci_fire.o
- obj-$(CONFIG_SPARC64_PCI_MSI) += pci_msi.o
- 
-+
- obj-$(CONFIG_COMPAT)         += sys32.o sys_sparc32.o signal32.o
- 
- obj-$(CONFIG_US3_MC)    += chmc.o
-diff --git a/arch/sparc/kernel/termios.c b/arch/sparc/kernel/termios.c
-new file mode 100644
-index 000000000000..97e23d4ae2e2
---- /dev/null
-+++ b/arch/sparc/kernel/termios.c
-@@ -0,0 +1,115 @@
-+#include <linux/uaccess.h>
-+#include <linux/termios.h>
-+
-+/*
-+ * c_cc characters in the termio structure.  Oh, how I love being
-+ * backwardly compatible.  Notice that character 4 and 5 are
-+ * interpreted differently depending on whether ICANON is set in
-+ * c_lflag.  If it's set, they are used as _VEOF and _VEOL, otherwise
-+ * as _VMIN and V_TIME.  This is for compatibility with OSF/1 (which
-+ * is compatible with sysV)...
-+ */
-+#define _VMIN	4
-+#define _VTIME	5
-+
-+int kernel_termios_to_user_termio(struct termio __user *termio,
-+						struct ktermios *termios)
-+{
-+	struct termio v;
-+	memset(&v, 0, sizeof(struct termio));
-+	v.c_iflag = termios->c_iflag;
-+	v.c_oflag = termios->c_oflag;
-+	v.c_cflag = termios->c_cflag;
-+	v.c_lflag = termios->c_lflag;
-+	v.c_line = termios->c_line;
-+	memcpy(v.c_cc, termios->c_cc, NCC);
-+	if (!(v.c_lflag & ICANON)) {
-+		v.c_cc[_VMIN] = termios->c_cc[VMIN];
-+		v.c_cc[_VTIME] = termios->c_cc[VTIME];
-+	}
-+	return copy_to_user(termio, &v, sizeof(struct termio));
-+}
-+
-+int user_termios_to_kernel_termios(struct ktermios *k,
-+						 struct termios2 __user *u)
-+{
-+	int err;
-+	err  = get_user(k->c_iflag, &u->c_iflag);
-+	err |= get_user(k->c_oflag, &u->c_oflag);
-+	err |= get_user(k->c_cflag, &u->c_cflag);
-+	err |= get_user(k->c_lflag, &u->c_lflag);
-+	err |= get_user(k->c_line,  &u->c_line);
-+	err |= copy_from_user(k->c_cc, u->c_cc, NCCS);
-+	if (k->c_lflag & ICANON) {
-+		err |= get_user(k->c_cc[VEOF], &u->c_cc[VEOF]);
-+		err |= get_user(k->c_cc[VEOL], &u->c_cc[VEOL]);
-+	} else {
-+		err |= get_user(k->c_cc[VMIN],  &u->c_cc[_VMIN]);
-+		err |= get_user(k->c_cc[VTIME], &u->c_cc[_VTIME]);
-+	}
-+	err |= get_user(k->c_ispeed,  &u->c_ispeed);
-+	err |= get_user(k->c_ospeed,  &u->c_ospeed);
-+	return err;
-+}
-+
-+int kernel_termios_to_user_termios(struct termios2 __user *u,
-+						 struct ktermios *k)
-+{
-+	int err;
-+	err  = put_user(k->c_iflag, &u->c_iflag);
-+	err |= put_user(k->c_oflag, &u->c_oflag);
-+	err |= put_user(k->c_cflag, &u->c_cflag);
-+	err |= put_user(k->c_lflag, &u->c_lflag);
-+	err |= put_user(k->c_line, &u->c_line);
-+	err |= copy_to_user(u->c_cc, k->c_cc, NCCS);
-+	if (!(k->c_lflag & ICANON)) {
-+		err |= put_user(k->c_cc[VMIN],  &u->c_cc[_VMIN]);
-+		err |= put_user(k->c_cc[VTIME], &u->c_cc[_VTIME]);
-+	} else {
-+		err |= put_user(k->c_cc[VEOF], &u->c_cc[VEOF]);
-+		err |= put_user(k->c_cc[VEOL], &u->c_cc[VEOL]);
-+	}
-+	err |= put_user(k->c_ispeed, &u->c_ispeed);
-+	err |= put_user(k->c_ospeed, &u->c_ospeed);
-+	return err;
-+}
-+
-+int user_termios_to_kernel_termios_1(struct ktermios *k,
-+						 struct termios __user *u)
-+{
-+	int err;
-+	err  = get_user(k->c_iflag, &u->c_iflag);
-+	err |= get_user(k->c_oflag, &u->c_oflag);
-+	err |= get_user(k->c_cflag, &u->c_cflag);
-+	err |= get_user(k->c_lflag, &u->c_lflag);
-+	err |= get_user(k->c_line,  &u->c_line);
-+	err |= copy_from_user(k->c_cc, u->c_cc, NCCS);
-+	if (k->c_lflag & ICANON) {
-+		err |= get_user(k->c_cc[VEOF], &u->c_cc[VEOF]);
-+		err |= get_user(k->c_cc[VEOL], &u->c_cc[VEOL]);
-+	} else {
-+		err |= get_user(k->c_cc[VMIN],  &u->c_cc[_VMIN]);
-+		err |= get_user(k->c_cc[VTIME], &u->c_cc[_VTIME]);
-+	}
-+	return err;
-+}
-+
-+int kernel_termios_to_user_termios_1(struct termios __user *u,
-+						 struct ktermios *k)
-+{
-+	int err;
-+	err  = put_user(k->c_iflag, &u->c_iflag);
-+	err |= put_user(k->c_oflag, &u->c_oflag);
-+	err |= put_user(k->c_cflag, &u->c_cflag);
-+	err |= put_user(k->c_lflag, &u->c_lflag);
-+	err |= put_user(k->c_line, &u->c_line);
-+	err |= copy_to_user(u->c_cc, k->c_cc, NCCS);
-+	if (!(k->c_lflag & ICANON)) {
-+		err |= put_user(k->c_cc[VMIN],  &u->c_cc[_VMIN]);
-+		err |= put_user(k->c_cc[VTIME], &u->c_cc[_VTIME]);
-+	} else {
-+		err |= put_user(k->c_cc[VEOF], &u->c_cc[VEOF]);
-+		err |= put_user(k->c_cc[VEOL], &u->c_cc[VEOL]);
-+	}
-+	return err;
-+}
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 2a76b330e108..ba515f7d69a7 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -374,6 +374,80 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
- }
- EXPORT_SYMBOL_GPL(tty_set_termios);
- 
-+
-+/*
-+ * Translate a "termio" structure into a "termios". Ugh.
-+ */
-+__weak int user_termio_to_kernel_termios(struct ktermios *termios,
-+						struct termio __user *termio)
-+{
-+	struct termio v;
-+
-+	if (copy_from_user(&v, termio, sizeof(struct termio)))
-+		return -EFAULT;
-+
-+	termios->c_iflag = (0xffff0000 & termios->c_iflag) | v.c_iflag;
-+	termios->c_oflag = (0xffff0000 & termios->c_oflag) | v.c_oflag;
-+	termios->c_cflag = (0xffff0000 & termios->c_cflag) | v.c_cflag;
-+	termios->c_lflag = (0xffff0000 & termios->c_lflag) | v.c_lflag;
-+	termios->c_line = (0xffff0000 & termios->c_lflag) | v.c_line;
-+	memcpy(termios->c_cc, v.c_cc, NCC);
-+	return 0;
-+}
-+
-+/*
-+ * Translate a "termios" structure into a "termio". Ugh.
-+ */
-+__weak int kernel_termios_to_user_termio(struct termio __user *termio,
-+						struct ktermios *termios)
-+{
-+	struct termio v;
-+	memset(&v, 0, sizeof(struct termio));
-+	v.c_iflag = termios->c_iflag;
-+	v.c_oflag = termios->c_oflag;
-+	v.c_cflag = termios->c_cflag;
-+	v.c_lflag = termios->c_lflag;
-+	v.c_line = termios->c_line;
-+	memcpy(v.c_cc, termios->c_cc, NCC);
-+	return copy_to_user(termio, &v, sizeof(struct termio));
-+}
-+
-+#ifdef TCGETS2
-+__weak int user_termios_to_kernel_termios(struct ktermios *k,
-+						 struct termios2 __user *u)
-+{
-+	return copy_from_user(k, u, sizeof(struct termios2));
-+}
-+__weak int kernel_termios_to_user_termios(struct termios2 __user *u,
-+						 struct ktermios *k)
-+{
-+	return copy_to_user(u, k, sizeof(struct termios2));
-+}
-+__weak int user_termios_to_kernel_termios_1(struct ktermios *k,
-+						   struct termios __user *u)
-+{
-+	return copy_from_user(k, u, sizeof(struct termios));
-+}
-+__weak int kernel_termios_to_user_termios_1(struct termios __user *u,
-+						   struct ktermios *k)
-+{
-+	return copy_to_user(u, k, sizeof(struct termios));
-+}
-+
-+#else
-+
-+__weak int user_termios_to_kernel_termios(struct ktermios *k,
-+						 struct termios __user *u)
-+{
-+	return copy_from_user(k, u, sizeof(struct termios));
-+}
-+__weak int kernel_termios_to_user_termios(struct termios __user *u,
-+						 struct ktermios *k)
-+{
-+	return copy_to_user(u, k, sizeof(struct termios));
-+}
-+#endif /* TCGETS2 */
-+
- /**
-  *	set_termios		-	set termios values for a tty
-  *	@tty: terminal device
-diff --git a/include/asm-generic/termios-base.h b/include/asm-generic/termios-base.h
-index 59c5a3bd4a6e..d6536b2214ae 100644
---- a/include/asm-generic/termios-base.h
-+++ b/include/asm-generic/termios-base.h
-@@ -9,69 +9,12 @@
- 
- #ifndef __ARCH_TERMIO_GETPUT
- 
--/*
-- * Translate a "termio" structure into a "termios". Ugh.
-- */
--static inline int user_termio_to_kernel_termios(struct ktermios *termios,
--						struct termio __user *termio)
--{
--	unsigned short tmp;
--
--	if (get_user(tmp, &termio->c_iflag) < 0)
--		goto fault;
--	termios->c_iflag = (0xffff0000 & termios->c_iflag) | tmp;
--
--	if (get_user(tmp, &termio->c_oflag) < 0)
--		goto fault;
--	termios->c_oflag = (0xffff0000 & termios->c_oflag) | tmp;
--
--	if (get_user(tmp, &termio->c_cflag) < 0)
--		goto fault;
--	termios->c_cflag = (0xffff0000 & termios->c_cflag) | tmp;
--
--	if (get_user(tmp, &termio->c_lflag) < 0)
--		goto fault;
--	termios->c_lflag = (0xffff0000 & termios->c_lflag) | tmp;
--
--	if (get_user(termios->c_line, &termio->c_line) < 0)
--		goto fault;
--
--	if (copy_from_user(termios->c_cc, termio->c_cc, NCC) != 0)
--		goto fault;
--
--	return 0;
--
-- fault:
--	return -EFAULT;
--}
--
--/*
-- * Translate a "termios" structure into a "termio". Ugh.
-- */
--static inline int kernel_termios_to_user_termio(struct termio __user *termio,
--						struct ktermios *termios)
--{
--	if (put_user(termios->c_iflag, &termio->c_iflag) < 0 ||
--	    put_user(termios->c_oflag, &termio->c_oflag) < 0 ||
--	    put_user(termios->c_cflag, &termio->c_cflag) < 0 ||
--	    put_user(termios->c_lflag, &termio->c_lflag) < 0 ||
--	    put_user(termios->c_line,  &termio->c_line) < 0 ||
--	    copy_to_user(termio->c_cc, termios->c_cc, NCC) != 0)
--		return -EFAULT;
--
--	return 0;
--}
--
--#ifndef user_termios_to_kernel_termios
--#define user_termios_to_kernel_termios(k, u) copy_from_user(k, u, sizeof(struct termios))
--#endif
--
--#ifndef kernel_termios_to_user_termios
--#define kernel_termios_to_user_termios(u, k) copy_to_user(u, k, sizeof(struct termios))
--#endif
--
--#define user_termios_to_kernel_termios_1(k, u) copy_from_user(k, u, sizeof(struct termios))
--#define kernel_termios_to_user_termios_1(u, k) copy_to_user(u, k, sizeof(struct termios))
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- 
- #endif	/* __ARCH_TERMIO_GETPUT */
- 
-diff --git a/include/asm-generic/termios.h b/include/asm-generic/termios.h
-index b1398d0d4a1d..d1d1ce65aa87 100644
---- a/include/asm-generic/termios.h
-+++ b/include/asm-generic/termios.h
-@@ -67,42 +67,16 @@ static inline int kernel_termios_to_user_termio(struct termio __user *termio,
- 	return 0;
- }
- 
-+int user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);
-+int kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);
- #ifdef TCGETS2
--static inline int user_termios_to_kernel_termios(struct ktermios *k,
--						 struct termios2 __user *u)
--{
--	return copy_from_user(k, u, sizeof(struct termios2));
--}
--
--static inline int kernel_termios_to_user_termios(struct termios2 __user *u,
--						 struct ktermios *k)
--{
--	return copy_to_user(u, k, sizeof(struct termios2));
--}
--
--static inline int user_termios_to_kernel_termios_1(struct ktermios *k,
--						   struct termios __user *u)
--{
--	return copy_from_user(k, u, sizeof(struct termios));
--}
--
--static inline int kernel_termios_to_user_termios_1(struct termios __user *u,
--						   struct ktermios *k)
--{
--	return copy_to_user(u, k, sizeof(struct termios));
--}
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);
-+int kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);
-+int user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);
- #else /* TCGETS2 */
--static inline int user_termios_to_kernel_termios(struct ktermios *k,
--						 struct termios __user *u)
--{
--	return copy_from_user(k, u, sizeof(struct termios));
--}
--
--static inline int kernel_termios_to_user_termios(struct termios __user *u,
--						 struct ktermios *k)
--{
--	return copy_to_user(u, k, sizeof(struct termios));
--}
-+int user_termios_to_kernel_termios(struct ktermios *, struct termios __user *);
-+int kernel_termios_to_user_termios(struct termios __user *, struct ktermios *);
- #endif /* TCGETS2 */
- 
- #endif /* _ASM_GENERIC_TERMIOS_H */
--- 
-2.30.2
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
