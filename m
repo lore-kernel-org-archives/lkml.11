@@ -2,76 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB17C28D13
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 16:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C30D3C32772
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 17:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbiHUQuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 12:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
+        id S229519AbiHUREF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 13:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiHUQuJ (ORCPT
+        with ESMTP id S229505AbiHURED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 12:50:09 -0400
-Received: from rfvt.org.uk (rfvt.org.uk [37.187.119.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C3B1C91E;
-        Sun, 21 Aug 2022 09:50:07 -0700 (PDT)
-Received: from wylie.me.uk (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Sun, 21 Aug 2022 13:04:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AE013FA6;
+        Sun, 21 Aug 2022 10:04:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by rfvt.org.uk (Postfix) with ESMTPS id CB5FB82CC4;
-        Sun, 21 Aug 2022 17:50:01 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wylie.me.uk;
-        s=mydkim005; t=1661100601;
-        bh=q+x+Ol4FFP5xOeKSbHjfFQjd4jkWVjDlO4DK5fZcXCM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=n9ilN6+egqrx5676IDM6rRoFeo5RFASYYAMqC3nwoyEPWXvxuVFxbc62BpVkc7jXe
-         nCfMzPFVXsfBAm7IeBkX9Zlh1Pd9Vm3BuTcBsNPMhs05/V71v5wbvLCYgehqK/7mrT
-         fAERmPVg8K9gjVxVH3ahVxHHmKpT7pQbRGljQqiaXy1FA0Cdu6BmpFZQEP60WH2SCv
-         awcO+0Qy4whfipO8XLCyqfyfJtRMJbrAQVGFAzt3rw5W9MlWHqYnpLDg5rIlTPK97D
-         jpxenad8f+GqtFRSzMIs0kUfAkgRqFfr8ZRLsTpBwRR9r60NEwsglOj3v8fACXzf54
-         gd8ChZxE8QCVA==
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4E8FB80A08;
+        Sun, 21 Aug 2022 17:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E339C433D6;
+        Sun, 21 Aug 2022 17:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661101439;
+        bh=lmaONrarTYyoSnUieZtTg5QSSZi6JaipEBFE/NQounY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pGDQAKjwVlBFKJvENPzrYPhYN0hSeGlSggZ+IRf4mwFF3sI5/AQoAKnIi/dooYgD6
+         2e0dJyQh0fSaM67YFXxxR5ZPBiwu9ISBMmW7rKbP4PLSdy5C33ZkqQc7RznzEpGRD/
+         PNe8hvLJ+t9SJXPBbAvAC3GKvp3HEdCT2ZgOaza/FcDkGkAdBj3EPxz/fw25EdmvKo
+         YKEPUNT10ipfNJT0CGtS/T8LugldK5MpoyQmtO8r1cEX3XG38atRajOeBQPIPgqLe5
+         Bh/2MaUl1G5RZZDH92GfteF/Y4TUD+zrhBOk/x4IKUpLhTbEDC/OKu3E9x28neMZ9E
+         sBuT8qcc3U5SQ==
+Date:   Sun, 21 Aug 2022 17:29:30 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: frequency: admv1014: return -EINVAL directly
+Message-ID: <20220821172930.29e7a2fa@jic23-huawei>
+In-Reply-To: <CAHp75VfQY_7WQZTxGG17Ps=VHGrnGdUAdRpacPYeJEMK5PS6yA@mail.gmail.com>
+References: <20220819104117.4600-1-antoniu.miclaus@analog.com>
+        <20220819180856.5a1d4e5a@jic23-huawei>
+        <CAHp75VfQY_7WQZTxGG17Ps=VHGrnGdUAdRpacPYeJEMK5PS6yA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-ID: <25346.25145.488362.162952@wylie.me.uk>
-Date:   Sun, 21 Aug 2022 17:50:01 +0100
-From:   "Alan J. Wylie" <alan@wylie.me.uk>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: Regression in 5.19.0: USB errors during boot
-In-Reply-To: <20220821142610.GA2979@lst.de>
-References: <25342.20092.262450.330346@wylie.me.uk>
-        <Yv5Q8gDvVTGOHd8k@kroah.com>
-        <20220821062345.GA26598@lst.de>
-        <25345.60162.942383.502797@wylie.me.uk>
-        <20220821142610.GA2979@lst.de>
-X-Mailer: VM 8.2.0b under 27.2 (x86_64-pc-linux-gnu)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-at 16:26 on Sun 21-Aug-2022 Christoph Hellwig (hch@lst.de) wrote:
+On Sat, 20 Aug 2022 18:56:53 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> Thanks for confirming my suspicion.  I'd still like to fix the issue
-> with CONFIG_GART_IOMMU enabled once I've tracked it down.  Would you
-> be willing to test patches?
+> On Fri, Aug 19, 2022 at 8:41 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Fri, 19 Aug 2022 13:41:17 +0300
+> > Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+> >  
+> > > Remove extra step where the error code is assigned to the `ret`
+> > > variable.
+> > >
+> > > Return instead error code directly.  
+> 
+> ...
+> 
+> > Change is fine, but I've dropped the fixes tag. The code before this
+> > wasn't broken, just longer than it needed to be. We don't want the noise
+> > of this getting backported because someone sees the fixes tag and thinks
+> > there is a reason it needs to be.
+> >
+> > Applied to the togreg branch of iio.git  
+> 
+> Haven't checked myself if it's possible, but shouldn;'t we go further
+> and return dev_err_probe()?
 
-I'll be glad to help.
+Good idea, but only as part of a patch doing that throughout the driver.
+So follow up patch perhaps..
 
-I've also had a look in the loft and my box of bits for an old
-Athlon64/Opteron/Turion/Sempron processor, but I'm afraid all I've got
-are:
+> 
+> > >       chip_id = FIELD_GET(ADMV1014_CHIP_ID_MSK, chip_id);
+> > >       if (chip_id != ADMV1014_CHIP_ID) {
+> > >               dev_err(&spi->dev, "Invalid Chip ID.\n");
+> > > -             ret = -EINVAL;
+> > > -             return ret;
+> > > +             return -EINVAL;
+> > >       }  
+> 
+> 
 
-Phenom II X6 1055T
-Phenom II X2 545
-Athlon 2  x2 270
-
--- 
-Alan J. Wylie                                          https://www.wylie.me.uk/
-
-Dance like no-one's watching. / Encrypt like everyone is.
-Security is inversely proportional to convenience
