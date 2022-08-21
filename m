@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9E4C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9463C25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236767AbiHUAJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 20:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
+        id S235824AbiHUAJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 20:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235643AbiHUAIg (ORCPT
+        with ESMTP id S235684AbiHUAIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 20:08:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4147912748;
-        Sat, 20 Aug 2022 17:08:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCF612ABC;
+        Sat, 20 Aug 2022 17:08:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81583B80B66;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46D21B80B6C;
+        Sun, 21 Aug 2022 00:08:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02301C43148;
         Sun, 21 Aug 2022 00:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E382C43140;
-        Sun, 21 Aug 2022 00:08:30 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oPYWD-005Dkz-06;
+        id 1oPYWD-005DnB-2T;
         Sat, 20 Aug 2022 20:08:45 -0400
-Message-ID: <20220821000844.870621395@goodmis.org>
+Message-ID: <20220821000845.597062173@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 20 Aug 2022 20:07:40 -0400
+Date:   Sat, 20 Aug 2022 20:07:44 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org, Krister Johansen <kjlx@templeofstupid.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: [for-linus][PATCH 03/10] tracing/perf: Fix double put of trace event when init fails
+        stable@vger.kernel.org,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+Subject: [for-linus][PATCH 07/10] tracing/eprobes: Fix reading of string fields
 References: <20220821000737.328590235@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,86 +45,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-If in perf_trace_event_init(), the perf_trace_event_open() fails, then it
-will call perf_trace_event_unreg() which will not only unregister the perf
-trace event, but will also call the put() function of the tp_event.
+Currently when an event probe (eprobe) hooks to a string field, it does
+not display it as a string, but instead as a number. This makes the field
+rather useless. Handle the different kinds of strings, dynamic, static,
+relational/dynamic etc.
 
-The problem here is that the trace_event_try_get_ref() is called by the
-caller of perf_trace_event_init() and if perf_trace_event_init() returns a
-failure, it will then call trace_event_put(). But since the
-perf_trace_event_unreg() already called the trace_event_put() function, it
-triggers a WARN_ON().
+Now when a string field is used, the ":string" type can be used to display
+it:
 
- WARNING: CPU: 1 PID: 30309 at kernel/trace/trace_dynevent.c:46 trace_event_dyn_put_ref+0x15/0x20
-
-If perf_trace_event_reg() does not call the trace_event_try_get_ref() then
-the perf_trace_event_unreg() should not be calling trace_event_put(). This
-breaks symmetry and causes bugs like these.
-
-Pull out the trace_event_put() from perf_trace_event_unreg() and call it
-in the locations that perf_trace_event_unreg() is called. This not only
-fixes this bug, but also brings back the proper symmetry of the reg/unreg
-vs get/put logic.
-
-Link: https://lore.kernel.org/all/cover.1660347763.git.kjlx@templeofstupid.com/
-Link: https://lkml.kernel.org/r/20220816192817.43d5e17f@gandalf.local.home
+  echo "e:sw sched/sched_switch comm=$next_comm:string" > dynamic_events
 
 Cc: stable@vger.kernel.org
-Fixes: 1d18538e6a092 ("tracing: Have dynamic events have a ref counter")
-Reported-by: Krister Johansen <kjlx@templeofstupid.com>
-Reviewed-by: Krister Johansen <kjlx@templeofstupid.com>
-Tested-by: Krister Johansen <kjlx@templeofstupid.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_event_perf.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ kernel/trace/trace_eprobe.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-index a114549720d6..61e3a2620fa3 100644
---- a/kernel/trace/trace_event_perf.c
-+++ b/kernel/trace/trace_event_perf.c
-@@ -157,7 +157,7 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
- 	int i;
+diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+index 550671985fd1..a1d3423ab74f 100644
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -311,6 +311,27 @@ static unsigned long get_event_field(struct fetch_insn *code, void *rec)
  
- 	if (--tp_event->perf_refcount > 0)
--		goto out;
-+		return;
+ 	addr = rec + field->offset;
  
- 	tp_event->class->reg(tp_event, TRACE_REG_PERF_UNREGISTER, NULL);
- 
-@@ -176,8 +176,6 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
- 			perf_trace_buf[i] = NULL;
- 		}
- 	}
--out:
--	trace_event_put_ref(tp_event);
- }
- 
- static int perf_trace_event_open(struct perf_event *p_event)
-@@ -241,6 +239,7 @@ void perf_trace_destroy(struct perf_event *p_event)
- 	mutex_lock(&event_mutex);
- 	perf_trace_event_close(p_event);
- 	perf_trace_event_unreg(p_event);
-+	trace_event_put_ref(p_event->tp_event);
- 	mutex_unlock(&event_mutex);
- }
- 
-@@ -292,6 +291,7 @@ void perf_kprobe_destroy(struct perf_event *p_event)
- 	mutex_lock(&event_mutex);
- 	perf_trace_event_close(p_event);
- 	perf_trace_event_unreg(p_event);
-+	trace_event_put_ref(p_event->tp_event);
- 	mutex_unlock(&event_mutex);
- 
- 	destroy_local_trace_kprobe(p_event->tp_event);
-@@ -347,6 +347,7 @@ void perf_uprobe_destroy(struct perf_event *p_event)
- 	mutex_lock(&event_mutex);
- 	perf_trace_event_close(p_event);
- 	perf_trace_event_unreg(p_event);
-+	trace_event_put_ref(p_event->tp_event);
- 	mutex_unlock(&event_mutex);
- 	destroy_local_trace_uprobe(p_event->tp_event);
- }
++	if (is_string_field(field)) {
++		switch (field->filter_type) {
++		case FILTER_DYN_STRING:
++			val = (unsigned long)(rec + (*(unsigned int *)addr & 0xffff));
++			break;
++		case FILTER_RDYN_STRING:
++			val = (unsigned long)(addr + (*(unsigned int *)addr & 0xffff));
++			break;
++		case FILTER_STATIC_STRING:
++			val = (unsigned long)addr;
++			break;
++		case FILTER_PTR_STRING:
++			val = (unsigned long)(*(char *)addr);
++			break;
++		default:
++			WARN_ON_ONCE(1);
++			return 0;
++		}
++		return val;
++	}
++
+ 	switch (field->size) {
+ 	case 1:
+ 		if (field->is_signed)
 -- 
 2.35.1
