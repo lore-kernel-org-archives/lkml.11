@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A333BC25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10288C25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237056AbiHUAJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 20:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        id S237125AbiHUAJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 20:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235680AbiHUAIg (ORCPT
+        with ESMTP id S235700AbiHUAIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 20:08:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC2B12AA7;
-        Sat, 20 Aug 2022 17:08:33 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BB5120BA;
+        Sat, 20 Aug 2022 17:08:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0983BB80B6A;
+        by sin.source.kernel.org (Postfix) with ESMTPS id E9FE6CE0A6A;
         Sun, 21 Aug 2022 00:08:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27C1C433C1;
-        Sun, 21 Aug 2022 00:08:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27B83C43149;
+        Sun, 21 Aug 2022 00:08:31 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oPYWD-005Dm5-1G;
+        id 1oPYWD-005Dnl-35;
         Sat, 20 Aug 2022 20:08:45 -0400
-Message-ID: <20220821000845.228939352@goodmis.org>
+Message-ID: <20220821000845.785614647@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 20 Aug 2022 20:07:42 -0400
+Date:   Sat, 20 Aug 2022 20:07:45 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-Subject: [for-linus][PATCH 05/10] tracing/eprobes: Do not allow eprobes to use $stack, or % for regs
+        stable@vger.kernel.org
+Subject: [for-linus][PATCH 08/10] tracing/eprobes: Have event probes be consistent with kprobes and
+ uprobes
 References: <20220821000737.328590235@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,114 +45,141 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-While playing with event probes (eprobes), I tried to see what would
-happen if I attempted to retrieve the instruction pointer (%rip) knowing
-that event probes do not use pt_regs. The result was:
+Currently, if a symbol "@" is attempted to be used with an event probe
+(eprobes), it will cause a NULL pointer dereference crash.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000024
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 1 PID: 1847 Comm: trace-cmd Not tainted 5.19.0-rc5-test+ #309
- Hardware name: Hewlett-Packard HP Compaq Pro 6300 SFF/339A, BIOS K01
-v03.03 07/14/2016
- RIP: 0010:get_event_field.isra.0+0x0/0x50
- Code: ff 48 c7 c7 c0 8f 74 a1 e8 3d 8b f5 ff e8 88 09 f6 ff 4c 89 e7 e8
-50 6a 13 00 48 89 ef 5b 5d 41 5c 41 5d e9 42 6a 13 00 66 90 <48> 63 47 24
-8b 57 2c 48 01 c6 8b 47 28 83 f8 02 74 0e 83 f8 04 74
- RSP: 0018:ffff916c394bbaf0 EFLAGS: 00010086
- RAX: ffff916c854041d8 RBX: ffff916c8d9fbf50 RCX: ffff916c255d2000
- RDX: 0000000000000000 RSI: ffff916c255d2008 RDI: 0000000000000000
- RBP: 0000000000000000 R08: ffff916c3a2a0c08 R09: ffff916c394bbda8
- R10: 0000000000000000 R11: 0000000000000000 R12: ffff916c854041d8
- R13: ffff916c854041b0 R14: 0000000000000000 R15: 0000000000000000
- FS:  0000000000000000(0000) GS:ffff916c9ea40000(0000)
-knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000024 CR3: 000000011b60a002 CR4: 00000000001706e0
- Call Trace:
-  <TASK>
-  get_eprobe_size+0xb4/0x640
-  ? __mod_node_page_state+0x72/0xc0
-  __eprobe_trace_func+0x59/0x1a0
-  ? __mod_lruvec_page_state+0xaa/0x1b0
-  ? page_remove_file_rmap+0x14/0x230
-  ? page_remove_rmap+0xda/0x170
-  event_triggers_call+0x52/0xe0
-  trace_event_buffer_commit+0x18f/0x240
-  trace_event_raw_event_sched_wakeup_template+0x7a/0xb0
-  try_to_wake_up+0x260/0x4c0
-  __wake_up_common+0x80/0x180
-  __wake_up_common_lock+0x7c/0xc0
-  do_notify_parent+0x1c9/0x2a0
-  exit_notify+0x1a9/0x220
-  do_exit+0x2ba/0x450
-  do_group_exit+0x2d/0x90
-  __x64_sys_exit_group+0x14/0x20
-  do_syscall_64+0x3b/0x90
-  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+Both kprobes and uprobes can reference data other than the main registers.
+Such as immediate address, symbols and the current task name. Have eprobes
+do the same thing.
 
-Obviously this is not the desired result.
-
-Move the testing for TPARG_FL_TPOINT which is only used for event probes
-to the top of the "$" variable check, as all the other variables are not
-used for event probes. Also add a check in the register parsing "%" to
-fail if an event probe is used.
+For "comm", if "comm" is used and the event being attached to does not
+have the "comm" field, then make it the "$comm" that kprobes has. This is
+consistent to the way histograms and filters work.
 
 Cc: stable@vger.kernel.org
 Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_probe.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ kernel/trace/trace_eprobe.c | 70 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 64 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
-index 850a88abd33b..dec657af363c 100644
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -283,7 +283,14 @@ static int parse_probe_vars(char *arg, const struct fetch_type *t,
- 	int ret = 0;
- 	int len;
+diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+index a1d3423ab74f..1783e3478912 100644
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -227,6 +227,7 @@ static int trace_eprobe_tp_arg_update(struct trace_eprobe *ep, int i)
+ 	struct probe_arg *parg = &ep->tp.args[i];
+ 	struct ftrace_event_field *field;
+ 	struct list_head *head;
++	int ret = -ENOENT;
  
--	if (strcmp(arg, "retval") == 0) {
-+	if (flags & TPARG_FL_TPOINT) {
-+		if (code->data)
-+			return -EFAULT;
-+		code->data = kstrdup(arg, GFP_KERNEL);
-+		if (!code->data)
-+			return -ENOMEM;
-+		code->op = FETCH_OP_TP_ARG;
-+	} else if (strcmp(arg, "retval") == 0) {
- 		if (flags & TPARG_FL_RETURN) {
- 			code->op = FETCH_OP_RETVAL;
- 		} else {
-@@ -323,13 +330,6 @@ static int parse_probe_vars(char *arg, const struct fetch_type *t,
- 		code->op = FETCH_OP_ARG;
- 		code->param = (unsigned int)param - 1;
- #endif
--	} else if (flags & TPARG_FL_TPOINT) {
--		if (code->data)
--			return -EFAULT;
--		code->data = kstrdup(arg, GFP_KERNEL);
--		if (!code->data)
--			return -ENOMEM;
--		code->op = FETCH_OP_TP_ARG;
- 	} else
- 		goto inval_var;
+ 	head = trace_get_fields(ep->event);
+ 	list_for_each_entry(field, head, link) {
+@@ -236,9 +237,20 @@ static int trace_eprobe_tp_arg_update(struct trace_eprobe *ep, int i)
+ 			return 0;
+ 		}
+ 	}
++
++	/*
++	 * Argument not found on event. But allow for comm and COMM
++	 * to be used to get the current->comm.
++	 */
++	if (strcmp(parg->code->data, "COMM") == 0 ||
++	    strcmp(parg->code->data, "comm") == 0) {
++		parg->code->op = FETCH_OP_COMM;
++		ret = 0;
++	}
++
+ 	kfree(parg->code->data);
+ 	parg->code->data = NULL;
+-	return -ENOENT;
++	return ret;
+ }
  
-@@ -384,6 +384,11 @@ parse_probe_arg(char *arg, const struct fetch_type *type,
- 		break;
+ static int eprobe_event_define_fields(struct trace_event_call *event_call)
+@@ -363,16 +375,38 @@ static unsigned long get_event_field(struct fetch_insn *code, void *rec)
  
- 	case '%':	/* named register */
-+		if (flags & TPARG_FL_TPOINT) {
-+			/* eprobes do not handle registers */
-+			trace_probe_log_err(offs, BAD_VAR);
-+			break;
-+		}
- 		ret = regs_query_register_offset(arg + 1);
- 		if (ret >= 0) {
- 			code->op = FETCH_OP_REG;
+ static int get_eprobe_size(struct trace_probe *tp, void *rec)
+ {
++	struct fetch_insn *code;
+ 	struct probe_arg *arg;
+ 	int i, len, ret = 0;
+ 
+ 	for (i = 0; i < tp->nr_args; i++) {
+ 		arg = tp->args + i;
+-		if (unlikely(arg->dynamic)) {
++		if (arg->dynamic) {
+ 			unsigned long val;
+ 
+-			val = get_event_field(arg->code, rec);
+-			len = process_fetch_insn_bottom(arg->code + 1, val, NULL, NULL);
++			code = arg->code;
++ retry:
++			switch (code->op) {
++			case FETCH_OP_TP_ARG:
++				val = get_event_field(code, rec);
++				break;
++			case FETCH_OP_IMM:
++				val = code->immediate;
++				break;
++			case FETCH_OP_COMM:
++				val = (unsigned long)current->comm;
++				break;
++			case FETCH_OP_DATA:
++				val = (unsigned long)code->data;
++				break;
++			case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
++				code++;
++				goto retry;
++			default:
++				continue;
++			}
++			code++;
++			len = process_fetch_insn_bottom(code, val, NULL, NULL);
+ 			if (len > 0)
+ 				ret += len;
+ 		}
+@@ -390,8 +424,28 @@ process_fetch_insn(struct fetch_insn *code, void *rec, void *dest,
+ {
+ 	unsigned long val;
+ 
+-	val = get_event_field(code, rec);
+-	return process_fetch_insn_bottom(code + 1, val, dest, base);
++ retry:
++	switch (code->op) {
++	case FETCH_OP_TP_ARG:
++		val = get_event_field(code, rec);
++		break;
++	case FETCH_OP_IMM:
++		val = code->immediate;
++		break;
++	case FETCH_OP_COMM:
++		val = (unsigned long)current->comm;
++		break;
++	case FETCH_OP_DATA:
++		val = (unsigned long)code->data;
++		break;
++	case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
++		code++;
++		goto retry;
++	default:
++		return -EILSEQ;
++	}
++	code++;
++	return process_fetch_insn_bottom(code, val, dest, base);
+ }
+ NOKPROBE_SYMBOL(process_fetch_insn)
+ 
+@@ -866,6 +920,10 @@ static int trace_eprobe_tp_update_arg(struct trace_eprobe *ep, const char *argv[
+ 			trace_probe_log_err(0, BAD_ATTACH_ARG);
+ 	}
+ 
++	/* Handle symbols "@" */
++	if (!ret)
++		ret = traceprobe_update_arg(&ep->tp.args[i]);
++
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
