@@ -2,109 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B4AC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66823C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiHUGlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 02:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
+        id S229642AbiHUGq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 02:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiHUGlG (ORCPT
+        with ESMTP id S229441AbiHUGqJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 02:41:06 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC8A2A968
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:41:03 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id m66so8167245vsm.12
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:41:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=ytZKdYUnft3zw47YJkefPgcAf98Ms5YVeOG27pEj8AI=;
-        b=Zsi3WSxLYpU0pacztqUlVPW8iatV0LWto+9rVcDwlyQmTvcmPZhKvpWwU7Xpp/qKP6
-         iYXNQslvjML01mRxIc6xM+gAHCHsklGm9G2rM0stiX6V+ihgDnr/HoXKLzBmQ5k+FLqX
-         oQK9Ymt+V5VOZ0O8CFvfSHMZJ90IE0ksI2lfn6r3jR6RTaZwZSsR4Uekg2tEZp/5PpiS
-         sZtrYY4FsPqvR9d2liHWAde/uRqPK29gbuKllzGczBLgaQ/YBsDIWniFQtrZc8ZrqRpl
-         0JgJYcY3099gqq6OaKsPLBbt73Q8H2zqjZDyVRfpjICiXP47BcDsZpRyOBxee609GmrF
-         P41w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=ytZKdYUnft3zw47YJkefPgcAf98Ms5YVeOG27pEj8AI=;
-        b=GE9Ei+CFloL5bszdJqUcix2oTLJ2N0ibAJJjFGCqLmv6G+3WXs751SEHQf50pVE6HB
-         Vw8UMn/XPO8/Ji0HkPj4NYc/P6nzxHSh1zZq7KTxYRC8iJy1lhfrOxz/77CrFebgxofl
-         ir0KYbFsI84b++rUhZFbDlehISZDlyT5odST3My1Co1/LgLW6UBxH1sugLdVo0euBNDj
-         ACEY9hdoYL0BTKYAbDutT2Rde7fljVJ4QNHqkuq3ml+TRhkr5Ad1bPVo1FL53XfV7HQX
-         jMac8nJ+EO9liz+OJ91hUvVYgRautueU2FmoQVfIYl2ENqfNCcT4EmXEgY11a3MJIBLf
-         VrwQ==
-X-Gm-Message-State: ACgBeo196DRuEKg9gEoTl18r5pksIMyZmxlzgucUgqoRbXgxPDxCIeEB
-        l7DbxY90kcIrUjoQ2rFVlhPniCVbzyl1EQ==
-X-Google-Smtp-Source: AA6agR52Y1gL6ZNjDwk8h8fIHUi6BPZq3k5iTk1UOwABDIgsn8hPjCUcSZPeES+9oNlVuslWWIaVXg==
-X-Received: by 2002:a05:6102:2753:b0:38a:a86f:6ac5 with SMTP id p19-20020a056102275300b0038aa86f6ac5mr5132744vsu.80.1661064062655;
-        Sat, 20 Aug 2022 23:41:02 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:4c2:8202::1001])
-        by smtp.gmail.com with ESMTPSA id x4-20020ab07784000000b00391bb2403adsm6695823uar.29.2022.08.20.23.40.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Aug 2022 23:41:02 -0700 (PDT)
-From:   Tales Aparecida <tales.aparecida@gmail.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     Tales Aparecida <tales.aparecida@gmail.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amd/display: remove unneeded defines from bios parser
-Date:   Sun, 21 Aug 2022 03:25:28 -0300
-Message-Id: <20220821062528.13416-1-tales.aparecida@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        Sun, 21 Aug 2022 02:46:09 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC22F13E25;
+        Sat, 20 Aug 2022 23:46:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661064338; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=bYCJqhi+7nttqyXosZqYm05vspgGmksaihPrm5uAGVuFIqeWwjyfqlFNXC6DeV/imHingbli6MlJ24QDPtYvcfYZLevSmeW7Ke0ypSqUuve/qZ/Md6bDMqL2wNWsCYTTRiowt5OTBr0GBBRATIs/gUZmRprjJOq6NZ2PnJVEpHg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661064338; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=XOgbmExxvrqPcmSB4T3YYmPjxkSvihylwUhZYEypY/o=; 
+        b=Z/lj6UjQdvfPjKHhUYCVNBwwb0tVvvwTvcjYn6Fa8ZTUVF0p90qs88jn2NKSkW9AtMNWZS4q6UbxA4py2y1TvnopB+EzNRTWCmwKAsm+haZMTy4bGrsJdss1kXXIQKvNZHFVI6JUxpFhSdM3uFIsjCJjFJXESTMWyI1uppeGzuM=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=icenowy.me;
+        spf=pass  smtp.mailfrom=uwu@icenowy.me;
+        dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661064338;
+        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
+        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=XOgbmExxvrqPcmSB4T3YYmPjxkSvihylwUhZYEypY/o=;
+        b=OzoilHrmKoD5y7+Yp7rUZt1f2jCBCriC5nIpmcz1YvfpV+Bk5QvJ7OKl8j4Kpmg5
+        yI38dBZQzD4SXAxAx2iqyGjtLI3X/6PNTgXxfBQ63uKWdSRjgOOHp/i79SxBLdJ4uQA
+        SDsj98NFgYcV3f6nQslenrXyTsxObqi8jl/D/lb8=
+Received: from edelgard.icenowy.me (112.94.100.154 [112.94.100.154]) by mx.zohomail.com
+        with SMTPS id 1661064334957903.0114134560564; Sat, 20 Aug 2022 23:45:34 -0700 (PDT)
+Message-ID: <c6cba83ea9eea7fc41a9e78d0e45487b21f0f560.camel@icenowy.me>
+Subject: Re: [PATCH 06/12] riscv: dts: allwinner: Add the D1 SoC base
+ devicetree
+From:   Icenowy Zheng <uwu@icenowy.me>
+To:     Conor.Dooley@microchip.com, samuel@sholland.org,
+        andre.przywara@arm.com
+Cc:     wens@csie.org, jernej.skrabec@gmail.com,
+        linux-sunxi@lists.linux.dev, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, aou@eecs.berkeley.edu,
+        linux-riscv@lists.infradead.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Date:   Sun, 21 Aug 2022 14:45:27 +0800
+In-Reply-To: <ff9e8bd3-c5f7-6319-060e-250151087a8e@microchip.com>
+References: <20220815050815.22340-1-samuel@sholland.org>
+         <20220815050815.22340-7-samuel@sholland.org>
+         <20220815141159.10edeba5@donnerap.cambridge.arm.com>
+         <3cd9ed5b-8348-38ac-feb1-9a7da858cebc@microchip.com>
+         <932aaefd-e2ca-ef26-bf30-e315fb271ec5@sholland.org>
+         <ff9e8bd3-c5f7-6319-060e-250151087a8e@microchip.com>
+Organization: Anthon Open-Source Community
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Removes DEFINEs that should have been removed after they were
-introduced to ObjectID.h by the commit abea57d70e90
-("drm/amdgpu: Add BRACKET_LAYOUT_ENUMs to ObjectID.h")
+=E5=9C=A8 2022-08-20=E6=98=9F=E6=9C=9F=E5=85=AD=E7=9A=84 17:29 +0000=EF=BC=
+=8CConor.Dooley@microchip.com=E5=86=99=E9=81=93=EF=BC=9A
+> On 20/08/2022 18:24, Samuel Holland wrote:
+> > On 8/15/22 12:01 PM, Conor.Dooley@microchip.com=C2=A0wrote:
+> > > On 15/08/2022 14:11, Andre Przywara wrote:
+> > > > EXTERNAL EMAIL: Do not click links or open attachments unless
+> > > > you know the content is safe
+> > > >=20
+> > > > On Mon, 15 Aug 2022 00:08:09 -0500
+> > > > Samuel Holland <samuel@sholland.org> wrote:
+> > > >=20
+> > > > Hi,
+> > > >=20
+> > > > thanks for all the efforts in getting those SoC peripherals
+> > > > supported!
+> > > >=20
+> > > > > D1 is a SoC containing a single-core T-HEAD Xuantie C906 CPU,
+> > > > > as well as
+> > > > > one HiFi 4 DSP. The SoC is based on a design that
+> > > > > additionally contained
+> > > > > a pair of Cortex A7's. For that reason, some peripherals are
+> > > > > duplicated.
+> > > >=20
+> > > > So because of this, the Allwinner R528 and T113 SoCs would
+> > > > share almost
+> > > > everything in this file. Would it be useful to already split
+> > > > this DT up?
+> > > > To have a base .dtsi, basically this file without /cpus and
+> > > > /soc/plic,
+> > > > then have a RISC-V specific file with just those, including the
+> > > > base?
+> > > > There is precedence for this across-arch(-directories) sharing
+> > > > with the
+> > > > Raspberry Pi and Allwinner H3/H5 SoCs.
+> > >=20
+> > > For those playing along at home, one example is the arm64
+> > > bananapi m2
+> > > dts which looks like:
+> > > > /dts-v1/;
+> > > > #include "sun50i-h5.dtsi"
+> > > > #include "sun50i-h5-cpu-opp.dtsi"
+> > > > #include <arm/sunxi-bananapi-m2-plus-v1.2.dtsi>
+> > > >=20
+> > > > / {
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0model =3D "Banana P=
+i BPI-M2-Plus v1.2 H5";
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0compatible =3D "ban=
+anapi,bpi-m2-plus-v1.2",
+> > > > "allwinner,sun50i-h5";
+> > > > };
+> > >=20
+> > > I think this is a pretty good idea, and putting in the modularity
+> > > up
+> > > front seems logical to me, so when the arm one does eventually
+> > > get
+> > > added it can be done by only touching a single arch.
+> >=20
+> > This is not feasible, due to the different #interrupt-cells. See
+> > https://lore.kernel.org/linux-riscv/CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisG=
+xHMBPUEa8nTMFpzw@mail.gmail.com/
+> >=20
+> > Even if we share some file across architectures, you still have to
+> > update files
+> > in both places to get the interrupts properties correct.
+> >=20
+> > I get the desire to deduplicate things, but we already deal with
+> > updating the
+> > same/similar nodes across several SoCs, so that is nothing new. I
+> > think it would
+> > be more confusing/complicated to have all of the interrupts
+> > properties
+> > overridden in a separate file.
+>=20
+> Yeah, should maybe have circled back after that conversation, would
+> have been
+> nice but if the DTC can't do it nicely then w/e.
 
-Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
----
- .../drm/amd/display/dc/bios/bios_parser2.c    | 19 -------------------
- 1 file changed, 19 deletions(-)
+Well, maybe we can overuse the facility of C preprocessor?
 
-diff --git a/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c b/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c
-index 09fbb7ad5362..ead4da11a992 100644
---- a/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c
-+++ b/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c
-@@ -44,25 +44,6 @@
- 
- #include "bios_parser_common.h"
- 
--/* Temporarily add in defines until ObjectID.h patch is updated in a few days */
--#ifndef GENERIC_OBJECT_ID_BRACKET_LAYOUT
--#define GENERIC_OBJECT_ID_BRACKET_LAYOUT          0x05
--#endif /* GENERIC_OBJECT_ID_BRACKET_LAYOUT */
--
--#ifndef GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID1
--#define GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID1	\
--	(GRAPH_OBJECT_TYPE_GENERIC << OBJECT_TYPE_SHIFT |\
--	GRAPH_OBJECT_ENUM_ID1 << ENUM_ID_SHIFT |\
--	GENERIC_OBJECT_ID_BRACKET_LAYOUT << OBJECT_ID_SHIFT)
--#endif /* GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID1 */
--
--#ifndef GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID2
--#define GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID2	\
--	(GRAPH_OBJECT_TYPE_GENERIC << OBJECT_TYPE_SHIFT |\
--	GRAPH_OBJECT_ENUM_ID2 << ENUM_ID_SHIFT |\
--	GENERIC_OBJECT_ID_BRACKET_LAYOUT << OBJECT_ID_SHIFT)
--#endif /* GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID2 */
--
- #define DC_LOGGER \
- 	bp->base.ctx->logger
- 
--- 
-2.37.2
+e.g.
+
+```
+// For ARM
+#define SOC_PERIPHERAL_IRQ(n) GIC_SPI n
+// For RISC-V
+#define SOC_PERIPHERAL_IRQ(n) n
+```
 
