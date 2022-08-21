@@ -2,95 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA97AC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 15:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59E2C28D13
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 15:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiHUPti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 11:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
+        id S231596AbiHUPyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 11:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbiHUPtg (ORCPT
+        with ESMTP id S230342AbiHUPyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 11:49:36 -0400
-Received: from mail.thepaulodoom.com (www.thepaulodoom.com [45.77.108.202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE091F2FE
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 08:49:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=thepaulodoom.com;
-        s=mail; t=1661096972;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lHgkvCFu+7/5o2QsPt7iXfrSWbO/n4tp4Oajyx2o5CI=;
-        b=QMj/FwExxxD9klUU0LWqOv3XprFUUcsb+tl/dTQFIKOQ5wzjk1c90X9U1eGQKNsCLh46gB
-        tBO9jSGJEDYZkgRbTzKC+8bw51qdBuHLM6VHi6V8vpQKtW7r9gWJqMNF624lUojeB3WS9Q
-        muYgYN+6IrrYjjAmytFDDNHRPK7aM2Y+5xFRFB9t2uAB4TFig1vHA8qgkvn3Yr4H17Qgyx
-        FkjeP6gmbTZDuUSNWjzU/2qqRjedxqzZ7mIBa6nxc+2E+TlyhQ4raEhFMfuBH6Ga0laxYK
-        BZLu+5bgEtsDxjt/tA9ti/mYObZvRxSgreGwScaEvnpjo0e0Cmez8R1OTxcVYgw9l59kas
-        l4Y4mIx/1RI2s3c75vTJHIMBR92I3QrGywe7xIcntCoyLrvD3vUDl/PiUM5+uhGfFGnVRm
-        AyDYrIav2LhDVMl+2z0pRvh7iqAS9GLEQTPocfIGX3aKJfTEX31TzzyNRWuD6WKb0gCVwu
-        EqJB4sQ1oB7A6PYfPolHodxTkH1WGmGx6bbajWUD0vlQYUmxTyVKjHf2rZhOEPvpYlKV7h
-        XL1VlojAQwfV1czMQYWnAkAwrMfGpnqZ9W5MhSat6lsSVejQ8dFlnh6HasF15QInfYOLfr
-        qKG98ZCU41I8bu/emzKdNjvzP05fAEi8C1noDVkqg46ZLOOBbFulY=
-Received: from [127.0.0.1] (h185.16.131.174.dynamic.ip.windstream.net [174.131.16.185])
-        by vultr.guest (OpenSMTPD) with ESMTPSA id 04288e26 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Sun, 21 Aug 2022 15:49:31 +0000 (UTC)
-Date:   Sun, 21 Aug 2022 15:49:28 +0000
-From:   ThePaulODoom <thepaulodoom@thepaulodoom.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     arnd@arndb.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: char: mem: changed 'unsigned' to 'unsigned int'
-In-Reply-To: <YwHuSyur7AQ7PUsC@kroah.com>
-References: <YvxF0yn07ztg9r4A@gus-fring.localdomain> <Yv5SG8XMR2mZGAqG@kroah.com> <Yv7s5dedhRaDlsAC@gus-fring.localdomain> <YwHuSyur7AQ7PUsC@kroah.com>
-Message-ID: <BA62DE39-AFED-47BC-964C-8AF150A0B9F1@thepaulodoom.com>
+        Sun, 21 Aug 2022 11:54:10 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E71BC18;
+        Sun, 21 Aug 2022 08:54:09 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id v23so2654655plo.9;
+        Sun, 21 Aug 2022 08:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=bkh2RmwQz43pDpH6k4U/hhGBE1MuNMuBG/1+04H09nA=;
+        b=ZNuEb7fEQxkPm2NNO2ZrPhQhxg0BwQRwImIdnuP6Yf88nqeoybObA5gVPi/QaxeDl2
+         lMXau9nQFQN/XhXyesFCEWMsBo63C+eAi4u/rVGieZyYN6kjxqcl9iQynZQedN1tPBzG
+         p9r5Xen6HBfl0pr9MDJ/T9bZd8jQhITDM3DCPkOKstNtSgKgnUcU4OkutHqMZLY9IB4M
+         LxnMaAipIehqbD/frL8KKAdKDq5WHiWncxGG+XnFkP+QSY9P5FNr50Ldcf15qF/GFEz1
+         7qHy/tzRU9+cVvIjIXToTf2d0996+QJIJ8MknJHzydRBfWG/RTxdTViurjUjKHHfqlPh
+         NvnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=bkh2RmwQz43pDpH6k4U/hhGBE1MuNMuBG/1+04H09nA=;
+        b=iOOxiap0gygtD/aF+i88KCPp4IPkQ/rp+/Y50qzeusTMhaKyvD1eltifOK14W5Djsn
+         HnZVOoIbzu5PC/NiYmu6MLI2aTy6M0B09V4Xr31frjc0cMsXbTlgC3YzGAOeljEFs1nY
+         ADX3PkZXWBDG6RjFqNh6njHbzk2XJdk17YD6RwHWeXrDRrJwumAzh7rkECuIeJKQEgAV
+         djEqtbr9iMHM4ITqorNYiq71teFUAA85XlVazXxBeT445ABJo7Y9ZOYvkJfHrlZHCH5I
+         u0Sf6tkpq8fnTRWCjCs4P9HwX+9NlVjH/Xmf3B5voUl/A2uovjzbB474fB0BZBvHkIrr
+         N+jg==
+X-Gm-Message-State: ACgBeo3JKihDabMQYQUHM7suhLHIq9nVGFSie2JctDmSDmPKF/XITCDV
+        Gk32Bf5lcyZQftM7OJUdnJn6nKFaNUQ=
+X-Google-Smtp-Source: AA6agR5Zh5My6hY3phecIGV+h3IPFUyS+zATf/VZj14J1TTIDjXcv0iGZrjT1Z8iftL+CvaKJJHV8Q==
+X-Received: by 2002:a17:903:28c:b0:172:e5f7:f58c with SMTP id j12-20020a170903028c00b00172e5f7f58cmr2283522plr.37.1661097248488;
+        Sun, 21 Aug 2022 08:54:08 -0700 (PDT)
+Received: from localhost (c-73-25-156-94.hsd1.or.comcast.net. [73.25.156.94])
+        by smtp.gmail.com with ESMTPSA id l8-20020a170903244800b0016bea74d11esm2910408pls.267.2022.08.21.08.54.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Aug 2022 08:54:07 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: De-open-code some CP_EVENT_WRITE
+Date:   Sun, 21 Aug 2022 08:54:35 -0700
+Message-Id: <20220821155441.1092134-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Rob Clark <robdclark@chromium.org>
 
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/adreno/a3xx_gpu.c | 2 +-
+ drivers/gpu/drm/msm/adreno/a4xx_gpu.c | 2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-On August 21, 2022 8:35:23 AM UTC, Greg KH <gregkh@linuxfoundation=2Eorg> =
-wrote:
->On Thu, Aug 18, 2022 at 08:52:37PM -0500, Paul Lemmermann wrote:
->> On Thu, Aug 18, 2022 at 04:52:11PM +0200, Greg KH wrote:
->> > On Tue, Aug 16, 2022 at 08:35:31PM -0500, Paul Lemmermann wrote:
->> > > found with checkpatch=2Epl
->> >=20
->> > That is a very sparse changelog text=2E
->> >=20
->> > Why make this change?  Please be descriptive=2E
->> >=20
->> I wanted to make this change to be more fitting with the kernel coding
->> guidelines, and to reduce a WARNING made with checkpatch preferring the
->> use of 'unsigned int' over 'unsigned'=2E With NOMMU_MAP_COPY defined in
->> 'include/linux/fs=2Eh' as an unsigned integer, I felt like the change w=
-as
->> fitting=2E I was quickly reminded that the changelog was not properly d=
-one,=20
->> and I now understand that, and will learn from my mistake in the future=
-=2E
->> As I am a new kernel contributor, and looking to hone my skills, what a=
-re=20
->> my next steps?=20
->>=20
->> Should I:
->>=20
->> o Drop the patch and resubmit it,
->> o Simply drop the patch,
->> o Could I change it somehow?,
->> o Or something else?
->
->Try something else=2E  Start out by working in drivers/staging/ on basic
->coding style fixes and other things listed in the drivers/staging/*/TODO
->files=2E  That's the best place for new developers to get started and the=
-n
+diff --git a/drivers/gpu/drm/msm/adreno/a3xx_gpu.c b/drivers/gpu/drm/msm/adreno/a3xx_gpu.c
+index 0ab0e1dd8bbb..2c8b9899625b 100644
+--- a/drivers/gpu/drm/msm/adreno/a3xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a3xx_gpu.c
+@@ -68,7 +68,7 @@ static void a3xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
+ 
+ 	/* BIT(31) of CACHE_FLUSH_TS triggers CACHE_FLUSH_TS IRQ from GPU */
+ 	OUT_PKT3(ring, CP_EVENT_WRITE, 3);
+-	OUT_RING(ring, CACHE_FLUSH_TS | BIT(31));
++	OUT_RING(ring, CACHE_FLUSH_TS | CP_EVENT_WRITE_0_IRQ);
+ 	OUT_RING(ring, rbmemptr(ring, fence));
+ 	OUT_RING(ring, submit->seqno);
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a4xx_gpu.c b/drivers/gpu/drm/msm/adreno/a4xx_gpu.c
+index 0c6b2a6d0b4c..7cb8d9849c07 100644
+--- a/drivers/gpu/drm/msm/adreno/a4xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a4xx_gpu.c
+@@ -62,7 +62,7 @@ static void a4xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
+ 
+ 	/* BIT(31) of CACHE_FLUSH_TS triggers CACHE_FLUSH_TS IRQ from GPU */
+ 	OUT_PKT3(ring, CP_EVENT_WRITE, 3);
+-	OUT_RING(ring, CACHE_FLUSH_TS | BIT(31));
++	OUT_RING(ring, CACHE_FLUSH_TS | CP_EVENT_WRITE_0_IRQ);
+ 	OUT_RING(ring, rbmemptr(ring, fence));
+ 	OUT_RING(ring, submit->seqno);
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 4d501100b9e4..c8ad8aeca777 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -146,7 +146,7 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
+ 	 */
+ 
+ 	OUT_PKT7(ring, CP_EVENT_WRITE, 1);
+-	OUT_RING(ring, 0x31);
++	OUT_RING(ring, CACHE_INVALIDATE);
+ 
+ 	if (!sysprof) {
+ 		/*
+-- 
+2.37.2
 
-That's what I'll do=2E Again, thank you for being patient and guiding me i=
-n the right direction!=20
-
-Many thanks,
-- Paul
