@@ -2,257 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4287C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 11:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0858AC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 11:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiHULLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 07:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
+        id S229538AbiHULRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 07:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiHULLZ (ORCPT
+        with ESMTP id S229460AbiHULRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 07:11:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3307522B3D;
-        Sun, 21 Aug 2022 04:11:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB97860C91;
-        Sun, 21 Aug 2022 11:11:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8644C433C1;
-        Sun, 21 Aug 2022 11:11:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661080283;
-        bh=3uYbaZwNU2jQid31a2LPaT/72f7D+hvGvUdLhTmk9us=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ww1Kc1gTt90YncMv+trawoPoYByKQSqodR5PmRHeYDlXd0S1eefbMKnOQiLpP9Cjl
-         +NmqZRsVrNfJ9BO972xxACxbMj1/gz/vFtLHDATWaUkkBa8Bay2TNFHVLzbR+f7zKe
-         GXWwL8GVoeDVT4qDPNoOqHs5RNersw477LRpTXNE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 486/545] serial: 8250_pci: Replace dev_*() by pci_*() macros
-Date:   Fri, 19 Aug 2022 17:44:16 +0200
-Message-Id: <20220819153851.179783779@linuxfoundation.org>
+        Sun, 21 Aug 2022 07:17:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9464A24F21
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661080664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=AxRts5aJ3HNvwn7dKavqQBNSNcUCmP54o8Yv9Iyp9m8=;
+        b=W28/KW19fVoLvXdzvx5EyRkGGeR0FoxbOCiMf20ag7X1+YvdIOmwmpJ9OneYkjKTNJHw/I
+        JXyzSvZfCpIN8z8CI/4O+saB+2LHZT7QZBoQb8c+095+vUTKAAP+r7Nmj+ELMBvNo0SGLG
+        tRYspS3MUg6BCtdbxWxdFqawtVujyPQ=
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
+ [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-509-MBcwq-XXPo-6VFKoJal1gA-1; Sun, 21 Aug 2022 07:17:41 -0400
+X-MC-Unique: MBcwq-XXPo-6VFKoJal1gA-1
+Received: by mail-pj1-f70.google.com with SMTP id t10-20020a17090a4e4a00b001fab2c791dcso4818824pjl.5
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:17:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=AxRts5aJ3HNvwn7dKavqQBNSNcUCmP54o8Yv9Iyp9m8=;
+        b=KXKth31M4ON5BlsI6KQbPX20UoWF6vRwYCvsreUlM012EkKlq/QFLqfhKKEU4Mm6ok
+         oH6vypZtz6Trpt5PR+84/+FbAmmnVimtRug9k3AUM5n/937N2/PLZ0SodkmheqEbX2o8
+         kxP2TEedFHi5sYGujUUbd6BpcLCMFXl+aOjBgTry9XDwHxcQ7P9vW+WWgQ4dorOWu0I1
+         RKlxDIib4FC1IhC6GhB+6t8g6wJ3wWb9+uSHyNMttzn5qRu2sU6PqDSblV2PXPqI+NRB
+         oJEAKSVdvPPzxltkH12brO6/0H3PdoHKbXdmjS+kBC4UP29/zEFV5hlZRg2KxlB3abNH
+         7dqw==
+X-Gm-Message-State: ACgBeo2+Ss36/F2GOvRFOX6GvfLJpd4iHA7qcPZT+X3PoqE7yT9GzjZU
+        b+m7qPljY+AnFOMvKyDd7JgzaalQwMMa6d1qkw0p6cG0OfqGWOatunQSchtPYOZiAlt65eKpC/c
+        8i7+plcpJ5UyN05I+wPsWD0al
+X-Received: by 2002:a17:90a:e586:b0:1fa:d28b:ab9b with SMTP id g6-20020a17090ae58600b001fad28bab9bmr16538357pjz.47.1661080660364;
+        Sun, 21 Aug 2022 04:17:40 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4kgULb8Oe4M5i8Q1aOVIChTcGskCxiNDQX9B8sJq/7wZLjPKLFXM/9i4rUtW/O1NjahDdO7Q==
+X-Received: by 2002:a17:90a:e586:b0:1fa:d28b:ab9b with SMTP id g6-20020a17090ae58600b001fad28bab9bmr16538337pjz.47.1661080660102;
+        Sun, 21 Aug 2022 04:17:40 -0700 (PDT)
+Received: from xps13.. ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
+        by smtp.gmail.com with ESMTPSA id w128-20020a623086000000b00536463e3802sm2835382pfw.36.2022.08.21.04.17.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Aug 2022 04:17:39 -0700 (PDT)
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     deller@gmx.de
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Shigeru Yoshida <syoshida@redhat.com>
+Subject: [PATCH] fbcon: Destroy mutex on freeing struct fb_info
+Date:   Sun, 21 Aug 2022 20:17:31 +0900
+Message-Id: <20220821111731.247446-1-syoshida@redhat.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220819153829.135562864@linuxfoundation.org>
-References: <20220819153829.135562864@linuxfoundation.org>
-User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+It's needed to destroy bl_curve_mutex on freeing struct fb_info since
+the mutex is embedded in the structure and initialized when it's
+allocated.
 
-[ Upstream commit 1177384179416c7136e1348f07609e0da1ae6b91 ]
-
-PCI subsystem provides convenient shortcut macros for message printing.
-Use those macros instead of dev_*().
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Jiri Slaby <jslaby@kernel.org>
-Link: https://lore.kernel.org/r/20211022135147.70965-3-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 52 +++++++++++++-----------------
- 1 file changed, 22 insertions(+), 30 deletions(-)
+ drivers/video/fbdev/core/fbsysfs.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 7ce755b47a3d..d2b38ae896d1 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -75,13 +75,12 @@ static int pci_default_setup(struct serial_private*,
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index c2a60b187467..4d7f63892dcc 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -84,6 +84,10 @@ void framebuffer_release(struct fb_info *info)
+ 	if (WARN_ON(refcount_read(&info->count)))
+ 		return;
  
- static void moan_device(const char *str, struct pci_dev *dev)
- {
--	dev_err(&dev->dev,
--	       "%s: %s\n"
-+	pci_err(dev, "%s\n"
- 	       "Please send the output of lspci -vv, this\n"
- 	       "message (0x%04x,0x%04x,0x%04x,0x%04x), the\n"
- 	       "manufacturer and name of serial board or\n"
- 	       "modem board to <linux-serial@vger.kernel.org>.\n",
--	       pci_name(dev), str, dev->vendor, dev->device,
-+	       str, dev->vendor, dev->device,
- 	       dev->subsystem_vendor, dev->subsystem_device);
++#if IS_ENABLED(CONFIG_FB_BACKLIGHT)
++	mutex_destroy(&info->bl_curve_mutex);
++#endif
++
+ 	kfree(info->apertures);
+ 	kfree(info);
  }
- 
-@@ -238,7 +237,7 @@ static int pci_inteli960ni_init(struct pci_dev *dev)
- 	/* is firmware started? */
- 	pci_read_config_dword(dev, 0x44, &oldval);
- 	if (oldval == 0x00001000L) { /* RESET value */
--		dev_dbg(&dev->dev, "Local i960 firmware missing\n");
-+		pci_dbg(dev, "Local i960 firmware missing\n");
- 		return -ENODEV;
- 	}
- 	return 0;
-@@ -588,9 +587,8 @@ static int pci_timedia_probe(struct pci_dev *dev)
- 	 * (0,2,3,5,6: serial only -- 7,8,9: serial + parallel)
- 	 */
- 	if ((dev->subsystem_device & 0x00f0) >= 0x70) {
--		dev_info(&dev->dev,
--			"ignoring Timedia subdevice %04x for parport_serial\n",
--			dev->subsystem_device);
-+		pci_info(dev, "ignoring Timedia subdevice %04x for parport_serial\n",
-+			 dev->subsystem_device);
- 		return -ENODEV;
- 	}
- 
-@@ -827,8 +825,7 @@ static int pci_netmos_9900_numports(struct pci_dev *dev)
- 		if (sub_serports > 0)
- 			return sub_serports;
- 
--		dev_err(&dev->dev,
--			"NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
-+		pci_err(dev, "NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
- 		return 0;
- 	}
- 
-@@ -927,7 +924,7 @@ static int pci_ite887x_init(struct pci_dev *dev)
- 	}
- 
- 	if (i == ARRAY_SIZE(inta_addr)) {
--		dev_err(&dev->dev, "ite887x: could not find iobase\n");
-+		pci_err(dev, "could not find iobase\n");
- 		return -ENODEV;
- 	}
- 
-@@ -1022,9 +1019,7 @@ static int pci_endrun_init(struct pci_dev *dev)
- 	/* EndRun device */
- 	if (deviceID == 0x07000200) {
- 		number_uarts = ioread8(p + 4);
--		dev_dbg(&dev->dev,
--			"%d ports detected on EndRun PCI Express device\n",
--			number_uarts);
-+		pci_dbg(dev, "%d ports detected on EndRun PCI Express device\n", number_uarts);
- 	}
- 	pci_iounmap(dev, p);
- 	return number_uarts;
-@@ -1054,9 +1049,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
- 	/* Tornado device */
- 	if (deviceID == 0x07000200) {
- 		number_uarts = ioread8(p + 4);
--		dev_dbg(&dev->dev,
--			"%d ports detected on Oxford PCI Express device\n",
--			number_uarts);
-+		pci_dbg(dev, "%d ports detected on Oxford PCI Express device\n", number_uarts);
- 	}
- 	pci_iounmap(dev, p);
- 	return number_uarts;
-@@ -1116,15 +1109,15 @@ static struct quatech_feature quatech_cards[] = {
- 	{ 0, }
- };
- 
--static int pci_quatech_amcc(u16 devid)
-+static int pci_quatech_amcc(struct pci_dev *dev)
- {
- 	struct quatech_feature *qf = &quatech_cards[0];
- 	while (qf->devid) {
--		if (qf->devid == devid)
-+		if (qf->devid == dev->device)
- 			return qf->amcc;
- 		qf++;
- 	}
--	pr_err("quatech: unknown port type '0x%04X'.\n", devid);
-+	pci_err(dev, "unknown port type '0x%04X'.\n", dev->device);
- 	return 0;
- };
- 
-@@ -1287,7 +1280,7 @@ static int pci_quatech_rs422(struct uart_8250_port *port)
- 
- static int pci_quatech_init(struct pci_dev *dev)
- {
--	if (pci_quatech_amcc(dev->device)) {
-+	if (pci_quatech_amcc(dev)) {
- 		unsigned long base = pci_resource_start(dev, 0);
- 		if (base) {
- 			u32 tmp;
-@@ -1311,7 +1304,7 @@ static int pci_quatech_setup(struct serial_private *priv,
- 	port->port.uartclk = pci_quatech_clock(port);
- 	/* For now just warn about RS422 */
- 	if (pci_quatech_rs422(port))
--		pr_warn("quatech: software control of RS422 features not currently supported.\n");
-+		pci_warn(priv->dev, "software control of RS422 features not currently supported.\n");
- 	return pci_default_setup(priv, board, port, idx);
- }
- 
-@@ -1525,7 +1518,7 @@ static int pci_fintek_setup(struct serial_private *priv,
- 	/* Get the io address from configuration space */
- 	pci_read_config_word(pdev, config_base + 4, &iobase);
- 
--	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%x", __func__, idx, iobase);
-+	pci_dbg(pdev, "idx=%d iobase=0x%x", idx, iobase);
- 
- 	port->port.iotype = UPIO_PORT;
- 	port->port.iobase = iobase;
-@@ -1689,7 +1682,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
- 			struct uart_8250_port *port, int idx)
- {
- 	port->port.quirks |= UPQ_NO_TXEN_TEST;
--	dev_dbg(&priv->dev->dev,
-+	pci_dbg(priv->dev,
- 		"serial8250: skipping TxEn test for device [%04x:%04x] subsystem [%04x:%04x]\n",
- 		priv->dev->vendor, priv->dev->device,
- 		priv->dev->subsystem_vendor, priv->dev->subsystem_device);
-@@ -4007,12 +4000,12 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
- 		uart.port.irq = 0;
- 	} else {
- 		if (pci_match_id(pci_use_msi, dev)) {
--			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
-+			pci_dbg(dev, "Using MSI(-X) interrupts\n");
- 			pci_set_master(dev);
- 			uart.port.flags &= ~UPF_SHARE_IRQ;
- 			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
- 		} else {
--			dev_dbg(&dev->dev, "Using legacy interrupts\n");
-+			pci_dbg(dev, "Using legacy interrupts\n");
- 			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
- 		}
- 		if (rc < 0) {
-@@ -4030,12 +4023,12 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
- 		if (quirk->setup(priv, board, &uart, i))
- 			break;
- 
--		dev_dbg(&dev->dev, "Setup PCI port: port %lx, irq %d, type %d\n",
-+		pci_dbg(dev, "Setup PCI port: port %lx, irq %d, type %d\n",
- 			uart.port.iobase, uart.port.irq, uart.port.iotype);
- 
- 		priv->line[i] = serial8250_register_8250_port(&uart);
- 		if (priv->line[i] < 0) {
--			dev_err(&dev->dev,
-+			pci_err(dev,
- 				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
- 				uart.port.iobase, uart.port.irq,
- 				uart.port.iotype, priv->line[i]);
-@@ -4131,8 +4124,7 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
- 	}
- 
- 	if (ent->driver_data >= ARRAY_SIZE(pci_boards)) {
--		dev_err(&dev->dev, "invalid driver_data: %ld\n",
--			ent->driver_data);
-+		pci_err(dev, "invalid driver_data: %ld\n", ent->driver_data);
- 		return -EINVAL;
- 	}
- 
-@@ -4215,7 +4207,7 @@ static int pciserial_resume_one(struct device *dev)
- 		err = pci_enable_device(pdev);
- 		/* FIXME: We cannot simply error out here */
- 		if (err)
--			dev_err(dev, "Unable to re-enable ports, trying to continue.\n");
-+			pci_err(pdev, "Unable to re-enable ports, trying to continue.\n");
- 		pciserial_resume_ports(priv);
- 	}
- 	return 0;
 -- 
-2.35.1
-
-
+2.37.2
 
