@@ -2,79 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 455C0C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 14:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D998BC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 14:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbiHUO1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 10:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
+        id S230260AbiHUObU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 10:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiHUO1e (ORCPT
+        with ESMTP id S229460AbiHUObS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 10:27:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712461ADA5
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 07:27:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BF8760EA0
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 14:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3276EC433D7;
-        Sun, 21 Aug 2022 14:27:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661092052;
-        bh=w/PkrSzM/YSb7wa9LQoXCP3wB1H/7EbaPvzXWLdFQ+4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=P4l2sSNSRd6fKLtyuxgZwmpLCFeiqXTLY9U4TL0OmoXNDrsHG8VL38AT2ZluD2vJB
-         NNSWMuaqhAH37SPiydGhEUaxFg3JVs8RekJDNEx/h9ZIUNfhFB5etI0WQJJYQkCoZK
-         bM/9xz6vyNEntdsT+ver8E+Xaudsb7vliVcdpIB6gqOUg2XFUDNb7B7lqJ3lmD7JB5
-         Dg7Itif42nhm+IhpXPwJbrGoQ2NScayiwYBp15qlKVa5FyroK2ETTQaQ1oX3Eh3vsf
-         AX7Ei1U9ofCYz1VImXqyZuZI1Mq10eJe/lCuG3KVdHF+gxTs7m9F89Aa7gz73VXzUE
-         ywmHsn++m3hpA==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] riscv: compat: s/failed/unsupported if compat mode isn't supported
-Date:   Sun, 21 Aug 2022 22:18:19 +0800
-Message-Id: <20220821141819.3804-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 21 Aug 2022 10:31:18 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94921CB06
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 07:31:14 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1661092257tqxhds2p
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 21 Aug 2022 22:30:55 +0800 (CST)
+X-QQ-SSF: 0100000000200000B000B00A0000000
+X-QQ-FEAT: Wyle2N1OIGk9/qf4RjOezsRwFlh5szDP0qWpg9ROsqG5sbiWbn0ZK8iUFuwsj
+        r3CM24sDaCZXdJtyTH7UR/iKB5AGvqSXE0M2tE7adbPMbbOW+Eb5WCQZp7wOTqx1o8pRAsk
+        CXe2/Vqov+MGzRUTOHniT+Dk/IsNPg5rWpg/ABfRk3rweBuwLR1l5ZvGGk1vhHqaf7fgbzn
+        rMUljpC39odco41y9zm4P8FOqu1SK1SWgxRPJ2X3YqWxhYyZZqcr9X7TFSxgc/k4i8nnSlk
+        vhsnjdGrKcNZ6kbDdTnQ1r25m708Qr5zkou5kvQxUoIQM5/2/L7OgA3/Tqk/w1Ay7uSWacG
+        r0vR6qZ
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     bskeggs@redhat.com, kherbst@redhat.com, lyude@redhat.com,
+        airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] subdev/clk: fix repeated words in comments
+Date:   Sun, 21 Aug 2022 22:30:38 +0800
+Message-Id: <20220821143038.46589-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When compat mode isn't supported(I believe this is the most case now),
-kernel will emit somthing as:
-[    0.050407] riscv: ELF compat mode failed
+ Delete the redundant word 'at'.
 
-This msg may make users think there's something wrong with the kernel
-itself, replace "failed" with "unsupported" to make it clear. In fact
-this is the real compat_mode_supported meaning. After the patch, the
-msg would be:
-[    0.050407] riscv: ELF compat mode unsupported
-
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
 ---
- arch/riscv/kernel/process.c | 2 +-
+ drivers/gpu/drm/nouveau/nvkm/subdev/clk/gm20b.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/kernel/process.c b/arch/riscv/kernel/process.c
-index ceb9ebab6558..b0c63e8e867e 100644
---- a/arch/riscv/kernel/process.c
-+++ b/arch/riscv/kernel/process.c
-@@ -105,7 +105,7 @@ static int __init compat_mode_detect(void)
- 	csr_write(CSR_STATUS, tmp);
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/gm20b.c b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/gm20b.c
+index a139dafffe06..7c33542f651b 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/gm20b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/gm20b.c
+@@ -581,7 +581,7 @@ gm20b_clk_prog(struct nvkm_clk *base)
  
- 	pr_info("riscv: ELF compat mode %s",
--			compat_mode_supported ? "supported" : "failed");
-+			compat_mode_supported ? "supported" : "unsupported");
- 
- 	return 0;
- }
+ 	/*
+ 	 * Interim step for changing DVFS detection settings: low enough
+-	 * frequency to be safe at at DVFS coeff = 0.
++	 * frequency to be safe at DVFS coeff = 0.
+ 	 *
+ 	 * 1. If voltage is increasing:
+ 	 * - safe frequency target matches the lowest - old - frequency
 -- 
-2.34.1
+2.36.1
 
