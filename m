@@ -2,66 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2AAC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 15:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C7AC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 15:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiHUPLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 11:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
+        id S231332AbiHUPMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 11:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiHUPLm (ORCPT
+        with ESMTP id S229507AbiHUPMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 11:11:42 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D635FB5
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 08:11:40 -0700 (PDT)
-X-QQ-mid: bizesmtp69t1661094695tad242yf
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 21 Aug 2022 23:11:33 +0800 (CST)
-X-QQ-SSF: 01000000000000C0D000B00A0000000
-X-QQ-FEAT: LE7C6P2vL8TJ2NV0d6Geu3qzKjOQ8egadwHhH5wys8q4sHfRqkS8ItdYYlKmf
-        /dEgdwtBIRd6zTV0MzVzAVvvzfIzQK7MW/4/IB/vO0P7bpJ6trKn7YMcX69VbWrM7Gpar7B
-        23tRKu6oqfb6elIzsVgwwUrIloJGMmw9tm8zM96GM/s8TGcx6zefKSTOuLO2qFlEJ81wspP
-        gm12i/HoktrIbtw5RP8vu7Yn7KGEOpKirOSZE88SnDzz5eBiDa+2hXxn64dw5qsGUPxZJZI
-        z8v4YEKvHSxrqsmLxgUTMhqOdbgeT8I/M1vQB60GHsfGhTHq5/nzp1r5aLIrn8rRGYCCfTm
-        QmQz3ZLd/ut3Vd659WDw90d2/20M3M6Vk47dU2B
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     linus.walleij@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] drivers/mfd: fix repeated words in comments
-Date:   Sun, 21 Aug 2022 23:11:27 +0800
-Message-Id: <20220821151127.54801-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Sun, 21 Aug 2022 11:12:07 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F305FB5
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 08:12:06 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gi31so10434559ejc.5
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 08:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=ZaWtw9Zg1nD5CoL5cE2PY2gb33V2/yQXN/4KLffNp9M=;
+        b=e2DTWR3YpfOjEHiMva39dkePzbaqOOjoCOG4mZEeHn5GGuOwWvgxfgeqwo7RP5BrmM
+         YTRwjNG4MLbmPQKeiXLh/KoS1wrGEeAPv9xqDGuufErHU5+YEe3LsRGCbqNibKxcI9WI
+         Mfc/TDTI2DsLAJWIFmDYZiZ3HApIDBauVWgnX5zotQPg/OfZjNNJm6+IZTRJs7jSAtlO
+         t39gM2a6NlA/9GUNgxE6WBKmiRhIbVFzyEesoZ/1+19cDT5gSGN4SgVO+q18uCYIG67+
+         qeFYod72WbkE0k8TJjryAuiTQhEgniImrKh5GyeSoFBo3YkYqza9mq6AZkItTTXrQVkI
+         v4ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=ZaWtw9Zg1nD5CoL5cE2PY2gb33V2/yQXN/4KLffNp9M=;
+        b=0T8tRmtwTVAwNXK1a5pfivhYcaiPOVJ4NZOwib1ymxF+n9PA0WShQNiBElL3roELah
+         6AgAYm28C2OKa1CYgdnssHavUd0cNgz0i/Dp/bhRVzPxmoEyLmGaSL0LYTEluMv8dEOE
+         Udu6muz9YKx5Noi6vaki0Z1pZfGkFPgfykbcVxBlHgY+v/Rs5jV6oCmfHuwT1bWDzaWy
+         KXTGFILF7BP8R3yAyUSyQWiYUk0mB4EULt9QRw2wxs2vf5fzUH5hZvGRMkwfT8gRInJ9
+         Tif6tOMMu7QFQOaNsldZ8wnV2jQG8sjR/ISWD3MC/gy9tjAK/NJGO1Bu6Hp0EtzTWqSz
+         WynA==
+X-Gm-Message-State: ACgBeo0H1aM3K6GINhKey4X9VyV5t/MAkzaF/W0gdnfzvl9q/wsT/pLb
+        e+FBPMxSwR2G8QJUnbzjyaI=
+X-Google-Smtp-Source: AA6agR68YNxfCRPYknc8+Ny6gQI1mqxcOIR7ZNTAXkL+VYPiJcMo2uyQ2HewLVkw0Q9bUKOXtYQTgA==
+X-Received: by 2002:a17:907:7256:b0:730:f074:963c with SMTP id ds22-20020a170907725600b00730f074963cmr10782622ejc.201.1661094724854;
+        Sun, 21 Aug 2022 08:12:04 -0700 (PDT)
+Received: from opensuse.localnet (host-87-17-106-94.retail.telecomitalia.it. [87.17.106.94])
+        by smtp.gmail.com with ESMTPSA id bm16-20020a170906c05000b00730a1c73288sm4962663ejb.49.2022.08.21.08.12.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Aug 2022 08:12:03 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Cc:     Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>
+Subject: Re: [PATCH v2] nvmet-tcp: Don't kmap() pages which can't come from HIGHMEM
+Date:   Sun, 21 Aug 2022 17:12:00 +0200
+Message-ID: <2113668.irdbgypaU6@opensuse>
+In-Reply-To: <8f3e0127-91d4-af1f-ba41-951e2c5050f9@nvidia.com>
+References: <20220817184519.25141-1-fmdefrancesco@gmail.com> <8f3e0127-91d4-af1f-ba41-951e2c5050f9@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
+On gioved=C3=AC 18 agosto 2022 17:48:04 CEST Chaitanya Kulkarni wrote:
+> > -	iov_iter_kvec(&cmd->recv_msg.msg_iter, READ, cmd->iov,
+> > -		cmd->nr_mapped, cmd->pdu_len);
+> > +	iov_iter_kvec(&cmd->recv_msg.msg_iter, READ, cmd->iov, nr_mapped,
+> > cmd->pdu_len);
+>=20
+> >   }
+> >  =20
+>=20
+>=20
+> overly long lines above ? we are keeping lines < 80 for consistency, can
+> be done at the time of applying patch.
+>=20
+> -ck
+>=20
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/mfd/db8500-prcmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm sorry for this.
+I changed my post commit hook and forgot to make it executable :-(
+I just wrote to Sagi and said that I'm going to send a new version with the=
+=20
+results of blktests. In the meantime I'll shorten those long lines below th=
+e=20
+80 characters threshold.
 
-diff --git a/drivers/mfd/db8500-prcmu.c b/drivers/mfd/db8500-prcmu.c
-index 56c61c99eb23..27a881da4d6e 100644
---- a/drivers/mfd/db8500-prcmu.c
-+++ b/drivers/mfd/db8500-prcmu.c
-@@ -798,7 +798,7 @@ void db8500_prcmu_get_abb_event_buffer(void __iomem **buf)
-  * @opp: The new ARM operating point to which transition is to be made
-  * Returns: 0 on success, non-zero on failure
-  *
-- * This function sets the the operating point of the ARM.
-+ * This function sets the operating point of the ARM.
-  */
- int db8500_prcmu_set_arm_opp(u8 opp)
- {
--- 
-2.36.1
+Thanks,
+
+=46abio=20
+
 
