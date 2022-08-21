@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26697C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F47EC25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbiHUAIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 20:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S236210AbiHUAIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 20:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiHUAIe (ORCPT
+        with ESMTP id S233847AbiHUAIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 20 Aug 2022 20:08:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6E211168;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF92DDFA4;
         Sat, 20 Aug 2022 17:08:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77E6060C5F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46C0E60C5A;
         Sun, 21 Aug 2022 00:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53178C4314B;
-        Sun, 21 Aug 2022 00:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B5EC433B5;
+        Sun, 21 Aug 2022 00:08:30 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oPYWE-005DoK-0S;
-        Sat, 20 Aug 2022 20:08:46 -0400
-Message-ID: <20220821000845.973042820@goodmis.org>
+        id 1oPYWD-005Dmd-1s;
+        Sat, 20 Aug 2022 20:08:45 -0400
+Message-ID: <20220821000845.407218228@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 20 Aug 2022 20:07:46 -0400
+Date:   Sat, 20 Aug 2022 20:07:43 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-Subject: [for-linus][PATCH 09/10] tracing/probes: Have kprobes and uprobes use $COMM too
+        stable@vger.kernel.org
+Subject: [for-linus][PATCH 06/10] tracing/eprobes: Do not hardcode $comm as a string
 References: <20220821000737.328590235@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,42 +44,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Both $comm and $COMM can be used to get current->comm in eprobes and the
-filtering and histogram logic. Make kprobes and uprobes consistent in this
-regard and allow both $comm and $COMM as well. Currently kprobes and
-uprobes only handle $comm, which is inconsistent with the other utilities,
-and can be confusing to users.
+The variable $comm is hard coded as a string, which is true for both
+kprobes and uprobes, but for event probes (eprobes) it is a field name. In
+most cases the "comm" field would be a string, but there's no guarantee of
+that fact.
 
-Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
+Do not assume that comm is a string. Not to mention, it currently forces
+comm fields to fault, as string processing for event probes is currently
+broken.
 
 Cc: stable@vger.kernel.org
-Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
-Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
  kernel/trace/trace_probe.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
-index 4daabbb8b772..36dff277de46 100644
+index dec657af363c..4daabbb8b772 100644
 --- a/kernel/trace/trace_probe.c
 +++ b/kernel/trace/trace_probe.c
-@@ -314,7 +314,7 @@ static int parse_probe_vars(char *arg, const struct fetch_type *t,
- 			}
- 		} else
- 			goto inval_var;
--	} else if (strcmp(arg, "comm") == 0) {
-+	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
- 		code->op = FETCH_OP_COMM;
- #ifdef CONFIG_HAVE_FUNCTION_ARG_ACCESS_API
- 	} else if (((flags & TPARG_FL_MASK) ==
-@@ -625,7 +625,8 @@ static int traceprobe_parse_probe_arg_body(const char *argv, ssize_t *size,
- 	 * we can find those by strcmp. But ignore for eprobes.
+@@ -622,9 +622,10 @@ static int traceprobe_parse_probe_arg_body(const char *argv, ssize_t *size,
+ 
+ 	/*
+ 	 * Since $comm and immediate string can not be dereferenced,
+-	 * we can find those by strcmp.
++	 * we can find those by strcmp. But ignore for eprobes.
  	 */
- 	if (!(flags & TPARG_FL_TPOINT) &&
--	    (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0)) {
-+	    (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0 ||
-+	     strncmp(arg, "\\\"", 2) == 0)) {
+-	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
++	if (!(flags & TPARG_FL_TPOINT) &&
++	    (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0)) {
  		/* The type of $comm must be "string", and not an array. */
  		if (parg->count || (t && strcmp(t, "string")))
  			goto out;
