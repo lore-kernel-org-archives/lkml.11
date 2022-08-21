@@ -2,94 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E7BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 12:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D75F3C32772
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 12:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbiHUMQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 08:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59344 "EHLO
+        id S229932AbiHUMTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 08:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiHUMQ4 (ORCPT
+        with ESMTP id S229471AbiHUMTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 08:16:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED93155B7;
-        Sun, 21 Aug 2022 05:16:55 -0700 (PDT)
+        Sun, 21 Aug 2022 08:19:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B14C22B19;
+        Sun, 21 Aug 2022 05:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 245D060C71;
-        Sun, 21 Aug 2022 12:16:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04601C433C1;
-        Sun, 21 Aug 2022 12:16:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661084214;
-        bh=pfR4jr4sZH4UOKGkZpaG1J5xDYNRWYkdFPxOgEXVxLM=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B32EB80B2E;
+        Sun, 21 Aug 2022 12:19:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1039C433D6;
+        Sun, 21 Aug 2022 12:19:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661084380;
+        bh=LIzsi2DhOwknBgqso0AgS4X1lYq0tfEFFNz7+quVlrE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MIhopnaCtadqyqX/FI8A1b9vohyx0SQAkfq2Yt+GGmRiptIFOaHd82MtzWD4BR88I
-         hG1fzHG+Rds8ryLU9I3aNMULrSBegjI/AsQXQSkuWzkYDlLBOiLQhfdiZxJyVgDRCE
-         ACJuPi3QrJXo/rt2cAJLuLrdeuAxgHxdlr6BKShY=
-Date:   Sun, 21 Aug 2022 14:16:51 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 000/541] 5.10.137-rc2 review
-Message-ID: <YwIiM6l/f3354+7B@kroah.com>
-References: <20220820182952.751374248@linuxfoundation.org>
- <20220821120348.GA2332676@roeck-us.net>
+        b=nsijGt6PVNMM6pcHObuu4cNQRp69K2JKJI6bICgO+m9wsv8crMdLK2TP6rGrfLXhs
+         UYuXLG0SwOnK5ppvnNjojk2RjrsEgdNozuilM+G0Q1BH5AkFgkhRz2z0EccKyjJT/4
+         6nclJSFuhvaTRUQNGgEtZkIqcI7IAyfv9atrRpdy6r/C+zwoECT9nP/J3Kh5UO2ttM
+         dayWFTq0LI/qcgTbHPjmC7Y6GAZkl3/1/PCvKuYUx4ofAz+BYuSdx+Pxq5bUxuDA/D
+         Yw05aRdiZa3STeVRykP5fDrW9uFWosFeNMls5kVfs6ghKAiz2tb4tahn4oTHXMbwg/
+         uaS9B+c0JjKWg==
+Date:   Sun, 21 Aug 2022 20:19:34 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     David Jander <david@protonic.nl>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] arm: dts: imx6qdl-vicut1.dtsi: Add backlight-isb
+ node
+Message-ID: <20220821121934.GX149610@dragon>
+References: <20220726123222.1074876-1-david@protonic.nl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220821120348.GA2332676@roeck-us.net>
+In-Reply-To: <20220726123222.1074876-1-david@protonic.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 05:03:48AM -0700, Guenter Roeck wrote:
-> On Sat, Aug 20, 2022 at 08:39:26PM +0200, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.10.137 release.
-> > There are 541 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> > 
-> > Responses should be made by Mon, 22 Aug 2022 18:28:24 +0000.
-> > Anything received after that time might be too late.
-> > 
-> Build results:
-> 	total: 163 pass: 162 fail: 1
-> Failed builds:
-> 	um:defconfig
-> Qemu test results:
-> 	total: 474 pass: 474 fail: 0
+On Tue, Jul 26, 2022 at 02:32:20PM +0200, David Jander wrote:
+> This series adds the backlight-isb node and fixes existing backlight_led
+> node name.
 > 
-> The build error is:
+> ---
+> v2:
+>  - Fix node names to use minus character instead of underscore.
 > 
-> Building um:defconfig ... failed
-> --------------
-> Error log:
-> In file included from arch/um/include/shared/irq_user.h:10,
->                  from arch/um/include/shared/os.h:12,
->                  from arch/um/kernel/umid.c:9:
-> include/linux/stddef.h:11:9: error: expected identifier before numeric constant
->    11 |         false   = 0,
->       |         ^~~~~
-> include/linux/types.h:30:33: error: two or more data types in declaration specifiers
->    30 | typedef _Bool                   bool;
->       |                                 ^~~~
-> In file included from arch/um/include/shared/os.h:17,
->                  from arch/um/kernel/umid.c:9:
-> include/linux/types.h:30:1: warning: useless type name in empty declaration
->    30 | typedef _Bool                   bool;
->       | ^~~~~~~
-> 
-> Bisect points to commit 6660dd43bbf ("um: seed rng using host OS rng"),
-> and reverting it fixes the problem.
+> David Jander (2):
+>   arm: dts: imx6qdl-vicut1.dtsi: Add backlight-isb node
+>   arm: dts: imx6qdl-vicut1.dtsi: Fix node name backlight_led
 
-Thanks, I'll go drop that commit now.
-
-greg k-h
+Applied both, thanks!
