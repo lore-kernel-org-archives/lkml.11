@@ -2,203 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B11C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 04:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBE3C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 04:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiHUEoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 00:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
+        id S229662AbiHUEwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 00:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHUEo0 (ORCPT
+        with ESMTP id S229379AbiHUEv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 00:44:26 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEAA14087
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 21:44:24 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id k9-20020a056e021a8900b002e5bd940e96so6056703ilv.13
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 21:44:24 -0700 (PDT)
+        Sun, 21 Aug 2022 00:51:58 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE731EAEC
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 21:51:57 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id m2so7277624pls.4
+        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 21:51:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=DoP5D0q5uq10qPqKZyI8ZyeoJp/Fm4FVEA1pggc97RE=;
+        b=myAtWZPR3n2L5a2uXfJkMWGR1ztcMZm5w845T3S6uVau8vS/bEloJxXmvk6cvOi/3Y
+         E19RlwtXTNJft6W4h+x1f7xelNtq42/Y4bOagZ+HJsxvIw+xW2YEgCZUzDCeN6Og8GWv
+         1Z0qv42RbhuhUL0E7okkfc9i8muWpJQdIPbfH7FPZPWbPRSFqQzNRpMfxTaPX8lfitzB
+         sKqE2X1LnQFKNp/pM/j3ZitgA1TmaM5JmfNklWdaY+0x7Llktl4uKmsPWmd6zm/VvSlF
+         uG8OCYBDRf051vU4P/4DmgFkeMmqIYqKYNyYdRZ2OwzJjc+sOyuu+T5H1HKAnzaS6C09
+         CJ9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=bVZXnPdyq13OL3gTqrTuRwM/LzaBY2wVApRqSobDy+M=;
-        b=EUw3i10HvHqDiQ1PYgqhNYFqF7PtPmHSTUvkeHVwcWkMFjQ2Pl5KzqpJyLW/RuzWBh
-         wuoEExJRmWma1z0P9w/lhHkWkkdT9rzAxulrTXJwjxmBvx+qN3/pK5GGCuJ0lxE6lnWA
-         SJ1iM0qo8Yic2/MGASL5XSwW/EmwHjEjBRZC0NBPlmWBLxOQWi0cdANd7+Y48/aKxpTa
-         4qndJ0MOKrGboVpI7IRPT+pI7UY0dLyW94Ojy085mfO/OQKf06zw5V4gCSxorXxGHR8d
-         MHG2IhUEQAe+bpmE8hZiNZLi4ngia36+IAgS92U0d39XkqMJNbWRvUS/s/9scdswo+nF
-         NCIw==
-X-Gm-Message-State: ACgBeo0djTzZOZeCrX48E8kpkPstSZ+0JMBKwkez0aVjwlMbgyocEcrA
-        BEk8qYst13hZ1iO093NSV4V+Ux1dVvqWrm8H8Bw1wLa0ZoyM
-X-Google-Smtp-Source: AA6agR4li2Niup/6JXfm8rwixUjv0fRIYSvRlavbxJvrRzUgYLE7razoFui2K7MDR37gpymzYNK4fxtM534c95mw32IKKOR0pwLD
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=DoP5D0q5uq10qPqKZyI8ZyeoJp/Fm4FVEA1pggc97RE=;
+        b=HRNv1/voWtIL/FFlexsPEfjQQbPHDovg2zBwGNqNgUwWMtC12vb/lcTXH5JXw4LZtf
+         W7/8Vl07F5uUyNccdxevv5l5s0O7wTmNbhau/UqZHoy3bRrnfoWHUFfnVVImj9xO196s
+         3NL45n3UGAGRp6funVMHYNF5+lE9AinX3/PLs6vZnc9qWe684f6H0ZN93k4HxOXbbC9Q
+         jju42xv2f2OiIh7VBESOjsN3dNAnUt6s/O/e64vlTMd38ERSf5WwV7Cg1ZS2ZZhDJUYq
+         my5in4hD74b6Zbp1V6ysxKJ6R/FBqMRR/DOO/s8dU90F840jJSl90IwdBEYmFEwzl2ca
+         rP8Q==
+X-Gm-Message-State: ACgBeo2sZ2Qsitqva8EUXq5dmNB1lFgZWM0X7ifLVKWaCKxfVsSXLToY
+        BAxRmGvtoUQ2f6F8AyivYos=
+X-Google-Smtp-Source: AA6agR6jFTcZ38ScQNkrKXr9tieWyesl9/CP4JCgWrO8XmdgeujTnsAPTI9TZJ5xdUsgbrPSe5e6Hg==
+X-Received: by 2002:a17:90a:c402:b0:1f7:75ce:1206 with SMTP id i2-20020a17090ac40200b001f775ce1206mr16667833pjt.68.1661057516936;
+        Sat, 20 Aug 2022 21:51:56 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:2c40:97f7:f170:cdca])
+        by smtp.gmail.com with ESMTPSA id n126-20020a622784000000b0053291ddd8e5sm3633772pfn.40.2022.08.20.21.51.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Aug 2022 21:51:56 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 21:51:53 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Rustam Subkhankulov <subkhankulov@ispras.ru>
+Cc:     Tzung-Bi Shih <tzungbi@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
+Subject: Re: [PATCH] platform/chrome: fix double-free in
+ chromeos_laptop_prepare()
+Message-ID: <YwG56T86sYkH/eCw@google.com>
+References: <20220813220843.2373004-1-subkhankulov@ispras.ru>
+ <YvnS7IKr/9VhffHX@google.com>
+ <7d4dd8009a777a7d32f4872dc0285878dbbb91b8.camel@ispras.ru>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1bc8:b0:2e9:8401:477a with SMTP id
- x8-20020a056e021bc800b002e98401477amr1529904ilv.265.1661057064062; Sat, 20
- Aug 2022 21:44:24 -0700 (PDT)
-Date:   Sat, 20 Aug 2022 21:44:24 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004155f505e6b8fc3b@google.com>
-Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
- request in kobject_add
-From:   syzbot <syzbot+995136d881b59882b2b6@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        rafael@kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7d4dd8009a777a7d32f4872dc0285878dbbb91b8.camel@ispras.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Sat, Aug 20, 2022 at 08:05:13PM +0300, Rustam Subkhankulov wrote:
+> On Mon, 2022-08-15 at 05:00 +0000, Tzung-Bi Shih wrote:
+> > Alternatively, I would prefer to fix the double-free by setting
+> > `i2c_peripherals` to NULL after [1].
+> 
+> Since 'cros_laptop->num_i2c_peripherals' is assigned with nonzero value
+> (otherwise the code on 'err_out' is not executed), setting 
+> 'i2c_peripherals' to NULL after [1] will cause dereferencing of 
+> NULL pointer in chromeos_laptop_destroy() at [2]. 
+> 
+> [1]:
+> https://elixir.bootlin.com/linux/v5.19/source/drivers/platform/chrome/chromeos_laptop.c#L787
+> [2]:
+> https://elixir.bootlin.com/linux/v5.19/source/drivers/platform/chrome/chromeos_laptop.c#L860
+> 
+> > After a quick glance, I found an invalid memory access at [2] if
+> > `i2c_peripherals` is NULL (see [3]). 
+> 
+> After applying the patch, there will be no invalid memory access at [2]
+> if 'i2c_peripherals' is NULL, because in this situation 
+> 'cros_laptop->num_i2c_peripherals' is zero and there is no single 
+> iteration of the loop.
 
-syzbot found the following issue on:
+Yes, we should either reset both cros_laptop->i2c_peripherals and
+cros_laptop->num_i2c_peripherals on error, or avoid setting them until
+we are sure that we are not getting an error. I think prefer the latter.
 
-HEAD commit:    3cc40a443a04 Merge tag 'nios2_fixes_v6.0' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1525710d080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
-dashboard link: https://syzkaller.appspot.com/bug?extid=995136d881b59882b2b6
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: i386
+Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+995136d881b59882b2b6@syzkaller.appspotmail.com
+Thanks.
 
-usbcore: registered new interface driver nfcmrvl
-Loading iSCSI transport class v2.0-870.
-scsi host0: Virtio SCSI HBA
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-Rounding down aligned max_sectors from 4294967295 to 4294967288
-db_root: cannot open: /etc/target
-slram: not enough parameters.
-ftl_cs: FTL header not found.
-wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
-MACsec IEEE 802.1AE
-tun: Universal TUN/TAP device driver, 1.6
-vcan: Virtual CAN interface driver
-vxcan: Virtual CAN Tunnel driver
-slcan: serial line CAN interface driver
-CAN device driver interface
-usbcore: registered new interface driver usb_8dev
-usbcore: registered new interface driver ems_usb
-usbcore: registered new interface driver gs_usb
-usbcore: registered new interface driver kvaser_usb
-usbcore: registered new interface driver mcba_usb
-usbcore: registered new interface driver peak_usb
-e100: Intel(R) PRO/100 Network Driver
-e100: Copyright(c) 1999-2006 Intel Corporation
-e1000: Intel(R) PRO/1000 Network Driver
-e1000: Copyright (c) 1999-2006 Intel Corporation.
-e1000e: Intel(R) PRO/1000 Network Driver
-e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
-mkiss: AX.25 Multikiss, Hans Albas PE1AYX
-AX.25: 6pack driver, Revision: 0.3.0
-AX.25: bpqether driver version 004
-PPP generic driver version 2.4.2
-PPP BSD Compression module registered
-PPP Deflate Compression module registered
-PPP MPPE Compression module registered
-NET: Registered PF_PPPOX protocol family
-PPTP driver version 0.8.5
-SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
-CSLIP: code copyright 1989 Regents of the University of California.
-SLIP linefill/keepalive option.
-hdlc: HDLC support module revision 1.22
-LAPB Ethernet driver version 0.02
-usbcore: registered new interface driver ath9k_htc
-usbcore: registered new interface driver carl9170
-usbcore: registered new interface driver ath6kl_usb
-usbcore: registered new interface driver ar5523
-usbcore: registered new interface driver ath10k_usb
-usbcore: registered new interface driver rndis_wlan
-mac80211_hwsim: initializing netlink
-BUG: unable to handle page fault for address: ffffdc0000000000
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 11826067 P4D 11826067 PUD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller-00017-g3cc40a443a04 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:string_nocheck lib/vsprintf.c:643 [inline]
-RIP: 0010:string+0x1bb/0x3d0 lib/vsprintf.c:725
-Code: 48 3b 5c 24 08 74 4b e8 e3 42 59 fd 48 89 df 48 83 c3 01 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 89 fa 48 c1 e8 03 83 e2 07 <0f> b6 04 08 38 d0 7f 08 84 c0 0f 85 cc 01 00 00 44 0f b6 63 ff 31
-RSP: 0000:ffffc90000067410 EFLAGS: 00010046
-RAX: 1fffe00000000000 RBX: ffff000000000001 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: ffffffff8422c86d RDI: ffff000000000000
-RBP: ffffc900000676eb R08: 0000000000000005 R09: 0000000000000000
-R10: 00000000ffffffff R11: 0000000000000001 R12: 00000000ffffffff
-R13: ffffc900000676e8 R14: ffff000000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- vsnprintf+0x71b/0x14f0 lib/vsprintf.c:2782
- vprintk_store+0x2d8/0xae0 kernel/printk/printk.c:2155
- vprintk_emit+0x14c/0x5f0 kernel/printk/printk.c:2252
- vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
- _printk+0xba/0xed kernel/printk/printk.c:2292
- kobject_add.cold+0x4a/0x5e lib/kobject.c:404
- device_add+0x368/0x1e90 drivers/base/core.c:3452
- device_create_groups_vargs+0x203/0x280 drivers/base/core.c:4194
- device_create+0xdf/0x120 drivers/base/core.c:4236
- mac80211_hwsim_new_radio+0x3ab/0x4dd0 drivers/net/wireless/mac80211_hwsim.c:3821
- init_mac80211_hwsim+0x5aa/0x73b drivers/net/wireless/mac80211_hwsim.c:5379
- do_one_initcall+0xfe/0x650 init/main.c:1296
- do_initcall_level init/main.c:1369 [inline]
- do_initcalls init/main.c:1385 [inline]
- do_basic_setup init/main.c:1404 [inline]
- kernel_init_freeable+0x6b1/0x73a init/main.c:1611
- kernel_init+0x1a/0x1d0 init/main.c:1500
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
-CR2: ffffdc0000000000
----[ end trace 0000000000000000 ]---
-RIP: 0010:string_nocheck lib/vsprintf.c:643 [inline]
-RIP: 0010:string+0x1bb/0x3d0 lib/vsprintf.c:725
-Code: 48 3b 5c 24 08 74 4b e8 e3 42 59 fd 48 89 df 48 83 c3 01 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 89 fa 48 c1 e8 03 83 e2 07 <0f> b6 04 08 38 d0 7f 08 84 c0 0f 85 cc 01 00 00 44 0f b6 63 ff 31
-RSP: 0000:ffffc90000067410 EFLAGS: 00010046
-RAX: 1fffe00000000000 RBX: ffff000000000001 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: ffffffff8422c86d RDI: ffff000000000000
-RBP: ffffc900000676eb R08: 0000000000000005 R09: 0000000000000000
-R10: 00000000ffffffff R11: 0000000000000001 R12: 00000000ffffffff
-R13: ffffc900000676e8 R14: ffff000000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	48 3b 5c 24 08       	cmp    0x8(%rsp),%rbx
-   5:	74 4b                	je     0x52
-   7:	e8 e3 42 59 fd       	callq  0xfd5942ef
-   c:	48 89 df             	mov    %rbx,%rdi
-   f:	48 83 c3 01          	add    $0x1,%rbx
-  13:	48 b9 00 00 00 00 00 	movabs $0xdffffc0000000000,%rcx
-  1a:	fc ff df
-  1d:	48 89 f8             	mov    %rdi,%rax
-  20:	48 89 fa             	mov    %rdi,%rdx
-  23:	48 c1 e8 03          	shr    $0x3,%rax
-  27:	83 e2 07             	and    $0x7,%edx
-* 2a:	0f b6 04 08          	movzbl (%rax,%rcx,1),%eax <-- trapping instruction
-  2e:	38 d0                	cmp    %dl,%al
-  30:	7f 08                	jg     0x3a
-  32:	84 c0                	test   %al,%al
-  34:	0f 85 cc 01 00 00    	jne    0x206
-  3a:	44 0f b6 63 ff       	movzbl -0x1(%rbx),%r12d
-  3f:	31                   	.byte 0x31
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-- 
+Dmitry
