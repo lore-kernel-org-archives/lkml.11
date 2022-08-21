@@ -2,182 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C836DC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91455C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 06:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiHUGYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 02:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
+        id S229632AbiHUG3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 02:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiHUGYb (ORCPT
+        with ESMTP id S229441AbiHUG3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 02:24:31 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D12C23144
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:24:29 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id i26-20020a056e021d1a00b002e9865e8963so1417922ila.14
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 23:24:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=PqboCOCwyASLavKwg3VOY5lF9ER/zs7glAbEsMVMddk=;
-        b=eOuwjXs8IzN25g7AXmatq3tuoJ+4yroBOfkPMRtrnY2AER7fo4FgA6I7/lGLNBtlNN
-         RYV7CK32BSLil+bSm03Rem/R79ConizKWZabmWhxHbWjdYFvIwSlkjW24R6YPgZtNewE
-         qRc+bGWlVE4IJ04OEmmf2m1pgDKXZRc4d2LAIZWyKFkWhdJlvWOnkm/ZBE48Pzb4hfT5
-         tvgq8Y3HZZdL55mc6bdxw+++5fKlB3d6Ths3ZJD4x2F23YsuWfURGZekktHr+bWB6Aan
-         frtYdNZ7Ndam9D4AEp7nYofUokOpWKK3WpOjBZDMKlcVjSBfnzTaZAfqq2yzTCJFKzw7
-         vEww==
-X-Gm-Message-State: ACgBeo1ykM2fkMQYz0Htf+GA/H9yZljjKJHPtxQn8D8Wnf9FWC6nGAsD
-        udKrDRs4kwTtq/RdFY1fvAQVtstVahE2c31hvaNLvPa/joen
-X-Google-Smtp-Source: AA6agR6toP/uLZC9/Mjkijg+F5nQ6hr+rCdJi9lecAXpeeLcIoxAQ14XnfJqhkKTT/uWDLkIQiomgqsjiSqdpNqL7EjR+nPCfDSE
+        Sun, 21 Aug 2022 02:29:15 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CBA26132;
+        Sat, 20 Aug 2022 23:29:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3ERvMu4POZUsMD6yq39TfKZ1EskT5FRYgihPSMVzLrE=; b=sRfYAE8N3StEyCR2m/Z/a1OEMB
+        2JBYBMUt6t2Ug76nY/K2hvyqHwgyWsw5Ms5DzFFXqsNhmC1ZAOKAOJEEvgnXScGH+OFrtTJQ0W12T
+        pQ6rmYvwk/qHJxalUZDm1DkzvmkLMYAPikRXindZlJVlHSGniH9t53J44pXX3rXE29FC5XNOhl3gD
+        nV8vH1Q5muzYhD5iCVgVkZZ8gMWV8bWnAfbqt58a3ByNUuMX6+7jOjtCx6C7qM72qU11IgjbHf097
+        5r2LGGcQ2Hf43JQ0BO0jlzAl/EuGt10sDyrXvTat1yQRiLymXrc2zzaHA2KRBV8C0knkZCul+ZrMh
+        VMzCTG7Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oPeSH-006lfG-GK; Sun, 21 Aug 2022 06:29:05 +0000
+Date:   Sat, 20 Aug 2022 23:29:05 -0700
+From:   hch <hch@infradead.org>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     Matthew Wilcox <willy@infradead.org>, david <david@fromorbit.com>,
+        djwong <djwong@kernel.org>, fgheet255t <fgheet255t@gmail.com>,
+        hch <hch@infradead.org>, linux-ext4 <linux-ext4@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        riteshh <riteshh@linux.ibm.com>,
+        syzbot+a8e049cd3abd342936b6 
+        <syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: [syzbot] WARNING in iomap_iter
+Message-ID: <YwHQsbH/aYtH5pVs@infradead.org>
+References: <20220818110031.89467-1-code@siddh.me>
+ <20220818111117.102681-1-code@siddh.me>
+ <Yv5RmsUvRh+RKpXH@casper.infradead.org>
+ <182b18b5d92.7a2e2b1623166.1514589417142553905@siddh.me>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5d0f:0:b0:688:6559:7a00 with SMTP id
- r15-20020a6b5d0f000000b0068865597a00mr6250707iob.42.1661063068701; Sat, 20
- Aug 2022 23:24:28 -0700 (PDT)
-Date:   Sat, 20 Aug 2022 23:24:28 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000028d96a05e6ba6266@google.com>
-Subject: [syzbot] possible deadlock in kcm_ioctl
-From:   syzbot <syzbot+e696806ef96cdd2d87cd@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, f.fainelli@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, nikolay@nvidia.com, pabeni@redhat.com,
-        sgarzare@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <182b18b5d92.7a2e2b1623166.1514589417142553905@siddh.me>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Thu, Aug 18, 2022 at 08:51:16PM +0530, Siddh Raman Pant wrote:
+> On Thu, 18 Aug 2022 20:20:02 +0530  Matthew Wilcox  wrote:
+> > I don't think changing these from u64 to s64 is the right way to go.
+> 
+> Why do you think so? Is there somnething I overlooked?
+> 
+> I think it won't intorduce regression, since if something is working,
+> it will continue to work. If something does break, then they were
+> relying on overflows, which is anyways an incorrect way to go about.
 
-syzbot found the following issue on:
+Well, for example userspace code expecting unsignedness of these
+types could break.  So if we really think changing the types is so
+much preferred we'd need to audit common userspace first.  Because
+of that I think the version proposed by willy is generally preferred.
 
-HEAD commit:    95d10484d66e Add linux-next specific files for 20220817
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=11b3b2f3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2f5fa747986be53a
-dashboard link: https://syzkaller.appspot.com/bug?extid=e696806ef96cdd2d87cd
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1778e50d080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1379e5e3080000
+> Also, it seems even the 32-bit compatibility structure uses signed
+> types.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e696806ef96cdd2d87cd@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-6.0.0-rc1-next-20220817-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor769/3613 is trying to acquire lock:
-ffff88801cb5c0f8 ((work_completion)(&strp->work)){+.+.}-{0:0}, at: __flush_work+0xdd/0xae0 kernel/workqueue.c:3066
-
-but task is already holding lock:
-ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1687 [inline]
-ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach net/kcm/kcmsock.c:1390 [inline]
-ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
-ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_ioctl+0x396/0x1180 net/kcm/kcmsock.c:1696
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (sk_lock-AF_INET6){+.+.}-{0:0}:
-       lock_sock_nested+0x36/0xf0 net/core/sock.c:3391
-       do_strp_work net/strparser/strparser.c:398 [inline]
-       strp_work+0x40/0x130 net/strparser/strparser.c:415
-       process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-       kthread+0x2e4/0x3a0 kernel/kthread.c:376
-       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
--> #0 ((work_completion)(&strp->work)){+.+.}-{0:0}:
-       check_prev_add kernel/locking/lockdep.c:3095 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
-       validate_chain kernel/locking/lockdep.c:3829 [inline]
-       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
-       lock_acquire kernel/locking/lockdep.c:5666 [inline]
-       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
-       __flush_work+0x105/0xae0 kernel/workqueue.c:3069
-       __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3160
-       strp_done+0x64/0xf0 net/strparser/strparser.c:513
-       kcm_attach net/kcm/kcmsock.c:1429 [inline]
-       kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
-       kcm_ioctl+0x913/0x1180 net/kcm/kcmsock.c:1696
-       sock_do_ioctl+0xcc/0x230 net/socket.c:1169
-       sock_ioctl+0x2f1/0x640 net/socket.c:1286
-       vfs_ioctl fs/ioctl.c:51 [inline]
-       __do_sys_ioctl fs/ioctl.c:870 [inline]
-       __se_sys_ioctl fs/ioctl.c:856 [inline]
-       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(sk_lock-AF_INET6);
-                               lock((work_completion)(&strp->work));
-                               lock(sk_lock-AF_INET6);
-  lock((work_completion)(&strp->work));
-
- *** DEADLOCK ***
-
-1 lock held by syz-executor769/3613:
- #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1687 [inline]
- #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach net/kcm/kcmsock.c:1390 [inline]
- #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
- #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_ioctl+0x396/0x1180 net/kcm/kcmsock.c:1696
-
-stack backtrace:
-CPU: 0 PID: 3613 Comm: syz-executor769 Not tainted 6.0.0-rc1-next-20220817-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
- check_prev_add kernel/locking/lockdep.c:3095 [inline]
- check_prevs_add kernel/locking/lockdep.c:3214 [inline]
- validate_chain kernel/locking/lockdep.c:3829 [inline]
- __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __flush_work+0x105/0xae0 kernel/workqueue.c:3069
- __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3160
- strp_done+0x64/0xf0 net/strparser/strparser.c:513
- kcm_attach net/kcm/kcmsock.c:1429 [inline]
- kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
- kcm_ioctl+0x913/0x1180 net/kcm/kcmsock.c:1696
- sock_do_ioctl+0xcc/0x230 net/socket.c:1169
- sock_ioctl+0x2f1/0x640 net/socket.c:1286
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fc907a73f09
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc5f76b0d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fc907a73f09
-RDX: 00000000200000c0 RSI: 00000000000089e0 RDI: 0000000000000003
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+We should probably fix that as well.
