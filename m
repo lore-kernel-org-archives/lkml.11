@@ -2,244 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8B7C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 14:19:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8494DC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 14:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbiHUOTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 10:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
+        id S230016AbiHUOWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 10:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbiHUOTq (ORCPT
+        with ESMTP id S229460AbiHUOWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 10:19:46 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D4A165B3
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 07:19:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1661091553;
-        bh=i7JBXf2cv8reUQcZbheK88+YSiOap4sMEEkEyTrm4SU=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=KSFGiRXHjhVIQU8znhYOuabkqY8sFBRBw0wMTn2dIR0fTOWncaY+7GwISFCkXsTJr
-         b1DNkW9TYcVeeho0tkWoEhW3qOE+AVF4sFecTiHHrZQgoq2KwAoKIMl9eq2sc1XTMe
-         0onyLTQ/rFLyuh30cZOhGeMgMy1y2LTD4eRoVfPQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.188.210]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MulqN-1pGUny0MQV-00rpmr; Sun, 21
- Aug 2022 16:19:13 +0200
-Message-ID: <138d7324-e769-1c5c-2976-d9b1f0bd4e45@gmx.de>
-Date:   Sun, 21 Aug 2022 16:18:07 +0200
+        Sun, 21 Aug 2022 10:22:22 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01olkn2055.outbound.protection.outlook.com [40.92.53.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B0517075
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 07:22:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=irCldg5WksIO3r+5MGfC7GytyvNqmjt4vomM8GwEhglUMMDtfgPX+XetUyjeBz5iveIUi3TFpkc5r3gYPIC8lkzbma2/b1PdXkSLh1oOpxpyTvJJPvIJmVugS+a+RAawl+kPQZ4r4iULDZsZvRfP9OyBW26nyq4Svpf970/XQiw/MAPEhYPOWJuitVoIF0s4R7VAHLiMtGIcnWPbwytLoUZEGeqKKbItE9wtU6xX4EsxCvdkHdvLVY4F4FnHkOQU3+/hDKasmCFGYUbjDVMkRNt5QuQQsEQriQ0ce9pnPUsEraJ5gEo3rkQ/F7X6kMoHqdydMqBAF1CTTkAOV5YuKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l5zGZqLPEnZ3kuGiFOMmtYs/LQ+JIEc5cJ0mdGNetoc=;
+ b=f48hOfBvZt5GhViMN5zq/NBXVTNjz3M9groEAQX2QxnM+upy1fjyCVdKv3dFNk54f0EyvGX2zr+PlBWd4VNhZ+WZ5541CgpAOlo4i4QsHz5Oq0vXhzkHMj+crwsv/zNTcJvHAsGdOKBMk3v/twkC/UvB0zTJFloeJ7kQKwM73efPY3Vm2ieN6kLHsp4U2NwOIbI7n0s+NnNOw9o3h0qkBFonAC+XgZzuUOMuAp5TWj5wEuSK8e2vQCoNvWs2jUNpOxHjpIW0HVp023PPFdFdxag9R0AFNg3lZUOeMZ6cTv43oU/SO1agRYk0AkoFktWKakLIy3MS3+e35RPQ2IsKxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l5zGZqLPEnZ3kuGiFOMmtYs/LQ+JIEc5cJ0mdGNetoc=;
+ b=iRfzh7p9BGIpKE+OfYyo78ulJ/NBPNEGJesFnoFlTXDGulr1sc0QnEZq/OVRw1ekk1tdvKCQ/xzRU2Wsya2BukYapl11ezLss1Bf6IZT/wJLHwzcD535SlCWW0kejwMB7y1EFZYSLNGehtsIEde80duYu8ftfalt5rXSYlpnRkLsICrx89ei+4UOGBu2wv3WLKALCK1kEWeX4vKpIqcV8Fv9sZtqVdP6IjgK3YD/rH84O6KEDTgkQxiMee8JWIuFeQBNHIOmuvAFXMiv6iECZ/KT1nXywfSx5fOIimMIlnipMTCEJrgNJy9O+wlO2LxYUZRR5RJkhu/YCp/xdWl0HQ==
+Received: from TY0PR03MB6275.apcprd03.prod.outlook.com (2603:1096:400:143::9)
+ by SG2PR03MB4535.apcprd03.prod.outlook.com (2603:1096:4:80::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.13; Sun, 21 Aug
+ 2022 14:22:18 +0000
+Received: from TY0PR03MB6275.apcprd03.prod.outlook.com
+ ([fe80::f1f0:3648:9853:968a]) by TY0PR03MB6275.apcprd03.prod.outlook.com
+ ([fe80::f1f0:3648:9853:968a%9]) with mapi id 15.20.5566.012; Sun, 21 Aug 2022
+ 14:22:18 +0000
+From:   Ecronic <ecronic@outlook.com>
+To:     paul@paul-moore.com, eparis@redhat.com, ecronic@outlook.com
+Cc:     linux-audit@redhat.com, linux-kernel@vger.kernel.org
+Subject: [PATCH next] audit: printk before dropping logs in audit_log_end
+Date:   Sun, 21 Aug 2022 22:21:55 +0800
+Message-ID: <TY0PR03MB627527D223A19E65A5DA14E8A36E9@TY0PR03MB6275.apcprd03.prod.outlook.com>
+X-Mailer: git-send-email 2.30.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN:  [pLmispgIn//yvfoAOSH00lYcxqLS2dw7]
+X-ClientProxiedBy: SG2PR02CA0049.apcprd02.prod.outlook.com
+ (2603:1096:4:54::13) To TY0PR03MB6275.apcprd03.prod.outlook.com
+ (2603:1096:400:143::9)
+X-Microsoft-Original-Message-ID: <20220821142155.7385-1-ecronic@outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 08/11] parisc: mm: Convert to GENERIC_IOREMAP
-Content-Language: en-US
-To:     Baoquan He <bhe@redhat.com>, kernel test robot <lkp@intel.com>
-Cc:     linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>
-References: <20220820003125.353570-9-bhe@redhat.com>
- <202208201135.YyN9CXsu-lkp@intel.com> <YwIIYHYnkJkY4yf3@MiWiFi-R3L-srv>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <YwIIYHYnkJkY4yf3@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:uh3Mr1Su/PEN4szzyuuy5Jkck43zfhtgf3O8nQX+w+f7YoZZuvv
- aU2Lkz3+NVgtpYHbPOSzS+PZXDve10Ah+ktq+Cf84JFXe81y4hcgFsDYbN7VapP2W9nem7L
- fDbCnjklbuTBffVKavv/oJHvx/EW+a1tF+CDFBSFismwE3tJLOwFltIGaZpYjWXiTNg05QO
- KtlaS/7kDQBN/7bVR6WRQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PiyqIqWJSdU=:nJ8WYsb50qAOOr6VkK4Pf9
- 4/Ef6SaBzQA9wq26BeN5fiCiNhCEZ1emnCcrkv5ctB1DDH3ZjS3TDMKBM5FEGLDehumCL63JL
- sYYp52u5biKgDFv74uusvm+XePZO+IDskSneeE3bXZpjtLnLoQwmD8FgX+EnEnc3K2sBqslFi
- C8zMh/cLUpUmwMQ+WwoAkWVo5gxhZa5LYL0KxoNi+1f3Aa2ZJ/7mh7+coB8AhJpqR43BIoQkB
- 8RHJxRKhPB38w7+yHqR8+Oz/5EZoP1l93LxNXrCJSpqdhBvnHCqCbiloboWURnr++6z49IDZQ
- qzKhJ4CX27RAw9NKZcR+fGIoAj8buBStvT3Cr6+/v/XoFkVLfIDjEzkMsgJsaSAt0GvNgnej+
- n/jJUyNkYQNHRgsbCOREAJBb7bcnSMeHf2MmlhkVUipR0BJYIfe/LvIbW4vPrGca5pk9jQpyd
- ZNmVkUESYDolLD9pB+jwZocaYnNTT5quvO3hqn9dXJrww+V+0SGPPiZ6dItemzhjyLCZEchK1
- ydDWkgQzMOZ5l5SRKrMDi0mpAVYJKXjLzWCmG5I7xYY/6yCT+32PHds/jzTKRurx94pPES0c+
- 0QuCoLf3WftDLcVnvi4mWLs1KaPP0lsx0OaE7xrH/ytj1nCgH+aDxJiGrfD3nFFPxvCRa5e6X
- rM0gSLzRsuRdVew58qSFkDmLROTPJKq95fUUnCU7UG+rZnrea7R8Wj2Uu2SJWSDV2DwhaKB4f
- zVcwtwJbY7zAEs/qHFmzSLvWM2YGPFTMeH8FwGN6KBgg8WCzkD3Q3M46gqo25AmqtzXBBJ0CN
- PMi022IykD90TXKj3LHhGzLIRKy+gOoBwvkoR3K0lXUcFadObRJdGvwqCxqVjBb3DnTtL+264
- FXh9/5qMZxtsIDihkdApyyFQRBhDmeIohn2ZjL/u9QZeM/QyPfXMblLBrEYoV2M5GLdggCqp8
- P2f6RtqJBcsfbvTDWIQ1XzINZnS4DBRKmX+spwFXRAkkBdNqOE/inqOIkI0O9GjJYAbuz7/LW
- y3YfLhRFLwcvvSirietQ9Q/DSiV50g5ac9IsZIP+MpN9F0NetHExwXOf94T8lixjqw1MGmOeG
- jIEXHOksplHVkQtIhna7qtb9FYHEZ4gjkwwwSIzQNilHiHDjFcizPM7cw==
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7e6b4771-4b09-4c98-f4f5-08da83808d20
+X-MS-Exchange-SLBlob-MailProps: Vt1MYR2q4Omjz9ND6GtvUm7Ce6URWvk5RsRU3CXJbeW1ZyfNZKPuT59LxEhdQHq1voM0y0hgifIejxl12Z4HpZioOrUwGzxfovgCgd/7y2Bg4+QmJt0GK95GBRlvPvUE6oPp1CZQLGm1rfGAet/NUd9XTLOqHOaPQrE8j4+mcgPm4ML+JNaUuVZ4JaUCMEOijYZobxqQrhNHk4ePDmvuc4VN5qCLPa7/JAIzbUxc7nAcsweIrso1vPxGcEbdTd/2kydL9LJ0+U3ugsZZQF+eggdwhkX09iYwR8XNWF8D7x2RjL9DryNDyABJJ1+vGmLXqGRkDVFBS7W68CBu+vKlTEGqKoYOuc673pTr3P+QUxZhMMIxcdQ8NduXvckDSVfw4yAukLYJj532v115r5U70qq+q5Q9oASHShf5wncJMNJg06zncI97uiJy2P+uMrKFH4IKewb88Et/Q0/xbh48sI0yBTzT705ietRuB0IZXhIO71KVq3hR1uImYXxsjuuKQJMTUU2D48kg9T3KWSLU5787VuwDqoF5F0i+z6iuVvAGYX0oykvHEnPzzPqiD5rGD4XhkQCYIev+vp92ucPPD+HE+XAdgvxF0HBo9kNhjK+QPxHyCHZ6Wsrs9C5abKEEM/HA9mIhz8mU8jubo4QfAJBPnhgVamOWHY4JBDMOLkJUNFiED8lZiLmze/YIazrbdQgGSuXlvWTwQvj9hb0/590xcgnUpmDg
+X-MS-TrafficTypeDiagnostic: SG2PR03MB4535:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x6/23avhi853y/MMwl7F9Sti6kcaCCd864MSfk0mYdfxEqd7x0NYquNv43+jD+CbDN1O7U1cU0B3FLiVBoAnLiKlq7sNrS+hYA+fk1bob4Al77u5vEYoXJhJT6jEwkb2weK4MInNKVPQ5y6+jjhfrB7S7rFwbDljH1S29Pkx/fIyQX6M6IHGXUTmjJtp+Z6GbNXovc2sR7eqMX5bDFvDjazlF2xTSqWPw4dT+GYcrUMHlBxKCgfwrNa5t+g7AQsEnZ3YCzR2/qgyrYzD1mjyjpHA4G/TzKbF8rwjv5i0b+jTMK1E9TeHIRJQ/gIlC8Zw/56BCM2I/wSyzZNgJoMR98WjoUnfAbSBVTwqtYdvLT9TQFU/HoNIX+0KeKH56rqe1fvgLF/PN5JVXWcP/E6D2Wl+Ip/+Tg8iovx90P1I6nWV6ZyygIQmyQ0r9jz+QJRnxtzivTIYhQ3Z0ibdN8RBwUQa0LaU42m+5VMcPLavm7F3Mg9Fh0gOb7U4nbilVKwEtDe9g+u6C4I5MwKFFoocXNt2jsZLHWQh33m3jaLYt7mIbWlCAJ8nrMWkISxZyfEW5KiXJNrlSefMok3zy3OLvz21UjlR0Vjp8ZmYkWyQp/5ablBFBjSQZAagJmp9GGtsk9Dc59f5QZMaGp91KEVibg==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h0tAuev6exzfna7JpE3nfyUurZTb87+hkjIwkOvfGhN3k4x+YgWRSgizC2XA?=
+ =?us-ascii?Q?bMH554i3yHa81FYyFNgIaJA8T+nDOeIPtWbt0WJRAvwVoOijUwn9CUQeStyj?=
+ =?us-ascii?Q?o161wKPA7YMRQAwsyefd6QPeNyS53DBNZ66K3RnRVEVtLgkydC1gQF8M4jRj?=
+ =?us-ascii?Q?8KyRCAz1m5VqYlt72ZasuRsy2dRAtjzpMa8QDyvdkUMHL9y3hIZmD/r3q/16?=
+ =?us-ascii?Q?VVWYdYKQnH0eku3dac9T1irKeuu0GA1i2i1tQd5p01f50aFSfz4xNjgaFZ2i?=
+ =?us-ascii?Q?TzfJeo9l7gq2orDsEY4OhtC7rrPgBmi0E1dM6sf8QPNA4/xePf28CwyFq5Jb?=
+ =?us-ascii?Q?l5xh6LzFO5+OpIxONWACf9eDo3qDlLGG04zwJpfS6EVT/AkASrBYh8jUhUls?=
+ =?us-ascii?Q?jaXWUVen1Pk6hgQau1ypPGZslJqrnA1rxxzFwNBtQA56oriSAHxcPPm3QpEl?=
+ =?us-ascii?Q?RpgLDCY+jak+XkcBMSPZ69bw0BphZReBG3vac0wmUFgsNBCKzGHqEFPPcl2b?=
+ =?us-ascii?Q?WHDRHvlCHPYA+cgs7Zk76KUum4jsrdgmHwlyMuEy6K6rzjaktYbKNBaxriyB?=
+ =?us-ascii?Q?TcNTFTtafNrp35srbxExN7nH0MCmvPJ/fcQ9l5UhPkjgcpaNwBI7x8WMojbl?=
+ =?us-ascii?Q?mN6BSfu1zsrRqCH9Z/Ga787cjQorRv9LrWTQcCBMf3Sw1sMTUyp5MCuGwSeQ?=
+ =?us-ascii?Q?D5LYyR8nYkGMzOsmw4xa28dboFy0UmjKfQDyi/WPy2ZNQUn28qOvgkjc2q5x?=
+ =?us-ascii?Q?pd3T4J5H4RSYW2pje3pPURRdJlHBj6Xh3gezAlGSyVuM0lhFdSVkvts784bG?=
+ =?us-ascii?Q?Fn0zHPPDi+dRKi+0M4RZ2WbC1H+eR5oLA5iU5eB1F3i0ZoermCLRS9jEUy0E?=
+ =?us-ascii?Q?sAbRzQHYYh+V1DRbSZITan4C5xBXWyUT5S6HEf6dt0AUR6KQsqGkEuzBAJUh?=
+ =?us-ascii?Q?4YZJI37xNIq2avVAIviqqm8frKKqUG8WVTYjDlz9PwcTbCugJBi84HVLFuU8?=
+ =?us-ascii?Q?CQ3u9PwdOjywMiJ5/avpLTNwEi1TwOvy8N2wMIhKRxqwwHN4V5EsARKXg5YR?=
+ =?us-ascii?Q?VKnCVkuF0tcexUiyFmTba04mB5IzjZOJGlRitybryHAX3Nr9hHEsUfgE2qLE?=
+ =?us-ascii?Q?MSfwWYR1+F2d0pA0HJM0Wxc5fHLm5XjWsOk7arhwpPGnip7KSpW/gI/bD6YI?=
+ =?us-ascii?Q?RSdBQcQkkgirz2JRNeYOc8ZuQQTb1Q8Y+px63W2ijFFR+t357BCncwYoP4Wr?=
+ =?us-ascii?Q?nyWKUbXzsEO5nJguX/weznqx34egbHf/vY1iU/DYZA=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e6b4771-4b09-4c98-f4f5-08da83808d20
+X-MS-Exchange-CrossTenant-AuthSource: TY0PR03MB6275.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2022 14:22:17.7364
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR03MB4535
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/21/22 12:26, Baoquan He wrote:
-> Hi,
->
-> On 08/20/22 at 12:03pm, kernel test robot wrote:
->> Hi Baoquan,
->>
->> I love your patch! Yet something to improve:
->>
->> [auto build test ERROR on akpm-mm/mm-everything]
->>
->> url:    https://github.com/intel-lab-lkp/linux/commits/Baoquan-He/mm-io=
-remap-Convert-architectures-to-take-GENERIC_IOREMAP-way/20220820-083435
->> base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-=
-everything
->> config: parisc-randconfig-r005-20220820 (https://download.01.org/0day-c=
-i/archive/20220820/202208201135.YyN9CXsu-lkp@intel.com/config)
->> compiler: hppa-linux-gcc (GCC) 12.1.0
->> reproduce (this is a W=3D1 build):
->>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/s=
-bin/make.cross -O ~/bin/make.cross
->>         chmod +x ~/bin/make.cross
->>         # https://github.com/intel-lab-lkp/linux/commit/570f2a3347cc83c=
-9ea71d3dbbebfad8ea085ecc6
->>         git remote add linux-review https://github.com/intel-lab-lkp/li=
-nux
->>         git fetch --no-tags linux-review Baoquan-He/mm-ioremap-Convert-=
-architectures-to-take-GENERIC_IOREMAP-way/20220820-083435
->>         git checkout 570f2a3347cc83c9ea71d3dbbebfad8ea085ecc6
->>         # save the config file
->>         mkdir build_dir && cp config build_dir/.config
->>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-12.1.0 make.c=
-ross W=3D1 O=3Dbuild_dir ARCH=3Dparisc prepare
->
-> Thanks for reporting. While it failed with "hppa-linux-gcc: unknown comp=
-iler" as below showing. Could you help check and tell what's wrong?
+If the log rate of audit exceeds audit_rate_limit, audit_log_end
+will drop the audit logs. Printk before dropping them may be a
+better choice.
 
-You need to install the gcc-hppa64-linux-gnu and gcc-hppa-linux-gnu DEBs/R=
-PMs.
-As COMPILER you probably only need "gcc" (or leave COMPILER empty/unset).
+Signed-off-by: Ecronic <ecronic@outlook.com>
+---
+ kernel/audit.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Then run "make ARCH=3Dparisc64"  (64bit)   or  "make ARCH=3Dparisc" (32bit=
-).
-The Makefile should automatically detect your compiler..
-
-Helge
-
->
-> [root@ ~]# ls
-> 0day  anaconda-ks.cfg  bin  EFI_BOOT_ENTRY.TXT  linux  NETBOOT_METHOD.TX=
-T  original-ks.cfg  RECIPE.TXT
-> [root@ ~]# ls 0day/gcc-12.1.0-nolibc/
-> hppa-linux  x86_64-gcc-12.1.0-nolibc_hppa-linux.tar.xz
-> [root@ ~]# ls bin/make.cross
-> bin/make.cross
-> [root@ ~]# pwd
-> /root
-> [root@ ~]# cd linux/
-> [root@ linux]# pwd
-> /root/linux
->
-> [root@ linux]# COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-12.1.0 =
-make.cross W=3D1 O=3D/root/linux/build_dir ARCH=3Dparisc prepare
-> Compiler will be installed in /root/0day
-> PATH=3D/root/0day/gcc-12.1.0-nolibc/hppa-linux/bin:/root/.local/bin:/roo=
-t/bin:/usr/lib64/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
-> make --keep-going --jobs=3D160 W=3D1 O=3D/root/linux/build_dir ARCH=3Dpa=
-risc prepare
-> make[1]: Entering directory '/root/linux/build_dir'
-> /root/0day/gcc-12.1.0-nolibc/hppa-linux/bin/hppa-linux-gcc: /root/0day/g=
-cc-12.1.0-nolibc/hppa-linux/bin/hppa-linux-gcc: cannot execute binary file
->   SYNC    include/config/auto.conf.cmd
-> /root/0day/gcc-12.1.0-nolibc/hppa-linux/bin/hppa-linux-gcc: /root/0day/g=
-cc-12.1.0-nolibc/hppa-linux/bin/hppa-linux-gcc: cannot execute binary file
->   GEN     Makefile
-> hppa-linux-gcc: unknown compiler
-> scripts/Kconfig.include:44: Sorry, this compiler is not supported.
-> make[3]: *** [../scripts/kconfig/Makefile:77: syncconfig] Error 1
-> make[2]: *** [../Makefile:632: syncconfig] Error 2
-> make[1]: *** [/root/linux/Makefile:734: include/config/auto.conf.cmd] Er=
-ror 2
-> make[1]: Failed to remake makefile 'include/config/auto.conf.cmd'.
-> make[1]: Failed to remake makefile 'include/config/auto.conf'.
->   GEN     Makefile
-> Error: kernelrelease not valid - run 'make prepare' to update it
-> make[1]: Target 'prepare' not remade because of errors.
-> make[1]: Leaving directory '/root/linux/build_dir'
-> make: *** [Makefile:222: __sub-make] Error 2
-> make: Target 'prepare' not remade because of errors.
->
->
->>
->> If you fix the issue, kindly add following tag where applicable
->> Reported-by: kernel test robot <lkp@intel.com>
->>
->> All error/warnings (new ones prefixed by >>):
->>
->>    In file included from arch/parisc/include/asm/io.h:315,
->>                     from include/linux/io.h:13,
->>                     from include/linux/irq.h:20,
->>                     from arch/parisc/include/asm/hardirq.h:13,
->>                     from include/linux/hardirq.h:11,
->>                     from arch/parisc/kernel/asm-offsets.c:21:
->>>> include/asm-generic/iomap.h:97: warning: "ioremap_wc" redefined
->>       97 | #define ioremap_wc ioremap
->>          |
->>    arch/parisc/include/asm/io.h:135: note: this is the location of the =
-previous definition
->>      135 | #define ioremap_wc(addr, size)  \
->>          |
->>    include/linux/io.h: In function 'pci_remap_cfgspace':
->>>> include/linux/io.h:89:44: error: implicit declaration of function 'io=
-remap'; did you mean 'ioremap_np'? [-Werror=3Dimplicit-function-declaratio=
-n]
->>       89 |         return ioremap_np(offset, size) ?: ioremap(offset, s=
-ize);
->>          |                                            ^~~~~~~
->>          |                                            ioremap_np
->>>> include/linux/io.h:89:42: warning: pointer/integer type mismatch in c=
-onditional expression
->>       89 |         return ioremap_np(offset, size) ?: ioremap(offset, s=
-ize);
->>          |                                          ^
->>    cc1: some warnings being treated as errors
->>    make[2]: *** [scripts/Makefile.build:117: arch/parisc/kernel/asm-off=
-sets.s] Error 1
->>    make[2]: Target '__build' not remade because of errors.
->>    make[1]: *** [Makefile:1207: prepare0] Error 2
->>    make[1]: Target 'prepare' not remade because of errors.
->>    make: *** [Makefile:222: __sub-make] Error 2
->>    make: Target 'prepare' not remade because of errors.
->>
->>
->> vim +89 include/linux/io.h
->>
->> 7d3dcf26a6559f Christoph Hellwig 2015-08-10  72
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  73  #ifdef CONFIG_PCI
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  74  /*
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  75   * The PCI specificati=
-ons (Rev 3.0, 3.2.5 "Transaction Ordering and
->> b10eb2d50911f9 Hector Martin     2021-03-25  76   * Posting") mandate n=
-on-posted configuration transactions. This default
->> b10eb2d50911f9 Hector Martin     2021-03-25  77   * implementation atte=
-mpts to use the ioremap_np() API to provide this
->> b10eb2d50911f9 Hector Martin     2021-03-25  78   * on arches that supp=
-ort it, and falls back to ioremap() on those that
->> b10eb2d50911f9 Hector Martin     2021-03-25  79   * don't. Overriding t=
-his function is deprecated; arches that properly
->> b10eb2d50911f9 Hector Martin     2021-03-25  80   * support non-posted =
-accesses should implement ioremap_np() instead, which
->> b10eb2d50911f9 Hector Martin     2021-03-25  81   * this default implem=
-entation can then use to return mappings compliant with
->> b10eb2d50911f9 Hector Martin     2021-03-25  82   * the PCI specificati=
-on.
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  83   */
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  84  #ifndef pci_remap_cfgs=
-pace
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  85  #define pci_remap_cfgs=
-pace pci_remap_cfgspace
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  86  static inline void __i=
-omem *pci_remap_cfgspace(phys_addr_t offset,
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  87  					       size_t siz=
-e)
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  88  {
->> b10eb2d50911f9 Hector Martin     2021-03-25 @89  	return ioremap_np(off=
-set, size) ?: ioremap(offset, size);
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  90  }
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  91  #endif
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  92  #endif
->> cf9ea8ca4a0bea Lorenzo Pieralisi 2017-04-19  93
->>
->> --
->> 0-DAY CI Kernel Test Service
->> https://01.org/lkp
->>
->
+diff --git a/kernel/audit.c b/kernel/audit.c
+index a75978ae38ad..3f5be93447cb 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -2415,10 +2415,10 @@ void audit_log_end(struct audit_buffer *ab)
+ 	if (!ab)
+ 		return;
+ 
+-	if (audit_rate_check()) {
+-		skb = ab->skb;
+-		ab->skb = NULL;
++	skb = ab->skb;
++	ab->skb = NULL;
+ 
++	if (audit_rate_check()) {
+ 		/* setup the netlink header, see the comments in
+ 		 * kauditd_send_multicast_skb() for length quirks */
+ 		nlh = nlmsg_hdr(skb);
+@@ -2427,8 +2427,11 @@ void audit_log_end(struct audit_buffer *ab)
+ 		/* queue the netlink packet and poke the kauditd thread */
+ 		skb_queue_tail(&audit_queue, skb);
+ 		wake_up_interruptible(&kauditd_wait);
+-	} else
++	} else {
++		kauditd_printk_skb(skb);
++		kfree_skb(skb);
+ 		audit_log_lost("rate limit exceeded");
++	}
+ 
+ 	audit_buffer_free(ab);
+ }
+-- 
+2.30.0
 
