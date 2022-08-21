@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F94DC32792
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26697C25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 00:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233029AbiHUAIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 20 Aug 2022 20:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S229521AbiHUAIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 20 Aug 2022 20:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235575AbiHUAId (ORCPT
+        with ESMTP id S229512AbiHUAIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 20 Aug 2022 20:08:33 -0400
+        Sat, 20 Aug 2022 20:08:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C1911477
-        for <linux-kernel@vger.kernel.org>; Sat, 20 Aug 2022 17:08:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6E211168;
+        Sat, 20 Aug 2022 17:08:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 890E560C57
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 00:08:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7993C433D7;
-        Sun, 21 Aug 2022 00:08:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77E6060C5F;
+        Sun, 21 Aug 2022 00:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53178C4314B;
+        Sun, 21 Aug 2022 00:08:31 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oPYWC-005Djt-29;
-        Sat, 20 Aug 2022 20:08:44 -0400
-Message-ID: <20220821000844.510643400@goodmis.org>
+        id 1oPYWE-005DoK-0S;
+        Sat, 20 Aug 2022 20:08:46 -0400
+Message-ID: <20220821000845.973042820@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 20 Aug 2022 20:07:38 -0400
+Date:   Sat, 20 Aug 2022 20:07:46 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Bart Van Assche <bvanassche@acm.org>
-Subject: [for-linus][PATCH 01/10] tracing: Suppress sparse warnings triggered by is_signed_type()
+        stable@vger.kernel.org,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+Subject: [for-linus][PATCH 09/10] tracing/probes: Have kprobes and uprobes use $COMM too
 References: <20220821000737.328590235@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,55 +43,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Using a __bitwise type in a tracing __field() definition triggers four
-sparse warnings in stage 4 of expanding the TRACE_EVENT() macro. These
-warnings are triggered by the is_signed_type() macro implementation.
-Since there is no known way of checking signedness of a bitwise type
-without triggering sparse warnings, disable signedness checking when
-verifying code with sparse.
+Both $comm and $COMM can be used to get current->comm in eprobes and the
+filtering and histogram logic. Make kprobes and uprobes consistent in this
+regard and allow both $comm and $COMM as well. Currently kprobes and
+uprobes only handle $comm, which is inconsistent with the other utilities,
+and can be confusing to users.
 
-Note: work is in progress to improve sparse but has not yet landed. See
-also "[PATCH 0/5] allow -1 and compares in bitwise types"
-(https://lore.kernel.org/all/20220627190540.13358-1-luc.vanoostenryck@gmail.com/ ).
+Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
 
-Link: https://lore.kernel.org/linux-trace-devel/20220717151047.19220-1-bvanassche@acm.org
-
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Cc: stable@vger.kernel.org
+Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- include/linux/trace_events.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ kernel/trace/trace_probe.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index b18759a673c6..b60347a0ccde 100644
---- a/include/linux/trace_events.h
-+++ b/include/linux/trace_events.h
-@@ -814,7 +814,19 @@ extern int trace_add_event_call(struct trace_event_call *call);
- extern int trace_remove_event_call(struct trace_event_call *call);
- extern int trace_event_get_offsets(struct trace_event_call *call);
- 
-+/*
-+ * There is no known way to check signedness of __bitwise types without
-+ * triggering a sparse warning. Hence the #ifdef __CHECKER__.
-+ *
-+ * Since there is another definition of is_signed_type() in <linux/overflow.h>,
-+ * undefine is_signed_type() before redefining it.
-+ */
-+#undef is_signed_type
-+#ifdef __CHECKER__
-+#define is_signed_type(type)	0
-+#else
- #define is_signed_type(type)	(((type)(-1)) < (type)1)
-+#endif
- 
- int ftrace_set_clr_event(struct trace_array *tr, char *buf, int set);
- int trace_set_clr_event(const char *system, const char *event, int set);
+diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
+index 4daabbb8b772..36dff277de46 100644
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -314,7 +314,7 @@ static int parse_probe_vars(char *arg, const struct fetch_type *t,
+ 			}
+ 		} else
+ 			goto inval_var;
+-	} else if (strcmp(arg, "comm") == 0) {
++	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
+ 		code->op = FETCH_OP_COMM;
+ #ifdef CONFIG_HAVE_FUNCTION_ARG_ACCESS_API
+ 	} else if (((flags & TPARG_FL_MASK) ==
+@@ -625,7 +625,8 @@ static int traceprobe_parse_probe_arg_body(const char *argv, ssize_t *size,
+ 	 * we can find those by strcmp. But ignore for eprobes.
+ 	 */
+ 	if (!(flags & TPARG_FL_TPOINT) &&
+-	    (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0)) {
++	    (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0 ||
++	     strncmp(arg, "\\\"", 2) == 0)) {
+ 		/* The type of $comm must be "string", and not an array. */
+ 		if (parg->count || (t && strcmp(t, "string")))
+ 			goto out;
 -- 
 2.35.1
