@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1317C32789
-	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 11:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B96E6C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 21 Aug 2022 11:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230305AbiHULgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 07:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
+        id S230307AbiHULgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 07:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiHULgW (ORCPT
+        with ESMTP id S230222AbiHULgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 07:36:22 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8165E2656C
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:36:20 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id u5so2244108wrt.11
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:36:20 -0700 (PDT)
+        Sun, 21 Aug 2022 07:36:23 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DDD18349
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:36:22 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id b5so5785936wrr.5
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 04:36:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=UGvwPzXngv88+qXXF2O4AJ0Z86Zyohdzp8L49ZwcrUI=;
-        b=RFEWL69QfCRQQBK2lSa24K7nmexDHde5oOE9gK1KPgEWu/3N9BF1FKy/yant22fc7r
-         SovDED+cd6fyc8s48RsE9t5Hb3/EgfWZ8sE3O0GnkOdMg4SdBVoDYmAToK0UlC8wMjST
-         Dy83emsgcvHF06ICzpd5w01aqlAlScw3qmuXagdS4mHF7olMtod+7IqWIhUdkXJ+916y
-         U1Es8YS/+TK13ci36gErubIgfOBWFCDMDaoX4eO6VW8NZFXjHEZ/W3FjivuixLu0wK4X
-         zDWTdTcgDyHjq82/Wl3ihmDAM4A9lKTGfM1UAU6X5jcP18LNvlgBNWHiNIjIB1igLJZQ
-         vXWw==
+        bh=ktqp5nP81udpM1MG+l3gnY1pzvY8/PrjfTARX1xGZ74=;
+        b=AW0FWHnYgwNCmESZ2n9ygpoNMqROFdVrXmoyjs1i/V3e6l8BazQwWJHi9XMO+O637d
+         Df4riE6PC/V/IgPUH8moc0EAfx7R5nCWwvG8iSYiE51RO1IzaDNMxbVkluZz63D/jFsp
+         sQfEu3LXgHPhM16VTmczW97sJwY69CLLTXVNAY8pZeDKe4dB8m3oCjol2mhGPp1ahO2V
+         ComPKJXyP3hAynPugfvZ3yXbmXZ7FkJXWMP8Y43x82GZahVFA7F1jqsxQLkrc9fWCoJf
+         P8nByGfCjdrtXVcb5dZ+jg18p6ejOPnoJLMHJlkjhG/J8lyAObKocbWp1a2AGk+RECcD
+         /M2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=UGvwPzXngv88+qXXF2O4AJ0Z86Zyohdzp8L49ZwcrUI=;
-        b=5LOOp/1IdV3k5/TYB8BbgpRAO3Wzm7kDNdHN1IXnpP5I9BJHsDuXId1QC/RrlEwyWb
-         crKjc5wDgi9436FYf+zCmLa4NEwrat58g0rnUuU60c4TS/+MsXC4y5c24liadOk+iGPV
-         hSRa8QqzqveyH2JnJSuLpl3pLAJRDpmZmzXJVUbcYYnJuWfeEjuiEvEK3p4rn+6orCC1
-         P6oqP6nGOKu8d7dOE8XTj3b9e5XVPWW0ijFbCKXjnZYTWyih9ehM04Tg0AwkyfKtwPK+
-         XQkxJ2MjuKSYtXUzciZo2MAzD/Yx7zA1rPIeG2c1Tu8FywhVhS78Vm5mFzlFD/Vmj99q
-         NhlA==
-X-Gm-Message-State: ACgBeo0UIYKPPVjPJOMSREp/esFeJC4Rib4qqFk0JNpxfgPZzm4ptkba
-        04+Ot1DGF0zvNksnWy3rvyXW7Q==
-X-Google-Smtp-Source: AA6agR6HxOhtorb8TKIhxX8S9RXjgPAg541CyxctPo1Ydg0AdY48FkmATY5ytrYfPqqcMNSVf1d3pg==
-X-Received: by 2002:a5d:6841:0:b0:225:3558:972d with SMTP id o1-20020a5d6841000000b002253558972dmr6441695wrw.461.1661081778602;
-        Sun, 21 Aug 2022 04:36:18 -0700 (PDT)
+        bh=ktqp5nP81udpM1MG+l3gnY1pzvY8/PrjfTARX1xGZ74=;
+        b=UsO+4FPw0GO6eiG4kuysDln2fHD7aDnrvPyGDD52+DXgX+8RHOzaUPpYkQcBFMnZ2M
+         B/GB15amvotKyidwd3gdrTWkMgBomUZi4M6R2DVrgHxkyBzw5wzdGf6MtK1WFeIeErPw
+         G4CiL6vdlENlgF0DMBXFq8u08d/ORr/WseNbsTEnIcXHbaJIuxoC/JG1QewpNakBDBOl
+         DcHJtmpAgWZhpzSuzITnZBWLu4OuH6OTX8OO3OltreHwNpIDcacyJHUZOf0zmopkTfoq
+         eQEO2Y/7bFQa5AaMmbVQVSWlAOibEstqy861a011i82OCGZaPRjrJUM6O3gjwL0/I5Iu
+         XGjQ==
+X-Gm-Message-State: ACgBeo0YOwR6WCckRG2bbn4qnfMON0sxPizn+w+QSQXABEu6x4Wq7lMf
+        ch6eYTIrQFXq5iAlUDs1kfbWWA==
+X-Google-Smtp-Source: AA6agR6iyTE2UwdrwXTf+0eiBHvZb7pU8qO0Gz7AlF1LBKoiF+3yUIHGhx0/IDeGH85WpPOkmWdetw==
+X-Received: by 2002:a05:6000:184c:b0:223:2c8b:c43c with SMTP id c12-20020a056000184c00b002232c8bc43cmr8659598wri.16.1661081782206;
+        Sun, 21 Aug 2022 04:36:22 -0700 (PDT)
 Received: from henark71.. ([51.37.149.245])
-        by smtp.gmail.com with ESMTPSA id m9-20020a7bce09000000b003a3442f1229sm14071361wmc.29.2022.08.21.04.36.17
+        by smtp.gmail.com with ESMTPSA id m9-20020a7bce09000000b003a3442f1229sm14071361wmc.29.2022.08.21.04.36.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Aug 2022 04:36:18 -0700 (PDT)
+        Sun, 21 Aug 2022 04:36:21 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     Michal Simek <monstr@monstr.eu>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -72,9 +72,9 @@ Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
         linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
         sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: [PATCH 1/6] asm-generic: add a cpuinfo_ops definition in shared code
-Date:   Sun, 21 Aug 2022 12:35:08 +0100
-Message-Id: <20220821113512.2056409-2-mail@conchuod.ie>
+Subject: [PATCH 3/6] s390: use the asm-generic version of cpuinfo_op
+Date:   Sun, 21 Aug 2022 12:35:10 +0100
+Message-Id: <20220821113512.2056409-4-mail@conchuod.ie>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220821113512.2056409-1-mail@conchuod.ie>
 References: <20220821113512.2056409-1-mail@conchuod.ie>
@@ -86,46 +86,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-On RISC-V sparse complains that:
-arch/riscv/kernel/cpu.c:204:29: warning: symbol 'cpuinfo_op' was not declared. Should it be static?
+There's little point in duplicating the declaration of cpuinfo_op now
+that there's a shared version of it, so drop it & include the generic
+header.
 
-Sure, it could be dumped into asm/processor.h like other archs have
-done, but putting it in an asm-generic header seems to be a saner
-strategy.
-
-Fixes: 76d2a0493a17 ("RISC-V: Init and Halt Code")
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/riscv/include/asm/processor.h | 1 +
- include/asm-generic/processor.h    | 7 +++++++
- 2 files changed, 8 insertions(+)
- create mode 100644 include/asm-generic/processor.h
+ arch/s390/include/asm/processor.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/include/asm/processor.h b/arch/riscv/include/asm/processor.h
-index 19eedd4af4cd..dd2c9a382192 100644
---- a/arch/riscv/include/asm/processor.h
-+++ b/arch/riscv/include/asm/processor.h
-@@ -9,6 +9,7 @@
- #include <linux/const.h>
- 
- #include <vdso/processor.h>
+diff --git a/arch/s390/include/asm/processor.h b/arch/s390/include/asm/processor.h
+index bd66f8e34949..48d2332a5899 100644
+--- a/arch/s390/include/asm/processor.h
++++ b/arch/s390/include/asm/processor.h
+@@ -41,6 +41,7 @@
+ #include <asm/fpu/types.h>
+ #include <asm/fpu/internal.h>
+ #include <asm/irqflags.h>
 +#include <asm-generic/processor.h>
  
- #include <asm/ptrace.h>
+ typedef long (*sys_call_ptr_t)(struct pt_regs *regs);
  
-diff --git a/include/asm-generic/processor.h b/include/asm-generic/processor.h
-new file mode 100644
-index 000000000000..2ec9af562e9b
---- /dev/null
-+++ b/include/asm-generic/processor.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __ASM_PROCESSOR_H
-+#define __ASM_PROCESSOR_H
-+
-+extern const struct seq_operations cpuinfo_op;
-+
-+#endif /* __ASM_PROCESSOR_H */
+@@ -80,7 +81,6 @@ void s390_adjust_jiffies(void);
+ void s390_update_cpu_mhz(void);
+ void cpu_detect_mhz_feature(void);
+ 
+-extern const struct seq_operations cpuinfo_op;
+ extern void execve_tail(void);
+ extern void __bpon(void);
+ unsigned long vdso_size(void);
 -- 
 2.37.1
 
