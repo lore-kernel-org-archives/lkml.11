@@ -2,89 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8946C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 792F9C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237197AbiHVRSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S237221AbiHVRTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237194AbiHVRSU (ORCPT
+        with ESMTP id S237216AbiHVRS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:18:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495CA63D8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:18:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661188698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fDT0NzG0FkOZTyIfEMiwc/td94ymUGlK2/HiuIYhkVw=;
-        b=NOytNCjQoTGdKqw4Sn38wuuTWykjqkxtbmT2gpgjR4o79XChLdO9odu0sZaiF4lD+RsZy6
-        NwM9pLM9+foGZZgOitZMvceRV5mYkK8mPUNW3fhrLRUWhQp4BPKlEiJnFPNii6m8EhMQcL
-        ARLrnCXA19fzcREBRRjTj4P3jfHTL74=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-461-2FZZ6Xi7MteDX4P7JIe-5A-1; Mon, 22 Aug 2022 13:18:15 -0400
-X-MC-Unique: 2FZZ6Xi7MteDX4P7JIe-5A-1
-Received: by mail-wm1-f71.google.com with SMTP id i132-20020a1c3b8a000000b003a537064611so6636773wma.4
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:18:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=fDT0NzG0FkOZTyIfEMiwc/td94ymUGlK2/HiuIYhkVw=;
-        b=B+e0Tl0O3S5NsvtYuCVcLsLCOxMI0DLrkJfnQ/o7P77fBuG9ICyKNQF+wncNjDN+n2
-         cSZW3yh4ciicI4ghqtzRM3351mzx78CXdJJytcMm/86KiIVNDy5yie2U1XG4Fk2IZaE7
-         ZKGguKeGWGOjr5B1cdqdAOWeIvAmwr969A7sFuDuwD3gCikCIXHjWG0ZzT4g4lELAt+V
-         oag8b4tzOKRp67PfRHW4YJ22gKW7rKOjMt536V5aFrUhYQTguxuXFrI9smnSSc+C4fxR
-         gQ/YYRP79oPeLa/3XexnodoPLnwjoo6b1ThOUHoVwSTQ8jYg93Ys0wder141DWx9CP1E
-         RsMw==
-X-Gm-Message-State: ACgBeo0gVUk47nj4yAjIwmgoA9xSRmuiwCFB3pPJOvmgSO+R/JxnfkGy
-        K4KnYbSZ5i8I6rG1KA89GxF9EnRi6+s2TFLp4zxN4VuzJRhd3+3YoEuwo5mtoRteNhyqTvg6cFJ
-        xvMwBDSTbUoF52FjHIO9OAl6+
-X-Received: by 2002:a05:600c:42ca:b0:3a6:3b06:92bd with SMTP id j10-20020a05600c42ca00b003a63b0692bdmr9729424wme.11.1661188694048;
-        Mon, 22 Aug 2022 10:18:14 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6+IYglItshBwaPPpRAzS01T43FN9+dUi4FLjFhCug7p7YEh483os0Z+YBPlQqSBN5wAQivlA==
-X-Received: by 2002:a05:600c:42ca:b0:3a6:3b06:92bd with SMTP id j10-20020a05600c42ca00b003a63b0692bdmr9729415wme.11.1661188693822;
-        Mon, 22 Aug 2022 10:18:13 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id x2-20020adfffc2000000b0021e5bec14basm11950426wrs.5.2022.08.22.10.18.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 10:18:13 -0700 (PDT)
-Message-ID: <aac8f6c9-c817-cde3-03ef-5c203899d269@redhat.com>
-Date:   Mon, 22 Aug 2022 19:18:12 +0200
+        Mon, 22 Aug 2022 13:18:59 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326261928D
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:18:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661188739; x=1692724739;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/Em9cfDMY2xjSlozQXtkKt2ZS9oCG79hCZIZM1AL1X4=;
+  b=iUH4nsNbpK71vfegAJmi2Q+IbFZIlhAzQ6bJKGGQT4FRVlLDg9omublu
+   N5nXtQYMSRKDC0+hyrGK0LK+NzZPiXLFknSPa9Zjh5K4XDrohN26TUYix
+   QgWhs80fS9PzL91xZs0SK89ni/2xM4IXad9/iMSdpmIQ3Ifj7id49gEZk
+   IuwjcYawyGJGmNyYtS5bf5pFCGIgvWC5WaZ5vx89u+VIzFGQwcMjRllOS
+   aWX6xMJXNvTInZw3Hh9cLp+1MIEpTK+TOXkCgPNxHa8wEzhqebbRTTTaL
+   9sJ+xNDqGg8MkEhqNrvNp7sFAFbRYrSgiwINdOtNxUN7TQ5RHrpnmadxq
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="293470446"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="293470446"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 10:18:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="735176964"
+Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 22 Aug 2022 10:18:56 -0700
+Received: from kbuild by dd9b29378baa with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQB4h-0000Vv-1P;
+        Mon, 22 Aug 2022 17:18:55 +0000
+Date:   Tue, 23 Aug 2022 01:18:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cezary Rojewski <cezary.rojewski@intel.com>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Subject: [ammarfaizi2-block:tiwai/sound/for-next 4/13]
+ sound/soc/intel/skylake/skl.c:729:25: warning: unused variable 'skl'
+Message-ID: <202208230107.aJwMhDQM-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] mailmap: Update Oliver's email address
-Content-Language: en-US
-To:     Oliver Upton <oliver.upton@linux.dev>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-References: <20220819190158.234290-1-oliver.upton@linux.dev>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220819190158.234290-1-oliver.upton@linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/19/22 21:01, Oliver Upton wrote:
-> While I'm still at Google, I've since switched to a linux.dev account
-> for working upstream.
-> 
-> Add an alias to the new address.
-> 
-> Signed-off-by: Oliver Upton<oliver.upton@linux.dev>
+tree:   https://github.com/ammarfaizi2/linux-block tiwai/sound/for-next
+head:   1cda83e42bf66beb06bf61c7a78951ec0c028898
+commit: 3fd63658caed9494cca1d4789a66d3d2def2a0ab [4/13] ASoC: Intel: Drop hdac_ext usage for codec device creation
+config: x86_64-randconfig-a002-20211028 (https://download.01.org/0day-ci/archive/20220823/202208230107.aJwMhDQM-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/3fd63658caed9494cca1d4789a66d3d2def2a0ab
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block tiwai/sound/for-next
+        git checkout 3fd63658caed9494cca1d4789a66d3d2def2a0ab
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash sound/soc/intel/skylake/
 
-Queued, thanks.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Paolo
+All warnings (new ones prefixed by >>):
 
+   sound/soc/intel/skylake/skl.c: In function 'probe_codec':
+>> sound/soc/intel/skylake/skl.c:729:25: warning: unused variable 'skl' [-Wunused-variable]
+     729 |         struct skl_dev *skl = bus_to_skl(bus);
+         |                         ^~~
+
+
+vim +/skl +729 sound/soc/intel/skylake/skl.c
+
+e4746d94d00c529 Cezary Rojewski      2022-08-16  720  
+d8c2dab8381d583 Jeeja KP             2015-07-09  721  /*
+d8c2dab8381d583 Jeeja KP             2015-07-09  722   * Probe the given codec address
+d8c2dab8381d583 Jeeja KP             2015-07-09  723   */
+76f56fae1cf9040 Rakesh Ughreja       2018-06-01  724  static int probe_codec(struct hdac_bus *bus, int addr)
+d8c2dab8381d583 Jeeja KP             2015-07-09  725  {
+d8c2dab8381d583 Jeeja KP             2015-07-09  726  	unsigned int cmd = (addr << 28) | (AC_NODE_ROOT << 20) |
+d8c2dab8381d583 Jeeja KP             2015-07-09  727  		(AC_VERB_PARAMETERS << 8) | AC_PAR_VENDOR_ID;
+e6a33532affd14c Dan Carpenter        2017-04-20  728  	unsigned int res = -1;
+bcc2a2dc3ba8c3a Cezary Rojewski      2019-07-23 @729  	struct skl_dev *skl = bus_to_skl(bus);
+8c4e7c2ee8096b5 Pierre-Louis Bossart 2018-11-18  730  #if IS_ENABLED(CONFIG_SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC)
+6bae5ea94989264 Rakesh Ughreja       2018-08-22  731  	struct hdac_hda_priv *hda_codec;
+8c4e7c2ee8096b5 Pierre-Louis Bossart 2018-11-18  732  #endif
+3fd63658caed949 Cezary Rojewski      2022-08-16  733  	struct hda_codec *codec;
+d8c2dab8381d583 Jeeja KP             2015-07-09  734  
+d8c2dab8381d583 Jeeja KP             2015-07-09  735  	mutex_lock(&bus->cmd_mutex);
+d8c2dab8381d583 Jeeja KP             2015-07-09  736  	snd_hdac_bus_send_cmd(bus, cmd);
+d8c2dab8381d583 Jeeja KP             2015-07-09  737  	snd_hdac_bus_get_response(bus, addr, &res);
+d8c2dab8381d583 Jeeja KP             2015-07-09  738  	mutex_unlock(&bus->cmd_mutex);
+d8c2dab8381d583 Jeeja KP             2015-07-09  739  	if (res == -1)
+d8c2dab8381d583 Jeeja KP             2015-07-09  740  		return -EIO;
+00deadb5d86a3c1 Rakesh Ughreja       2018-08-22  741  	dev_dbg(bus->dev, "codec #%d probed OK: %x\n", addr, res);
+d8c2dab8381d583 Jeeja KP             2015-07-09  742  
+
+:::::: The code at line 729 was first introduced by commit
+:::::: bcc2a2dc3ba8c3a7aed856f840afa6a47e3cb8e0 ASoC: Intel: Skylake: Merge skl_sst and skl into skl_dev struct
+
+:::::: TO: Cezary Rojewski <cezary.rojewski@intel.com>
+:::::: CC: Mark Brown <broonie@kernel.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
