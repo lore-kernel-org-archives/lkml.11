@@ -2,176 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F84FC32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564EEC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234323AbiHVK7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 06:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
+        id S234338AbiHVK7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 06:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiHVK64 (ORCPT
+        with ESMTP id S234249AbiHVK67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 06:58:56 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D9C31230;
-        Mon, 22 Aug 2022 03:58:53 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id o22so13336677edc.10;
-        Mon, 22 Aug 2022 03:58:53 -0700 (PDT)
+        Mon, 22 Aug 2022 06:58:59 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9278C3123A;
+        Mon, 22 Aug 2022 03:58:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc;
-        bh=l/LzIhPe9ZTwGL9N0G3IR78vwpYSKjEk5JerrPZ+Ejo=;
-        b=Uo63L0oGuXttZhHN4XJDd7Yk9cuKw2mTwcaEljw6hjBYWig7OS9VB7K1mzfL2EFBKr
-         XBP2dIWW+q5jeGJWxci/I7uQ1EAi0SaQAPsFm+bcQQvpOY2BWq4qZEA3dzroYr/ttTMG
-         FNh3IvETdStsqN1/597U/tw//3tgux3GHuX+jdYjKniZkLV4BwBTgscQb59JsslnD3bR
-         hBLgtOlgJBH38JE/rDlFWCUO6BvD+5lpeZmuycDKOvHql6fm5WET93M+rTl5ab3YUKcq
-         Wctx2hTikYI/zIwRKOmIZWB+I8PM6A8O3Q1yLpqFlFymyuqBdR7novHoK7RZCsL0icQ7
-         mkqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
-        bh=l/LzIhPe9ZTwGL9N0G3IR78vwpYSKjEk5JerrPZ+Ejo=;
-        b=gu9rFgYRSWXGuv1+LSxTfrqugGo8wWc0n1lgKZoBWFMlIVx++aIu960HmUdYPZnK0i
-         D2QupnhQ4WaK1tA99AgIrNPOk59OzRrnDYyeAL9Kq+1o5hyuFYqcPwx/fBKkmIJI9tAg
-         Qw8B+1VZO/auiv5Rqg0iwY9a6QJ3j5WTe7vCUMaybFeIil9ELNw2amSCBQNtkqSgpPaS
-         bnsGXcV3J7oOw9/CsM18/cK7b4I7LPhQ4vzfHhEr8XB0L69lFBStO2OuSLhBhFTjurxX
-         Pe/eNd+EdK/0ELcltfF/+NmL93G7yCaoNcNYm98Yv5v7wOslw6dwWr1cfhqUJeW8qfFm
-         wbtQ==
-X-Gm-Message-State: ACgBeo3VKMkyzrT/RNZa5eirv3punTWKs8gygREA4jPNsveHziVp/qVK
-        gfADMBlWajT9PgYha41WnQM=
-X-Google-Smtp-Source: AA6agR6cWPvpGJFviWOBgVZVY1+3fDdKs6dGgBZXzzVrjPl3a947xyPgoMPCgjTTt4XboZ2i5XPf5g==
-X-Received: by 2002:a05:6402:3805:b0:43e:8335:3a2a with SMTP id es5-20020a056402380500b0043e83353a2amr16055078edb.296.1661165932033;
-        Mon, 22 Aug 2022 03:58:52 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id ss2-20020a170907c00200b007309f007d3asm5874225ejc.128.2022.08.22.03.58.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 03:58:51 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Mon, 22 Aug 2022 12:58:49 +0200
-To:     roberto.sassu@huaweicloud.com
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        namhyung@kernel.org, quentin@isovalent.com,
-        linux-perf-users@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH 3/3] tools/build: Display logical OR of a feature flavors
-Message-ID: <YwNhabqHEq3PfNM8@krava>
-References: <20220818120957.319995-1-roberto.sassu@huaweicloud.com>
- <20220818120957.319995-3-roberto.sassu@huaweicloud.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1661165937; x=1692701937;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7s4PF8RXbYEqzbeQRRYuac3gOnJi1NGTK0dQaORCsDM=;
+  b=Riw5dd7lqsS6ee91GmGMLqcdtTahtBKnneBP1Gte6mTIBgsRwkXXAucU
+   1WDP2pNsnz+U03havLObtz6LkXCJ7IlnSBq8jAbq+E/X9oHnzu7aZzV32
+   SOapGBCYgxy3hX3+J0/lLnOH+HSwA8eEINh1GSurG2Z+h0nrpVu9Lcfzu
+   w=;
+X-IronPort-AV: E=Sophos;i="5.93,254,1654560000"; 
+   d="scan'208";a="1046875127"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 10:58:35 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com (Postfix) with ESMTPS id 27E6D8150F;
+        Mon, 22 Aug 2022 10:58:32 +0000 (UTC)
+Received: from EX19D013UWA003.ant.amazon.com (10.13.138.202) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Mon, 22 Aug 2022 10:58:32 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX19D013UWA003.ant.amazon.com (10.13.138.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Mon, 22 Aug 2022 10:58:32 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Mon, 22 Aug 2022 10:58:32
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id A00FD4C8B; Mon, 22 Aug 2022 10:58:30 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <brgl@bgdev.pl>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <arnd@arndb.de>, <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dkl@amazon.com>,
+        <dwmw@amazon.co.uk>
+Subject: [PATCH v2 0/2] add power-supply control to enable eeprom usage
+Date:   Mon, 22 Aug 2022 10:58:28 +0000
+Message-ID: <20220822105830.22790-1-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818120957.319995-3-roberto.sassu@huaweicloud.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 02:09:57PM +0200, roberto.sassu@huaweicloud.com wrote:
-> From: Roberto Sassu <roberto.sassu@huawei.com>
-> 
-> Sometimes, features are simply different flavors of another feature, to
-> properly detect the exact dependencies needed by different Linux
-> distributions.
-> 
-> For example, libbfd has three flavors: libbfd if the distro does not
-> require any additional dependency; libbfd-liberty if it requires libiberty;
-> libbfd-liberty-z if it requires libiberty and libz.
-> 
-> It might not be clear to the user whether a feature has been successfully
-> detected or not, given that some of its flavors will be set to OFF, others
-> to ON.
-> 
-> Instead, display only the feature main flavor if not in verbose mode
-> (VF != 1), and set it to ON if at least one of its flavors has been
-> successfully detected (logical OR), OFF otherwise. Omit the other flavors.
-> 
-> Accomplish that by declaring a FEATURE_GROUP_MEMBERS-<feature main flavor>
-> variable, with the list of the other flavors as variable value. For now, do
-> it just for libbfd.
-> 
-> In verbose mode, of if no group is defined for a feature, show the feature
-> detection result as before.
-> 
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> ---
->  tools/build/Makefile.feature | 27 +++++++++++++++++++++++++--
->  1 file changed, 25 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
-> index 6c809941ff01..57619f240b56 100644
-> --- a/tools/build/Makefile.feature
-> +++ b/tools/build/Makefile.feature
-> @@ -137,6 +137,12 @@ FEATURE_DISPLAY ?=              \
->           libaio			\
->           libzstd
->  
-> +#
-> +# Declare group members of a feature to display the logical OR of the detection
-> +# result instead of each member result.
-> +#
-> +FEATURE_GROUP_MEMBERS-libbfd = libbfd-liberty libbfd-liberty-z
+First patch describes the new binding property.
+Second patch adds the functionality to the driver.
 
-nice, I checked and could not find any other 'flavours' instance
-like libbfd, but it might happen in future
+Change between v2 and v1:
+- Use a gpio regulator for power-supply control.
 
-for the whole patchset:
+Eliav Farber (2):
+  dt-bindings: at24: add new optional power-supply property
+  eeprom: at24: add support for power-supply control
 
-Tested-by: Jiri Olsa <jolsa@kernel.org>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
+ .../devicetree/bindings/eeprom/at24.txt       |  3 ++
+ drivers/misc/eeprom/at24.c                    | 41 +++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-thanks,
-jirka
+-- 
+2.37.1
 
-
-> +
->  # Set FEATURE_CHECK_(C|LD)FLAGS-all for all FEATURE_TESTS features.
->  # If in the future we need per-feature checks/flags for features not
->  # mentioned in this list we need to refactor this ;-).
-> @@ -179,8 +185,17 @@ endif
->  #
->  feature_print_status = $(eval $(feature_print_status_code))
->  
-> +feature_group = $(eval $(feature_gen_group)) $(GROUP)
-> +
-> +define feature_gen_group
-> +  GROUP := $(1)
-> +  ifneq ($(feature_verbose),1)
-> +    GROUP += $(FEATURE_GROUP_MEMBERS-$(1))
-> +  endif
-> +endef
-> +
->  define feature_print_status_code
-> -  ifeq ($(feature-$(1)), 1)
-> +  ifneq (,$(filter 1,$(foreach feat,$(call feature_group,$(feat)),$(feature-$(feat)))))
->      MSG = $(shell printf '...%40s: [ \033[32mon\033[m  ]' $(1))
->    else
->      MSG = $(shell printf '...%40s: [ \033[31mOFF\033[m ]' $(1))
-> @@ -244,12 +259,20 @@ ifeq ($(VF),1)
->    feature_verbose := 1
->  endif
->  
-> +ifneq ($(feature_verbose),1)
-> +  #
-> +  # Determine the features to omit from the displayed message, as only the
-> +  # logical OR of the detection result will be shown.
-> +  #
-> +  FEATURE_OMIT := $(foreach feat,$(FEATURE_DISPLAY),$(FEATURE_GROUP_MEMBERS-$(feat)))
-> +endif
-> +
->  feature_display_entries = $(eval $(feature_display_entries_code))
->  define feature_display_entries_code
->    ifeq ($(feature_display),1)
->      $$(info )
->      $$(info Auto-detecting system features:)
-> -    $(foreach feat,$(FEATURE_DISPLAY),$(call feature_print_status,$(feat),) $$(info $(MSG)))
-> +    $(foreach feat,$(filter-out $(FEATURE_OMIT),$(FEATURE_DISPLAY)),$(call feature_print_status,$(feat),) $$(info $(MSG)))
->    endif
->  
->    ifeq ($(feature_verbose),1)
-> -- 
-> 2.25.1
-> 
