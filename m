@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B97C32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AC1C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237555AbiHVTVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        id S238405AbiHVTV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238691AbiHVTU4 (ORCPT
+        with ESMTP id S238696AbiHVTU5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:20:56 -0400
+        Mon, 22 Aug 2022 15:20:57 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0732913D14;
-        Mon, 22 Aug 2022 12:20:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92C8F13D35;
+        Mon, 22 Aug 2022 12:20:26 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 9D50CDA6;
-        Mon, 22 Aug 2022 22:23:30 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9D50CDA6
+        by mail.baikalelectronics.com (Postfix) with ESMTP id D8C49DA8;
+        Mon, 22 Aug 2022 22:23:33 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com D8C49DA8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661196210;
-        bh=LzgKLA2Es3MVjHYo8FGWSLKo8lr8OalQ3g2hasfSC+k=;
+        d=baikalelectronics.ru; s=mail; t=1661196213;
+        bh=vGDzPPboDDzeWQHOsdZSQJzQCZZGhH5NjkNxhCEEYhw=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=YlzCnLA1UyogqEyTz5GoGP8fEomf1wvjDDnWhNAzjskiCrSVudf8ovRgwV2EyI87t
-         9aa0j/EtmY5KKQFwDrXEiHh9yV26f2zsbOnLUzg6wARVRpv6v3BVDt6gPE+BAysizW
-         ISrqu6Y/F6sElTkPQOATQU49INUv6to2bCKe0HfE=
+        b=CgvUDRQiqZUhU8TqDbgjKfWOZkBJFboNyIbn1ukSJEtMdfROnASrWQG/+aCUKTncT
+         qQIwsWgQTVcu5OStH3qVvsdmWg9OzL5yWc0tQCibDhZW1MO458DvYJK2buShOqD4kd
+         jlfgB7j2PCzb5kht4va7XVE87FbAEmUMK5pND+/4=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:20:16 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:20:19 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Michal Simek <michal.simek@xilinx.com>,
         Borislav Petkov <bp@alien8.de>,
@@ -49,9 +49,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 04/13] EDAC/synopsys: Add optional ECC Scrub support
-Date:   Mon, 22 Aug 2022 22:19:47 +0300
-Message-ID: <20220822191957.28546-5-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 06/13] EDAC/synopsys: Add data poisoning disable support
+Date:   Mon, 22 Aug 2022 22:19:49 +0300
+Message-ID: <20220822191957.28546-7-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -62,86 +62,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DW uMCTL2 DDRC ECC has a so called ECC Scrub feature in case if an
-single-bit error is detected. The scrub is executed as a new RMW operation
-to the location that resulted in a single-bit error thus fixing the ECC
-code preserved in the SDRAM. But that feature not only optional, but also
-runtime switchable. So there can be platforms with DW uMCTL2 DDRC not
-supporting hardware-base scrub. In those cases the single-bit errors will
-still be detected but won't be fixed until the next SDRAM write commands
-to the erroneous location. Since the ECC Scrub feature availability is
-detectable by means of the ECCCFG0.dis_scrub flag state we can use it to
-tune the MCI core up so one would automatically execute the
-platform-specific the platform-specific scrubbing to the affected SDRAM
-location. It's now possible to be done since the DW uMCTL2 DDRC driver
-supports the actual system address reported to the MCI core. The only
-thing left to do is to auto-detect the ECC Scrub feature availability and
-set the mem_ctl.info.scrub_mode mode with SCRUB_SW_SRC if the feature is
-unavailable. The rest will be done by the MCI core when the single-bit
-errors happen.
+Even though being a pure-debug feature currently the data poison can't be
+disabled once it has been initialized and enabled. Irrespective to the way
+the feature has been implemented it doesn't seem right since the system
+may print false ECC errors in case if the poisoned address is accessed by
+the kernel or by the user-space applications. It's possible since the
+poisoned address isn't reserved in any kernel mm subsystems. Even though
+that doesn't seem right either at least it's tolerable since the ECC data
+poison is supposed to be utilized in the framework of the EDAC driver
+debugging, but having the feature unswitchable can't be justified that
+easy especially seeing it's not that hard to implement.
+
+So in order to have the ECC data poison switchable we suggest to define
+three possible values acceptable by the "inject_data_poison" DebugFS node:
+1. "CE" - emit correctable error (as before).
+2. "UE" - emit uncorrectable error (used to be any non-"CE" value).
+3. Any other value - disable data poison feature.
+
+Note we have to redefine the macros describing the data poison-related
+fields of the ECC_CFG0 register in a way so they would be used to
+separately switch the feature on/off and to select the type of the ECC
+error. As a result the suggest solution turns into a proper ECC_CFG0 CSRs
+fields setup based on the value written to the "inject_data_poison"
+DebugFS node.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/edac/synopsys_edac.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/edac/synopsys_edac.c | 29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index 872ad9a164a7..2b8de7e8fae1 100644
+index 05201f5a284e..028a9ad70d49 100644
 --- a/drivers/edac/synopsys_edac.c
 +++ b/drivers/edac/synopsys_edac.c
-@@ -32,6 +32,7 @@
- #define SNPS_EDAC_MOD_VER		"1"
- 
- /* DDR capabilities */
-+#define SNPS_CAP_ECC_SCRUB		BIT(0)
- #define SNPS_CAP_ZYNQMP			BIT(31)
- 
- /* Synopsys uMCTL2 DDR controller registers that are relevant to ECC */
-@@ -114,6 +115,7 @@
- #define DDR_MSTR_MEM_LPDDR4		BIT(5)
- 
- /* ECC CFG0 register definitions */
-+#define ECC_CFG0_DIS_SCRUB		BIT(4)
+@@ -118,6 +118,10 @@
+ #define ECC_CFG0_DIS_SCRUB		BIT(4)
  #define ECC_CFG0_MODE_MASK		GENMASK(2, 0)
  
++/* ECC CFG1 register definitions */
++#define ECC_CFG1_POISON_BIT		BIT(1)
++#define ECC_CFG1_POISON_EN		BIT(0)
++
  /* ECC status register definitions */
-@@ -1008,6 +1010,10 @@ static int snps_get_ddrc_info(struct snps_edac_priv *priv)
- 		return -ENXIO;
- 	}
+ #define ECC_STAT_UE_MASK		GENMASK(23, 16)
+ #define ECC_STAT_CE_MASK		GENMASK(15, 8)
+@@ -157,10 +161,6 @@
+ #define ECC_POISON1_BANK_MASK		GENMASK(26, 24)
+ #define ECC_POISON1_ROW_MASK		GENMASK(17, 0)
  
-+	/* Assume HW-src scrub is always available if it isn't disabled */
-+	if (!(regval & ECC_CFG0_DIS_SCRUB))
-+		priv->info.caps |= SNPS_CAP_ECC_SCRUB;
+-/* DDRC ECC CE & UE poison mask */
+-#define ECC_CEPOISON_MASK		GENMASK(1, 0)
+-#define ECC_UEPOISON_MASK		BIT(0)
+-
+ /* DDRC address mapping parameters */
+ #define DDR_ADDRMAP_NREGS		12
+ 
+@@ -1781,10 +1781,14 @@ static ssize_t snps_inject_data_poison_read(struct file *filep, char __user *ubu
+ 	int pos;
+ 
+ 	regval = readl(priv->baseaddr + ECC_CFG1_OFST);
+-	errstr = FIELD_GET(ECC_CEPOISON_MASK, regval) == ECC_CEPOISON_MASK ?
+-		 "Correctable Error" : "UnCorrectable Error";
++	if (!(regval & ECC_CFG1_POISON_EN))
++		errstr = "Off";
++	else if (regval & ECC_CFG1_POISON_BIT)
++		errstr = "CE";
++	else
++		errstr = "UE";
+ 
+-	pos = scnprintf(buf, sizeof(buf), "Data Poisoning: %s\n\r", errstr);
++	pos = scnprintf(buf, sizeof(buf), "%s\n", errstr);
+ 
+ 	return simple_read_from_buffer(ubuf, size, offp, buf, pos);
+ }
+@@ -1795,6 +1799,7 @@ static ssize_t snps_inject_data_poison_write(struct file *filep, const char __us
+ 	struct mem_ctl_info *mci = filep->private_data;
+ 	struct snps_edac_priv *priv = mci->pvt_info;
+ 	char buf[SNPS_DBGFS_BUF_LEN];
++	u32 regval;
+ 	int rc;
+ 
+ 	rc = simple_write_to_buffer(buf, sizeof(buf), offp, ubuf, size);
+@@ -1802,10 +1807,16 @@ static ssize_t snps_inject_data_poison_write(struct file *filep, const char __us
+ 		return rc;
+ 
+ 	writel(0, priv->baseaddr + DDR_SWCTL);
 +
- 	/* Auto-detect the basic HIF/SDRAM bus parameters */
- 	regval = readl(priv->baseaddr + DDR_MSTR_OFST);
- 
-@@ -1484,8 +1490,14 @@ static struct mem_ctl_info *snps_mc_create(struct snps_edac_priv *priv)
- 			 MEM_FLAG_DDR3 | MEM_FLAG_LPDDR3 |
- 			 MEM_FLAG_DDR4 | MEM_FLAG_LPDDR4;
- 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
--	mci->scrub_cap = SCRUB_FLAG_HW_SRC;
--	mci->scrub_mode = SCRUB_NONE;
++	regval = readl(priv->baseaddr + ECC_CFG1_OFST);
+ 	if (strncmp(buf, "CE", 2) == 0)
+-		writel(ECC_CEPOISON_MASK, priv->baseaddr + ECC_CFG1_OFST);
++		regval |= ECC_CFG1_POISON_BIT | ECC_CFG1_POISON_EN;
++	else if (strncmp(buf, "UE", 2) == 0)
++		regval = (regval & ~ECC_CFG1_POISON_BIT) | ECC_CFG1_POISON_EN;
+ 	else
+-		writel(ECC_UEPOISON_MASK, priv->baseaddr + ECC_CFG1_OFST);
++		regval &= ~ECC_CFG1_POISON_EN;
++	writel(regval, priv->baseaddr + ECC_CFG1_OFST);
 +
-+	if (priv->info.caps & SNPS_CAP_ECC_SCRUB) {
-+		mci->scrub_mode = SCRUB_HW_SRC;
-+		mci->scrub_cap = SCRUB_FLAG_HW_SRC;
-+	} else {
-+		mci->scrub_mode = SCRUB_SW_SRC;
-+		mci->scrub_cap = SCRUB_FLAG_SW_SRC;
-+	}
+ 	writel(1, priv->baseaddr + DDR_SWCTL);
  
- 	mci->edac_cap = EDAC_FLAG_SECDED;
- 	mci->ctl_name = "snps_umctl2_ddrc";
-@@ -1578,6 +1590,8 @@ static int snps_ddrc_info_show(struct seq_file *s, void *data)
- 
- 	seq_puts(s, "Caps:");
- 	if (priv->info.caps) {
-+		if (priv->info.caps & SNPS_CAP_ECC_SCRUB)
-+			seq_puts(s, " +Scrub");
- 		if (priv->info.caps & SNPS_CAP_ZYNQMP)
- 			seq_puts(s, " +ZynqMP");
- 	} else {
+ 	return size;
 -- 
 2.35.1
 
