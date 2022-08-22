@@ -2,115 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B057FC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22175C32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234154AbiHVK47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 06:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
+        id S234233AbiHVK6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 06:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234141AbiHVK45 (ORCPT
+        with ESMTP id S230107AbiHVK6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 06:56:57 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3A331EDC;
-        Mon, 22 Aug 2022 03:56:55 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id p18so9564554plr.8;
-        Mon, 22 Aug 2022 03:56:55 -0700 (PDT)
+        Mon, 22 Aug 2022 06:58:52 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D3031230;
+        Mon, 22 Aug 2022 03:58:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:reply-to:message-id:date
-         :subject:cc:to:from:from:to:cc;
-        bh=hUQZ/Tp1Sqyiv6w3yUz+ygSiTM9PrSsj+REeubDk2qE=;
-        b=C3HaUGLQY/5xCsQrVkt+OdGw/vWjDEQbsfd0003LDMRZiClk+Q/ID/FH98FpvzpkhW
-         YmozuFBomyLxUP7iEui4cprVH2IL/wR6kybEI06V3D+1rKIOvuB2TD1db8RGJWmOn8BO
-         Ratq2FuXP5lPY+ygKTFYyzIWy0inHKk727PrNQfDFkKvRBTwLEKbXo+/gn+HMMKgYacO
-         rdBCeFi1Bl6PTxOETCCW7oGQBBfh+B+wNCG48TleMWHAtuFuzBf7Vns0E08EYK9wDqPu
-         zpaNILIeB1gIwrhs1EoEHnqsdoj9pdDc0wUs235s2eOFfGUM0Jyhgt9dzstb17bArH26
-         KoAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:reply-to:message-id:date
-         :subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=hUQZ/Tp1Sqyiv6w3yUz+ygSiTM9PrSsj+REeubDk2qE=;
-        b=Lf4wRxuSSo5TDCbkX9mMGUzMDY+0yxVL7AlT8EyzaR4u/JJaQDLUpFNivem5kHQQ/I
-         HbqW2MitBSSL1XbQOv19YHaB20J3JxvcIE58elUgSxX0pHt6l8colBHw+Z91YNG9uYqb
-         gX7I5w53G+5J9SL4/xJZQIXBE/q7bMBDPchgLJW6ZWikTmHtbCSM08H3r6sgCDtTtUvu
-         Gdn+FYx8Zybu0w5FV3iCMsaGBPKoMTOSQs13INoiy7q9AoObDKZGbzpXEW7L8XYjyVWl
-         sPdMDKkiO9bVK09/tYZbrqyTUNn91hi/3ALdyRFEYT8zpI1PbyKUuOh3rg4WsHYz/xhU
-         3tdQ==
-X-Gm-Message-State: ACgBeo0KiR1XAzHzIEV03KQedPUXdY73JX84nyO0Xjt/Fm/4dRyY1bIU
-        KobS52gDLGOBOPfkQ0yrgX8=
-X-Google-Smtp-Source: AA6agR5CXRqUs3HJRCeXUJI+lLofKDx4VbPUBq2jOgPfCZ7L6aGgxEOblRidGxRmwmFYt28M9X+3mQ==
-X-Received: by 2002:a17:902:7005:b0:172:98ef:863c with SMTP id y5-20020a170902700500b0017298ef863cmr19616019plk.131.1661165814407;
-        Mon, 22 Aug 2022 03:56:54 -0700 (PDT)
-Received: from KASONG-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id m7-20020a1709026bc700b00172d9f6e22bsm3727399plt.15.2022.08.22.03.56.52
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 22 Aug 2022 03:56:53 -0700 (PDT)
-From:   Kairui Song <ryncsn@gmail.com>
-To:     damon@lists.linux.dev
-Cc:     SeongJae Park <sj@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        linux-mm@kvack.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kairui Song <kasong@tencent.com>
-Subject: [PATCH] Docs/admin-guide/mm/damon/usage: fix the example code snip
-Date:   Mon, 22 Aug 2022 18:56:17 +0800
-Message-Id: <20220822105617.75524-1-ryncsn@gmail.com>
-X-Mailer: git-send-email 2.35.2
-Reply-To: Kairui Song <kasong@tencent.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1661165932; x=1692701932;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jBeEiHk1ILwd7T0QguL62OOtCR2zHUCuW2NIEn5oMQM=;
+  b=K307zDWhyzdo8JNbGA+pMVXol3u123UB0ucPRp3rJwGXlBI+v/yRce8v
+   QmhOGiiVFtWRf2mk5iJ8z29KDJ7LWQ4unDPBekjowEujOMBkZ8W15FC7B
+   kZgV7R56KIAvScLktwL0ClLZvgGV8w8uZIQ7Ol4Kc5iaU6mbjAB9qofrk
+   I=;
+X-IronPort-AV: E=Sophos;i="5.93,254,1654560000"; 
+   d="scan'208";a="232563806"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 10:58:40 +0000
+Received: from EX13MTAUEB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com (Postfix) with ESMTPS id 89DBC3E00E8;
+        Mon, 22 Aug 2022 10:58:38 +0000 (UTC)
+Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
+ EX13MTAUEB001.ant.amazon.com (10.43.60.129) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Mon, 22 Aug 2022 10:58:32 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Mon, 22 Aug 2022 10:58:32 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Mon, 22 Aug 2022 10:58:31
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id A2EA64C68; Mon, 22 Aug 2022 10:58:30 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <brgl@bgdev.pl>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <arnd@arndb.de>, <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dkl@amazon.com>,
+        <dwmw@amazon.co.uk>
+Subject: [PATCH v2 2/2] eeprom: at24: add support for power-supply control
+Date:   Mon, 22 Aug 2022 10:58:30 +0000
+Message-ID: <20220822105830.22790-3-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220822105830.22790-1-farbere@amazon.com>
+References: <20220822105830.22790-1-farbere@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kairui Song <kasong@tencent.com>
+Add an optional gpio regulator to support a power-supply control.
+If a gpio power-supply regulator is supplied in the device tree, the
+gpio is enabled during probe, and disabled on remove.
 
-The workflow example code is not working since it got the file names
-wrong. So fix this.
-
-Signed-off-by: Kairui Song <kasong@tencent.com>
+Signed-off-by: Eliav Farber <farbere@amazon.com>
 ---
- Documentation/admin-guide/mm/damon/usage.rst | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+V1 -> V2:
+Change pointed out by Rob Herring:
+- Use a gpio regulator for power-supply control.
 
-diff --git a/Documentation/admin-guide/mm/damon/usage.rst b/Documentation/admin-guide/mm/damon/usage.rst
-index d52f572a90298..ca91ecc290785 100644
---- a/Documentation/admin-guide/mm/damon/usage.rst
-+++ b/Documentation/admin-guide/mm/damon/usage.rst
-@@ -50,10 +50,10 @@ For a short example, users can monitor the virtual address space of a given
- workload as below. ::
+ drivers/misc/eeprom/at24.c | 41 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/drivers/misc/eeprom/at24.c b/drivers/misc/eeprom/at24.c
+index dc3537651b80..a5e3fe1403d9 100644
+--- a/drivers/misc/eeprom/at24.c
++++ b/drivers/misc/eeprom/at24.c
+@@ -25,6 +25,7 @@
+ #include <linux/platform_data/at24.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/regulator/consumer.h>
  
-     # cd /sys/kernel/mm/damon/admin/
--    # echo 1 > kdamonds/nr && echo 1 > kdamonds/0/contexts/nr
-+    # echo 1 > kdamonds/nr_kdamonds && echo 1 > kdamonds/0/contexts/nr_contexts
-     # echo vaddr > kdamonds/0/contexts/0/operations
--    # echo 1 > kdamonds/0/contexts/0/targets/nr
--    # echo $(pidof <workload>) > kdamonds/0/contexts/0/targets/0/pid
-+    # echo 1 > kdamonds/0/contexts/0/targets/nr_targets
-+    # echo $(pidof <workload>) > kdamonds/0/contexts/0/targets/0/pid_target
-     # echo on > kdamonds/0/state
+ /*
+  * I2C EEPROMs from most vendors are inexpensive and mostly interchangeable.
+@@ -78,6 +79,8 @@ struct at24_data {
  
- Files Hierarchy
-@@ -366,12 +366,12 @@ memory rate becomes larger than 60%, or lower than 30%". ::
-     # echo 1 > kdamonds/0/contexts/0/schemes/nr_schemes
-     # cd kdamonds/0/contexts/0/schemes/0
-     # # set the basic access pattern and the action
--    # echo 4096 > access_patterns/sz/min
--    # echo 8192 > access_patterns/sz/max
--    # echo 0 > access_patterns/nr_accesses/min
--    # echo 5 > access_patterns/nr_accesses/max
--    # echo 10 > access_patterns/age/min
--    # echo 20 > access_patterns/age/max
-+    # echo 4096 > access_pattern/sz/min
-+    # echo 8192 > access_pattern/sz/max
-+    # echo 0 > access_pattern/nr_accesses/min
-+    # echo 5 > access_pattern/nr_accesses/max
-+    # echo 10 > access_pattern/age/min
-+    # echo 20 > access_pattern/age/max
-     # echo pageout > action
-     # # set quotas
-     # echo 10 > quotas/ms
+ 	struct gpio_desc *wp_gpio;
+ 
++	struct regulator *supply;
++
+ 	/*
+ 	 * Some chips tie up multiple I2C addresses; dummy devices reserve
+ 	 * them for us, and we'll use them with SMBus calls.
+@@ -615,6 +618,13 @@ static unsigned int at24_get_offset_adj(u8 flags, unsigned int byte_len)
+ 	}
+ }
+ 
++static void devm_at24_regulator_disable(void *data)
++{
++	struct at24_data *at24 = data;
++
++	regulator_disable(at24->supply);
++}
++
+ static int at24_probe(struct i2c_client *client)
+ {
+ 	struct regmap_config regmap_config = { };
+@@ -674,6 +684,37 @@ static int at24_probe(struct i2c_client *client)
+ 	if (!at24)
+ 		return -ENOMEM;
+ 
++	at24->supply = devm_regulator_get_optional(dev, "power");
++	if (IS_ERR(at24->supply)) {
++		err = PTR_ERR(at24->supply);
++		if (err == -ENODEV)
++			at24->supply = NULL;
++		else
++			return dev_err_probe(dev, err,
++					     "failed to get power-supply regulator\n");
++	}
++
++	if (at24->supply) {
++		err = regulator_enable(at24->supply);
++		if (err < 0) {
++			dev_err(dev,
++				"failed to enable power-supply regulator: %d\n",
++				err);
++			return err;
++		}
++
++		err = devm_add_action_or_reset(dev, devm_at24_regulator_disable,
++					       at24);
++		if (err < 0) {
++			dev_err(dev,
++				"failed to adction to disable power-supply regulator: %d\n",
++				err);
++			return err;
++		}
++
++		usleep_range(2000, 3000);
++	}
++
+ 	mutex_init(&at24->lock);
+ 	at24->byte_len = pdata.byte_len;
+ 	at24->page_size = pdata.page_size;
 -- 
-2.35.2
+2.37.1
 
