@@ -2,300 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31404C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA61AC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234748AbiHVMkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47180 "EHLO
+        id S235169AbiHVMkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiHVMjz (ORCPT
+        with ESMTP id S233674AbiHVMkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:39:55 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E023AB04
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 05:39:54 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oQ6iZ-0002K8-GJ; Mon, 22 Aug 2022 14:39:47 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oQ6iX-001J6u-22; Mon, 22 Aug 2022 14:39:45 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oQ6iW-00A6xf-BM; Mon, 22 Aug 2022 14:39:44 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next v2 1/2] net: asix: ax88772: migrate to phylink
-Date:   Mon, 22 Aug 2022 14:39:42 +0200
-Message-Id: <20220822123943.2409987-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 22 Aug 2022 08:40:01 -0400
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736E933343;
+        Mon, 22 Aug 2022 05:40:00 -0700 (PDT)
+Received: by mail-ot1-f46.google.com with SMTP id d18-20020a9d72d2000000b0063934f06268so833766otk.0;
+        Mon, 22 Aug 2022 05:40:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=PhEPEud72j5kQVxW8NO2vqL1FVdaHjnTMbrh083xpV0=;
+        b=jrz9kdF7p21Lt8PU3ZNe+cpNELdxDnXQDshiwQTw+X7bKhKTLAk/YsEs+rKBKfY2VL
+         ZP3Z/5pWIqIkta1hEarQvAUb8ICgb78yjxpLubIaSx6VmCSMioYkb+/XQb+5rjaemb/2
+         TF6YjGjscHW4GT+wbukauvovDAy3Hg/GtQSrKj4Y6vN5ofHwdrdPPo2qL47eVYaQaO29
+         GiErwHy8QnSSUpQ57Jvaq/s3XqeXyyzebZlCp6nQZGquo6OsCz3Dt1k5+g/bphiqqeC+
+         zDO+rhTnbRGR7sz2jfsO8Ag+vfGqRw3xQ+1kfSE+s6wKNcEz072hC4v/3InnMg6xUUmQ
+         o4JA==
+X-Gm-Message-State: ACgBeo1SjvyOduC+B0S/jNAiRPfuMt0KXdacpFxrpByh6049YswSKxv9
+        yMUULxhF/ZOb4cHlqA1sMx+ovJ5mIg==
+X-Google-Smtp-Source: AA6agR5g64WBRUlwSWnDCd9sVKwnExbQiowIvsS13bvXxfGDvcK7A+9xBDQH0t3l/Jgnraq3we4Kzw==
+X-Received: by 2002:a05:6830:6188:b0:61c:568b:1001 with SMTP id cb8-20020a056830618800b0061c568b1001mr7614005otb.98.1661171999453;
+        Mon, 22 Aug 2022 05:39:59 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a13-20020a4ad5cd000000b00435954f91ddsm2497869oot.28.2022.08.22.05.39.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 05:39:58 -0700 (PDT)
+Received: (nullmailer pid 3640781 invoked by uid 1000);
+        Mon, 22 Aug 2022 12:39:57 -0000
+Date:   Mon, 22 Aug 2022 07:39:57 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: soc: qcom: Introduce PMIC GLINK binding
+Message-ID: <20220822123957.GA3628946-robh@kernel.org>
+References: <20220818031512.319310-1-bjorn.andersson@linaro.org>
+ <20220818031512.319310-2-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818031512.319310-2-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are some exotic ax88772 based devices which may require
-functionality provide by the phylink framework. For example:
-- US100A20SFP, USB 2.0 auf LWL Converter with SFP Cage
-- AX88772B USB to 100Base-TX Ethernet (with RMII) demo board, where it
-  is possible to switch between internal PHY and external RMII based
-  connection.
+On Wed, Aug 17, 2022 at 08:15:09PM -0700, Bjorn Andersson wrote:
+> The PMIC GLINK service, running on a coprocessor on some modern Qualcomm
+> platforms and implement USB Type-C handling and battery management.
+> This binding describes the component in the OS used to communicate with
+> the firmware and connect it's resources to those described in the
+> Devicetree, particularly the USB Type-C controllers relationship with
+> USB and DisplayPort components.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  .../bindings/soc/qcom/qcom,pmic-glink.yaml    | 98 +++++++++++++++++++
+>  1 file changed, 98 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
+> new file mode 100644
+> index 000000000000..3261f9d27a47
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
+> @@ -0,0 +1,98 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/soc/qcom/qcom,pmic-glink.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm PMIC GLINK firmware interface for battery management, USB
+> +  Type-C and other things.
+> +
+> +maintainers:
+> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> +
+> +description:
+> +  The PMIC GLINK service, running on a coprocessor on some modern Qualcomm
+> +  platforms and implement USB Type-C handling and battery management. This
+> +  binding describes the component in the OS used to communicate with the
+> +  firmware and connect it's resources to those described in the Devicetree,
+> +  particularly the USB Type-C controllers relationship with USB and DisplayPort
+> +  components.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - qcom,sc8180x-pmic-glink
+> +          - qcom,sc8280xp-pmic-glink
+> +          - qcom,sm8350-pmic-glink
+> +      - const: qcom,pmic-glink
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
+> +
+> +patternProperties:
+> +  '^connector@\d$':
+> +    $ref: /schemas/connector/usb-connector.yaml#
+> +    unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |+
+> +    pmic-glink {
+> +        compatible = "qcom,sc8280xp-pmic-glink", "qcom,pmic-glink";
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        connector@0 {
+> +            compatible = "usb-c-connector";
+> +            reg = <0>;
 
-So, convert this driver to phylink as soon as possible.
+'reg' causes a warning:
 
-Tested with:
-- AX88772A + internal PHY
-- AX88772B + external DP83TD510E T1L PHY
+Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.example.dtb: pmic-glink: connector@0: Unevaluated properties are not allowed ('reg' was unexpected)
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- phylink_destroy() on errors or unbind()
-- attach phy on bind and detach on unbind.
----
- drivers/net/usb/Kconfig        |   2 +-
- drivers/net/usb/asix.h         |   3 +
- drivers/net/usb/asix_devices.c | 122 ++++++++++++++++++++++++++++++---
- 3 files changed, 116 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
-index 76659c1c525a2..4402eedb3d1a2 100644
---- a/drivers/net/usb/Kconfig
-+++ b/drivers/net/usb/Kconfig
-@@ -168,7 +168,7 @@ config USB_NET_AX8817X
- 	tristate "ASIX AX88xxx Based USB 2.0 Ethernet Adapters"
- 	depends on USB_USBNET
- 	select CRC32
--	select PHYLIB
-+	select PHYLINK
- 	select AX88796B_PHY
- 	imply NET_SELFTESTS
- 	default y
-diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-index 21c1ca275cc44..74162190bccc1 100644
---- a/drivers/net/usb/asix.h
-+++ b/drivers/net/usb/asix.h
-@@ -27,6 +27,7 @@
- #include <linux/if_vlan.h>
- #include <linux/phy.h>
- #include <net/selftests.h>
-+#include <linux/phylink.h>
- 
- #define DRIVER_VERSION "22-Dec-2011"
- #define DRIVER_NAME "asix"
-@@ -185,6 +186,8 @@ struct asix_common_private {
- 	struct mii_bus *mdio;
- 	struct phy_device *phydev;
- 	struct phy_device *phydev_int;
-+	struct phylink *phylink;
-+	struct phylink_config phylink_config;
- 	u16 phy_addr;
- 	bool embd_phy;
- 	u8 chipcode;
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 5b5eb630c4b79..caa1bed1fe341 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -343,7 +343,7 @@ static int ax88772_reset(struct usbnet *dev)
- 	if (ret < 0)
- 		goto out;
- 
--	phy_start(priv->phydev);
-+	phylink_start(priv->phylink);
- 
- 	return 0;
- 
-@@ -590,8 +590,11 @@ static void ax88772_suspend(struct usbnet *dev)
- 	struct asix_common_private *priv = dev->driver_priv;
- 	u16 medium;
- 
--	if (netif_running(dev->net))
--		phy_stop(priv->phydev);
-+	if (netif_running(dev->net)) {
-+		rtnl_lock();
-+		phylink_suspend(priv->phylink, false);
-+		rtnl_unlock();
-+	}
- 
- 	/* Stop MAC operation */
- 	medium = asix_read_medium_status(dev, 1);
-@@ -622,8 +625,11 @@ static void ax88772_resume(struct usbnet *dev)
- 		if (!priv->reset(dev, 1))
- 			break;
- 
--	if (netif_running(dev->net))
--		phy_start(priv->phydev);
-+	if (netif_running(dev->net)) {
-+		rtnl_lock();
-+		phylink_resume(priv->phylink);
-+		rtnl_unlock();
-+	}
- }
- 
- static int asix_resume(struct usb_interface *intf)
-@@ -667,8 +673,7 @@ static int ax88772_init_phy(struct usbnet *dev)
- 		return -ENODEV;
- 	}
- 
--	ret = phy_connect_direct(dev->net, priv->phydev, &asix_adjust_link,
--				 PHY_INTERFACE_MODE_INTERNAL);
-+	ret = phylink_connect_phy(priv->phylink, priv->phydev);
- 	if (ret) {
- 		netdev_err(dev->net, "Could not connect PHY\n");
- 		return ret;
-@@ -688,6 +693,9 @@ static int ax88772_init_phy(struct usbnet *dev)
- 	 */
- 	priv->phydev_int = mdiobus_get_phy(priv->mdio, AX_EMBD_PHY_ADDR);
- 	if (!priv->phydev_int) {
-+		rtnl_lock();
-+		phylink_disconnect_phy(priv->phylink);
-+		rtnl_unlock();
- 		netdev_err(dev->net, "Could not find internal PHY\n");
- 		return -ENODEV;
- 	}
-@@ -698,6 +706,89 @@ static int ax88772_init_phy(struct usbnet *dev)
- 	return 0;
- }
- 
-+static void ax88772_mac_config(struct phylink_config *config, unsigned int mode,
-+			      const struct phylink_link_state *state)
-+{
-+	/* Nothing to do */
-+}
-+
-+static void ax88772_mac_link_down(struct phylink_config *config,
-+				 unsigned int mode, phy_interface_t interface)
-+{
-+	struct usbnet *dev = netdev_priv(to_net_dev(config->dev));
-+
-+	asix_write_medium_mode(dev, 0, 0);
-+	usbnet_link_change(dev, false, false);
-+}
-+
-+static void ax88772_mac_link_up(struct phylink_config *config,
-+			       struct phy_device *phy,
-+			       unsigned int mode, phy_interface_t interface,
-+			       int speed, int duplex,
-+			       bool tx_pause, bool rx_pause)
-+{
-+	struct usbnet *dev = netdev_priv(to_net_dev(config->dev));
-+	u16 m = AX_MEDIUM_AC | AX_MEDIUM_RE;
-+
-+	m |= duplex ? AX_MEDIUM_FD : 0;
-+
-+	switch (speed) {
-+	case SPEED_100:
-+		m |= AX_MEDIUM_PS;
-+		break;
-+	case SPEED_10:
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	if (tx_pause)
-+		m |= AX_MEDIUM_TFC;
-+
-+	if (rx_pause)
-+		m |= AX_MEDIUM_RFC;
-+
-+	asix_write_medium_mode(dev, m, 0);
-+	usbnet_link_change(dev, true, false);
-+}
-+
-+static const struct phylink_mac_ops ax88772_phylink_mac_ops = {
-+	.validate = phylink_generic_validate,
-+	.mac_config = ax88772_mac_config,
-+	.mac_link_down = ax88772_mac_link_down,
-+	.mac_link_up = ax88772_mac_link_up,
-+};
-+
-+static int ax88772_phylink_setup(struct usbnet *dev)
-+{
-+	struct asix_common_private *priv = dev->driver_priv;
-+	phy_interface_t phy_if_mode;
-+	struct phylink *phylink;
-+
-+	priv->phylink_config.dev = &dev->net->dev;
-+	priv->phylink_config.type = PHYLINK_NETDEV;
-+	priv->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
-+		MAC_10 | MAC_100;
-+
-+	__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+		  priv->phylink_config.supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_RMII,
-+		  priv->phylink_config.supported_interfaces);
-+
-+	if (priv->embd_phy)
-+		phy_if_mode = PHY_INTERFACE_MODE_INTERNAL;
-+	else
-+		phy_if_mode = PHY_INTERFACE_MODE_RMII;
-+
-+	phylink = phylink_create(&priv->phylink_config, dev->net->dev.fwnode,
-+				 phy_if_mode, &ax88772_phylink_mac_ops);
-+	if (IS_ERR(phylink))
-+		return PTR_ERR(phylink);
-+
-+	priv->phylink = phylink;
-+	return 0;
-+}
-+
- static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	struct asix_common_private *priv;
-@@ -788,14 +879,22 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 	if (ret)
- 		return ret;
- 
--	return ax88772_init_phy(dev);
-+	ret = ax88772_phylink_setup(dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = ax88772_init_phy(dev);
-+	if (ret)
-+		phylink_destroy(priv->phylink);
-+
-+	return ret;
- }
- 
- static int ax88772_stop(struct usbnet *dev)
- {
- 	struct asix_common_private *priv = dev->driver_priv;
- 
--	phy_stop(priv->phydev);
-+	phylink_stop(priv->phylink);
- 
- 	return 0;
- }
-@@ -804,7 +903,10 @@ static void ax88772_unbind(struct usbnet *dev, struct usb_interface *intf)
- {
- 	struct asix_common_private *priv = dev->driver_priv;
- 
--	phy_disconnect(priv->phydev);
-+	rtnl_lock();
-+	phylink_disconnect_phy(priv->phylink);
-+	rtnl_unlock();
-+	phylink_destroy(priv->phylink);
- 	asix_rx_fixup_common_free(dev->driver_priv);
- }
- 
--- 
-2.30.2
-
+> +            power-role = "dual";
+> +            data-role = "dual";
+> +
+> +            ports {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +
+> +                port@0 {
+> +                    reg = <0>;
+> +                    endpoint {
+> +                        remote-endpoint = <&usb_role>;
+> +                    };
+> +                };
+> +
+> +                port@1 {
+> +                    reg = <1>;
+> +
+> +                    #address-cells = <1>;
+> +                    #size-cells = <0>;
+> +
+> +                    endpoint@0 {
+> +                        reg = <0>;
+> +                        remote-endpoint = <&qmp_out>;
+> +                    };
+> +
+> +                    endpoint@1 {
+> +                        reg = <1>;
+> +                        remote-endpoint = <&displayport_hpd>;
+> +                    };
+> +                };
+> +
+> +                port@2 {
+> +                    reg = <2>;
+> +                    endpoint {
+> +                        remote-endpoint = <&sbu_mux>;
+> +                    };
+> +                };
+> +            };
+> +        };
+> +    };
+> +...
+> +
+> -- 
+> 2.35.1
+> 
+> 
