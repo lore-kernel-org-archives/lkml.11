@@ -2,100 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D40C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77330C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235664AbiHVOLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        id S235685AbiHVOLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235667AbiHVOL0 (ORCPT
+        with ESMTP id S235682AbiHVOL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 10:11:26 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73B133E2A;
-        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id w13so4388565pgq.7;
-        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=p7nFqFJ6GyduwW/jaAManajXS9BcTBoJW3Oy3Zrj+Us=;
-        b=bphPJ9HNniChNozFrr8pN3OyWuoEb0pXuMv2UiJ0i+iBLZzhawlJHDZRkhECE4YNRk
-         ZuuvFb/T8k2Ul/mSmo3vLbqKo/o7QHfSCSXrKXurOnL5AEribeJAX9XKncFDzmmhfe/e
-         lssIcPM5I1Utx9D+nI3KVKZ1bWHdAx4FsW8l6A1k48LMbW+Ji6dH67g5DKF2S9rXJted
-         8P8yYeSPTNmXm9qoazNSrjLOr8gazh7WRUGI7DEDU58LIi+HMy4ajgou0wG1ZkW+9tut
-         x0PsilyPTvamDP9z8HJjabhd+bioVKOwnNbrKagLIZVvTx9ou5yq2lLkH8dfa8pdmlXX
-         fBlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=p7nFqFJ6GyduwW/jaAManajXS9BcTBoJW3Oy3Zrj+Us=;
-        b=DxEpcfoe04PxzC+aElqQW2IWaBmS2V9nafXl2xj16lmfNkxOWlzt/99ftVbHnl0abc
-         PZV9IZnHrHiPbqv9DBGWxdXzOzq1zfHko6S/6GKzSNM6aUtg7wffiPvmcD5MuTSAnX2/
-         j5gBxbJu9uYRF1Y8//Vdeg5bZJJMwahz2wOb6A896HDtlODIiHulS8EP8Dg4731P8Ob1
-         4n6CwFUcEn52PKQv1yxc5oQQOJag+1paOYcvVaml21cjMJCPWXWTt75aNGWb8dPiZKrW
-         Wr9LdxK3dkeGMOE/2/B4Iv7Wo2gi8Mvo+Qt/Kc4v6CzLOeShDHKgn3AHrBhWzwjiawi/
-         Wbnw==
-X-Gm-Message-State: ACgBeo0cv80xFLz20MWCVv3bpuWISXACKjxZ3goreBPgFgiT3uL2v1Du
-        rcJjeLABxfLjjrxI7hNgBkwCi1pDG+2vFOgt7VE=
-X-Google-Smtp-Source: AA6agR6adpyvp+DDP9uK/VhDoIlFGyKFzKJohwDSBAIOeH9QK3/ZoHCTz84zb/mdVjiQ1SJPy+2DVw==
-X-Received: by 2002:a05:6a00:1402:b0:536:bf1c:3d16 with SMTP id l2-20020a056a00140200b00536bf1c3d16mr3320102pfu.20.1661177484185;
-        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
-Received: from localhost.localdomain ([182.160.5.243])
-        by smtp.gmail.com with ESMTPSA id r17-20020aa79631000000b00535d3caa66fsm3099167pfg.197.2022.08.22.07.11.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC6A33E2C;
         Mon, 22 Aug 2022 07:11:23 -0700 (PDT)
-From:   Tuo Cao <91tuocao@gmail.com>
-To:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        91tuocao@gmail.com
-Subject: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to spin_lock in interrupt handler
-Date:   Mon, 22 Aug 2022 22:11:10 +0800
-Message-Id: <20220822141110.17199-1-91tuocao@gmail.com>
-X-Mailer: git-send-email 2.17.1
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 1952823430;
+        Mon, 22 Aug 2022 13:55:37 +0000 (UTC)
+Received: from pdx1-sub0-mail-a269.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id F205F2316A;
+        Mon, 22 Aug 2022 13:55:35 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661176536; a=rsa-sha256;
+        cv=none;
+        b=3omOJCF76GuHexFv/qn+hiLUUmfn7xeZC84hnGFQT+rvm4rXISSdNtlZVmrEE5sqtb7qu0
+        3inDTAnHBJfo+S+wp7aAATE21YP3PjKgbJ9C7QhYGOEU0j6cJwtyp3oH0tE4gSiL+OBW+U
+        1DL2QK/F6AN6MuJUhu2HEW5h8Wut2n5/oIxzrMIfjuUal1nbMnF4JAs3B4bYWCx+LM6eGO
+        Yc4LDkdGW1I8qj7+85o++qzprKZgxrtfobh1HEl6ikZ13fQz2bxXn7QoN/LKckqa8tJEEt
+        2nX+0knXTvg9iGDyNftTkxY8Wh8GjerVMbb27j2h6vN0JtGORFYafRY1AnZ6UA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661176536;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=csF531VNDYAPl7BDCtxROg1S1vDGD1Xfu0RVZFflFgw=;
+        b=ZvmlbUl9YVut82uc81/HTw+lLblqpFVw9EygzxtfrSza3T+55d90/r5bSwQbBJKLcBd1eP
+        62BbakMYs4pwykdF6hhicoBALGVfufFwXKZ7OS9F673ZnUL+B8yAg9xMS7g3Ng2kLUtnDt
+        kL3kY1/EcPW9HH3n1hfJCZwzvf1XJs6aMzkAWFB6BY5V/o7d7VZntOWqc3/ykYAzUf6Vl8
+        ZrwnFzdRpIcnJpC53MoRaIe6ibeCmRuZ/jMGV0ulEwplL4/jqczigLa1oWzOK3L4c/VL20
+        ehYj7B6W/FtjzN4/J+VW46cehQWQJpR8tn0b80TcyH+H36nxNrjeKJ35r/051A==
+ARC-Authentication-Results: i=1;
+        rspamd-79945fd77c-g497v;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Zesty-Army: 5b5717fe75be5fd0_1661176536659_1620849424
+X-MC-Loop-Signature: 1661176536659:101402978
+X-MC-Ingress-Time: 1661176536659
+Received: from pdx1-sub0-mail-a269.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.112.55.195 (trex/6.7.1);
+        Mon, 22 Aug 2022 13:55:36 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a269.dreamhost.com (Postfix) with ESMTPSA id 4MBDQZ3sRWzKj;
+        Mon, 22 Aug 2022 06:55:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661176535;
+        bh=csF531VNDYAPl7BDCtxROg1S1vDGD1Xfu0RVZFflFgw=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=purhyt64fbjx70+gG83TpY2jPCSW5nNdRsKMo2E1vKOMKSh2939nWpCf6L62aVxS1
+         XVRYEpBkL6OL2slgGlLRDPiwXn7C5eVwHPjt3LAOmS7vmu6rmAK8cRiHEsrno15B3t
+         OSKoQ77IUpZPFTzbIS3SWyFgXoz9Bn1oGZEKbmmY/Z7LtZ7b30ZInMcBX6PuWvWQr+
+         mMzIHELO8whLUjrUhgmlLQid7sPScz9wXRqJWgdjpRW1gReUH0RfGt9FRs7jwsUyUP
+         vKMEdFbqtOs8wDR54Nucu3waN0rVXPtJOReqRukQEhP3Ie8RB2HCwJ8MKpS1MfqZVE
+         nMdUf361w69Bw==
+Date:   Mon, 22 Aug 2022 06:37:36 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-arch@vger.kernel.org, dan.j.williams@intel.com,
+        peterz@infradead.org, mark.rutland@arm.com, dave.jiang@intel.com,
+        Jonathan.Cameron@huawei.com, a.manzanares@samsung.com,
+        bwidawsk@kernel.org, alison.schofield@intel.com,
+        ira.weiny@intel.com, linux-cxl@vger.kernel.org,
+        nvdimm@lists.linux.dev, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] arch/cacheflush: Introduce flush_all_caches()
+Message-ID: <20220822133736.roxmpj6sfo6gsij2@offworld>
+References: <20220819171024.1766857-1-dave@stgolabs.net>
+ <YwMkUMiKf3ZyMDDF@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YwMkUMiKf3ZyMDDF@infradead.org>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-it is unnecessary to call spin_lock_irqsave in a interrupt handler.
+On Sun, 21 Aug 2022, Christoph Hellwig wrote:
 
-Signed-off-by: Tuo Cao <91tuocao@gmail.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+>On Fri, Aug 19, 2022 at 10:10:24AM -0700, Davidlohr Bueso wrote:
+>> index b192d917a6d0..ac4d4fd4e508 100644
+>> --- a/arch/x86/include/asm/cacheflush.h
+>> +++ b/arch/x86/include/asm/cacheflush.h
+>> @@ -10,4 +10,8 @@
+>>
+>>  void clflush_cache_range(void *addr, unsigned int size);
+>>
+>> +/* see comments in the stub version */
+>> +#define flush_all_caches() \
+>> +	do { wbinvd_on_all_cpus(); } while(0)
+>
+>Yikes.  This is just a horrible, horrible name and placement for a bad
+>hack that should have no generic relevance.
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 8efdc271eb75..fb525c435723 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -560,7 +560,6 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	struct uart_port *up = dev_id;
- 	struct device *dev = up->dev;
- 	struct brcmuart_priv *priv = up->private_data;
--	unsigned long flags;
- 	u32 interrupts;
- 	u32 rval;
- 	u32 tval;
-@@ -569,7 +568,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if (interrupts == 0)
- 		return IRQ_NONE;
- 
--	spin_lock_irqsave(&up->lock, flags);
-+	spin_lock(&up->lock);
- 
- 	/* Clear all interrupts */
- 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, interrupts);
-@@ -583,7 +582,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if ((rval | tval) == 0)
- 		dev_warn(dev, "Spurious interrupt: 0x%x\n", interrupts);
- 
--	spin_unlock_irqrestore(&up->lock, flags);
-+	spin_unlock(&up->lock);
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.17.1
+Why does this have no generic relevance? There's already been discussions
+on how much wbinv is hated[0].
 
+>Please fix up the naming to make it clear that this function is for a
+>very specific nvdimm use case, and move it to a nvdimm-specific header
+>file.
+
+Do you have any suggestions for a name? And, as the changelog describes,
+this is not nvdimm specific anymore, and the whole point of all this is
+volatile memory components for cxl, hence nvdimm namespace is bogus.
+
+[0] https://lore.kernel.org/all/Yvtc2u1J%2Fqip8za9@worktop.programming.kicks-ass.net/
+
+Thanks,
+Davidlohr
