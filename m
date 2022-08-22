@@ -2,116 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C8AC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B7BC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233879AbiHVIXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55232 "EHLO
+        id S234001AbiHVIXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233915AbiHVIXf (ORCPT
+        with ESMTP id S233354AbiHVIXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:23:35 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF02E63EC;
-        Mon, 22 Aug 2022 01:23:30 -0700 (PDT)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27M5UOOp019702;
-        Mon, 22 Aug 2022 08:22:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=Xf+IX2U66sCC6/J8Rap0DTZgRqGVjsxKf4X6I9mo4M0=;
- b=J1czoEJwHDIF7DDCYkRCBXNLTRHGRVSvhQrdEHvJgr8n+pDNspA1nuM5zQ2d4kO4kK6x
- 1BTKAs5SQstLforhnnU46s0TWyNiOZQO53Xu8zShFGzYbgC6rq3kmaE70dMTVnVqptO4
- A9Y5C8U0fX2vyLpr2qu6E33sEZ9gqjmIpb7kbB9Aag24nHDA299MiWkdWyi1uAqlPj77
- BHD0EV5jpdCShEAzeo4gWqp4yyQWXOU18LMftg4lR+2GXWuce7bpLRKCunJxcQF0gNHX
- 5U8u9OA/axoY76J3kMXwm3A7tSrO9Ln5VGq6fGgPjYnyybQzYHCZuAUhnEkIEcH0lTpe jA== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j2vwrkm1m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 08:22:50 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27M8MmX1011801
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 08:22:49 GMT
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 22 Aug 2022 01:22:43 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [RESEND v5 4/7] remoteproc: qcom: Replace hard coded values with macros
-Date:   Mon, 22 Aug 2022 13:52:00 +0530
-Message-ID: <1661156523-22611-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 22 Aug 2022 04:23:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7CB615A;
+        Mon, 22 Aug 2022 01:23:32 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MB50n281BznTgN;
+        Mon, 22 Aug 2022 16:21:13 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 22 Aug 2022 16:23:29 +0800
+From:   Yicong Yang <yangyicong@huawei.com>
+To:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>, <x86@kernel.org>,
+        <catalin.marinas@arm.com>, <will@kernel.org>,
+        <linux-doc@vger.kernel.org>
+CC:     <corbet@lwn.net>, <peterz@infradead.org>, <arnd@arndb.de>,
+        <linux-kernel@vger.kernel.org>, <darren@os.amperecomputing.com>,
+        <yangyicong@hisilicon.com>, <huzhanyuan@oppo.com>,
+        <lipeifeng@oppo.com>, <zhangshiming@oppo.com>, <guojian@oppo.com>,
+        <realmz6@gmail.com>, <linux-mips@vger.kernel.org>,
+        <openrisc@lists.librecores.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-riscv@lists.infradead.org>, <linux-s390@vger.kernel.org>,
+        Barry Song <21cnbao@gmail.com>, <wangkefeng.wang@huawei.com>,
+        <xhao@linux.alibaba.com>, <prime.zeng@hisilicon.com>,
+        <anshuman.khandual@arm.com>
+Subject: [PATCH v3 0/4] mm: arm64: bring up BATCHED_UNMAP_TLB_FLUSH
+Date:   Mon, 22 Aug 2022 16:21:16 +0800
+Message-ID: <20220822082120.8347-1-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: ViFSqu8k4dnBp11RsS90GtISwaNtt71A
-X-Proofpoint-GUID: ViFSqu8k4dnBp11RsS90GtISwaNtt71A
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_04,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- spamscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0
- mlxlogscore=999 malwarescore=0 priorityscore=1501 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208220035
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace hard coded values of QDSP6 boot control reg params
-with appropriate macro names.
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
- drivers/remoteproc/qcom_q6v5_adsp.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Though ARM64 has the hardware to do tlb shootdown, the hardware
+broadcasting is not free.
+A simplest micro benchmark shows even on snapdragon 888 with only
+8 cores, the overhead for ptep_clear_flush is huge even for paging
+out one page mapped by only one process:
+5.36%  a.out    [kernel.kallsyms]  [k] ptep_clear_flush
 
-diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
-index 6d409ca..701a615 100644
---- a/drivers/remoteproc/qcom_q6v5_adsp.c
-+++ b/drivers/remoteproc/qcom_q6v5_adsp.c
-@@ -54,6 +54,9 @@
- 
- #define QCOM_Q6V5_RPROC_PROXY_PD_MAX	3
- 
-+#define LPASS_BOOT_CORE_START	BIT(0)
-+#define LPASS_BOOT_CMD_START	BIT(0)
-+
- struct adsp_pil_data {
- 	int crash_reason_smem;
- 	const char *firmware_name;
-@@ -366,10 +369,10 @@ static int adsp_start(struct rproc *rproc)
- 	writel(adsp->mem_phys >> 4, adsp->qdsp6ss_base + RST_EVB_REG);
- 
- 	/* De-assert QDSP6 stop core. QDSP6 will execute after out of reset */
--	writel(0x1, adsp->qdsp6ss_base + CORE_START_REG);
-+	writel(LPASS_BOOT_CORE_START, adsp->qdsp6ss_base + CORE_START_REG);
- 
- 	/* Trigger boot FSM to start QDSP6 */
--	writel(0x1, adsp->qdsp6ss_base + BOOT_CMD_REG);
-+	writel(LPASS_BOOT_CMD_START, adsp->qdsp6ss_base + BOOT_CMD_REG);
- 
- 	/* Wait for core to come out of reset */
- 	ret = readl_poll_timeout(adsp->qdsp6ss_base + BOOT_STATUS_REG,
+While pages are mapped by multiple processes or HW has more CPUs,
+the cost should become even higher due to the bad scalability of
+tlb shootdown.
+
+The same benchmark can result in 16.99% CPU consumption on ARM64
+server with around 100 cores according to Yicong's test on patch
+4/4.
+
+This patchset leverages the existing BATCHED_UNMAP_TLB_FLUSH by
+1. only send tlbi instructions in the first stage -
+	arch_tlbbatch_add_mm()
+2. wait for the completion of tlbi by dsb while doing tlbbatch
+	sync in arch_tlbbatch_flush()
+My testing on snapdragon shows the overhead of ptep_clear_flush
+is removed by the patchset. The micro benchmark becomes 5% faster
+even for one page mapped by single process on snapdragon 888.
+
+-v3:
+1. Declare arch's tlbbatch defer support by arch_tlbbatch_should_defer() instead
+   of ARCH_HAS_MM_CPUMASK, per Barry and Kefeng
+2. Add Tested-by from Xin Hao
+Link: https://lore.kernel.org/linux-mm/20220711034615.482895-1-21cnbao@gmail.com/
+
+-v2:
+1. Collected Yicong's test result on kunpeng920 ARM64 server;
+2. Removed the redundant vma parameter in arch_tlbbatch_add_mm()
+   according to the comments of Peter Zijlstra and Dave Hansen
+3. Added ARCH_HAS_MM_CPUMASK rather than checking if mm_cpumask
+   is empty according to the comments of Nadav Amit
+
+Thanks, Peter, Dave and Nadav for your testing or reviewing
+, and comments.
+
+-v1:
+https://lore.kernel.org/lkml/20220707125242.425242-1-21cnbao@gmail.com/
+
+Anshuman Khandual (1):
+  mm/tlbbatch: Introduce arch_tlbbatch_should_defer()
+
+Barry Song (3):
+  Revert "Documentation/features: mark BATCHED_UNMAP_TLB_FLUSH doesn't
+    apply to ARM64"
+  mm: rmap: Extend tlbbatch APIs to fit new platforms
+  arm64: support batched/deferred tlb shootdown during page reclamation
+
+ Documentation/features/arch-support.txt       |  1 -
+ .../features/vm/TLB/arch-support.txt          |  2 +-
+ arch/arm64/Kconfig                            |  1 +
+ arch/arm64/include/asm/tlbbatch.h             | 12 ++++++++
+ arch/arm64/include/asm/tlbflush.h             | 28 +++++++++++++++++--
+ arch/x86/include/asm/tlbflush.h               | 15 +++++++++-
+ mm/rmap.c                                     | 19 +++++--------
+ 7 files changed, 61 insertions(+), 17 deletions(-)
+ create mode 100644 arch/arm64/include/asm/tlbbatch.h
+
 -- 
-2.7.4
+2.24.0
 
