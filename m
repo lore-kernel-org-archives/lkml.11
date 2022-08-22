@@ -2,91 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D137C32792
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3ADCC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232951AbiHVGW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        id S232967AbiHVGXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232947AbiHVGW4 (ORCPT
+        with ESMTP id S232631AbiHVGXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:22:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15282275C2
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661149375;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nn4jF27DFlQd4RWn0PQw34qeK9JpgLOLE2krBPtSffM=;
-        b=fslQWwpRylkvCj+/Vvrw/mPfA4jq4fCn8ZSMv6ynoEZ17HvOGy6Di/Wo9iNasemIfhihrF
-        wXec1+El+x5gurmb1e3uYUb3ZLmOO5C8Pfal1xKgFJFz9c4BE0SrTUsaFBc8HzL9hXrO0i
-        amUNCwkM+KDQXVxStx9sezXh7uLekiA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-208-oWilpA_WMdKNbxA-Luhz_w-1; Mon, 22 Aug 2022 02:22:50 -0400
-X-MC-Unique: oWilpA_WMdKNbxA-Luhz_w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 566F43C0CD4A;
-        Mon, 22 Aug 2022 06:22:50 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.211])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E8911121314;
-        Mon, 22 Aug 2022 06:22:49 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Stefan Hansson <newbie13xd@gmail.com>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH] HID: input: fix uclogic tablets
-Date:   Mon, 22 Aug 2022 08:22:47 +0200
-Message-Id: <20220822062247.1146141-1-benjamin.tissoires@redhat.com>
+        Mon, 22 Aug 2022 02:23:02 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC23227177
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:23:00 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MB2Kj1t8BznThx;
+        Mon, 22 Aug 2022 14:20:41 +0800 (CST)
+Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
+ (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
+ 2022 14:22:57 +0800
+From:   Zeng Heng <zengheng4@huawei.com>
+To:     <rostedt@goodmis.org>, <mingo@redhat.com>, <bristot@kernel.org>
+CC:     <liwei391@huawei.com>, <zengheng4@huawei.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] trace: wwnr: Make local symbol 'rv_wwnr' static
+Date:   Mon, 22 Aug 2022 14:30:56 +0800
+Message-ID: <20220822063056.3890045-1-zengheng4@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500022.china.huawei.com (7.185.36.162)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 87562fcd1342 ("HID: input: remove the need for HID_QUIRK_INVERT")
-made the assumption that it was the only one handling tablets and thus
-kept an internal state regarding the tool.
+The sparse tool complains as follows:
 
-Turns out that the uclogic driver has a timer to release the in range
-bit, effectively making hid-input ignoring all in range information
-after the very first one.
+kernel/trace/rv/monitors/wwnr/wwnr.c:18:19:
+warning: symbol 'rv_wwnr' was not declared. Should it be static?
 
-Fix that by having a more rationale approach which consists in forwarding
-every event and let the input stack filter out the duplicates.
+The `rv_wwnr` symbol is not dereferenced by other extern files,
+so add static qualifier for it.
 
-Reported-by: Stefan Hansson <newbie13xd@gmail.com>
-Fixes: 87562fcd1342 ("HID: input: remove the need for HID_QUIRK_INVERT")
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Zeng Heng <zengheng4@huawei.com>
 ---
- drivers/hid/hid-input.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/trace/rv/monitors/wwnr/wwnr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index 48c1c02c69f4..871a185a0f1f 100644
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1532,7 +1532,10 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
- 			 * assume ours
- 			 */
- 			if (!report->tool)
--				hid_report_set_tool(report, input, usage->code);
-+				report->tool = usage->code;
-+
-+			/* drivers may have changed the value behind our back, resend it */
-+			hid_report_set_tool(report, input, report->tool);
- 		} else {
- 			hid_report_release_tool(report, input, usage->code);
- 		}
+diff --git a/kernel/trace/rv/monitors/wwnr/wwnr.c b/kernel/trace/rv/monitors/wwnr/wwnr.c
+index 599225d9cf38..a063b93c6a1d 100644
+--- a/kernel/trace/rv/monitors/wwnr/wwnr.c
++++ b/kernel/trace/rv/monitors/wwnr/wwnr.c
+@@ -15,7 +15,7 @@
+ 
+ #include "wwnr.h"
+ 
+-struct rv_monitor rv_wwnr;
++static struct rv_monitor rv_wwnr;
+ DECLARE_DA_MON_PER_TASK(wwnr, unsigned char);
+ 
+ static void handle_switch(void *data, bool preempt, struct task_struct *p,
+@@ -59,7 +59,7 @@ static void disable_wwnr(void)
+ 	da_monitor_destroy_wwnr();
+ }
+ 
+-struct rv_monitor rv_wwnr = {
++static struct rv_monitor rv_wwnr = {
+ 	.name = "wwnr",
+ 	.description = "wakeup while not running per-task testing model.",
+ 	.enable = enable_wwnr,
 -- 
-2.37.1
+2.25.1
 
