@@ -2,290 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E14C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 636B2C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:49:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233283AbiHVHtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
+        id S233345AbiHVHt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231865AbiHVHsy (ORCPT
+        with ESMTP id S233273AbiHVHtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:48:54 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD60063CF;
-        Mon, 22 Aug 2022 00:48:52 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27M7lxG8028645;
-        Mon, 22 Aug 2022 07:48:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : in-reply-to : mime-version;
- s=corp-2022-7-12; bh=036IaCcxUTHfNNGpoEt/UhRQy444HEjstOLo7pwfESc=;
- b=wDrIWBdEVWuF5x1ChxBMkijfj30JcXnlqIUWscA4N0z4TzznuSqh1UJT+bsLMwq9r36t
- gP1taFhvTIFBiThUXKJRdohINfWJPR+VmKN8I//JxawkRogw1YjtO4EXpPRfLeqvWv1u
- FcL8GyBXdVtdIvP0aFHqhpd4VUBP+SWSL1dX2l5BWU4I3tRh9gokBZcHfpajdSGPuXx+
- oGN3zeUHUPN+ylHBWpGyZOgHitukBxxbLaNJPEn18XcwZwJGYA1ub4Ub6R23hd0VfeP9
- 7hBUxtGGsCqnu3rABqw373jrLOrpw6I5fsCLgQAEP43h0x/WILkdXhra7xoIC10oMUZ3 uQ== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j45qk0013-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Aug 2022 07:48:23 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27M7egOw013438;
-        Mon, 22 Aug 2022 07:40:46 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j3mjcqdjv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Aug 2022 07:40:46 +0000
+        Mon, 22 Aug 2022 03:49:25 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2081.outbound.protection.outlook.com [40.107.22.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1ED13CD5;
+        Mon, 22 Aug 2022 00:49:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jHpTGqL1Rl6cuLw0t2YtapaM4o3CblFmIhkwsF1QGwEK5zXlDlI6X4b1KaV9gf3vk7wR4IE4tUO1A0k5a7MoQ20D750bku2bzOXKmnLUlm02A/Fv+I4MPylsOERsVfTSntygpF6kTA065Rsf9c5P1LAiT3oxqBMvO5QieaygIguri+npq4I50mcc0A0UZKZ1CRQPoBtMV5VhMtgx5lv0/nKxD+PbzGYakngselybSAJWgOEaRKENmHD2b9wgjEyfiNVZdEJ2aL9s862/6MUzN88n5xb6cv5vdw63NdA9bHk4QWABv882ynCSJmQERbme7DduClfjrQbd78S/DWgo5A==
+ b=gIyAJfFIC5UxvrQdGd7AjWkN7dvZfiV/Yq2pK+Er7BN64HbD8Tq3jtMxtrdncERgcT4F18LEDMR9V9JjCQO2s//trpGbiDOWZdieVZKaWKQ0V2M+IQ/FvRkX4jQuz2lPZ0+X33nWLZYlFZQDJWrIVR5/oEOhnr9yj4bzbRm42p2eac+C8nDLW1AV5GKnS2+k1bdQx0fGsCbKg8WUHHwAIs3TGz7OotKWZEkcHBKEWQV8Ie5QyDz6Q6EGysF/yR/qPWIQll8snBwPjlpkUyoZVDWwJA3WLIS3UrtfLLYKyYjS9sUoYVRl3WDf7kI93iWONOoonahJQNsggHZ2d1Yl5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=036IaCcxUTHfNNGpoEt/UhRQy444HEjstOLo7pwfESc=;
- b=HqAEPXvZ2WrdVSIGd+PjZYv4uLiVflxk7/CwoOOO1vOXfoqMndGYWEa4dyoPuE4dYcCoCu7F468tVpoRxAUlood0U1p2OJ77H5LL2uplpys8cSoaJw//mceZjpkz/BLsNp7S1nylz3J6VJe8Y01DO6Ne8aMcp5AsgluftfGXD5RQoGEKsXVIpfH2/Dy0BCzubZWYqptV3l0oJGj3ERMVg7rmhpxmWD4t6vm+bE59p70Bh4GyA/hN+xQXp8Js4k3Vr7Yo3TrIzSdYoVY4EwKXO8cz2eUpocRTSbNWdIILaQd+nl0K8iBFHCoZEvGTLcknc+rTVE/UQkq0YcEE9KOQVg==
+ bh=1RS6yCNOPqwWf3B5rJNrthzCvh5OfykrF2PWvKioYCg=;
+ b=mAOpkOqbe2R4Q7jbPVHFvgh4+HGdG2dUKzdRuFlnSFw+cPeZEJ7l3U6b+Z6eNrie3KruEY5DqSYMoOWT4UpbazUQVMnBasXvb7CW++zF5So9S+tZ7M3g6M3JevMssA7PKsWDGEaKHUBu/z49xFP/4ADyLqqk2Zx95+6YBtiPLmb5Y5Uwl8mI9JN55iZE0OcczX4vD2jiO9NORdtGdmB3g74lokbRemGLjukAU0AeJOfNr4r/v5dW4T+7Yti4U955BnSMC/ccY5MzFxGb07XAJM9gnbj0qNsWGqrazKgs7k+2Ev1dUaNXDZUqZy4E806fILxnuAQeiOGWHE7GoQoQEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=036IaCcxUTHfNNGpoEt/UhRQy444HEjstOLo7pwfESc=;
- b=AT+DHDqP/EEntxtswVxLQxCe6yVnusM7ZgpEwAVi+uGo78MbFnsZIjZ1l1z620HXvbPqDHhVMvSyMp9ZbiVlGAgv8gqfMxcO3NglRcpXmWzdr/Y3EDoObhzwEpqgp0rJPQeJG3gMvp77IDY+fRBH8/TYq+9PpD+AC5nVUcP6+/w=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DM5PR10MB2011.namprd10.prod.outlook.com
- (2603:10b6:3:111::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Mon, 22 Aug
- 2022 07:40:43 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
- 07:40:43 +0000
-Date:   Mon, 22 Aug 2022 10:40:25 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Gireesh.Hiremath@in.bosch.com,
-        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        bcousson@baylibre.com, tony@atomide.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, dmitry.torokhov@gmail.com,
-        mkorpershoek@baylibre.com, davidgow@google.com,
-        m.felsch@pengutronix.de, swboyd@chromium.org,
-        fengping.yu@mediatek.com, y.oudjana@protonmail.com,
-        rdunlap@infradead.org, colin.king@intel.com
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        sjoerd.simons@collabora.co.uk, VinayKumar.Shettar@in.bosch.com,
-        Govindaraji.Sivanantham@in.bosch.com, anaclaudia.dias@de.bosch.com
-Subject: Re: [PATCH v3 2/3] driver: input: matric-keypad: add reduced matrix
- support
-Message-ID: <202208200111.6wvFtbES-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819065946.9572-2-Gireesh.Hiremath@in.bosch.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR2P264CA0177.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501::16)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=1RS6yCNOPqwWf3B5rJNrthzCvh5OfykrF2PWvKioYCg=;
+ b=cu3zK+KpjnxKqjbL7Ux2gJ4CyWZ4o5eYJGA3XLZrCqeBcTCjFFjmlgW3+JgSgxohYd2Lbsf1O8UVp9Nj+ZckoC64oi0z71hm/nB5U6OXe7GK4Fpew3SxJTUgNSfvGg6EXYQ91E+fJHOgUCvSIUZ7Hfca9ZE+NNIAviD7mdb5IxY=
+Received: from AM6PR04MB6053.eurprd04.prod.outlook.com (2603:10a6:20b:b9::10)
+ by AM6PR04MB6664.eurprd04.prod.outlook.com (2603:10a6:20b:fa::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Mon, 22 Aug
+ 2022 07:49:20 +0000
+Received: from AM6PR04MB6053.eurprd04.prod.outlook.com
+ ([fe80::6cd5:f11c:4e5c:d79c]) by AM6PR04MB6053.eurprd04.prod.outlook.com
+ ([fe80::6cd5:f11c:4e5c:d79c%3]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 07:49:20 +0000
+From:   "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+To:     Marco Felsch <m.felsch@pengutronix.de>
+CC:     "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
+        "linux@roeck-us.net" <linux@roeck-us.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+Subject: RE: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
+ unlock sequence
+Thread-Topic: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
+ unlock sequence
+Thread-Index: AQHYsSoBdxZHPlON40a5XuD6jrx4qK2xDxMAgAl1k+A=
+Date:   Mon, 22 Aug 2022 07:49:20 +0000
+Message-ID: <AM6PR04MB60537292F559EC012F0EB510E2719@AM6PR04MB6053.eurprd04.prod.outlook.com>
+References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
+ <20220816043643.26569-3-alice.guo@oss.nxp.com>
+ <20220816062330.z2fvurteg337krw2@pengutronix.de>
+In-Reply-To: <20220816062330.z2fvurteg337krw2@pengutronix.de>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 24e7f8c9-9116-4415-6600-08da8412d2d6
+x-ms-traffictypediagnostic: AM6PR04MB6664:EE_
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: EecfZLh9Um7wLHN7jSR6UXRH6QnGyej/Nm41nP2Dw837JI/iqqHanoELMq+9T3xUqrmPRCFoTOBv1UpgkN6Qbt1zdhX2KXPYV7NWAct/zrMxcBJI8B3ru4CI4a/s/aCflDvTBLRtFCXI2OVbcnwI+Tc3ld4Vjg2ow8kf9M0FFby938L53cfQTygfUgTUU3170B6PPcW16dxETnPcb1XkhJ1oJjAjCu0UP9DUniZvf4y9m+iUGXCw5oodiBIddf6bWCuZ98cV5avmCr5nCDOsdJoqUC9RU/8OebrjjkAnG524e7ejoQj96KdP2C4uQ2WGujmtgadz0BB5dKW2JGhTnWgV2Sk9xmRG6wfME28k2MvCDjtEOgG9g5kGKu/dfBWnCanX0Tr0ZSaSyQlinb5Ojbvhh/CE/Np4Vyo5SviuYLEOKEvFUDQfkgRudATvwvNPrMSVbWnw1CZ7b/Tgd7WybcKTrQINY/gSXcIAn0IpB0z9NCi7yx15aaAJ+Fj/XxI8h1/t1t0GihwLLZS/zubgIZpipMRUz3CnDJSkyQWNLXjSlDHTYjLQ4+K6cQW5Cm4oBLoggvNmX6NJejaPBRklvEp87I0G50DuDsNkUlr0L3+rmJKnJqlyNBfyLUhe3rY7U4DoVHgALXqXMIT6FS73c8GGX4g+Z6layQJ6B4Y2+f/cibvcvYe8o6VOrNv69YmIadeh6SYOZC0Mywxvw2L5bkOC93tthZuhELleoumsQjkMe+S4UffA24M3vCFINaL/DnbDnbBOH6/m+vVUpT5LFQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6053.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(136003)(39860400002)(376002)(366004)(122000001)(38100700002)(2906002)(38070700005)(52536014)(8936002)(478600001)(71200400001)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(8676002)(4326008)(316002)(6916009)(54906003)(55016003)(186003)(83380400001)(41300700001)(7416002)(5660300002)(9686003)(7696005)(26005)(53546011)(86362001)(6506007)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?O8419l4zXw3yj0A9qPEkf7J1jJ7mXjvqjs9WRE/HenRsGnCONrZaAGQiVDSr?=
+ =?us-ascii?Q?M5JRO/GxsTj9axttOvP1r8ufZ0TCDfJLyrvEI9H+Mtxle+dhyGCrE/FD1AWr?=
+ =?us-ascii?Q?sU0pur8k0chc77VKwGlY0btjkQHqdDPH5fJe2rp4/1OmZ4TcGgCr4XM9cbqM?=
+ =?us-ascii?Q?jAhcguASJx7L7k7B0RLud3W6fDCjc7CA2OESeRpvKZNvgozPYLyTyimcWOcw?=
+ =?us-ascii?Q?Dnrcde/8ygc6cZdjPX/ZYU7dFtkMFkwe+8MKUjTc6skqQIWNHCQeUarxI8LK?=
+ =?us-ascii?Q?cY1VkpvCg5M07NwQCd1QA2mtFmx3BFgU3uYYHjfulvI1UPbhQc1MEaCz14mh?=
+ =?us-ascii?Q?MA8m1Ktq0UXrBL/O0Nktpll0j5C1sjaCbdujkkRoitd9XdDYCai6dCb/IS0u?=
+ =?us-ascii?Q?0P4b2Bd8640cV8wrugiUtd8QCjTTIS/yT1UKW11vA3hOk6azAeoruzYW7FN7?=
+ =?us-ascii?Q?JRZjn8PuN8rOfnJPn495ChQkLzuX0bLC+qXrXF4yI13gx5shGl4yZJ8HTiIY?=
+ =?us-ascii?Q?JdZ6XqXFqFbIWQC4Kf0wog3/HStpAE7QTd1jbYFLxMJhrLPZ5WLDo2E6sL/E?=
+ =?us-ascii?Q?SzwJFWXaBZpE6UCJigD1SBDXhXERSHEXO3WrIFCQpDm0HNnRoDe3lKfTMi9k?=
+ =?us-ascii?Q?/tRmkPjZ0X14jA1xlDEUhZXth1s1capIJ5xYt1W+jpVaHNCDNbzwHQoB0O7y?=
+ =?us-ascii?Q?drJoKzBhONmnC2CtRMapbDO0iLAfFPfApUA3S/Zb3Uuv9c6rKltbOyfgIixV?=
+ =?us-ascii?Q?PbNBBpMKyn23OdB2alhtwUmA8WaSjS60dMuo/SETmodA36KT9fnzVIHHBWKh?=
+ =?us-ascii?Q?oVk7lKMql3x3P+sT5KNzFZn6viNPQqqXkIRqBmC9/KT9jyTEAqRct9McSZAv?=
+ =?us-ascii?Q?M/xhCWaHr7piZ3kOu5eZjIhSou2Yegmp/JSH5CPZFclQj7OlyriLnF64p1ct?=
+ =?us-ascii?Q?9QUujSuJMcqDC+PYb7dHiMxvnfLsHsWGoD41/stNPPiwCYiQ9Pl1UeI7owj/?=
+ =?us-ascii?Q?6tRig3uB5y7YhxhOkbLoqeV/WGLvVvDGRGim/lqLHEmaR3WGCANgKMzcjKkH?=
+ =?us-ascii?Q?43FS/SKzfWkLPzr7U8Cvs/ukeOKvtpnVSMBpeohpohwAdB2F3TPW1zDen5KB?=
+ =?us-ascii?Q?K/fVzZLpWLv35PgPPExbtomK6XDnvLTmlwrWpnUwe3hqB+uyl2eCh/bevlV5?=
+ =?us-ascii?Q?aFiKd8TUDDi5XXRn22RjqHjyNzpZ9UDYVW1nEhxnz/RNk4nvV7n9pLgQL78Z?=
+ =?us-ascii?Q?DwxqlECV/kVPouY7thsnXHdeJtOIGerPvTgK0lhbJHaJkqn6WS5VM9xW4OLs?=
+ =?us-ascii?Q?QP5zpkuF8kY/MirEyOUsbWKkYOgZMfCJ7xHlSSzhs8ueGZPAJ3hp4i4xziMy?=
+ =?us-ascii?Q?XbfmggBfa9TrzM46/4YZDDDsELmcnb4EvXs1TBGYimHZqtbRdTgZ6+b6+CS5?=
+ =?us-ascii?Q?YCWacNMEl6EGgqMIhpE2Kh3nuDK9maFSVNAm45hqCHdlU0Mla3B0pXHX8McO?=
+ =?us-ascii?Q?9k3+oLRN+WJ6A5BBbgg/BAwtysTFx6vYrVcaTyGaCCcLfj3sX72WZ9yjGhVn?=
+ =?us-ascii?Q?oes5aKvQzCD2y/Zw34/Z9nTFU0NtaPL93USCjxbi?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6f583c09-3d3d-462e-8ed7-08da84119e0f
-X-MS-TrafficTypeDiagnostic: DM5PR10MB2011:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QhyaGuMmJlKApmuQlKOIA9WObpjDpVZ3UvR15gOgvaKwGzYFUW7Mun6/9p7r2+kpiOKFQlLpuSJbwSZzxxjKyxBTEzfaTWlRnQgSvKWH354io5FYk0k69QzFQOHEDH90dqI+DmFomxAoKde3AlsuQXor5RjyzLhDOjsSS3IqU41HOZf8lsPYPNGxt7oMz7vDhxcDTHNbM+bW1/zMlOASQ9I7qv5M0x5KQcpDVIiF6Mwoz3n9KI1gR6pgT0Q+P8bjrcvItng84LpaTZ0fLIIylcQFKAa6Pk4QfoiEC56lEjhNMFLfVeenm6NSSwkQWW/8yHx9EfQj8Xyd5qqvVKJkbpZGwewiEsDJ5QyXOJjg1PsEx2Oq2yODvT9kz4f2FzyKa7XVuuI1UxFV1D8jqOnR8DeR09JQeMFulGj11JaZYJAJNILi6VVtPA0QzFuS5BSvwVtPJ62xLbNA3BRgyV2HMsMSoGRDLR9mO52v4791KBE4L7BIeCpA2eye3nb1F0qNEsobR1UgQSjDOjy2egMsmHBTQQoSEjKdTfxQ8RPqU3nsMn5uLZWpkNq2WZKT3CMyI91zgchrdun9kLySvZfi/U/6y1f+8V3UsFy4Du07iucKU2PsIrNxWFfU5GFDaMoVA1GJAjuUSsLoUTneMA6SJvMCiwPwhu19Hv3NTcj/S/OZtHE0uydnpFzV7q0pRCPr/oATNqh9KcnmmVi0aUv8YMc4lIxkrcct2jxBhxGwYWGAHnAJn6DSfVp8fdVfgH3EcoJSdit/K/uZN3MIiNdlS0G9tZfVkuDrbdMyRXa0Xd8Twyqz0uW8UYIiZjjq3yMlEUtwzVjSaBuZ7fZkhBY5NHMGEamDedptb1CosiWDjhc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(346002)(136003)(39860400002)(376002)(66946007)(66476007)(8676002)(66556008)(4326008)(86362001)(921005)(38350700002)(36756003)(38100700002)(1076003)(186003)(8936002)(6512007)(26005)(52116002)(9686003)(6666004)(41300700001)(6486002)(478600001)(966005)(6506007)(7416002)(316002)(4001150100001)(2906002)(83380400001)(44832011)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Cb8d88iK8Vw6rP/w+KjZMAS0xd0+vaotCP2ewcgCFdwLV5oWJBWQBRtCwrBx?=
- =?us-ascii?Q?OFCTh3wEfu6Bne2f2uhiO9hoPyADA69gOGhVvVB0RSCaDX6H+JeH1t798w2f?=
- =?us-ascii?Q?ZAVGyN4E5WCvnLcipsNJPm6e2TtrP14ZUwkuifPvzSoXof0vIYCcQXI17/ca?=
- =?us-ascii?Q?pbVtQjPayDNnNA1MnCxqiaFcihHqKqOd9TDiVQwhUIIquyRvEVE3bhIcHYSm?=
- =?us-ascii?Q?0T25ehsVbmmYW2NkiVUQatkZDk9+29nG7PLed2vjRhw+He+bsIcPM81VuQ6O?=
- =?us-ascii?Q?DQ8FF2XXym9hMTyaqvQkJDHuUoydPsaymFhtBxat4myxd4CFOR82ilk5KNSm?=
- =?us-ascii?Q?Z3DteCK1Ic+IGoaA+nZSQhlngqmP540t/c3Z/ghQHcZMlu1/POzlUNPhYn2z?=
- =?us-ascii?Q?pgf5GIvhMzBj83vCn6X4Xb49kRwdISIGzsAwpSSHPPlew7gTT2nJTM4PKmP5?=
- =?us-ascii?Q?AeL0NNNnz/lKMY1rC9YAh/tRrOmbcCC4ZkTdv6kEXr83n+a67O7Dox70Zllv?=
- =?us-ascii?Q?3udIWScC7LSctg75Sw3TOXVPMy22kdVnFeySKbCAHtclc6PsaWe7QIwsbg+g?=
- =?us-ascii?Q?pcdB8xhjduhGY0/FEoVqyFzJNMnfvksxRJHSAY3PYxiebhLo+rpxvhSBsT8j?=
- =?us-ascii?Q?BHFRfJvlyzTbZpxH312578qI5fGO3+ubT0f0Mxc2Ybx054hZR+gSopeXi0Gm?=
- =?us-ascii?Q?PF7/w+q8UE+bRhN7mYmSg8EiBJ+XoY2XUATj/xwqZRt/QmjO55g2WN07hlEb?=
- =?us-ascii?Q?+ld42YrPiHciB2Mmg85l30GYHcf4u34BXc8/265NDY+P3tIeRxOn6AJyZPco?=
- =?us-ascii?Q?VCLC+OnW2jhrZH0KeN5WN5c7JYWYxoyMemXMa8JXiyXZa2CMlA302xe8DlK9?=
- =?us-ascii?Q?DKOSKDV51cKRFatJRKVLhQh+dFMIWqRvdvG9O/ixecEjNTOfmFLMGpOLG9xm?=
- =?us-ascii?Q?XWvzcT3SXSul7PJL78MsusMeyjI5Pnhx5T43Peta3OsNtX12qUaR+rWqSaQO?=
- =?us-ascii?Q?c0GRwuiIv6p9KM9SkVjyki5FN9fu3VVfYPpWWmXrdTUom/MPlVR9GRTP5Ebf?=
- =?us-ascii?Q?/K0QtMitPiOF8jPRwTyrqtKijIF2WdmZLGJBLDFPGMgn16O17AMHHwsQ3vaZ?=
- =?us-ascii?Q?gZuS34NBRymwZ10/6WSQpb/NLYiH2vdDySE10nvUCj8ziixYCpYDFNjr6QQX?=
- =?us-ascii?Q?Utj/4kB0sMyS37WjVpWRe5ePl+NUqCHP7632j2R9zpS9BssBGGD90Ah4O4/Z?=
- =?us-ascii?Q?GftKxjkwLMNzqixBtSIX9qb9SZtweqlvSQRX1DQlhLyxz1/k1x6TIhnnC11Q?=
- =?us-ascii?Q?KLOj7+sVCtA7LA0VcUcHr+DrtNiq1vHGtrAbLDXG2s2tGiUpdvXDqZFjGdEW?=
- =?us-ascii?Q?/+ZYDtFY73/miZ0UXWzwHXSxpoSKiYKcqLWHZSmLxNV1WWB7afUVmkeSqJsi?=
- =?us-ascii?Q?pQXpDGBEeenwBQaL+smlHzNzkyr4TrydrHVUTLopOY5BrCxiYocH/D8Pw6oB?=
- =?us-ascii?Q?Dv5MfefL0iO5QIXF+rt8XR6RcBtjLgSUB/o6vC272pZ3dnu23SyYnU0Gigk2?=
- =?us-ascii?Q?9tPGc/LxOGKkcPRtCVNGIz+qwe1ddPOmztktN6x0lx5MY/HA+NAnyxQYWhSt?=
- =?us-ascii?Q?+A=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f583c09-3d3d-462e-8ed7-08da84119e0f
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-OriginatorOrg: oss.nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 07:40:43.2632
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6053.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24e7f8c9-9116-4415-6600-08da8412d2d6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2022 07:49:20.7734
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sg5TqVdUIXtRYgjC2DFzYsSMJcQpwxlQNfaUtjjZGOgGimWbOpuIA8ORrYZiMyJ8015bFlu5whOa68bHDrhsSvzFlyMEZb7AYAZGHNqbS1g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB2011
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_04,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
- spamscore=0 phishscore=0 malwarescore=0 bulkscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208220032
-X-Proofpoint-ORIG-GUID: sIzmsiX-tydalzwcDQJFmmrQwmgsALfb
-X-Proofpoint-GUID: sIzmsiX-tydalzwcDQJFmmrQwmgsALfb
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zqrNQXRk2IhyfSWf0zUkreYFG6afSbWw64oJhhDE7f6YME4TbCoQAxTiy5i82SS3TzRXKy2zKYu8MJjp7ghjbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6664
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> -----Original Message-----
+> From: Marco Felsch <m.felsch@pengutronix.de>
+> Sent: Tuesday, August 16, 2022 2:24 PM
+> To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
+> Cc: wim@linux-watchdog.org; linux@roeck-us.net; shawnguo@kernel.org;
+> s.hauer@pengutronix.de; festevam@gmail.com;
+> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+> dl-linux-imx <linux-imx@nxp.com>; kernel@pengutronix.de;
+> linux-watchdog@vger.kernel.org
+> Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier fo=
+r
+> unlock sequence
+>=20
+> On 22-08-16, Alice Guo (OSS) wrote:
+> > From: Jacky Bai <ping.bai@nxp.com>
+> >
+> > Add explict memory barrier for the wdog unlock sequence.
+>=20
+> Did you inspected any failures? It's not enough to say what you did, you =
+need
+> to specify the why as well.
+>=20
+> Regards,
+>   Marco
+
 Hi,
 
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Two 16-bit writes of unlocking the Watchdog should be completed within a ce=
+rtain time. The first mb() is used to ensure that previous instructions are=
+ completed.
+The second mb() is used to ensure that the unlock sequence cannot be affect=
+ed by subsequent instructions. The reason will be added in the commit log o=
+f v2.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Gireesh-Hiremath-in-bosch-com/driver-input-matric-keypad-switch-to-gpiod/20220819-151155
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: s390-randconfig-m041-20220819 (https://download.01.org/0day-ci/archive/20220820/202208200111.6wvFtbES-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
+Best Regards,
+Alice Guo
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-smatch warnings:
-drivers/input/keyboard/matrix_keypad.c:932 matrix_keypad_probe() error: uninitialized symbol 'err'.
-
-vim +/err +932 drivers/input/keyboard/matrix_keypad.c
-
-5298cc4cc753bb Bill Pemberton   2012-11-23  823  static int matrix_keypad_probe(struct platform_device *pdev)
-bab7614d6d1b1f Eric Miao        2009-06-29  824  {
-bab7614d6d1b1f Eric Miao        2009-06-29  825  	const struct matrix_keypad_platform_data *pdata;
-bab7614d6d1b1f Eric Miao        2009-06-29  826  	struct matrix_keypad *keypad;
-bab7614d6d1b1f Eric Miao        2009-06-29  827  	struct input_dev *input_dev;
-bab7614d6d1b1f Eric Miao        2009-06-29  828  	int err;
-bab7614d6d1b1f Eric Miao        2009-06-29  829  
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  830  	pdata = dev_get_platdata(&pdev->dev);
-bab7614d6d1b1f Eric Miao        2009-06-29  831  	if (!pdata) {
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  832  		pdata = matrix_keypad_parse_dt(&pdev->dev);
-d55bda1b3e7c5a Christian Hoff   2018-11-12  833  		if (IS_ERR(pdata))
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  834  			return PTR_ERR(pdata);
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  835  	} else if (!pdata->keymap_data) {
-bab7614d6d1b1f Eric Miao        2009-06-29  836  		dev_err(&pdev->dev, "no keymap data defined\n");
-bab7614d6d1b1f Eric Miao        2009-06-29  837  		return -EINVAL;
-bab7614d6d1b1f Eric Miao        2009-06-29  838  	}
-bab7614d6d1b1f Eric Miao        2009-06-29  839  
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  840  	keypad = kzalloc(sizeof(struct matrix_keypad), GFP_KERNEL);
-bab7614d6d1b1f Eric Miao        2009-06-29  841  	input_dev = input_allocate_device();
-01111fcd42b050 Dmitry Torokhov  2012-04-20  842  	if (!keypad || !input_dev) {
-bab7614d6d1b1f Eric Miao        2009-06-29  843  		err = -ENOMEM;
-bab7614d6d1b1f Eric Miao        2009-06-29  844  		goto err_free_mem;
-bab7614d6d1b1f Eric Miao        2009-06-29  845  	}
-bab7614d6d1b1f Eric Miao        2009-06-29  846  
-bab7614d6d1b1f Eric Miao        2009-06-29  847  	keypad->input_dev = input_dev;
-bab7614d6d1b1f Eric Miao        2009-06-29  848  	keypad->pdata = pdata;
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  849  	keypad->row_shift = get_count_order(pdata->num_col_gpios);
-bab7614d6d1b1f Eric Miao        2009-06-29  850  	keypad->stopped = true;
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  851  
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  852  	if (pdata->mode == REDUCED) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  853  		keypad->button_array = devm_kzalloc(
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  854  			&pdev->dev,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  855  			sizeof(struct button) * (pdata->num_of_buttons),
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  856  			GFP_KERNEL);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  857  		if (!keypad->button_array) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  858  			dev_err(&pdev->dev,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  859  				"could not allocate memory for button array\n");
-
-err = -ENOMEM;
-
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  860  			goto err_free_mem;
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  861  			;
-
-Why the extra ;?
-
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  862  		}
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  863  
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  864  		poll_prepare(keypad);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  865  
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  866  		err = input_setup_polling(input_dev, matrix_keypad_poll);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  867  		if (err) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  868  			dev_err(&pdev->dev,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  869  				"unable to set up polling, err=%d\n", err);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  870  			return err;
-
-Memory leaks.  Needs to goto err_free_mem;
-
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  871  		}
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  872  
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  873  		input_set_poll_interval(input_dev, pdata->poll_interval_ms);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  874  	} else {
-bab7614d6d1b1f Eric Miao        2009-06-29  875  		INIT_DELAYED_WORK(&keypad->work, matrix_keypad_scan);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  876  	}
-bab7614d6d1b1f Eric Miao        2009-06-29  877  	spin_lock_init(&keypad->lock);
-bab7614d6d1b1f Eric Miao        2009-06-29  878  
-bab7614d6d1b1f Eric Miao        2009-06-29  879  	input_dev->name = pdev->name;
-bab7614d6d1b1f Eric Miao        2009-06-29  880  	input_dev->id.bustype = BUS_HOST;
-bab7614d6d1b1f Eric Miao        2009-06-29  881  	input_dev->dev.parent = &pdev->dev;
-bab7614d6d1b1f Eric Miao        2009-06-29  882  	input_dev->open = matrix_keypad_start;
-bab7614d6d1b1f Eric Miao        2009-06-29  883  	input_dev->close = matrix_keypad_stop;
-bab7614d6d1b1f Eric Miao        2009-06-29  884  
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  885  	if (pdata->mode == REDUCED) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  886  		err = matrix_keypad_build_keymap(pdata->keymap_data, NULL,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  887  						 pdata->num_line_gpios,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  888  						 pdata->num_line_gpios, NULL,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  889  						 input_dev);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  890  		if (err) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  891  			dev_err(&pdev->dev, "failed to build keymap for reduced mode\n");
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  892  			goto err_free_mem;
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  893  		}
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  894  	} else {
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  895  		err = matrix_keypad_build_keymap(pdata->keymap_data, NULL,
-1932811f426fee Dmitry Torokhov  2012-05-10  896  						 pdata->num_row_gpios,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  897  						 pdata->num_col_gpios, NULL,
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  898  						 input_dev);
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  899  		if (err) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  900  			dev_err(&pdev->dev, "failed to build keymap for generic mode\n");
-1932811f426fee Dmitry Torokhov  2012-05-10  901  			goto err_free_mem;
-4a83eecff65bd3 AnilKumar Ch     2012-11-20  902  		}
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  903  	}
-bab7614d6d1b1f Eric Miao        2009-06-29  904  
-1932811f426fee Dmitry Torokhov  2012-05-10  905  	if (!pdata->no_autorepeat)
-1932811f426fee Dmitry Torokhov  2012-05-10  906  		__set_bit(EV_REP, input_dev->evbit);
-bab7614d6d1b1f Eric Miao        2009-06-29  907  	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
-bab7614d6d1b1f Eric Miao        2009-06-29  908  	input_set_drvdata(input_dev, keypad);
-bab7614d6d1b1f Eric Miao        2009-06-29  909  
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  910  	if (pdata->mode == REDUCED) {
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  911  		button_hdl_init(keypad);
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  912  	} else {
-b83643ebf22423 Dmitry Torokhov  2012-04-20  913  		err = matrix_keypad_init_gpio(pdev, keypad);
-bab7614d6d1b1f Eric Miao        2009-06-29  914  		if (err)
-bab7614d6d1b1f Eric Miao        2009-06-29  915  			goto err_free_mem;
-a0b420e08e3b87 Gireesh Hiremath 2022-08-19  916  	}
-bab7614d6d1b1f Eric Miao        2009-06-29  917  
-bab7614d6d1b1f Eric Miao        2009-06-29  918  	err = input_register_device(keypad->input_dev);
-bab7614d6d1b1f Eric Miao        2009-06-29  919  	if (err)
-b83643ebf22423 Dmitry Torokhov  2012-04-20  920  		goto err_free_gpio;
-bab7614d6d1b1f Eric Miao        2009-06-29  921  
-bab7614d6d1b1f Eric Miao        2009-06-29  922  	device_init_wakeup(&pdev->dev, pdata->wakeup);
-bab7614d6d1b1f Eric Miao        2009-06-29  923  	platform_set_drvdata(pdev, keypad);
-bab7614d6d1b1f Eric Miao        2009-06-29  924  
-bab7614d6d1b1f Eric Miao        2009-06-29  925  	return 0;
-bab7614d6d1b1f Eric Miao        2009-06-29  926  
-b83643ebf22423 Dmitry Torokhov  2012-04-20  927  err_free_gpio:
-b83643ebf22423 Dmitry Torokhov  2012-04-20  928  	matrix_keypad_free_gpio(keypad);
-bab7614d6d1b1f Eric Miao        2009-06-29  929  err_free_mem:
-bab7614d6d1b1f Eric Miao        2009-06-29  930  	input_free_device(input_dev);
-bab7614d6d1b1f Eric Miao        2009-06-29  931  	kfree(keypad);
-bab7614d6d1b1f Eric Miao        2009-06-29 @932  	return err;
-bab7614d6d1b1f Eric Miao        2009-06-29  933  }
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
-
+>=20
+> >
+> > Suggested-by: Ye Li <ye.li@nxp.com>
+> > Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+> > Signed-off-by: Alice Guo <alice.guo@nxp.com>
+> > Reviewed-by: Ye Li <ye.li@nxp.com>
+> > ---
+> >  drivers/watchdog/imx7ulp_wdt.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/drivers/watchdog/imx7ulp_wdt.c
+> > b/drivers/watchdog/imx7ulp_wdt.c index 014f497ea0dc..b8ac0cb04d2f
+> > 100644
+> > --- a/drivers/watchdog/imx7ulp_wdt.c
+> > +++ b/drivers/watchdog/imx7ulp_wdt.c
+> > @@ -179,9 +179,13 @@ static int imx7ulp_wdt_init(void __iomem *base,
+> unsigned int timeout)
+> >  	int ret;
+> >
+> >  	local_irq_disable();
+> > +
+> > +	mb();
+> >  	/* unlock the wdog for reconfiguration */
+> >  	writel_relaxed(UNLOCK_SEQ0, base + WDOG_CNT);
+> >  	writel_relaxed(UNLOCK_SEQ1, base + WDOG_CNT);
+> > +	mb();
+> > +
+> >  	ret =3D imx7ulp_wdt_wait(base, WDOG_CS_ULK);
+> >  	if (ret)
+> >  		goto init_out;
+> > --
+> > 2.17.1
+> >
+> >
+> >
