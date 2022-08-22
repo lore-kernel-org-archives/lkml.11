@@ -2,131 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77498C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3A8C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235018AbiHVNKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
+        id S235002AbiHVNLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234934AbiHVNJ6 (ORCPT
+        with ESMTP id S233450AbiHVNLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:09:58 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D216C22BEB;
-        Mon, 22 Aug 2022 06:09:56 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id l21so10563738ljj.2;
-        Mon, 22 Aug 2022 06:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
-        bh=vigYgSEq8XNq0GNKbbIvxMXyahHUCUs5sjRm7+jzlAc=;
-        b=NAy+QHjlAUfAF+0E95smBz9TJ7pgnNqV0/+Acohr5RjSf02nCPAGkQ+pFPggURwPeX
-         zRyiPUy6gLGtGBvdyFvEpY4i+9kLUc3a9K1mJJW6klXx+dV6iNVBwfdBFfGclLlWsSKc
-         wwy5CfuU6Umz8mvsHk5SDTkqkRBI41DgEnEIh3L8fix43WRj6cIBHh6jUwou+rV0cWis
-         r0A5lhU/NqD9H1HwQiagH22yBnoNJHG/XsEGUYedXEWD/02Ca2fauPsIGQyj6SURbbAV
-         7NXqd4ceJyahjYHtOIFLpbP07hSf6AeFJcFNKS31VgrTkTCDU0j5EEsKpRfhQiNAFdEa
-         D7Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=vigYgSEq8XNq0GNKbbIvxMXyahHUCUs5sjRm7+jzlAc=;
-        b=O+x8LZslJSosZVmTRQrKRpY+LARJW9ouPKJ7wEyCYx4qEWZ9r4vDQnFguF8UZILuLh
-         BvRV3PVwrl5nwfBHQhjWJXcwmdu0Zb2MUHyJKnkqwe+sLo9siOJXNBsRiO/3MLEpCGbc
-         fNDf32f15gUPqVXY4BI4CzGZ7g8VNXDFFJhz0Mo/BaS5nmig8rFnXl1evCZLjSuqJWjn
-         XsoKQpUNNo3rxmLxmgASx8PiLrUkObIDJEi6cl51wwl09f7APZPYw5TchgEyI19xGdoM
-         3KUxBMisPg6hCQCnWsxgZxUaU0VioqSxttRDM2aoHIcOEgDl9WQ6a2BGQmXXsziXUcPR
-         Crpw==
-X-Gm-Message-State: ACgBeo2D+kAH8GEpGbFLyFFyULFVI25bWotQVw23Kiq1EjGPFAq1e+cm
-        lil2rkFFSrhNn3ZX4DJd5Z3Ba5rDPOZR/A==
-X-Google-Smtp-Source: AA6agR5A55b/w/+RqBS9nJXJtBTCYbFkCFhxVZ/4Z5ZKcrs5fj5l1pPwWXAHQ8XkZjrkmmXNmOa0Rg==
-X-Received: by 2002:a2e:92c4:0:b0:25d:9d30:5d61 with SMTP id k4-20020a2e92c4000000b0025d9d305d61mr6134684ljh.202.1661173795023;
-        Mon, 22 Aug 2022 06:09:55 -0700 (PDT)
-Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id v11-20020a2ea44b000000b0025e42174f0csm1817832ljn.70.2022.08.22.06.09.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 06:09:54 -0700 (PDT)
-Message-ID: <1d4eb194-aab7-42c7-f33f-4b89e607dc6c@gmail.com>
-Date:   Mon, 22 Aug 2022 16:12:20 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Content-Language: en-US
-To:     Vaishnav Achath <vaishnav.a@ti.com>, vkoul@kernel.org,
-        broonie@kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
-Cc:     vigneshr@ti.com, kishon@ti.com
-References: <20220822091531.27827-1-vaishnav.a@ti.com>
- <20220822091531.27827-2-vaishnav.a@ti.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-Subject: Re: [PATCH 1/2] dmaengine: ti: k3-udma: Respond TX done if
- DMA_PREP_INTERRUPT is not requested
-In-Reply-To: <20220822091531.27827-2-vaishnav.a@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 22 Aug 2022 09:11:52 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F13B140F1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:11:50 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1661173908; bh=HTMe+NWdQhVrv4pk9fiHKxQBTpwr9lj6IAS27IV/VvE=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=q8L1pggjM0PWgIqJYCIL22femgo3CMmkx0sHKqqiWpKLGyDateOmHoMO2m3Jdpns4
+         pzMV1WmAXjXHC9xY7YeZueMmQYvpvJnomm4uMbPMJ1LJoTNpz49IJjCzAK99y2lC5u
+         xad/jYkJEXvQ9UBtmtWFntivWc3hmV2UGB+mIGi4=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] ASoC: dapm: Export new 'graph.dot' file in debugfs
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>
+In-Reply-To: <YwN+0yHSOSC2aD+J@sirena.org.uk>
+Date:   Mon, 22 Aug 2022 15:11:48 +0200
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6EDC1D4B-4B84-49A2-A60A-EA15D27251A7@cutebit.org>
+References: <20220822095242.3779-1-povik+lin@cutebit.org>
+ <YwN2Pd4Ez08yDFno@sirena.org.uk>
+ <3234D74E-0DFF-4BB5-87ED-6135BAC1F31D@cutebit.org>
+ <YwN+0yHSOSC2aD+J@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+> On 22. 8. 2022, at 15:04, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Mon, Aug 22, 2022 at 02:38:09PM +0200, Martin Povi=C5=A1er wrote:
+>>> On 22. 8. 2022, at 14:27, Mark Brown <broonie@kernel.org> wrote:
+>=20
+>>> There was a tool floating about in the past (last copy I knew about =
+was
+>>> on Wolfson's git but they took that down) - can we not just continue =
+to
+>>> do that?
+>=20
+>> I don=E2=80=99t know the tool or where would I find it. I think =
+it=E2=80=99s neat
+>=20
+> Copying in Charles and Richard who might know about the status of the
+> tool Dimitris wrote.
 
-On 22/08/2022 12:15, Vaishnav Achath wrote:
-> When the DMA consumer driver does not expect the callback for TX done,
-> There is no need to perform the channel RT byte counter calculations 
-> and estimate the completion but return complete on first attempt itself.
-> This assumes that the consumer who did not request DMA_PREP_INTERRUPT 
-> has its own mechanism for understanding TX completion, example: MCSPI
-> EOW interrupt can be used as TX completion signal for a SPI transaction.
+Thanks.
 
-The check is in place to make sure that we don't leave stale data in the
-DMA fabric.
-If you drop the check then it is going to be possible that some TX data
-is going to be lost.
-Could be one out of 10K transfers or 100K, but if that happens it is not
-going to be easy to figure out.
-Let's say we go the packet back, but PDMA is still have data to send and
-the IP stops transmitting (externally clocked bus, some delay, etc).
-Is it going to be OK to disable the channel?
+>> simply having a =E2=80=98graph.dot=E2=80=99 at hand, especially since =
+it requires
+>> little code. (Although sure there=E2=80=99s the danger of it =
+growing.)
+>=20
+> I'm also worried about people going in and wanting other more tool
+> specific formats adding, if we didn't have anything at all it'd be one
+> thing but we do have something.
 
-> 
-> Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
-> ---
->  drivers/dma/ti/k3-udma.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
-> index 39b330ada200..03d579068453 100644
-> --- a/drivers/dma/ti/k3-udma.c
-> +++ b/drivers/dma/ti/k3-udma.c
-> @@ -263,6 +263,7 @@ struct udma_chan_config {
->  	enum udma_tp_level channel_tpl; /* Channel Throughput Level */
->  
->  	u32 tr_trigger_type;
-> +	unsigned long tx_flags;
->  
->  	/* PKDMA mapped channel */
->  	int mapped_channel_id;
-> @@ -1057,7 +1058,7 @@ static bool udma_is_desc_really_done(struct udma_chan *uc, struct udma_desc *d)
->  
->  	/* Only TX towards PDMA is affected */
->  	if (uc->config.ep_type == PSIL_EP_NATIVE ||
-> -	    uc->config.dir != DMA_MEM_TO_DEV)
-> +	    uc->config.dir != DMA_MEM_TO_DEV || !(uc->config.tx_flags & DMA_PREP_INTERRUPT))
->  		return true;
->  
->  	peer_bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
-> @@ -3418,6 +3419,8 @@ udma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
->  	if (!burst)
->  		burst = 1;
->  
-> +	uc->config.tx_flags = tx_flags;
-> +
->  	if (uc->config.pkt_mode)
->  		d = udma_prep_slave_sg_pkt(uc, sgl, sglen, dir, tx_flags,
->  					   context);
+Sure, although I would argue DOT is by a large margin the standard
+format to represent graphs in.
 
--- 
-Péter
+Best,
+Martin
+
