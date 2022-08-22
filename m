@@ -2,104 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56157C32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58860C32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234316AbiHVJRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59540 "EHLO
+        id S234345AbiHVJRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234595AbiHVJPx (ORCPT
+        with ESMTP id S233613AbiHVJRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:15:53 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60252A40A;
-        Mon, 22 Aug 2022 02:15:40 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27M9FZbu019388;
-        Mon, 22 Aug 2022 04:15:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1661159735;
-        bh=CCFuC6F3PDmk2qInbJWBLRf6Yk6t6h+PLhjhJhuGEiU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=wVHPOOoOSXMNWegBZxJgN9tTlzrUxjqKFEC2pfWyu1jkiRQVmWYH48cilDIOW81A4
-         GXbLcOKJryRxCgnVAVsaVziLaLnwBdnwv+Q76xPG0blv49+9fwhorbI1fneWITb5uh
-         VN91c/YXBIolZRYwsNATRwAawDB84QRYNLmzhpmM=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27M9FYu9111259
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 22 Aug 2022 04:15:35 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Mon, 22
- Aug 2022 04:15:34 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Mon, 22 Aug 2022 04:15:34 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27M9FXYS037071;
-        Mon, 22 Aug 2022 04:15:34 -0500
-From:   Vaishnav Achath <vaishnav.a@ti.com>
-To:     <peter.ujfalusi@gmail.com>, <vkoul@kernel.org>,
-        <broonie@kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>
-CC:     <vigneshr@ti.com>, <kishon@ti.com>, <vaishnav.a@ti.com>
-Subject: [PATCH 1/2] dmaengine: ti: k3-udma: Respond TX done if DMA_PREP_INTERRUPT is not requested
-Date:   Mon, 22 Aug 2022 14:45:30 +0530
-Message-ID: <20220822091531.27827-2-vaishnav.a@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220822091531.27827-1-vaishnav.a@ti.com>
-References: <20220822091531.27827-1-vaishnav.a@ti.com>
+        Mon, 22 Aug 2022 05:17:47 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F039911166;
+        Mon, 22 Aug 2022 02:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661159865; x=1692695865;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6d17F0vfyYCfy1y5XTyYgJ9Isihgj/pGEDhDb6BTYVE=;
+  b=daY5fbNpuTG0x1vbC99jrm1D3z0uyCb3IBqjDYLoeOFy2vY4aEc8V2Jj
+   WXtR9oUSb89W24szU/gIW0wOObX4bpj2K5MsgpmkTfhwHbcNDvracuZZ4
+   5QBgKBc+nxI7DKMR0rHYq2aUHec8rtjA2jnXzP175dySV7sfP8BOvTgBy
+   aEELwCr/qds5dOs+eUR9w9eftosxIACneu1Jq8AReTMTJFV19/QE78bdW
+   AMihvDFP2VJczn5e/Lps2aEMUg9X2/gFExfZGDKWGi9gP5eMOyhgoLKFA
+   5YSEkYHEagkOOH+zMAkgbbK6tUHahJw7jwd9BqLvy6EO976c2U/hE3wwN
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="290921152"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="290921152"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 02:17:45 -0700
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="608889608"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 02:17:43 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 1660B20656;
+        Mon, 22 Aug 2022 12:17:41 +0300 (EEST)
+Date:   Mon, 22 Aug 2022 09:17:41 +0000
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Marco Felsch <m.felsch@pengutronix.de>
+Cc:     mchehab@kernel.org, laurent.pinchart+renesas@ideasonboard.com,
+        jacopo+renesas@jmondi.org, akinobu.mita@gmail.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 2/4] media: mt9m111: fix subdev API usage
+Message-ID: <YwNJtWCLsZgy3iHG@paasikivi.fi.intel.com>
+References: <20220818144712.997477-1-m.felsch@pengutronix.de>
+ <20220818144712.997477-2-m.felsch@pengutronix.de>
+ <YwMiJYympE18tkmm@paasikivi.fi.intel.com>
+ <20220822075101.75dv3cv2evb2qeqq@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822075101.75dv3cv2evb2qeqq@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the DMA consumer driver does not expect the callback for TX done,
-There is no need to perform the channel RT byte counter calculations 
-and estimate the completion but return complete on first attempt itself.
-This assumes that the consumer who did not request DMA_PREP_INTERRUPT 
-has its own mechanism for understanding TX completion, example: MCSPI
-EOW interrupt can be used as TX completion signal for a SPI transaction.
+On Mon, Aug 22, 2022 at 09:51:01AM +0200, Marco Felsch wrote:
+> Hi Sakari,
+> 
+> On 22-08-22, Sakari Ailus wrote:
+> > Hi Marco,
+> > 
+> > On Thu, Aug 18, 2022 at 04:47:10PM +0200, Marco Felsch wrote:
+> > > In case of I2C transfer failures the driver return failure codes which
+> > > are not allowed according the API documentation. Fix that by ignore the
+> > > register access failure codes.
+> > > 
+> > > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+> > > ---
+> > >  drivers/media/i2c/mt9m111.c | 116 ++++++++++++++++++++----------------
+> > >  1 file changed, 66 insertions(+), 50 deletions(-)
+> > > 
+> > > diff --git a/drivers/media/i2c/mt9m111.c b/drivers/media/i2c/mt9m111.c
+> > > index cdaf283e1309..53c4dac4e4bd 100644
+> > > --- a/drivers/media/i2c/mt9m111.c
+> > > +++ b/drivers/media/i2c/mt9m111.c
+> > > @@ -455,7 +455,7 @@ static int mt9m111_set_selection(struct v4l2_subdev *sd,
+> > >  	struct mt9m111 *mt9m111 = to_mt9m111(client);
+> > >  	struct v4l2_rect rect = sel->r;
+> > >  	int width, height;
+> > > -	int ret, align = 0;
+> > > +	int align = 0;
+> > >  
+> > >  	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE ||
+> > >  	    sel->target != V4L2_SEL_TGT_CROP)
+> > > @@ -481,14 +481,13 @@ static int mt9m111_set_selection(struct v4l2_subdev *sd,
+> > >  	width = min(mt9m111->width, rect.width);
+> > >  	height = min(mt9m111->height, rect.height);
+> > >  
+> > > -	ret = mt9m111_setup_geometry(mt9m111, &rect, width, height, mt9m111->fmt->code);
+> > > -	if (!ret) {
+> > > -		mt9m111->rect = rect;
+> > > -		mt9m111->width = width;
+> > > -		mt9m111->height = height;
+> > > -	}
+> > >  
+> > > -	return ret;
+> > > +	mt9m111_setup_geometry(mt9m111, &rect, width, height, mt9m111->fmt->code);
+> > 
+> > If the function can fail, it'd be much better to move it to s_stream
+> > callback than ignore the error.
+> > 
+> > Same for the rest of such changes.
+> 
+> I did that in the following patch, but I can merge them if you want.
 
-Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
----
- drivers/dma/ti/k3-udma.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Yes, please.
 
-diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
-index 39b330ada200..03d579068453 100644
---- a/drivers/dma/ti/k3-udma.c
-+++ b/drivers/dma/ti/k3-udma.c
-@@ -263,6 +263,7 @@ struct udma_chan_config {
- 	enum udma_tp_level channel_tpl; /* Channel Throughput Level */
- 
- 	u32 tr_trigger_type;
-+	unsigned long tx_flags;
- 
- 	/* PKDMA mapped channel */
- 	int mapped_channel_id;
-@@ -1057,7 +1058,7 @@ static bool udma_is_desc_really_done(struct udma_chan *uc, struct udma_desc *d)
- 
- 	/* Only TX towards PDMA is affected */
- 	if (uc->config.ep_type == PSIL_EP_NATIVE ||
--	    uc->config.dir != DMA_MEM_TO_DEV)
-+	    uc->config.dir != DMA_MEM_TO_DEV || !(uc->config.tx_flags & DMA_PREP_INTERRUPT))
- 		return true;
- 
- 	peer_bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
-@@ -3418,6 +3419,8 @@ udma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
- 	if (!burst)
- 		burst = 1;
- 
-+	uc->config.tx_flags = tx_flags;
-+
- 	if (uc->config.pkt_mode)
- 		d = udma_prep_slave_sg_pkt(uc, sgl, sglen, dir, tx_flags,
- 					   context);
 -- 
-2.17.1
-
+Sakari Ailus
