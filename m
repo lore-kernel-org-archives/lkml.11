@@ -2,82 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94646C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3856C32793
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234833AbiHVLv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
+        id S233263AbiHVLxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234870AbiHVLuR (ORCPT
+        with ESMTP id S232841AbiHVLxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:50:17 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F34B862;
-        Mon, 22 Aug 2022 04:50:17 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MB9Yz4dSfz1N7Tt;
-        Mon, 22 Aug 2022 19:46:47 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 19:50:14 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <mic@digikod.net>, <paul@paul-moore.com>, <jmorris@namei.org>,
-        <serge@hallyn.com>, <shuah@kernel.org>, <corbet@lwn.net>
-CC:     <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>
-Subject: [PATCH -next 5/5] landlock: update chmod and chown support in document
-Date:   Mon, 22 Aug 2022 19:47:01 +0800
-Message-ID: <20220822114701.26975-6-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220822114701.26975-1-xiujianfeng@huawei.com>
-References: <20220822114701.26975-1-xiujianfeng@huawei.com>
+        Mon, 22 Aug 2022 07:53:12 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B570B33A15;
+        Mon, 22 Aug 2022 04:53:09 -0700 (PDT)
+Received: from stanislav-HLY-WX9XX.. (unknown [46.172.13.71])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 12A9640D4004;
+        Mon, 22 Aug 2022 11:53:01 +0000 (UTC)
+From:   Stanislav Goriainov <goriainov@ispras.ru>
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     Stanislav Goriainov <goriainov@ispras.ru>,
+        linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] ovl: Fix potential memory leak
+Date:   Mon, 22 Aug 2022 14:52:57 +0300
+Message-Id: <20220822115257.7457-1-goriainov@ispras.ru>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-update LANDLOCK_ACCESS_FS_{CHMOD, CHOWN} support and add abi change
-in the document.
+ovl: Fix potential memory leak in ovl_lookup()
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+If memory for uperredirect was allocated with kstrdup()
+in upperdir != NULL and d.redirect != NULL path,
+it may be lost when upperredirect is reassigned later.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Stanislav Goriainov <goriainov@ispras.ru>
 ---
- Documentation/userspace-api/landlock.rst | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ fs/overlayfs/namei.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/userspace-api/landlock.rst
-index 2509c2fbf98f..05ab338db529 100644
---- a/Documentation/userspace-api/landlock.rst
-+++ b/Documentation/userspace-api/landlock.rst
-@@ -61,7 +61,9 @@ the need to be explicit about the denied-by-default access rights.
-             LANDLOCK_ACCESS_FS_MAKE_BLOCK |
-             LANDLOCK_ACCESS_FS_MAKE_SYM |
-             LANDLOCK_ACCESS_FS_REFER |
--            LANDLOCK_ACCESS_FS_TRUNCATE,
-+            LANDLOCK_ACCESS_FS_TRUNCATE |
-+            LANDLOCK_ACCESS_FS_CHMOD |
-+            LANDLOCK_ACCESS_FS_CHOWN
-     };
+diff --git a/fs/overlayfs/namei.c b/fs/overlayfs/namei.c
+index 69dc577974f8..226c69812379 100644
+--- a/fs/overlayfs/namei.c
++++ b/fs/overlayfs/namei.c
+@@ -1085,6 +1085,7 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
+ 			.mnt = ovl_upper_mnt(ofs),
+ 		};
  
- Because we may not know on which kernel version an application will be
-@@ -90,6 +92,10 @@ the ABI.
-     case 2:
-             /* Removes LANDLOCK_ACCESS_FS_TRUNCATE for ABI < 3 */
-             ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_TRUNCATE;
-+    case 3:
-+            /* Removes LANDLOCK_ACCESS_FS_{CHMOD, CHOWN} for ABI < 4 */
-+            ruleset_attr.handled_access_fs &= ~(LANDLOCK_ACCESS_FS_CHMOD |
-+                                                LANDLOCK_ACCESS_FS_CHOWN);
-     }
- 
- This enables to create an inclusive ruleset that will contain our rules.
++		kfree(upperredirect);
+ 		upperredirect = ovl_get_redirect_xattr(ofs, &upperpath, 0);
+ 		if (IS_ERR(upperredirect)) {
+ 			err = PTR_ERR(upperredirect);
 -- 
-2.17.1
+2.34.1
 
