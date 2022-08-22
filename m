@@ -2,224 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDABC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A085CC32793
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:30:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234277AbiHVL3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
+        id S234347AbiHVLaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234170AbiHVL3i (ORCPT
+        with ESMTP id S234170AbiHVL36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:29:38 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD7E32EFA;
-        Mon, 22 Aug 2022 04:29:37 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id x19so9641099plc.5;
-        Mon, 22 Aug 2022 04:29:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
-        b=NlWoQCchWeNTZs+AYQyBWxFuTYWc/I3igYYx8cB+Bj8NxSXt+UNeRjQ1sO33INU2p7
-         6e72lGCiI+NO/L2ODjyVLUAD46LJFZNo9SHHrJC6OyrVUNySGMWnUw3S9SXe62LoKXMd
-         ivVDE5wiE87n5WzONjwMT4eficfysknxi3aid0/lpeT86LXYLjXs6N24K1iQP65IHwYP
-         E0zugKUahcdCoakaptdI+8jbECtTm++JxXfXH+UuOW0a3ijuueqPN49a5GA3xgVN97jo
-         dQ2I94Xg+ieBH7aLtzkih5TjQb3pUFkKY1DOW1L7znBq2lO2xucLCTOw2Z81jXcvaeo5
-         v8KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
-        b=HRf9Rv39I0kEx5S64c1t2OsmRmee69SUj0B8EoV3cZ9hZQuGGcG/VUNjAnlIo2YNs8
-         o753OuFbXbZlxsOIb1BC2/z1JyL/7F+7P0agfYSzCd07xZV+LIXTCffBDAIR032L4IhM
-         uTSkVuMzxhjqyc4uUb1D/dtgIdQ5MftMz1LVpjgHOens1QrZq9YsM+GgNx/3HukafF/s
-         0EJanotDvi7tUuYw3yenUch9hF1AprA7llNPdAuSmAbKLmRSZz1iDILHw7vlkjHbVVtn
-         t5nOjhqJUXTkY9Pk1kHvjfd5XhFNj0v6DChIEJiQtQ1+4gI5/K+BkXqV7Ew3Q3s0PAER
-         CVBw==
-X-Gm-Message-State: ACgBeo2U4+/JMtn78gV4I+zdmG/FDoGLK3LSzhGxD8Aa27Y2Irlmypnl
-        F5eUPXKx8tR/6XFSQ2/V69U=
-X-Google-Smtp-Source: AA6agR4Vk04va7kXaoAFh76/Ap9kNlNwCowffm0tDN0KvnijUryXAa9rfxzul4sOy7+EtojSrH7cYQ==
-X-Received: by 2002:a17:90b:4a8f:b0:1f5:ee3:a6a1 with SMTP id lp15-20020a17090b4a8f00b001f50ee3a6a1mr28013360pjb.149.1661167776544;
-        Mon, 22 Aug 2022 04:29:36 -0700 (PDT)
-Received: from localhost ([36.112.86.8])
-        by smtp.gmail.com with ESMTPSA id c3-20020a170902d48300b0016a058b7547sm1329861plg.294.2022.08.22.04.29.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 04:29:35 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-afs@lists.infradead.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        paskripkin@gmail.com,
-        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
-Date:   Mon, 22 Aug 2022 19:29:30 +0800
-Message-Id: <20220822112931.2884-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <992103.1661160093@warthog.procyon.org.uk>
-References: <992103.1661160093@warthog.procyon.org.uk>
+        Mon, 22 Aug 2022 07:29:58 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A024D33349;
+        Mon, 22 Aug 2022 04:29:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661167797; x=1692703797;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RJ04Kh5e1eZ1WoCexWG+Naw0DQ2en6wdmxTB7LzJfB4=;
+  b=WYFdwjaQzwiZoh+S9vNJBjfc/HO0JxggjnYtSNiBAFLbYZQS+KV/OtW1
+   cAjmsuhgHq+rzgWi808rnkhaCeQHOBiICZs8P1SzOAKZGCo8ENPXaIUAM
+   /SsgXFH0r07lvqmL7ECB5ke0PX+kYiAuzQa0grlAZqhJQVYn0yQ8367Gk
+   XnHBh4BiqRevNV/PcwvSypiV+WzdsxCvtz/AilxWbV43OYSobCWzuRzbg
+   zMr8DL6d4GQgXnDUl5eUjFtqxunFsrYn36w6vWUJhxTG81NMMewrbv7YK
+   Rgd0Hy/WZbEBF5aez7mX3HKl55xgtxIIntQH+l7K7tDXN3NfC+YUCNjAd
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="110092089"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Aug 2022 04:29:56 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 22 Aug 2022 04:29:54 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Mon, 22 Aug 2022 04:29:51 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Hugh Breslin <hugh.breslin@microchip.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>
+Subject: [PATCH v2 0/6] Add PolarFire SoC Fabric Clock Conditioning Circuitry Support
+Date:   Mon, 22 Aug 2022 12:29:23 +0100
+Message-ID: <20220822112928.2727437-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 at 16:48, David Howells <dhowells@redhat.com> wrote:
->
-> Hawkins Jiawei <yin31149@gmail.com> wrote:
->
-> > -             if (mutex_lock_interruptible(&call->user_mutex) < 0)
-> > +             if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-> > +                     mutex_lock(&call->user_mutex);
->
-> Yeah, as Khalid points out that kind of makes the interruptible lock
-> pointless.  Either rxrpc_send_data() needs to return a separate indication
-> that we returned without the lock held or it needs to always drop the lock on
-> error (at least for ERESTARTSYS/EINTR) which can be checked for higher up.
-Hi David,
+Hey all,
 
-For second option, I think it may meet some difficulty, because we
-cannot figure out whether rxrpc_send_data() meets lock error.
-To be more specific, rxrpc_send_data() may still returns the number
-it has copied even rxrpc_send_data() meets lock error, if
-rxrpc_send_data() has successfully dealed some data.(Please correct me
-if I am wrong)
+PolarFire SoC has 4 clock source blocks, each with 2 PLLs and 2 DLLs,
+in the corners of the FPGA fabric. Add bindings, a driver supporting
+the PLLs and the requisite changes to the devicetrees for PolarFire
+SoC based boards. These clocks were already in use, but which clock
+specifically was chosen was decided by the synthesis tool. In our
+end-of-September release of our FPGA reference design, constraints will
+be added to force the synthesis tool to pick the "north west" CCC,
+making it possible to read the configuration from the CCC's registers.
 
-So I think the first option seems better. I wonder if we can add an
-argument in rxrpc_send_data() as an indication you pointed out? Maybe:
+I am mainly looking for feedback on the dt-bindings on this version,
+so that if something dt-abi related needs to change it can be done in
+advance.
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 1d38e279e2ef..0801325a7c7f 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -284,13 +284,18 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
- 
- /*
-  * send data through a socket
-+ * @holding_mutex: rxrpc_send_data() will assign this pointer with True
-+ * if functions still holds the call user access mutex when returned to caller.
-+ * This argument can be NULL, which will effect nothing.
-+ *
-  * - must be called in process context
-  * - The caller holds the call user access mutex, but not the socket lock.
-  */
- static int rxrpc_send_data(struct rxrpc_sock *rx,
- 			   struct rxrpc_call *call,
- 			   struct msghdr *msg, size_t len,
--			   rxrpc_notify_end_tx_t notify_end_tx)
-+			   rxrpc_notify_end_tx_t notify_end_tx,
-+			   bool *holding_mutex)
- {
- 	struct rxrpc_skb_priv *sp;
- 	struct sk_buff *skb;
-@@ -299,6 +304,9 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 	bool more;
- 	int ret, copied;
- 
-+	if (holding_mutex)
-+		*holding_mutex = true;
-+
- 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
- 
- 	/* this should be in poll */
-@@ -338,8 +346,11 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 				ret = rxrpc_wait_for_tx_window(rx, call,
- 							       &timeo,
- 							       msg->msg_flags & MSG_WAITALL);
--				if (ret < 0)
-+				if (ret < 0) {
-+					if (holding_mutex)
-+						*holding_mutex = false;
- 					goto maybe_error;
-+				}
- 			}
- 
- 			/* Work out the maximum size of a packet.  Assume that
-@@ -630,6 +641,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 	struct rxrpc_call *call;
- 	unsigned long now, j;
- 	int ret;
-+	bool holding_user_mutex;
- 
- 	struct rxrpc_send_params p = {
- 		.call.tx_total_len	= -1,
-@@ -747,7 +759,9 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 		/* Reply phase not begun or not complete for service call. */
- 		ret = -EPROTO;
- 	} else {
--		ret = rxrpc_send_data(rx, call, msg, len, NULL);
-+		ret = rxrpc_send_data(rx, call, msg, len, NULL, &holding_user_mutex);
-+		if (!holding_user_mutex)
-+			goto error_put;
- 	}
- 
- out_put_unlock:
-@@ -796,7 +810,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 	case RXRPC_CALL_SERVER_ACK_REQUEST:
- 	case RXRPC_CALL_SERVER_SEND_REPLY:
- 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
--				      notify_end_tx);
-+				      notify_end_tx, NULL);
- 		break;
- 	case RXRPC_CALL_COMPLETE:
- 		read_lock_bh(&call->state_lock);
+There are no maintainers changes in this series, but they are required
+due to the binding rename. I am waiting for some changes queued in the
+soc tree before rebasing on a later -rc before including that patch.
+
+Thanks,
+Conor.
+
+Changes since v1:
+- Stopped using the dt node name to generate the clk name. Rather than
+  use clock-output-names etc, I just opted to call each PLL after it's
+  individual base address:
+  cccrefclk
+    ccc@38100000_pll0
+      ccc@38100000_pll0_out3
+      ccc@38100000_pll0_out2
+      ccc@38100000_pll0_out1
+      ccc@38100000_pll0_out0
+- dt nodes are now all called "clock-controller"
+
+Conor Dooley (6):
+  dt-bindings: clk: rename mpfs-clkcfg binding
+  dt-bindings: clk: document PolarFire SoC fabric clocks
+  dt-bindings: clk: add PolarFire SoC fabric clock ids
+  clk: microchip: add PolarFire SoC fabric clock support
+  dt-bindings: riscv: microchip: document icicle reference design
+  riscv: dts: microchip: add the mpfs' fabric clock control
+
+ .../bindings/clock/microchip,mpfs-ccc.yaml    |  81 +++++
+ ...p,mpfs.yaml => microchip,mpfs-clkcfg.yaml} |   2 +-
+ .../devicetree/bindings/riscv/microchip.yaml  |   1 +
+ .../dts/microchip/mpfs-icicle-kit-fabric.dtsi |  27 +-
+ .../boot/dts/microchip/mpfs-icicle-kit.dts    |   4 +
+ .../dts/microchip/mpfs-polarberry-fabric.dtsi |   5 +
+ arch/riscv/boot/dts/microchip/mpfs.dtsi       |  34 +-
+ drivers/clk/microchip/Makefile                |   1 +
+ drivers/clk/microchip/clk-mpfs-ccc.c          | 293 ++++++++++++++++++
+ .../dt-bindings/clock/microchip,mpfs-clock.h  |  23 ++
+ 10 files changed, 458 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/microchip,mpfs-ccc.yaml
+ rename Documentation/devicetree/bindings/clock/{microchip,mpfs.yaml => microchip,mpfs-clkcfg.yaml} (96%)
+ create mode 100644 drivers/clk/microchip/clk-mpfs-ccc.c
 
 
-On Mon, 22 Aug 2022 at 17:21, David Howells <dhowells@redhat.com> wrote:
->
-> Actually, there's another bug here too: if rxrpc_wait_for_tx_window() drops
-> the call mutex then it needs to reload the pending packet state in
-> rxrpc_send_data() as it may have raced with another sendmsg().
->
-> David
->
-After applying the above patch, kernel still panic, but seems not the
-bad unlock balance bug before. yet I am not sure if this is the same bug you
-mentioned. Kernel output as below:
-[   39.115966][ T6508] ====================================
-[   39.116940][ T6508] WARNING: syz/6508 still has locks held!
-[   39.117978][ T6508] 6.0.0-rc1-00066-g3b06a2755758-dirty #186 Not tainted
-[   39.119353][ T6508] ------------------------------------
-[   39.120321][ T6508] 1 lock held by syz/6508:
-[   39.121122][ T6508]  #0: ffff88801f472b20 (&call->user_mutex){....}-{3:3}0
-[   39.123014][ T6508] 
-[   39.123014][ T6508] stack backtrace:
-[   39.123925][ T6508] CPU: 0 PID: 6508 Comm: syz Not tainted 6.0.0-rc1-00066
-[   39.125304][ T6508] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)4
-[   39.125304][ T6508] Call Trace:
-[   39.125304][ T6508]  <TASK>
-[   39.125304][ T6508]  dump_stack_lvl+0x8e/0xdd
-[   39.125304][ T6508]  get_signal+0x1866/0x24d0
-[   39.125304][ T6508]  ? lock_acquire+0x172/0x310
-[   39.125304][ T6508]  ? exit_signals+0x7b0/0x7b0
-[   39.125304][ T6508]  arch_do_signal_or_restart+0x82/0x23f0
-[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[   39.125304][ T6508]  ? __fget_light+0x20d/0x270
-[   39.125304][ T6508]  ? get_sigframe_size+0x10/0x10
-[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[   39.125304][ T6508]  ? __sys_sendmsg+0x11a/0x1c0
-[   39.125304][ T6508]  ? __sys_sendmsg_sock+0x30/0x30
-[   39.125304][ T6508]  exit_to_user_mode_prepare+0x146/0x1b0
-[   39.125304][ T6508]  syscall_exit_to_user_mode+0x12/0x30
-[   39.125304][ T6508]  do_syscall_64+0x42/0xb0
-[   39.125304][ T6508]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[   39.125304][ T6508] RIP: 0033:0x44fbad
-[   39.125304][ T6508] Code: c3 e8 97 29 00 00 0f 1f 80 00 00 00 00 f3 0f 1e8
-[   39.125304][ T6508] RSP: 002b:00007f4b8ae22d48 EFLAGS: 00000246 ORIG_RAX:e
-[   39.125304][ T6508] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 0000d
-[   39.125304][ T6508] RDX: 0000000000000186 RSI: 0000000020000000 RDI: 00003
-[   39.125304][ T6508] RBP: 00007f4b8ae22d80 R08: 00007f4b8ae23700 R09: 00000
-[   39.125304][ T6508] R10: 00007f4b8ae23700 R11: 0000000000000246 R12: 0000e
-[   39.125304][ T6508] R13: 00007ffe483304af R14: 00007ffe48330550 R15: 00000
-[   39.125304][ T6508]  </TASK>
-====================================
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.36.1
 
-I will make a deeper look and try to patch it.
