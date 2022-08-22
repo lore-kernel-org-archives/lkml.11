@@ -2,141 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F03EC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A092C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234666AbiHVWmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 18:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        id S234147AbiHVWm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 18:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237790AbiHVWm0 (ORCPT
+        with ESMTP id S237790AbiHVWmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 18:42:26 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3106150716;
-        Mon, 22 Aug 2022 15:42:24 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 3D8FC374F3;
-        Mon, 22 Aug 2022 22:42:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1661208143; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L8tdsVzVyDJM4BV8U6INcBMyETt5VDqLfPWrM+9ANZU=;
-        b=Wr3CoLUChRliBIcsKBEP1ARTBdMKIOxqorZDI5PC02cuVv0LuNzxNwZ1mFTqVb+7JBZfoX
-        LL26ihunLovvcTYQcNmjUYPDT4M9P9JN52Z6d716ibtdAE1bnPXlUzvKCWl56tXGcZft6y
-        NhQsHRd9e09zuZfA90lOARNSJ6/HILI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1661208143;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L8tdsVzVyDJM4BV8U6INcBMyETt5VDqLfPWrM+9ANZU=;
-        b=qZqaiUA+p1D36amScnShCHJ24rJTyLaa5teureTyNmBQZIY+cXaWtrvpBQYngEYOJIQLbp
-        dy+/koo412I3GbAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7967F1332D;
-        Mon, 22 Aug 2022 22:42:20 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 0pRhDUwGBGPzJAAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 22 Aug 2022 22:42:20 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 22 Aug 2022 18:42:54 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CF95141B;
+        Mon, 22 Aug 2022 15:42:53 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-33365a01f29so334613457b3.2;
+        Mon, 22 Aug 2022 15:42:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=HSdoxsJ0k6gi0gsdGDs4RmvY3VdrRt/X1WP13pkBsqU=;
+        b=C3O0dWqKjUV3GXIxPrazUCrC1qZ8vJXzfPUCnaeFt/paXuYseHJFcPGlmSxCM14FGF
+         WJbmQlxGHA2MgIuv+R+K5DzQkVq8q6aSUY/f6hG8Xr9LTg/y31VSixfUpY72oo5SjjOE
+         egfTtL0WveMBMQE1lZgccfd5I4v6eFLVO9C/BIosaS50mLcQuMN7ImL6MMihx7HYao7o
+         TiQS65HRw+zHe7q0hZ5iVJIZhZMikl588HNHGk/AM7peHpw8OiF6HBUCCWBaxvBufxgs
+         5kE7xT5n8cdsBza4ZP1G1jXZj4o+sq9t+ozeeWlSqN3PovjjkP7tZb3ptMxUa5A0O5r6
+         HygA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=HSdoxsJ0k6gi0gsdGDs4RmvY3VdrRt/X1WP13pkBsqU=;
+        b=MurVcqXqDcgMGJ8Psbme+rkLG9NcEJhKnHE6AlMSsyWvK35bwqX5+La3d2wGGUKtB0
+         Sx+pY10DGTRWiGCgDsrdEQq+b6ZLCp/QsprMi+Q/49Id46kXnCV534t88tfmw51XLWui
+         Q/91DGeyrNzHj2Okg9sTp3aQMR9hWBeuUrTp2sGW++4wlD1D9iYSqQPdaiimtZLzgHpy
+         lkX9qnGPELVGFb8IYUW137wcNSzL9X9uv0lPaHHvythap8HWFe3XqBpiu7OUYRDTaRbX
+         AQoUVC8f2OhxoDLNY980gkN7Kh17PlQ55VSTFyJ/6NHDnhccXDkO+vCT48TyWStl02rb
+         iVmA==
+X-Gm-Message-State: ACgBeo1aiYfCbNuGh0xREM9sZSerrQTKc8t+vp5sBW3PlQGvES9ogfu1
+        wS96g6FyjfrBUpkg0jUbftHlvzRRkVuJ4bmpNzU=
+X-Google-Smtp-Source: AA6agR5j2z1EgEY6ADYmvGvAzZLL2kTZhI6Ws+fREQaJa7ShHYh+KSQlTaAXsJcSSTgeLsWdxumZ0lziQUjPKdz+S7s=
+X-Received: by 2002:a25:8a85:0:b0:671:715e:a1b0 with SMTP id
+ h5-20020a258a85000000b00671715ea1b0mr21425930ybl.98.1661208172405; Mon, 22
+ Aug 2022 15:42:52 -0700 (PDT)
 MIME-Version: 1.0
-From:   "NeilBrown" <neilb@suse.de>
-To:     "Jeff Layton" <jlayton@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-xfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        "Trond Myklebust" <trondmy@hammerspace.com>,
-        "Dave Chinner" <david@fromorbit.com>
-Subject: Re: [PATCH] iversion: update comments with info about atime updates
-In-reply-to: <20220822133309.86005-1-jlayton@kernel.org>
-References: <20220822133309.86005-1-jlayton@kernel.org>
-Date:   Tue, 23 Aug 2022 08:42:15 +1000
-Message-id: <166120813594.23264.3095357572943917078@noble.neil.brown.name>
+References: <CANXV_XwgZMCGXijfoUyZ9+KyM6Rgeqiq-sCfubyj_16d-2CN=A@mail.gmail.com>
+ <20220815013317.26121-1-dmitrii.bundin.a@gmail.com> <CAKwvOdnnSAozX8bQ9HeSw12BV9OjpzyDmXk_BGczjVVQNN+7tQ@mail.gmail.com>
+ <CANXV_Xw2wzwDdJkyV1nHPQm2JTt48SLrNc7YwrfcxOwuFA-z3w@mail.gmail.com>
+ <CAKwvOdkiq_byi1QeCvSGb2fd+0AJ1k9WNnsHJMeaaQcPRy1Wxg@mail.gmail.com> <CAKwvOdkPwbD-c0V-up2Ufzb-Uh7LLyD12X0FKeBa=hn+cSPA9Q@mail.gmail.com>
+In-Reply-To: <CAKwvOdkPwbD-c0V-up2Ufzb-Uh7LLyD12X0FKeBa=hn+cSPA9Q@mail.gmail.com>
+From:   Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
+Date:   Tue, 23 Aug 2022 01:42:41 +0300
+Message-ID: <CANXV_XzdTTYc2w7Ur8zY=ijOofg91yfF7RLhedbVH0rmi3c2yA@mail.gmail.com>
+Subject: Re: [PATCH v3] kbuild: add debug level and macro defs options
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Fangrui Song <maskray@google.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Jeff Layton wrote:
-> Add an explicit paragraph codifying that atime updates due to reads
-> should not be counted against the i_version counter. None of the
-> existing subsystems that use the i_version want those counted, and
-> there is an easy workaround for those that do.
->=20
-> Cc: NeilBrown <neilb@suse.de>
-> Cc: Trond Myklebust <trondmy@hammerspace.com>
-> Cc: Dave Chinner <david@fromorbit.com>
-> Link: https://lore.kernel.org/linux-xfs/166086932784.5425.17134712694961326=
-033@noble.neil.brown.name/#t
-> Signed-off-by: Jeff Layton <jlayton@kernel.org>
-> ---
->  include/linux/iversion.h | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->=20
-> diff --git a/include/linux/iversion.h b/include/linux/iversion.h
-> index 3bfebde5a1a6..da6cc1cc520a 100644
-> --- a/include/linux/iversion.h
-> +++ b/include/linux/iversion.h
-> @@ -9,8 +9,8 @@
->   * ---------------------------
->   * The change attribute (i_version) is mandated by NFSv4 and is mostly for
->   * knfsd, but is also used for other purposes (e.g. IMA). The i_version mu=
-st
-> - * appear different to observers if there was a change to the inode's data=
- or
-> - * metadata since it was last queried.
-> + * appear different to observers if there was an explicit change to the in=
-ode's
-> + * data or metadata since it was last queried.
+On Tue, Aug 23, 2022 at 12:36 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> or perhaps that simply needs to be `-g -gsplit-dwarf`?  In which case,
+> that if/else could just be re-arranged.
 
-Should rename change the i_version?
-It does not explicitly change data or metadata, though it seems to
-implicitly change the ctime.
+How about simply assigning DEBUG_CFLAGS   := -g at the very beginning
+without any conditions? This would provide the default with the
+possibility of overriding later and -gsplit-dwarf does not necessarily
+come with -g implicitly.
 
->   *
->   * Observers see the i_version as a 64-bit number that never decreases. If=
- it
->   * remains the same since it was last checked, then nothing has changed in=
- the
-> @@ -18,6 +18,12 @@
->   * anything about the nature or magnitude of the changes from the value, o=
-nly
->   * that the inode has changed in some fashion.
->   *
-> + * Note that atime updates due to reads or similar activity do _not_ repre=
-sent
-> + * an explicit change to the inode. If the only change is to the atime and=
- it
-> + * wasn't set via utimes() or a similar mechanism, then i_version should n=
-ot be
-> + * incremented. If an observer cares about atime updates, it should plan to
-> + * fetch and store them in conjunction with the i_version.
-> + *
+> Honestly, I really don't think we need to be wrapping every compiler
+> command line flag under the sun in a kconfig option.
 
-If an implicit atime update happened to make the atime go backwards
-(possible, but not common), the updating i_version should be permitted,
-and possibly should be preferred.
+This indeed sounds reasonable to me. So the key point here is to not
+bloat the kconfig with options related to every compiler flag. But I
+think it still might be useful to provide some option that would
+include sort of full debug information compilers may produce. With
+this approach there would be, in fact 3 different levels of debug
+information supported by Kconfig: reduced, default and full. The full
+level would increase everything like -g3, and -fdebug-macro for Clang,
+and probably others.
 
-NeilBrown
+> Or add -g1 to CONFIG_DEBUG_INFO_REDUCED.
 
+I ran some tests and there was indeed some decrease in size. That
+combination probably might be useful.
 
->   * Not all filesystems properly implement the i_version counter. Subsystem=
-s that
->   * want to use i_version field on an inode should first check whether the
->   * filesystem sets the SB_I_VERSION flag (usually via the IS_I_VERSION mac=
-ro).
-> --=20
-> 2.37.2
->=20
->=20
+Any thoughts?
+
+Regards
+Dmitrii
