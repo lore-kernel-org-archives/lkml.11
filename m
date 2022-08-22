@@ -2,78 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2492CC32792
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2334CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238804AbiHVTgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S238829AbiHVThV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238768AbiHVTgA (ORCPT
+        with ESMTP id S238766AbiHVThO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:36:00 -0400
+        Mon, 22 Aug 2022 15:37:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9CE1275E;
-        Mon, 22 Aug 2022 12:35:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557F6120AC;
+        Mon, 22 Aug 2022 12:37:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 868AF6122F;
-        Mon, 22 Aug 2022 19:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E425AC43141;
-        Mon, 22 Aug 2022 19:35:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7A56122C;
+        Mon, 22 Aug 2022 19:37:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22144C433D6;
+        Mon, 22 Aug 2022 19:37:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661196948;
-        bh=59bb0jYFlSosGYQkwjxBpEccBGa05dy9L2UhBEaYG+I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e4u1X1JWq8Fq35+G7oCT0frCJtoXcIPfYBzz2ocV72fIPDu635p+trs2/NJX51Bw+
-         dgo+DWNHq1pD50EiRAdBEzkcKK3vT+9Aacb/Ii2b7sNZQh2VEXp1Stfw/xPvBSP7TE
-         yEUSUZpbiCwhm85IZbW8DzLkomsacdzLFaXZh2aCVKqStx6LceK2JZBqZEkdt09Oru
-         Jn59ZTfbqB/+T6ZGRuwTfYcwfJcS6gnjL37YLHkn3qHx4o6q7ptzcqvSp2vy9foITX
-         lmbGxorMtEcb0WFe+XxpFFX+6N9/xgRjbImvwZc5tNJQVc9dwnZy0o667r1FWMrLcm
-         IoN/gGcnWyy6Q==
-Date:   Mon, 22 Aug 2022 20:01:20 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Artur Rojek <contact@artur-rojek.eu>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 4/4] input: joystick: Fix buffer data parsing
-Message-ID: <20220822200120.543ff801@jic23-huawei>
-In-Reply-To: <3HE0HR.IPKJTTCKEJUA1@crapouillou.net>
-References: <20220817105643.95710-1-contact@artur-rojek.eu>
-        <20220817105643.95710-5-contact@artur-rojek.eu>
-        <20220819185339.7f488ad8@jic23-huawei>
-        <3HE0HR.IPKJTTCKEJUA1@crapouillou.net>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1661197033;
+        bh=FeYGsxzCyb1NGsi9TcyMiumm/NVyPesnRttU2pCPJgI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dnf6EkL3sfDIT3ITEXiWFCXln4ziGtCF2o2/BqUTY71/UMaydkmuvKO76lhNgYKKB
+         bWTAlDskcB/BFea2awpx3Aai+LCz6g7PYiDvyGzCFLoL4EChiEpm8CStD49JyT9pDk
+         qUWv/J/26byy6dySt5Zq9Rqsr4viEH1S0jPhuY/a8HLWGKxFmFlDLbjtnAWP8N3wHU
+         N7lhWIGA6WNGKEIMHV3UCU9LOUq0aYwNFKhsuVL7TbPOdW9FuYNiqdoxaKPtzH1Dn6
+         aELdfX9urW1ACCvLBcgWNPSwk63V5Q+c2XykhuyjQ2QNmlu1F6z8gsuCRmyoxrNXK4
+         NcN82MV38URIQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 14137404A1; Mon, 22 Aug 2022 16:37:10 -0300 (-03)
+Date:   Mon, 22 Aug 2022 16:37:10 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Yang Jihong <yangjihong1@huawei.com>, bp@suse.de,
+        ndesaulniers@google.com, nathan@kernel.org,
+        alexandre.belloni@bootlin.com, namhyung@kernel.org,
+        jolsa@kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf tools: Fix compile error for x86
+Message-ID: <YwPa5gZ0gVTM4Sli@kernel.org>
+References: <20220822092557.210209-1-yangjihong1@huawei.com>
+ <YwNcgdk/p18Cr+uv@gmail.com>
+ <YwOBKwPmW/FX6hSS@kernel.org>
+ <CAHk-=wjRLxmiTWiy4f1wa4S3NRK1kdZoAind_AtBGvNx=CdhYg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjRLxmiTWiy4f1wa4S3NRK1kdZoAind_AtBGvNx=CdhYg@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> >>   		case 2:
-> >>  -			data_u16 = (const u16 *)data + idx;
-> >>  -
-> >>   			/*
-> >>   			 * Data is aligned to the sample size by IIO core.
-> >>   			 * Call `get_unaligned_xe16` to hide type casting.
-> >>   			 */
-> >>   			if (endianness == IIO_BE)
-> >>  -				val = get_unaligned_be16(data_u16);
-> >>  +				val = get_unaligned_be16(chan_data);  
-> > 
-> > I obviously missed this previously but these are aligned so we don't 
-> > need the
-> > unaligned form.  
+Em Mon, Aug 22, 2022 at 09:45:02AM -0700, Linus Torvalds escreveu:
+> On Mon, Aug 22, 2022 at 6:14 AM Arnaldo Carvalho de Melo
+> <acme@kernel.org> wrote:
+> >
+> > Linus, I'll prep a pull req later today or you can apply this so that we
+> > can reduce the window where tools/perf/ isn't building.
 > 
-> Yes, the comment above says that it's used to hide type casting.
-oops :)
+> Ok, I took that patch directly. Thanks,
 
-Thanks for pointing out my lack of observation!
+Great, thanks, rebased my local branch, re-tested, all is ok.
 
-Jonathan
-
+- Arnaldo
