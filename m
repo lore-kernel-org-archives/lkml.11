@@ -2,93 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE4E2C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC7CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233191AbiHVH0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
+        id S232070AbiHVH1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232526AbiHVHZ4 (ORCPT
+        with ESMTP id S229496AbiHVH1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:25:56 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F1929CA3;
-        Mon, 22 Aug 2022 00:25:54 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y141so9504782pfb.7;
-        Mon, 22 Aug 2022 00:25:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=msDkfbAvjPj8tG1+VbcyJyurZyD89z+69jjtCZT96Cw=;
-        b=Wm8Ji1NHluqt74CopL6xSV0sx0lEWK55ZRr+ompfbpqjBuTbFHU8kiCO46OANmUSMP
-         +I4sNY9RvnDKp3fB0C6rXVUNkiWkILHs2+xC1t+U2NHmbvSspDBomtr/f3aHzGVznzv/
-         SaNQChOeWNEV1BOjEp3byhGvdsTZalvTGy9HQ9UcsA/bDVY4mIxl20ARf35ceYjgT4LI
-         wKabvHKz4Bb3n66vzbfYgHaHWzE2gLVwbNq9SJrIAPwZNnA1+urGvpvqHxuFakHMQlBb
-         t3P8IVcve2cLPI12k+dFsMDNBYWncQ+t0xzVus9MqggqoXYR/JadregHgH8nkRjEBUV+
-         3AVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=msDkfbAvjPj8tG1+VbcyJyurZyD89z+69jjtCZT96Cw=;
-        b=wFvLJPDLHxO5s6CAgjlIlBR0b4JH+dCaRJTx52pizjcYu+zCSmIuQsxQlqO4jsmK+3
-         e2B6SB7Z6hqRvUeq8nHBbAXOwSsr7H/qnBG/+pTnueupK4PJIgEZlNwb3Gby3xKtDMCc
-         rI/3EHS52V7AF42EWd18eUAnlIVytLURDoEBR81HFol47QA5IMonkRxVHtQPCk10/1Sj
-         v6g5bWd9u9Rx6+XByqdHm8s5GNm5EuDkUQjdJHjerAmkUTBBdN8Yn8L3OKmznAWkzk44
-         GDeieQeJGEtTm+DR0yX4r+q/Z5l60UWRzxQHaDWk31s+z1BUd7p0X0A71pGDteTR1gj/
-         7bHQ==
-X-Gm-Message-State: ACgBeo0bJ1VmCBZ8JxVNXwGjABWHvMMry/BmoFgOqxCftKUObXkqI5Fk
-        XZNIgybRsBnnAp2Yhc0ncoU=
-X-Google-Smtp-Source: AA6agR6rUdzkK82sm1UBcvd5xL8mxZXyJiI+lw59UgR63AlGd2zrshfJy4MVXbMQxPnnTsDxddlEGQ==
-X-Received: by 2002:a63:d0:0:b0:41b:c075:acb5 with SMTP id 199-20020a6300d0000000b0041bc075acb5mr15768848pga.480.1661153154100;
-        Mon, 22 Aug 2022 00:25:54 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id i5-20020a635405000000b004298d7b6e70sm6717648pgb.54.2022.08.22.00.25.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 00:25:53 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Sun, 21 Aug 2022 21:25:52 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        "yukuai (C)" <yukuai3@huawei.com>
-Subject: Re: [PATCH v7 1/9] blk-throttle: fix that io throttle can only work
- for single bio
-Message-ID: <YwMvgN0YxNvkC1gm@slm.duckdns.org>
-References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
- <20220802140415.2960284-2-yukuai1@huaweicloud.com>
- <Yvvx+/d2+OMROUOe@slm.duckdns.org>
- <712e0f29-94ba-d3d3-ce21-cba4d6092008@huaweicloud.com>
- <Yv0qbDR+cxKeZ3nD@slm.duckdns.org>
- <83c8b253-2ebb-5af6-8ce1-6dc3b84cf182@huaweicloud.com>
- <b1791e41-4945-a0d8-8067-3841ce10fddd@huaweicloud.com>
+        Mon, 22 Aug 2022 03:27:19 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916C829CB4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:27:18 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 43E8C5C8E3;
+        Mon, 22 Aug 2022 07:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661153237; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QOSZ1gao5/3E8NwCd+xFOFyj6wHAE0KqY6dM+F15eTY=;
+        b=D1v7Rzn8hkS/j8FC79rIDlh6LSkmKqTkZElaHBNiKH8zFdkA5fyDxbpTGYkfW7HGNMe9lV
+        /yAxxvRie+Snh4pL4dY1J2t5JZGLWQbVvsEnyyWkh3gmUjR+2komdG4sqBwfye7m17JkPh
+        SktY9C9jZl3ReOdmsRG0x8HWTPxXHUQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 22C1E13523;
+        Mon, 22 Aug 2022 07:27:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id eRsjBtUvA2MuIQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 07:27:17 +0000
+Date:   Mon, 22 Aug 2022 09:27:16 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Liu Shixin <liushixin2@huawei.com>
+Cc:     Aaron Lu <aaron.lu@intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>
+Subject: Re: [PATCH RFC] mm, proc: add PcpFree to meminfo
+Message-ID: <YwMv1A1rVNZQuuOo@dhcp22.suse.cz>
+References: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
+ <CAC=cRTN=vbrgOsH7PNNMV+Coyabp=H_XF99MUL00kfET=K-32w@mail.gmail.com>
+ <578084e8-bdc3-6e4e-f390-4202a8bc7c1d@huawei.com>
+ <Yv8+bxiZ8+Rw+wu3@ziqianlu-Dell-Optiplex7000>
+ <31718e40-51e9-c14d-f7f5-526ba26d0db8@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1791e41-4945-a0d8-8067-3841ce10fddd@huaweicloud.com>
+In-Reply-To: <31718e40-51e9-c14d-f7f5-526ba26d0db8@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Mon, Aug 22, 2022 at 11:06:44AM +0800, Yu Kuai wrote:
-> While implementing the new method, I found that there seems to be a
-> misunderstanding here, the code seems to try to add flag to split bio
-> so that it won't be throttled again for bps limit, however:
+On Fri 19-08-22 17:53:27, Liu Shixin wrote:
 > 
-> 1) for blk throttle, split bio is issued directly and will never be
-> throttled again, while orignal bio will go through throttle path again.
-> 2) if cloned bio is directed to a new disk, the flag is cleared anyway.
+> 
+> On 2022/8/19 15:40, Aaron Lu wrote:
+> > On Tue, Aug 16, 2022 at 05:24:07PM +0800, Kefeng Wang wrote:
+> >> On 2022/8/16 16:48, huang ying wrote:
+> >>> On Tue, Aug 16, 2022 at 4:38 PM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+> >>>> From: Liu Shixin <liushixin2@huawei.com>
+> >>>>
+> >>>> The page on pcplist could be used, but not counted into memory free or
+> >>>> avaliable, and pcp_free is only showed by show_mem(). Since commit
+> >>>> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+> >>>> significant decrease in the display of free memory, with a large number
+> >>>> of cpus and nodes, the number of pages in the percpu list can be very
+> >>>> large, so it is better to let user to know the pcp count.
+> >>> Can you show some data?
+> >> 80M+ with 72cpus/2node
 
-Doesn't that make the current code correct then? But you were seeing
-incorrect behaviors, right?
+I would expect that such system would have quite some memory as well and
+80MB wouldn't be a really noticeable. What is that amount in %tage 
 
-Thanks.
+> > 80M+ for a 2 node system doesn't sound like a significant number.
+> >
+> >>> Another choice is to count PCP free pages in MemFree.  Is that OK for
+> >>> your use case too?
+> >> Yes, the user will make policy according to MemFree, we think count PCP free
+> >> pages
+> >>
+> >> in MemFree is better, but don't know whether it is right way.
+> >>
+> > Is there a real problem where user makes a sub-optimal policy due to the
+> > not accounted 80M+ free memory?
+> I need to explain that 80M+ is the increased after patch d8a759b57035. Actually in my test,
+> the pcplist is about 114M after system startup, and in high load scenarios, the pcplist memory
+> can reach 300M+.
+> The downstream has sensed the memory change after the kernel is updated, which has an
+> actual impact on them. That's why I sent this patch to ask if should count this
+> part of memory.
+
+It would be really great to be more explicit about this. Because if this
+is really runtime noticeable then we might need to consider an improved
+tunning or way to manually configure the pcp batch sizes. Reporting the
+amount on its own is unlikely going to help without being able to do
+anything about that.
 
 -- 
-tejun
+Michal Hocko
+SUSE Labs
