@@ -2,240 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E120FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 01:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53067C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 01:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232194AbiHVB6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 21:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        id S232226AbiHVB7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 21:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232076AbiHVB6m (ORCPT
+        with ESMTP id S232076AbiHVB7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 21:58:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3778112AA8
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 18:58:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661133518;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Krkj7XTnCtjViG9b8n/OBoFVjFdMc6CFu64n/j38mOw=;
-        b=FDdVhNbmIyudNkXSwFWkKfUvJy4u51sSsAjmfZHqkSznQHiKw4T9oPkYqkXl+06MXj3uXp
-        07mQnqNsJZuSXRo7ab0CcGaFuWIcSzx9lh1x/TqFSZzCVamZfcbcKsiUoZ7oLJYOfvKJLK
-        1MnEhRDROpv9nKh/Lu+vOp2b8Zwdlio=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-cjhPf0ltNzSeEla4-Qi79A-1; Sun, 21 Aug 2022 21:58:33 -0400
-X-MC-Unique: cjhPf0ltNzSeEla4-Qi79A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 49F8F8032F1;
-        Mon, 22 Aug 2022 01:58:32 +0000 (UTC)
-Received: from [10.64.54.16] (vpn2-54-16.bne.redhat.com [10.64.54.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4DF624010D42;
-        Mon, 22 Aug 2022 01:58:24 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
- tracking
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        peterx@redhat.com, pbonzini@redhat.com, corbet@lwn.net,
-        james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, oliver.upton@linux.dev,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
-        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
-        shan.gavin@gmail.com
-References: <20220819005601.198436-1-gshan@redhat.com>
- <20220819005601.198436-2-gshan@redhat.com> <87lerkwtm5.wl-maz@kernel.org>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
-Date:   Mon, 22 Aug 2022 11:58:20 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
-MIME-Version: 1.0
-In-Reply-To: <87lerkwtm5.wl-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        Sun, 21 Aug 2022 21:59:47 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2084.outbound.protection.outlook.com [40.107.22.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C608F21815;
+        Sun, 21 Aug 2022 18:59:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aUBQjJvoOvHmb83UZ1nhJXiImyeRTMKoiIRisNISC3E1oNKMdcowoz4fmahPm5Dk0nek3eTJ8Wh65Uw54FMFS4OzX7f2A/t0j5E0FMXDAtKv/ZgJOYpo1fR41u2V7HlzkjyHUpUZMAkTTV/oWvfK9yJ8lyMmNmxytGwB2C0tXYOIFaj+WcAMchqY/1+0x0ji9JNhvMIUXqY56YkZpxBgsMkxkVESNaM+MATFjuyIoXuVogTBuyXhik2+hWZvd27Ed3s0NuybBeqwNLy4dhAouGXZb28Qmu2LbIFVKa0+BsWJS0mSVAPvh8pwSpeXn4SU5C77Bhg2SkAStV6190/HRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CULa9flY15bsPQVIiuBuA6ls7ndbAXl9Ec3WwDk5sj4=;
+ b=ofiFHj7CKFrl7B3+ZwzE3/qPYwdgSmBpMUWkYyqHpE3+pmrKTeFRAXbAQYup90QFWC03MAYz6b4HrBQwCUl3Zq0KsSsse+vCIh6BqDp3DxCICnwV4g0u1Ztp85Sy6KPLoAlZRc7o3kyJLd0GCGXP8dshMtScC4mh8528gokYE5haJZV/kMIqT+sS4h+7o25qeNcAZg36+gDv//GaoYwqvawfas9wb5d3GP4Vl8XnxSY0Voc/zDgR05IcCq2MuYJh/sASMrCWQ5SjpQxGqvxy6scynAsT6eUr2PKCbeOXimXqvi7NQ+lt/gDbyomaPUCWFAKExWQQ0WLf9NMA1qAlcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CULa9flY15bsPQVIiuBuA6ls7ndbAXl9Ec3WwDk5sj4=;
+ b=ZcTw2aN1bsvuzlvdhIvlKkA5GU2jb+wV1e9HewknBUIRej2PfhJRdoMtG4L60RS7ChPpkQGxbOFfsUfR+YAmJCkDKifHdnmy7p0XvG//mbIB++WNszmKhijj/tNPpWW8xkqZ/VnT5rUh4sVVt1/Zcp58ONJ/AsZ6QS8QNkielCs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by AM6PR0402MB3335.eurprd04.prod.outlook.com (2603:10a6:209:a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Mon, 22 Aug
+ 2022 01:59:43 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::a569:c84a:d972:38ce]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::a569:c84a:d972:38ce%9]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 01:59:43 +0000
+From:   wei.fang@nxp.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 net-next 0/2] add interface mode select and RMII
+Date:   Mon, 22 Aug 2022 09:59:47 +0800
+Message-Id: <20220822015949.1569969-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain
+X-ClientProxiedBy: SG2P153CA0029.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::16)
+ To DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5ce43109-183e-440e-b239-08da83e1fb4a
+X-MS-TrafficTypeDiagnostic: AM6PR0402MB3335:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R0sw44voXIqKf5J+WON5tlH/YVl7Vz3jzzfjJ8+/Twn95TGuLnsBOU5sS6OjfcDv6MAKbWPY4WxzYAIEaHoEX1wRHUYJfl8IXfdSb+Eow9cLxTpj+KrMBm/Wkg2vCUyt8IlGU8Z4yJGEugCP4qqIdmbJuAPEo8IIdlurE7iwO4XFwNVYfJKQ1gu+OVZ93YCxg1nIpsnO8iZ0sy00mr3wCuX89/nTqKMfMTq/4HYPP/q4wfwSfaEgJlNO8X9LuwsHwlPdtPGRXu0941OVVmzIyIY4mUWCOO0R6S5d1C7ozqKX4xci6E+rkgeuJSrg4kkbCjNUU+hP2ZmJ9ZmuItgXVaJ+3IxfkRr98Q6flJv4qqRrF7fdZkGlF7Zp3Pb6B8XHqY/adiYzWUY8FCjC2oImEph6KB+39cm39ka6WvJW1KdMdAd4Jnie4/ZmhkEmZ//XPUJJSf2q3zw9IbchFYsGXZiHmA5ALWF+j8zYpyHwunVSKJjCH0xiBQrah4S98UNARe95QNgDYu9RInlimtMe1xu2olU7MQ1ZNY//D/4o3Sbm6QZKjYe0f+PKJwy54kWPkUyQfKdp6N1ey3TGOV+X/glGuA/w4a/YIqarFPG5DmxRGpdAOOD0ONtpqQ/cN2637SPWPMwgB6fZJDtSjFzh1jmAoazkzSNaZxk8s+dfd2nJlAY4+0665acYXZxHgpwUScqWqCzr2GC7Igb6Bo826CGdtLMdrHXFamVjwxlHCh+Na1MsKWlgZjZro8ONGEx8/FTgcTBooMQ3vjzwMvLpOw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(366004)(136003)(66476007)(66946007)(38350700002)(4326008)(86362001)(8676002)(4744005)(66556008)(921005)(8936002)(36756003)(38100700002)(6512007)(6506007)(6486002)(1076003)(52116002)(316002)(478600001)(2616005)(2906002)(83380400001)(41300700001)(5660300002)(9686003)(26005)(7416002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZQR4uqErITNyJMb1sNbgnw0JWJ7ULgCD4WvaySoIr78k2EuovpcJeixAoNNu?=
+ =?us-ascii?Q?XrT8wFQIHcFtxcUZo213i//NBsA8Q6QlUxAxRW98lhOFnEkAqlIhlD7IbD9O?=
+ =?us-ascii?Q?e+G7ZRh9YyUJegwKM9FidKDXgNeLZQ3u/5aVxyQfDFqrocBusPEIebxMc3ZX?=
+ =?us-ascii?Q?Y9+cxGTzWHy0/uPYXQ/QzU52aQjNLBuJVNoc3Cevp3lwKly+l7k1YbXkFSYs?=
+ =?us-ascii?Q?pp3TKXWFC5FpmCmsr4yLQjdGN/Z6sgPM96lOWDmeU1iJo2+3Ynx0tXe1P9u5?=
+ =?us-ascii?Q?d/WillQjqKf9FitzIGhIqI65Zcoe6gF8ecH8Ygbp9uWH0Sp8nFUhO5R0v6DP?=
+ =?us-ascii?Q?moOwOciPNZHy+9+yq+Rq325VKWkWrOVp/BQM2+JGHcTsUnCuCiOZz0+q56MY?=
+ =?us-ascii?Q?attevwVkkOXUPM6Hmgmow9bhFoD9BU2maSp+MVLsF8oiVuuULaxePxW+2oKa?=
+ =?us-ascii?Q?sZYC7i7sxk0tUJoS1UcaV59wiwPqvsbz+6ukkEVmx2/I4Ou/UFABWvlDUMkG?=
+ =?us-ascii?Q?Mzf8RRbs1SxS3eWT0WNJeX78UFrZ5oxHl+xk8I4OoqKi0uS4uPz6sDLXuStj?=
+ =?us-ascii?Q?T5OBdbWk01sl70nxcMhvfO0yylQOItVudvdPKwlsHAdQbKkO7gKBnuNsr50Y?=
+ =?us-ascii?Q?ojeoHBSuQYCA6F8ouOK6xsdK/u6SHllIWoM1Ncnu9vFUPa/hGQ46DHXBLuZi?=
+ =?us-ascii?Q?+oL5NfBYqgUz1pJYd1FeBwTcbvMfnuUj5vBRP77rY5AyIf/rtHOak43KYZr7?=
+ =?us-ascii?Q?/myW4uXmF022Yx3Ry7fYfDkYSM5uq8BaIHQUeiQvjOxjCJ15b4UF5s85qAoQ?=
+ =?us-ascii?Q?/xqwhrOBMqw1otaeYp/3cKFVac8iShGi/gDTGPbXypyLDinmK+Zl4yjQo/Y2?=
+ =?us-ascii?Q?AYilB5kZSgM29g5h8s6zbnxH4e2LCnZvR74e29WQFlPbg0NqUce2zZILLTeP?=
+ =?us-ascii?Q?hnInQvvKhrwj0lTC47dO2xvKIcOiZR7YfNbjXjHweTN0BMXEJwOociIMtDQM?=
+ =?us-ascii?Q?ug4szf6xzkt4S2siy0w9UDr0czkDsy0kMmeJASSpQWzoK6sK5lPtoQf+8qbp?=
+ =?us-ascii?Q?74mqa8tbwOAc/e8i+jxfWxpMvOUaGH4e1gHVe6xEM/TI2K7ppQ/t88cPcm/B?=
+ =?us-ascii?Q?XuPOhugC2s0vxdKGgJju2ifmkpk3DDp1wNACv25CVlOCA1yKPcEGUlsu/xZG?=
+ =?us-ascii?Q?TeTiPU8egst9KjyTVpRq3uvOsNj5rv6v8QNu5hd/9V68Pam/XB4nyEZm6k8A?=
+ =?us-ascii?Q?j42ivayzakcGWzb0s33G9d0+dvxPX8Bd6HG+Z7UV377bMrYJh/D9SyonNbls?=
+ =?us-ascii?Q?K5u5Iw/9PCF7lYrLgb8lMNlxqRrYTRDmeILl4Ai82Kgczed2jGMWjKK/Zxjk?=
+ =?us-ascii?Q?24kRVWwPZmmzaY2U5CNlQHljgrdw+L2JmV8c92CsugULW592X0H+0fC3WZe9?=
+ =?us-ascii?Q?qrP0XWQPp9qK0EMCuPNcAdnp+XEhbRfUeG36LTEUk535sWVLss7T76e9djEV?=
+ =?us-ascii?Q?FmXSDvGbLNXP9zXqrTpWUm6SnHXFWf0FG1B1+f8CipL5xPppTH1n+uZt81AN?=
+ =?us-ascii?Q?bpwNq5hhnNQmHYXUh1p/X2JMep15VCMs9Ox3E7Vq?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ce43109-183e-440e-b239-08da83e1fb4a
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 01:59:43.6484
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iJnmKzTwbPctp5pup80qvA3GETZR2Nt1/JAL23JCSE8fNe8kO5jvS1WBW8bEr6LO/+uf3vlt8j7qUB+n09ny1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3335
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+From: Wei Fang <wei.fang@nxp.com>
 
-On 8/19/22 6:00 PM, Marc Zyngier wrote:
-> On Fri, 19 Aug 2022 01:55:57 +0100,
-> Gavin Shan <gshan@redhat.com> wrote:
->>
->> The ring-based dirty memory tracking has been available and enabled
->> on x86 for a while. The feature is beneficial when the number of
->> dirty pages is small in a checkpointing system or live migration
->> scenario. More details can be found from fb04a1eddb1a ("KVM: X86:
->> Implement ring-based dirty memory tracking").
->>
->> This enables the ring-based dirty memory tracking on ARM64. It's
->> notable that no extra reserved ring entries are needed on ARM64
->> because the huge pages are always split into base pages when page
->> dirty tracking is enabled.
-> 
-> Can you please elaborate on this? Adding a per-CPU ring of course
-> results in extra memory allocation, so there must be a subtle
-> x86-specific detail that I'm not aware of...
-> 
+The patches add the below feature support for both TJA1100 and
+TJA1101 PHYs cards:
+- Add MII and RMII mode support.
+- Add REF_CLK input/output support for RMII mode.
 
-Sure. I guess it's helpful to explain how it works in next revision.
-Something like below:
+Wei Fang (2):
+  dt-bindings: net: tja11xx: add nxp,refclk_in property
+  net: phy: tja11xx: add interface mode and RMII REF_CLK support
 
-This enables the ring-based dirty memory tracking on ARM64. The feature
-is enabled by CONFIG_HAVE_KVM_DIRTY_RING, detected and enabled by
-CONFIG_HAVE_KVM_DIRTY_RING. A ring buffer is created on every vcpu and
-each entry is described by 'struct kvm_dirty_gfn'. The ring buffer is
-pushed by host when page becomes dirty and pulled by userspace. A vcpu
-exit is forced when the ring buffer becomes full. The ring buffers on
-all vcpus can be reset by ioctl command KVM_RESET_DIRTY_RINGS.
+ .../devicetree/bindings/net/nxp,tja11xx.yaml  | 17 ++++
+ drivers/net/phy/nxp-tja11xx.c                 | 83 +++++++++++++++++--
+ 2 files changed, 95 insertions(+), 5 deletions(-)
 
-Yes, I think so. Adding a per-CPU ring results in extra memory allocation.
-However, it's avoiding synchronization among multiple vcpus when dirty
-pages happen on multiple vcpus. More discussion can be found from [1]
-
-[1] https://patchwork.kernel.org/project/kvm/patch/BL2PR08MB4812F929A2760BC40EA757CF0630@BL2PR08MB481.namprd08.prod.outlook.com/
-(comment#8 from Radim Krčmář on May 3, 2016, 2:11 p.m. UTC)
-
-
->>
->> Signed-off-by: Gavin Shan <gshan@redhat.com>
->> ---
->>   Documentation/virt/kvm/api.rst    | 2 +-
->>   arch/arm64/include/uapi/asm/kvm.h | 1 +
->>   arch/arm64/kvm/Kconfig            | 1 +
->>   arch/arm64/kvm/arm.c              | 8 ++++++++
->>   4 files changed, 11 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
->> index abd7c32126ce..19fa1ac017ed 100644
->> --- a/Documentation/virt/kvm/api.rst
->> +++ b/Documentation/virt/kvm/api.rst
->> @@ -8022,7 +8022,7 @@ regardless of what has actually been exposed through the CPUID leaf.
->>   8.29 KVM_CAP_DIRTY_LOG_RING
->>   ---------------------------
->>   
->> -:Architectures: x86
->> +:Architectures: x86, arm64
->>   :Parameters: args[0] - size of the dirty log ring
->>   
->>   KVM is capable of tracking dirty memory using ring buffers that are
->> diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
->> index 3bb134355874..7e04b0b8d2b2 100644
->> --- a/arch/arm64/include/uapi/asm/kvm.h
->> +++ b/arch/arm64/include/uapi/asm/kvm.h
->> @@ -43,6 +43,7 @@
->>   #define __KVM_HAVE_VCPU_EVENTS
->>   
->>   #define KVM_COALESCED_MMIO_PAGE_OFFSET 1
->> +#define KVM_DIRTY_LOG_PAGE_OFFSET 64
-> 
-> For context, the documentation says:
-> 
-> <quote>
-> - if KVM_CAP_DIRTY_LOG_RING is available, a number of pages at
->    KVM_DIRTY_LOG_PAGE_OFFSET * PAGE_SIZE. [...]
-> </quote>
-> 
-> What is the reason for picking this particular value?
-> 
-
-It's inherited from x86. I don't think it has to be this particular value.
-The value is used to distinguish the region's owners like kvm_run, KVM_PIO_PAGE_OFFSET,
-KVM_COALESCED_MMIO_PAGE_OFFSET, and KVM_DIRTY_LOG_PAGE_OFFSET.
-
-How about to have 2 for KVM_DIRTY_LOG_PAGE_OFFSET in next revision?
-The virtual area is cheap, I guess it's also nice to use x86's
-pattern to have 64 for KVM_DIRTY_LOG_PAGE_OFFSET.
-
-     #define KVM_COALESCED_MMIO_PAGE_OFFSET   1
-     #define KVM_DIRTY_LOG_PAGE_OFFSET        2
-
->>   
->>   #define KVM_REG_SIZE(id)						\
->>   	(1U << (((id) & KVM_REG_SIZE_MASK) >> KVM_REG_SIZE_SHIFT))
->> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
->> index 815cc118c675..0309b2d0f2da 100644
->> --- a/arch/arm64/kvm/Kconfig
->> +++ b/arch/arm64/kvm/Kconfig
->> @@ -32,6 +32,7 @@ menuconfig KVM
->>   	select KVM_VFIO
->>   	select HAVE_KVM_EVENTFD
->>   	select HAVE_KVM_IRQFD
->> +	select HAVE_KVM_DIRTY_RING
->>   	select HAVE_KVM_MSI
->>   	select HAVE_KVM_IRQCHIP
->>   	select HAVE_KVM_IRQ_ROUTING
->> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
->> index 986cee6fbc7f..3de6b9b39db7 100644
->> --- a/arch/arm64/kvm/arm.c
->> +++ b/arch/arm64/kvm/arm.c
->> @@ -866,6 +866,14 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
->>   		if (!ret)
->>   			ret = 1;
->>   
->> +		/* Force vcpu exit if its dirty ring is soft-full */
->> +		if (unlikely(vcpu->kvm->dirty_ring_size &&
->> +			     kvm_dirty_ring_soft_full(&vcpu->dirty_ring))) {
->> +			vcpu->run->exit_reason = KVM_EXIT_DIRTY_RING_FULL;
->> +			trace_kvm_dirty_ring_exit(vcpu);
->> +			ret = 0;
->> +		}
->> +
-> 
-> Why can't this be moved to kvm_vcpu_exit_request() instead? I would
-> also very much like the check to be made a common helper with x86.
-> 
-> A seemingly approach would be to make this a request on dirty log
-> insertion, and avoid the whole "check the log size" on every run,
-> which adds pointless overhead to unsuspecting users (aka everyone).
-> 
-
-I though of having the check in kvm_vcpu_exit_request(). The various
-exit reasons are prioritized. x86 gives KVM_EXIT_DIRTY_RING_FULL the
-highest priority and ARM64 is just to follow. I don't think it really
-matters. I will improve it accordingly in next revision:
-
-- Change kvm_dirty_ring_soft_full() to something as below in dirty_ring.c
-
-   bool kvm_dirty_ring_soft_full(struct kvm_vcpu *vcpu)
-   {
-        struct kvm *kvm = vcpu->vcpu;
-        struct kvm_dirty_ring *ring = &vcpu->dirty_ring;
-
-        if (unlikely(kvm->dirty_ring_size &&
-                     kvm_dirty_ring_used(ring) >= ring->soft_limit)) {
-            vcpu->run->exit_reason = KVM_EXIT_DIRTY_RING_FULL;
-            trace_kvm_dirty_ring_exit(vcpu);
-            return true;
-        }
-
-        return false;
-   }
-
-- Use the modified kvm_dirty_ring_soft_full() in kvm_vcpu_exit_request().
-
-Userspace needs KVM_EXIT_DIRTY_RING_FULL to collect the dirty log in time.
-Otherwise, the dirty log in the ring buffer will be overwritten. I'm not
-sure if anything else I missed?
-
-Thanks,
-Gavin
-
-
-
-
+-- 
+2.25.1
 
