@@ -2,105 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A36C32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B4BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236988AbiHVQZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 12:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
+        id S236999AbiHVQ1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 12:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237035AbiHVQZX (ORCPT
+        with ESMTP id S229524AbiHVQ1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 12:25:23 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C02C40569;
-        Mon, 22 Aug 2022 09:25:23 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id ds12-20020a17090b08cc00b001fae6343d9fso6136016pjb.0;
-        Mon, 22 Aug 2022 09:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=4loECkPREqd2KldEisF0VFFtJVa4MK+m9ZV3bvHaKd4=;
-        b=PijjwuK0QygrWuX++4tMf+m0vUD4Oe/mNMbf1MM2BjAgbwZVhCn3VPqAnuEn/PjQ1t
-         Bs4ymE7HP+BjR2n8hyd2NkaUKnfnc7G8TQKAA2W3XpBnb38nwCOTwXefWb5Utp7S0Bad
-         KdjLMsC72yuECNVPWLu/HqTDKH7RQMTfx5GUxI8Y+tmvT3uoGUTtDr3UQqmBE6kw3AUR
-         pobniaU9nyHRqyiSudFaydNxYrRhzUfqs3MXZiqCeHE7OETzpcze9jiPBbC0zaYFXeUb
-         1qA0yzYK0oEWpzgCg/bQDYPlJmsVls+N7kdDuVm2xyRHpLLz0SjvSy6FpvWNGR0ijxWC
-         HW1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=4loECkPREqd2KldEisF0VFFtJVa4MK+m9ZV3bvHaKd4=;
-        b=X6NcKDpnM+v71DN+0gN/nvskwRUpn1pAsgmdGGaa5O+uEE02tT2g773MjJxXqqaNCw
-         DUa0JUPBE5ujNfFJ6SVIgCoySa7Zy4ecKsvmH9YHED1PMu8tYXx3UfYaq2Yw/Qh6WKSo
-         y4tCTZflTsTPjGqMTwx4+yPN6kIteV6sb/gVPF9MbPlKSt+mm2+dIdqSToe8LjXjUUWx
-         gPAMdul+/mgyJSUN3wPcMohhaQgsYesKhw2DLY63UvW8AU0Pd8g2vIkzWLjyPfrLnAAD
-         B0dug+2gP6b0xTYCja0qvadq3xx9n0zXMbqcVlNgvD2Sljc/85C1MHQUf5tGPhtH0nF4
-         kccQ==
-X-Gm-Message-State: ACgBeo1naY13/HqRhFFV0gzZ1tkYAc5MCZNJx54l6Sfz3q93W2rwvDwg
-        ztJvNQiu2j8AeVgXdlYwBsQ=
-X-Google-Smtp-Source: AA6agR5uPcCO/iIC8BrdjXOXXObRD+jLn5sIcoDWY0fUpRAKCaheaoumTsmutXPH0/+IcxFhZd3Q9g==
-X-Received: by 2002:a17:90b:3c0b:b0:1fa:fe78:6385 with SMTP id pb11-20020a17090b3c0b00b001fafe786385mr13993071pjb.55.1661185522627;
-        Mon, 22 Aug 2022 09:25:22 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a5-20020a624d05000000b00536b67c6a80sm1999442pfb.109.2022.08.22.09.25.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 09:25:21 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 22 Aug 2022 09:25:19 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Farber, Eliav" <farbere@amazon.com>
-Cc:     jdelvare@suse.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
-        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
-        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
-        amitlavi@amazon.com, almogbs@amazon.com, dwmw@amazon.co.uk,
-        rtanwar@maxlinear.com
-Subject: Re: [PATCH v2 13/16] hwmon: (mr75203) add thermal coefficient
- properties for Moortec PVT controller
-Message-ID: <20220822162519.GC4098765@roeck-us.net>
-References: <20220817054321.6519-1-farbere@amazon.com>
- <20220817054321.6519-14-farbere@amazon.com>
- <20220818202531.GA3431466@roeck-us.net>
- <58a79e41-4d20-0e30-cecd-4ca37dd3dbfd@amazon.com>
+        Mon, 22 Aug 2022 12:27:21 -0400
+X-Greylist: delayed 322 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 09:27:18 PDT
+Received: from mx01.puc.rediris.es (outbound2mad.lav.puc.rediris.es [130.206.19.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCA640E09
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:27:18 -0700 (PDT)
+Received: from mta-out03.sim.rediris.es (mta-out03.sim.rediris.es [130.206.24.45])
+        by mx01.puc.rediris.es  with ESMTP id 27MGL5av008437-27MGL5ax008437
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 22 Aug 2022 18:21:05 +0200
+Received: from mta-out03.sim.rediris.es (localhost.localdomain [127.0.0.1])
+        by mta-out03.sim.rediris.es (Postfix) with ESMTPS id A76F0302A8C5;
+        Mon, 22 Aug 2022 18:21:05 +0200 (CEST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mta-out03.sim.rediris.es (Postfix) with ESMTP id 932C63049C41;
+        Mon, 22 Aug 2022 18:21:05 +0200 (CEST)
+X-Amavis-Modified: Mail body modified (using disclaimer) -
+        mta-out03.sim.rediris.es
+Received: from mta-out03.sim.rediris.es ([127.0.0.1])
+        by localhost (mta-out03.sim.rediris.es [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id LBajIlpnifdK; Mon, 22 Aug 2022 18:21:05 +0200 (CEST)
+Received: from lt-gp.iram.es (haproxy02.sim.rediris.es [130.206.24.70])
+        by mta-out03.sim.rediris.es (Postfix) with ESMTPA id DD52C302A8C5;
+        Mon, 22 Aug 2022 18:21:04 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 18:21:00 +0200
+From:   Gabriel Paubert <paubert@iram.es>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Nick Child <nick.child@ibm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH] powerpc: Add support for early debugging via Serial
+ 16550 console
+Message-ID: <YwOs7LxpyDubCSyF@lt-gp.iram.es>
+References: <20220819211254.22192-1-pali@kernel.org>
+ <b23ecdd1-fe34-f0f7-be7f-da8624096447@csgroup.eu>
+ <20220822153335.v5gc26jfbbqyj3et@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <58a79e41-4d20-0e30-cecd-4ca37dd3dbfd@amazon.com>
+In-Reply-To: <20220822153335.v5gc26jfbbqyj3et@pali>
+Content-Transfer-Encoding: quoted-printable
+X-FE-Policy-ID: 23:8:0:SYSTEM
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=iram.es; s=DKIM; c=relaxed/relaxed;
+ h=date:from:to:cc:subject:message-id:references:mime-version:content-type;
+ bh=P7Z6k3A8poRGgY/r2fVngWTDGFg6NAUY66Qf9n627IU=;
+ b=OyMQyYGzrjUYNUmcunzhWkDUU5JjJFTOsKqT+SUVtt2g3UnIhxWU+iwHp0FTD8lRwEuEnymDs9vF
+        8EK3OI7gFDHC36L1qm6HHO4WcA93SesWX2QJvzkglm+3lguFSpQPiQ/+Q62vIoM4/X54Mzo7HMaw
+        lZj1G7AVI8jASBE3EV0QpsKmpXVxys1JksNuF3CyKd2LLcYdMXRpmwQXrcnvKqhd8sYuLbRuhLMi
+        j8N0Ncfrv2sdTd3NWghjMxUBNRu4gF4S03hGWZPLXFxrnpzXwxK0ZoT1WSW3MM3/Tn7tBb+4xRYj
+        YRELdnG9Xm3v9zgH1rh48s36yf1JxyqSDiZGwg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 04:24:20PM +0300, Farber, Eliav wrote:
-> On 8/18/2022 11:25 PM, Guenter Roeck wrote:
-> > On Wed, Aug 17, 2022 at 05:43:18AM +0000, Eliav Farber wrote:
-> > > Add optional "ts-coeff-g", "ts-coeff-h", "ts-coeff-cal5" and
-> > > "ts-coeff-j" properties to be used instead of defaults for the
-> > > thermal equasion.
-> > > 
-> > Vendor prefix again, and shouldn;t there be some note about the
-> > to-be-used defaults ?
-> Can you please explain why to add a vendor prefix to these properties
-> (and also to all other properties I added in this series)?
-> All the properties I added are not specific to our SOC, and any other
-> vendor using the same mr75203 ip block in their SOC, can also use the new
-> properties.
+On Mon, Aug 22, 2022 at 05:33:35PM +0200, Pali Roh=E1r wrote:
+> On Monday 22 August 2022 14:25:57 Christophe Leroy wrote:
+> > Le 19/08/2022 =E0 23:12, Pali Roh=E1r a =E9crit=A0:
+> > > Currently powerpc early debugging contains lot of platform specific
+> > > options, but does not support standard UART / serial 16550 console.
+> > >=20
+> > > Later legacy_serial.c code supports registering UART as early debug=
+ console
+> > > from device tree but it is not early during booting, but rather lat=
+er after
+> > > machine description code finishes.
+> > >=20
+> > > So for real early debugging via UART is current code unsuitable.
+> > >=20
+> > > Add support for new early debugging option CONFIG_PPC_EARLY_DEBUG_1=
+6550
+> > > which enable Serial 16550 console on address defined by new option
+> > > CONFIG_PPC_EARLY_DEBUG_16550_PHYSADDR and by stride by option
+> > > CONFIG_PPC_EARLY_DEBUG_16550_STRIDE.
+> > >=20
+> > > With this change it is possible to debug powerpc machine descriptor=
+ code.
+> > > For example this early debugging code can print on serial console a=
+lso
+> > > "No suitable machine description found" error which is done before
+> > > legacy_serial.c code.
+> > >=20
+> > > Signed-off-by: Pali Roh=E1r <pali@kernel.org>
+> > > ---
+> > > Tested on P2020 board. It allowed me do debug and implement this pa=
+tch series:
+> > > https://lore.kernel.org/linuxppc-dev/20220819191557.28116-1-pali@ke=
+rnel.org/
+> >=20
+> > Build failure if I select it on mpc885_ads_defconfig :
+> >=20
+> >    LD      vmlinux.o
+> >    MODPOST vmlinux.symvers
+> >    MODINFO modules.builtin.modinfo
+> >    GEN     modules.builtin
+> >    CC      .vmlinux.export.o
+> >    LD      .tmp_vmlinux.kallsyms1
+> > powerpc64-linux-ld: arch/powerpc/kernel/udbg.o: in function=20
+> > `udbg_early_init':
+> > /home/chleroy/linux-powerpc/arch/powerpc/kernel/udbg.c:71: undefined=20
+> > reference to `udbg_init_debug_16550'
+> >=20
+> >=20
+> >=20
+> > > ---
+> > >   arch/powerpc/Kconfig.debug       | 14 ++++++++++++++
+> > >   arch/powerpc/include/asm/udbg.h  |  1 +
+> > >   arch/powerpc/kernel/udbg.c       |  2 ++
+> > >   arch/powerpc/kernel/udbg_16550.c | 33 +++++++++++++++++++++++++++=
++++++
+> > >   4 files changed, 50 insertions(+)
+> > >=20
+> > > diff --git a/arch/powerpc/Kconfig.debug b/arch/powerpc/Kconfig.debu=
+g
+> > > index 9f363c143d86..a4e7d90a45d2 100644
+> > > --- a/arch/powerpc/Kconfig.debug
+> > > +++ b/arch/powerpc/Kconfig.debug
+> > > @@ -276,6 +276,11 @@ config PPC_EARLY_DEBUG_OPAL_HVSI
+> > >   	  Select this to enable early debugging for the PowerNV platform
+> > >   	  using an "hvsi" console
+> > >  =20
+> > > +config PPC_EARLY_DEBUG_16550
+> > > +	bool "Serial 16550"
+> > > +	help
+> > > +	  Select this to enable early debugging via Serial 16550 console
+> > > +
+> >=20
+> > Putting it before EARLY_DEBUG_MEMCONS means that configs that were=20
+> > previously selectiong EARLY_DEBUG_MEMCONS will now select=20
+> > EARLY_DEBUG_16550 instead.
+> >=20
+> > Add a dependency to PPC_UDBG_16550 to avoid the build failure I menti=
+onned ?
+>=20
+> Yea, there is really missing dependency. I will fix it.
+>=20
+> > >   config PPC_EARLY_DEBUG_MEMCONS
+> > >   	bool "In memory console"
+> > >   	help
+> > > @@ -355,6 +360,15 @@ config PPC_EARLY_DEBUG_CPM_ADDR
+> > >   	  platform probing is done, all platforms selected must
+> > >   	  share the same address.
+> > >  =20
+> > > +config PPC_EARLY_DEBUG_16550_PHYSADDR
+> > > +	hex "Early debug Serial 16550 physical address"
+> > > +	depends on PPC_EARLY_DEBUG_16550
+> >=20
+> > A default value is necessary here to avoid prompts during defconfig b=
+uilds.
+> >=20
+> > > +
+> > > +config PPC_EARLY_DEBUG_16550_STRIDE
+> > > +	int "Early debug Serial 16550 stride"
+> > > +	depends on PPC_EARLY_DEBUG_16550
+> > > +	default 1
+> > > +
+> > >   config FAIL_IOMMU
+> > >   	bool "Fault-injection capability for IOMMU"
+> > >   	depends on FAULT_INJECTION
+> > > diff --git a/arch/powerpc/include/asm/udbg.h b/arch/powerpc/include=
+/asm/udbg.h
+> > > index b4aa0d88ce2c..20b5a37ab772 100644
+> > > --- a/arch/powerpc/include/asm/udbg.h
+> > > +++ b/arch/powerpc/include/asm/udbg.h
+> > > @@ -53,6 +53,7 @@ extern void __init udbg_init_ehv_bc(void);
+> > >   extern void __init udbg_init_ps3gelic(void);
+> > >   extern void __init udbg_init_debug_opal_raw(void);
+> > >   extern void __init udbg_init_debug_opal_hvsi(void);
+> > > +extern void __init udbg_init_debug_16550(void);
+> >=20
+> > 'extern' keywork is pointless and deprecated for function prototypes,=
+=20
+> > please don't add new ones.
+>=20
+> I used extern keyword to follow existing coding style.
 
-To me it seems that the properties are very mr75203 and thus vendor
-specific.
+In this case it's better to remove existing extern specifications in the
+surrounding lines. Increasing a bit the footprint of the patch is
+justified, and does not significantly increase the risk of conflicts
+with other patches, unlike the gratuitous churn we see sometimes.
 
-However, I am not a DT maintainer. Stepping back to let DT maintainers
-respond and state their preferences.
+	Gabriel
+>=20
+> > Checkpatch reports:
+> >=20
+> > CHECK: extern prototypes should be avoided in .h files
+> > #77: FILE: arch/powerpc/include/asm/udbg.h:56:
+> > +extern void __init udbg_init_debug_16550(void);
+> >=20
+> >=20
+> > >  =20
+> > >   #endif /* __KERNEL__ */
+> > >   #endif /* _ASM_POWERPC_UDBG_H */
+> > > diff --git a/arch/powerpc/kernel/udbg.c b/arch/powerpc/kernel/udbg.=
+c
+> > > index b1544b2f6321..92b3fc258d11 100644
+> > > --- a/arch/powerpc/kernel/udbg.c
+> > > +++ b/arch/powerpc/kernel/udbg.c
+> > > @@ -67,6 +67,8 @@ void __init udbg_early_init(void)
+> > >   	udbg_init_debug_opal_raw();
+> > >   #elif defined(CONFIG_PPC_EARLY_DEBUG_OPAL_HVSI)
+> > >   	udbg_init_debug_opal_hvsi();
+> > > +#elif defined(CONFIG_PPC_EARLY_DEBUG_16550)
+> > > +	udbg_init_debug_16550();
+> > >   #endif
+> > >  =20
+> > >   #ifdef CONFIG_PPC_EARLY_DEBUG
+> > > diff --git a/arch/powerpc/kernel/udbg_16550.c b/arch/powerpc/kernel=
+/udbg_16550.c
+> > > index d3942de254c6..46f2d831d7c9 100644
+> > > --- a/arch/powerpc/kernel/udbg_16550.c
+> > > +++ b/arch/powerpc/kernel/udbg_16550.c
+> > > @@ -8,6 +8,7 @@
+> > >   #include <asm/udbg.h>
+> > >   #include <asm/io.h>
+> > >   #include <asm/reg_a2.h>
+> > > +#include <asm/early_ioremap.h>
+> > >  =20
+> > >   extern u8 real_readb(volatile u8 __iomem  *addr);
+> > >   extern void real_writeb(u8 data, volatile u8 __iomem *addr);
+> > > @@ -335,3 +336,35 @@ void __init udbg_init_debug_microwatt(void)
+> > >   }
+> > >  =20
+> > >   #endif /* CONFIG_PPC_EARLY_DEBUG_MICROWATT */
+> > > +
+> > > +#ifdef CONFIG_PPC_EARLY_DEBUG_16550
+> > > +
+> > > +static void __iomem *udbg_uart_early_addr;
+> > > +
+> > > +void __init udbg_init_debug_16550(void)
+> > > +{
+> > > +	udbg_uart_early_addr =3D early_ioremap(CONFIG_PPC_EARLY_DEBUG_165=
+50_PHYSADDR, 0x1000);
+> > > +	udbg_uart_init_mmio(udbg_uart_early_addr, CONFIG_PPC_EARLY_DEBUG_=
+16550_STRIDE);
+> > > +}
+> > > +
+> > > +static int __init udbg_init_debug_16550_ioremap(void)
+> > > +{
+> > > +	void __iomem *addr;
+> > > +
+> > > +	if (!udbg_uart_early_addr)
+> > > +		return 0;
+> > > +
+> > > +	addr =3D ioremap(CONFIG_PPC_EARLY_DEBUG_16550_PHYSADDR, 0x1000);
+> > > +	if (WARN_ON(!addr))
+> > > +		return -ENOMEM;
+> > > +
+> > > +	udbg_uart_init_mmio(addr, CONFIG_PPC_EARLY_DEBUG_16550_STRIDE);
+> > > +	early_iounmap(udbg_uart_early_addr, 0x1000);
+> > > +	udbg_uart_early_addr =3D NULL;
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +early_initcall(udbg_init_debug_16550_ioremap);
+> > > +
+> > > +#endif /* CONFIG_PPC_EARLY_DEBUG_16550 */
+ 
 
-> 
-> Regarding defaults, these properties are optional, so if they are absent
-> in device tree, the current defaults in code are used.
-> 
-Same as before. Question was if DT should say what the defaults are.
-I'll leave it up to DT maintainers.
-
-Thanks,
-Guenter
