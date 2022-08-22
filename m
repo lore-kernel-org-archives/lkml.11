@@ -2,114 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E556FC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC3CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233332AbiHVLaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
+        id S234566AbiHVLaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234433AbiHVLaI (ORCPT
+        with ESMTP id S234422AbiHVLaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:30:08 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711FF3336F;
-        Mon, 22 Aug 2022 04:30:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661167808; x=1692703808;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ggvgSTbI/3n106FcPTJ8++adTEBX7bnWFulBMj2Sqa4=;
-  b=Pz3EICBbjSBKYtF82b1I3T1CmMKwNuRBna08Faaammlrc5uMd4RqWXD3
-   dhmUX9CDlrW/CjOx+bOGaVu3roO87oY6OBNwaSaKsbHzNXy4pcROYKfvH
-   F0qQRELrDKeBebb7P0bDZc9flN4UK3BK5i/20f/3auDXvZxtJAHb9xirC
-   1vTw9DGUwEJQLi5XCBYd48fbyclGvCvfPP3ivDz38KAdJLeWv0ho4SmyR
-   pMkhdNQ+yTECtv7ZTby47YIXFAbSFt4uhY3XG7g7MgALl5wJmTY/ZIoOi
-   4R2e9PCzd7jPK+Spc70V+EGPmN1GcWm4kINH0/AXpp7r7e0sVad5ehtU9
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="170324628"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Aug 2022 04:30:07 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 22 Aug 2022 04:30:02 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Mon, 22 Aug 2022 04:30:00 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Hugh Breslin <hugh.breslin@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 3/6] dt-bindings: clk: add PolarFire SoC fabric clock ids
-Date:   Mon, 22 Aug 2022 12:29:26 +0100
-Message-ID: <20220822112928.2727437-4-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220822112928.2727437-1-conor.dooley@microchip.com>
-References: <20220822112928.2727437-1-conor.dooley@microchip.com>
+        Mon, 22 Aug 2022 07:30:06 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B933335F
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:30:05 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id z20so13404725edb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:30:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Xlmus60sqK8GeXhd6q9NENg7b74le0wdQoVj4za8BkE=;
+        b=W22n9DZSOQzBWhxvg9uaQDvwGdkLpDtbnuKeDZPqUgw1psI7Bh8DAmds/AcK6rHLnf
+         UK85rgUvcGXYBYry65MhhQJUoQdLB/1cWhdtbv/KbbSYSTArEdTsFyNFjH2ccnovAEpk
+         y9PAd9CuVI3aGPW5LKD+7J4HGaSopRqQxIN5g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Xlmus60sqK8GeXhd6q9NENg7b74le0wdQoVj4za8BkE=;
+        b=FqGAys4WjX8moEmeG1vLICYwZ6ATrgGgbD8dMXufAEzX2Jys8wFjO75uMRuiMtnNwA
+         RaCq55tXOKzTeqpJ337orB/YVn34WKC8p1is66YP/rVAn/c+dDfj4iWXylXn+AZy2FiY
+         JGE5bDaeqM9RK561F9izaYpijo1FIM2f1JPDi3cIETlKstCfMaVJiMgkmJ1qagpMIpJ0
+         g1SeBrpvqkbmoF98MmOZXBOi36ZvuEDYCey1Vt1n2OAJ8kBkd411ns0r3xvGvxbBDaAx
+         67Ul7iZtrM+HZRvLAmky2heCelJiapxaYUzHbnImrDoJIDXfuZAmCxBHcODKx7jSR6Ln
+         N7pA==
+X-Gm-Message-State: ACgBeo3NiyYQ6iz1oskhH69kHgLKRg67YGu0t0kXgxLO0VdW+nYJVaGI
+        J3u55q5/mqIoXyx1cZIMqe5rbg==
+X-Google-Smtp-Source: AA6agR4Dk6XIdvRO93LKvp6U+BMj/bECACWyCvfC/JBkAJHvokftn0ynCiHWPGR5yQE+8KJcyZyfaA==
+X-Received: by 2002:a05:6402:c45:b0:442:c549:8e6b with SMTP id cs5-20020a0564020c4500b00442c5498e6bmr15765394edb.123.1661167804008;
+        Mon, 22 Aug 2022 04:30:04 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-57-252.cust.vodafonedsl.it. [188.217.57.252])
+        by smtp.gmail.com with ESMTPSA id kz13-20020a17090777cd00b0073d6234ceebsm3475065ejc.160.2022.08.22.04.30.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 04:30:03 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 13:30:01 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl, shawnguo@kernel.org,
+        robh+dt@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, xiahong.bao@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 3/4] media: amphion: decoder add support for
+ contiguous planes
+Message-ID: <20220822113001.GB17530@tom-ThinkPad-T14s-Gen-2i>
+References: <cover.1660027440.git.ming.qian@nxp.com>
+ <c55f85d694cf6cd29fbd072b9246dda296ca6639.1660027440.git.ming.qian@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c55f85d694cf6cd29fbd072b9246dda296ca6639.1660027440.git.ming.qian@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Each Clock Conditioning Circuitry block contains 2 PLLs and 2 DLLs.
-The PLLs have 4 outputs each and the DLLs 2. Add 16 new IDs covering
-these clocks. For more information on the CCC hardware, see the
-"PolarFire SoC FPGA Clocking Resources" document at the link below.
+Hi Ming,
 
-Link: https://onlinedocs.microchip.com/pr/GUID-8F0CC4C0-0317-4262-89CA-CE7773ED1931-en-US-1/index.html
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../dt-bindings/clock/microchip,mpfs-clock.h  | 23 +++++++++++++++++++
- 1 file changed, 23 insertions(+)
+On Tue, Aug 09, 2022 at 02:50:40PM +0800, Ming Qian wrote:
+> decoder add support for contiguous formats
+> V4L2_PIX_FMT_NV12_8L128 and V4L2_PIX_FMT_NV12_10BE_8L128
+> 
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> ---
+>  drivers/media/platform/amphion/vdec.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
+> index 48ab664fa7ef..9c3324717cbc 100644
+> --- a/drivers/media/platform/amphion/vdec.c
+> +++ b/drivers/media/platform/amphion/vdec.c
+> @@ -72,12 +72,28 @@ static const struct vpu_format vdec_formats[] = {
+>  		.mem_planes = 2,
+>  		.comp_planes = 2,
+>  		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
+> +		.sibling = V4L2_PIX_FMT_NV12_8L128,
+> +	},
+> +	{
+> +		.pixfmt = V4L2_PIX_FMT_NV12_8L128,
+> +		.mem_planes = 1,
+> +		.comp_planes = 2,
+> +		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
+> +		.sibling = V4L2_PIX_FMT_NV12M_8L128,
+>  	},
+>  	{
+>  		.pixfmt = V4L2_PIX_FMT_NV12M_10BE_8L128,
+>  		.mem_planes = 2,
+>  		.comp_planes = 2,
+>  		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
+> +		.sibling = V4L2_PIX_FMT_NV12_10BE_8L128,
+> +	},
+> +	{
+> +		.pixfmt = V4L2_PIX_FMT_NV12_10BE_8L128,
+> +		.mem_planes = 1,
+> +		.comp_planes = 2,
+> +		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
+> +		.sibling = V4L2_PIX_FMT_NV12M_10BE_8L128
+>  	},
+>  	{
+>  		.pixfmt = V4L2_PIX_FMT_H264,
+> -- 
+> 2.37.1
+> 
 
-diff --git a/include/dt-bindings/clock/microchip,mpfs-clock.h b/include/dt-bindings/clock/microchip,mpfs-clock.h
-index 4048669bf756..79775a5134ca 100644
---- a/include/dt-bindings/clock/microchip,mpfs-clock.h
-+++ b/include/dt-bindings/clock/microchip,mpfs-clock.h
-@@ -45,4 +45,27 @@
- #define CLK_RTCREF	33
- #define CLK_MSSPLL	34
- 
-+/* Clock Conditioning Circuitry Clock IDs */
-+
-+#define CLK_CCC_PLL0		0
-+#define CLK_CCC_PLL1		1
-+#define CLK_CCC_DLL0		2
-+#define CLK_CCC_DLL1		3
-+
-+#define CLK_CCC_PLL0_OUT0	4
-+#define CLK_CCC_PLL0_OUT1	5
-+#define CLK_CCC_PLL0_OUT2	6
-+#define CLK_CCC_PLL0_OUT3	7
-+
-+#define CLK_CCC_PLL1_OUT0	8
-+#define CLK_CCC_PLL1_OUT1	9
-+#define CLK_CCC_PLL1_OUT2	10
-+#define CLK_CCC_PLL1_OUT3	11
-+
-+#define CLK_CCC_DLL0_OUT0	12
-+#define CLK_CCC_DLL0_OUT1	13
-+
-+#define CLK_CCC_DLL1_OUT0	14
-+#define CLK_CCC_DLL1_OUT1	15
-+
- #endif	/* _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_ */
+Looks good to me. 
+
+Unfortunately I don't have hw for testing more.
+I tried to build and reviewed the code seems ok for me.
+
+Reviewed-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+
+Tommaso
+
 -- 
-2.36.1
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
