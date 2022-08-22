@@ -2,130 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C41CC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE662C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237362AbiHVR7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
+        id S236465AbiHVR7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235409AbiHVR7L (ORCPT
+        with ESMTP id S237357AbiHVR73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:59:11 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAC711456
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:59:09 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6827A33E3F;
-        Mon, 22 Aug 2022 17:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1661191148; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1/zTUhQrbC/7qpGA30WfWqlePGy+CwLE43bs3sA5UyA=;
-        b=amZwreonC27XDSyxh75t6Ubc3eutJmy2ZZgLLmxnrco9X1BUnpCQFEzqcGVJd2OyUllNWS
-        RXKBlYnBgeoHBB6QnHBxtr6kbprucvlKlUcmJaCVG3gDtDUF14Aomh+ipwAnRgMoDSZvyY
-        nhnG6zpw+I2OBPVA4ix7sCKY8lUNYJ4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1661191148;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1/zTUhQrbC/7qpGA30WfWqlePGy+CwLE43bs3sA5UyA=;
-        b=VD1bsxjtFktzBe4Oo6yoNqpQCOUP5QpUlmNp3v/fXKqF1I6qSoO1s2w8KXNTVJk+aetFdd
-        +c3qv5gT1DstUhCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 409DD1332D;
-        Mon, 22 Aug 2022 17:59:08 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id vz+6D+zDA2P2TwAAMHmgww
-        (envelope-from <jack@suse.cz>); Mon, 22 Aug 2022 17:59:08 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 5835DA066F; Mon, 22 Aug 2022 19:59:07 +0200 (CEST)
-Date:   Mon, 22 Aug 2022 19:59:07 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Jan Kara <jack@suse.cz>, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        eparis@redhat.com, mszeredi@redhat.com, amir73il@gmail.com,
-        linux-audit@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH next] audit: fix potential double free on error path from
- fsnotify_add_inode_mark
-Message-ID: <20220822175907.q35mhoqdtdqxture@quack3>
-References: <20220822022905.1949007-1-cuigaosheng1@huawei.com>
- <20220822085050.hxj6qmgj2x2tj6uv@quack3>
- <CAHC9VhSw0zJWQEm-GCzQy_-4-X-yVuzvX1wBFcYMkG1mOXy+BA@mail.gmail.com>
- <20220822152055.hitwrvi3lmldhcgx@quack3>
- <CAHC9VhQoTHZ4SFz2k7=2OLKFdrpmxq8ei-sNDNfV0MFtJsqpFg@mail.gmail.com>
+        Mon, 22 Aug 2022 13:59:29 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7720013EA4;
+        Mon, 22 Aug 2022 10:59:27 -0700 (PDT)
+Received: by mail-oi1-f177.google.com with SMTP id a133so5306035oif.4;
+        Mon, 22 Aug 2022 10:59:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=3TuVf54GgPydYoGd51XaXL3tfz0KadvwC9z8/Fy+sls=;
+        b=3v9yCy+M1HSa7s5GrzJ8Yeolm2QsufS72EDOEKwiM/5m+3T58koxFY1E6VlV66oupy
+         /wJVN9Kv6YUrdWzRFcVvrX60wtHr7WVMStkJ8cPH0zH5ipvzsqTDQbbq/DNxWu7gTFOG
+         ui1OX96Jk2Bu6xlhyLdOovvGTzZa/U47Yt1Be5FEcHwPztKoVLZYyEC5r5FRg23xg0nO
+         nO/ovHR8zw6yDKqyWoIBFgIpClc1t/W2EO5IVM7ecb847quRMtIf6TRF1q3YTLqfpqzE
+         upuYQsk5SVxbMV95hLaP0RH/bojUOXBGUrYZqaIXgnCHNzU53pkDJKaRW+a8Hh43l6Le
+         E/vg==
+X-Gm-Message-State: ACgBeo2d+yV8qAE+6WGSdvVeOPi2HP1kOuFO+XZZHYBupT/GInO2Z9/m
+        yBm/z6nM4CMc7e5tMeMLXA==
+X-Google-Smtp-Source: AA6agR602WMERbYZ3uSCPQSQ/AhC9EWTsVLdvnnS5HXY696Jr8IN6ZBdolcGmNue7hlW5WqBeaMdnQ==
+X-Received: by 2002:a05:6808:302b:b0:2f9:eeef:f03 with SMTP id ay43-20020a056808302b00b002f9eeef0f03mr11736503oib.128.1661191166666;
+        Mon, 22 Aug 2022 10:59:26 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r11-20020a4a964b000000b0041b49c19a00sm2478019ooi.18.2022.08.22.10.59.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 10:59:26 -0700 (PDT)
+Received: (nullmailer pid 62586 invoked by uid 1000);
+        Mon, 22 Aug 2022 17:59:24 -0000
+Date:   Mon, 22 Aug 2022 12:59:24 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Stefan Berger <stefanb@linux.ibm.com>
+Cc:     kexec@lists.infradead.org, mpe@ellerman.id.au,
+        devicetree@vger.kernel.org, Eric Biederman <ebiederm@xmission.com>,
+        Nageswara R Sastry <rnsastry@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        nayna@linux.ibm.com, nasastry@in.ibm.com,
+        Frank Rowand <frowand.list@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v7 6/6] tpm/kexec: Duplicate TPM measurement log in
+ of-tree for kexec
+Message-ID: <20220822175924.GA62553-robh@kernel.org>
+References: <20220812164305.2056641-1-stefanb@linux.ibm.com>
+ <20220812164305.2056641-7-stefanb@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHC9VhQoTHZ4SFz2k7=2OLKFdrpmxq8ei-sNDNfV0MFtJsqpFg@mail.gmail.com>
+In-Reply-To: <20220812164305.2056641-7-stefanb@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 13:39:23, Paul Moore wrote:
-> On Mon, Aug 22, 2022 at 11:20 AM Jan Kara <jack@suse.cz> wrote:
-> > On Mon 22-08-22 10:34:15, Paul Moore wrote:
-> > > On Mon, Aug 22, 2022 at 4:50 AM Jan Kara <jack@suse.cz> wrote:
-> > > > On Mon 22-08-22 10:29:05, Gaosheng Cui wrote:
-> > > > > Audit_alloc_mark() assign pathname to audit_mark->path, on error path
-> > > > > from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
-> > > > > of audit_mark->path, but the caller of audit_alloc_mark will free
-> > > > > the pathname again, so there will be double free problem.
-> > > > >
-> > > > > Fix this by resetting audit_mark->path to NULL pointer on error path
-> > > > > from fsnotify_add_inode_mark().
-> > > > >
-> > > > > Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
-> > > > > Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-> > > >
-> > > > Good spotting! The patch looks good to me. Feel free to add:
-> > > >
-> > > > Reviewed-by: Jan Kara <jack@suse.cz>
-> > > >
-> > > > > ---
-> > > > >  kernel/audit_fsnotify.c | 1 +
-> > > > >  1 file changed, 1 insertion(+)
-> > > > >
-> > > > > diff --git a/kernel/audit_fsnotify.c b/kernel/audit_fsnotify.c
-> > > > > index 6432a37ac1c9..c565fbf66ac8 100644
-> > > > > --- a/kernel/audit_fsnotify.c
-> > > > > +++ b/kernel/audit_fsnotify.c
-> > > > > @@ -102,6 +102,7 @@ struct audit_fsnotify_mark *audit_alloc_mark(struct audit_krule *krule, char *pa
-> > > > >
-> > > > >       ret = fsnotify_add_inode_mark(&audit_mark->mark, inode, 0);
-> > > > >       if (ret < 0) {
-> > > > > +             audit_mark->path = NULL;
-> > > > >               fsnotify_put_mark(&audit_mark->mark);
-> > >
-> > > As I'm tracing the code path from audit through fsnotify, and back
-> > > into audit, I'm wondering if we still have a problem.  When
-> > > fsnotify_add_inode_mark() fails it will end up freeing not just
-> > > audit_mark->path, but audit_mark itself via audit_fsnotify_mark_free()
-> > > (via a call into fsnotify_put_mark()), yes?
-> >
-> > I don't think so. fsnotify_add_mark_locked() will call fsnotify_put_mark()
-> > but that is just a counter part to fsnotify_get_mark() a few lines above.
-> > The caller of fsnotify_add_inode_mark() still holds its own mark reference
-> > which prevents mark from being freed.
+On Fri, 12 Aug 2022 12:43:05 -0400, Stefan Berger wrote:
+> The memory area of the TPM measurement log is currently not properly
+> duplicated for carrying it across kexec when an Open Firmware
+> Devicetree is used. Therefore, the contents of the log get corrupted.
+> Fix this for the kexec_file_load() syscall by allocating a buffer and
+> copying the contents of the existing log into it. The new buffer is
+> preserved across the kexec and a pointer to it is available when the new
+> kernel is started. To achieve this, store the allocated buffer's address
+> in the flattened device tree (fdt) under the name linux,tpm-kexec-buffer
+> and search for this entry early in the kernel startup before the TPM
+> subsystem starts up. Adjust the pointer in the of-tree stored under
+> linux,sml-base to point to this buffer holding the preserved log. The TPM
+> driver can then read the base address from this entry when making the log
+> available. Invalidate the log by removing 'linux,sml-base' from the
+> devicetree if anything goes wrong with updating the buffer.
 > 
-> Okay, that sounds reasonable, but I'm still looking for a code path
-> that only frees audit_mark:path and not the audit_mark itself.  What
-> am I not seeing?
+> Use subsys_initcall() to call the function to restore the buffer even if
+> the TPM subsystem or driver are not used. This allows the buffer to be
+> carried across the next kexec without involvement of the TPM subsystem
+> and ensures a valid buffer pointed to by the of-tree.
+> 
+> Use the subsys_initcall(), rather than an ealier initcall, since
+> page_is_ram() in get_kexec_buffer() only starts working at this stage.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Frank Rowand <frowand.list@gmail.com>
+> Cc: Eric Biederman <ebiederm@xmission.com>
+> Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
+> 
+> ---
+> v6:
+>  - Define prototype for tpm_add_kexec_buffer under same config options
+>    as drivers/of/kexec.c is compiled, provide inline function otherwise.
+>    (kernel test robot)
+> 
+> v4:
+>  - Added #include <linux/vmalloc.h> due to parisc
+>  - Use phys_addr_t for physical address rather than void *
+>  - Remove linux,sml-base if the buffer cannot be updated after a kexec
+>  - Added __init to functions where possible
+> ---
+>  drivers/of/kexec.c    | 216 +++++++++++++++++++++++++++++++++++++++++-
+>  include/linux/kexec.h |   6 ++
+>  include/linux/of.h    |   9 +-
+>  kernel/kexec_file.c   |   6 ++
+>  4 files changed, 234 insertions(+), 3 deletions(-)
+> 
 
-The callers of audit_alloc_mark() call kfree(path) if audit_alloc_mark()
-returns error (which is a sensible thing because in some cases path indeed
-needs freeing).
-
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Reviewed-by: Rob Herring <robh@kernel.org>
