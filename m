@@ -2,324 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39684C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D9FFC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237824AbiHVTFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        id S237838AbiHVTHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236695AbiHVTFI (ORCPT
+        with ESMTP id S237405AbiHVTHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:05:08 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2A813F92
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:05:07 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id k1-20020a17090a658100b001fb35f86ccdso1944846pjj.9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:05:07 -0700 (PDT)
+        Mon, 22 Aug 2022 15:07:35 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77D2013F92;
+        Mon, 22 Aug 2022 12:07:33 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 3CF0EDA2;
+        Mon, 22 Aug 2022 22:10:46 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 3CF0EDA2
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=fRVYXLDIctciukFUKSd2/GooWNYoTVmdQcxMFuUrumY=;
-        b=KKkDGSumaIg53jK3OgpGqth05MPWF/QD24vh55Bcxqs4g+35kL1S/z9Gz4AMcb17V3
-         laERCP0k0YN7Pz3u29nxktavuY2NpWkqECtzIkpDkvTzfjRJTekym7nuXb8RBzI4sdnu
-         J0aKMoghALFXZ/Lr0o4k5OYB/pshunGPx0dOdAbfbiA0V6VYfb52AfL2UdTgqAFySoyc
-         sR2QbSjqsCy/icBtkaFIqBd6iBqTbVdk669B2HgSDJX0j+wkOfIDfK/iBHB8qKECpNfU
-         vTwxLPMcKTXSMQxPVFmWY9Y37jkW6HMK0TQeOI2PaAv4qNKIg94dXhSdOEb3c3oe5O4/
-         qXMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=fRVYXLDIctciukFUKSd2/GooWNYoTVmdQcxMFuUrumY=;
-        b=mktwGMVdR6xzXYtGLzCKhNOAFp9CaMLe6XMX+2zr0GNJ7BpemA39DyTREjflXRfkCa
-         uANqYvdw1x7Np6DobLLxA6VqHpVJxSHUET8tWGogqEe8RoarJ36kBqPQkhAGXWftaimS
-         LCWtKa1gYRw5lAnDtQ1I2hwB0TqVWwWl02qOsN9dvr68ZWXT4RshmvzVnGd9rXlHDugi
-         +9iR1Im1IwZU04nUDls9gaqbvGCGWUx+1qR+C6pooytgWBsjHxTA9E2SfxNcAjMVAzdr
-         Aqqg4ZWR2h3dr1aVh1NSlkKPas5sJ6g6MKed0TeTRcSXvwJoJVC8BaRpht1MykeMlzEB
-         66AQ==
-X-Gm-Message-State: ACgBeo1DuRj82tkfOJm0NELTPtP3ZkI5kLdp80PWcAPTzj9akVFtW6AC
-        VCnDmFoSlNgMAgeFwQm+BmZND2qUNSAqA/DwK5cO9N1baztlGpDi9MMrvF1PoLJY/Mok0Yy+DLy
-        X5BKQkB4iSkivQSohYR1YpS9L4Te3WnpzaahI2alRVudJNOtJ0I64RuLpmeKp2aHQ6Q8oACw=
-X-Google-Smtp-Source: AA6agR4o3ck3mbS34wCnLNWitDB95b+fiEIgKN3Jf0cV/Ttq3uu3wArzsn70bq8B6AqhCGj/CA7pKgwPaYlR
-X-Received: from jstultz-noogler2.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:600])
- (user=jstultz job=sendgmr) by 2002:a17:90a:1b69:b0:1fa:f9de:fbcf with SMTP id
- q96-20020a17090a1b6900b001faf9defbcfmr14929866pjq.201.1661195106810; Mon, 22
- Aug 2022 12:05:06 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 19:05:00 +0000
-In-Reply-To: <20220822190501.2171100-1-jstultz@google.com>
-Message-Id: <20220822190501.2171100-2-jstultz@google.com>
-Mime-Version: 1.0
-References: <20220822190501.2171100-1-jstultz@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [RFC][PATCH v2 1/2] sched: Avoid placing RT threads on cores handling
- long softirqs
-From:   John Stultz <jstultz@google.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     "Connor O'Brien" <connoro@google.com>,
-        John Dias <joaodias@google.com>, Rick Yiu <rickyiu@google.com>,
-        John Kacur <jkacur@redhat.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Chris Redpath <chris.redpath@arm.com>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        "J . Avila" <elavila@google.com>, John Stultz <jstultz@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        d=baikalelectronics.ru; s=mail; t=1661195446;
+        bh=EJsCN0YYd8iM5UM8xnboKosxyxlQkg+Bsj8ERpm8McY=;
+        h=From:To:CC:Subject:Date:From;
+        b=Xg3tMp2TRFPB7NGJpvc15j74XMqjEH/JmnFHV4zKwc9jPNLNISib3lLsXybnTB7Go
+         jLe3eMtUUldOSeNjDuUapDr7TZ8oRbEsuUx2b272NDOXJSEB96k1nt4C8rYuiUagGV
+         oXkGlE+7kWe4wLBZzgf3RvKJ5Bf+iK4oPDzH6N8k=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:31 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 00/20] EDAC/mc/synopsys: Various fixes and cleanups
+Date:   Mon, 22 Aug 2022 22:07:10 +0300
+Message-ID: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Connor O'Brien <connoro@google.com>
+This patchset is a first one in the series created in the framework of
+my Baikal-T1 DDRC-related work:
 
-In certain audio use cases, scheduling RT threads on cores that
-are handling softirqs can lead to glitches. Prevent this
-behavior in cases where the softirq is likely to take a long
-time. To avoid unnecessary migrations, the old behavior is
-preserved for RCU, SCHED and TIMER irqs which are expected to be
-relatively quick.
+[1: In-progress] EDAC/mc/synopsys: Various fixes and cleanups
+Link: ---you are looking at it---
+[2: To be submitted] EDAC/synopsys: Add generic DDRC info and address mapping
+Link:
+[3: To be submitted] EDAC/synopsys: Add generic resources and Baikal-T1 support
+Link:
 
-This patch reworks and combines two related changes originally
-by John Dias <joaodias@google.com>
+Note the patchsets above must be merged in the same order as they are
+placed in the list in order to prevent conflicts. Nothing prevents them
+from being reviewed synchronously though. Any tests are very welcome.
+Thanks in advance.
 
-Cc: John Dias <joaodias@google.com>
-Cc: Connor O'Brien <connoro@google.com>
-Cc: Rick Yiu <rickyiu@google.com>
-Cc: John Kacur <jkacur@redhat.com>
-Cc: Qais Yousef <qais.yousef@arm.com>
-Cc: Chris Redpath <chris.redpath@arm.com>
-Cc: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: kernel-team@android.com
-Signed-off-by: John Dias <joaodias@google.com>
-[elavila: Port to mainline, amend commit text]
-Signed-off-by: J. Avila <elavila@google.com>
-[connoro: Reworked, simplified, and merged two patches together]
-Signed-off-by: Connor O'Brien <connoro@google.com>
-[jstultz: Further simplified and fixed issues, reworded commit
- message, removed arm64-isms]
-Signed-off-by: John Stultz <jstultz@google.com>
----
-v2:
-* Reformatted Kconfig entry to match coding style
-  (Reported-by: Randy Dunlap <rdunlap@infradead.org>)
-* Made rt_task_fits_capacity_and_may_preempt static to
-  avoid warnings (Reported-by: kernel test robot <lkp@intel.com>)
-* Rework to use preempt_count and drop kconfig dependency on ARM64
----
- include/linux/interrupt.h |  7 +++++
- init/Kconfig              | 10 ++++++
- kernel/sched/rt.c         | 65 +++++++++++++++++++++++++++++++++------
- kernel/softirq.c          |  9 ++++++
- 4 files changed, 82 insertions(+), 9 deletions(-)
+Regarding this series content. It's an initial patchset which
+traditionally provides various fixes, cleanups and modifications required
+for the more comfortable further features development. The main goal of it
+though is to detach the Xilinx Zynq A05 DDRC related code into the
+dedicated driver since first it has nothing to do with the Synopsys DW
+uMCTL2 DDR controller and second it will be a great deal obstacle on the
+way of extending the Synopsys-part functionality.
 
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index a92bce40b04b..bac9da05b9c8 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -571,6 +571,12 @@ enum
-  * _ IRQ_POLL: irq_poll_cpu_dead() migrates the queue
-  */
- #define SOFTIRQ_HOTPLUG_SAFE_MASK (BIT(RCU_SOFTIRQ) | BIT(IRQ_POLL_SOFTIRQ))
-+/* Softirq's where the handling might be long: */
-+#define LONG_SOFTIRQ_MASK ((1 << NET_TX_SOFTIRQ)       | \
-+			   (1 << NET_RX_SOFTIRQ)       | \
-+			   (1 << BLOCK_SOFTIRQ)        | \
-+			   (1 << IRQ_POLL_SOFTIRQ) | \
-+			   (1 << TASKLET_SOFTIRQ))
- 
- /* map softirq index to softirq name. update 'softirq_to_name' in
-  * kernel/softirq.c when adding a new softirq.
-@@ -606,6 +612,7 @@ extern void raise_softirq_irqoff(unsigned int nr);
- extern void raise_softirq(unsigned int nr);
- 
- DECLARE_PER_CPU(struct task_struct *, ksoftirqd);
-+DECLARE_PER_CPU(u32, active_softirqs);
- 
- static inline struct task_struct *this_cpu_ksoftirqd(void)
- {
-diff --git a/init/Kconfig b/init/Kconfig
-index 532362fcfe31..8b5add74b6cb 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1284,6 +1284,16 @@ config SCHED_AUTOGROUP
- 	  desktop applications.  Task group autogeneration is currently based
- 	  upon task session.
- 
-+config RT_SOFTIRQ_OPTIMIZATION
-+	bool "Improve RT scheduling during long softirq execution"
-+	depends on SMP
-+	default n
-+	help
-+	  Enable an optimization which tries to avoid placing RT tasks on CPUs
-+	  occupied by nonpreemptible tasks, such as a long softirq or CPUs
-+	  which may soon block preemptions, such as a CPU running a ksoftirq
-+	  thread which handles slow softirqs.
-+
- config SYSFS_DEPRECATED
- 	bool "Enable deprecated sysfs features to support old userspace tools"
- 	depends on SYSFS
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 55f39c8f4203..5a5cf396d0d2 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -1599,12 +1599,50 @@ static void yield_task_rt(struct rq *rq)
- #ifdef CONFIG_SMP
- static int find_lowest_rq(struct task_struct *task);
- 
-+#ifdef CONFIG_RT_SOFTIRQ_OPTIMIZATION
-+/*
-+ * Return whether the task on the given cpu is currently non-preemptible
-+ * while handling a potentially long softirq, or if the task is likely
-+ * to block preemptions soon because it is a ksoftirq thread that is
-+ * handling slow softirq.
-+ */
-+static bool task_may_preempt(struct task_struct *task, int cpu)
-+{
-+	u32 softirqs = per_cpu(active_softirqs, cpu) |
-+		       per_cpu(irq_stat, cpu).__softirq_pending;
-+
-+	struct task_struct *cpu_ksoftirqd = per_cpu(ksoftirqd, cpu);
-+	struct task_struct *curr;
-+	struct rq *rq = cpu_rq(cpu);
-+	int ret;
-+
-+	rcu_read_lock();
-+	curr = READ_ONCE(rq->curr); /* unlocked access */
-+	ret = !((softirqs & LONG_SOFTIRQ_MASK) &&
-+		 (curr == cpu_ksoftirqd ||
-+		  preempt_count() & SOFTIRQ_MASK));
-+	rcu_read_unlock();
-+	return ret;
-+}
-+#else
-+static bool task_may_preempt(struct task_struct *task, int cpu)
-+{
-+	return true;
-+}
-+#endif /* CONFIG_RT_SOFTIRQ_OPTIMIZATION */
-+
-+static bool rt_task_fits_capacity_and_may_preempt(struct task_struct *p, int cpu)
-+{
-+	return task_may_preempt(p, cpu) && rt_task_fits_capacity(p, cpu);
-+}
-+
- static int
- select_task_rq_rt(struct task_struct *p, int cpu, int flags)
- {
- 	struct task_struct *curr;
- 	struct rq *rq;
- 	bool test;
-+	bool may_not_preempt;
- 
- 	/* For anything but wake ups, just return the task_cpu */
- 	if (!(flags & (WF_TTWU | WF_FORK)))
-@@ -1616,7 +1654,12 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
- 	curr = READ_ONCE(rq->curr); /* unlocked access */
- 
- 	/*
--	 * If the current task on @p's runqueue is an RT task, then
-+	 * If the current task on @p's runqueue is a softirq task,
-+	 * it may run without preemption for a time that is
-+	 * ill-suited for a waiting RT task. Therefore, try to
-+	 * wake this RT task on another runqueue.
-+	 *
-+	 * Also, if the current task on @p's runqueue is an RT task, then
- 	 * try to see if we can wake this RT task up on another
- 	 * runqueue. Otherwise simply start this RT task
- 	 * on its current runqueue.
-@@ -1641,9 +1684,10 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
- 	 * requirement of the task - which is only important on heterogeneous
- 	 * systems like big.LITTLE.
- 	 */
--	test = curr &&
--	       unlikely(rt_task(curr)) &&
--	       (curr->nr_cpus_allowed < 2 || curr->prio <= p->prio);
-+	may_not_preempt = !task_may_preempt(curr, cpu);
-+	test = (curr && (may_not_preempt ||
-+			 (unlikely(rt_task(curr)) &&
-+			  (curr->nr_cpus_allowed < 2 || curr->prio <= p->prio))));
- 
- 	if (test || !rt_task_fits_capacity(p, cpu)) {
- 		int target = find_lowest_rq(p);
-@@ -1656,11 +1700,14 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
- 			goto out_unlock;
- 
- 		/*
--		 * Don't bother moving it if the destination CPU is
-+		 * If cpu is non-preemptible, prefer remote cpu
-+		 * even if it's running a higher-prio task.
-+		 * Otherwise: Don't bother moving it if the destination CPU is
- 		 * not running a lower priority task.
- 		 */
- 		if (target != -1 &&
--		    p->prio < cpu_rq(target)->rt.highest_prio.curr)
-+		    (may_not_preempt ||
-+		     p->prio < cpu_rq(target)->rt.highest_prio.curr))
- 			cpu = target;
- 	}
- 
-@@ -1901,11 +1948,11 @@ static int find_lowest_rq(struct task_struct *task)
- 
- 		ret = cpupri_find_fitness(&task_rq(task)->rd->cpupri,
- 					  task, lowest_mask,
--					  rt_task_fits_capacity);
-+					  rt_task_fits_capacity_and_may_preempt);
- 	} else {
- 
--		ret = cpupri_find(&task_rq(task)->rd->cpupri,
--				  task, lowest_mask);
-+		ret = cpupri_find_fitness(&task_rq(task)->rd->cpupri,
-+					  task, lowest_mask, task_may_preempt);
- 	}
- 
- 	if (!ret)
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index c8a6913c067d..35ee79dd8786 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -60,6 +60,13 @@ static struct softirq_action softirq_vec[NR_SOFTIRQS] __cacheline_aligned_in_smp
- 
- DEFINE_PER_CPU(struct task_struct *, ksoftirqd);
- 
-+/*
-+ * active_softirqs -- per cpu, a mask of softirqs that are being handled,
-+ * with the expectation that approximate answers are acceptable and therefore
-+ * no synchronization.
-+ */
-+DEFINE_PER_CPU(u32, active_softirqs);
-+
- const char * const softirq_to_name[NR_SOFTIRQS] = {
- 	"HI", "TIMER", "NET_TX", "NET_RX", "BLOCK", "IRQ_POLL",
- 	"TASKLET", "SCHED", "HRTIMER", "RCU"
-@@ -551,6 +558,7 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
- restart:
- 	/* Reset the pending bitmask before enabling irqs */
- 	set_softirq_pending(0);
-+	__this_cpu_write(active_softirqs, pending);
- 
- 	local_irq_enable();
- 
-@@ -580,6 +588,7 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
- 		pending >>= softirq_bit;
- 	}
- 
-+	__this_cpu_write(active_softirqs, 0);
- 	if (!IS_ENABLED(CONFIG_PREEMPT_RT) &&
- 	    __this_cpu_read(ksoftirqd) == current)
- 		rcu_softirq_qs();
+The series starts with fixes patches, which in short concern the next
+aspects: touching the ZynqMP-specific CSRs on the Xilinx ZinqMP platform
+only, serializing an access to the ECCCLR register, adding correct memory
+devices type detection, setting a correct value to the
+mem_ctl_info.scrub_cap field, dropping an erroneous ADDRMAP[4] parsing and
+getting back a correct order of the ECC errors info detection procedure.
+
+Afterwards the patchset provides several cleanup patches required for the
+more coherent code splitting up (Xilinx Zynq A05 and Synopsys DW uMCTL2)
+so the provided modifications would be useful in both drivers. First we
+get to replace the platform resource manual IO-remapping with the
+devm_platform_ioremap_resource() method call. Secondly we suggest to drop:
+internal CE/UE errors counters, local to_mci() macros definition, some
+redundant ecc_error_info structure fields and redundant info from the
+error message, duplicated dimm->nr_pages debug printout and spaces from
+the MEM_TYPE flags declarations. (The later two updates concern the MCI
+core part.) Thirdly before splitting up the driver we need to add an
+unique MC index allocation infrastructure to the MCI core.  It's required
+since after splitting the driver up we'll need to make sure both device
+types could be correctly probed on the same platform. Finally the Xilinx
+Zynq A05 part of the driver is moved out to a dedicated driver where it
+should been originally placed. After that the platform-specific setups API
+is removed from the Synopsys DW uMCTL2 DDRC driver since it's no longer
+required.
+
+Finally as the cherry on the cake we suggest to unify the DW uMCTL2 DDRC
+driver entities naming and replace the open-coded "shift/mask" patter with
+the kernel helpers like BIT/GENMASK/FIELD_x in there. It shall
+significantly improve the code readability.
+
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: Punnaiah Choudary Kalluri <punnaiah.choudary.kalluri@xilinx.com>
+Cc: Manish Narani <manish.narani@xilinx.com>
+Cc: Dinh Nguyen <dinguyen@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Robert Richter <rric@kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-edac@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (20):
+  EDAC/synopsys: Fix native uMCTL2 IRQs handling procedure
+  EDAC/synopsys: Fix generic device type detection procedure
+  EDAC/synopsys: Fix mci->scrub_cap field setting
+  EDAC/synopsys: Drop erroneous ADDRMAP4.addrmap_col_b10 parse
+  EDAC/synopsys: Fix reading errors count before ECC status
+  EDAC/synopsys: Use platform device devm ioremap method
+  EDAC/synopsys: Drop internal CE and UE counters
+  EDAC/synopsys: Drop local to_mci macro implementation
+  EDAC/synopsys: Drop struct ecc_error_info.blknr field
+  EDAC/synopsys: Shorten out struct ecc_error_info.bankgrpnr field name
+  EDAC/synopsys: Drop redundant info from error message
+  EDAC/mc: Replace spaces with tabs in memtype flags definition
+  EDAC/mc: Drop duplicated dimm->nr_pages debug printout
+  EDAC/mc: Init DIMM labels in MC registration method
+  EDAC/mc: Add MC unique index allocation procedure
+  dt-bindings: memory: snps: Detach Zynq DDRC controller support
+  EDAC/synopsys: Detach Zynq DDRC controller support
+  EDAC/synopsys: Drop unused platform-specific setup API
+  EDAC/synopsys: Unify the driver entities naming
+  EDAC/synopsys: Convert to using BIT/GENMASK/FIELD_x macros
+
+ .../snps,dw-umctl2-ddrc.yaml                  |  51 +
+ .../memory-controllers/synopsys,ddrc-ecc.yaml |  76 --
+ .../xlnx,zynq-ddrc-a05.yaml                   |  38 +
+ MAINTAINERS                                   |   3 +
+ drivers/edac/Kconfig                          |   9 +-
+ drivers/edac/Makefile                         |   1 +
+ drivers/edac/edac_mc.c                        | 136 ++-
+ drivers/edac/edac_mc.h                        |   4 +
+ drivers/edac/synopsys_edac.c                  | 902 ++++++------------
+ drivers/edac/zynq_edac.c                      | 504 ++++++++++
+ include/linux/edac.h                          |  30 +-
+ 11 files changed, 1037 insertions(+), 717 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
+ create mode 100644 drivers/edac/zynq_edac.c
+
 -- 
-2.37.1.595.g718a3a8f04-goog
+2.35.1
 
