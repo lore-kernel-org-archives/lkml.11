@@ -2,117 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E844C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23FDC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236929AbiHVRGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54484 "EHLO
+        id S235567AbiHVRG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235132AbiHVRGG (ORCPT
+        with ESMTP id S234656AbiHVRGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:06:06 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D5241D33
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:06:04 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id l1so15643969lfk.8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:06:04 -0700 (PDT)
+        Mon, 22 Aug 2022 13:06:54 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326C8422C8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:06:53 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z2so14799125edc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:06:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=ZeOAZdZ1yXvrhpvKyMHxQ22SxHwyD0iMdKanQBhxciM=;
-        b=SV06XhiZ34abyfKHMPGCLESwF1jJ/D7wDFiHsP4gMcJpxxIUm0Du+uj/p7zs/Znp2h
-         aFi4/kp0rzH+6uNv6jImDeAxzbpYnoX2tWx/wdWZfWX9ak7rGoGV/fTqARbchTIvtiMT
-         COFjOJzRTIySYt08HgMcJCPCCsu0F59sSyqvWRVoRm8Lg+KJp+dcdVnU52RpU3I6/YXy
-         i5jU4MkzqaqXH1tHnN56cOmTAh0WCCw1V/avRkB7saX5Jwk+pzZzrPCXSocR7FR684lE
-         VuFCLslADfqU3rDvao3HBu9W3n0Rilzo+2038Q7LLhbFAGzxifR4raf8VF8Kr6RZ7nt9
-         VW5g==
+        bh=yq00nMAmmdOVK3LrfY7efLvJa1UyHrXxc7OvcasMVWw=;
+        b=u7IL+AKZZZNWXnISptZyq8hMQdrEpTcugXYWPxYgGiIx97VYEb/Ofzv2TnO9P/O8tD
+         SMVRlqX4avEXXdXRA0DDBDUGmUyibgcztVdWq5esziWmP8hdXVu7VwBmQv2VrJBSZ9a5
+         XOVuLnebN3mxOHNzVIfu8VPfT0dQjfmbVznTbX020e6AKj9REq5RBk+62u2fVb9AJZFC
+         bBE8N0dd7qrNYbGps0yw5FJyzXD2zFUWzO/JXsfPw+eBF3CfKVK06tPSY4mhB4AB2oPi
+         GqDdOAI/NJutt4g2B/+FIKVcZtvJL1HBuV+/Sju7XCM+zxeLYCxUvXVxbKaEkIG8PU6M
+         zeBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=ZeOAZdZ1yXvrhpvKyMHxQ22SxHwyD0iMdKanQBhxciM=;
-        b=a0hXMrqM5deR4WXM0LjXrT6fdivVXm0B0IHDdbhoQ9KSssF41Hi+Z2fcwGwSy4wmQt
-         Vz1gn4M8hYXKwyWuUwMsKpwJSqM6t9efp2IVcEcxrWNNnx68D0aDbrZxzlUXaFHot9kh
-         Z0DMoiKmOEhF351rIImAJ8SMjm3DIO0uBVLmenWW15vY+iYVeEW0Sl/ds/FkAXZ0X3F/
-         tCoJP7iratW1UQAZsjiRCW8Q1GZxzmo/pZUU58gRs0eh3oHrG9K3CtS4kDnA+DiqD54d
-         Uec98roCLQ6UQZjGgSSvFGrdhKxgKq3IOnJDuIh5hVGoI33cReaKwEm5oBVuiIRFgLw8
-         SfaA==
-X-Gm-Message-State: ACgBeo1s32IeySTO05oJBLcW4EL0nGfHa2kD9NTw0dll7RIB73CPqJka
-        AkPvw6BUdXyYCHL65yAKSXM0DLUDVHafdP2OC3ztYQ==
-X-Google-Smtp-Source: AA6agR4EmGcItOfTk/CWgl/iZqu4ysFcUq5qUh9eN7VnoNdQDE5dFY4pVHcynNxzLUX0r2KEZtmyymsRMpq01zDNfQo=
-X-Received: by 2002:a05:6512:158b:b0:48b:38:cff8 with SMTP id
- bp11-20020a056512158b00b0048b0038cff8mr6949964lfb.100.1661187962925; Mon, 22
- Aug 2022 10:06:02 -0700 (PDT)
+        bh=yq00nMAmmdOVK3LrfY7efLvJa1UyHrXxc7OvcasMVWw=;
+        b=Xy+8mGCa7wI5B+yjQmMPgbAZUvoMO56lQG6kjuIe2lkNpiqezA5vzqK1Du2lHpVYju
+         P8/pMQkj1JuwhqE3a3uySsoUYsBlbZIFMFP9bjk2w0FRPtCT02Z3q3OZ48H8+gDj4USv
+         RsvilMrBbs+vXelHk/0yNsGvkpoaWcbbA6khzFdwXQ1X/fAka8KC5u5saiyENDk7/yJl
+         SMuYbrNWPFAa3YiJX7Vd+jARFfGWcPd9Pflta01fKjd1JFC3PoGD8c/wXWmwcD2x4xuD
+         Nx/7Mr4RRETsi0OVDrtGBLH4kTHHai4+/EEtgV7iL8MTSDvtqFuLk96ynaMEWH9AxoqX
+         JRmQ==
+X-Gm-Message-State: ACgBeo3LvsWOvH/XSxevKKFJ0jQTpYV3seTCeSTlYvUMIQvqKvGEAzMK
+        MBCRwnlxVvuYHohzEzwlB70CXRFYEwuklFnaEyGM3g==
+X-Google-Smtp-Source: AA6agR5R+Iw/Vr1KokMtpw8qpbmlXsE28LNUhVY9yJGMOoDcEQne6vWTGopnXYGv6KYqVbH43wTlHo7R85OQBsdeue8=
+X-Received: by 2002:a05:6402:11cf:b0:446:fbf6:bf with SMTP id
+ j15-20020a05640211cf00b00446fbf600bfmr106473edw.259.1661188011671; Mon, 22
+ Aug 2022 10:06:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <202208210645.72NkUj0g-lkp@intel.com>
-In-Reply-To: <202208210645.72NkUj0g-lkp@intel.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 22 Aug 2022 10:05:50 -0700
-Message-ID: <CAKwvOd=VD-Oxtko-tq=GjcLZg5tNj_cMZwMhw7NqBbOYLxuidA@mail.gmail.com>
-Subject: Re: [linux-stable-rc:queue/4.14 13/175] Makefile:877: *** Recursive
- variable 'LDFLAGS' references itself (eventually). Stop.
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel test robot <lkp@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220808111113.71890-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220808111113.71890-1-krzysztof.kozlowski@linaro.org>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Mon, 22 Aug 2022 10:06:39 -0700
+Message-ID: <CAJ+vNU2=kLpbGr_W9O0Tp=nawfgV5ioGr6C-7KWfjLXy8kGTmQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: mfd: Drop Robert Jones
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Lee Jones <lee@kernel.org>, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 3:51 PM kernel test robot <lkp@intel.com> wrote:
+On Mon, Aug 8, 2022 at 4:11 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 >
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.14
-> head:   ed8a2f4d20af62ebd64e4092d988d4ae6b54657c
-> commit: 17c47886b521ae64a733f41364def799797e45ef [13/175] Makefile: link with -z noexecstack --no-warn-rwx-segments
-> config: arc-randconfig-r043-20220821 (https://download.01.org/0day-ci/archive/20220821/202208210645.72NkUj0g-lkp@intel.com/config)
-> compiler: arc-elf-gcc (GCC) 7.5.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=17c47886b521ae64a733f41364def799797e45ef
->         git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
->         git fetch --no-tags linux-stable-rc queue/4.14
->         git checkout 17c47886b521ae64a733f41364def799797e45ef
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+> Emails to Robert Jones bounce ("550 5.2.1 The email account that you
+> tried to reach is disabled").
 >
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 >
-> All errors (new ones prefixed by >>):
+> ---
 >
-> >> Makefile:877: *** Recursive variable 'LDFLAGS' references itself (eventually).  Stop.
-
-Thanks for the report!
-
-That's not something that I've seen before...
-
-Masahiro, does ARCH=arc do something special to LDFLAGS?
-
-This report is a randconfig against a branch of stable for arc, so
-guessing this might be more obscure than usual.
-
+> For dt-bindings see:
+> https://lore.kernel.org/all/20220808104712.54315-1-krzysztof.kozlowski@linaro.org/T/#t
+> ---
+>  MAINTAINERS | 1 -
+>  1 file changed, 1 deletion(-)
 >
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 4832b317fe05..ee8f04918d44 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -8442,7 +8442,6 @@ F:        tools/testing/selftests/futex/
 >
-> vim +/LDFLAGS +877 Makefile
->
->    875
->    876  LDFLAGS += -z noexecstack
->  > 877  LDFLAGS += $(call ld-option,--no-warn-rwx-segments)
->    878
->
+>  GATEWORKS SYSTEM CONTROLLER (GSC) DRIVER
+>  M:     Tim Harvey <tharvey@gateworks.com>
+> -M:     Robert Jones <rjones@gateworks.com>
+>  S:     Maintained
+>  F:     Documentation/devicetree/bindings/mfd/gateworks-gsc.yaml
+>  F:     drivers/mfd/gateworks-gsc.c
 > --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+> 2.34.1
+>
 
+Acked-By: Tim Harvey <tharvey@gateworks.com>
 
-
--- 
-Thanks,
-~Nick Desaulniers
+Tim
