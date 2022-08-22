@@ -2,104 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 002E8C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 21:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CBCC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 21:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238149AbiHVVhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 17:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
+        id S238172AbiHVVhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 17:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235750AbiHVVhA (ORCPT
+        with ESMTP id S238145AbiHVVhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 17:37:00 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520EF53001
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 14:36:55 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98b2329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b2:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C407F1EC0645;
-        Mon, 22 Aug 2022 23:36:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1661204209;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=GM4p6K/MhEh+Um7C63wrny15ZaDe+tYLO6GoXOH8A5M=;
-        b=Ppb7yfgjpCchvGQteNdVjlB+M6JUQ/bofHi7hNfrNlKVfajCRCT7zMOzGvN6vEHD+JYUJV
-        5h8W4JbFig1Ga5oYPPeG3CGHSRXCPXMd2Rs1txBFhSgItSnnhLM1FyD9J3xeaI9DtXLGNm
-        6OUnVRETaEtFwG4dHthEpNTLQJua6zw=
-Date:   Mon, 22 Aug 2022 23:36:45 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kai Huang <kai.huang@intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 1/6] x86/tdx: Add TDX Guest attestation interface
- driver
-Message-ID: <YwP27a6/9Yq8LBM3@zn.tnic>
-References: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220728034420.648314-2-sathyanarayanan.kuppuswamy@linux.intel.com>
- <Yv5KNyX992ddvVtD@zn.tnic>
- <20abfa00-b70c-f151-9ee4-5668f09f4ace@intel.com>
+        Mon, 22 Aug 2022 17:37:13 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC74C52FEB;
+        Mon, 22 Aug 2022 14:37:12 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id a14-20020a0568300b8e00b0061c4e3eb52aso8609965otv.3;
+        Mon, 22 Aug 2022 14:37:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=KEpNtUC9l6wcpMRYvXgPLT6vlWgJnNmmrEjDcmWf5Jw=;
+        b=Cb67W4y06KkMNC1JilWsaZIaFCF+y0TrgrWURUX7q3y+NiwRw2E5i/Fh/+mctYsC5d
+         sPI5AYTMPmSQF993JHRaNGhxRB9W1qS8TCbUcaWzsmMePE7ymqCtuzK2zZUCsiIsQ7LK
+         yMYGdoh1nJDjJ2X3oY2/FneUiRAgPvQ5l6uHbR0/tDh42+0c7lyVBSIdhu7BYThi4IC/
+         KDJweMetLeyYeOXKvKPgVnbc2pCs94+nwVoDAtGx+tT3PXAnDI8HXko9LYsanx5q0qT+
+         Ts9O0I3S02CaRkbQTAD372On1kCjAh3DS1kojMRxGdLV/nXDCwPBb2X66aWlaMvbTg4o
+         9LgA==
+X-Gm-Message-State: ACgBeo0WCoooecQ/3xmY6OefZ7LFKipVpZA9Lv/qcakwkFEuLiSaWR7D
+        6rrCG5wXFnW1RPADnC3ImA==
+X-Google-Smtp-Source: AA6agR5d4kOtbr6Cfx6n95VVMcZobOYTA0XwKtbRhPwEIJABIhfjNrrCrSOrwVeVhadGDzMD8Zzo5A==
+X-Received: by 2002:a05:6830:660c:b0:61c:1c4f:3f56 with SMTP id cp12-20020a056830660c00b0061c1c4f3f56mr8340692otb.207.1661204232175;
+        Mon, 22 Aug 2022 14:37:12 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q206-20020aca43d7000000b0033b31480f38sm2843385oia.34.2022.08.22.14.37.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 14:37:11 -0700 (PDT)
+Received: (nullmailer pid 896426 invoked by uid 1000);
+        Mon, 22 Aug 2022 21:37:10 -0000
+Date:   Mon, 22 Aug 2022 16:37:10 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Mike Looijmans <mike.looijmans@topic.nl>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        p.meerwald@bct-electronic.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH 2/2] dt-bindings: leds: pca963x: Add support for PCA962x
+ chips
+Message-ID: <20220822213710.GA896391-robh@kernel.org>
+References: <20220822061838.8212-1-mike.looijmans@topic.nl>
+ <20220822061838.8212-2-mike.looijmans@topic.nl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20abfa00-b70c-f151-9ee4-5668f09f4ace@intel.com>
+In-Reply-To: <20220822061838.8212-2-mike.looijmans@topic.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 02:19:44PM -0700, Dave Hansen wrote:
-> This actually shows up to apps, though.
+On Mon, 22 Aug 2022 08:18:38 +0200, Mike Looijmans wrote:
+> The PCA962x family shares the same I2C register layout and functionality.
+> This adds support for the following chips:
+> PCA9623 4-channel
+> PCA9624 8-channel
+> PCA9622 16-channel
+> PCA9626 24-channel
+> 
+> Tested only the PCA9624. Other devices based on datasheet information.
+> 
+> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+> 
+> ---
+> 
+>  Documentation/devicetree/bindings/leds/leds-pca9532.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-Blergh.
-
-> They'll actually be opening /dev/tdx. When the other driver comes
-> along, they'll all need to change to /dev/tdx-guest. That seems a bit
-> unkind to those poor app developers.
-
-So do you really wanna call the attestation driver "tdx-guest"?
-
-But that's not really an attestation driver - there's tdx/tdx.c which is
-all the guest code and there's an attestation "driver" in it.
-
-So maybe this "attestation driver" thing is just an additional "ability"
-of the tdx-guest driver.
-
-Might wanna take out your cristal ball and think what you wanna call it
-now so that it doesn't change because...
-
-> BTW, do we consider these kernel names be part of the ABI? Seems like
-> we should.
-
-... yap, that.
-
-If apps open this, then this is an ABI and cast in stone.
-
-I'd say.
-
-Which makes my initial suggestion of calling this whole guest
-functionality a "tdx" driver not such a bad idea... Depends on
-whether there will be a split at all or it'll continue gaining more
-functionality.
-
-Or so.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Acked-by: Rob Herring <robh@kernel.org>
