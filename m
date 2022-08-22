@@ -2,163 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 699DEC28D13
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9100EC32774
 	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:47:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235701AbiHVOpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
+        id S235650AbiHVOqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235502AbiHVOp1 (ORCPT
+        with ESMTP id S235647AbiHVOpl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:45:27 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F35A186E7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:45:25 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id r16so13503676wrm.6
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:45:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=bSMvzF6WPZ8nDQB+J28VbvrCg97cVH3Ebn5HDrB27ak=;
-        b=m4y+Z+22JbZ0Ly6iBmFidAPZbkvp3PPRC8y3oYtfAFQ6zt8Qsv0eBQvfUmbwvpR5Fz
-         6FfER971HaLEhnRP4cPVeZI966k6CvgqRYCznu2N07D+STkzGsmBCWwAs27GojNTHxAb
-         gfgGQK7gfmYhtspMaXzBNGZI8QN+iNbbEWfO1RD64+OxUeqMNHNXqtJWfrO1YBcgZvf/
-         ltLGBra18ZmCpSqLGVqMvGQr3CEgFaReGa7JDnqLUfwStl5qtHpUwTTTGLIKZQ+JRo2D
-         SDXJAvjea+okphduoXudm34rEiqTE6SIaK/Nn5GnhZyUjgypTOvG5JnUFCysgq1kcBWA
-         A+Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=bSMvzF6WPZ8nDQB+J28VbvrCg97cVH3Ebn5HDrB27ak=;
-        b=j1PEzIMALhdAEMn67SRzQdAvG13QFn0CDBXSYDCEkk4uF3Mz3Ss3ilFk3bCExtFSTo
-         9I832XTptu4vElLwVjowp/rNWLEUkF1Dwk25XgX1oGrlp5qsvAPOlbmLaqaKKMIy7u7r
-         ilnjFDnoXlTd14+SeDyrFQdr/4jrrtoJoE6S5PwdtotWzJFy7OndpMQSbNuJd3MlsEkd
-         4iTwEEsnnDht1fLQ/U3jQSBEpmMTj5Tw31Du/EBBdTtteyOM6B6mwV1LVt2KKXhJEaXi
-         3lk4lJSngIF65JH432v5O3oDz7XBfJFrhHY94d6Is2SuPgRLAEVcTHPlchYMV5bolQzV
-         GzoQ==
-X-Gm-Message-State: ACgBeo12YYDQjEUno8RKk0PH7iuCJOr3XJqh3T0rNue7VbKqM/lvcj6V
-        L84nuG0GtTLt+Xy9fMi+aq4C1A==
-X-Google-Smtp-Source: AA6agR5R6cBNc/betWL+bcg9LDkG0egcM3JtWWDX14j+emkuV8ZDXIYqm2augz26Mh+LKIlQ0llVbw==
-X-Received: by 2002:adf:dd0f:0:b0:225:1fd6:66d9 with SMTP id a15-20020adfdd0f000000b002251fd666d9mr11085044wrm.42.1661179524224;
-        Mon, 22 Aug 2022 07:45:24 -0700 (PDT)
-Received: from blmsp.fritz.box ([2001:4090:a245:8020:2658:1f7c:362:3e99])
-        by smtp.gmail.com with ESMTPSA id z24-20020a1cf418000000b003a5dadcf1a8sm14670935wma.19.2022.08.22.07.45.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 07:45:23 -0700 (PDT)
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Fabien Parent <parent.f@gmail.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH v3 3/4] soc: mediatek: add support of MTK_SCPD_STRICT_BUSP cap
-Date:   Mon, 22 Aug 2022 16:43:02 +0200
-Message-Id: <20220822144303.3438467-4-msp@baylibre.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220822144303.3438467-1-msp@baylibre.com>
-References: <20220822144303.3438467-1-msp@baylibre.com>
+        Mon, 22 Aug 2022 10:45:41 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97882248C2;
+        Mon, 22 Aug 2022 07:45:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=x9nBUo0+hZpdGfurRQeuyioQwpYpr7z6L1SJHhD4mc0=; b=srfxE/Q6nHF+9wd/VdS0IGeBqk
+        kf2royYp/fC6OyojYMvfqw8KVCd2y2ud1/MytJk1LfII+B1JXMgEsLbOtJAH2Qx7kdmcwytRDwhad
+        5DaqW4FqdAmCuqWK4x7aEb7eCfZn2Ki9VSP2o9lgDZ9M92V9cdJx5ySmGrnI5VjRZ/3eE7/Gx4Uq5
+        9BPikQCIB35OtKoIZvkJdpjcsQifNaRqMycBMQ5BDX4IfY+YW28krSeF/amGzTnMuKHBs2+o++7gI
+        pyBoej4IqhLuCmY/8HwCEkgp0G6MtY5GaTyCsz4Lh4jwWQWFocaZPJnLT+EMuLxxzewm1fNg8LYtq
+        4kRO/eSQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQ8gD-00EMmb-0K; Mon, 22 Aug 2022 14:45:29 +0000
+Date:   Mon, 22 Aug 2022 15:45:28 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     david@fromorbit.com, djwong@kernel.org, fgheet255t@gmail.com,
+        hch@infradead.org, linux-ext4@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-xfs@vger.kernel.org, riteshh@linux.ibm.com,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in iomap_iter
+Message-ID: <YwOWiDKhVxm7m0fa@casper.infradead.org>
+References: <182c028abf0.2dc6f7c973088.2963173753499991828@siddh.me>
+ <20220821114816.24193-1-code@siddh.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220821114816.24193-1-code@siddh.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Bailon <abailon@baylibre.com>
+On Sun, Aug 21, 2022 at 05:18:16PM +0530, Siddh Raman Pant wrote:
+> @@ -979,9 +979,15 @@ loop_set_status_from_info(struct loop_device *lo,
+>  
+>  	lo->lo_offset = info->lo_offset;
+>  	lo->lo_sizelimit = info->lo_sizelimit;
+> +	lo->lo_flags = info->lo_flags;
+> +
+> +	/* loff_t/int vars are assigned __u64/__u32 vars (respectively) */
+> +	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0 || lo->lo_flags < 0)
+> +		return -EOVERFLOW;
 
-This adds support for MTK_SCPD_STRICT_BUSP capability. It is a strict
-bus protection policy that requires the bus protection to be disabled
-before accessing the bus.
-This is required by the mt8365, for the MM power domain.
-
-Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
----
-
-Notes:
-    Changes in v3:
-    - Rename MTK_SCPD_STRICT_BUSP to MTK_SCPD_STRICT_BUS_PROTECTION
-    - Remove extra bool variable reflecting the capability
-    
-    Changes in v2:
-    - Fixup error handling path.
-
- drivers/soc/mediatek/mtk-pm-domains.c | 27 +++++++++++++++++++++++----
- drivers/soc/mediatek/mtk-pm-domains.h |  1 +
- 2 files changed, 24 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
-index c2cbe0de6aa1..d323275aa11c 100644
---- a/drivers/soc/mediatek/mtk-pm-domains.c
-+++ b/drivers/soc/mediatek/mtk-pm-domains.c
-@@ -303,9 +303,17 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
- 	regmap_clear_bits(scpsys->base, pd->data->ctl_offs, PWR_ISO_BIT);
- 	regmap_set_bits(scpsys->base, pd->data->ctl_offs, PWR_RST_B_BIT);
- 
--	ret = clk_bulk_prepare_enable(pd->num_subsys_clks, pd->subsys_clks);
--	if (ret)
--		goto err_pwr_ack;
-+	/*
-+	 * In few Mediatek platforms(e.g. MT6779), the bus protect policy is
-+	 * stricter, which leads to bus protect release must be prior to bus
-+	 * access.
-+	 */
-+	if (!MTK_SCPD_CAPS(pd, MTK_SCPD_STRICT_BUS_PROTECTION)) {
-+		ret = clk_bulk_prepare_enable(pd->num_subsys_clks,
-+					      pd->subsys_clks);
-+		if (ret)
-+			goto err_pwr_ack;
-+	}
- 
- 	ret = scpsys_sram_enable(pd);
- 	if (ret < 0)
-@@ -315,12 +323,23 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
- 	if (ret < 0)
- 		goto err_disable_sram;
- 
-+	if (MTK_SCPD_CAPS(pd, MTK_SCPD_STRICT_BUS_PROTECTION)) {
-+		ret = clk_bulk_prepare_enable(pd->num_subsys_clks,
-+					      pd->subsys_clks);
-+		if (ret)
-+			goto err_enable_bus_protect;
-+	}
-+
- 	return 0;
- 
-+err_enable_bus_protect:
-+	scpsys_bus_protect_enable(pd);
- err_disable_sram:
- 	scpsys_sram_disable(pd);
- err_disable_subsys_clks:
--	clk_bulk_disable_unprepare(pd->num_subsys_clks, pd->subsys_clks);
-+	if (!MTK_SCPD_CAPS(pd, MTK_SCPD_STRICT_BUS_PROTECTION))
-+		clk_bulk_disable_unprepare(pd->num_subsys_clks,
-+					   pd->subsys_clks);
- err_pwr_ack:
- 	clk_bulk_disable_unprepare(pd->num_clks, pd->clks);
- err_reg:
-diff --git a/drivers/soc/mediatek/mtk-pm-domains.h b/drivers/soc/mediatek/mtk-pm-domains.h
-index 974c68a1d89c..493f3fa14612 100644
---- a/drivers/soc/mediatek/mtk-pm-domains.h
-+++ b/drivers/soc/mediatek/mtk-pm-domains.h
-@@ -10,6 +10,7 @@
- #define MTK_SCPD_DOMAIN_SUPPLY		BIT(4)
- /* can't set MTK_SCPD_KEEP_DEFAULT_OFF at the same time */
- #define MTK_SCPD_ALWAYS_ON		BIT(5)
-+#define MTK_SCPD_STRICT_BUS_PROTECTION	BIT(6)
- #define MTK_SCPD_CAPS(_scpd, _x)	((_scpd)->data->caps & (_x))
- 
- #define SPM_VDE_PWR_CON			0x0210
--- 
-2.37.2
-
+Why would you check lo_flags?  That really, really should be an unsigned
+type.
