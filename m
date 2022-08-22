@@ -2,89 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4764BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9AFC32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbiHVKbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 06:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S234058AbiHVKbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 06:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231649AbiHVKbm (ORCPT
+        with ESMTP id S231649AbiHVKbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 06:31:42 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E5C2F3A7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 03:31:41 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id l64so9016372pge.0
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 03:31:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=KvLVHIy7zFmD92aZ72OpIyLKeAlx3Wy2AZD7ansT0hI=;
-        b=uRjb+mCzNE70MMOwkG1xm8XLINlTbDkVtFqyTMQP45dT6ADUDma5G/UjvHJapmVm3e
-         Yd0J94dERpRzHrFPIGIXL16T63choHaKDPsZpuMB9ruiATjU1SOMK+mUfsV2bEx9GPVc
-         PHbZhc6tXUD/L6m7nlBT8jfNRsqInjSDtRccPdG6QIq1gGAHlJgeYyT/ABdPVC1llSXh
-         ZJqBi/ieOvLak0ErKyhg+IX6a90rtonqtdOva+e3O53ser83AcWhhLNDbx+KJZgak0gV
-         OSHQFIOE8q9AxVHsadaoONziCY7jXocYXYe3gvAl90uOl7wMBmPbj7PrAUCxPXcfObWE
-         Ziig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=KvLVHIy7zFmD92aZ72OpIyLKeAlx3Wy2AZD7ansT0hI=;
-        b=hQ6v3oFOQU6UJCIUDe4uw25CdkIyB3k6tUfZfxwzzLuqFLEFLE3h2c5R7sO4bb6jXg
-         cobP7l9OrJ7HV8yTn84fllyWRNG60uc5VwsbNnq36qhDewdp+JpL0f2n9ehUuobOcVAw
-         ygvB1uy+zFPRlRwZAJ1JEXlScompnVJyunOzsN1cgLRVTne5hFDulOnBEyPp/MSGMaT8
-         hlO5dJmfO7J/yNx7GnW/zFLjEk62FVzkb6Ptiu/NQtgnIp0yWahJK0mX18/eNAzUA99y
-         8LF6iFA+AS+/bhMyuOhs1esHPT0jwfksOZ1xbdXNQe+S5WNJJLiqcdjkXLkQnNfM32/f
-         scgQ==
-X-Gm-Message-State: ACgBeo1UCDJNcpSzPhsRIBFuvZDM1GBjUR7iZ1V2yiz906Alsa77JqWL
-        UvW/rExKVWoGCaBjJEoV92We2dGASHdG0zq5i+9Tcw==
-X-Google-Smtp-Source: AA6agR5XofIXPXZ4LEElDr9w/G89kUmRcY6qMj6MV1zWn56gcU6Qdn13Sw7kEPRLbozr1pg3nNWrORVLo40ygh5EkAU=
-X-Received: by 2002:a63:2c6:0:b0:41d:9a04:c227 with SMTP id
- 189-20020a6302c6000000b0041d9a04c227mr16202348pgc.167.1661164301179; Mon, 22
- Aug 2022 03:31:41 -0700 (PDT)
+        Mon, 22 Aug 2022 06:31:48 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EF22F3B1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 03:31:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661164307; x=1692700307;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9ex5t4ytfumm6Wsq9uJG78mnESKnj7rd8OGsNfvqKSQ=;
+  b=DYx5yFP4f5S1+Y00BzxZChqdelMwz1dQ8TeerKxOQCuGVqiyKHCqfzbt
+   tuke0N/JJPe5+c8uApvrVItNR8DAs/yrMY6znbmuHQZe1g7+B4y4F6cm7
+   XM0mkidAotXJAwCINl4WjgDdXYi9M+DmnuX/+DBp9x+MG6F/WH1B5yPXE
+   2+tWJ20BfgvlLnXxfd7bBW7/vqYSeyAqSUBu+MDAYhOORBEw2yeQ0cWH3
+   besSmxW0alL53ld3ouBpdXY+Z1V0EtgcwDo9hkyhq8U3FZ0j69A69F1KW
+   MTq1fx2hn0i4+hM2E0wVrIgcDlVOxc/MX0qV+VWm9U0HbKaCW11vRuv4m
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="273133309"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="273133309"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 03:31:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="698240197"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2022 03:31:45 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQ4ie-0005DE-2C;
+        Mon, 22 Aug 2022 10:31:44 +0000
+Date:   Mon, 22 Aug 2022 18:31:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: drivers/base/power/domain.c:2894:34: warning: unused variable
+ 'idle_state_match'
+Message-ID: <202208221825.M4zoR8e6-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220812071526.414285-1-jsd@semihalf.com> <a6e5b123-91da-b32d-be40-d88a82e4374e@linux.intel.com>
-In-Reply-To: <a6e5b123-91da-b32d-be40-d88a82e4374e@linux.intel.com>
-From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
-Date:   Mon, 22 Aug 2022 12:31:30 +0200
-Message-ID: <CAOtMz3Nt15089MrvKAzgoviY1P4B=5v08c5-8qt3=f7RhPb8BA@mail.gmail.com>
-Subject: Re: [PATCH v2] i2c: designware: Introduce semaphore reservation timer
- to AMDPSP driver
-To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
-        rrangel@chromium.org, mw@semihalf.com, upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pon., 15 sie 2022 o 13:17 Jarkko Nikula
-<jarkko.nikula@linux.intel.com> napisa=C5=82(a):
->
-> On 8/12/22 10:15, Jan Dabros wrote:
-> > In order to optimize performance, limit amount of back and forth
-> > transactions between x86 and PSP. This is done by introduction of
-> > semaphore reservation period - that is window in which x86 isn't
-> > releasing the bus immediately after each I2C transaction.
-> >
-> > In order to protect PSP from being starved while waiting for
-> > arbitration, after a programmed time bus is automatically released by a
-> > deferred function.
-> >
-> > Signed-off-by: Jan Dabros <jsd@semihalf.com>
-> > ---
-> >   drivers/i2c/busses/i2c-designware-amdpsp.c | 68 +++++++++++++++++----=
--
-> >   1 file changed, 53 insertions(+), 15 deletions(-)
-> >
-> Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Hi Konrad,
 
-Thanks!
+FYI, the error/warning was bisected to this commit, please ignore it if it's irrelevant.
 
-Best Regards,
-Jan
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   1c23f9e627a7b412978b4e852793c5e3c3efc555
+commit: 7d0221fb59125181a31ef3a561306c70fb238bc7 soc/qcom: Make QCOM_RPMPD select PM_GENERIC_DOMAINS/_OF
+date:   7 weeks ago
+config: x86_64-buildonly-randconfig-r004-20220822 (https://download.01.org/0day-ci/archive/20220822/202208221825.M4zoR8e6-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7d0221fb59125181a31ef3a561306c70fb238bc7
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 7d0221fb59125181a31ef3a561306c70fb238bc7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/base/power/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/base/power/domain.c:2894:34: warning: unused variable 'idle_state_match' [-Wunused-const-variable]
+   static const struct of_device_id idle_state_match[] = {
+                                    ^
+   1 warning generated.
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS_OF
+   Depends on [n]: PM_GENERIC_DOMAINS [=y] && OF [=n]
+   Selected by [m]:
+   - QCOM_RPMPD [=m] && QCOM_SMD_RPM [=y]
+
+
+vim +/idle_state_match +2894 drivers/base/power/domain.c
+
+5d6be70add65e3 Ulf Hansson 2018-06-29  2893  
+30f604283e05d3 Lina Iyer   2016-10-14 @2894  static const struct of_device_id idle_state_match[] = {
+598da548ef7892 Lina Iyer   2016-11-03  2895  	{ .compatible = "domain-idle-state", },
+30f604283e05d3 Lina Iyer   2016-10-14  2896  	{ }
+30f604283e05d3 Lina Iyer   2016-10-14  2897  };
+30f604283e05d3 Lina Iyer   2016-10-14  2898  
+
+:::::: The code at line 2894 was first introduced by commit
+:::::: 30f604283e05d34cb10108c7ba017e5f4fc9d62c PM / Domains: Allow domain power states to be read from DT
+
+:::::: TO: Lina Iyer <lina.iyer@linaro.org>
+:::::: CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
