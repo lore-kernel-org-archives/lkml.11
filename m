@@ -2,83 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9C1C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F50C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234097AbiHVJDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
+        id S234159AbiHVJFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231464AbiHVJDQ (ORCPT
+        with ESMTP id S234146AbiHVJD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:03:16 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECBC18D
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:03:13 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3246910dac3so273997147b3.12
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:03:13 -0700 (PDT)
+        Mon, 22 Aug 2022 05:03:28 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8672DEB9
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:03:21 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id o22so12964715edc.10
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:03:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=EuziAoq5ZbtPrSZbeUk8bQqTzuyS7XPxbOwKK2h6M3I=;
-        b=Sw3kIy20SNGugBW8dL2ZMcQGAgqJ/0rc8tznUC4Q0+BOOO85ccRBiVpJitf6eK1Iaa
-         RjQCiALJNCBQ6CFRTYn5FHPW8bV5kgVDvlP6Yq32hZslXgIJmJr+Jna1zxeXneR38Ihj
-         34zAejNuIsR38piTK9NXJDONa4Y76Jh9fsQBE=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=PfP60D9HcZlcTmmRkDILCGp84nMKR71wAxP/XLHNcOc=;
+        b=dcOe3X+PKAbEoSgP1SZmV125Z3qv1XttTwkArPyYcr4xSsp1l0HctYY2pv0uExaNHs
+         BSjz8aI9/G3YSdKhzFhH4CM26Cp3NbzkVihaziCi6knnGjVWDuodYzoqNDXyfNKbrhPb
+         UHDG2NBq7HvBzE/cVwbtE5cAhkXQhMN87foLuPRlelhuP82lAzr5Yde41DKpyBIzO+mN
+         HIVVXPLUopYlfKhEimJOiRXK27dIR5p0EdpWDotSbKPfnQzDABmMtGMYeN6kyfaZbYRN
+         0s61P20Acr+L1GVSLBYmoWZlAAvXC2NhF9tw6XT5iUBlLjrqMQ71IR+FoqGenpIcgCK0
+         3j0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=EuziAoq5ZbtPrSZbeUk8bQqTzuyS7XPxbOwKK2h6M3I=;
-        b=fkRQLvGbZRIqAMw/YewGTJSt9tNoy5veJjj3nMReYFGYTPUiJr670cRg3ZAnD16Ds7
-         K0GFGiEn5a6MUvESkVs6iwozs0kP16FMtuHgsMjGvIsHPIs6Kb1qlnAcAS+f8tuJ0YuL
-         loTfudsIXX9g6f6wI2iZhidnnVWLwMu7f0fpaa2nnwV0T/FfAT2o9uPUTwfwnaZ7+dfp
-         t6c/5q26UMkJSmz+BFyedsCMvaUA8+0YZDuFBUWqrhVjP7/5zpUyy2NK867lr1jXKdQ8
-         QNPxXWbI1QJIegOXSnke0owL+lbhIv8wZ6ML4b+Yup3EPmeHBS107m9citD03D2b3Zuc
-         U3kg==
-X-Gm-Message-State: ACgBeo2AlHPa3JnwCB/AC807kwmjHW+ubEduZcAQPIU6KzO8T5wwsg6m
-        8EaBUeaT2WCzeG79VHAoAyjOvA6i1rU7FqdL+2o/8Q==
-X-Google-Smtp-Source: AA6agR6APdt78F3uw+1hsI55dL+JHbLtSlHcfqi0jLhAPn0QEEgxu7vETGl/x/2GaGSTbsdSnHe62HeLvEmG/XpC7hM=
-X-Received: by 2002:a05:6902:100b:b0:695:bd4e:95d6 with SMTP id
- w11-20020a056902100b00b00695bd4e95d6mr2569366ybt.595.1661158993033; Mon, 22
- Aug 2022 02:03:13 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=PfP60D9HcZlcTmmRkDILCGp84nMKR71wAxP/XLHNcOc=;
+        b=cNio36h9yBrUMsIwSB4A9PTtA+VagJsHcGI8baIlNgjWqpBu0a0MnHHd9CgDx/cJM7
+         Q8J0fSWNCWH+wKiS6A1MDK4r1dwfgkm/3FZpEHHd0KICr6APicRFV2ri50ZOmCVISMZZ
+         xiwvT0KfsOa049UBZoJfdzdsoVlvQTdmzSxA5q+ZFEuDQ7h+bsTcHBS5m/yW3gANIWzI
+         tS7ned0x7Y+2qD9XK5PdaYG7bFoRQMshFfi+nOo16XcUY1/L0/I7zBCOB7nU7D3AJSoc
+         vy0gc04rZcxLvmcZkEveuPto2T5O5JSEtR/hqoZnuXAqUDuhbc50Vi8+8bdwEpG25lx1
+         2Jag==
+X-Gm-Message-State: ACgBeo1Jlc74L4+ekcaj77gTIk2noIsI6EyLAPvXm/ptXIL0WqgY2OAS
+        WNWs2LI57FJc1jWsTb3pJPFwAmSPlQxbNnuv1yAmXw==
+X-Google-Smtp-Source: AA6agR4jfiw9ukbwgaBM5kt0WK81+CDs8BDK8ocqBwlyo9nrKF50l8XJTQbKiqdo/xZ0koN9LAIfirRH7ThqRuR3Ic4=
+X-Received: by 2002:a05:6402:1f8c:b0:43e:8fab:76c with SMTP id
+ c12-20020a0564021f8c00b0043e8fab076cmr15225219edc.126.1661158999829; Mon, 22
+ Aug 2022 02:03:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220815104739.v7.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
- <Yvnq5o5f+qp5zs1c@kroah.com>
-In-Reply-To: <Yvnq5o5f+qp5zs1c@kroah.com>
-From:   Daniil Lunev <dlunev@chromium.org>
-Date:   Mon, 22 Aug 2022 19:03:02 +1000
-Message-ID: <CAONX=-fScRJt-j1USO6gKXm780S=XBGHVc_LUziSZDiStc5P6A@mail.gmail.com>
-Subject: Re: [PATCH v7] ufs: core: print UFSHCD capabilities in controller's
- sysfs node
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Keoseong Park <keosung.park@samsung.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+References: <20220808025121.110223-1-jhlspies@gmail.com>
+In-Reply-To: <20220808025121.110223-1-jhlspies@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 22 Aug 2022 11:03:08 +0200
+Message-ID: <CACRpkda6VoNjJfKY3+oCvdB+V6O_4cumKpjVSdBb9e8mEmHF6g@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: rockchip: Enhance support for IRQ_TYPE_EDGE_BOTH
+To:     =?UTF-8?B?Sm/Do28gSC4gU3BpZXM=?= <jhlspies@gmail.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jianqun Xu <jay.xu@rock-chips.com>,
+        Maya Matuszczyk <maccraft123mc@gmail.com>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 4:42 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> Please provide a lot more information about this in the changelog text.
-> What would you want to see here if you had to review this change?
+On Mon, Aug 8, 2022 at 4:53 AM Jo=C3=A3o H. Spies <jhlspies@gmail.com> wrot=
+e:
 
-Hi Greg,
-Sorry for toppost, let me try again.
-Can you clarify what specifically is missing from the changelog?
-The comment used to be on the "c" file, but now is moved to the
-documentation. Is there anything specific missing? Or do you
-mean commit messages?
+> Switching between falling/rising edges for IRQ_TYPE_EDGE_BOTH on pins tha=
+t
+> require debounce can cause the device to lose events due to a desync
+> between pin state and irq type.
+>
+> This problem is resolved by switching between IRQ_TYPE_LEVEL_LOW and
+> IRQ_TYPE_LEVEL_HIGH instead.
+>
+> Fixes: 936ee26 ("gpio/rockchip: add driver for rockchip gpio")
+> Signed-off-by: Jo=C3=A3o H. Spies <jhlspies@gmail.com>
 
-Thanks,
-Daniil
+No reaction from maintainers so I'm just gonna assume this fix is
+correct and applied for fixes.
+
+Yours,
+Linus Walleij
