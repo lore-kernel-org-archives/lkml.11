@@ -2,98 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D255C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D10EC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235220AbiHVNfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48978 "EHLO
+        id S231629AbiHVNjF convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235191AbiHVNfL (ORCPT
+        with ESMTP id S234115AbiHVNjD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:35:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128522A96C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:35:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 22 Aug 2022 09:39:03 -0400
+Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2523A95BA
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:39:00 -0700 (PDT)
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8500B81221
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:35:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F8B7C433D6;
-        Mon, 22 Aug 2022 13:35:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661175307;
-        bh=qu81bEpu83VA10aS3AYSiUHtRFuL4LO72HPagtwl6K4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bpVtLRFuNwVU9uP82xV498EtC+k6chfBhOw+W+WVOVCnkMEKV3kKCf+Xw3QrTk4df
-         AXMZKBddw/HvLcuL7kQr0+FJc1YAMjf+HAtjoObJJRwvIPjEsEC9e4s1djd+QYu5q0
-         UgAuU7r3eOyi9TSGxnGF9UGzJf8ST+mIgANuIQVfD5o/yt17cRFhzovNx2/Qzvmr+c
-         OtOmV0mq9bPsJ6arnYmI3C9/9JQ4/reeZQul1IZDrYwLRlKtODD90k3VQLOk6AR3wO
-         8I5EYN+v+NM2sKMa9crla6dd7U0f+G5/179cyVJgtXcqfnUM5HNR+QMTT/UY00jNXK
-         wXRbbMGd0RqUw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oQ7a4-0002R3-2a; Mon, 22 Aug 2022 15:35:04 +0200
-Date:   Mon, 22 Aug 2022 15:35:04 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Douglas Anderson <dianders@chromium.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH] drm/panel-edp: add AUO B133UAN02.1 panel entry
-Message-ID: <YwOGCPFTx0+MNfN2@hovoldconsulting.com>
-References: <20220711075202.21775-1-johan+linaro@kernel.org>
- <YtpyeCHojFovBKxv@hovoldconsulting.com>
+        by mx1.emlix.com (Postfix) with ESMTPS id 5DDBD601AF;
+        Mon, 22 Aug 2022 15:04:37 +0200 (CEST)
+From:   Rolf Eike Beer <eb@emlix.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/6] mm: pagewalk: fix documentation of PTE hole handling
+Date:   Mon, 22 Aug 2022 15:01:32 +0200
+Message-ID: <3695521.kQq0lBPeGt@devpool047>
+Organization: emlix GmbH
+In-Reply-To: <3200642.44csPzL39Z@devpool047>
+References: <3200642.44csPzL39Z@devpool047>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtpyeCHojFovBKxv@hovoldconsulting.com>
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 11:48:40AM +0200, Johan Hovold wrote:
-> On Mon, Jul 11, 2022 at 09:52:02AM +0200, Johan Hovold wrote:
-> > Add an eDP panel entry for AUO B133UAN02.1.
-> > 
-> > Due to lack of documentation, use the delay_200_500_e50 timings like
-> > some other AUO entries for now.
-> > 
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> 
-> Any comments to this one?
-> 
-> It looks like it hasn't shown up in the dri-devel patchwork and just
-> want to make sure it isn't lost.
-> 
-> Rob Clark mentioned something about a spam filter on IRC.
+Empty PTEs are passed to the pte_entry callback, not to pte_hole.
 
-This one still hasn't been picked up.
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+---
+ include/linux/pagewalk.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Is this something you can do, Doug? I noticed you applied a couple of
-patches to this driver recently.
+diff --git a/include/linux/pagewalk.h b/include/linux/pagewalk.h
+index ac7b38ad5903..f3fafb731ffd 100644
+--- a/include/linux/pagewalk.h
++++ b/include/linux/pagewalk.h
+@@ -15,12 +15,12 @@ struct mm_walk;
+  *			this handler is required to be able to handle
+  *			pmd_trans_huge() pmds.  They may simply choose to
+  *			split_huge_page() instead of handling it explicitly.
+- * @pte_entry:		if set, called for each non-empty PTE (lowest-level)
+- *			entry
++ * @pte_entry:		if set, called for each PTE (lowest-level) entry,
++ *			including empty ones
+  * @pte_hole:		if set, called for each hole at all levels,
+- *			depth is -1 if not known, 0:PGD, 1:P4D, 2:PUD, 3:PMD
+- *			4:PTE. Any folded depths (where PTRS_PER_P?D is equal
+- *			to 1) are skipped.
++ *			depth is -1 if not known, 0:PGD, 1:P4D, 2:PUD, 3:PMD.
++ *			Any folded depths (where PTRS_PER_P?D is equal to 1)
++ *			are skipped.
+  * @hugetlb_entry:	if set, called for each hugetlb entry
+  * @test_walk:		caller specific callback function to determine whether
+  *			we walk over the current vma or not. Returning 0 means
+-- 
+2.37.2
 
-Or who is really responsible for this driver?
+-- 
+Rolf Eike Beer, emlix GmbH, http://www.emlix.com
+Fon +49 551 30664-0, Fax +49 551 30664-11
+Gothaer Platz 3, 37083 Göttingen, Germany
+Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
+Geschäftsführung: Heike Jordan, Dr. Uwe Kracke – Ust-IdNr.: DE 205 198 055
 
-> > ---
-> >  drivers/gpu/drm/panel/panel-edp.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-> > index fe3897b86665..30f69cd8f9ee 100644
-> > --- a/drivers/gpu/drm/panel/panel-edp.c
-> > +++ b/drivers/gpu/drm/panel/panel-edp.c
-> > @@ -1845,6 +1845,7 @@ static const struct panel_delay delay_100_500_e200 = {
-> >   * Sort first by vendor, then by product ID.
-> >   */
-> >  static const struct edp_panel_entry edp_panels[] = {
-> > +	EDP_PANEL_ENTRY('A', 'U', 'O', 0x1e9b, &delay_200_500_e50, "B133UAN02.1"),
-> >  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x405c, &auo_b116xak01.delay, "B116XAK01"),
-> >  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x615c, &delay_200_500_e50, "B116XAN06.1"),
-> >  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8594, &delay_200_500_e50, "B133UAN01.0"),
+emlix - smart embedded open source
 
-Johan
+
+
