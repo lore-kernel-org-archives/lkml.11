@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9A7C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F56C38142
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiHVIFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
+        id S233606AbiHVIFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233688AbiHVIEs (ORCPT
+        with ESMTP id S233659AbiHVIE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:04:48 -0400
+        Mon, 22 Aug 2022 04:04:57 -0400
 Received: from mail.fris.de (mail.fris.de [116.203.77.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C3C2B1B9;
-        Mon, 22 Aug 2022 01:04:06 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 7474AC01BC;
-        Mon, 22 Aug 2022 10:04:03 +0200 (CEST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D08DEB1;
+        Mon, 22 Aug 2022 01:04:25 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 6208FBFAFA;
+        Mon, 22 Aug 2022 10:04:23 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1661155444; h=from:subject:date:message-id:to:cc:mime-version:
+        t=1661155463; h=from:subject:date:message-id:to:cc:mime-version:
          content-transfer-encoding:in-reply-to:references;
-        bh=FZxRCHSXKqRPFEISTv4M6mKUoy/XipaFpY/4ooNcIpw=;
-        b=RLiM+7KqZBOZzIePPu2nICdNn5VY/36fEUOb0NYoN3E/mfg9tI3x7w74LHYx38wj7mo1Hl
-        bSnDuto+gTC+fWXhxd802qNVV91j5/lsfPHe2IGi/ONNP3W6+otagzQQT8/kD8XfhBOBw2
-        ZBh8Hs88FYe0Q2GhRs+5kxvGwuIDtbOFdljNaihlu/f56D2kcKtig7eXHmTgzOMtid2kji
-        y/qxzpLmXWyVunYO4N6hxUSn02WMys0wl/vnO6mW6INQVtSd86BTigbc5VJBrxy9q4Jzx9
-        QLg6zyJkEndgyi5YLygsIWCONuAKxxbXgEbYZW+1rKOIsrhnk+Idu6RCZFhAZw==
+        bh=/guGV0ra07b3IlhGeOCuArN7ww+4egM5anvKI+999M8=;
+        b=emWqcRmwo9IrbCEkslamJSpc8U6z3yS4KNDatFfVM6IHN9Lwaxf33qkLAh2X51vxe48UHu
+        zZaUDl4z6Enb5UJLDFqErDstG0kdIbKBwM/kq4vi4MyaYml3qtiSfkpQdJlJt2o9/nQXWc
+        B7kZgEoGs69u49C8KC0hPg9FaHFC3AQsOZe7zdMzBTmgBBke8oqrRCmIsG5fdu87DEtPHt
+        hqMcJvAQgz4m5qM3AgjyQWqR4zfytLqvNVKp8C+q5M9MZNtEgVmlWjP6+vLnyI8qAeMfj7
+        9j+isAaChX19oDyjKz/k6+MYLLbEufb5Tx5DSGu8Uk2uP0APR5pJjWi3YiuhhA==
 From:   Frieder Schrempf <frieder@fris.de>
 To:     devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
         Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Peng Fan <peng.fan@nxp.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 2/8] dt-bindings: arm: fsl: Add Kontron BL i.MX8MM OSM-S board
-Date:   Mon, 22 Aug 2022 10:03:48 +0200
-Message-Id: <20220822080357.24478-3-frieder@fris.de>
+        Fabio Estevam <festevam@gmail.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: [PATCH v4 5/8] arm64: dts: imx8mm-kontron: Remove low DDRC operating point
+Date:   Mon, 22 Aug 2022 10:03:51 +0200
+Message-Id: <20220822080357.24478-6-frieder@fris.de>
 In-Reply-To: <20220822080357.24478-1-frieder@fris.de>
 References: <20220822080357.24478-1-frieder@fris.de>
 MIME-Version: 1.0
@@ -57,49 +53,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Add bindings for the Kontron BL i.MX8MM OSM-S board.
+For some reason there is a problem with finding a DDR configuration
+that works on all operating points and all LPDDR4 types used on the
+SoM. Therefore the bootloader currently doesn't configure the lowest
+of the three operating points. Let's also skip this in the kernel
+devicetree to make sure it isn't used.
 
 Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
 Changes in v4:
 * none
 
 Changes in v3:
-* rename compatibles
 * rebase on v6.0-rc1
 
 Changes in v2:
-* add A-b tag from Krzysztof (Thanks!)
+* none
 ---
- Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 4dcfa27044f0..2b5a4d293e25 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -832,6 +832,7 @@ properties:
-               - gw,imx8mm-gw7902          # i.MX8MM Gateworks Board
-               - gw,imx8mm-gw7903          # i.MX8MM Gateworks Board
-               - kontron,imx8mm-sl         # i.MX8MM Kontron SL (N801X) SOM
-+              - kontron,imx8mm-osm-s      # i.MX8MM Kontron OSM-S (N802X) SOM
-               - menlo,mx8menlo            # i.MX8MM Menlo board with Verdin SoM
-               - toradex,verdin-imx8mm     # Verdin iMX8M Mini Modules
-               - toradex,verdin-imx8mm-nonwifi  # Verdin iMX8M Mini Modules without Wi-Fi / BT
-@@ -854,6 +855,12 @@ properties:
-           - const: kontron,imx8mm-sl
-           - const: fsl,imx8mm
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+index 33179157f619..96ecdce67059 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+@@ -46,10 +46,6 @@ &ddrc {
+ 	ddrc_opp_table: opp-table {
+ 		compatible = "operating-points-v2";
  
-+      - description: Kontron BL i.MX8MM OSM-S (N802X S) Board
-+        items:
-+          - const: kontron,imx8mm-bl-osm-s
-+          - const: kontron,imx8mm-osm-s
-+          - const: fsl,imx8mm
-+
-       - description: Toradex Boards with Verdin iMX8M Mini Modules
-         items:
-           - enum:
+-		opp-25M {
+-			opp-hz = /bits/ 64 <25000000>;
+-		};
+-
+ 		opp-100M {
+ 			opp-hz = /bits/ 64 <100000000>;
+ 		};
 -- 
 2.37.2
 
