@@ -2,89 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF68C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D272C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234446AbiHVNDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
+        id S234790AbiHVNED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiHVNC7 (ORCPT
+        with ESMTP id S234770AbiHVND6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:02:59 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FAA356D1;
-        Mon, 22 Aug 2022 06:02:59 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 40B082B3;
-        Mon, 22 Aug 2022 15:02:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1661173377;
-        bh=3KUAM+O8TZK6k0R26rf5Rv/fs3CP6Usaeb49tMIg+sk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Td0g3pwLBnD4ckmy1hbXDW04i7ernfNgHGZCUdSMCtSjlY3Pn1sNUuAGLtBC48rgG
-         FTTZrBGWXPZp5syugBjLfT+n7fp8i1q1BeoXTtDvEUdtHXhb0aXT+mUzYbtYJ7Nhwu
-         /f9Qm6RMTvMXBTYpXVx1XaeYw5BwFMnZT+C6TWvs=
-Date:   Mon, 22 Aug 2022 16:02:53 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Ricardo Ribalda <ribalda@chromium.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: uvcvideo: Fix InterfaceProtocol for Quanta camera
-Message-ID: <YwN+fU5ez0L5pi1j@pendragon.ideasonboard.com>
-References: <20220808134106.70100-1-ribalda@chromium.org>
+        Mon, 22 Aug 2022 09:03:58 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F0C65F4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:03:55 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d10so9858771plr.6
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:03:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=xCwRRSOAI8NTFENMJB9POgmpe2aeGgmWc81Fota2RZQ=;
+        b=cQprBtTZHQFpLzv2+41gOj70u6H6qx39V2iiBysGguJzbcAK9u8lwqU0xB6DzqE3xN
+         fgEK4NxxA8iavdul3svoFSE1oDymCtPWrQLtjaSpUOO4qHul+975UZelVwslwFAUTvbb
+         kjezuMksPNHCa0LcbTDQPU9SAI3KSTFdLMFWByj6mXrbrKkyN2/JNBofNvXey5f+EuPN
+         r/jpj/9NeBbgtBM2Go0Z48MFSCADhMSvsxYoWemYk4L4Miobnjq9KIo7DrlEX5KS3HMa
+         qFkyLB5B5hv3gD/JWKy9obUYrPG3pPEMCT/f/lRBiE6IenAREJEaxsUDx99Ni4MGxDK0
+         QL3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=xCwRRSOAI8NTFENMJB9POgmpe2aeGgmWc81Fota2RZQ=;
+        b=ekn+f3kzWD25rA7VrpkLOXF1RbAvIsPEcMra0dCOP8H3ulpGmtTi/awSAfgWif4wrp
+         By6n2CfsrPqc0LhyC6WohJHZU08vNOmZ9aHIkWFRKpTEMb8dU3+hkKNjvPNrUyj0v5DY
+         al9SBX720LoE5qQUHE+/19Vhjox1orP9fBJka6X34YH0MLra0JXvzU2JXv6m6Lk19mms
+         W1zRTXEWoZzRgjv1yyaO6YR+BGzyYiR+Zfx2O0nW2BO9N21aEEAQfaE5K7s/V+M5GUB1
+         BJZQqANXzUH7oxy+ys3iCbguLiObhwWrI26IodCTqQn5K7oVtUW0jYfHPa66+WCwwp4n
+         btMQ==
+X-Gm-Message-State: ACgBeo0J883ZlT+q47RgvkSYu3PzHizAlpZtjXphLanq9rkTU/z/zR4R
+        O8W/19RSw385Zb8k7iUwbNet80lS83wQFRvLcd9VuQ==
+X-Google-Smtp-Source: AA6agR5eL07OPXjLdDZdPY4zqYAKnvhGdzM/+MIxIyIqRKU6U3n7CoCKAbzZBxprdaqHJo9ki2OFdh+xc5qR2NH+PUw=
+X-Received: by 2002:a17:902:c411:b0:170:91ff:884b with SMTP id
+ k17-20020a170902c41100b0017091ff884bmr20195671plk.58.1661173434289; Mon, 22
+ Aug 2022 06:03:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220808134106.70100-1-ribalda@chromium.org>
+References: <20220819153829.135562864@linuxfoundation.org> <20220819153853.762825860@linuxfoundation.org>
+ <20220822111546.GA7795@duo.ucw.cz>
+In-Reply-To: <20220822111546.GA7795@duo.ucw.cz>
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+Date:   Mon, 22 Aug 2022 15:03:43 +0200
+Message-ID: <CAHUa44HBBgMtT=xAJYmNPkwZntLt=cNCmE8eb29DWm2+1PxF-g@mail.gmail.com>
+Subject: Re: [PATCH 5.10 540/545] tee: add overflow check in register_shm_helper()
+To:     Pavel Machek <pavel@denx.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Nimish Mishra <neelam.nimish@gmail.com>,
+        Anirban Chakraborty <ch.anirban00727@gmail.com>,
+        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
+        Jerome Forissier <jerome.forissier@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ricardo,
+Hi,
 
-Thank you for the patch.
+On Mon, Aug 22, 2022 at 1:15 PM Pavel Machek <pavel@denx.de> wrote:
+>
+> Hi!
+>
+> > From: Jens Wiklander <jens.wiklander@linaro.org>
+> >
+> > commit 573ae4f13f630d6660008f1974c0a8a29c30e18a upstream.
+> >
+> > With special lengths supplied by user space, register_shm_helper() has
+> > an integer overflow when calculating the number of pages covered by a
+> > supplied user space memory region.
+> >
+> > This causes internal_get_user_pages_fast() a helper function of
+> > pin_user_pages_fast() to do a NULL pointer dereference:
+>
+> Maybe this needs fixing, but this fix adds a memory leak or two. Note
+> the goto err, that needs to be done.
 
-On Mon, Aug 08, 2022 at 03:41:06PM +0200, Ricardo Ribalda wrote:
-> The device is using a different InterfaceProtocol than the one set in
-> the original quirk.
-> 
-> Fixes: 95f03d973478 ("media: uvcvideo: Limit power line control for Quanta cameras")
-> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-> ---
-> 
-> This was fixed on the last version of the patchset. Unfortunately I did
-> checked that it was the version merged :(.
+Thanks for bringing this up. I believe the best option is to take the
+backport I just did for 5.4, it should apply cleanly on the 5.10
+stable kernel too.
 
-Oops :-(
+Greg,  can you cherry-pick the 5.4 backport patch, or would you rather
+have an explicit backport for this stable kernel?
 
-> It is too late to land it in this version?
+Cheers,
+Jens
 
-I think it can be considered as a v6.0 fix, yes.
-
->  drivers/media/usb/uvc/uvc_driver.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
-> index 9c05776f11d1..6556158a8888 100644
-> --- a/drivers/media/usb/uvc/uvc_driver.c
-> +++ b/drivers/media/usb/uvc/uvc_driver.c
-> @@ -2740,7 +2740,7 @@ static const struct usb_device_id uvc_ids[] = {
->  	  .idProduct		= 0x4034,
->  	  .bInterfaceClass	= USB_CLASS_VIDEO,
->  	  .bInterfaceSubClass	= 1,
-> -	  .bInterfaceProtocol	= 0,
-> +	  .bInterfaceProtocol	= 1,
-
-Should we use UVC_PC_PROTOCOL_15 here ?
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
->  	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
->  	/* LogiLink Wireless Webcam */
->  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
-
--- 
-Regards,
-
-Laurent Pinchart
+>
+> Best regards,
+>                                                                 Pavel
+>
+> Signed-off-by: Pavel Machek <pavel@denx.de>
+>
+> > +++ b/drivers/tee/tee_shm.c
+> > @@ -222,6 +222,9 @@ struct tee_shm *tee_shm_register(struct
+> >               goto err;
+> >       }
+> >
+> > +     if (!access_ok((void __user *)addr, length))
+> > +             return ERR_PTR(-EFAULT);
+> > +
+> >       mutex_lock(&teedev->mutex);
+> >       shm->id = idr_alloc(&teedev->idr, shm, 1, 0, GFP_KERNEL);
+> >       mutex_unlock(&teedev->mutex);
+> >
+>
+>
+> diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+> index 6e662fb131d5..283fa50676a2 100644
+> --- a/drivers/tee/tee_shm.c
+> +++ b/drivers/tee/tee_shm.c
+> @@ -222,8 +222,10 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
+>                 goto err;
+>         }
+>
+> -       if (!access_ok((void __user *)addr, length))
+> -               return ERR_PTR(-EFAULT);
+> +       if (!access_ok((void __user *)addr, length)) {
+> +               ret = ERR_PTR(-EFAULT);
+> +               goto err;
+> +       }
+>
+>         mutex_lock(&teedev->mutex);
+>         shm->id = idr_alloc(&teedev->idr, shm, 1, 0, GFP_KERNEL);
+>
+> --
+> DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+> HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
