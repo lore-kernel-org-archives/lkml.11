@@ -2,184 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B02C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35727C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbiHVHYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
+        id S232631AbiHVHZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbiHVHYN (ORCPT
+        with ESMTP id S233355AbiHVHZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:24:13 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 00:24:08 PDT
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC6029CA3
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:24:08 -0700 (PDT)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2022082207230497e2b7ec13ed658fe1
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 22 Aug 2022 09:23:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=ACmDxriEaNzc7oW3ZCWxsNGmQoofxCbjtgQjuq93gyQ=;
- b=KbLsC6WiWX2lkGs+gzLmAWTkPTItBfMewc1PowT2lpbrOl99GJ61nR27iyG9UjAlSsztKS
- 8wLuWsoRjC9UEyUL6k1PvtWXxKqpVdcYjifsPG7Kv4U4nJd59g+T3/MqC2W7/UbCUju7PXMX
- irk1Kp1wcbdZ5PdoCHH/qIhrVv0rQ=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5/6] tty: n_gsm: name the debug bits
-Date:   Mon, 22 Aug 2022 09:21:37 +0200
-Message-Id: <20220822072138.3123-5-daniel.starke@siemens.com>
-In-Reply-To: <20220822072138.3123-1-daniel.starke@siemens.com>
-References: <20220822072138.3123-1-daniel.starke@siemens.com>
+        Mon, 22 Aug 2022 03:25:20 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C512A243;
+        Mon, 22 Aug 2022 00:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1661153098;
+        bh=++bx+FIr/OJ8Ma7DWnnidJKg8gGmATCR+MLXDTDjB7o=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=dwBdNXeMQEe3XNFKy8GeDuaJ+uT/G3UKIPTrSqiNqamt3/5oU+HgIvdUvoSm2RyTT
+         t5SLdXclKkbWavyW9bY72kE1CfsNywqC+4w4qd28AUUA8rDx7VT1mMzhBM5L8FRveW
+         iPd6MrnDaWPyO2WvczrO7h5Gmp5xt4NTGVxcGVHQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx105
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1MCsUC-1oYnFJ0gd6-008pLx; Mon, 22
+ Aug 2022 09:24:57 +0200
+Message-ID: <1ed5a33a-b667-0e8e-e010-b4365f3713d6@gmx.com>
+Date:   Mon, 22 Aug 2022 15:24:53 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: LTS kernel Linux 4.14.290 unable to boot with edk2-ovmf (x86_64
+ UEFI runtime)
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     stable <stable@vger.kernel.org>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-x86_64@vger.kernel.org
+References: <2d6012e8-805d-4225-80ed-d317c28f1899@gmx.com>
+ <YwMhXX6OhROLZ/LR@kroah.com>
+From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
+In-Reply-To: <YwMhXX6OhROLZ/LR@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Pvs5NuqGKX357tY1B+Cjpx2O8DVXYlGmkX/e91DFFh3+ZeSahql
+ Ofo4NJ+hLkV5y4fECV8KWRw08N9EhYQKihuyjWDKSPFMoydVJMHdF2fxxNHza4+vX4BPAYu
+ 1+DTnP41OJ+ZqPyZwXqe7Zi+F+p8knltDSBOuZ5RJGk+MAVXaROtHZ5/D7VVXpXubA+3ASt
+ EwXYnibS1Noksc7/oeP4Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BlCUppmJbYY=:PMEhlSE4Bwuice/SATKWJZ
+ 0+WkC3TAelS5kpVct3UgaGXay0QHvPHMgbqZ0d6PPB7QPAW+eyfGzZ7e+TENioMNp/43IwQ7f
+ FOxxp28o7eg11KzTp0AoZJyQ8ch+QEWeAWpA9R+NixOYThfeTRtfYb10xPxSv8348Cf6q+JZj
+ ioFdhEY7mY1fYNRvU2KN27Phk7mgVj0hfxyCzOCy4c8t6+QKX+3OoHbvEn3Z4n4BjXIaTKsXs
+ IQjRnLAUMWUN77OPL5rw7D5jmc04yH67vupJtCEtd+vVqiyxp++epMLcY52l68GJtikdUluV4
+ N5b3WrgYk92pP02t3XhCidWJhulwIcRuOeVlJdcc+8ffl1vJBx8tUMCILEmMWQhml/6J6wYee
+ I9ngtx1DVDJawj1UPatGWw+9kCNDZ+O/pclGKRWBZONGwrpXEf1uadtPHYCCTNoGTS7J/jxDc
+ gmSXqQ6GVxN4hZrxouBykKU3w42bJNFNZF3En3rU87B9HewnrzzQBxt2FBwEenz0ED6FXENLE
+ tkeTTJA7/CiKPFeji7h4aUpou/Xg1ikoU7EDvmqJrlSa+W/XAKOiNOI6HwCG3wjBKQZthtEMP
+ /+E3pfsdLlvw2xGg6SuIi3AX3qgSu4RxpXWvQS9V0EypGNBD9kSmceCuOpnf56M6Kncu27YfN
+ V9FYEZzdFLgW85Xl6d+B/V0Ijh5Uzqbts8GpgYZTZeSE83ROZIujaZJkSIcqvt0FjtxyEiFcj
+ 7oArtLqpXaAu1rwnz0nTLgm9APYYTfAU1MBX9vPTg/63eyTUTemg80qt3NIq3Dx0XvLnoV4i7
+ S6Nix+qztrIDZovmHb9WGMWWRnlwwOdFLsfCs8IJ4igVvV6jPDCNwOkO+pbscJgcuCTdK1ZXP
+ QeGSglXMP6HhQ5T9N6evQJmUyZpmzKniO4YOf2Wo+dmhYJd2HW3FIx3r7DNGuf+ad5SwCuoXI
+ 2LGaHP+L77mlfLVztjO0hVbKJVcQNImhSqSHw5Z/KsloOVrNH3nezXkxjjqlVBzSt3HhAyh/d
+ 0MSSrFxsFL9o0hUZnqo+kCfyOCRBB2o+JGrWiXbr4GcRyrcJoZr6tBWAYUv0/3N3VkwNeVlBB
+ wALrYvRXk2kuko16x+dlsbxr4An1jfKCATvaDcEKKVXbVMcbVUJIzXrAw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
 
-Introduce defines to name the various debug bits used within the code to
-improve readability and to make its specific use clear.
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+On 2022/8/22 14:25, Greg KH wrote:
+> On Mon, Aug 22, 2022 at 09:15:59AM +0800, Qu Wenruo wrote:
+>> Hi,
+>>
+>> When backporting some btrfs specific patches to all LTS kernels, I foun=
+d
+>> v4.14.290 kernel unable to boot as a KVM guest with edk2-ovmf
+>> (edk2-ovmf: 202205, qemu 7.0.0, libvirt 1:8.6.0).
+>>
+>> While all other LTS/stable branches (4.19.x, 5.4.x, 5.10.x, 5.15.x,
+>> 5.18.x, 5.19.x) can boot without a hipccup.
+>>
+>> I tried the following configs, but none of them can even provide an
+>> early output:
+>>
+>> - CONFIG_X86_VERBOSE_BOOTUP
+>> - CONFIG_EARLY_PRINTK
+>> - CONFIG_EARLY_PRINTK_EFI
+>>
+>> Is this a known bug or something new?
+>
+> Has this ever worked properly on this very old kernel tree?  If so, can
+> you use 'git bisect' to find the offending commit?
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 71599198eb6d..e8f10a5f0a8a 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -63,6 +63,13 @@
- static int debug;
- module_param(debug, int, 0600);
- 
-+/* Module debug bits */
-+#define DBG_DUMP	(1 << 0) /* Data transmission dump. */
-+#define DBG_CD_ON	(1 << 1) /* Always assume CD line on. */
-+#define DBG_DATA	(1 << 2) /* Data transmission details. */
-+#define DBG_ERRORS	(1 << 3) /* Details for fail conditions. */
-+#define DBG_TTY		(1 << 4) /* Transmission statistics for DLCI TTYs. */
-+
- /* Defaults: these are from the specification */
- 
- #define T1	10		/* 100mS */
-@@ -535,7 +542,7 @@ static int gsm_register_devices(struct tty_driver *driver, unsigned int index)
- 		 */
- 		dev = tty_register_device(gsm_tty_driver, base + i, NULL);
- 		if (IS_ERR(dev)) {
--			if (debug & 8)
-+			if (debug & DBG_ERRORS)
- 				pr_info("%s failed to register device minor %u",
- 					__func__, base + i);
- 			for (i--; i >= 1; i--)
-@@ -589,7 +596,7 @@ static void gsm_unregister_devices(struct tty_driver *driver,
- static void gsm_print_packet(const char *hdr, int addr, int cr,
- 					u8 control, const u8 *data, int dlen)
- {
--	if (!(debug & 1))
-+	if (!(debug & DBG_DUMP))
- 		return;
- 
- 	pr_info("%s %d) %c: ", hdr, addr, "RC"[cr]);
-@@ -833,7 +840,7 @@ static int gsm_send_packet(struct gsm_mux *gsm, struct gsm_msg *msg)
- 		len += 2;
- 	}
- 
--	if (debug & 4)
-+	if (debug & DBG_DATA)
- 		gsm_hex_dump_bytes(__func__, gsm->txframe, len);
- 	gsm_print_packet("-->", msg->addr, gsm->initiator, msg->ctrl, msg->data,
- 			 msg->len);
-@@ -1765,7 +1772,7 @@ static int gsm_control_wait(struct gsm_mux *gsm, struct gsm_control *control)
- static void gsm_dlci_close(struct gsm_dlci *dlci)
- {
- 	del_timer(&dlci->t1);
--	if (debug & 8)
-+	if (debug & DBG_ERRORS)
- 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
- 	dlci->state = DLCI_CLOSED;
- 	/* Prevent us from sending data before the link is up again */
-@@ -1799,7 +1806,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 	/* This will let a tty open continue */
- 	dlci->state = DLCI_OPEN;
- 	dlci->constipated = false;
--	if (debug & 8)
-+	if (debug & DBG_ERRORS)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Send current modem state */
- 	if (dlci->addr)
-@@ -1835,7 +1842,7 @@ static void gsm_dlci_t1(struct timer_list *t)
- 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
--			if (debug & 8)
-+			if (debug & DBG_ERRORS)
- 				pr_info("DLCI %d opening in ADM mode.\n",
- 					dlci->addr);
- 			dlci->mode = DLCI_MODE_ADM;
-@@ -1940,7 +1947,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
- 	unsigned int modem = 0;
- 	int len;
- 
--	if (debug & 16)
-+	if (debug & DBG_TTY)
- 		pr_debug("%d bytes for tty\n", len);
- 	switch (dlci->adaption)  {
- 	/* Unsupported types */
-@@ -2030,7 +2037,7 @@ static void gsm_kick_timer(struct timer_list *t)
- 		sent = gsm_dlci_data_sweep(gsm);
- 	spin_unlock_irqrestore(&gsm->tx_lock, flags);
- 
--	if (sent && debug & 4)
-+	if (sent && debug & DBG_DATA)
- 		pr_info("%s TX queue stalled\n", __func__);
- }
- 
-@@ -2164,7 +2171,7 @@ static void gsm_queue(struct gsm_mux *gsm)
- 
- 	if (gsm->fcs != GOOD_FCS) {
- 		gsm->bad_fcs++;
--		if (debug & 4)
-+		if (debug & DBG_DATA)
- 			pr_debug("BAD FCS %02x\n", gsm->fcs);
- 		return;
- 	}
-@@ -2790,7 +2797,7 @@ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len)
- 		set_bit(TTY_DO_WRITE_WAKEUP, &gsm->tty->flags);
- 		return -ENOSPC;
- 	}
--	if (debug & 4)
-+	if (debug & DBG_DATA)
- 		gsm_hex_dump_bytes(__func__, data, len);
- 	return gsm->tty->ops->write(gsm->tty, data, len);
- }
-@@ -2877,7 +2884,7 @@ static void gsmld_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	struct gsm_mux *gsm = tty->disc_data;
- 	char flags = TTY_NORMAL;
- 
--	if (debug & 4)
-+	if (debug & DBG_DATA)
- 		gsm_hex_dump_bytes(__func__, cp, count);
- 
- 	for (; count; count--, cp++) {
-@@ -3416,7 +3423,7 @@ static int gsm_carrier_raised(struct tty_port *port)
- 	/* Not yet open so no carrier info */
- 	if (dlci->state != DLCI_OPEN)
- 		return 0;
--	if (debug & 2)
-+	if (debug & DBG_CD_ON)
- 		return 1;
- 
- 	/*
--- 
-2.34.1
+Unfortunately the initial v4.14 from upstream can not even be compiled.
 
+I'll try some more recent v4.14.x tags to see if I can get a working
+release to do the bisect.
+
+Thanks,
+Qu
+
+>
+> thanks,
+>
+> greg k-h
