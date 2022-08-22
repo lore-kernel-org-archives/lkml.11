@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 864E5C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF284C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:35:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiHVTdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38132 "EHLO
+        id S238632AbiHVTfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239494AbiHVTbd (ORCPT
+        with ESMTP id S231196AbiHVTfC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:31:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2391F1D330;
-        Mon, 22 Aug 2022 12:29:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 22 Aug 2022 15:35:02 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56911BE1;
+        Mon, 22 Aug 2022 12:35:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3B5760BC5;
-        Mon, 22 Aug 2022 19:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD7CC433C1;
-        Mon, 22 Aug 2022 19:29:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661196573;
-        bh=EUirQLLNP7hOsCjZnx2sV4TuIc9Zb4vvS+mAipxKh2M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uvPiSS4beKT9aG7xQ8zSwQTtIFHPhjUQt4piTXo/fIWLTvu17nhdOvsq+ZeYJe9Te
-         7OI0SqqDR3B8cyIBdujMHDWtzE01y5K2LdVq3GnNtXbiiiuIO+XRDOH5d4R4ZI+46R
-         lYsH/D9Nmnbegl1CTYfDJqS+NBHiWY4KGNgPRWi/nZDapM1y0XQU3b6BJw77j+6Tp6
-         gvDRnzKaFNxJl8Zi+nT7V74OxALy5+Ias1HxWaK6yqn2K2fLoZPryeiDISS/Rdpdig
-         Mnd6rjmC1yikw8eljMhFKVg8u8wZLVCpRg28w1PTtseAxldYuGbigqjFpgfTBlDAVh
-         KwoaQjcFYtziQ==
-Date:   Mon, 22 Aug 2022 20:29:27 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Rob Herring <robh+dt@kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Herve Codina <herve.codina@bootlin.com>
-Subject: Re: [PATCH v2 2/2] spi: fsl-spi: Implement trailing bits
-Message-ID: <YwPZF6fjZkn2tozH@sirena.org.uk>
-References: <cover.1646060734.git.christophe.leroy@csgroup.eu>
- <fe4a3946a66ede73f6d6871700f2aaf0171372a1.1646060734.git.christophe.leroy@csgroup.eu>
- <YhzqbYW1q5bPNWXn@sirena.org.uk>
- <7afaab3d-50e0-4716-18d4-41eabc2a9cb9@csgroup.eu>
- <Yhz0/1kiAy7Mlgtv@sirena.org.uk>
- <f9046e68-ff22-2652-48dc-d277b4af75dd@csgroup.eu>
- <YwO5l/KpXoKJVawq@sirena.org.uk>
- <c4950a61-ba9a-5897-1f04-bb2c56979d7d@csgroup.eu>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 0946C5CA41;
+        Mon, 22 Aug 2022 19:35:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661196900; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8LOpaT2Q971EUbjBeeWliYNilDBmmPl4LkCkk2UWfDk=;
+        b=pGEsQUrii2Ffpmtr8KAOdRMqyQVwo8KxxpKgeV2D/hGy/FAz5HnnGfP7IbIGRpYoALy/83
+        Z0JgiA3PYFUqXzFCRRTdOyzmioQ6Bv6y4aiwX2z9ik5cMyyYrSK5ef31rrS/qDgN6JTj/9
+        FKohA1XnzPJ/oDg92mSqV9HH3EYkttw=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DD8BA1332D;
+        Mon, 22 Aug 2022 19:34:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id BZy/MmPaA2OcbgAAMHmgww
+        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 19:34:59 +0000
+Date:   Mon, 22 Aug 2022 21:34:59 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Oliver Sang <oliver.sang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
+Message-ID: <YwPZ1lpJ98pZSLmw@dhcp22.suse.cz>
+References: <20220822001737.4120417-1-shakeelb@google.com>
+ <20220822001737.4120417-4-shakeelb@google.com>
+ <YwPM6o1+pZ2kRyy3@P9FQF9L96D>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="WLYBq0WlMGbH0CuE"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c4950a61-ba9a-5897-1f04-bb2c56979d7d@csgroup.eu>
-X-Cookie: Do not write in this space.
+In-Reply-To: <YwPM6o1+pZ2kRyy3@P9FQF9L96D>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon 22-08-22 11:37:30, Roman Gushchin wrote:
+[...]
+> I wonder only if we want to make it configurable (Idk a sysctl or maybe
+> a config option) and close the topic.
 
---WLYBq0WlMGbH0CuE
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I do not think this is a good idea. We have other examples where we have
+outsourced internal tunning to the userspace and it has mostly proven
+impractical and long term more problematic than useful (e.g.
+lowmem_reserve_ratio, percpu_pagelist_high_fraction, swappiness just to
+name some that come to my mind). I have seen more often these to be used
+incorrectly than useful.
 
-On Mon, Aug 22, 2022 at 06:38:22PM +0000, Christophe Leroy wrote:
-> Le 22/08/2022 =E0 19:15, Mark Brown a =E9crit=A0:
+In this case, I guess we should consider either moving to per memcg
+charge batching and see whether the pcp overhead x memcg_count is worth
+that or some automagic tuning of the batch size depending on how
+effectively the batch is used. Certainly a lot of room for
+experimenting.
 
-> I think we already addressed this possibility back in 2016, see=20
-> https://lore.kernel.org/linux-spi/20160824111206.GD22076@sirena.org.uk/
-
-> The conclusion was that it was not possible to accomplish it with cs_chan=
-ge.
-
-> Or did we miss something at that time ?
-
-No, I think that's fine - your proposal has some overlap but is fine.
-
---WLYBq0WlMGbH0CuE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMD2RcACgkQJNaLcl1U
-h9BpjAgAgbRxXDYgdu9wb/vJghve0BVH9SPSVadgMxYQGWp/LeFlTbnpbFIM+53F
-04wyp3cbGJFllREDxptRBug9rySiuAsRtHD+CkEqz7ztgR8h8qxwjuUDmdjGyaYO
-Bw8Luc+BYePG940V3niAE1zza9E15MdDKOpKtcCYxaEzL7WENT98fF1FILjRqAqM
-PpRYeDMAmTUyLUmmSnVNHUtYLIhTfahDtI/Zn2mYpZ2OQ0YHv+BP3+yhcWZGsJ0P
-2XuYxkl61A42nU3TysJoVEkqd0Xjx2iEFAt2g4L8xyydz1RH1WIHOE2sYgrCWQs9
-wiy6bp2p2KbV8Jjt2os2Vpm7eLAYtQ==
-=vpgG
------END PGP SIGNATURE-----
-
---WLYBq0WlMGbH0CuE--
+-- 
+Michal Hocko
+SUSE Labs
