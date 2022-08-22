@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4A0C32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1953C32792
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238618AbiHVTPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        id S237866AbiHVTQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238261AbiHVTOy (ORCPT
+        with ESMTP id S238361AbiHVTO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:14:54 -0400
+        Mon, 22 Aug 2022 15:14:57 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FBF828E36;
-        Mon, 22 Aug 2022 12:14:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C39A2DAA6;
+        Mon, 22 Aug 2022 12:14:56 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 67075DA3;
-        Mon, 22 Aug 2022 22:17:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 67075DA3
+        by mail.baikalelectronics.com (Postfix) with ESMTP id BFFCEDAF;
+        Mon, 22 Aug 2022 22:17:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com BFFCEDAF
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195871;
-        bh=/8ThEf1i+s1crKo+bRntGSY9BgtvL3o8XGLLK2fAhdo=;
+        d=baikalelectronics.ru; s=mail; t=1661195872;
+        bh=qk5PF40MhORN4hopt80I1DJzdF9gJ4cgPQgi7eRr1Ms=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=aCLBIz0IIW7Q3caEG8UgEFS8Xa/lHpjAqFJD8uDR+ay3GE4Qg0OmZpSgSmJqQ0s2A
-         qQaRM38sw6MN1kKRqifkyPZA5Hf9Awl/GXDq69A9tWnWnG8kVRyM5CQ/e3jqR32a3p
-         gYAGSUlmUUu/zmfrLMx5IDN7bSSLBaISK03ZW4ts=
+        b=rCK8CXtfzYcn947RIcZ6zYHwC53LQovu0VKYM0w9NyVW/Ij63uUOueTOqZBpLuoN1
+         x4myVh/n4jQYvPkmF4SNW1mGjLyJ1u/i+U/q7QgOj4LA7W04WT8iKIaQrv04e8+O40
+         7awTfQnNL9UD+hB7y63hGLaq1pi7ihcaDst8kdSk=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:14:37 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:14:38 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Michal Simek <michal.simek@xilinx.com>,
         Borislav Petkov <bp@alien8.de>,
@@ -46,92 +46,152 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Dinh Nguyen <dinguyen@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 12/18] EDAC/synopsys: Read data syndrome on errors
-Date:   Mon, 22 Aug 2022 22:14:21 +0300
-Message-ID: <20220822191427.27969-13-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 14/18] EDAC/synopsys: Simplify HIF/SDRAM column mapping get procedure
+Date:   Mon, 22 Aug 2022 22:14:23 +0300
+Message-ID: <20220822191427.27969-15-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case of the corrected and uncorrected errors DW uMCTL2 DDR controller
-preserves the ECC syndrome of the erroneous data pattern in the ECCCSYN2
-and ECCUSYN2 CSRs [1]. Seeing the MCI core permits supplying the ECC
-syndrome to the error reporting method, let's read it from the CSRs and
-pass the value out to the core so to provide more details of the happened
-error.
+What is currently implemented in the driver by means of the multiple
+if-else-if-else statements in fact is described in the hardware reference
+manual [1]. It says:
+1. All of the column bits shift up 1 bit when only half of the data bus is
+in use. In this case, for instance, you need to look at
+ADDRMAP3.addrmap_col_b6 instead to determine the value of column address
+bit 7.
+2. All of the column bits shift up 2 bits when only a quarter of the data
+bus is in use. In this case, for instance, you need to look at
+ADDRMAP2.addrmap_col_b5 instead to determine the value of column address
+bit 7.
+3. In addition to the above, the column bit 10 is reserved for the
+auto-precharge command in DDR2/3/4/mDDR. So the column bits must be
+further shifted up 1 bit when one of these DDR protocols is enabled.
 
-[1] DesignWare® Cores Enhanced Universal DDR Memory Controller (uMCTL2)
-    Databook, Version 3.91a, October 2020, p.826, p.837
+So taking into account all of the notes above and what the column bit 12
+is always reserved, the SDRAM column bits mapping procedure can be
+significantly simplified. Initially we get to read the mapping as if for
+the LPDDR2/3/4 memory with Full DQ-bus utilized. Then we shift the column
+bits up in accordance with the detected DQ-bus width mode. That's it.
+Simple, canonical and scalable.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/edac/synopsys_edac.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/edac/synopsys_edac.c | 83 ++++++++++++------------------------
+ 1 file changed, 27 insertions(+), 56 deletions(-)
 
 diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index 124b0167898e..f48244919a5c 100644
+index 81d14042ed4c..62b925abbcb4 100644
 --- a/drivers/edac/synopsys_edac.c
 +++ b/drivers/edac/synopsys_edac.c
-@@ -302,6 +302,7 @@ struct snps_ddrc_info {
-  * @bankgrp:	Bank group number.
-  * @bitpos:	Bit position.
-  * @data:	Data causing the error.
-+ * @syndrome:	Erroneous data syndrome.
-  */
- struct snps_ecc_error_info {
- 	u32 row;
-@@ -310,6 +311,7 @@ struct snps_ecc_error_info {
- 	u32 bankgrp;
- 	u32 bitpos;
- 	u64 data;
-+	u32 syndrome;
- };
+@@ -990,8 +990,22 @@ static void snps_get_hif_col_map(struct snps_edac_priv *priv, u32 *addrmap)
+ 	map->col[9] = map->col[9] == DDR_ADDRMAP_MAX_15 ?
+ 		      DDR_ADDRMAP_UNUSED : map->col[9] + COL_B9_BASE;
+ 
++	map->col[10] = FIELD_GET(DDR_ADDRMAP_B0_M15, addrmap[4]);
++	map->col[10] = map->col[10] == DDR_ADDRMAP_MAX_15 ?
++		      DDR_ADDRMAP_UNUSED : map->col[10] + COL_B10_BASE;
++
++	map->col[11] = FIELD_GET(DDR_ADDRMAP_B8_M15, addrmap[4]);
++	map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
++		      DDR_ADDRMAP_UNUSED : map->col[11] + COL_B11_BASE;
++
++	/*
++	 * In case of the non-Full DQ bus mode the lowest columns are
++	 * unmapped and used by the controller to read the full DQ word
++	 * in multiple cycles (col[0] for the Half bus mode, col[0:1] for
++	 * the Quarter bus mode).
++	 */
+ 	if (priv->info.dq_mode) {
+-		for (i = 9; i > priv->info.dq_mode; i--) {
++		for (i = 11 + priv->info.dq_mode; i >= priv->info.dq_mode; i--) {
+ 			map->col[i] = map->col[i - priv->info.dq_mode];
+ 			map->col[i - priv->info.dq_mode] = DDR_ADDRMAP_UNUSED;
+ 		}
+@@ -1001,65 +1015,22 @@ static void snps_get_hif_col_map(struct snps_edac_priv *priv, u32 *addrmap)
+ 	 * Per JEDEC DDR2/3/4/mDDR specification, column address bit 10 is
+ 	 * reserved for indicating auto-precharge, and hence no source
+ 	 * address bit can be mapped to col[10].
++	 */
++	if (priv->info.sdram_mode == MEM_LPDDR || priv->info.sdram_mode == MEM_DDR2 ||
++	    priv->info.sdram_mode == MEM_DDR3 || priv->info.sdram_mode == MEM_DDR4) {
++		for (i = 12 + priv->info.dq_mode; i > 10; i--) {
++			map->col[i] = map->col[i - 1];
++			map->col[i - 1] = DDR_ADDRMAP_UNUSED;
++		}
++	}
++
++	/*
+ 	 * Per JEDEC specification, column address bit 12 is reserved
+ 	 * for the Burst-chop status, so no source address bit mapping
+ 	 * for col[12] either.
+ 	 */
+-	if (priv->info.dq_mode == SNPS_DQ_FULL) {
+-		if (priv->info.sdram_mode == MEM_LPDDR3) {
+-			map->col[10] = FIELD_GET(DDR_ADDRMAP_B0_M15, addrmap[4]);
+-			map->col[10] = map->col[10] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[10] + COL_B10_BASE;
+-
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B8_M15, addrmap[4]);
+-			map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[11] + COL_B11_BASE;
+-		} else {
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B0_M15, addrmap[4]);
+-			map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[11] + COL_B10_BASE;
+-
+-			map->col[13] = FIELD_GET(DDR_ADDRMAP_B8_M15, addrmap[4]);
+-			map->col[13] = map->col[13] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[13] + COL_B11_BASE;
+-		}
+-	} else if (priv->info.dq_mode == SNPS_DQ_HALF) {
+-		if (priv->info.sdram_mode == MEM_LPDDR3) {
+-			map->col[10] = FIELD_GET(DDR_ADDRMAP_B24_M15, addrmap[3]);
+-			map->col[10] = map->col[10] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[10] + COL_B9_BASE;
+-
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B0_M15, addrmap[4]);
+-			map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[11] + COL_B10_BASE;
+-		} else {
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B24_M15, addrmap[3]);
+-			map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[11] + COL_B9_BASE;
+-
+-			map->col[13] = FIELD_GET(DDR_ADDRMAP_B0_M15, addrmap[4]);
+-			map->col[13] = map->col[13] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[13] + COL_B10_BASE;
+-		}
+-	} else {
+-		if (priv->info.sdram_mode == MEM_LPDDR3) {
+-			map->col[10] = FIELD_GET(DDR_ADDRMAP_B16_M15, addrmap[3]);
+-			map->col[10] = map->col[10] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[10] + COL_B8_BASE;
+-
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B24_M15, addrmap[3]);
+-			map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[11] + COL_B9_BASE;
+-		} else {
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B16_M15, addrmap[3]);
+-			map->col[11] = map->col[11] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[11] + COL_B8_BASE;
+-
+-			map->col[11] = FIELD_GET(DDR_ADDRMAP_B24_M15, addrmap[3]);
+-			map->col[13] = map->col[13] == DDR_ADDRMAP_MAX_15 ?
+-				       DDR_ADDRMAP_UNUSED : map->col[13] + COL_B9_BASE;
+-		}
+-	}
++	map->col[13] = map->col[12];
++	map->col[12] = DDR_ADDRMAP_UNUSED;
+ }
  
  /**
-@@ -421,9 +423,7 @@ static int snps_get_error_info(struct snps_edac_priv *priv)
- 	if (priv->info.dq_width == SNPS_DQ_64)
- 		p->ceinfo.data |= (u64)readl(base + ECC_CSYND1_OFST) << 32;
- 
--	edac_dbg(2, "ECCCSYN0: 0x%08X ECCCSYN1: 0x%08X ECCCSYN2: 0x%08X\n",
--		 readl(base + ECC_CSYND0_OFST), readl(base + ECC_CSYND1_OFST),
--		 readl(base + ECC_CSYND2_OFST));
-+	p->ceinfo.syndrome = readl(base + ECC_CSYND2_OFST);
- 
- ue_err:
- 	if (!p->ue_cnt)
-@@ -441,6 +441,8 @@ static int snps_get_error_info(struct snps_edac_priv *priv)
- 	if (priv->info.dq_width == SNPS_DQ_64)
- 		p->ueinfo.data |= (u64)readl(base + ECC_UESYND1_OFST) << 32;
- 
-+	p->ueinfo.syndrome = readl(base + ECC_UESYND2_OFST);
-+
- out:
- 	spin_lock_irqsave(&priv->lock, flags);
- 
-@@ -475,7 +477,7 @@ static void snps_handle_error(struct mem_ctl_info *mci, struct snps_ecc_status *
- 			 pinf->bitpos, pinf->data);
- 
- 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci,
--				     p->ce_cnt, 0, 0, 0, 0, 0, -1,
-+				     p->ce_cnt, 0, 0, pinf->syndrome, 0, 0, -1,
- 				     priv->message, "");
- 	}
- 
-@@ -488,7 +490,7 @@ static void snps_handle_error(struct mem_ctl_info *mci, struct snps_ecc_status *
- 			 pinf->data);
- 
- 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci,
--				     p->ue_cnt, 0, 0, 0, 0, 0, -1,
-+				     p->ue_cnt, 0, 0, pinf->syndrome, 0, 0, -1,
- 				     priv->message, "");
- 	}
- 
 -- 
 2.35.1
 
