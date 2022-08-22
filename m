@@ -2,105 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B13A2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B88ADC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234731AbiHVNOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
+        id S235147AbiHVNQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233096AbiHVNOE (ORCPT
+        with ESMTP id S235219AbiHVNOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:14:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A2512AF2;
-        Mon, 22 Aug 2022 06:13:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E3CC6117D;
-        Mon, 22 Aug 2022 13:13:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C30DC433D7;
-        Mon, 22 Aug 2022 13:13:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661174037;
-        bh=tNeHnHaJjzswUACn776pwxPxD2MUG1JGluDyy3FZzd0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BuMBhBmnxZt4+44nb5kE3SzlJSnGt1iYtN7YtxFpBmcEZbxWQAkPVXQnLEBornGlj
-         7Sn6nljoJwHdccbVJVSwpVyihQLEfBBWhrYYBgbaiNpTjfwJduuPLcOeQ+DOYRaVkd
-         qAZKsgRqFUmE3HetbKbdtgLlSlzPLS06eP6mCIHLD0nnY87bfB6vELzJ2ZWQkmmL6W
-         Jap6d9obs3UGwuurIwzXun5Jw6Zvd9q8YwdUGk/6zbuSzwaZ778cTJw3yJeilTRVjV
-         /3FdBo+xxUoKyHupJI74IJso6rzdYBV6u7Je28ps3om5Wi2oR27MDh92MiNy07944A
-         hFGvyyDz5IKZg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oQ7Fa-0002Ds-L6; Mon, 22 Aug 2022 15:13:54 +0200
-Date:   Mon, 22 Aug 2022 15:13:54 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Johan Hovold <johan+linaro@kernel.org>, andersson@kernel.org
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: sc7280: move USB wakeup-source property
-Message-ID: <YwOBEhViD1iY14yL@hovoldconsulting.com>
-References: <20220802152642.2516-1-johan+linaro@kernel.org>
+        Mon, 22 Aug 2022 09:14:43 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125F4B1D7;
+        Mon, 22 Aug 2022 06:14:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661174077; x=1692710077;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WAob+mo4g+EjtYO9n5soxiAkQ5tVT5mjRP8SgQX0eI0=;
+  b=jZXPr9qCo9JjKIHc3Jwj1/MLUZgVVJiWo9AM/77HcWZ+ba78ueL3sn4e
+   EMoqs7X7dpG7laA+Cu9y9pgWDNl0ojKNAfmZyC1cn4YudrdtRdl1bJ1Ke
+   YVG+siTfYtVeom2EaNNaDr7grbJyDFMcyqd/gM5vyqaLsosXKiu/4LC0R
+   wPcO5+t12v/ablQ+MhyQaRz0XiZs1veDUk5gjzf8ZU+TZAyul6wCBGOa+
+   RL1JMnw3g/a4ecaxi/51upNhGYbDWZ8yuvxoqSsXg6SKDu2dbmuDAJQty
+   lA3s35GcuNuauSTQfPbBjkoVoO2VU6Zm4QQc+JS2U4xAi2eoS1AL+gH7l
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273797262"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="273797262"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 06:14:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="559740620"
+Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Aug 2022 06:14:32 -0700
+Received: from kbuild by dd9b29378baa with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQ7GC-00006j-0k;
+        Mon, 22 Aug 2022 13:14:32 +0000
+Date:   Mon, 22 Aug 2022 21:14:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vaishnav Achath <vaishnav.a@ti.com>, peter.ujfalusi@gmail.com,
+        vkoul@kernel.org, broonie@kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, vigneshr@ti.com, kishon@ti.com,
+        vaishnav.a@ti.com
+Subject: Re: [PATCH 2/2] spi: spi-omap2-mcspi: Use EOW interrupt for
+ completion when DMA enabled
+Message-ID: <202208222100.SKGSz2m9-lkp@intel.com>
+References: <20220822091531.27827-3-vaishnav.a@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220802152642.2516-1-johan+linaro@kernel.org>
+In-Reply-To: <20220822091531.27827-3-vaishnav.a@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 05:26:42PM +0200, Johan Hovold wrote:
-> Move the USB-controller wakeup-source property to the dwc3 glue node to
-> match the updated binding.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
-> 
-> This one can be applied once the following series has been merged:
-> 
-> 	https://lore.kernel.org/all/20220802151404.1797-1-johan+linaro@kernel.org
+Hi Vaishnav,
 
-The above series has now been merged (for 6.0):
+Thank you for the patch! Perhaps something to improve:
 
-	https://lore.kernel.org/all/Yv56fFpuUsxCSxJ8@kroah.com/
+[auto build test WARNING on vkoul-dmaengine/next]
+[also build test WARNING on broonie-spi/for-next linus/master v6.0-rc2 next-20220822]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-so that this patch can be applied.
+url:    https://github.com/intel-lab-lkp/linux/commits/Vaishnav-Achath/spi-spi-omap2-mcspi-Use-EOW-interrupt-for-transfer-completion/20220822-171807
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git next
+config: arc-randconfig-r043-20220821 (https://download.01.org/0day-ci/archive/20220822/202208222100.SKGSz2m9-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/492d819558f7cb9fb64d860042c6ca17a054c3f7
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vaishnav-Achath/spi-spi-omap2-mcspi-Use-EOW-interrupt-for-transfer-completion/20220822-171807
+        git checkout 492d819558f7cb9fb64d860042c6ca17a054c3f7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/spi/
 
->  arch/arm64/boot/dts/qcom/sc7280.dtsi | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index 13d7f267b289..dac3b69e314f 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -3374,6 +3374,8 @@ usb_1: usb@a6f8800 {
->  					<&gem_noc MASTER_APPSS_PROC 0 &cnoc2 SLAVE_USB3_0 0>;
->  			interconnect-names = "usb-ddr", "apps-usb";
->  
-> +			wakeup-source;
-> +
->  			usb_1_dwc3: usb@a600000 {
->  				compatible = "snps,dwc3";
->  				reg = <0 0x0a600000 0 0xe000>;
-> @@ -3384,7 +3386,6 @@ usb_1_dwc3: usb@a600000 {
->  				phys = <&usb_1_hsphy>, <&usb_1_ssphy>;
->  				phy-names = "usb2-phy", "usb3-phy";
->  				maximum-speed = "super-speed";
-> -				wakeup-source;
->  			};
->  		};
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Johan
+All warnings (new ones prefixed by >>):
+
+   drivers/spi/spi-omap2-mcspi.c: In function 'omap2_mcspi_txrx_dma':
+>> drivers/spi/spi-omap2-mcspi.c:549:34: warning: variable 'mcspi_dma' set but not used [-Wunused-but-set-variable]
+     549 |         struct omap2_mcspi_dma  *mcspi_dma;
+         |                                  ^~~~~~~~~
+
+
+vim +/mcspi_dma +549 drivers/spi/spi-omap2-mcspi.c
+
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  543  
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  544  static unsigned
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  545  omap2_mcspi_txrx_dma(struct spi_device *spi, struct spi_transfer *xfer)
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  546  {
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  547  	struct omap2_mcspi	*mcspi;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  548  	struct omap2_mcspi_cs	*cs = spi->controller_state;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11 @549  	struct omap2_mcspi_dma  *mcspi_dma;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  550  	unsigned int		count;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  551  	u8			*rx;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  552  	const u8		*tx;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  553  	struct dma_slave_config	cfg;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  554  	enum dma_slave_buswidth width;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  555  	unsigned es;
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  556  	void __iomem		*chstat_reg;
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  557  	int			wait_res;
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  558  	int ret;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  559  
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  560  	mcspi = spi_master_get_devdata(spi->master);
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  561  	mcspi_dma = &mcspi->dma_channels[spi->chip_select];
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  562  
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  563  	if (cs->word_len <= 8) {
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  564  		width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  565  		es = 1;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  566  	} else if (cs->word_len <= 16) {
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  567  		width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  568  		es = 2;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  569  	} else {
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  570  		width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  571  		es = 4;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  572  	}
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  573  
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  574  	count = xfer->len;
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  575  
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  576  	memset(&cfg, 0, sizeof(cfg));
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  577  	cfg.src_addr = cs->phys + OMAP2_MCSPI_RX0;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  578  	cfg.dst_addr = cs->phys + OMAP2_MCSPI_TX0;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  579  	cfg.src_addr_width = width;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  580  	cfg.dst_addr_width = width;
+baf8b9f8d260c5 drivers/spi/spi-omap2-mcspi.c Vignesh R       2019-01-15  581  	cfg.src_maxburst = 1;
+baf8b9f8d260c5 drivers/spi/spi-omap2-mcspi.c Vignesh R       2019-01-15  582  	cfg.dst_maxburst = 1;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  583  
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  584  	rx = xfer->rx_buf;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  585  	tx = xfer->tx_buf;
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  586  
+89e8b9cb846515 drivers/spi/spi-omap2-mcspi.c Vignesh R       2018-10-15  587  	mcspi->slave_aborted = false;
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  588  	reinit_completion(&mcspi->txrxdone);
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  589  	mcspi_write_reg(spi->master, OMAP2_MCSPI_IRQENABLE,	OMAP2_MCSPI_IRQSTATUS_EOW);
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  590  	if (tx)
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  591  		omap2_mcspi_tx_dma(spi, xfer, cfg);
+d7b4394e780b02 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-09-11  592  
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  593  	if (rx)
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  594  		count = omap2_mcspi_rx_dma(spi, xfer, cfg, es);
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  595  
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  596  	ret = mcspi_wait_for_completion(mcspi, &mcspi->txrxdone);
+89e8b9cb846515 drivers/spi/spi-omap2-mcspi.c Vignesh R       2018-10-15  597  	omap2_mcspi_set_dma_req(spi, 0, 0);
+89e8b9cb846515 drivers/spi/spi-omap2-mcspi.c Vignesh R       2018-10-15  598  	if (ret || mcspi->slave_aborted)
+89e8b9cb846515 drivers/spi/spi-omap2-mcspi.c Vignesh R       2018-10-15  599  		return 0;
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  600  
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  601  	/* for TX_ONLY mode, be sure all words have shifted out */
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  602  	if (tx && !rx) {
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  603  		chstat_reg = cs->base + OMAP2_MCSPI_CHSTAT0;
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  604  		if (mcspi->fifo_depth > 0) {
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  605  			wait_res = mcspi_wait_for_reg_bit(chstat_reg, OMAP2_MCSPI_CHSTAT_TXFFE);
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  606  			if (wait_res < 0)
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  607  				dev_err(&spi->dev, "TXFFE timed out\n");
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  608  		} else {
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  609  			wait_res = mcspi_wait_for_reg_bit(chstat_reg, OMAP2_MCSPI_CHSTAT_TXS);
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  610  			if (wait_res < 0)
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  611  				dev_err(&spi->dev, "TXS timed out\n");
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  612  		}
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  613  		if (wait_res >= 0 && (mcspi_wait_for_reg_bit(chstat_reg,
+d33f473dcd8e69 drivers/spi/spi-omap2-mcspi.c Illia Smyrnov   2013-06-17  614  							     OMAP2_MCSPI_CHSTAT_EOT) < 0))
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  615  			dev_err(&spi->dev, "EOT timed out\n");
+e47a682ace0cd5 drivers/spi/spi-omap2-mcspi.c Shubhrajyoti D  2012-11-06  616  	}
+492d819558f7cb drivers/spi/spi-omap2-mcspi.c Vaishnav Achath 2022-08-22  617  
+ccdc7bf925731e drivers/spi/omap2_mcspi.c     Samuel Ortiz    2007-07-17  618  	return count;
+ccdc7bf925731e drivers/spi/omap2_mcspi.c     Samuel Ortiz    2007-07-17  619  }
+ccdc7bf925731e drivers/spi/omap2_mcspi.c     Samuel Ortiz    2007-07-17  620  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
