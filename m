@@ -2,109 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F248DC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:32:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7179C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238792AbiHVTcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
+        id S238823AbiHVTcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239147AbiHVTa6 (ORCPT
+        with ESMTP id S239550AbiHVTbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:30:58 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7DA1DA69;
-        Mon, 22 Aug 2022 12:26:41 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id h22so12954744ejk.4;
-        Mon, 22 Aug 2022 12:26:41 -0700 (PDT)
+        Mon, 22 Aug 2022 15:31:45 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAF013DD8;
+        Mon, 22 Aug 2022 12:30:38 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id c9so7547194qkk.6;
+        Mon, 22 Aug 2022 12:30:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=34B6ZerjP73aR6id6f0RzGACZQ2hivLWBiIjVWGXY18=;
-        b=Sw7nurMhQNzh2Ro2WO/7hDZvbDJWnymb8aEHmWyPcPtzZFf0xh55xykAysGabanPx8
-         bwR3E9cvmCjyv5skEtJrII0H5kSOQZ98reJCYQz2sGAlF85pQLWHILn2iXDAyLcjLC23
-         G+pxFizeSoyncxtrvkY0d8xy8kFYIsAXgClTe+RH79TF+nE5WdDdWK18MF9a6O/QvvZF
-         r6muGcUzeasHJAh3E4obaF6CDJyBtA9kt/NdSuWS+bO2mMZhnGoFHeH02NGnT0T7RSTG
-         MplNH/KyclIsIiMODOxj+WHkvBbRMLMeoAxOVzb4++n8wAewuL+8lsBAJjQZhvGWBvHE
-         zHIQ==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=wCrEp0GD1MEQtauUK6wljsgzA5hgr1kFQ31N0O6sheQ=;
+        b=GBt4fe+AK+6R1Jw5a0AFIA6jGoVQowCcIjLNNu3g4fCYTu85ADLCsuwJx6Rh9tE8uK
+         xi/R3bXNFuLWwqjmcucCSL3PFvNwqrWGQuagIY2iVU/l48hTP0fizUfqUkqPN704fxKj
+         Ik6cf1uOFxIV3qwjB9veQtwVthk0Vs/VA3HQF4Vh5UHXjQ0Jl7Dc8fGEJnT3LJD2zWTD
+         NpMTt6REfsOD99YZa0pXBcdhOmgEn/wAiEf7g0uo9+ZwwZSa0Vj4JB+t/KKOLMmW1rYK
+         EfGqJVdbNkkdX2DxlOdDm/zhceK4Nrwy+mOpn1LruAfcTynRdprZPsm/zqv7QB/6LmYs
+         mbtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=34B6ZerjP73aR6id6f0RzGACZQ2hivLWBiIjVWGXY18=;
-        b=7Df5sUivcSgfTO70xiKLYx+c+aZASqKm7gYio1PqP9aECMbImJAxtNr6Mmof7vOTbu
-         0DRJtIa3IcEK93enl48f8M0Oo69uWVqhgMRNx32Uedug0GKr5oeR5kc4JMmS01HSikKo
-         koHlRl3xDzjGFXY0X9D4XJcJLJWw+Ayx/Hyv7uFo+95fXla6u8lQ1Ax10VLkqA7HiaG/
-         nY6sxiUQHLDQI9x/6XPLm54UHf14A9ez8i2+6EtLqVDUnW/AUPdc9lIgAh3xk9ZtLGxs
-         p5NuCQroOUxyp169lVYEiYyoLJr5Oukc+ko0Y05e/K2Jv40WR60EUwVqo9exIvlr5bf0
-         j4Xg==
-X-Gm-Message-State: ACgBeo0wsD8gjCjj2qyNSUQIZcOMbPqePkf/4ZkwHavJhJpplv7uhj2u
-        xLbFYp86TKuZeKVXnbzHzzc=
-X-Google-Smtp-Source: AA6agR7IwMlgtrcN3HByLXR3b2uPu3TTKrTqwjGyDMZq9RruqDF1DlexxH1hQj9n0MYiZP/6PDBqnw==
-X-Received: by 2002:a17:907:a056:b0:73d:5b60:5aae with SMTP id gz22-20020a170907a05600b0073d5b605aaemr9173089ejc.238.1661196399927;
-        Mon, 22 Aug 2022 12:26:39 -0700 (PDT)
-Received: from nuc ([2a02:168:633b:1:1e69:7aff:fe05:97e6])
-        by smtp.gmail.com with ESMTPSA id z22-20020a170906435600b007308812ce89sm6611027ejm.168.2022.08.22.12.26.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 12:26:39 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 21:26:37 +0200
-From:   =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
-To:     Xiu Jianfeng <xiujianfeng@huawei.com>
-Cc:     mic@digikod.net, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org, corbet@lwn.net,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH -next 3/5] landlock/selftests: add selftests for chmod
- and chown
-Message-ID: <YwPYbY/HbHTOv7Ux@nuc>
-References: <20220822114701.26975-1-xiujianfeng@huawei.com>
- <20220822114701.26975-4-xiujianfeng@huawei.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=wCrEp0GD1MEQtauUK6wljsgzA5hgr1kFQ31N0O6sheQ=;
+        b=jqoycGR5qT6FtZOI2DenXAvmjO7+9Bn/P6YFdAiKc5BZHhyU30fw+kEavKRKD9uDmh
+         R2ho8cm5fpMLfqVHA2gQ2IdFulo8o13Y1uQqppL/e17ILLhTcM7VMTPX49qJp9GuLr6e
+         JYCJ4qgoGLqB8cf/Xy6nDb/kSCCs1mZx31f2/WJxTMVljN+PCqaBd+qgMfOb/3I1bELI
+         ahhK6e1MmQjeA6qdMffC0lYH21D8v/jgvToC3hIg47U3W/xUaDtsZiWJky2zgpFTXDnu
+         uHFAR3fC29SCKhaTQJ/K2la9vD/EAZDVHKUXI9k9sxut8nW1BHLLDuF+HyCCc+H75Nfo
+         8Hgw==
+X-Gm-Message-State: ACgBeo0eHn6aQIquxmJZipC3cRt4bxYyF6fsOJfcya8TTFUveDmJ72Wi
+        IMXBGOdcQY6gNf8//O4484o=
+X-Google-Smtp-Source: AA6agR4zCN7cTmZVhR/AZ/dO+6RhM78OlwpvA75LuUAcnPR4qVqLtIVZdBHGFcxDdMkebFRNLwTz0w==
+X-Received: by 2002:a05:620a:6012:b0:6bc:2de8:ae4d with SMTP id dw18-20020a05620a601200b006bc2de8ae4dmr1978044qkb.363.1661196637603;
+        Mon, 22 Aug 2022 12:30:37 -0700 (PDT)
+Received: from [10.69.47.244] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u13-20020a05622a14cd00b003435983a263sm10069145qtx.46.2022.08.22.12.30.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 12:30:37 -0700 (PDT)
+Message-ID: <7cd8ec1b-dd37-756b-0b74-c543fdce1995@gmail.com>
+Date:   Mon, 22 Aug 2022 12:30:35 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822114701.26975-4-xiujianfeng@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH -next] scsi: lpfc: add missing destroy_workqueue() on
+ error path in lpfc_sli4_driver_resource_setup()
+Content-Language: en-US
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        martin.petersen@oracle.com
+Cc:     james.smart@broadcom.com, dick.kennedy@broadcom.com
+References: <20220819085049.1906233-1-yangyingliang@huawei.com>
+From:   James Smart <jsmart2021@gmail.com>
+In-Reply-To: <20220819085049.1906233-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 07:46:59PM +0800, Xiu Jianfeng wrote:
-> +TEST_F_FORK(layout1, unhandled_chmod)
-> +{
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = file2_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{
-> +			.path = file3_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{},
-> +	};
-> +	const int ruleset_fd =
-> +		create_ruleset(_metadata, ACCESS_RW, rules);
-> +
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	ASSERT_EQ(0, test_chmod(file2_s3d1));
-> +	ASSERT_EQ(0, test_fchmod(file2_s3d1));
-> +	ASSERT_EQ(0, test_chmod(file3_s3d1));
-> +	ASSERT_EQ(0, test_chmod(dir_s3d1));
-> +}
+On 8/19/2022 1:50 AM, Yang Yingliang wrote:
+> Add the missing destroy_workqueue() before return from
+> lpfc_sli4_driver_resource_setup() in error path.
+> 
+> Fixes: 3cee98db2610 ("scsi: lpfc: Fix crash on driver unload in wq free")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>   drivers/scsi/lpfc/lpfc_init.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+> index c69c5a0979ec..a7bb1620fbe1 100644
+> --- a/drivers/scsi/lpfc/lpfc_init.c
+> +++ b/drivers/scsi/lpfc/lpfc_init.c
+> @@ -8053,7 +8053,7 @@ lpfc_sli4_driver_resource_setup(struct lpfc_hba *phba)
+>   	/* Allocate device driver memory */
+>   	rc = lpfc_mem_alloc(phba, SGL_ALIGN_SZ);
+>   	if (rc)
+> -		return -ENOMEM;
+> +		goto out_destory_workqueue;
+>   
+>   	/* IF Type 2 ports get initialized now. */
+>   	if (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) >=
+> @@ -8481,6 +8481,9 @@ lpfc_sli4_driver_resource_setup(struct lpfc_hba *phba)
+>   	lpfc_destroy_bootstrap_mbox(phba);
+>   out_free_mem:
+>   	lpfc_mem_free(phba);
+> +out_destory_workqueue:
+> +	destroy_workqueue(phba->wq);
+> +	phba->wq = NULL;
+>   	return rc;
+>   }
+>   
 
-I missed it in the previous mail:
+Looks fine
+but label needs spelling error corrected: out_destroy_workqueue
 
-There are also the chown variants lchown() and fchownat(), as well as
-the chmod variant fchmodat(), which might be interesting to test,
-especially the symlink scenarios.
+Please resend with this fixed
 
-fchmodat() has a AT_SYMLINK_NOFOLLOW flag which does the chmod
-equivalent to lchown().
+-- james
 
---
