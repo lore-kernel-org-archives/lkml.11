@@ -2,222 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5868C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3B5C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238404AbiHVTV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
+        id S238464AbiHVTVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238612AbiHVTUt (ORCPT
+        with ESMTP id S238681AbiHVTUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:20:49 -0400
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9D54F672;
-        Mon, 22 Aug 2022 12:19:43 -0700 (PDT)
-Received: by mail-ot1-f48.google.com with SMTP id 53-20020a9d0838000000b006371d896343so8349852oty.10;
-        Mon, 22 Aug 2022 12:19:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=RZ1oGebuMKpJEbiPzGnoljYw5urwJldyFB+scivuSGA=;
-        b=J82D8BoNx8nY5YAT05F57vtD23DoQL5hq63k8TB6ClweDHPX8oKZdyEoqt4Ay/OHrR
-         qcgC59QwDI6A4fp00S8cRXwQbCjwZDBvpaqezCn0Z7hSAaFaLbPwf/YSPLktHcZH9dkM
-         WprT+m1RL5Vk665ruTBBgtmF3rYomZFW/v7BNcW1oS28pqhYMkdTL+4KV2Br/PcQSnaX
-         gF2NHAPAbK6k/DW++PsAvzLcMz55R/9NCDbFfNgIhC9xxBru6Xat/zX7psiApmq99DBP
-         eBpf9ASbNOxDlBvQhStgIwsXHPZVOh1CL6z7nFN4Lf35aiHYYqYgG2wRP/obN5M6r/ER
-         l3XA==
-X-Gm-Message-State: ACgBeo0//PG61Eq4U+qlCBxUwsNXKaLp9HE2XDzwCJCo2kHO4NEidrMx
-        eCRxquZ+viAMNfbKsoXG7A==
-X-Google-Smtp-Source: AA6agR7jg9n404zse1cC27270kM/5YJfT5XwC0i0bGLJFJD/IXgbOA6s+I+Nbp/hMQQGJ1ESzcH1bg==
-X-Received: by 2002:a05:6830:56:b0:639:bbb:f0cf with SMTP id d22-20020a056830005600b006390bbbf0cfmr5802691otp.161.1661195983103;
-        Mon, 22 Aug 2022 12:19:43 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w16-20020a4a3550000000b00435785e7b49sm2599297oog.19.2022.08.22.12.19.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 12:19:42 -0700 (PDT)
-Received: (nullmailer pid 278879 invoked by uid 1000);
-        Mon, 22 Aug 2022 19:19:41 -0000
-Date:   Mon, 22 Aug 2022 14:19:41 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Adam Skladowski <a39.skl@gmail.com>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Mon, 22 Aug 2022 15:20:55 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D7215F86;
+        Mon, 22 Aug 2022 12:20:15 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id E443CDA2;
+        Mon, 22 Aug 2022 22:23:27 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com E443CDA2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1661196208;
+        bh=KF3X090vcoA9grM0P07tsVKO0EiXk7h8wSJHSrQJgOo=;
+        h=From:To:CC:Subject:Date:From;
+        b=Gn/TCwquunznoofIfp0cPam7W9juapk3ZAlbNBTgO7CBhULSZjPpdPg0EIhuoJP2+
+         jfSorT349Mp40u+IXg7wtuJdvw8UGG27JvJpvl2KYiga3eZBUmNL1NXez0KTG+zkq0
+         mpWeGQOFp/TRnjt+Y9WrGDjaAAML3xFI/7B4NgxY=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:20:13 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: clock: add QCOM SM6115 display clock
- bindings
-Message-ID: <20220822191941.GA262452-robh@kernel.org>
-References: <20220819201231.23474-1-a39.skl@gmail.com>
- <20220819201231.23474-2-a39.skl@gmail.com>
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 00/13] EDAC/synopsys: Add generic resources and Baikal-T1 support
+Date:   Mon, 22 Aug 2022 22:19:43 +0300
+Message-ID: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819201231.23474-2-a39.skl@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 10:12:21PM +0200, Adam Skladowski wrote:
-> Add device tree bindings for display clock controller for
-> Qualcomm Technology Inc's SM6115 SoC.
-> 
-> Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-> ---
->  .../bindings/clock/qcom,sm6115-dispcc.yaml    | 88 +++++++++++++++++++
->  .../dt-bindings/clock/qcom,sm6115-dispcc.h    | 36 ++++++++
->  2 files changed, 124 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,sm6115-dispcc.yaml
->  create mode 100644 include/dt-bindings/clock/qcom,sm6115-dispcc.h
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,sm6115-dispcc.yaml b/Documentation/devicetree/bindings/clock/qcom,sm6115-dispcc.yaml
-> new file mode 100644
-> index 000000000000..c9b97281171c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/qcom,sm6115-dispcc.yaml
-> @@ -0,0 +1,88 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/qcom,sm6115-dispcc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Display Clock Controller Binding for SM6115
-> +
-> +maintainers:
-> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+This patchset is a third one in the series created in the framework of my
+Baikal-T1 DDRC-related work:
 
-As of today, bouncing...
+[1: In-progress] EDAC/mc/synopsys: Various fixes and cleanups
+Link: https://lore.kernel.org/linux-edac/20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru/
+[2: In-progress] EDAC/synopsys: Add generic DDRC info and address mapping
+Link: https://lore.kernel.org/linux-edac/20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru/
+[3: In-progress] EDAC/synopsys: Add generic resources and Baikal-T1 support
+Link: ---you are looking at it---
 
-Otherwise, looks fine.
+Note the patchsets above must be merged in the same order as they are
+placed in the list in order to prevent conflicts. Nothing prevents them
+from being reviewed synchronously though. Any tests are very welcome.
+Thanks in advance.
 
-> +
-> +description: |
-> +  Qualcomm display clock control module which supports the clocks and
-> +  power domains on SM6115.
-> +
-> +  See also:
-> +    dt-bindings/clock/qcom,sm6115-dispcc.h
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - qcom,sm6115-dispcc
-> +
-> +  clocks:
-> +    items:
-> +      - description: Board XO source
-> +      - description: Byte clock from DSI PHY0
-> +      - description: Pixel clock from DSI PHY0
-> +      - description: GPLL0 clock from GCC
-> +      - description: GPLL0 div clock from GCC
-> +      - description: Board sleep clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bi_tcxo
-> +      - const: dsi0_phy_pll_out_byteclk
-> +      - const: dsi0_phy_pll_out_dsiclk
-> +      - const: gcc_disp_gpll0_clk_src
-> +      - const: gcc_disp_gpll0_div_clk_src
-> +      - const: sleep_clk
-> +
-> +  '#clock-cells':
-> +    const: 1
-> +
-> +  '#reset-cells':
-> +    const: 1
-> +
-> +  '#power-domain-cells':
-> +    const: 1
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - '#clock-cells'
-> +  - '#reset-cells'
-> +  - '#power-domain-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/qcom,rpmcc.h>
-> +    #include <dt-bindings/clock/qcom,gcc-sm6115.h>
-> +    clock-controller@5f00000 {
-> +      compatible = "qcom,sm6115-dispcc";
-> +      reg = <0x5f00000 0x20000>;
-> +      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-> +               <&dsi0_phy 0>,
-> +               <&dsi0_phy 1>,
-> +               <&gcc GCC_DISP_GPLL0_CLK_SRC>,
-> +               <&gcc GCC_DISP_GPLL0_DIV_CLK_SRC>,
-> +               <&sleep_clk>;
-> +      clock-names = "bi_tcxo",
-> +                    "dsi0_phy_pll_out_byteclk",
-> +                    "dsi0_phy_pll_out_dsiclk",
-> +                    "gcc_disp_gpll0_clk_src",
-> +                    "gcc_disp_gpll0_div_clk_src",
-> +                    "sleep_clk";
-> +      #clock-cells = <1>;
-> +      #reset-cells = <1>;
-> +      #power-domain-cells = <1>;
-> +    };
-> +...
-> diff --git a/include/dt-bindings/clock/qcom,sm6115-dispcc.h b/include/dt-bindings/clock/qcom,sm6115-dispcc.h
-> new file mode 100644
-> index 000000000000..d1a6c45b5029
-> --- /dev/null
-> +++ b/include/dt-bindings/clock/qcom,sm6115-dispcc.h
-> @@ -0,0 +1,36 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +/*
-> + * Copyright (c) 2022, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
-> +#define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
-> +
-> +/* DISP_CC clocks */
-> +#define DISP_CC_PLL0			0
-> +#define DISP_CC_PLL0_OUT_MAIN		1
-> +#define DISP_CC_MDSS_AHB_CLK		2
-> +#define DISP_CC_MDSS_AHB_CLK_SRC	3
-> +#define DISP_CC_MDSS_BYTE0_CLK		4
-> +#define DISP_CC_MDSS_BYTE0_CLK_SRC	5
-> +#define DISP_CC_MDSS_BYTE0_DIV_CLK_SRC	6
-> +#define DISP_CC_MDSS_BYTE0_INTF_CLK	7
-> +#define DISP_CC_MDSS_ESC0_CLK		8
-> +#define DISP_CC_MDSS_ESC0_CLK_SRC	9
-> +#define DISP_CC_MDSS_MDP_CLK		10
-> +#define DISP_CC_MDSS_MDP_CLK_SRC	11
-> +#define DISP_CC_MDSS_MDP_LUT_CLK	12
-> +#define DISP_CC_MDSS_NON_GDSC_AHB_CLK	13
-> +#define DISP_CC_MDSS_PCLK0_CLK		14
-> +#define DISP_CC_MDSS_PCLK0_CLK_SRC	15
-> +#define DISP_CC_MDSS_ROT_CLK		16
-> +#define DISP_CC_MDSS_ROT_CLK_SRC	17
-> +#define DISP_CC_MDSS_VSYNC_CLK		18
-> +#define DISP_CC_MDSS_VSYNC_CLK_SRC	19
-> +#define DISP_CC_SLEEP_CLK		20
-> +#define DISP_CC_SLEEP_CLK_SRC		21
-> +
-> +/* DISP_CC GDSCR */
-> +#define MDSS_GDSC			0
-> +
-> +#endif
-> -- 
-> 2.25.1
-> 
-> 
+This is a final patchset in the framework of my Synopsys DW uMCTL2 DDRC
+work, which completes the driver updates with the new functionality and
+at the closure introduces the Baikal-T1 DDRC support.
+
+The series starts from extending the Synopsys DW uMCTL2 DDRC DT-schema
+with the controller specific IRQs, clocks and resets properties. In
+addition to the Baikal-T1 DDRC is added to the DT-bindings since it's
+based on the DW uMCTL2 DDRC v2.61a.
+
+After that we suggest to finally inform the MCI core with the detected
+SDRAM ranks and make sure the detected errors are reported to the
+corresponding rank. Then we extend the DDRC capabilities with optional
+Scrub functionality. It's indeed possible to have the DW uMCTL2 controller
+with no HW-accelerated Scrub support (no RMW engine). In that case the MCI
+core is supposed to perform the erroneous location ECC update by means of
+the platform-specific scrub method.
+
+Then we get to fix the error-injection functionality a bit. First since
+the driver now has the Sys<->SDRAM address translation infrastructure we
+can use it to convert the supplied poisonous system address to the SDRAM
+one. Thus there is no longer need in preserving the address in the device
+private data. Second we suggest to add a DebuFS node-based command to
+disable the error-injection feature (no idea why it hasn't been done in
+the first place).
+
+Afterwards a series of the IRQ-related patches goes. First we introduce the
+individual DDRC event IRQs support in accordance with what has been added
+to the DT-bindings and what the native DW uMCTL2 DDR controller actually
+provides. Then aside to the ECC CE/UE errors detection we suggest to the
+DFI/SDRAM CRC/Parity errors report. It specifically useful for the DDR4
+memory which has dedicated ALARM_n signal, but can be still utilized in
+the framework of the older protocols if the device DFI-PHY calculates
+the HIF-interface signals parity. Third after adding the platform
+clock/resets request procedure we introduce the HW-accelerated Scrubber
+support. Its performance can be tuned by means of the sdram_scrub_rate
+SysFS node and the Core clock rate. Note it is possible to one-time-run
+the Scrubber in the back-to-back mode so to perform a burst-like scan of
+the whole SDRAM memory.
+
+At the patchset closure we finally fix the DW uMCTL2 DDRC kernel config to
+be available not only on the Xilinx, Intel and MXC platforms and add the
+Baikal-T1 DDRC support which the whole work has been dedicated for in the
+first place.
+
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: Punnaiah Choudary Kalluri <punnaiah.choudary.kalluri@xilinx.com>
+Cc: Manish Narani <manish.narani@xilinx.com>
+Cc: Dinh Nguyen <dinguyen@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Robert Richter <rric@kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-edac@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (13):
+  dt-bindings: memory: snps: Extend schema with IRQs/resets/clocks props
+  dt-bindings: memory: snps: Add Baikal-T1 DDRC support
+  EDAC/synopsys: Add multi-ranked memory support
+  EDAC/synopsys: Add optional ECC Scrub support
+  EDAC/synopsys: Drop ECC poison address from private data
+  EDAC/synopsys: Add data poisoning disable support
+  EDAC/synopsys: Split up ECC UE/CE IRQs handler
+  EDAC/synopsys: Add individual named ECC IRQs support
+  EDAC/synopsys: Add DFI alert_n IRQ support
+  EDAC/synopsys: Add reference clocks support
+  EDAC/synopsys: Add ECC Scrubber support
+  EDAC/synopsys: Drop vendor-specific arch dependency
+  EDAC/synopsys: Add Baikal-T1 DDRC support
+
+ .../snps,dw-umctl2-ddrc.yaml                  |  75 +-
+ drivers/edac/Kconfig                          |   1 -
+ drivers/edac/synopsys_edac.c                  | 952 ++++++++++++++----
+ 3 files changed, 830 insertions(+), 198 deletions(-)
+
+-- 
+2.35.1
+
