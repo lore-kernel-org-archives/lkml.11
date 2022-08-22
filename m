@@ -2,136 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A03C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BCFC32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235110AbiHVN3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
+        id S235243AbiHVNbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235190AbiHVN3k (ORCPT
+        with ESMTP id S235233AbiHVNbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:29:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D7518346;
-        Mon, 22 Aug 2022 06:29:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B50761196;
-        Mon, 22 Aug 2022 13:29:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7E7C433C1;
-        Mon, 22 Aug 2022 13:29:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661174978;
-        bh=tKR+1ncaLktuwBqOq+cs01Cvto2mRKf0wx5WnwSpD0c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LTkh9d2Haa525kwq2grlzk2TfJzupWlmdIDQ5qo0V4w55EsXMCH6v1DJh2tvLXpfu
-         DrZ7mhtp3qKmb7fNWOImHLVlYbOQdRn88AvwmFxXXov+Y+Bv007ApBHm64gHBnHBZr
-         s2NReW++3jE2tMLkvDU/VdpAQO1j8Q8pySCO8tns=
-Date:   Mon, 22 Aug 2022 15:29:35 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Gupta, Nipun" <Nipun.Gupta@amd.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "eric.auger@redhat.com" <eric.auger@redhat.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "Gupta, Puneet (DCG-ENG)" <puneet.gupta@amd.com>,
-        "song.bao.hua@hisilicon.com" <song.bao.hua@hisilicon.com>,
-        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "jeffrey.l.hugo@gmail.com" <jeffrey.l.hugo@gmail.com>,
-        "saravanak@google.com" <saravanak@google.com>,
-        "Michael.Srba@seznam.cz" <Michael.Srba@seznam.cz>,
-        "mani@kernel.org" <mani@kernel.org>,
-        "yishaih@nvidia.com" <yishaih@nvidia.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "okaya@kernel.org" <okaya@kernel.org>,
-        "Anand, Harpreet" <harpreet.anand@amd.com>,
-        "Agarwal, Nikhil" <nikhil.agarwal@amd.com>,
-        "Simek, Michal" <michal.simek@amd.com>,
-        "git (AMD-Xilinx)" <git@amd.com>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH v2 2/6] bus/cdx: add the cdx bus driver
-Message-ID: <YwOEv6107RfU5p+H@kroah.com>
-References: <20220803122655.100254-1-nipun.gupta@amd.com>
- <20220817150542.483291-1-nipun.gupta@amd.com>
- <20220817150542.483291-3-nipun.gupta@amd.com>
- <Yv0KHROjESUI59Pd@kroah.com>
- <DM6PR12MB3082D966CFC0FA1C2148D8FAE8719@DM6PR12MB3082.namprd12.prod.outlook.com>
+        Mon, 22 Aug 2022 09:31:15 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F92275F7
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:14 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gk3so21210927ejb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=8r7BIjoasIUEZdXg2N4q2u4F3zO3DOtklhLZqt6JWWg=;
+        b=D60msXWmUqbwg/uV8lvURpYnUYQo0L2zrsdfg4Yez2C2yk+mKZq4gDOfBq6lTm/xsb
+         1luO+bvGH0blaw7aqMaXBlZAOHiobEbk9vP9HOIBhBGoWdXmfj6Bk3Xr+NSr7+9Q5Jzw
+         uMN7FJUAN57h5sp0tOMxjBWsJvgVmc0TD8cmU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=8r7BIjoasIUEZdXg2N4q2u4F3zO3DOtklhLZqt6JWWg=;
+        b=v4JwF/yyxAsUAvdIlMDUpOTfa4p92q7cgeZAgtINSj6lTi/pjsYJaQZl9au8nYPsN/
+         3q8r650MAFhnLLUSUPjw55tAOWv1zyMs5TMhRU09ILU4ivl9cjXPSzlwkrUhXU1FdUAp
+         WhsUXumNZrfFfWd6m98ZCUQtULRrT8evtvpYVR5ViYXEI7FP9DYuF5W8yDvy3BHaVgGf
+         9ZPsun6S87DtbKmBnqdz/DsZpIj3x4xKA+McKeGnPYruB0Tz1V7OmopEhmAVuN2sMFcX
+         Y5oZlSLn3KLPxfRCvLold8jVN61V4JH3MCGrggVtgaz1dgj+LzSNjp4BJ2eU2aBs7Fnp
+         ZPSg==
+X-Gm-Message-State: ACgBeo0MvAQaSC54pzVW5TSAazHjSf9e7szWW4WCYSucLQmP9lcTX2XM
+        Ke5ob/7jyvsXNtspzECz14nVAhUJnNzrgbKf
+X-Google-Smtp-Source: AA6agR4cMJi4QZDEmrIl8aiE53u1XkQN8brkopflOn/DuwVyLGs9E7OXUpAY5c+CVrvWinhvw6pGew==
+X-Received: by 2002:a17:907:9605:b0:6f5:c66:7c13 with SMTP id gb5-20020a170907960500b006f50c667c13mr13640253ejc.66.1661175072692;
+        Mon, 22 Aug 2022 06:31:12 -0700 (PDT)
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com. [209.85.218.54])
+        by smtp.gmail.com with ESMTPSA id 17-20020a170906309100b0073ce4abf093sm4966682ejv.214.2022.08.22.06.31.11
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 06:31:12 -0700 (PDT)
+Received: by mail-ej1-f54.google.com with SMTP id vw19so7556727ejb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:11 -0700 (PDT)
+X-Received: by 2002:a17:906:9f2a:b0:730:bc30:da30 with SMTP id
+ fy42-20020a1709069f2a00b00730bc30da30mr13133746ejc.763.1661175071574; Mon, 22
+ Aug 2022 06:31:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR12MB3082D966CFC0FA1C2148D8FAE8719@DM6PR12MB3082.namprd12.prod.outlook.com>
+References: <20220808134106.70100-1-ribalda@chromium.org> <YwN+fU5ez0L5pi1j@pendragon.ideasonboard.com>
+ <YwN/jeElxyXpyyfU@pendragon.ideasonboard.com>
+In-Reply-To: <YwN/jeElxyXpyyfU@pendragon.ideasonboard.com>
+From:   Ricardo Ribalda <ribalda@chromium.org>
+Date:   Mon, 22 Aug 2022 15:31:00 +0200
+X-Gmail-Original-Message-ID: <CANiDSCvyhUORSp7831DJsQGFF8Bw3uzEoTTV9FG8qunu-KrMyw@mail.gmail.com>
+Message-ID: <CANiDSCvyhUORSp7831DJsQGFF8Bw3uzEoTTV9FG8qunu-KrMyw@mail.gmail.com>
+Subject: Re: [PATCH] media: uvcvideo: Fix InterfaceProtocol for Quanta camera
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 01:21:47PM +0000, Gupta, Nipun wrote:
-> [AMD Official Use Only - General]
-> 
-> 
-> 
-> > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: Wednesday, August 17, 2022 9:03 PM
-> > To: Gupta, Nipun <Nipun.Gupta@amd.com>
-> > Cc: robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org; rafael@kernel.org;
-> > eric.auger@redhat.com; alex.williamson@redhat.com; cohuck@redhat.com;
-> > Gupta, Puneet (DCG-ENG) <puneet.gupta@amd.com>;
-> > song.bao.hua@hisilicon.com; mchehab+huawei@kernel.org; maz@kernel.org;
-> > f.fainelli@gmail.com; jeffrey.l.hugo@gmail.com; saravanak@google.com;
-> > Michael.Srba@seznam.cz; mani@kernel.org; yishaih@nvidia.com;
-> > jgg@ziepe.ca; linux-kernel@vger.kernel.org; devicetree@vger.kernel.org;
-> > kvm@vger.kernel.org; okaya@kernel.org; Anand, Harpreet
-> > <harpreet.anand@amd.com>; Agarwal, Nikhil <nikhil.agarwal@amd.com>;
-> > Simek, Michal <michal.simek@amd.com>; git (AMD-Xilinx) <git@amd.com>
-> > Subject: Re: [RFC PATCH v2 2/6] bus/cdx: add the cdx bus driver
-> > 
-> > [CAUTION: External Email]
-> > 
-> > On Wed, Aug 17, 2022 at 08:35:38PM +0530, Nipun Gupta wrote:
-> > > CDX bus driver manages the scanning and populating FPGA
-> > > based devices present on the CDX bus.
-> > >
-> > > The bus driver sets up the basic infrastructure and fetches
-> > > the device related information from the firmware. These
-> > > devices are registered as platform devices.
-> > 
-> > Ick, why?  These aren't platform devices, they are CDX devices.  Make
-> > them real devices here, don't abuse the platform device interface for
-> > things that are not actually on the platform bus.
-> 
-> CDX is a virtual bus (FW based) which discovers FPGA based platform
-> devices based on communication with FW.
+On Mon, 22 Aug 2022 at 15:07, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
 
-virtual busses are fine to have as a real bus in the kernel, no problem
-there.
+>
+> As this is a v6.0 fix, would you mind submitting a v2 with these changes
+> ? Mauro could then pick it up directly.
 
-> These devices are essentially platform devices as these are memory mapped
-> on system bus, but having a property that they are dynamically discovered
-> via FW and are rescannable.
+Done. https://lore.kernel.org/linux-media/20220822131754.102393-1-ribalda@chromium.org/T/#u
 
-If they are dynamically discoverable and rescannable, then great, it's a
-bus in the kernel and NOT a platform device.
+Thanks :)
 
-> I think your point is correct in the sense that CDX bus is not an actual bus,
-> but a FW based mechanism to discover FPGA based platform devices.
-> 
-> Can you kindly suggest us if we should have the CDX platform device scanning
-> code as a CDX bus in "drivers/bus/" folder OR have it in "drivers/fpga/" or
-> "drivers/platform/" or which other suitable location?
 
-drivers/cdx/ ?
-
-thanks,
-
-greg k-h
+-- 
+Ricardo Ribalda
