@@ -2,107 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB3FC32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B034C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbiHVI03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        id S232779AbiHVI1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbiHVI0O (ORCPT
+        with ESMTP id S231927AbiHVI1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:26:14 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9062F5AC;
-        Mon, 22 Aug 2022 01:25:52 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id r16so12213609wrm.6;
-        Mon, 22 Aug 2022 01:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ZQMxC8SQcK7D46DZF5jtDRzGw0Z16LiNuM+Bzk2aJSo=;
-        b=OLNL7exAXaIJduiNgoQCsJ6rZMgitXCim/HKlxMgBRRUMCxtAAGNXtBtdJheaqg3pC
-         TliuMGd3pDcTM0WkGacO/UZyKRKECjlG9Ivq6S5pkWzazG/SiSWx1c22mT9jRaFgdULc
-         uKtdOp8YucD7O/pNet+Y6K5EyTp5iQwS1AqbAP1Jmkl4bXT2K8HjhmnI5SUL5R3SjuSV
-         wFYxO3P1vtwx1gJuNwHXyzk0gGnBpf1Wqs4fFBhoAFAonxxG3aOXc7mMbBu4OlCxcg0S
-         PALZyKiXSsboDOgNWyC5yTxYoPEifsTcDhQb6avJ9/RCrwlMmkA/31s2jiE6pkks3ayk
-         gPtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ZQMxC8SQcK7D46DZF5jtDRzGw0Z16LiNuM+Bzk2aJSo=;
-        b=Glvm8QKUGiM7TKktdBRNHxHYf2+XDoOCD3uIr0XU0L4UVB5WrowodhssPRaTrqgz59
-         nTtMBv/gP//2rh1D5GMw3a2LqSXHCGNxri0W7IiFLJHz+fNaMHYirFuUQIpplsn01sUL
-         XuuLbnT/PPzW/aLgno9cB3fZnzknc37rz4VyaaEmOeZObHsII9izn61k9RNOro0Dqbd3
-         Kef4k1vPoLRRt2PVzXWgIHQFqfAYKZUlo36WK+sYrfc2hxRQFyj4nSJPYB2LeIC3vsDQ
-         zNoXH84xi0KMRIQ7s3BGCkjvnYaAIhByj/o0bZQh9AwWRwXmouhKTn6/CD4wURLrD0XP
-         +d2w==
-X-Gm-Message-State: ACgBeo0Zyr/WQuV48BHx/jYuOHb4RMLkP64f36+GlZ2+xM36Wovs2B81
-        SM9llkChCdiDFjwqfNbidvqMVxTS0Wg=
-X-Google-Smtp-Source: AA6agR7sv04KNDMmxFOJpvl9C2FbEVaKWNy3FaYLC+PE0f+To+BYbZRu8vRj6lpsja472y0AXYkGnw==
-X-Received: by 2002:a5d:47c9:0:b0:225:5a4f:8f82 with SMTP id o9-20020a5d47c9000000b002255a4f8f82mr1877881wrc.0.1661156751316;
-        Mon, 22 Aug 2022 01:25:51 -0700 (PDT)
-Received: from felia.fritz.box (200116b826f28600ec06010f612e4c3e.dip.versatel-1u1.de. [2001:16b8:26f2:8600:ec06:10f:612e:4c3e])
-        by smtp.gmail.com with ESMTPSA id m30-20020a05600c3b1e00b003a6077384ecsm17912800wms.31.2022.08.22.01.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 01:25:50 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] mm/hugetlb: remove unused local variable dst_entry in copy_hugetlb_page_range()
-Date:   Mon, 22 Aug 2022 10:25:25 +0200
-Message-Id: <20220822082525.26071-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 22 Aug 2022 04:27:42 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C7755A2
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:27:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661156861; x=1692692861;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=pZFyRLLcKilsUuU4T3dWTly/amYGpZtgRPnOkL03t2o=;
+  b=Wl2uILdjpocETICk1gVpEZBvm2CYj6qFajXj2qGXydWEaMPh1riH8+bf
+   qopBiIvfU9zPYQ/ewoDpZqXBnCMW+jFp8b3xgx6+iCna8QC23pQYXMvG8
+   DsepwP8OiGgmpCMSYuNv92m/1UFItlbLpQ/IE3T9Xh43vjdN9rd2jyvzI
+   jypiUpymzvk7ZK/M4sMflakuH5y4K+zq21nCgznIIKS59Jg8YpMQZnHYS
+   vu36N6SG5lCjff0eLs4At/oLpi+rN9TfbFimFHO3mqIIfz69oGw5M2U2V
+   lUU7SiGvtudQG+6G7jbkSKJGT3B5mfZVKFy2ErnMH1O7FmHPZ5LEd8HwO
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="292098537"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="292098537"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 01:27:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="936949242"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 22 Aug 2022 01:27:39 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQ2mY-00057N-2G;
+        Mon, 22 Aug 2022 08:27:38 +0000
+Date:   Mon, 22 Aug 2022 16:27:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liu Shixin <liushixin2@huawei.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
+Subject: mm/page_alloc.c:6050:6: warning: unused variable 'cpu'
+Message-ID: <202208221625.NXXjg2Cm-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit a0e4f7b82610 ("mm/hugetlb: make detecting shared pte more reliable")
-modifies copy_hugetlb_page_range() such that huge_ptep_get(dst_pte) and the
-local variable dst_entry is not used explicitly in this function.
+tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220822-110006/Liu-Shixin/mm-proc-collect-percpu-free-pages-into-the-free-pages/20220822-095948
+head:   8190723fa00c3bbaa252ce0f3cbb4dac1a9cb6ff
+commit: 8190723fa00c3bbaa252ce0f3cbb4dac1a9cb6ff mm, proc: collect percpu free pages into the free pages
+date:   5 hours ago
+config: i386-randconfig-a001-20220822 (https://download.01.org/0day-ci/archive/20220822/202208221625.NXXjg2Cm-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/8190723fa00c3bbaa252ce0f3cbb4dac1a9cb6ff
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review UPDATE-20220822-110006/Liu-Shixin/mm-proc-collect-percpu-free-pages-into-the-free-pages/20220822-095948
+        git checkout 8190723fa00c3bbaa252ce0f3cbb4dac1a9cb6ff
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Remove this unused local variable dst_entry in copy_hugetlb_page_range().
-No functional change.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- mm/hugetlb.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 9a72499486c1..6c00ba1dde32 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4763,7 +4763,7 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- 			    struct vm_area_struct *dst_vma,
- 			    struct vm_area_struct *src_vma)
- {
--	pte_t *src_pte, *dst_pte, entry, dst_entry;
-+	pte_t *src_pte, *dst_pte, entry;
- 	struct page *ptepage;
- 	unsigned long addr;
- 	bool cow = is_cow_mapping(src_vma->vm_flags);
-@@ -4823,7 +4823,6 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- 		src_ptl = huge_pte_lockptr(h, src, src_pte);
- 		spin_lock_nested(src_ptl, SINGLE_DEPTH_NESTING);
- 		entry = huge_ptep_get(src_pte);
--		dst_entry = huge_ptep_get(dst_pte);
- again:
- 		if (huge_pte_none(entry)) {
- 			/*
-@@ -4906,7 +4905,7 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- 					restore_reserve_on_error(h, dst_vma, addr,
- 								new);
- 					put_page(new);
--					/* dst_entry won't change as in child */
-+					/* huge_ptep of dst_pte won't change as in child */
- 					goto again;
- 				}
- 				hugetlb_install_page(dst_vma, dst_pte, addr, new);
+>> mm/page_alloc.c:6050:6: warning: unused variable 'cpu' [-Wunused-variable]
+           int cpu, nid;
+               ^
+   1 warning generated.
+
+
+vim +/cpu +6050 mm/page_alloc.c
+
+377e4f167664d8 Rabin Vincent             2012-12-11  6037  
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6038  /*
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6039   * Show free area list (used inside shift_scroll-lock stuff)
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6040   * We also calculate the percentage fragmentation. We do this by counting the
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6041   * memory on each free list with the exception of the first item on the list.
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6042   *
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6043   * Bits in @filter:
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6044   * SHOW_MEM_FILTER_NODES: suppress nodes that are not allowed by current's
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6045   *   cpuset.
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6046   */
+9af744d743170b Michal Hocko              2017-02-22  6047  void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6048  {
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6049  	unsigned long free_pcp = 0;
+dcadcf1c30619e Gang Li                   2022-07-06 @6050  	int cpu, nid;
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6051  	struct zone *zone;
+599d0c954f91d0 Mel Gorman                2016-07-28  6052  	pg_data_t *pgdat;
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6053  
+ee99c71c59f897 KOSAKI Motohiro           2009-03-31  6054  	for_each_populated_zone(zone) {
+9af744d743170b Michal Hocko              2017-02-22  6055  		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
+ddd588b5dd55f1 David Rientjes            2011-03-22  6056  			continue;
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6057  
+8190723fa00c3b Liu Shixin                2022-08-22  6058  		free_pcp += nr_free_zone_pcplist_pages(zone);
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6059  	}
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6060  
+a731286de62294 KOSAKI Motohiro           2009-09-21  6061  	printk("active_anon:%lu inactive_anon:%lu isolated_anon:%lu\n"
+a731286de62294 KOSAKI Motohiro           2009-09-21  6062  		" active_file:%lu inactive_file:%lu isolated_file:%lu\n"
+8d92890bd6b850 NeilBrown                 2020-06-01  6063  		" unevictable:%lu dirty:%lu writeback:%lu\n"
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6064  		" slab_reclaimable:%lu slab_unreclaimable:%lu\n"
+d1ce749a0db122 Bartlomiej Zolnierkiewicz 2012-10-08  6065  		" mapped:%lu shmem:%lu pagetables:%lu bounce:%lu\n"
+eb2169cee36fc4 liuhailong                2021-09-02  6066  		" kernel_misc_reclaimable:%lu\n"
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6067  		" free:%lu free_pcp:%lu free_cma:%lu\n",
+599d0c954f91d0 Mel Gorman                2016-07-28  6068  		global_node_page_state(NR_ACTIVE_ANON),
+599d0c954f91d0 Mel Gorman                2016-07-28  6069  		global_node_page_state(NR_INACTIVE_ANON),
+599d0c954f91d0 Mel Gorman                2016-07-28  6070  		global_node_page_state(NR_ISOLATED_ANON),
+599d0c954f91d0 Mel Gorman                2016-07-28  6071  		global_node_page_state(NR_ACTIVE_FILE),
+599d0c954f91d0 Mel Gorman                2016-07-28  6072  		global_node_page_state(NR_INACTIVE_FILE),
+599d0c954f91d0 Mel Gorman                2016-07-28  6073  		global_node_page_state(NR_ISOLATED_FILE),
+599d0c954f91d0 Mel Gorman                2016-07-28  6074  		global_node_page_state(NR_UNEVICTABLE),
+11fb998986a72a Mel Gorman                2016-07-28  6075  		global_node_page_state(NR_FILE_DIRTY),
+11fb998986a72a Mel Gorman                2016-07-28  6076  		global_node_page_state(NR_WRITEBACK),
+d42f3245c7e299 Roman Gushchin            2020-08-06  6077  		global_node_page_state_pages(NR_SLAB_RECLAIMABLE_B),
+d42f3245c7e299 Roman Gushchin            2020-08-06  6078  		global_node_page_state_pages(NR_SLAB_UNRECLAIMABLE_B),
+50658e2e04c12d Mel Gorman                2016-07-28  6079  		global_node_page_state(NR_FILE_MAPPED),
+11fb998986a72a Mel Gorman                2016-07-28  6080  		global_node_page_state(NR_SHMEM),
+f0c0c115fb8194 Shakeel Butt              2020-12-14  6081  		global_node_page_state(NR_PAGETABLE),
+c41f012ade0b95 Michal Hocko              2017-09-06  6082  		global_zone_page_state(NR_BOUNCE),
+eb2169cee36fc4 liuhailong                2021-09-02  6083  		global_node_page_state(NR_KERNEL_MISC_RECLAIMABLE),
+c41f012ade0b95 Michal Hocko              2017-09-06  6084  		global_zone_page_state(NR_FREE_PAGES),
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6085  		free_pcp,
+c41f012ade0b95 Michal Hocko              2017-09-06  6086  		global_zone_page_state(NR_FREE_CMA_PAGES));
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6087  
+599d0c954f91d0 Mel Gorman                2016-07-28  6088  	for_each_online_pgdat(pgdat) {
+9af744d743170b Michal Hocko              2017-02-22  6089  		if (show_mem_node_skip(filter, pgdat->node_id, nodemask))
+c02e50bb8a55a7 Michal Hocko              2017-02-22  6090  			continue;
+c02e50bb8a55a7 Michal Hocko              2017-02-22  6091  
+599d0c954f91d0 Mel Gorman                2016-07-28  6092  		printk("Node %d"
+599d0c954f91d0 Mel Gorman                2016-07-28  6093  			" active_anon:%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6094  			" inactive_anon:%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6095  			" active_file:%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6096  			" inactive_file:%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6097  			" unevictable:%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6098  			" isolated(anon):%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6099  			" isolated(file):%lukB"
+50658e2e04c12d Mel Gorman                2016-07-28  6100  			" mapped:%lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6101  			" dirty:%lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6102  			" writeback:%lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6103  			" shmem:%lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6104  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+11fb998986a72a Mel Gorman                2016-07-28  6105  			" shmem_thp: %lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6106  			" shmem_pmdmapped: %lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6107  			" anon_thp: %lukB"
+11fb998986a72a Mel Gorman                2016-07-28  6108  #endif
+11fb998986a72a Mel Gorman                2016-07-28  6109  			" writeback_tmp:%lukB"
+991e7673859ed4 Shakeel Butt              2020-08-06  6110  			" kernel_stack:%lukB"
+991e7673859ed4 Shakeel Butt              2020-08-06  6111  #ifdef CONFIG_SHADOW_CALL_STACK
+991e7673859ed4 Shakeel Butt              2020-08-06  6112  			" shadow_call_stack:%lukB"
+991e7673859ed4 Shakeel Butt              2020-08-06  6113  #endif
+f0c0c115fb8194 Shakeel Butt              2020-12-14  6114  			" pagetables:%lukB"
+599d0c954f91d0 Mel Gorman                2016-07-28  6115  			" all_unreclaimable? %s"
+599d0c954f91d0 Mel Gorman                2016-07-28  6116  			"\n",
+599d0c954f91d0 Mel Gorman                2016-07-28  6117  			pgdat->node_id,
+599d0c954f91d0 Mel Gorman                2016-07-28  6118  			K(node_page_state(pgdat, NR_ACTIVE_ANON)),
+599d0c954f91d0 Mel Gorman                2016-07-28  6119  			K(node_page_state(pgdat, NR_INACTIVE_ANON)),
+599d0c954f91d0 Mel Gorman                2016-07-28  6120  			K(node_page_state(pgdat, NR_ACTIVE_FILE)),
+599d0c954f91d0 Mel Gorman                2016-07-28  6121  			K(node_page_state(pgdat, NR_INACTIVE_FILE)),
+599d0c954f91d0 Mel Gorman                2016-07-28  6122  			K(node_page_state(pgdat, NR_UNEVICTABLE)),
+599d0c954f91d0 Mel Gorman                2016-07-28  6123  			K(node_page_state(pgdat, NR_ISOLATED_ANON)),
+599d0c954f91d0 Mel Gorman                2016-07-28  6124  			K(node_page_state(pgdat, NR_ISOLATED_FILE)),
+50658e2e04c12d Mel Gorman                2016-07-28  6125  			K(node_page_state(pgdat, NR_FILE_MAPPED)),
+11fb998986a72a Mel Gorman                2016-07-28  6126  			K(node_page_state(pgdat, NR_FILE_DIRTY)),
+11fb998986a72a Mel Gorman                2016-07-28  6127  			K(node_page_state(pgdat, NR_WRITEBACK)),
+1f06b81aea5ecb Alexander Polakov         2017-04-07  6128  			K(node_page_state(pgdat, NR_SHMEM)),
+11fb998986a72a Mel Gorman                2016-07-28  6129  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+57b2847d3c1dc1 Muchun Song               2021-02-24  6130  			K(node_page_state(pgdat, NR_SHMEM_THPS)),
+a1528e21f8915e Muchun Song               2021-02-24  6131  			K(node_page_state(pgdat, NR_SHMEM_PMDMAPPED)),
+69473e5de87389 Muchun Song               2021-02-24  6132  			K(node_page_state(pgdat, NR_ANON_THPS)),
+11fb998986a72a Mel Gorman                2016-07-28  6133  #endif
+11fb998986a72a Mel Gorman                2016-07-28  6134  			K(node_page_state(pgdat, NR_WRITEBACK_TEMP)),
+991e7673859ed4 Shakeel Butt              2020-08-06  6135  			node_page_state(pgdat, NR_KERNEL_STACK_KB),
+991e7673859ed4 Shakeel Butt              2020-08-06  6136  #ifdef CONFIG_SHADOW_CALL_STACK
+991e7673859ed4 Shakeel Butt              2020-08-06  6137  			node_page_state(pgdat, NR_KERNEL_SCS_KB),
+991e7673859ed4 Shakeel Butt              2020-08-06  6138  #endif
+f0c0c115fb8194 Shakeel Butt              2020-12-14  6139  			K(node_page_state(pgdat, NR_PAGETABLE)),
+c73322d098e4b6 Johannes Weiner           2017-05-03  6140  			pgdat->kswapd_failures >= MAX_RECLAIM_RETRIES ?
+c73322d098e4b6 Johannes Weiner           2017-05-03  6141  				"yes" : "no");
+599d0c954f91d0 Mel Gorman                2016-07-28  6142  	}
+599d0c954f91d0 Mel Gorman                2016-07-28  6143  
+ee99c71c59f897 KOSAKI Motohiro           2009-03-31  6144  	for_each_populated_zone(zone) {
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6145  		int i;
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6146  
+9af744d743170b Michal Hocko              2017-02-22  6147  		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
+ddd588b5dd55f1 David Rientjes            2011-03-22  6148  			continue;
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6149  
+8190723fa00c3b Liu Shixin                2022-08-22  6150  		free_pcp = nr_free_zone_pcplist_pages(zone);
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6151  
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6152  		show_node(zone);
+1f84a18fc010d7 Joe Perches               2016-10-27  6153  		printk(KERN_CONT
+1f84a18fc010d7 Joe Perches               2016-10-27  6154  			"%s"
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6155  			" free:%lukB"
+a6ea8b5b9f1ce3 Liangcai Fan              2021-11-05  6156  			" boost:%lukB"
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6157  			" min:%lukB"
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6158  			" low:%lukB"
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6159  			" high:%lukB"
+e47b346aba0873 lijiazi                   2019-11-30  6160  			" reserved_highatomic:%luKB"
+71c799f4982d34 Minchan Kim               2016-07-28  6161  			" active_anon:%lukB"
+71c799f4982d34 Minchan Kim               2016-07-28  6162  			" inactive_anon:%lukB"
+71c799f4982d34 Minchan Kim               2016-07-28  6163  			" active_file:%lukB"
+71c799f4982d34 Minchan Kim               2016-07-28  6164  			" inactive_file:%lukB"
+71c799f4982d34 Minchan Kim               2016-07-28  6165  			" unevictable:%lukB"
+5a1c84b404a717 Mel Gorman                2016-07-28  6166  			" writepending:%lukB"
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6167  			" present:%lukB"
+9feedc9d831e18 Jiang Liu                 2012-12-12  6168  			" managed:%lukB"
+4a0aa73f1d613b KOSAKI Motohiro           2009-09-21  6169  			" mlocked:%lukB"
+4a0aa73f1d613b KOSAKI Motohiro           2009-09-21  6170  			" bounce:%lukB"
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6171  			" free_pcp:%lukB"
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6172  			" local_pcp:%ukB"
+d1ce749a0db122 Bartlomiej Zolnierkiewicz 2012-10-08  6173  			" free_cma:%lukB"
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6174  			"\n",
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6175  			zone->name,
+88f5acf88ae6a9 Mel Gorman                2011-01-13  6176  			K(zone_page_state(zone, NR_FREE_PAGES)),
+a6ea8b5b9f1ce3 Liangcai Fan              2021-11-05  6177  			K(zone->watermark_boost),
+418589663d6011 Mel Gorman                2009-06-16  6178  			K(min_wmark_pages(zone)),
+418589663d6011 Mel Gorman                2009-06-16  6179  			K(low_wmark_pages(zone)),
+418589663d6011 Mel Gorman                2009-06-16  6180  			K(high_wmark_pages(zone)),
+e47b346aba0873 lijiazi                   2019-11-30  6181  			K(zone->nr_reserved_highatomic),
+71c799f4982d34 Minchan Kim               2016-07-28  6182  			K(zone_page_state(zone, NR_ZONE_ACTIVE_ANON)),
+71c799f4982d34 Minchan Kim               2016-07-28  6183  			K(zone_page_state(zone, NR_ZONE_INACTIVE_ANON)),
+71c799f4982d34 Minchan Kim               2016-07-28  6184  			K(zone_page_state(zone, NR_ZONE_ACTIVE_FILE)),
+71c799f4982d34 Minchan Kim               2016-07-28  6185  			K(zone_page_state(zone, NR_ZONE_INACTIVE_FILE)),
+71c799f4982d34 Minchan Kim               2016-07-28  6186  			K(zone_page_state(zone, NR_ZONE_UNEVICTABLE)),
+5a1c84b404a717 Mel Gorman                2016-07-28  6187  			K(zone_page_state(zone, NR_ZONE_WRITE_PENDING)),
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6188  			K(zone->present_pages),
+9705bea5f833f4 Arun KS                   2018-12-28  6189  			K(zone_managed_pages(zone)),
+4a0aa73f1d613b KOSAKI Motohiro           2009-09-21  6190  			K(zone_page_state(zone, NR_MLOCK)),
+4a0aa73f1d613b KOSAKI Motohiro           2009-09-21  6191  			K(zone_page_state(zone, NR_BOUNCE)),
+d1bfcdb8ce0ea6 Konstantin Khlebnikov     2015-04-14  6192  			K(free_pcp),
+28f836b6777b6f Mel Gorman                2021-06-28  6193  			K(this_cpu_read(zone->per_cpu_pageset->count)),
+33e077bd6059a5 Minchan Kim               2016-07-28  6194  			K(zone_page_state(zone, NR_FREE_CMA_PAGES)));
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6195  		printk("lowmem_reserve[]:");
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6196  		for (i = 0; i < MAX_NR_ZONES; i++)
+1f84a18fc010d7 Joe Perches               2016-10-27  6197  			printk(KERN_CONT " %ld", zone->lowmem_reserve[i]);
+1f84a18fc010d7 Joe Perches               2016-10-27  6198  		printk(KERN_CONT "\n");
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6199  	}
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6200  
+ee99c71c59f897 KOSAKI Motohiro           2009-03-31  6201  	for_each_populated_zone(zone) {
+d00181b96eb86c Kirill A. Shutemov        2015-11-06  6202  		unsigned int order;
+d00181b96eb86c Kirill A. Shutemov        2015-11-06  6203  		unsigned long nr[MAX_ORDER], flags, total = 0;
+377e4f167664d8 Rabin Vincent             2012-12-11  6204  		unsigned char types[MAX_ORDER];
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6205  
+9af744d743170b Michal Hocko              2017-02-22  6206  		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
+ddd588b5dd55f1 David Rientjes            2011-03-22  6207  			continue;
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6208  		show_node(zone);
+1f84a18fc010d7 Joe Perches               2016-10-27  6209  		printk(KERN_CONT "%s: ", zone->name);
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6210  
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6211  		spin_lock_irqsave(&zone->lock, flags);
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6212  		for (order = 0; order < MAX_ORDER; order++) {
+377e4f167664d8 Rabin Vincent             2012-12-11  6213  			struct free_area *area = &zone->free_area[order];
+377e4f167664d8 Rabin Vincent             2012-12-11  6214  			int type;
+377e4f167664d8 Rabin Vincent             2012-12-11  6215  
+377e4f167664d8 Rabin Vincent             2012-12-11  6216  			nr[order] = area->nr_free;
+8f9de51a4a98ba Kirill Korotaev           2006-06-23  6217  			total += nr[order] << order;
+377e4f167664d8 Rabin Vincent             2012-12-11  6218  
+377e4f167664d8 Rabin Vincent             2012-12-11  6219  			types[order] = 0;
+377e4f167664d8 Rabin Vincent             2012-12-11  6220  			for (type = 0; type < MIGRATE_TYPES; type++) {
+b03641af680959 Dan Williams              2019-05-14  6221  				if (!free_area_empty(area, type))
+377e4f167664d8 Rabin Vincent             2012-12-11  6222  					types[order] |= 1 << type;
+377e4f167664d8 Rabin Vincent             2012-12-11  6223  			}
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6224  		}
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6225  		spin_unlock_irqrestore(&zone->lock, flags);
+377e4f167664d8 Rabin Vincent             2012-12-11  6226  		for (order = 0; order < MAX_ORDER; order++) {
+1f84a18fc010d7 Joe Perches               2016-10-27  6227  			printk(KERN_CONT "%lu*%lukB ",
+1f84a18fc010d7 Joe Perches               2016-10-27  6228  			       nr[order], K(1UL) << order);
+377e4f167664d8 Rabin Vincent             2012-12-11  6229  			if (nr[order])
+377e4f167664d8 Rabin Vincent             2012-12-11  6230  				show_migration_types(types[order]);
+377e4f167664d8 Rabin Vincent             2012-12-11  6231  		}
+1f84a18fc010d7 Joe Perches               2016-10-27  6232  		printk(KERN_CONT "= %lukB\n", K(total));
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6233  	}
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6234  
+dcadcf1c30619e Gang Li                   2022-07-06  6235  	for_each_online_node(nid) {
+dcadcf1c30619e Gang Li                   2022-07-06  6236  		if (show_mem_node_skip(filter, nid, nodemask))
+dcadcf1c30619e Gang Li                   2022-07-06  6237  			continue;
+dcadcf1c30619e Gang Li                   2022-07-06  6238  		hugetlb_show_meminfo_node(nid);
+dcadcf1c30619e Gang Li                   2022-07-06  6239  	}
+949f7ec5760b02 David Rientjes            2013-04-29  6240  
+11fb998986a72a Mel Gorman                2016-07-28  6241  	printk("%ld total pagecache pages\n", global_node_page_state(NR_FILE_PAGES));
+e6f3602d2c5881 Larry Woodman             2008-02-04  6242  
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6243  	show_swap_cache_info();
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6244  }
+^1da177e4c3f41 Linus Torvalds            2005-04-16  6245  
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
