@@ -2,69 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59650C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D807FC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233666AbiHVIFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
+        id S233694AbiHVIFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232785AbiHVIFC (ORCPT
+        with ESMTP id S233646AbiHVIE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:05:02 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C12B10AE;
-        Mon, 22 Aug 2022 01:04:59 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 27M84u0h017804;
-        Mon, 22 Aug 2022 10:04:56 +0200
-Date:   Mon, 22 Aug 2022 10:04:56 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-x86_64@vger.kernel.org
-Subject: Re: LTS kernel Linux 4.14.290 unable to boot with edk2-ovmf (x86_64
- UEFI runtime)
-Message-ID: <20220822080456.GB17080@1wt.eu>
-References: <2d6012e8-805d-4225-80ed-d317c28f1899@gmx.com>
- <YwMhXX6OhROLZ/LR@kroah.com>
- <1ed5a33a-b667-0e8e-e010-b4365f3713d6@gmx.com>
- <YwMxRAfrrsPE6sNI@kroah.com>
- <8aff5c17-d414-2412-7269-c9d15f574037@gmx.com>
+        Mon, 22 Aug 2022 04:04:56 -0400
+Received: from mail.fris.de (mail.fris.de [116.203.77.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AB62CDC2;
+        Mon, 22 Aug 2022 01:04:21 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 95CE3BFB01;
+        Mon, 22 Aug 2022 10:04:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
+        t=1661155460; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding:in-reply-to:references;
+        bh=KmlchrrmClOEdG+NrQBCHG5tvdW+GLnM4C6arwv7cdA=;
+        b=Dy3JdhYeHWhHozGJEr2DP/Bct6fv5eiWsGKj1IyhIAHXz0lCcPY/2qzoTCHfFDHHiHUoez
+        FdRJ9RdAgKeTubBUv5dbotFWV1WWPzB++lo2CmXvBVH1NqKLUs8yCPB+aPTwzeF81Ch9bd
+        rUbNb1on/dZd7P/Iebr9A/B0HInuqOMl4TJvDcFZHBXoZ5HnVyPJ1vG91odFosjyCCPi2H
+        X9WGy3BPz5yaNd8KgBMxkzGnR6Fux8GcFCgpdUPaytnDsKWbBKVcaZZvkW5zfC7HKaFHoc
+        Gglqm79l6FTMiuHjboZbEn1WDoXeIqE+i5nTSKm9+Lt/8qqPPyJTMUdK48hBAQ==
+From:   Frieder Schrempf <frieder@fris.de>
+To:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: [PATCH v4 4/8] arm64: dts: imx8mm-kontron: Use the VSELECT signal to switch SD card IO voltage
+Date:   Mon, 22 Aug 2022 10:03:50 +0200
+Message-Id: <20220822080357.24478-5-frieder@fris.de>
+In-Reply-To: <20220822080357.24478-1-frieder@fris.de>
+References: <20220822080357.24478-1-frieder@fris.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8aff5c17-d414-2412-7269-c9d15f574037@gmx.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 03:49:51PM +0800, Qu Wenruo wrote:
-> Yeah, I'm pretty sure my toolchain is too new for v4.14.0. But my distro
-> only provides the latest and mostly upstream packages.
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Then there's something odd in your use case. Old kernels are aimed at
-those who need to have systems on which nothing changes. It's particularly
-strange to be stuck in the past for the kernel but to continually upgrade
-userland. Most often it's the opposite that's seen.
+It turns out that it is not necessary to declare the VSELECT signal as
+GPIO and let the PMIC driver set it to a fixed high level. This switches
+the voltage between 3.3V and 1.8V by setting the PMIC register for LDO5
+accordingly.
 
-Regardless, if you need an older compiler, just use these ones:
+Instead we can do it like other boards already do and simply mux the
+VSELECT signal of the USDHC interface to the pin. This makes sure that
+the correct voltage is selected by setting the PMIC's SD_VSEL input
+to high or low accordingly.
 
-   https://mirrors.edge.kernel.org/pub/tools/crosstool/
+Reported-by: Heiko Thiery <heiko.thiery@gmail.com>
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+Reviewed-by: Heiko Thiery <heiko.thiery@gmail.com>
+---
+Changes in v4:
+* none
 
-They go back to 4.9.4 for x86, you'll surely find the right one for your
-usage. I've long used 4.7.4 for kernels up to 4.9 and 6.5 for 4.19 and
-above, so something within that area will surely match your needs.
+Changes in v3:
+* rebase on v6.0-rc1
 
-> It may be a even worse disaster to find a way to rollback to older
-> toolchains using my distro...
+Changes in v2:
+* none
+---
+ arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts  | 3 +++
+ arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-No, using a prebuilt toolchain like those above is quite trivial and
-it will avoid messing up with your local packages. That's the best
-solution I can recommend.
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts b/arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts
+index ca533baedcd2..a079322a3793 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts
+@@ -321,6 +321,7 @@ MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d0
+ 			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d0
+ 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d0
+ 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x019
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0
+ 		>;
+ 	};
+ 
+@@ -333,6 +334,7 @@ MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d4
+ 			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d4
+ 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d4
+ 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x019
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0
+ 		>;
+ 	};
+ 
+@@ -345,6 +347,7 @@ MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d6
+ 			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d6
+ 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d6
+ 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x019
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0
+ 		>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+index 30299c2a98ea..33179157f619 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+@@ -86,7 +86,6 @@ pca9450: pmic@25 {
+ 		pinctrl-0 = <&pinctrl_pmic>;
+ 		interrupt-parent = <&gpio1>;
+ 		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
+-		sd-vsel-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+ 
+ 		regulators {
+ 			reg_vdd_soc: BUCK1 {
+@@ -229,7 +228,6 @@ MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA			0x400001c3
+ 	pinctrl_pmic: pmicgrp {
+ 		fsl,pins = <
+ 			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0		0x141
+-			MX8MM_IOMUXC_GPIO1_IO04_GPIO1_IO4		0x141
+ 		>;
+ 	};
+ 
+-- 
+2.37.2
 
-Willy
