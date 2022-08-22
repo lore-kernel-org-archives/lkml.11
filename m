@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D73C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39B2C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233159AbiHVHYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
+        id S232764AbiHVHYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233090AbiHVHYN (ORCPT
+        with ESMTP id S232959AbiHVHYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:24:13 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 00:24:09 PDT
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BEC29CA7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:24:09 -0700 (PDT)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2022082207230529ca8eb2d3c3701ff6
+        Mon, 22 Aug 2022 03:24:12 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 00:24:07 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAE529C9B
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:24:07 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220822072302d891b779b0089c5424
         for <linux-kernel@vger.kernel.org>;
-        Mon, 22 Aug 2022 09:23:05 +0200
+        Mon, 22 Aug 2022 09:23:02 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=kG+0qXXrDijXLAMNyyyKqvB26/6HqiXhBVma8IBGVuM=;
- b=RaoNLvrvpsgFs4obdqCMDL5oIMeVq7vmkAuILqAPSqKuHaAR4RHrXCH1+xhnKP2qZHxV5u
- GqNdbblhsfdvBuh9MhKIBYlPJqEsrDwqlwV0vhfwbV7xd4iw1iNWTuE3vJNN1sMb7rKhHGVw
- z0Xre7ZjrGS35t+m93dJynosanSdY=;
+ bh=CNy6MqnKDMe4CP4wWwV81ctYeDjxb6K5D7MwtJqm1cc=;
+ b=Yd/7hUcNfQRVoOUSsolFCJt/Wg238ulDKcVIPVtfNoLwlf7ECCdcSpHXAD5JXTkpYrJ3MM
+ MnelxBIPPY5x4YCs6r41N4BPSuDIuXMDg8wPoUWUcPyvTv3cn0raGkgz+Nru/k/l6rdXWJ/V
+ IkORTDJd1qxq/7wYlBSkmty1s8k6Q=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 6/6] tty: n_gsm: add debug bit for user payload
-Date:   Mon, 22 Aug 2022 09:21:38 +0200
-Message-Id: <20220822072138.3123-6-daniel.starke@siemens.com>
+Subject: [PATCH 2/6] tty: n_gsm: name gsm tty device minors
+Date:   Mon, 22 Aug 2022 09:21:34 +0200
+Message-Id: <20220822072138.3123-2-daniel.starke@siemens.com>
 In-Reply-To: <20220822072138.3123-1-daniel.starke@siemens.com>
 References: <20220822072138.3123-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,38 +46,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-A debug bit to output a complete transmission dump exists. Sometimes only
-the user frames are relevant. Add an additional bit which limits the
-transmission dump output to user data frames if set.
+Add a macro which defines the possible number of virtual devices for n_gsm
+to improve code readability.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/n_gsm.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index e8f10a5f0a8a..676034fb1190 100644
+index 5bf09d129357..ed399d57b197 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -69,6 +69,7 @@ module_param(debug, int, 0600);
- #define DBG_DATA	(1 << 2) /* Data transmission details. */
- #define DBG_ERRORS	(1 << 3) /* Details for fail conditions. */
- #define DBG_TTY		(1 << 4) /* Transmission statistics for DLCI TTYs. */
-+#define DBG_PAYLOAD	(1 << 5) /* Limits DBG_DUMP to payload frames. */
+@@ -164,6 +164,9 @@ struct gsm_dlci {
+ 	struct net_device *net; /* network interface, if created */
+ };
  
- /* Defaults: these are from the specification */
++/* Total number of supported devices */
++#define GSM_TTY_MINORS		256
++
+ /* DLCI 0, 62/63 are special or reserved see gsmtty_open */
  
-@@ -598,6 +599,10 @@ static void gsm_print_packet(const char *hdr, int addr, int cr,
- {
- 	if (!(debug & DBG_DUMP))
- 		return;
-+	/* Only show user payload frames if debug & DBG_PAYLOAD */
-+	if (!(debug & DBG_PAYLOAD) && addr != 0)
-+		if ((control & ~PF) == UI || (control & ~PF) == UIH)
-+			return;
+ #define NUM_DLCI		64
+@@ -3748,7 +3751,7 @@ static int __init gsm_init(void)
+ 		return status;
+ 	}
  
- 	pr_info("%s %d) %c: ", hdr, addr, "RC"[cr]);
- 
+-	gsm_tty_driver = tty_alloc_driver(256, TTY_DRIVER_REAL_RAW |
++	gsm_tty_driver = tty_alloc_driver(GSM_TTY_MINORS, TTY_DRIVER_REAL_RAW |
+ 			TTY_DRIVER_DYNAMIC_DEV | TTY_DRIVER_HARDWARE_BREAK);
+ 	if (IS_ERR(gsm_tty_driver)) {
+ 		pr_err("gsm_init: tty allocation failed.\n");
 -- 
 2.34.1
 
