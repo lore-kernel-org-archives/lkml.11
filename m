@@ -2,229 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE51C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4957DC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234650AbiHVLaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
+        id S234740AbiHVLa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234484AbiHVLaN (ORCPT
+        with ESMTP id S234700AbiHVLai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:30:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE78233359;
-        Mon, 22 Aug 2022 04:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661167812; x=1692703812;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AoTjF84+5kjo+c9X22M8nu7imt7Yf53AM1e1Wqcdbis=;
-  b=VGEemEodlEGglwPUKKWzn0SmtRevNAiD36ililVPuPzbf+gppkm5yj1U
-   PKjVwZvo2GSbPcwSiv9KP3+R/mc8okTC4yQRcNqaSk//JjVwWpi6yP34I
-   YXVh7U7HILfuxs93Ah1pXRn7atOcqGjVraDI1EfJh6SLP51WhJdMG9jxZ
-   d8ZIKrHHRyhvoiRxp7fjALsSPQLaNncbWRIDiNea8SbzyKMd9bPWFOiBS
-   XQeiPqY58rr0DtPuxN0PaAVv1rZtJoeMmpp6J7qSDr7XtoWtK5cTkXwO8
-   VVPxj0mkhtDJdo6jhpqFO0mPDGJnCRWkD9uNiXhGRIfqMYaWbl8Pz/h9U
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="187490803"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Aug 2022 04:30:12 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 22 Aug 2022 04:30:11 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Mon, 22 Aug 2022 04:30:09 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Hugh Breslin <hugh.breslin@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: [PATCH v2 6/6] riscv: dts: microchip: add the mpfs' fabric clock control
-Date:   Mon, 22 Aug 2022 12:29:29 +0100
-Message-ID: <20220822112928.2727437-7-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220822112928.2727437-1-conor.dooley@microchip.com>
-References: <20220822112928.2727437-1-conor.dooley@microchip.com>
+        Mon, 22 Aug 2022 07:30:38 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34A932ED3;
+        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id m15so2592190pjj.3;
+        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
+        b=CIT9km6nhEi6sZnsN3AtxvN+UbmYD2586Yn+riuF/ZXbFpfmMuYtPVeJQBGTA9nI2V
+         CmqQRQgofc3dwk9amoNfPXptPiZ8PumOvnE2/uGa7tpaRU+WrBZbs8Jv9MEAab2JWPTN
+         QYsg9AjJ3xzeWuiCf8g/0jZsOqsYHng5ThNeuv0neQEGj3sdvl4XUga6hzjUf88FFzaq
+         j/Qh1RWmKfF4krOOTBlLluuMi1GEyaR+Et6DwrsUqohDU5lGodSmpP7C6Xa6ItgpngnU
+         2m/inLkSctLjZaN0jPNXsHFQOGdsV1zmtdd4yLOYthab9dPnJMcdcd2m5IVhSJmsmnr5
+         1JAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
+        b=MEbDKWoZzbpvCh/jwTPUiALr366gm2m2JeoiXLVcy/eFlC/yL/z5Q1+2tS+1YJek5o
+         XUNkDQk6YSHhAPAE1GWwJKXYxRdYR1eKst/sTd17/JQtrC65xfQyLS1jaaxe5we19FID
+         psQB+x6/wcukxhXCP34ZZl1X1TudmCQBOvrm3GHMv5M1iwt0VskoeJ2qhXZIscRus7HC
+         fkBFqhB8D24/VXBGRIdIc8x2xpRYuvjkESim+cMQKtMolGGjayFFXJi3JH5Kws/jC/ey
+         zdBmaKkRi+LKeR4eIFViOcVf2kA8WdIezWqe/96C5lOidUXRx3xDpbRu37nrEWucSbFg
+         6jFA==
+X-Gm-Message-State: ACgBeo2HdKD0NZhNtIAYcRn76zyXveS5ZQHmuCebLKy5JPeEgRI7U03+
+        fZs39rvqQdyyHwemjZxSUjgYlFK3CWOXku1V
+X-Google-Smtp-Source: AA6agR7y+Cf8+shJU1lBosyHfXcyCc16aZq3kbBZqTPdtK//EWTrJrX/hfVvvATCV3np2/Hfg7VvTg==
+X-Received: by 2002:a17:903:2585:b0:172:9ac6:30f3 with SMTP id jb5-20020a170903258500b001729ac630f3mr20042388plb.0.1661167837386;
+        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
+Received: from localhost ([36.112.86.8])
+        by smtp.gmail.com with ESMTPSA id v4-20020a626104000000b005327281cb8dsm8714072pfb.97.2022.08.22.04.30.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-afs@lists.infradead.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        paskripkin@gmail.com,
+        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
+Date:   Mon, 22 Aug 2022 19:29:51 +0800
+Message-Id: <20220822112952.2961-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <992103.1661160093@warthog.procyon.org.uk>
+References: <992103.1661160093@warthog.procyon.org.uk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "fabric clocks" in current PolarFire SoC device trees are not
-really fixed clocks. Their frequency is set by the bitstream, so having
-them located in -fabric.dtsi is not a problem - they're just as "fixed"
-as the IP blocks etc used in the FPGA fabric.
-However, their configuration can be read at runtime (and to an extent
-they can be controlled, although the intended usage is static
-configurations set by the bitstream) through the system controller bus.
+On Mon, 22 Aug 2022 at 16:48, David Howells <dhowells@redhat.com> wrote:
+>
+> Hawkins Jiawei <yin31149@gmail.com> wrote:
+>
+> > -             if (mutex_lock_interruptible(&call->user_mutex) < 0)
+> > +             if (mutex_lock_interruptible(&call->user_mutex) < 0) {
+> > +                     mutex_lock(&call->user_mutex);
+>
+> Yeah, as Khalid points out that kind of makes the interruptible lock
+> pointless.  Either rxrpc_send_data() needs to return a separate indication
+> that we returned without the lock held or it needs to always drop the lock on
+> error (at least for ERESTARTSYS/EINTR) which can be checked for higher up.
+Hi David,
 
-In the v2209 reference design a single CCC (north-west corner) is
-enabled, using a 50 MHz off-chip oscillator as its reference.
+For second option, I think it may meet some difficulty, because we
+cannot figure out whether rxrpc_send_data() meets lock error.
+To be more specific, rxrpc_send_data() may still returns the number
+it has copied even rxrpc_send_data() meets lock error, if
+rxrpc_send_data() has successfully dealed some data.(Please correct me
+if I am wrong)
 
-Updating to the v2209 reference design is required.
+So I think the first option seems better. I wonder if we can add an
+argument in rxrpc_send_data() as an indication you pointed out? Maybe:
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../dts/microchip/mpfs-icicle-kit-fabric.dtsi | 27 +++++++++------
- .../boot/dts/microchip/mpfs-icicle-kit.dts    |  4 +++
- .../dts/microchip/mpfs-polarberry-fabric.dtsi |  5 +++
- arch/riscv/boot/dts/microchip/mpfs.dtsi       | 34 +++++++++++++++++--
- 4 files changed, 58 insertions(+), 12 deletions(-)
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 1d38e279e2ef..0801325a7c7f 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -284,13 +284,18 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
+ 
+ /*
+  * send data through a socket
++ * @holding_mutex: rxrpc_send_data() will assign this pointer with True
++ * if functions still holds the call user access mutex when returned to caller.
++ * This argument can be NULL, which will effect nothing.
++ *
+  * - must be called in process context
+  * - The caller holds the call user access mutex, but not the socket lock.
+  */
+ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 			   struct rxrpc_call *call,
+ 			   struct msghdr *msg, size_t len,
+-			   rxrpc_notify_end_tx_t notify_end_tx)
++			   rxrpc_notify_end_tx_t notify_end_tx,
++			   bool *holding_mutex)
+ {
+ 	struct rxrpc_skb_priv *sp;
+ 	struct sk_buff *skb;
+@@ -299,6 +304,9 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 	bool more;
+ 	int ret, copied;
+ 
++	if (holding_mutex)
++		*holding_mutex = true;
++
+ 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 
+ 	/* this should be in poll */
+@@ -338,8 +346,11 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 				ret = rxrpc_wait_for_tx_window(rx, call,
+ 							       &timeo,
+ 							       msg->msg_flags & MSG_WAITALL);
+-				if (ret < 0)
++				if (ret < 0) {
++					if (holding_mutex)
++						*holding_mutex = false;
+ 					goto maybe_error;
++				}
+ 			}
+ 
+ 			/* Work out the maximum size of a packet.  Assume that
+@@ -630,6 +641,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 	struct rxrpc_call *call;
+ 	unsigned long now, j;
+ 	int ret;
++	bool holding_user_mutex;
+ 
+ 	struct rxrpc_send_params p = {
+ 		.call.tx_total_len	= -1,
+@@ -747,7 +759,9 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 		/* Reply phase not begun or not complete for service call. */
+ 		ret = -EPROTO;
+ 	} else {
+-		ret = rxrpc_send_data(rx, call, msg, len, NULL);
++		ret = rxrpc_send_data(rx, call, msg, len, NULL, &holding_user_mutex);
++		if (!holding_user_mutex)
++			goto error_put;
+ 	}
+ 
+ out_put_unlock:
+@@ -796,7 +810,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
+ 	case RXRPC_CALL_SERVER_ACK_REQUEST:
+ 	case RXRPC_CALL_SERVER_SEND_REPLY:
+ 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
+-				      notify_end_tx);
++				      notify_end_tx, NULL);
+ 		break;
+ 	case RXRPC_CALL_COMPLETE:
+ 		read_lock_bh(&call->state_lock);
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-index 0d28858b83f2..f17cb00df467 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-@@ -2,14 +2,14 @@
- /* Copyright (c) 2020-2021 Microchip Technology Inc */
- 
- / {
--	compatible = "microchip,mpfs-icicle-reference-rtlv2203", "microchip,mpfs";
-+	compatible = "microchip,mpfs-icicle-reference-rtlv2209", "microchip,mpfs";
- 
- 	core_pwm0: pwm@41000000 {
- 		compatible = "microchip,corepwm-rtl-v4";
- 		reg = <0x0 0x41000000 0x0 0xF0>;
- 		microchip,sync-update-mask = /bits/ 32 <0>;
- 		#pwm-cells = <2>;
--		clocks = <&fabric_clk3>;
-+		clocks = <&ccc_nw CLK_CCC_PLL0_OUT0>;
- 		status = "disabled";
- 	};
- 
-@@ -18,22 +18,29 @@ i2c2: i2c@44000000 {
- 		reg = <0x0 0x44000000 0x0 0x1000>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
--		clocks = <&fabric_clk3>;
-+		clocks = <&ccc_nw CLK_CCC_PLL0_OUT3>;
- 		interrupt-parent = <&plic>;
- 		interrupts = <122>;
- 		clock-frequency = <100000>;
- 		status = "disabled";
- 	};
- 
--	fabric_clk3: fabric-clk3 {
-+	refclk_ccc: cccrefclk {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
--		clock-frequency = <62500000>;
- 	};
-+};
- 
--	fabric_clk1: fabric-clk1 {
--		compatible = "fixed-clock";
--		#clock-cells = <0>;
--		clock-frequency = <125000000>;
--	};
-+&ccc_nw {
-+	clocks = <&refclk_ccc>, <&refclk_ccc>, <&refclk_ccc>, <&refclk_ccc>,
-+		 <&refclk_ccc>, <&refclk_ccc>;
-+	clock-names = "pll0_ref0", "pll0_ref1", "pll1_ref0", "pll1_ref1",
-+		      "dll0_ref", "dll1_ref";
-+	status = "okay";
-+};
-+
-+&pcie {
-+	clocks = <&ccc_nw CLK_CCC_PLL0_OUT0>, <&ccc_nw CLK_CCC_PLL0_OUT1>,
-+		 <&ccc_nw CLK_CCC_PLL0_OUT3>;
-+	clock-names = "fic0", "fic1", "fic3";
- };
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-index 044982a11df5..d361d1e38b16 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-@@ -140,6 +140,10 @@ &refclk {
- 	clock-frequency = <125000000>;
- };
- 
-+&refclk_ccc {
-+	clock-frequency = <50000000>;
-+};
-+
- &rtc {
- 	status = "okay";
- };
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-index 49380c428ec9..3beb450b4259 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-@@ -14,3 +14,8 @@ fabric_clk1: fabric-clk1 {
- 		clock-frequency = <125000000>;
- 	};
- };
-+
-+&pcie {
-+	clocks = <&fabric_clk1>, <&fabric_clk1>, <&fabric_clk3>;
-+	clock-names = "fic0", "fic1", "fic3";
-+};
-diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-index 499c2e63ad35..b23390e7504e 100644
---- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-@@ -236,6 +236,38 @@ clkcfg: clkcfg@20002000 {
- 			#clock-cells = <1>;
- 		};
- 
-+		ccc_se: clock-controller@38010000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38010000 0x0 0x1000>, <0x0 0x38020000 0x0 0x1000>,
-+			      <0x0 0x39010000 0x0 0x1000>, <0x0 0x39020000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ccc_ne: clock-controller@38040000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38040000 0x0 0x1000>, <0x0 0x38080000 0x0 0x1000>,
-+			      <0x0 0x39040000 0x0 0x1000>, <0x0 0x39080000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ccc_nw: clock-controller@38100000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38100000 0x0 0x1000>, <0x0 0x38200000 0x0 0x1000>,
-+			      <0x0 0x39100000 0x0 0x1000>, <0x0 0x39200000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ccc_sw: clock-controller@38400000 {
-+			compatible = "microchip,mpfs-ccc";
-+			reg = <0x0 0x38400000 0x0 0x1000>, <0x0 0x38800000 0x0 0x1000>,
-+			      <0x0 0x39400000 0x0 0x1000>, <0x0 0x39800000 0x0 0x1000>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
-+
- 		mmuart0: serial@20000000 {
- 			compatible = "ns16550a";
- 			reg = <0x0 0x20000000 0x0 0x400>;
-@@ -480,8 +512,6 @@ pcie: pcie@2000000000 {
- 					<0 0 0 3 &pcie_intc 2>,
- 					<0 0 0 4 &pcie_intc 3>;
- 			interrupt-map-mask = <0 0 0 7>;
--			clocks = <&fabric_clk1>, <&fabric_clk1>, <&fabric_clk3>;
--			clock-names = "fic0", "fic1", "fic3";
- 			ranges = <0x3000000 0x0 0x8000000 0x20 0x8000000 0x0 0x80000000>;
- 			msi-parent = <&pcie>;
- 			msi-controller;
--- 
-2.36.1
 
+On Mon, 22 Aug 2022 at 17:21, David Howells <dhowells@redhat.com> wrote:
+>
+> Actually, there's another bug here too: if rxrpc_wait_for_tx_window() drops
+> the call mutex then it needs to reload the pending packet state in
+> rxrpc_send_data() as it may have raced with another sendmsg().
+>
+> David
+>
+After applying the above patch, kernel still panic, but seems not the
+bad unlock balance bug before. yet I am not sure if this is the same bug you
+mentioned. Kernel output as below:
+[   39.115966][ T6508] ====================================
+[   39.116940][ T6508] WARNING: syz/6508 still has locks held!
+[   39.117978][ T6508] 6.0.0-rc1-00066-g3b06a2755758-dirty #186 Not tainted
+[   39.119353][ T6508] ------------------------------------
+[   39.120321][ T6508] 1 lock held by syz/6508:
+[   39.121122][ T6508]  #0: ffff88801f472b20 (&call->user_mutex){....}-{3:3}0
+[   39.123014][ T6508] 
+[   39.123014][ T6508] stack backtrace:
+[   39.123925][ T6508] CPU: 0 PID: 6508 Comm: syz Not tainted 6.0.0-rc1-00066
+[   39.125304][ T6508] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)4
+[   39.125304][ T6508] Call Trace:
+[   39.125304][ T6508]  <TASK>
+[   39.125304][ T6508]  dump_stack_lvl+0x8e/0xdd
+[   39.125304][ T6508]  get_signal+0x1866/0x24d0
+[   39.125304][ T6508]  ? lock_acquire+0x172/0x310
+[   39.125304][ T6508]  ? exit_signals+0x7b0/0x7b0
+[   39.125304][ T6508]  arch_do_signal_or_restart+0x82/0x23f0
+[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
+[   39.125304][ T6508]  ? __fget_light+0x20d/0x270
+[   39.125304][ T6508]  ? get_sigframe_size+0x10/0x10
+[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
+[   39.125304][ T6508]  ? __sys_sendmsg+0x11a/0x1c0
+[   39.125304][ T6508]  ? __sys_sendmsg_sock+0x30/0x30
+[   39.125304][ T6508]  exit_to_user_mode_prepare+0x146/0x1b0
+[   39.125304][ T6508]  syscall_exit_to_user_mode+0x12/0x30
+[   39.125304][ T6508]  do_syscall_64+0x42/0xb0
+[   39.125304][ T6508]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[   39.125304][ T6508] RIP: 0033:0x44fbad
+[   39.125304][ T6508] Code: c3 e8 97 29 00 00 0f 1f 80 00 00 00 00 f3 0f 1e8
+[   39.125304][ T6508] RSP: 002b:00007f4b8ae22d48 EFLAGS: 00000246 ORIG_RAX:e
+[   39.125304][ T6508] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 0000d
+[   39.125304][ T6508] RDX: 0000000000000186 RSI: 0000000020000000 RDI: 00003
+[   39.125304][ T6508] RBP: 00007f4b8ae22d80 R08: 00007f4b8ae23700 R09: 00000
+[   39.125304][ T6508] R10: 00007f4b8ae23700 R11: 0000000000000246 R12: 0000e
+[   39.125304][ T6508] R13: 00007ffe483304af R14: 00007ffe48330550 R15: 00000
+[   39.125304][ T6508]  </TASK>
+====================================
+
+I will make a deeper look and try to patch it.
