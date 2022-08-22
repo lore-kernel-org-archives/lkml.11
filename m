@@ -2,120 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BBBC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAC1C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235126AbiHVSYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
+        id S236271AbiHVSY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237425AbiHVSYI (ORCPT
+        with ESMTP id S237422AbiHVSYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:24:08 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA141A81F;
-        Mon, 22 Aug 2022 11:24:03 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 11:23:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1661192642;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bQzUYJbzeSJVtDIpGsHXApQTdq+ArDiyBUiXh9dJl9c=;
-        b=ko5CwHMhDHobyMV2JTCqgpMz2+52hcGSQVRXn7bUUUSzOzmxP9AFk+/mRkwC+S5zY6MqdX
-        F2q4LAhYZbvIHrC86yIgvLfaWvRCGsb0n0M91E3H2sYMBQDtjW1gtraZ1MHGzTdRTZPXQf
-        PJRtOi3CP/lPjq5dDiL0j6nSDxN5b2s=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for
- low/min
-Message-ID: <YwPJvGL6ZhgrYTeK@P9FQF9L96D>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-2-shakeelb@google.com>
+        Mon, 22 Aug 2022 14:24:24 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABE6481D3;
+        Mon, 22 Aug 2022 11:24:20 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id u14so13212917oie.2;
+        Mon, 22 Aug 2022 11:24:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=kHHAGkcdDwIUojsw/Qh9mTAcNHVZ/83Lhyn//UEbyGE=;
+        b=KCM5lV6jh22OXLeWJuB2PF+QCC0TgTlKK3tnexJR1au8KWsichEDWaCgGAcFCNypyW
+         kXjuQYUUYyJJAWRTUDHD8gMnbvjz7KAhtnVgYlwWblmovisc9lM5nYimMJh8aIRbALUk
+         t78kFsAIAm/+ZYWUKzomcf9jBtjuppSb8eiNvjB459eBts2v2db+Wuzyn4ma/LNx5VbC
+         Y7SuDm0G56V/4aVvzl0Mj7e2kWzzII5g7Nu4bBfJBkYZUJKmmKCciSDhqR/NpO4ZkwNu
+         0qmnj1jmLNaPUKkk+hk0+pzZPUvJr9iP+Z8CohSlwgN2Xf64/Vcc4qdnA+ZpSeZeRJOa
+         okBg==
+X-Gm-Message-State: ACgBeo3SdrQGZWMmd2AzZBddFm+xglkb48wcrBNKXRCsnQZxun9D/u9y
+        5lEvcevkRGpkbyyYAOYT5g==
+X-Google-Smtp-Source: AA6agR4GcnCSOqfMPx7kKucGwdxFpONZqkYeDNNgwvLBMASnPewmx+dR5MZxR1QRtg6AOjnDW1mCwA==
+X-Received: by 2002:a05:6808:3a9:b0:343:4b14:ccce with SMTP id n9-20020a05680803a900b003434b14cccemr11840129oie.41.1661192659071;
+        Mon, 22 Aug 2022 11:24:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t20-20020a9d5914000000b0061cbd18bd18sm3145285oth.45.2022.08.22.11.24.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 11:24:18 -0700 (PDT)
+Received: (nullmailer pid 109846 invoked by uid 1000);
+        Mon, 22 Aug 2022 18:24:18 -0000
+Date:   Mon, 22 Aug 2022 13:24:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, Lee Jones <lee@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [RFT PATCH v3 01/16] dt-bindings: mfd: qcom,tcsr: add several
+ devices
+Message-ID: <20220822182418.GA109764-robh@kernel.org>
+References: <20220819083209.50844-1-krzysztof.kozlowski@linaro.org>
+ <20220819083209.50844-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220819083209.50844-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 12:17:35AM +0000, Shakeel Butt wrote:
-> For cgroups using low or min protections, the function
-> propagate_protected_usage() was doing an atomic xchg() operation
-> irrespectively. It only needs to do that operation if the new value of
-> protection is different from older one. This patch does that.
+On Fri, 19 Aug 2022 11:31:54 +0300, Krzysztof Kozlowski wrote:
+> Document existing (MSM8996, SC7280) and new compatibles for TCSR syscon
+> registers (QCS404, SC7180, SDM630, SDM845, SM8150, MSM8998).
 > 
-> To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> ran the following workload in a three level of cgroup hierarchy with top
-> level having min and low setup appropriately. More specifically
-> memory.min equal to size of netperf binary and memory.low double of
-> that.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> 
-> Results (average throughput of netperf):
-> Without (6.0-rc1)	10482.7 Mbps
-> With patch		14542.5 Mbps (38.7% improvement)
-> 
-> With the patch, the throughput improved by 38.7%
-
-Nice savings!
-
-> 
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
 > ---
->  mm/page_counter.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
 > 
-> diff --git a/mm/page_counter.c b/mm/page_counter.c
-> index eb156ff5d603..47711aa28161 100644
-> --- a/mm/page_counter.c
-> +++ b/mm/page_counter.c
-> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
->  				      unsigned long usage)
->  {
->  	unsigned long protected, old_protected;
-> -	unsigned long low, min;
->  	long delta;
->  
->  	if (!c->parent)
->  		return;
->  
-> -	min = READ_ONCE(c->min);
-> -	if (min || atomic_long_read(&c->min_usage)) {
-> -		protected = min(usage, min);
-> +	protected = min(usage, READ_ONCE(c->min));
-> +	old_protected = atomic_long_read(&c->min_usage);
-> +	if (protected != old_protected) {
->  		old_protected = atomic_long_xchg(&c->min_usage, protected);
->  		delta = protected - old_protected;
->  		if (delta)
->  			atomic_long_add(delta, &c->parent->children_min_usage);
+> Changes since v2:
+> 1. Add more compatibles.
+> 
+> Changes since v1:
+> 1. Correct order of compatibles.
+> ---
+>  Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
 
-What if there is a concurrent update of c->min_usage? Then the patched version
-can miss an update. I can't imagine a case when it will lead to bad consequences,
-so probably it's ok. But not super obvious.
-I think the way to think of it is that a missed update will be fixed by the next
-one, so it's ok to run some time with old numbers.
-
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-
-Thanks!
+Acked-by: Rob Herring <robh@kernel.org>
