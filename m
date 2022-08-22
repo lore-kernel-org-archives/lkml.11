@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BD7C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 736CAC32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234391AbiHVLEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S234485AbiHVLE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbiHVLEV (ORCPT
+        with ESMTP id S229704AbiHVLEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 07:04:21 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06FE27B11
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C345127B13
         for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:04:19 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Dx-0005Qj-4p; Mon, 22 Aug 2022 13:04:05 +0200
+        id 1oQ5Dw-0005PG-1N; Mon, 22 Aug 2022 13:04:04 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Dw-001HmQ-5b; Mon, 22 Aug 2022 13:04:04 +0200
+        id 1oQ5Dt-001Hlg-S9; Mon, 22 Aug 2022 13:04:01 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Ds-009gzH-EK; Mon, 22 Aug 2022 13:04:00 +0200
+        id 1oQ5Ds-009gyY-BM; Mon, 22 Aug 2022 13:04:00 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 08/17] net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register
-Date:   Mon, 22 Aug 2022 13:03:49 +0200
-Message-Id: <20220822110358.2310055-9-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 03/17] net: dsa: microchip: don't announce extended register support on non Gbit chips
+Date:   Mon, 22 Aug 2022 13:03:44 +0200
+Message-Id: <20220822110358.2310055-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220822110358.2310055-1-o.rempel@pengutronix.de>
 References: <20220822110358.2310055-1-o.rempel@pengutronix.de>
@@ -55,31 +55,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This issue was detected after adding regmap register access validation.
-KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
-So, avoid writing to it.
+This issue was detected after adding support of regmap_ranges for KSZ8563R
+chip. This chip is reporting extended registers support without having
+actual extended registers. This made PHYlib request not existing
+registers.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz9477.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/dsa/microchip/ksz9477.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 13c4ded84b1db..62a03b3b918df 100644
+index 17c39d27c6d3b..e1702ff04b858 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -193,6 +193,11 @@ int ksz9477_reset_switch(struct ksz_device *dev)
- 	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
- 	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
+@@ -264,6 +264,17 @@ void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
+ 	mutex_unlock(&mib->cnt_mutex);
+ }
  
-+	/* KSZ9893 compatible chips do not support refclk configuration */
-+	if (dev->chip_id == KSZ9893_CHIP_ID ||
-+	    dev->chip_id == KSZ8563_CHIP_ID)
-+		return 0;
 +
- 	data8 = SW_ENABLE_REFCLKO;
- 	if (dev->synclko_disable)
- 		data8 = 0;
++static void ksz9477_r_phy_quirks(struct ksz_device *dev, u16 addr, u16 reg,
++				 u16 *data)
++{
++	/* KSZ8563R do not have extended registers but BMSR_ESTATEN and
++	 * BMSR_ERCAP bits are set.
++	 */
++	if (dev->chip_id == KSZ8563_CHIP_ID && reg == MII_BMSR)
++		*data &= ~(BMSR_ESTATEN | BMSR_ERCAP);
++}
++
+ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ {
+ 	u16 val = 0xffff;
+@@ -308,6 +319,7 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ 		}
+ 	} else {
+ 		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
++		ksz9477_r_phy_quirks(dev, addr, reg, &val);
+ 	}
+ 
+ 	*data = val;
 -- 
 2.30.2
 
