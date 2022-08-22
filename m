@@ -2,172 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F99C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 04:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86208C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 04:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiHVE6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 00:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S232576AbiHVE7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 00:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231694AbiHVE6c (ORCPT
+        with ESMTP id S231694AbiHVE7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 00:58:32 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FDBE0E1;
-        Sun, 21 Aug 2022 21:58:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661144311; x=1692680311;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/rA08EkKshgmbDIpcT1/pWksM4Su7kRxSiCqNoDLNEs=;
-  b=nW4fMCJmW5ex5URirrhpeR8yvubYEuroknsNG6SijULXApGXGHqZsjom
-   frMR/6ugGcoFdeukhj7lm+mKbvktquo7HeqVmXETrzZQdk3IZrQMNxb9U
-   +xKzbcDf1fbu4P8FgSdUaL1IYXhpNUPeqR1oGaprDACW7p8YyPVxiNpXJ
-   9D4Ehv1DEmk6nW0orFGaR/V2WZymrsEmcZJmT9QFDw8LomXvwnbTFLKQC
-   8kmffL8mB7ZK+T139OksXa6496m4i+b8waukKcIcivKc7L2EdKDPhqsPE
-   IytooClf+RXogoBAV6Yzd8av0Y7ZR/bcES7nLTydjlt3fpLn9slYkOHn/
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="280289702"
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="280289702"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 21:58:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="936880202"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Aug 2022 21:58:27 -0700
-Date:   Mon, 22 Aug 2022 12:49:16 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Russ Weight <russell.h.weight@intel.com>
-Cc:     Peter Colberg <peter.colberg@intel.com>, Wu Hao <hao.wu@intel.com>,
-        Tom Rix <trix@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        marpagan@redhat.com, lgoncalv@redhat.com
-Subject: Re: [PATCH v1] uio: dfl: add IOPLL user-clock feature id
-Message-ID: <YwMKzC6HwjYqDxIs@yilunxu-OptiPlex-7050>
-References: <20220817213746.4986-1-peter.colberg@intel.com>
- <Yv29ev8OKyEYcaf/@yilunxu-OptiPlex-7050>
- <acdf9c04-0816-5995-da90-c53153ffac59@intel.com>
+        Mon, 22 Aug 2022 00:59:33 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA1124F0E
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 21:59:32 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id d71so8393287pgc.13
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 21:59:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=9XhZmihVWYtN8pqGhGwupTf+AWRqtf1YyaQ/pGiog9k=;
+        b=e4g+T2mMYZZcLZKVuyYTBE7KioYD6BNBNG1cLqDFZ5B9t0E6FIRD5EvbyAzLTCr3kJ
+         rA6ZK7oCz9GEATt82qpw+2JFjAHNx6MWzrOEJkCcglpPUJI6hS1usRrjSP0PtvLaklzt
+         2SWFQW3etXo3F8BRQXjkvsEAD1xWTy3389fS+y8cwwh/ZpGZYzfVQV4mAVDrVneI1RKY
+         LqoHhaNoGRAKG4D6abLWZ4z6qaxhraGCM7tcAmHqKNXwMFf8R6WZS65/KM+mSpunicvW
+         NoZagRqgMyd0mx1A/gtNa8G0tjAlwmRM7GukYQSHxRJh5NrCaUN7Ht0Ligb/wX1I4ajV
+         MSHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=9XhZmihVWYtN8pqGhGwupTf+AWRqtf1YyaQ/pGiog9k=;
+        b=XGhtMBa40RzZ0BQUXPFPmha3bk1ULpICOBMu98uj3irAxw2ZnzUbcfYbmc6QX3XVc9
+         4jYe2hToojY6DAs4KgFU5HmldyYTINIoKl9enHLTaNv+hG3XyM/ufzQnjGM3JNbWU0qY
+         HfeuD+twyR/XPxn7eJAryW4eKoQdfQIVKa+dpGalV2UNYfTNDt6YXtrwpAhPNg/Ql/zt
+         /5rK7jI73XUTpb3niEe22I1q89w0Og5YfU6Bb/17EeGLAPIfq/ZUmktFy0z3OQMJOqxm
+         XwdNoDEoHe6PJbu0b6mJwV4Qpx8ZpefJIYoYam9AqLG+HpadFP6Xbi4PPeiDCNGdEoG4
+         FCfA==
+X-Gm-Message-State: ACgBeo0N3Z+fP9fp+eQsszvF1EI91Pr0V0pUgvd3BjAPVMvmp09kufmg
+        CAlH4RpFsZGyGESw7znk6YLzRHzLSGGMnoJ/Nun5cg==
+X-Google-Smtp-Source: AA6agR4/1s7y++qNsA2/cfFgEIhAK4Q20RaQ1xUDhpnZDmYg93tgbnj5pntFlvFsEA9PvT9gkP9gZgjLoqCg32dK4EA=
+X-Received: by 2002:a62:6497:0:b0:52e:e0cd:1963 with SMTP id
+ y145-20020a626497000000b0052ee0cd1963mr19195169pfb.58.1661144371422; Sun, 21
+ Aug 2022 21:59:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <acdf9c04-0816-5995-da90-c53153ffac59@intel.com>
+References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-3-shakeelb@google.com>
+ <YwLlsr0jNq5m6v8z@feng-clx>
+In-Reply-To: <YwLlsr0jNq5m6v8z@feng-clx>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Sun, 21 Aug 2022 21:59:20 -0700
+Message-ID: <CALvZod6d_0ERWy3bsCaLwoNhn7H6YnGeJfs_S5H+Fy2xb3eM9w@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Michal Koutn??" <mkoutny@suse.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "Sang, Oliver" <oliver.sang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "lkp@lists.01.org" <lkp@lists.01.org>,
+        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-18 at 17:38:35 -0600, Russ Weight wrote:
-> 
-> 
-> On 8/17/22 21:18, Xu Yilun wrote:
-> > On 2022-08-17 at 17:37:46 -0400, Peter Colberg wrote:
-> >> Add a Device Feature List (DFL) feature id for the configurable
-> >> IOPLL user clock source, which can be used to configure the clock
-> >> speeds that are used for RTL logic that is programmed into the
-> >> Partial Reconfiguration (PR) region of an FPGA.
-> > Why not use linux clock framework for this IOPLL? And let the PR
-> > driver set it togeter with the RTL logic reporgramming?
-> 
-> Hi Yilun,
-> 
-> We previously explored the possibility of plugging into the linux
-> clock framework. For this device, setting a desired frequency is
-> heavily dependent on a table of values that must be programmed in
-> order to achieve the desired clock speeds.
-> 
-> Here is an example table, indexed by frequency. The first element
-> in each entry is the frequency in kHz:
-> 
-> https://github.com/OPAE/opae-sdk/blob/master/libraries/plugins/xfpga/usrclk/fpga_user_clk_freq.h
-> 
-> We previously experimented with a kernel-space driver. The
-> implementation exported a sysfs node into which the table values for
-> the desired frequency would be written in order to set the desired
-> frequency. The function of the driver was to execute the logic
-> required to program the device. We did not think this implementation
-> should be up-streamed.
-> 
-> It isn't practical to upstream the frequency tables as they are
-> subject to change for future devices. For example, if the reference
-> frequency changed in a future device, a whole new table of values would
-> have to be added for the new device. In a recent transition to a new
-> device, the range of frequencies was increased which required an
-> extension to an existing table.
-
-Making a table for the inputs & outputs is always a easier way to get
-things done, but the trade off is, as you said, extension to the table
-every time for new outputs.
-
-So do we really need all parameters to be in a table, or these are
-actually the outcome of some calculation? Is it possible just
-Implementing the calculation.
-
-If I remember correctly, linux clk framework enables a generic clk
-caculation mechanism. It encourages people to model the internal
-refclk, plls (and deviders?) separately and construct the clk tree.
-Then the specified calculation could be simpler for each clk driver.
-
-I'm not sure the clk framework fits all your need, but please
-investigate it firstly.
-
-> 
-> A previous implementation of the user clock was also implemented in
-> user-space. The kernel driver exported each of the registers, but
-> all of the logic was implemented in user-space. The kernel portion
-> can be viewed here:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/fpga/dfl-afu-main.c#n380
-> 
-> This is our reasoning in choosing to implement this driver in
-> user-space. Would you consider a uio based user-space driver to
-> be acceptable for in this case?
-
-As usual, we firstly make clear why existing framework cannot fit the
-case and should be implemented in userspace, then everything would be
-OK.
-
-Thanks,
-Yilun
-
-> 
-> - Russ
-> 
-> 
+On Sun, Aug 21, 2022 at 7:12 PM Feng Tang <feng.tang@intel.com> wrote:
+>
+> On Mon, Aug 22, 2022 at 08:17:36AM +0800, Shakeel Butt wrote:
+> > With memcg v2 enabled, memcg->memory.usage is a very hot member for
+> > the workloads doing memcg charging on multiple CPUs concurrently.
+> > Particularly the network intensive workloads. In addition, there is a
+> > false cache sharing between memory.usage and memory.high on the charge
+> > path. This patch moves the usage into a separate cacheline and move all
+> > the read most fields into separate cacheline.
 > >
-> > Thanks,
-> > Yilun
+> > To evaluate the impact of this optimization, on a 72 CPUs machine, we
+> > ran the following workload in a three level of cgroup hierarchy with top
+> > level having min and low setup appropriately. More specifically
+> > memory.min equal to size of netperf binary and memory.low double of
+> > that.
 > >
-> >> The DFL feature id table can be found at:
-> >> https://github.com/OPAE/dfl-feature-id
-> >>
-> >> Signed-off-by: Peter Colberg <peter.colberg@intel.com>
-> >> ---
-> >>  drivers/uio/uio_dfl.c | 2 ++
-> >>  1 file changed, 2 insertions(+)
-> >>
-> >> diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
-> >> index 8f39cc8bb034..69e93f3e7faf 100644
-> >> --- a/drivers/uio/uio_dfl.c
-> >> +++ b/drivers/uio/uio_dfl.c
-> >> @@ -46,10 +46,12 @@ static int uio_dfl_probe(struct dfl_device *ddev)
-> >>  
-> >>  #define FME_FEATURE_ID_ETH_GROUP	0x10
-> >>  #define FME_FEATURE_ID_HSSI_SUBSYS	0x15
-> >> +#define PORT_FEATURE_ID_IOPLL_USRCLK	0x14
-> >>  
-> >>  static const struct dfl_device_id uio_dfl_ids[] = {
-> >>  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
-> >>  	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
-> >> +	{ PORT_ID, PORT_FEATURE_ID_IOPLL_USRCLK },
-> >>  	{ }
-> >>  };
-> >>  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
-> >> -- 
-> >> 2.28.0
-> >>
-> 
+> >  $ netserver -6
+> >  # 36 instances of netperf with following params
+> >  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+> >
+> > Results (average throughput of netperf):
+> > Without (6.0-rc1)     10482.7 Mbps
+> > With patch            12413.7 Mbps (18.4% improvement)
+> >
+> > With the patch, the throughput improved by 18.4%.
+> >
+> > One side-effect of this patch is the increase in the size of struct
+> > mem_cgroup. However for the performance improvement, this additional
+> > size is worth it. In addition there are opportunities to reduce the size
+> > of struct mem_cgroup like deprecation of kmem and tcpmem page counters
+> > and better packing.
+> >
+> > Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+>
+> Looks good to me, with one nit below.
+>
+> Reviewed-by: Feng Tang <feng.tang@intel.com>
+
+Thanks.
+
+>
+> > ---
+> >  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
+> >  1 file changed, 23 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+> > index 679591301994..8ce99bde645f 100644
+> > --- a/include/linux/page_counter.h
+> > +++ b/include/linux/page_counter.h
+> > @@ -3,15 +3,27 @@
+> >  #define _LINUX_PAGE_COUNTER_H
+> >
+> >  #include <linux/atomic.h>
+> > +#include <linux/cache.h>
+> >  #include <linux/kernel.h>
+> >  #include <asm/page.h>
+> >
+> > +#if defined(CONFIG_SMP)
+> > +struct pc_padding {
+> > +     char x[0];
+> > +} ____cacheline_internodealigned_in_smp;
+> > +#define PC_PADDING(name)     struct pc_padding name
+> > +#else
+> > +#define PC_PADDING(name)
+> > +#endif
+>
+> There are 2 similar padding definitions in mmzone.h and memcontrol.h:
+>
+>         struct memcg_padding {
+>                 char x[0];
+>         } ____cacheline_internodealigned_in_smp;
+>         #define MEMCG_PADDING(name)      struct memcg_padding name
+>
+>         struct zone_padding {
+>                 char x[0];
+>         } ____cacheline_internodealigned_in_smp;
+>         #define ZONE_PADDING(name)      struct zone_padding name;
+>
+> Maybe we can generalize them, and lift it into include/cache.h? so
+> that more places can reuse it in future.
+>
+
+This makes sense but let me do that in a separate patch.
