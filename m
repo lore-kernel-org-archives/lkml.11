@@ -2,88 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897C4C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FF1C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236299AbiHVPWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
+        id S236515AbiHVPWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiHVPWD (ORCPT
+        with ESMTP id S236572AbiHVPWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:22:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC7B3DBE3;
-        Mon, 22 Aug 2022 08:15:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D855D610A3;
-        Mon, 22 Aug 2022 15:15:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 411D6C433C1;
-        Mon, 22 Aug 2022 15:15:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661181312;
-        bh=/TNMqXAFkzzbD2nFZOZ+zBMA3FkHrzThtNSNS4wQTRo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=anMmDAU/uld9xgko3X5FETrFRedS3WY/nROOoODI38BxFOZfWl40rHDS3kkQT8wAD
-         fTihu/DAVOjYjHmNpiae4Xif4oMdiUybw7RzYodfu7HoE9Ge036smsOl0Et9Tfsimq
-         hTUaaZgwaOGWp06MuVG/r5l1VBZTymVP6xVfo2qFYdGh92Yw+C4ajtIslQ5jYzXvYs
-         cvoTg5KUiegWlYqmYdwVQRijF+lInrKN6DFOLubDBKVLgSvO/Bj4DQ9n8ItQWEZPXY
-         +6TW3s0Mskezycy8t2biLpisyzAyja+sBMb6s0Fv23nI0UfWt/BjgBeYiYrUMkAlT5
-         ypCVM6g3ECDuQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oQ98w-00074j-EV; Mon, 22 Aug 2022 17:15:10 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sean Young <sean@mess.org>, linux-media@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH RESEND 2/3] media: flexcop-usb: clean up URB initialisation
-Date:   Mon, 22 Aug 2022 17:14:55 +0200
-Message-Id: <20220822151456.27178-3-johan@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220822151456.27178-1-johan@kernel.org>
-References: <20220822151456.27178-1-johan@kernel.org>
+        Mon, 22 Aug 2022 11:22:20 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3720559E;
+        Mon, 22 Aug 2022 08:17:03 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 17:17:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661181421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sfH8hUad6jWP6uiuYu/KbAXG3ccK+U6weU/GmP4xtvg=;
+        b=Ff5yfR8MKTqcA30lf5KIppWnEDZQIQl1GO1BmXcKUZ8q8BRDfH1rxN9iFR+hwq7nPTzive
+        IMt2rnJViM4Z9NQHC9KHzaK4fY+jXlfTZbNn9VeQPztcMck6rf45mQLa4nnKMWu12klJbB
+        i4Lg1W6vVc22WS8YYTg0xnss0z74YEnoDIRVfYkwE/8T9K/ab893uxdZnPvZRqx4m05ziP
+        GZ1ocKgs8cPNvq6Q+nqWo81HuLMO65AfUqfs0ZGDjVCUhZF1o5L/hGEs9I628TW1FiUfgE
+        V8JdYMAhTuI3yq5msiNKy79SDZcY5nzLMzGpG5qCeE4gWU4gUyisVepY3WUpMw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661181421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sfH8hUad6jWP6uiuYu/KbAXG3ccK+U6weU/GmP4xtvg=;
+        b=nFY5KRFXlHoYF7rgNaRSsazzVQh8iWRdwSwo57sPBdxa48GPQ3HogGSdPGn/f6zRYNN3u8
+        YT6eVuSh1ybACCDA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
+Message-ID: <YwOd7Ex7W21WzQ8N@linutronix.de>
+References: <20220817162703.728679-1-bigeasy@linutronix.de>
+ <20220817162703.728679-10-bigeasy@linutronix.de>
+ <20220817112745.4efd8217@kernel.org>
+ <Yv5aSquR9S2KxUr2@linutronix.de>
+ <20220818090200.4c6889f2@kernel.org>
+ <Yv5v1E6mfpcxjnLV@linutronix.de>
+ <20220818104505.010ff950@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220818104505.010ff950@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up URB initialisation somewhat by introducing a temporary variable
-and separating declaration and non-trivial initialisation.
+On 2022-08-18 10:45:05 [-0700], Jakub Kicinski wrote:
+> BTW, I have a hazy memory of people saying they switched to the _irq()
+> version because it reduced the number of retries significantly under
+> traffic. Dunno how practical that is but would you be willing to scan
+> the git history to double check that's not some of the motivation?
 
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/media/usb/b2c2/flexcop-usb.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+I didn't find any changes like -u64_stats_fetch_begin()
++u64_stats_fetch_begin_irq() for perf reasons. Thinking about it:
 
-diff --git a/drivers/media/usb/b2c2/flexcop-usb.c b/drivers/media/usb/b2c2/flexcop-usb.c
-index 31dd37d8236c..7102b346db05 100644
---- a/drivers/media/usb/b2c2/flexcop-usb.c
-+++ b/drivers/media/usb/b2c2/flexcop-usb.c
-@@ -425,12 +425,14 @@ static void flexcop_usb_transfer_exit(struct flexcop_usb *fc_usb)
- 
- static int flexcop_usb_transfer_init(struct flexcop_usb *fc_usb)
- {
--	u16 frame_size = le16_to_cpu(
--		fc_usb->uintf->cur_altsetting->endpoint[0].desc.wMaxPacketSize);
--	int bufsize = B2C2_USB_NUM_ISO_URB * B2C2_USB_FRAMES_PER_ISO *
--		frame_size, i, j, ret;
-+	struct usb_host_interface *alt = fc_usb->uintf->cur_altsetting;
-+	u16 frame_size;
-+	int bufsize, i, j, ret;
- 	int buffer_offset = 0;
- 
-+	frame_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
-+	bufsize = B2C2_USB_NUM_ISO_URB * B2C2_USB_FRAMES_PER_ISO * frame_size;
-+
- 	deb_ts("creating %d iso-urbs with %d frames each of %d bytes size = %d.\n",
- 	       B2C2_USB_NUM_ISO_URB,
- 			B2C2_USB_FRAMES_PER_ISO, frame_size, bufsize);
--- 
-2.35.1
+- On 32bit UP u64_stats_fetch_begin() disables only preemption during
+  stats read up, so the number of retries must be 0 because no seqcount
+  is used.
 
+- On 32bit UP u64_stats_fetch_begin_irq() disables interrupt during stats
+  read out so the number of retries must be 0 because no seqcount is
+  used.
+
+- On 32bit SMP u64_stats_fetch_begin()/ u64_stats_fetch_begin_irq()
+  keep preemption/ interrupts as-is, uses seqcount and so retries might
+  be observed.
+
+Based on that I don't see how a switch to _irq() makes a change in an
+SMP build while on UP you shouldn't see a retry at all.
+
+Using u64_stats_fetch_begin() is most likely wrong in networking because
+the stats are updated while packets are received which is either in IRQ
+or in BH (except maybe for the SPI/I2C ethernet driver). The _bh()
+version was replaced with _irq() for netpoll reasons.
+u64_stats_fetch_begin() does not disable any of those two (IRQ, BH) on
+32bit-UP and does not use a seqcount so it is possible that an update
+happens during the read out of stats. Let me look=E2=80=A6
+	drivers/net/ethernet/cortina/gemini.c
+reads in net_device_ops::ndo_get_stats64(), updates in NAPI.
+
+	drivers/net/ethernet/huawei/hinic/hinic_rx.c
+reads in net_device_ops::ndo_get_stats64() and
+ethtool_ops::get_ethtool_stats(), updates in NAPI. Good.
+
+So I guess these want be fixed properly instead of silently via the
+series?
+
+Sebastian
