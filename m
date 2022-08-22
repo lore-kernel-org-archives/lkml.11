@@ -2,133 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D07C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E68B0C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236431AbiHVPYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
+        id S236659AbiHVPZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236333AbiHVPYV (ORCPT
+        with ESMTP id S236654AbiHVPYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:24:21 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2B31115;
-        Mon, 22 Aug 2022 08:20:03 -0700 (PDT)
+        Mon, 22 Aug 2022 11:24:37 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6032964F7
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:20:57 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5067C2030D;
-        Mon, 22 Aug 2022 15:20:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661181602; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 0F634346C1;
+        Mon, 22 Aug 2022 15:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661181656; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=u+unRvwl5RKeXktuSK+JeocNb4ORKTqv8ZYCMY8yQM8=;
-        b=Z5JRAObP6PGpMdquxeMFMidbeOHtWJLVEE9H5TfjY4M/WMd9ZT0jW0WV9Yp7wIT2uHYujK
-        vrtWNCDHB5cxvadCzxPjVH948tgFEUdcfX8l61/jqmxdXQSDRyrYuCK77OhGk7sq3xkBGI
-        VPjgQZhJpqdOtppnpDO8v0bcGYh8wQQ=
+        bh=EOugp0arXi6PbnZspKBUOzjZp1e4ktn4gDiB2vuIYYU=;
+        b=s4590lSMJAQ601yDxFsZVYneQsn6DwfFjYfUFfKcK2gIl2wuIIxRjhIeHl/jSyccbKwP1G
+        LRQTmQ68P0iMdIuM2mYFno0Zgq27TCHYJUR58KGF4alQECUnYp/63yTXdaiOJYM3bZl6Y3
+        +iFOA3BKgzYb0sngAbHf18Cy6r0rvn4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661181656;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EOugp0arXi6PbnZspKBUOzjZp1e4ktn4gDiB2vuIYYU=;
+        b=z6j9pD47ERTNCUbZfNwdCmXEQOHSCwqe1Wt1BFPqvGlV5vn+FPmZIg5DtwqkPsoaaXdMqE
+        rDaeAHQqbnnWjSAA==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 23E3D1332D;
-        Mon, 22 Aug 2022 15:20:02 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D547E1332D;
+        Mon, 22 Aug 2022 15:20:55 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id T4jUBaKeA2O6FQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 15:20:02 +0000
-Date:   Mon, 22 Aug 2022 17:20:01 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for
- low/min
-Message-ID: <YwOeocdkF/lacpKn@dhcp22.suse.cz>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-2-shakeelb@google.com>
- <YwNSlZFPMgclrSCz@dhcp22.suse.cz>
- <YwNX+vq9svMynVgW@dhcp22.suse.cz>
- <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
+        id FDwFNNeeA2MPFgAAMHmgww
+        (envelope-from <jack@suse.cz>); Mon, 22 Aug 2022 15:20:55 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 0D2F3A066F; Mon, 22 Aug 2022 17:20:55 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 17:20:55 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Jan Kara <jack@suse.cz>, Gaosheng Cui <cuigaosheng1@huawei.com>,
+        eparis@redhat.com, mszeredi@redhat.com, amir73il@gmail.com,
+        linux-audit@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH next] audit: fix potential double free on error path from
+ fsnotify_add_inode_mark
+Message-ID: <20220822152055.hitwrvi3lmldhcgx@quack3>
+References: <20220822022905.1949007-1-cuigaosheng1@huawei.com>
+ <20220822085050.hxj6qmgj2x2tj6uv@quack3>
+ <CAHC9VhSw0zJWQEm-GCzQy_-4-X-yVuzvX1wBFcYMkG1mOXy+BA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
+In-Reply-To: <CAHC9VhSw0zJWQEm-GCzQy_-4-X-yVuzvX1wBFcYMkG1mOXy+BA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 07:55:58, Shakeel Butt wrote:
-> On Mon, Aug 22, 2022 at 3:18 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Mon 22-08-22 11:55:33, Michal Hocko wrote:
-> > > On Mon 22-08-22 00:17:35, Shakeel Butt wrote:
-> > [...]
-> > > > diff --git a/mm/page_counter.c b/mm/page_counter.c
-> > > > index eb156ff5d603..47711aa28161 100644
-> > > > --- a/mm/page_counter.c
-> > > > +++ b/mm/page_counter.c
-> > > > @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
-> > > >                                   unsigned long usage)
-> > > >  {
-> > > >     unsigned long protected, old_protected;
-> > > > -   unsigned long low, min;
-> > > >     long delta;
-> > > >
-> > > >     if (!c->parent)
-> > > >             return;
-> > > >
-> > > > -   min = READ_ONCE(c->min);
-> > > > -   if (min || atomic_long_read(&c->min_usage)) {
-> > > > -           protected = min(usage, min);
-> > > > +   protected = min(usage, READ_ONCE(c->min));
-> > > > +   old_protected = atomic_long_read(&c->min_usage);
-> > > > +   if (protected != old_protected) {
+On Mon 22-08-22 10:34:15, Paul Moore wrote:
+> On Mon, Aug 22, 2022 at 4:50 AM Jan Kara <jack@suse.cz> wrote:
+> > On Mon 22-08-22 10:29:05, Gaosheng Cui wrote:
+> > > Audit_alloc_mark() assign pathname to audit_mark->path, on error path
+> > > from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
+> > > of audit_mark->path, but the caller of audit_alloc_mark will free
+> > > the pathname again, so there will be double free problem.
 > > >
-> > > I have to cache that code back into brain. It is really subtle thing and
-> > > it is not really obvious why this is still correct. I will think about
-> > > that some more but the changelog could help with that a lot.
+> > > Fix this by resetting audit_mark->path to NULL pointer on error path
+> > > from fsnotify_add_inode_mark().
+> > >
+> > > Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
+> > > Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
 > >
-> > OK, so the this patch will be most useful when the min > 0 && min <
-> > usage because then the protection doesn't really change since the last
-> > call. In other words when the usage grows above the protection and your
-> > workload benefits from this change because that happens a lot as only a
-> > part of the workload is protected. Correct?
+> > Good spotting! The patch looks good to me. Feel free to add:
+> >
+> > Reviewed-by: Jan Kara <jack@suse.cz>
+> >
+> > > ---
+> > >  kernel/audit_fsnotify.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/kernel/audit_fsnotify.c b/kernel/audit_fsnotify.c
+> > > index 6432a37ac1c9..c565fbf66ac8 100644
+> > > --- a/kernel/audit_fsnotify.c
+> > > +++ b/kernel/audit_fsnotify.c
+> > > @@ -102,6 +102,7 @@ struct audit_fsnotify_mark *audit_alloc_mark(struct audit_krule *krule, char *pa
+> > >
+> > >       ret = fsnotify_add_inode_mark(&audit_mark->mark, inode, 0);
+> > >       if (ret < 0) {
+> > > +             audit_mark->path = NULL;
+> > >               fsnotify_put_mark(&audit_mark->mark);
 > 
-> Yes, that is correct. I hope the experiment setup is clear now.
+> As I'm tracing the code path from audit through fsnotify, and back
+> into audit, I'm wondering if we still have a problem.  When
+> fsnotify_add_inode_mark() fails it will end up freeing not just
+> audit_mark->path, but audit_mark itself via audit_fsnotify_mark_free()
+> (via a call into fsnotify_put_mark()), yes?
 
-Maybe it is just me that it took a bit to grasp but maybe we want to
-save our future selfs from going through that mental process again. So
-please just be explicit about that in the changelog. It is really the
-part that workloads excessing the protection will benefit the most that
-would help to understand this patch.
+I don't think so. fsnotify_add_mark_locked() will call fsnotify_put_mark()
+but that is just a counter part to fsnotify_get_mark() a few lines above.
+The caller of fsnotify_add_inode_mark() still holds its own mark reference
+which prevents mark from being freed.
 
-> > Unless I have missed anything this shouldn't break the correctness but I
-> > still have to think about the proportional distribution of the
-> > protection because that adds to the complexity here.
-> 
-> The patch is not changing any semantics. It is just removing an
-> unnecessary atomic xchg() for a specific scenario (min > 0 && min <
-> usage). I don't think there will be any change related to proportional
-> distribution of the protection.
-
-Yes, I suspect you are right. I just remembered previous fixes
-like 503970e42325 ("mm: memcontrol: fix memory.low proportional
-distribution") which just made me nervous that this is a tricky area.
-
-I will have another look tomorrow with a fresh brain and send an ack.
+								Honza
 -- 
-Michal Hocko
-SUSE Labs
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
