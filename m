@@ -2,78 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AE2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B346C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:07:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234809AbiHVNGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44416 "EHLO
+        id S234730AbiHVNHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbiHVNGI (ORCPT
+        with ESMTP id S234133AbiHVNHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:06:08 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA531E3CE
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:06:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661173568; x=1692709568;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=G4hBATmLM/5HOkJqWP9Jt5co1zzgbB7M4mIwYzwwRe8=;
-  b=TfyVeX07RSsaDF0IzjVYSK99XWzChNL4YShTKN2rwoe7i0GELxPvY7of
-   v0YVxHZ/VH86R3RkOAQhAWcZ8ac8T+JZzsrjxzDaCl/s4//3r0fANEWxQ
-   4l8kYJBku16wK7m8MzEiNeyIEGLp9vP654voQpsxPJvBdIbG0r7jBZPvq
-   tC6vHdtIGQV+lSA4kSdXa6lg7G0bmClMfjQni0TLiqYlyWhZUMEuk6RQM
-   m1k+xZie7n/m2DERJE90ZNVIu8LeY8SbaCG2NZmN/IsVjwJ8Nu6T8lS44
-   jEONlSFIiuPfjOZ1O3rnSF3aUefHRsa6TBKQekJB9NVSIjUSO1udtVj6V
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379698498"
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="379698498"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 06:06:07 -0700
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="712176290"
-Received: from mhakkine-mobl4.ger.corp.intel.com (HELO [10.249.43.69]) ([10.249.43.69])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 06:06:06 -0700
-Message-ID: <19b60ea9-6bee-1cc9-5384-89231fce3a99@linux.intel.com>
-Date:   Mon, 22 Aug 2022 15:06:03 +0200
+        Mon, 22 Aug 2022 09:07:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB1933A1B
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:07:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13C22B81134
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:07:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A786C433D6;
+        Mon, 22 Aug 2022 13:07:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661173624;
+        bh=tc+H2IZAZYCcsk+W/qTN/Gurc56MzvlVN7bbGRvcG/8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UWbhguo6slX2gCkBvkQDKi4z6EJRsxjArA7HDElXkjZM/QcrN7bJXNogEVMDwzfhR
+         wT8xkpFbn/8v1NhEkjj091LbJjSYthE2j7m8R/BjYJuFa+C0sl1ltXbzaP9ozJwKi1
+         9W/TlWvxIuY/U3bG8AT8l30zQ4WdyM1ZOcngH8lb3MsczRS7ulh5FimlfTtUZV3oUb
+         afQzRsua+Mnsll8h/6ETgCYdNO7/g1legmMBODv1HG6ex5WoQIYHZk7CujwjgG+fU/
+         1a9jy4qoQUyQZOqJt+E7gfllyZl8FTgviAzqdMb7LhkdSq5Cq6wOGXIvZSoaj23Nip
+         8sPWCHgEN8+uA==
+Date:   Mon, 22 Aug 2022 14:06:59 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Shengjiu Wang <shengjiu.wang@nxp.com>
+Cc:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: fsl_sai: Add support multi fifo sdma script
+Message-ID: <YwN/c0Q8ooBCIB1z@sirena.org.uk>
+References: <1660555546-24223-1-git-send-email-shengjiu.wang@nxp.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH] ASoC: dapm: Export new 'graph.dot' file in debugfs
-Content-Language: en-US
-To:     =?UTF-8?Q?Martin_Povi=c5=a1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>
-Cc:     alsa-devel@alsa-project.org, Liam Girdwood <lgirdwood@gmail.com>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        linux-kernel@vger.kernel.org
-References: <20220822095242.3779-1-povik+lin@cutebit.org>
- <YwN2Pd4Ez08yDFno@sirena.org.uk>
- <3234D74E-0DFF-4BB5-87ED-6135BAC1F31D@cutebit.org>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <3234D74E-0DFF-4BB5-87ED-6135BAC1F31D@cutebit.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="u43b6UwMPrtGu+8T"
+Content-Disposition: inline
+In-Reply-To: <1660555546-24223-1-git-send-email-shengjiu.wang@nxp.com>
+X-Cookie: Am I SHOPLIFTING?
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
->>> Provide a DOT summary of the DAPM graph in a newly added 'graph.dot'
->>> file in debugfs, placed in the card's DAPM directory.
->>
->> There was a tool floating about in the past (last copy I knew about was
->> on Wolfson's git but they took that down) - can we not just continue to
->> do that?
-> 
-> I don’t know the tool or where would I find it. I think it’s neat
-> simply having a ‘graph.dot’ at hand, especially since it requires
-> little code. (Although sure there’s the danger of it growing.)
+--u43b6UwMPrtGu+8T
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The Chrome folks used an 'asoc_dapm_graph' python script since 2014
-according to the copyright information. IIRC it was python2 so might
-need a bit of work.
+On Mon, Aug 15, 2022 at 05:25:46PM +0800, Shengjiu Wang wrote:
+> With disabling combine mode, the multiple successive
+> FIFO registers or non successive FIFO registers of SAI module
+> can work with the sdma multi fifo script.
 
-https://chromium.googlesource.com/chromiumos/third_party/adhd/+/refs/heads/master/scripts/asoc_dapm_graph
+This doesn't apply against current code, please check and resend.
+
+--u43b6UwMPrtGu+8T
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMDf3IACgkQJNaLcl1U
+h9BAlQf+L5kP4l9lQLSb9J7A0IJngh/vpXFA7wuR/7oW6SzHZxsyamK1IEPXVijQ
+6Is+lGT3ObIPZydx36IzJS+qkTOCIbuNTjeAl12SM/qCOQX4wZzhn80eKO3SKtvK
+9PVvmTaFFWvn+ANBeNWDKOXtdawBfBK5K+yLhiTNifOqQZ+8e0kL0TmnOhdecYEw
+//MgiNAkSEQV3c8F+u6JmXReT/9J7LLSGKbxTzu2Il8rXRPPbEfrfTxTF9V5BH3L
+XAYQYUTdrQ9/1rPXEW8/jAPJxvEOljTT4Q6iFAN5KF2xslmGD7pCuM5FW9ClHuCm
+rFKX5gZWGOaQn33E+zDa8HWh+usyVA==
+=BNOe
+-----END PGP SIGNATURE-----
+
+--u43b6UwMPrtGu+8T--
