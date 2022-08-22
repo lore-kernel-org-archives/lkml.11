@@ -2,112 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E76C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF672C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233450AbiHVNQf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        id S234680AbiHVNSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235132AbiHVNO3 (ORCPT
+        with ESMTP id S232132AbiHVNSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:14:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD8F275CD;
-        Mon, 22 Aug 2022 06:14:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7E1CB81216;
-        Mon, 22 Aug 2022 13:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C943C433B5;
-        Mon, 22 Aug 2022 13:14:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661174062;
-        bh=SEh3mF7ErUNfvVH/oVHuD4yxNekDIazJvrYvjkTf/wg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qdNZ0LYu5Rx+ziVjZkM4Hi/80XTmYVjC+0m651EfSjVbUv8Xg64kNcTIwfGaLhdbZ
-         ZExpIhp4TlYJdPB8G0BWjFChLLjxRjG6kTcLb1EayDD7ye12REKi3JIiC5+szvM+Ea
-         e5ltKuMpuiie5AFJ0f+V4+FpeNTsbrVmQ785pkpjSTEwmD3hu4vHeLyfXTUA9FghdQ
-         1sCG200GTk65GrZRuKErqQyD3dBF9bM0oL0/tveElV/6A9y38s1Ex4RCtQpEQEQLuB
-         mxeO5D01NKWCStn2JV2q5Gyw1zh3Q3+nUCdM8dtHhq3aptev7zYxf+hXa4KhqNDvqU
-         FgUXzMlIeZv6g==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id EE2F0404A1; Mon, 22 Aug 2022 10:14:19 -0300 (-03)
-Date:   Mon, 22 Aug 2022 10:14:19 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>
-Cc:     Yang Jihong <yangjihong1@huawei.com>, bp@suse.de,
-        ndesaulniers@google.com, nathan@kernel.org,
-        alexandre.belloni@bootlin.com, namhyung@kernel.org,
-        jolsa@kernel.org, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf tools: Fix compile error for x86
-Message-ID: <YwOBKwPmW/FX6hSS@kernel.org>
-References: <20220822092557.210209-1-yangjihong1@huawei.com>
- <YwNcgdk/p18Cr+uv@gmail.com>
+        Mon, 22 Aug 2022 09:18:00 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7DA32071
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:17:58 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id vw19so7478382ejb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=RJWgbhnetMUZfyM+6mbC5WR3l/QmeL2C9e6LCezHs8s=;
+        b=nEZxKvECnqaTacdetsPvCMLjEzMvzkaws4tpiuI3hSGvDeMW/Z8BeFaxSFYuH5rzZy
+         VTtnGO/hu+Kj8UxFUaKUJBj7DiQw+plUm8miZ/m1FTDt0nH3O4ejvACvedKR8khFwXvU
+         Jy0i92dmLpB6vvQP6MDvasUvdn1zF+YfRSwP0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=RJWgbhnetMUZfyM+6mbC5WR3l/QmeL2C9e6LCezHs8s=;
+        b=aJ2f6kXivfZL/gMyOj9J499Id1k6m+OmE102r/c1OfxNxhTh2rqlqRReMo+Q0VFeWN
+         fjyEbJu1+vZBIbAcSgvObU54lfGXS52h28+QI/4glo0yKyLtX1HX2Tk9B0FKm1pg0YZa
+         /nv7/wq0nofXSi3KZ2yyg68DfAFPAYeV2VKUjVGC0Ztx0vJRjb+r9myytm3thCYtb69c
+         23Jg+/3zo43ZjUeYH4yBb5zklHMuhYsp/S3BTZtfDfLRgnhy15upxO2Nykn1o5yxOnFN
+         +uGnvlNSSFLtYlngHPKi/XJ+XIJxXrw/CtYxgJswxHslBpw5U+VYc6QpszHD5qlx5R99
+         7tSg==
+X-Gm-Message-State: ACgBeo0+C7C6/swmVV1oUen6+Czivbkpo5XhSAS5NRtMW8F1Sc8wAqPb
+        J46pYtqzKxtd8aEq3QOSIV7xPQ==
+X-Google-Smtp-Source: AA6agR5XwKKVgTOQ165d7kv54mlk+T5p7ggV9lJhMetTNmnUiUMrmTa0+gfNTPMNwA3/LVQAyyLAww==
+X-Received: by 2002:a17:907:2cd4:b0:73c:9fa8:3ddc with SMTP id hg20-20020a1709072cd400b0073c9fa83ddcmr10642455ejc.40.1661174277183;
+        Mon, 22 Aug 2022 06:17:57 -0700 (PDT)
+Received: from alco.corp.google.com ([2620:0:1059:10:31ed:bb21:563b:e10c])
+        by smtp.gmail.com with ESMTPSA id kw24-20020a170907771800b0073c10031dc9sm4363211ejc.80.2022.08.22.06.17.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 06:17:56 -0700 (PDT)
+From:   Ricardo Ribalda <ribalda@chromium.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ricardo Ribalda <ribalda@chromium.org>
+Subject: [PATCH v2] media: uvcvideo: Fix InterfaceProtocol for Quanta camera
+Date:   Mon, 22 Aug 2022 15:17:54 +0200
+Message-Id: <20220822131754.102393-1-ribalda@chromium.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YwNcgdk/p18Cr+uv@gmail.com>
-X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Aug 22, 2022 at 12:37:53PM +0200, Ingo Molnar escreveu:
-> 
-> * Yang Jihong <yangjihong1@huawei.com> wrote:
-> 
-> > Commit a0a12c3ed057 ("asm goto: eradicate CC_HAS_ASM_GOTO") eradicates
-> > CC_HAS_ASM_GOTO, perf on x86 call asm_volatile_goto when compiling __GEN_RMWcc.
-> > However, asm_volatile_goto is not declared, which causes compilation error:
-> > 
-> > In file included from /home/linux/tools/include/asm/../../arch/x86/include/asm/atomic.h:7,
-> >                  from /home/linux/tools/include/asm/atomic.h:6,
-> >                  from /home/linux/tools/include/linux/atomic.h:5,
-> >                  from /home/linux/tools/include/linux/refcount.h:41,
-> >                  from /home/linux/tools/lib/perf/include/internal/cpumap.h:5,
-> >                  from /home/linux/tools/perf/util/cpumap.h:7,
-> >                  from /home/linux/tools/perf/util/env.h:7,
-> >                  from /home/linux/tools/perf/util/header.h:12,
-> >                  from pmu-events/pmu-events.c:9:
-> > /home/linux/tools/include/asm/../../arch/x86/include/asm/atomic.h: In function ‘atomic_dec_and_test’:
-> > /home/linux/tools/include/asm/../../arch/x86/include/asm/rmwcc.h:7:2: error: implicit declaration of function ‘asm_volatile_goto’ [-Werror=implicit-function-declaration]
-> >   asm_volatile_goto (fullop "; j" cc " %l[cc_label]"  \
-> >   ^~~~~~~~~~~~~~~~~
-> > 
-> > Solution:
-> > Define asm_volatile_goto in compiler_types.h if not declared.
-> > 
-> > Currently, only x86 architecture uses asm_volatile_goto.
-> > Theoretically, this patch affects only the x86 architecture.
-> > 
-> > Fixes: a0a12c3ed057 ("asm goto: eradicate CC_HAS_ASM_GOTO")
-> > Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-> > ---
-> >  tools/include/linux/compiler_types.h | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/tools/include/linux/compiler_types.h b/tools/include/linux/compiler_types.h
-> > index 24ae3054f304..1bdd834bdd57 100644
-> > --- a/tools/include/linux/compiler_types.h
-> > +++ b/tools/include/linux/compiler_types.h
-> > @@ -36,4 +36,8 @@
-> >  #include <linux/compiler-gcc.h>
-> >  #endif
-> >  
-> > +#ifndef asm_volatile_goto
-> > +#define asm_volatile_goto(x...) asm goto(x)
-> > +#endif
-> 
-> Tested-by: Ingo Molnar <mingo@kernel.org>
+The Quanta 0408:4034 camera implements UVC 1.5, and thus sets
+bInterfaceProtocol to UVC_PC_PROTOCOL_15. Commit 95f03d973478 ("media:
+uvcvideo: Limit power line control for Quanta cameras") added a quirk
+for the device that incorrectly specified the UVC 1.0 protocol,
+rendering the quirk inoperative. Fix it.
 
-Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 95f03d973478 ("media: uvcvideo: Limit power line control for Quanta cameras")
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+---
 
-Linus, I'll prep a pull req later today or you can apply this so that we
-can reduce the window where tools/perf/ isn't building.
+Mauro, could you queue this patch for v6.0?
 
-- Arnaldo
+Thanks!
+
+ drivers/media/usb/uvc/uvc_driver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index 9c05776f11d1..d509a4a2f08e 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -2740,7 +2740,7 @@ static const struct usb_device_id uvc_ids[] = {
+ 	  .idProduct		= 0x4034,
+ 	  .bInterfaceClass	= USB_CLASS_VIDEO,
+ 	  .bInterfaceSubClass	= 1,
+-	  .bInterfaceProtocol	= 0,
++	  .bInterfaceProtocol	= UVC_PC_PROTOCOL_15,
+ 	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
+ 	/* LogiLink Wireless Webcam */
+ 	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
+-- 
+2.37.1.595.g718a3a8f04-goog
+
