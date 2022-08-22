@@ -2,194 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9CBC32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D781C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237668AbiHVSpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        id S238024AbiHVSqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237662AbiHVSos (ORCPT
+        with ESMTP id S237552AbiHVSow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:44:48 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3842A32C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:42:47 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so6495903wmb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:42:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=skzCG58l+HqXhjJKQO4lGgqfYIra8NXlt0XqK+Dm+co=;
-        b=dx3NiSAtEGzJGfO8Eei9gt+WPU+TFmsqSP8lo8aUcEY9SRecb90LQhJLHXFxWBkz+K
-         uebpZQ4QXAOzd1RmygSNSxE23ik1uofISPNpbwlPoZfs2hMc6aQoCuRVi5AbfJAoR59q
-         F9SOivk2DtOGDfzREl9zsRfm5Tuy1D9SB/efL3oVI/bLQ8MkeFByzi7UT7PF/VBZs+QD
-         pIsOBvF1hgJtGo1jIay6ibiSM5JR1GeaGaqKUtL2+5Ir51iBZ47BTHpdQgE4G94u03k+
-         z6brz9tx8VhuGIVUNGCckUNXmMco6QjXmzOJgpqYy8s/KbM3hDDipepQjHuerXJqjGSQ
-         6AWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=skzCG58l+HqXhjJKQO4lGgqfYIra8NXlt0XqK+Dm+co=;
-        b=iO9CJSFjox2+IcBiXX9ahl/qhK7nAECvqkGkROY56qSfwYIDbf5zv3RnvaSfSeV3SE
-         qlo4+Wv4MVWyQWynmg8GjDhHvKD51bHPozi3MjwB3H9abZQyz7ch+ATL9ahFR67vaZID
-         COfMXjK1DGK888CYc0h5apcxFzHEhl5wPnV/oh0NMSQyvE90bdAoy/YzNfrjYh5kNiTW
-         Xcz79a2azLuhHcf9cs8zL9LcCF92dg2HmDM8U7IKPrzhDFFkuNNzRqI2sBTH1+r21bGV
-         g06/VpOW/IDcp+fYg+Fem2uX0HU8x9fzXhTF9m3EYG9tMwqHBnPO8BdXS8o7IzIKGUbE
-         Oz/A==
-X-Gm-Message-State: ACgBeo1ZHWw908sPfFxEiK0qvfHCMpErXjF9wnDRFQMLAVtCu10Yo4KA
-        adwrw/mDvkG8CdgDA3Mh+qToEB3K1JrfvApjzptTyA==
-X-Google-Smtp-Source: AA6agR7AX0ck8HLTb7YMThG6aIE5+jGjKGhb7ts1QaiBVNTTBDpQ9FwDjv0asC2/z8+2U+UoH0eswifRgbTRzwQFffA=
-X-Received: by 2002:a7b:c8d3:0:b0:3a6:2e:d4a8 with SMTP id f19-20020a7bc8d3000000b003a6002ed4a8mr16289164wml.135.1661193765556;
- Mon, 22 Aug 2022 11:42:45 -0700 (PDT)
+        Mon, 22 Aug 2022 14:44:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3122723BCA
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:43:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661193790; x=1692729790;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LXeq1g0rOoidK7Ljzxcs+75UbaovvOPztMME8H2Yn5I=;
+  b=WwqPnJxTHsChpKc0oGU/xKpWXCLY/KrQ4wJqIGcRtTZbawtlCn2C6M5S
+   NHfkTuB6GEb9w+h4JDKpnT9451A1RJRToG4tjOMH5hlyHJEquWqfsfBvP
+   IBaZ48gxzuuKj/E6cEZcOnVwXys7RARYKhS7KFEJD9uyQOwWWRroEzMtq
+   C2hEyD8TvLieQyHvjmyvjYUK+7e0bS2/Wzf831iJJfd1KKNzqpM+W2XNB
+   PX0XDHMbE3RhWWnjYzJJQ9hoUYeLPP1wTi5wM/kF66wXRJbyvPZGxKzk9
+   ZitPTVeHhQlubwd10uVPqS0VXGZ9nPniY6mgFIquktYrLER0jCa6Z5mHd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280464688"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="280464688"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:43:09 -0700
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="669671087"
+Received: from apascali-mobl2.ger.corp.intel.com (HELO pbossart-mobl3.home) ([10.252.42.21])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:43:06 -0700
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+To:     alsa-devel@alsa-project.org
+Cc:     tiwai@suse.de, broonie@kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Chao Song <chao.song@intel.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Banajit Goswami <bgoswami@quicinc.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 2/5] ASoC: wcd-mbhc-v2: remove always-true condition
+Date:   Mon, 22 Aug 2022 20:42:36 +0200
+Message-Id: <20220822184239.169757-3-pierre-louis.bossart@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220822184239.169757-1-pierre-louis.bossart@linux.intel.com>
+References: <20220822184239.169757-1-pierre-louis.bossart@linux.intel.com>
 MIME-Version: 1.0
-References: <20220818170005.747015-1-dima@arista.com> <fc05893d-7733-1426-3b12-7ba60ef2698f@gmail.com>
-In-Reply-To: <fc05893d-7733-1426-3b12-7ba60ef2698f@gmail.com>
-From:   Salam Noureddine <noureddine@arista.com>
-Date:   Mon, 22 Aug 2022 11:42:34 -0700
-Message-ID: <CAO7SqHBZMu1vX_a58ujOcNHaau19UtVbauB37Q0zRL-k3wqRXg@mail.gmail.com>
-Subject: Re: [PATCH 00/31] net/tcp: Add TCP-AO support
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     Dmitry Safonov <dima@arista.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 1:34 PM Leonard Crestez <cdleonard@gmail.com> wrote=
-:
->
-> On 8/18/22 19:59, Dmitry Safonov wrote:
-> > This patchset implements the TCP-AO option as described in RFC5925. The=
-re
-> > is a request from industry to move away from TCP-MD5SIG and it seems th=
-e time
-> > is right to have a TCP-AO upstreamed. This TCP option is meant to repla=
-ce
-> > the TCP MD5 option and address its shortcomings.
-...
-> >
-> > The patch set was written as a collaboration of three authors (in alpha=
-betical
-> > order): Dmitry Safonov, Francesco Ruggeri and Salam Noureddine. Additio=
-nal
-> > credits should be given to Prasad Koya, who was involved in early proto=
-typing
-> > a few years back. There is also a separate submission done by Leonard C=
-restez
-> > whom we thank for his efforts getting an implementation of RFC5925 subm=
-itted
-> > for review upstream [2]. This is an independent implementation that mak=
-es
-> > different design decisions.
->
-> Is this based on something that Arista has had running for a while now
-> or is a recent new development?
->
+cppcheck warning:
 
-This is based on prototype code we had worked on internally three years
-ago. The implementation effort was restarted to get it over the finish
-line. For business reasons we had to have our own implementation ready
-and not tied to unmerged upstream code. Please also note that our
-implementation is based on linux-4.19 and was only ported forward to
-mainline recently. So it wasn=E2=80=99t ready to be submitted upstream.
+sound/soc/codecs/wcd-mbhc-v2.c:1192:26: style: Condition
+'cross_conn<0' is always true [knownConditionTrueFalse]
+   } else if (cross_conn < 0) /* Error */
+                         ^
+sound/soc/codecs/wcd-mbhc-v2.c:1188:15: note: Assuming that condition
+'!cross_conn' is not redundant
+   } else if (!cross_conn) { /* no cross connection */
+              ^
+sound/soc/codecs/wcd-mbhc-v2.c:1192:26: note: Condition 'cross_conn<0'
+is always true
+   } else if (cross_conn < 0) /* Error */
+                         ^
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Chao Song <chao.song@intel.com>
+---
+ sound/soc/codecs/wcd-mbhc-v2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > For example, we chose a similar design to the TCP-MD5SIG implementation=
- and
-> > used setsockopt()s to program per-socket keys, avoiding the extra compl=
-exity
-> > of managing a centralized key database in the kernel. A centralized dat=
-abase
-> > in the kernel has dubious benefits since it doesn=E2=80=99t eliminate p=
-er-socket
-> > setsockopts needed to specify which sockets need TCP-AO and what are th=
-e
-> > currently preferred keys. It also complicates traffic key caching and
-> > preventing deletion of in-use keys.
->
-> My implementation started with per-socket lists but switched to a global
-> list because this way is much easier to manage from userspace. In
-> practice userspace apps will want to ensure that all sockets use the
-> same set of keys anyway.
->
+diff --git a/sound/soc/codecs/wcd-mbhc-v2.c b/sound/soc/codecs/wcd-mbhc-v2.c
+index 98baef594bf31..b16a18dbfe7af 100644
+--- a/sound/soc/codecs/wcd-mbhc-v2.c
++++ b/sound/soc/codecs/wcd-mbhc-v2.c
+@@ -1189,7 +1189,7 @@ static void wcd_correct_swch_plug(struct work_struct *work)
+ 				pt_gnd_mic_swap_cnt = 0;
+ 				plug_type = wcd_mbhc_get_plug_from_adc(mbhc, output_mv);
+ 				continue;
+-			} else if (cross_conn < 0) /* Error */
++			} else /* Error if (cross_conn < 0) */
+ 				continue;
+ 
+ 			if (pt_gnd_mic_swap_cnt == GND_MIC_SWAP_THRESHOLD) {
+-- 
+2.34.1
 
-We did consider a global list early on but we didn=E2=80=99t find it
-beneficial. We still believe that per-socket lists reduce complexity
-of the implementation, are more scalable and ensure predictable
-behavior. Our expectation is that TCP-AO will be only useful for a
-limited set of routing applications, rather than used transparently
-like IPSEC for non-routing apps. We would be happy to discuss this in
-more detail.
-
-> > In this implementation, a centralized database of keys can be thought o=
-f
-> > as living in user space and user applications would have to program tho=
-se
-> > keys on matching sockets. On the server side, the user application prog=
-rams
-> > keys (MKTS in TCP-AO nomenclature) on the listening socket for all peer=
-s that
-> > are expected to connect. Prefix matching on the peer address is support=
-ed.
-...
->
-> My series doesn't try to prevent inconsistencies inside the key lists
-> because it's not clear that the kernel should prevent userspace from
-> shooting itself in the foot. Worst case is connection failure on
-> misconfiguration which seems fine.
->
-> The RFC doesn't specify in detail how key management is to be performed,
-> for example if two valid keys are available it doesn't mention which one
-> should be used. Some guidance is found in RFC8177 but again not very much=
-.
->
-> I implemented an ABI that can be used by userspace for RFC8177-style key
-> management and asked for feedback but received very little. If you had
-> come with a clear ABI proposal I would have tried to implement it.
->
-> Here's a link to our older discussion:
->
-> https://lore.kernel.org/netdev/e7f0449a-2bad-99ad-4737-016a0e6b8b84@gmail=
-.com/
->
-> Seeing an entirely distinct unrelated implementation is very unexpected.
-> What made you do this?
->
-> --
-> Regards,
-> Leonard
-
-Our goal was not to have a competing TCP-AO upstream submission but
-to implement the RFC for our customers to use. Had there been an
-already upstreamed implementation we would have used it and
-implemented customer requirements on top of it. Just like we do with
-all other kernel features. This is not a bad situation, we believe it
-is good for the upstream community to have two fully functioning
-implementations to consider. Possibly a third collaborative
-submission might emerge that takes the best of both. A year ago, there
-wasn=E2=80=99t much available online about TCP-AO besides the RFC. We are
-excited with the current interest in TCP-AO and hope to see it
-upstreamed soon.
-
-Best,
-
-Salam
