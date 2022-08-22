@@ -2,126 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A81C7C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59182C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238617AbiHVXVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 19:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
+        id S238598AbiHVXVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 19:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238554AbiHVXVF (ORCPT
+        with ESMTP id S238636AbiHVXVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 19:21:05 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C1055090;
-        Mon, 22 Aug 2022 16:21:04 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27MNKmIo072232;
-        Mon, 22 Aug 2022 18:20:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1661210448;
-        bh=5MgM4AcC0Lhor+4qBPCkkXGr/4m2H9W3ELACWQrvmRA=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=MNEfSSEtH7f4BD6/aQ8EmmjCtOoYkQDBfbNMg3hwfLRHAzE5TqH0Yd7jjJzKGcRM+
-         FVrLrdL2mzHSHL7im7ZJlVrjrE0rGPm+xbgWEhFgd3rQT3kGjHTH2+t7zvhFd1wGMR
-         KVrtXXpMRdHQvE5jrYPSmLaua0MUKJKi3cxwnJr8=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27MNKmrY011826
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 22 Aug 2022 18:20:48 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Mon, 22
- Aug 2022 18:20:48 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Mon, 22 Aug 2022 18:20:47 -0500
-Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27MNKkkS122207;
-        Mon, 22 Aug 2022 18:20:47 -0500
-From:   Andrew Davis <afd@ti.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Daniel Tang <dt.tangr@gmail.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Andrew Davis <afd@ti.com>
-Subject: [PATCH 2/2] ARM: nspire: Remove unused header file mmio.h
-Date:   Mon, 22 Aug 2022 18:20:46 -0500
-Message-ID: <20220822232046.1230-3-afd@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220822232046.1230-1-afd@ti.com>
-References: <20220822232046.1230-1-afd@ti.com>
+        Mon, 22 Aug 2022 19:21:43 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE82455091
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 16:21:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661210502; x=1692746502;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TKnRFyZojBDepq0MeETIBlamkN8wx2nn6IJckBft1yI=;
+  b=d1jR9gwwuFgxsAoXJ82JqHvIZrDTBCF2GYorEBjMCX8bKNa/da4CdVbI
+   A04yOkAB1fDCIO1sk/6/jwN3mh1IXLpqiSnXDD0lh66DnLgp6OGAyA8vT
+   czCwFi5eIL256b4se0F1d1LsBOPnMymKQ0l28XdNjAQ0vAUTMbduMpSfS
+   CtSb3Dyr9OS4lV4MA6d2WTRpbOijGxbpVlb0UKIy7OdSEfLXZsIa0MXIv
+   +45bPW8t4avRCG4CcjJVzwclQAQZMXqxWxI1zOpfvAX68MEPCa9q1aZ8v
+   g34MIuAj/ETqdr6kwzgFRUGwur3yxnYkUHVPw6NjcEtUxKK4A7uMNg6Q9
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294828253"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="294828253"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 16:21:42 -0700
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="559935988"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 16:21:42 -0700
+Date:   Mon, 22 Aug 2022 16:24:54 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+        x86@kernel.org, Joerg Roedel <joro@8bytes.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 2/2] iommu: Use the user PGD for SVA if PTI is enabled
+Message-ID: <20220822162454.490ad1f2@jacob-builder>
+In-Reply-To: <09bccb93-2c0e-4962-0c46-c84c22fa140d@intel.com>
+References: <20220822201213.352289-1-jacob.jun.pan@linux.intel.com>
+        <20220822201213.352289-3-jacob.jun.pan@linux.intel.com>
+        <09bccb93-2c0e-4962-0c46-c84c22fa140d@intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Nspire boardfile platform drivers have all been converted. None
-of the definitions in this header are used anymore. Remove it.
+Hi Dave,
 
-While here lets remove all the other unused headers and the file
-name from in the file itself.
+On Mon, 22 Aug 2022 15:31:20 -0700, Dave Hansen <dave.hansen@intel.com>
+wrote:
 
-Signed-off-by: Andrew Davis <afd@ti.com>
----
- arch/arm/mach-nspire/mmio.h   | 13 -------------
- arch/arm/mach-nspire/nspire.c | 14 --------------
- 2 files changed, 27 deletions(-)
- delete mode 100644 arch/arm/mach-nspire/mmio.h
+> On 8/22/22 13:12, Jacob Pan wrote:
+> > @@ -394,7 +395,9 @@ static struct iommu_sva *intel_svm_bind_mm(struct
+> > intel_iommu *iommu, sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
+> >  			PASID_FLAG_SUPERVISOR_MODE : 0;
+> >  	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ?
+> > PASID_FLAG_FL5LP : 0;
+> > -	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd,
+> > mm->pasid, +
+> > +	pgd = static_cpu_has(X86_FEATURE_PTI) ?
+> > kernel_to_user_pgdp(mm->pgd) : mm->pgd;
+> > +	ret = intel_pasid_setup_first_level(iommu, dev, pgd, mm->pasid,
+> >  					    FLPT_DEFAULT_DID, sflags);
+> >  
+> 
+> This X86_FEATURE_PTI should really be done within a helper.
+> 
+> I'd probably do this with a *new* helper since all of the existing
+> kernel_to_user_pgdp() users seem to be within a PTI #ifdef.
+> 
+> Maybe something like:
+> 
+> pgd_t *mm_user_pgd(struct mm_struct *mm)
+> {
+> #ifdef CONFIG_PAGE_TABLE_ISOLATION
+> 	if (cpu_feature_enabled(X86_FEATURE_PTI))
+> 		return kernel_to_user_pgdp(mm->pgd);
+> #endif
+> 	return mm->pgd;
+> }
+> 
+Sounds good. I thought about a helper also, thinking there are so many other
+cpu_has(X86_FEATURE_PTI) checks already :)
 
-diff --git a/arch/arm/mach-nspire/mmio.h b/arch/arm/mach-nspire/mmio.h
-deleted file mode 100644
-index 2ce0656139ec..000000000000
---- a/arch/arm/mach-nspire/mmio.h
-+++ /dev/null
-@@ -1,13 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- *	linux/arch/arm/mach-nspire/mmio.h
-- *
-- *	Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
-- */
--
--#define NSPIRE_PWR_PHYS_BASE		0x900B0000
--#define NSPIRE_PWR_VIRT_BASE		0xFEEB0000
--#define NSPIRE_PWR_BUS_DISABLE1		0x18
--#define NSPIRE_PWR_BUS_DISABLE2		0x20
--
--#define NSPIRE_LCD_PHYS_BASE		0xC0000000
-diff --git a/arch/arm/mach-nspire/nspire.c b/arch/arm/mach-nspire/nspire.c
-index 1e13337972dd..2fbfc23237ff 100644
---- a/arch/arm/mach-nspire/nspire.c
-+++ b/arch/arm/mach-nspire/nspire.c
-@@ -1,23 +1,9 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- *	linux/arch/arm/mach-nspire/nspire.c
-- *
-  *	Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
-  */
--#include <linux/init.h>
--#include <linux/of_irq.h>
--#include <linux/of_address.h>
--#include <linux/of_platform.h>
--#include <linux/irqchip.h>
--#include <linux/irqchip/arm-vic.h>
--#include <linux/clkdev.h>
--#include <linux/amba/bus.h>
- 
- #include <asm/mach/arch.h>
--#include <asm/mach-types.h>
--#include <asm/mach/map.h>
--
--#include "mmio.h"
- 
- static const char *const nspire_dt_match[] __initconst = {
- 	"ti,nspire",
--- 
-2.36.1
+> That #ifdef could even go away if your kernel_to_user_pgdp() stub from
+> patch 1/2 was available.  I'm not sure it's worth it though.
+I will remove 1/2 and keep the uniform style of the existing helpers.
 
+Thanks for the suggestion,
+
+Jacob
