@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0000FC32793
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB20C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233227AbiHVIh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
+        id S233384AbiHVIih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiHVIh4 (ORCPT
+        with ESMTP id S233777AbiHVIi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:37:56 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADF32C67A
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=hsUU+M8inv09Ir/zuanJetA2licV
-        zhMzd31+/Qc062w=; b=NVkwDgOPZ1Hr4Lbbc5MAOnCaS0237NRp8x6WfbIHtqB6
-        tl44Pm5GFRZr3iwYxwD6MBg46TVQZADvJvH9nadaBmGhcAbsZbvFABrrQApeM7q9
-        Ilo+UPZEiN0fsmswdxOcBBzTYUz3EXlL03V1LD1WWsL5CdmMChnOQUgfdWbFTUw=
-Received: (qmail 1214028 invoked from network); 22 Aug 2022 10:37:47 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 22 Aug 2022 10:37:47 +0200
-X-UD-Smtp-Session: l3s3148p1@MiDDXNDmnOkgAwDPXxw3AFlguiwjsjwa
-Date:   Mon, 22 Aug 2022 10:37:47 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        Benjamin Block <bblock@linux.ibm.com>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
-Message-ID: <YwNAW2Zp6o7Z//Y2@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        Benjamin Block <bblock@linux.ibm.com>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
- <YwM4y78boN4s1VNo@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        Mon, 22 Aug 2022 04:38:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1D0B7C0
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:38:24 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id vw19so6045514ejb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:38:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=5OBoHrdlmLoJOWu5Z6u5wsXYdDXsGII6yOBzDwmmk64=;
+        b=Q5AWfYM/rPqlMVN4qyTDPaeV/0+Fk0sK5jGatklasd63Xvzc/Kde3ny7t+KQZiqhIi
+         xsESJzpeoc5Lj7GBHNkmN+DL75GF2tfoLYlTL0t5oybt5T4qkzTZOtSnum4SCRoVeD+5
+         OwXvk2cy7EyTb3Gu6Hkp4xMVbEeb1iQSjZIJPPlEuaZSTW7Bq71o5TtgXC8JUKif7xJ8
+         vvKdA/XZ8SX+JhfY6W5XqInUgwpTUMu5HM0oEiNREievTLz9/od5tYsgeuCNeCISgGJI
+         7BYkKKmxWsn9xLuTDXk1pJ8ACucfi4oWsaMV/NjeMxbD2ocFyhJNvN9MVGBz62abvbCY
+         QbSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=5OBoHrdlmLoJOWu5Z6u5wsXYdDXsGII6yOBzDwmmk64=;
+        b=cORIPSG1Yz4aGiuMhyhYLVVrhVQ3ss66FdituIdwTRGy9xdi8YA8Xll60LshEaGvG5
+         EhjhSJWtCyUIjJB791bVcKUB+hXarusHMu97klTEGSYA4yp5Zi7PMEH86xJjk2FHvPNE
+         dB1D+6F6vRpRLnGwrH155+gUKw/1ox+LQ0Z2m25aYV9Rif00YQIYf2GGi/4bbt91DAHX
+         kliZ/sft8fqkBDs+3Z3G+TbPsSHD9uCv7l4fBPr4WVWEGBoNt2NP9mwofGcHZRPn3dPF
+         UFKY0P8Xpk9o7aNJmr9YkxVga3oeQxvHkjlVIn+N1T+Q0jZcRjc5vvbMwMiUoHvgib3d
+         uD5A==
+X-Gm-Message-State: ACgBeo3E/coQLa4lfLjVrbojd+3K77/f0kDI5vn4vPHxuk3+nlWMJXVG
+        sCYKjQVCAHxWah2zpFnj+sJjgcaMcHFgYrKWbeSxJQ==
+X-Google-Smtp-Source: AA6agR6ZR63Fh74m2vscZd7j1aOwLRpZQ7CAvO0GxPchmdyIMOJWkKrwFuKZZRefZqXis0gsyYLXWca4nOtfLFidPho=
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id
+ e8-20020a17090658c800b006fe91d518d2mr12458571ejs.190.1661157503046; Mon, 22
+ Aug 2022 01:38:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ABC3aCasbFWYlJHr"
-Content-Disposition: inline
-In-Reply-To: <YwM4y78boN4s1VNo@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220802095252.2486591-1-foss+kernel@0leil.net>
+In-Reply-To: <20220802095252.2486591-1-foss+kernel@0leil.net>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 22 Aug 2022 10:38:11 +0200
+Message-ID: <CACRpkdZXTtar73-HP8_wcAsCYw7JOgPwkXZt-_3s0GdoggBABw@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/1] Making Rockchip IO domains dependency from other
+ devices explicit
+To:     Quentin Schulz <foss+kernel@0leil.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     heiko@sntech.de, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 2, 2022 at 11:53 AM Quentin Schulz <foss+kernel@0leil.net> wrote:
 
---ABC3aCasbFWYlJHr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> Some background on IO domains on Rockchip:
+>
+> On some Rockchip SoCs, some SoC pins are split in what are called IO
+> domains.
+>
+> An IO domain is supplied power externally, by regulators from a PMIC for
+> example. This external power supply is then used by the IO domain as
+> "supply" for the IO pins if they are outputs.
+>
+> Each IO domain can configure which voltage the IO pins will be operating
+> on (1.8V or 3.3V).
+>
+> There already exists an IO domain driver for Rockchip SoCs[1]. This
+> driver allows to explicit the relationship between the external power
+> supplies and IO domains[2]. This makes sure the regulators are enabled
+> by the Linux kernel so the IO domains are supplied with power and
+> correctly configured as per the supplied voltage.
+> This driver is a regulator consumer and does not offer any other
+> interface for device dependency.
 
-Hi Alexander,
+What makes me confused about the patch is the relationship, if any,
+between this "IO domain" and generic power domains (genpd) that has
+been worked on for ~10 years.
 
-> Could you please explain why you skipped strlcpy() usage in
-> drivers/s390/char/diag_ftp.c and drivers/s390/char/sclp_ftp.c?
+I am worried that we are reinventing the world.
 
-Sure. It is a bit hidden in $subject, but the key is to convert strlcpy
-instances for now which do not check the return value. This is the
-low-hanging fruit.
+While my intuitive feeling is that genpd power domains are only on-chip
+and not considering off-chip pins, I am not so sure that it warrants
+its own abstraction and want to know whether this can be retrofit into
+genpd rather than inventing this?
 
-Converting the other uses checking the return value needs to be done
-manually and much more carfully. I wanted to this as a second step, but
-if you prefer to have everything converted in one go, I can give your
-subsystem a priority boost. Would you prefer that?
+Documentation/devicetree/bindings/power/power-domain.yaml
+include/linux/pm_domain.h
 
-Thanks and happy hacking,
-
-   Wolfram
-
-
---ABC3aCasbFWYlJHr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMDQFsACgkQFA3kzBSg
-Kbbcew/9EjjU46h1Hw7hn47Z8s7LOJ86qovV0HqE8I6JiZmPknoKxmBppnvrlG/5
-sGdJVtiWUpHmedA5M+DQYLFO2ZxeGeluaQOg22nsMbGmb7V7W0LosiZUm/Er7pOd
-qbXdLrgVnDzWIRfDVEh0HvJT3RNrc8WhmrW5MeBW4Dnhvwccn6kxCnVVAb66lnQ5
-m5qwdFjHgrCsf4QhNCZ1o8g/dwGjirIJjT7svqFirSMB81q3tNA/yNr2XLarOuDb
-kCtKyKHOHr4Vzy4uxi6HnpvYz8nYE+tF04rB+nqNYLeCoEM8R42zz3kuaA95vQYg
-3mcCYr3tZIGDZV6kdCYrFq2e9iQf2w3XmdrlSe31CBUGugL/jx89DOfNaOCUba1k
-lWNdmUJDUmicmcBeR6Yv/arWqMnkmBLABURl9WmXmrbl6ya9Dh/bM3vjSV+WoJVv
-GhiUgQKgEdi3pWhrRBYoRk//OtgEu5fxFIGs90DYlrXGLdsCQk3L0Ng/IR/MZ/jG
-jZjkD/4arMVqz+EPOI9nhxflWh70q/oKgdvejgmsGIEz8EIxEyukvi61Ea/VDuJf
-C96kGPeR6A0F2RiG0wtesUZM9PAE3TKr3LNDM4UNZ5/BgBVzD4XFCq3BKYHsHv/0
-SMHb42lEJze4FeBTAJ+R+AjL1Ckgz4MzNG816dblvKDHfU5B24E=
-=183G
------END PGP SIGNATURE-----
-
---ABC3aCasbFWYlJHr--
+Yours,
+Linus Walleij
