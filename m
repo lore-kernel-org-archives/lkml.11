@@ -2,109 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C58C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47326C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiHVNHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
+        id S233706AbiHVNHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234820AbiHVNHV (ORCPT
+        with ESMTP id S234708AbiHVNHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:07:21 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C832E9DD
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:07:19 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id j21so15682953ejs.0
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=OO/3V/9VOGJvCqjEz1HGxPMCQzQjuOzsv8kdhtCYLqw=;
-        b=WKfZw4BbbkDUPDHSI/rvUL2ko1UJNDsiGtR2Rh5cY+gXY86FXqXUlpI3YCUa9Zlr95
-         doiBj3WMDGjs5d9/HQhF2bOBYcP49NedwUoBAK6EYdEyPHE7KendVPC6BrVHwbnyfcFx
-         K+TNRUSQDBEpAZbQ8LtznwcZXmtdHu37gf0Y5rCMZPXi2aA6DfSlyaTVvJgn8ZQx8fga
-         2wOnHBR9ICzQ9My0jtClp2igz/nWW5MJG8Z6aaYBSzs9i858RCTtLmJ5IKhzrKaqimLm
-         73w91RWcyTLNjvo9LpSWcYRRwOEjB0IneBYAi+bJ5zDoBzHL2JTVWOgzkGwR/6YxNqIU
-         rQtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=OO/3V/9VOGJvCqjEz1HGxPMCQzQjuOzsv8kdhtCYLqw=;
-        b=lHZVsUwABIM0PvUAVS8vvJ20+nQU0MmZcaHAG/yPmHMwXbgpTG99/0Qpi7rFrfZt7W
-         skYVIIVbOr7jehZzivh9q99+/WXfVBTIw+cdPE4WuHuwe3KJKGdO71/neV9qvb7R7NNr
-         P6sodEPA5hKO9AuMhdQriPCpO+oh8BqlEObMsgcpVV1qWs/HqfAGw+CMNX3ehogwr1Xz
-         0+uVpL4fskA4A6EieTK4vH5JUUPGBdVDrCELMfThY7QZ+Le7Utk6A8jhXZup3FNuwrzL
-         0RZgur9A1A0lRdo0yf2yamtzQusTKPMtAFOZiPlmNY+Zt9MA2zQw1m4WmvoFQOhnIdoi
-         JZXA==
-X-Gm-Message-State: ACgBeo3oQncA1yl+hCKfy2ns5dgBDp4Ha6ERLYl6Y34t2fgmddG8lL0D
-        WEvS957LNTAnUZ0pov7Z3JtrxgFbloqu66d1L9TNaQ==
-X-Google-Smtp-Source: AA6agR4iJXhbaCc+qVUpwZQJ5IVxTKw3KFZnXaT4HwMAEbWZZxGMshLMCOLe/S61KE7DBVu1Bw9DwjntjPtsy/vPZj0=
-X-Received: by 2002:a17:907:2e19:b0:730:acf0:4921 with SMTP id
- ig25-20020a1709072e1900b00730acf04921mr12339007ejc.416.1661173637810; Mon, 22
- Aug 2022 06:07:17 -0700 (PDT)
+        Mon, 22 Aug 2022 09:07:34 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64573356F3;
+        Mon, 22 Aug 2022 06:07:30 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A9F662B3;
+        Mon, 22 Aug 2022 15:07:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1661173648;
+        bh=EgK/lj3WOzFoJY3t5OghKCjX9nJhMCtuKrfeio3gCCM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LYLRqJKpqNWSi7RoHVeSnd6+lUMgxA3Y5yXyXQ8XcX0c8wl8vUdp1lgFj5i6Poaru
+         jNl6GqmffjTFvqC03B8TewA/SOnPcxnoChOCEdwuAalv4KDCUw1Xi9UzKwjtDbWqvX
+         RCko36GpWZG2S3m5TEsCdhLLIDws/2mRU7QSntsM=
+Date:   Mon, 22 Aug 2022 16:07:25 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Ricardo Ribalda <ribalda@chromium.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: uvcvideo: Fix InterfaceProtocol for Quanta camera
+Message-ID: <YwN/jeElxyXpyyfU@pendragon.ideasonboard.com>
+References: <20220808134106.70100-1-ribalda@chromium.org>
+ <YwN+fU5ez0L5pi1j@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-3-shakeelb@google.com>
- <CACSApvYU5gfbDv9dyaypu1oOPB58eT1inX9EX6gV5b2q3+qr6Q@mail.gmail.com> <CALvZod4r5_vcL4ZcSpR_DdLc_2sppnPTv1DXmFchCULWLu3Riw@mail.gmail.com>
-In-Reply-To: <CALvZod4r5_vcL4ZcSpR_DdLc_2sppnPTv1DXmFchCULWLu3Riw@mail.gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 22 Aug 2022 09:06:41 -0400
-Message-ID: <CACSApvbuKfR8r4OHZ-QHTFaWiSSK8NrHWxmM5TvirFSz7F0GGg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwN+fU5ez0L5pi1j@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 12:55 AM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Sun, Aug 21, 2022 at 5:24 PM Soheil Hassas Yeganeh <soheil@google.com> wrote:
-> >
-> > On Sun, Aug 21, 2022 at 8:18 PM Shakeel Butt <shakeelb@google.com> wrote:
-> > >
-> > > With memcg v2 enabled, memcg->memory.usage is a very hot member for
-> > > the workloads doing memcg charging on multiple CPUs concurrently.
-> > > Particularly the network intensive workloads. In addition, there is a
-> > > false cache sharing between memory.usage and memory.high on the charge
-> > > path. This patch moves the usage into a separate cacheline and move all
-> > > the read most fields into separate cacheline.
-> > >
-> > > To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> > > ran the following workload in a three level of cgroup hierarchy with top
-> > > level having min and low setup appropriately. More specifically
-> > > memory.min equal to size of netperf binary and memory.low double of
-> > > that.
-> > >
-> > >  $ netserver -6
-> > >  # 36 instances of netperf with following params
-> > >  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> > >
-> > > Results (average throughput of netperf):
-> > > Without (6.0-rc1)       10482.7 Mbps
-> > > With patch              12413.7 Mbps (18.4% improvement)
-> > >
-> > > With the patch, the throughput improved by 18.4%.
-> >
-> > Shakeel, for my understanding: is this on top of the gains from the
-> > previous patch?
-> >
->
-> No, this is independent of the previous patch. The cover letter has
-> the numbers for all three optimizations applied together.
+On Mon, Aug 22, 2022 at 04:02:55PM +0300, Laurent Pinchart wrote:
+> Hi Ricardo,
+> 
+> Thank you for the patch.
+> 
+> On Mon, Aug 08, 2022 at 03:41:06PM +0200, Ricardo Ribalda wrote:
+> > The device is using a different InterfaceProtocol than the one set in
+> > the original quirk.
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Also, I would mention that the device implements UVC 1.5:
+
+The Quanta 0408:4034 camera implements UVC 1.5, and thus sets
+bInterfaceProtocol to UVC_PC_PROTOCOL_15. Commit 95f03d973478 ("media:
+uvcvideo: Limit power line control for Quanta cameras") added a quirk
+for the device that incorrectly specified the UVC 1.0 protocol,
+rendering the quirk inoperative. Fix it.
+
+As this is a v6.0 fix, would you mind submitting a v2 with these changes
+? Mauro could then pick it up directly.
+
+> > Fixes: 95f03d973478 ("media: uvcvideo: Limit power line control for Quanta cameras")
+> > Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> > ---
+> > 
+> > This was fixed on the last version of the patchset. Unfortunately I did
+> > checked that it was the version merged :(.
+> 
+> Oops :-(
+> 
+> > It is too late to land it in this version?
+> 
+> I think it can be considered as a v6.0 fix, yes.
+> 
+> >  drivers/media/usb/uvc/uvc_driver.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+> > index 9c05776f11d1..6556158a8888 100644
+> > --- a/drivers/media/usb/uvc/uvc_driver.c
+> > +++ b/drivers/media/usb/uvc/uvc_driver.c
+> > @@ -2740,7 +2740,7 @@ static const struct usb_device_id uvc_ids[] = {
+> >  	  .idProduct		= 0x4034,
+> >  	  .bInterfaceClass	= USB_CLASS_VIDEO,
+> >  	  .bInterfaceSubClass	= 1,
+> > -	  .bInterfaceProtocol	= 0,
+> > +	  .bInterfaceProtocol	= 1,
+> 
+> Should we use UVC_PC_PROTOCOL_15 here ?
+> 
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> 
+> >  	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
+> >  	/* LogiLink Wireless Webcam */
+> >  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
+
+-- 
+Regards,
+
+Laurent Pinchart
