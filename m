@@ -2,79 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77498C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 05:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DEBC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbiHVF4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 01:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
+        id S230435AbiHVGBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiHVF4H (ORCPT
+        with ESMTP id S229499AbiHVGBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 01:56:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE052611C
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 22:56:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F96CB80D83
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 05:56:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29F4C433C1;
-        Mon, 22 Aug 2022 05:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661147762;
-        bh=UXPhdV0KvZbi0frdKGtoEE+EnbITh7+sFXDjXX0lowc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sgJjG6+GaSpvVxT1gTZ2WSxmSsi9vQolmpIw/Ul7tck/K+Nt8uQLGYU/aqUtI/zJZ
-         DaRTqfLGi64Ji/l3RLKjg516Mmrdq7hScEwSpitVEgEzm1PjuYKRR2INDiDD9wflos
-         2f27ALuH8F3/cqSvD3ZnSpPExC8PrNKpguOSENHsxZO+OXSyQJpJ32Zq8xS9pSGW+h
-         zZzIhGxzRZvzSuvqc/+Yhd3YZz5SfyCMKQ8RxjXyw2JreMIwtbOrBEDGRfoyH3XdLY
-         6H/0uUgrTmColPMV/KcpDlK/XvmjCmI8L8+PgBnGsVdpid0sPC9pFHGNU7+jGjNd++
-         o0pgzdTwwwb+A==
-Date:   Mon, 22 Aug 2022 05:55:58 +0000
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     Evan Green <evgreen@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Rajat Jain <rajatja@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] platform/chrome: cros_ec: Expose suspend_timeout_ms
- in debugfs
-Message-ID: <YwMabj1HazWxJEAr@google.com>
-References: <20220818082827.v2.1.Idd188ff3f9caddebc17ac357a13005f93333c21f@changeid>
- <CACeCKafyHSTiyyjA=yjSXsTub4kKECfe9gp=y10LCYYx0nGKqg@mail.gmail.com>
+        Mon, 22 Aug 2022 02:01:05 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144501F61B;
+        Sun, 21 Aug 2022 23:01:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661148063; x=1692684063;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=06z1Sp4leSqz/xK8Xz8b0aRfqzDx5qUAH0KwCoR1bYk=;
+  b=VfkQJ4owSztDk8idF3knm4ahXBhMH5W4KaKuNBncFap8GGFqJB1jX45I
+   QkI2hJtUY29pko7zxW3BwxDq1CVg3Jwrr4iAgp8NQLyDGuD7avgJxQ2Mo
+   dQD4MSygS4S2hhQ3WHjHCJNEGDLBJ8Z91xs9h8xSJ7hdtgl4ejN/OlVkq
+   JuZjspwfxV5MNgXdcbSC/6panPncFz1Os7fb3vaxY2zllo1m5R+0CphRK
+   pXhEPzNOw93yFr8d4xqY6OYxYtnZIjwFCXX+UxKW75Qpm9zliPLuISord
+   Xq4KKR+g9eN2Gn4evGeNekyUq7RZNd9ajhrt+eRxUx7xAIsxRhS6xu/lZ
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="177314448"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Aug 2022 23:01:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Sun, 21 Aug 2022 23:00:43 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Sun, 21 Aug 2022 23:00:43 -0700
+Date:   Mon, 22 Aug 2022 08:04:56 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH 1/2] dt-bindings: lan966x-otpc: document Lan966X OTPC
+Message-ID: <20220822060456.sl343a3a3uifini7@soft-dev3-1.localhost>
+References: <20220818164405.1953698-1-horatiu.vultur@microchip.com>
+ <20220818164405.1953698-2-horatiu.vultur@microchip.com>
+ <550e652e-4541-c1e6-33a7-d5555f0cb266@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <CACeCKafyHSTiyyjA=yjSXsTub4kKECfe9gp=y10LCYYx0nGKqg@mail.gmail.com>
+In-Reply-To: <550e652e-4541-c1e6-33a7-d5555f0cb266@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:24:23AM -0700, Prashant Malani wrote:
-> On Thu, Aug 18, 2022 at 8:29 AM Evan Green <evgreen@chromium.org> wrote:
-> > diff --git a/Documentation/ABI/testing/debugfs-cros-ec b/Documentation/ABI/testing/debugfs-cros-ec
-> > index 1fe0add99a2a99..9f79c641b2d09f 100644
-> > --- a/Documentation/ABI/testing/debugfs-cros-ec
-> > +++ b/Documentation/ABI/testing/debugfs-cros-ec
-> > @@ -54,3 +54,25 @@ Description:
-> >                 this feature.
-> >
-> >                 Output will be in the format: "0x%08x\n".
-> > +
-> > +What:          /sys/kernel/debug/<cros-ec-device>/suspend_timeout_ms
-> > +Date:          August 2022
-> > +KernelVersion: 6.1
-> > +Description:
-> > +               Some ECs have a feature where they will track transitions to the
-> > +               a hardware-controlled sleep line, such as Intel's SLP_S0 line,
-> > +               in order to detect cases where a system failed to go into deep
-> > +               sleep states. The suspend_timeout file controls the amount of
-> s/suspend_timeout/suspend_timeout_ms
+The 08/19/2022 09:52, Krzysztof Kozlowski wrote:
 
-Please also fix it in code.
+Hi Krzysztof,
+
+> 
+> On 18/08/2022 19:44, Horatiu Vultur wrote:
+> > Document Lan966x OTP controller.
+> >
+> > +
+> > +properties:
+> > +  compatible:
+> > +    items:
+> > +      - const: microchip,lan966x-otpc
+> 
+> No wildcards in compatible (which will also affect the file name as it
+> should match the compatible).
+
+Ok, I will replace lan966x with lan966 as the SoC is defined (SOC_LAN966)
+
+> 
+> > +      - const: syscon
+> 
+> Is OTP controller also system controller register region? This is a bit
+> odd and looks like hack not to use nvmem subsystem.
+
+That was a copy paste mistake. The OTP controller is not a system
+controller register region.
+
+> 
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    otpc: otp@e0021000 {
+> > +        compatible = "microchip,lan966x-otpc", "syscon";
+> > +        reg = <0xe0021000 0x300>;
+> > +    };
+> > +
+> > +...
+> 
+> 
+> Best regards,
+> Krzysztof
+
+-- 
+/Horatiu
