@@ -2,32 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B4A2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BCDC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbiHVNYK convert rfc822-to-8bit (ORCPT
+        id S234771AbiHVNYO convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        Mon, 22 Aug 2022 09:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbiHVNYD (ORCPT
+        with ESMTP id S234669AbiHVNYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:24:03 -0400
-X-Greylist: delayed 1163 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 06:24:01 PDT
+        Mon, 22 Aug 2022 09:24:10 -0400
 Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B72627CED
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:24:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE2827CED
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:24:09 -0700 (PDT)
 Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
         (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.emlix.com (Postfix) with ESMTPS id 3BB495FB1D;
+        by mx1.emlix.com (Postfix) with ESMTPS id 413A15FCA6;
         Mon, 22 Aug 2022 15:04:37 +0200 (CEST)
 From:   Rolf Eike Beer <eb@emlix.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] mm: pagewalk: move variables to more local scope, tweak loops
-Date:   Mon, 22 Aug 2022 15:04:12 +0200
-Message-ID: <8155217.NyiUUSuA9g@devpool047>
+Subject: [PATCH 5/6] mm: pagewalk: allow walk_page_range_novma() without mm
+Date:   Mon, 22 Aug 2022 15:03:29 +0200
+Message-ID: <5760214.MhkbZ0Pkbq@devpool047>
 Organization: emlix GmbH
 In-Reply-To: <3200642.44csPzL39Z@devpool047>
 References: <3200642.44csPzL39Z@devpool047>
@@ -38,123 +37,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move some variables to more local scopes to make it obvious that they don't
-carry state. Put the end additions into the for loop instructions to make
-them easier to read.
+Since e47690d756a7 ("x86: mm: avoid allocating struct mm_struct on the
+stack") a pgd can be passed to walk_page_range_novma(). In case it is set
+no place in the pagewalk code use the walk.mm anymore, so permit to pass a
+NULL mm instead. It is up to the caller to ensure proper locking on the pgd
+in this case.
 
 Signed-off-by: Rolf Eike Beer <eb@emlix.com>
 ---
- mm/pagewalk.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ mm/pagewalk.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/mm/pagewalk.c b/mm/pagewalk.c
-index f816f86588be..d8be8a30b272 100644
+index dc3c850cd148..f816f86588be 100644
 --- a/mm/pagewalk.c
 +++ b/mm/pagewalk.c
-@@ -25,14 +25,12 @@ static int walk_pte_range_inner(pte_t *pte, unsigned long addr,
- {
- 	const struct mm_walk_ops *ops = walk->ops;
- 
--	for (;;) {
-+	for (;; addr += PAGE_SIZE, pte++) {
- 		int err = ops->pte_entry(pte, addr, addr + PAGE_SIZE, walk);
- 		if (err)
- 			return err;
- 		if (addr >= end - PAGE_SIZE)
- 			break;
--		addr += PAGE_SIZE;
--		pte++;
- 	}
- 	return 0;
- }
-@@ -42,13 +40,14 @@ static int walk_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
- {
- 	pte_t *pte;
- 	int err;
--	spinlock_t *ptl;
- 
- 	if (walk->no_vma) {
- 		pte = pte_offset_map(pmd, addr);
- 		err = walk_pte_range_inner(pte, addr, end, walk);
- 		pte_unmap(pte);
- 	} else {
-+		spinlock_t *ptl;
-+
- 		pte = pte_offset_map_lock(walk->mm, pmd, addr, &ptl);
- 		err = walk_pte_range_inner(pte, addr, end, walk);
- 		pte_unmap_unlock(pte, ptl);
-@@ -71,7 +70,7 @@ static int walk_hugepd_range(hugepd_t *phpd, unsigned long addr,
- 	if (addr & (page_size - 1))
- 		return 0;
- 
--	for (;;) {
-+	for (;; addr += page_size) {
- 		pte_t *pte;
- 		int err;
- 
-@@ -84,7 +83,6 @@ static int walk_hugepd_range(hugepd_t *phpd, unsigned long addr,
- 			return err;
- 		if (addr >= end - page_size)
- 			break;
--		addr += page_size;
- 	}
- 	return 0;
- }
-@@ -307,14 +305,13 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
- 	unsigned long next;
- 	unsigned long hmask = huge_page_mask(h);
- 	unsigned long sz = huge_page_size(h);
--	pte_t *pte;
- 	const struct mm_walk_ops *ops = walk->ops;
- 
--	do {
-+	for (; addr < end; addr = next) {
- 		int err;
-+		pte_t *pte = huge_pte_offset(walk->mm, addr & hmask, sz);
- 
- 		next = hugetlb_entry_end(h, addr, end);
--		pte = huge_pte_offset(walk->mm, addr & hmask, sz);
- 
- 		if (pte)
- 			err = ops->hugetlb_entry(pte, hmask, addr, next, walk);
-@@ -323,7 +320,7 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
- 
- 		if (err)
- 			return err;
--	} while (addr = next, addr != end);
-+	}
- 
- 	return 0;
- }
-@@ -461,14 +458,13 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
- 	do {
- 		int err;
- 
-+		walk.vma = vma;
- 		if (!vma) { /* after the last vma */
--			walk.vma = NULL;
- 			next = end;
- 		} else if (start < vma->vm_start) { /* outside vma */
- 			walk.vma = NULL;
- 			next = min(end, vma->vm_start);
- 		} else { /* inside vma */
--			walk.vma = vma;
- 			next = min(end, vma->vm_end);
- 			vma = vma->vm_next;
- 
-@@ -595,11 +591,11 @@ int walk_page_mapping(struct address_space *mapping, pgoff_t first_index,
+@@ -506,6 +506,8 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
+  * not backed by VMAs. Because 'unusual' entries may be walked this function
+  * will also not lock the PTEs for the pte_entry() callback. This is useful for
+  * walking the kernel pages tables or page tables for firmware.
++ *
++ * Either mm or pgd may be NULL, but not both.
+  */
+ int walk_page_range_novma(struct mm_struct *mm, unsigned long start,
+ 			  unsigned long end, const struct mm_walk_ops *ops,
+@@ -520,10 +522,11 @@ int walk_page_range_novma(struct mm_struct *mm, unsigned long start,
+ 		.no_vma		= true
  	};
- 	struct vm_area_struct *vma;
- 	pgoff_t vba, vea, cba, cea;
--	unsigned long start_addr, end_addr;
  
- 	lockdep_assert_held(&mapping->i_mmap_rwsem);
- 	vma_interval_tree_foreach(vma, &mapping->i_mmap, first_index,
- 				  first_index + nr - 1) {
-+		unsigned long start_addr, end_addr;
- 		int err;
+-	if (start >= end || !walk.mm)
++	if (start >= end || (!walk.mm && !walk.pgd))
+ 		return -EINVAL;
  
- 		/* Clip to the vma */
+-	mmap_assert_locked(walk.mm);
++	if (walk.mm)
++		mmap_assert_locked(walk.mm);
+ 
+ 	return walk_pgd_range(start, end, &walk);
+ }
 -- 
 2.37.2
 
