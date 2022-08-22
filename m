@@ -2,188 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3116DC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 02:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE35C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbiHVC7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 22:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
+        id S232299AbiHVDGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 23:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbiHVC7S (ORCPT
+        with ESMTP id S231359AbiHVDGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 22:59:18 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992381400C
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 19:59:16 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M9xpf0X9yznTgM;
-        Mon, 22 Aug 2022 10:56:58 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 10:59:14 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
- 2022 10:59:14 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "Michal Hocko" <mhocko@suse.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Kemi Wang <kemi.wang@intel.com>,
-        "Kefeng Wang" <wangkefeng.wang@huawei.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH -next v2] mm, proc: collect percpu free pages into the free pages
-Date:   Mon, 22 Aug 2022 11:33:54 +0800
-Message-ID: <20220822033354.952849-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220822023311.909316-1-liushixin2@huawei.com>
-References: <20220822023311.909316-1-liushixin2@huawei.com>
+        Sun, 21 Aug 2022 23:06:50 -0400
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D1A18373;
+        Sun, 21 Aug 2022 20:06:48 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4M9y0B1mMxz6V2TB;
+        Mon, 22 Aug 2022 11:05:14 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP2 (Coremail) with SMTP id Syh0CgCn3rrF8gJjlLq4Ag--.54125S3;
+        Mon, 22 Aug 2022 11:06:46 +0800 (CST)
+Subject: Re: [PATCH v7 1/9] blk-throttle: fix that io throttle can only work
+ for single bio
+To:     Yu Kuai <yukuai1@huaweicloud.com>, Tejun Heo <tj@kernel.org>
+Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        "yukuai (C)" <yukuai3@huawei.com>
+References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
+ <20220802140415.2960284-2-yukuai1@huaweicloud.com>
+ <Yvvx+/d2+OMROUOe@slm.duckdns.org>
+ <712e0f29-94ba-d3d3-ce21-cba4d6092008@huaweicloud.com>
+ <Yv0qbDR+cxKeZ3nD@slm.duckdns.org>
+ <83c8b253-2ebb-5af6-8ce1-6dc3b84cf182@huaweicloud.com>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <b1791e41-4945-a0d8-8067-3841ce10fddd@huaweicloud.com>
+Date:   Mon, 22 Aug 2022 11:06:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm100009.china.huawei.com (7.185.36.113)
+In-Reply-To: <83c8b253-2ebb-5af6-8ce1-6dc3b84cf182@huaweicloud.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: Syh0CgCn3rrF8gJjlLq4Ag--.54125S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7trWUKry3Xw48Aw48GrWrAFb_yoW8tF45pF
+        WIva1vkFWqyrn29F4xtr1Y9Fnayr4rZr45Zry5Jry7Z3s8Cr1SkrWIqr1Ykrnrur4kC3Wj
+        vF4kt3s3GrW5ArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9Y14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka
+        0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
+        kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
+        67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
+        CI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E
+        3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCT
+        nIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page on pcplist could be used, but not counted into memory free or
-avaliable, and pcp_free is only showed by show_mem() for now. Since commit
-d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
-significant decrease in the display of free memory, with a large number
-of cpus and zones, the number of pages in the percpu list can be very
-large, so it is better to let user to know the pcp count.
+Hi,
 
-On a machine with 3 zones and 72 CPUs. Before commit d8a759b57035, the
-maximum amount of pages in the pcp lists was theoretically 162MB(3*72*768KB).
-After the patch, the lists can hold 324MB. It has been observed to be 114MB
-in the idle state after system startup in practice(increased 80 MB).
+在 2022/08/18 9:23, Yu Kuai 写道:
+> Hi, Tejun!
+> 
+> 在 2022/08/18 1:50, Tejun Heo 写道:
+>> Hello,
+>>
+>> On Wed, Aug 17, 2022 at 09:13:38AM +0800, Yu Kuai wrote:
+>>>> So, as a fix for the immediate problem, I guess this might do but 
+>>>> this feels
+>>>> really fragile. How can we be certain that re-entering only happens 
+>>>> because
+>>>> of splitting? What if future core development changes that? It seems 
+>>>> to be
+>>>> solving the problem in the wrong place. Shouldn't we flag the bio 
+>>>> indicating
+>>>> that it's split when we're splitting the bio so that we only limit 
+>>>> them for
+>>>> iops in the first place?
+>>>
+>>> Splited bio is tracked in __bio_clone:
+>>
+>> As the word is used in commit messages and comments, the past perfect 
+>> form
+>> of the verb "split" is "split". It looks like "splitted" is used in rare
+>> cases but dictionary says it's an archaic form.
+> 
+> Ok, thanks for pointing it out, I'll change that in next iteration.
+>>
+>>> if (bio_flagged(bio_src, BIO_THROTTLED))
+>>>     bio_set_flag(bio, BIO_THROTTLED);
 
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- mm/page_alloc.c | 51 ++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 34 insertions(+), 17 deletions(-)
+While implementing the new method, I found that there seems to be a
+misunderstanding here, the code seems to try to add flag to split bio
+so that it won't be throttled again for bps limit, however:
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 033f1e26d15b..f89928d3ad4e 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5853,6 +5853,26 @@ static unsigned long nr_free_zone_pages(int offset)
- 	return sum;
- }
- 
-+static unsigned long nr_free_zone_pcplist_pages(struct zone *zone)
-+{
-+	unsigned long sum = 0;
-+	int cpu;
-+
-+	for_each_online_cpu(cpu)
-+		sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-+	return sum;
-+}
-+
-+static unsigned long nr_free_pcplist_pages(void)
-+{
-+	unsigned long sum = 0;
-+	struct zone *zone;
-+
-+	for_each_zone(zone)
-+		sum += nr_free_zone_pcplist_pages(zone);
-+	return sum;
-+}
-+
- /**
-  * nr_free_buffer_pages - count number of pages beyond high watermark
-  *
-@@ -5894,7 +5914,8 @@ long si_mem_available(void)
- 	 * Estimate the amount of memory available for userspace allocations,
- 	 * without causing swapping or OOM.
- 	 */
--	available = global_zone_page_state(NR_FREE_PAGES) - totalreserve_pages;
-+	available = global_zone_page_state(NR_FREE_PAGES) +
-+		    nr_free_pcplist_pages() - totalreserve_pages;
- 
- 	/*
- 	 * Not all the page cache can be freed, otherwise the system will
-@@ -5924,7 +5945,8 @@ void si_meminfo(struct sysinfo *val)
- {
- 	val->totalram = totalram_pages();
- 	val->sharedram = global_node_page_state(NR_SHMEM);
--	val->freeram = global_zone_page_state(NR_FREE_PAGES);
-+	val->freeram = global_zone_page_state(NR_FREE_PAGES) +
-+		       nr_free_pcplist_pages();
- 	val->bufferram = nr_blockdev_pages();
- 	val->totalhigh = totalhigh_pages();
- 	val->freehigh = nr_free_highpages();
-@@ -5938,30 +5960,28 @@ void si_meminfo_node(struct sysinfo *val, int nid)
- {
- 	int zone_type;		/* needs to be signed */
- 	unsigned long managed_pages = 0;
-+	unsigned long free_pages = sum_zone_node_page_state(nid, NR_FREE_PAGES);
- 	unsigned long managed_highpages = 0;
- 	unsigned long free_highpages = 0;
- 	pg_data_t *pgdat = NODE_DATA(nid);
- 
--	for (zone_type = 0; zone_type < MAX_NR_ZONES; zone_type++)
--		managed_pages += zone_managed_pages(&pgdat->node_zones[zone_type]);
--	val->totalram = managed_pages;
--	val->sharedram = node_page_state(pgdat, NR_SHMEM);
--	val->freeram = sum_zone_node_page_state(nid, NR_FREE_PAGES);
--#ifdef CONFIG_HIGHMEM
- 	for (zone_type = 0; zone_type < MAX_NR_ZONES; zone_type++) {
- 		struct zone *zone = &pgdat->node_zones[zone_type];
- 
-+		managed_pages += zone_managed_pages(zone);
-+		free_pages += nr_free_zone_pcplist_pages(zone);
-+#ifdef CONFIG_HIGHMEM
- 		if (is_highmem(zone)) {
- 			managed_highpages += zone_managed_pages(zone);
- 			free_highpages += zone_page_state(zone, NR_FREE_PAGES);
- 		}
-+#endif
- 	}
-+	val->totalram = managed_pages;
-+	val->sharedram = node_page_state(pgdat, NR_SHMEM);
-+	val->freeram = free_pages;
- 	val->totalhigh = managed_highpages;
- 	val->freehigh = free_highpages;
--#else
--	val->totalhigh = managed_highpages;
--	val->freehigh = free_highpages;
--#endif
- 	val->mem_unit = PAGE_SIZE;
- }
- #endif
-@@ -6035,8 +6055,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
- 			continue;
- 
--		for_each_online_cpu(cpu)
--			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-+		free_pcp += nr_free_zone_pcplist_pages(zone);
- 	}
- 
- 	printk("active_anon:%lu inactive_anon:%lu isolated_anon:%lu\n"
-@@ -6128,9 +6147,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
- 			continue;
- 
--		free_pcp = 0;
--		for_each_online_cpu(cpu)
--			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-+		free_pcp = nr_free_zone_pcplist_pages(zone);
- 
- 		show_node(zone);
- 		printk(KERN_CONT
--- 
-2.25.1
+1) for blk throttle, split bio is issued directly and will never be
+throttled again, while orignal bio will go through throttle path again.
+2) if cloned bio is directed to a new disk, the flag is cleared anyway.
+>>>
+>>> And currenty, the iops limit and bps limit are treated differently,
+>>> however there are only one flag 'BIO_THROTTLED' and they can't be
+>>> distinguished.
+>>>
+>>> Perhaps I can use two flags, for example BIO_IOPS_THROTTLED and
+>>> BIO_BPS_THROTTLED, this way only iops limit can be handled and bps
+>>> limit can be skipped for splited bio.
+>>>
+>>> What do you think?
+>>
+>> I think the code would be a lot more intuitive and less fragile if we 
+>> used
+>> two flags but the bits in the bi_flags field are a scarce resource
+>> unfortunately. Even then, I think the right thing to do here is using two
+>> flags.
+> 
+> Yes, the field 'bio->bi_flags' is unsigned short, and there are only two
+> bits left. I'll use the new sulution which will acquire a new bit.
+> 
+> Thanks,
+> Kuai
+>>
+>> Thanks.
+>>
+> 
+> .
+> 
 
