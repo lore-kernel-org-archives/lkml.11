@@ -2,126 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D986EC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:01:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9C1C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234085AbiHVJBc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        id S234097AbiHVJDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232041AbiHVJA5 (ORCPT
+        with ESMTP id S231464AbiHVJDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:00:57 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14EDE2E9EE;
-        Mon, 22 Aug 2022 02:00:56 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 09:00:52 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661158854;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dM3ojszo3Veb8HoUmWERKHR8FJOVeplfXo3T1F8LY58=;
-        b=gj7pKeIaBS2ImOOqOgKXS9jcGggbX1n0/F+0+34kqcOkTkaGMNZKhWQRWsvjD3mMX1PkHI
-        XbDhhV0Ealw1qqu1h+Rysm3fviIkPKVKutCziLNWQnXk04ZhQsPXkYRHsshiqTCtWQ9JOQ
-        kyUy5Uvjqr12KLiJ1bOMlH64VrJStGe2vrKi3uRupIU0t1MYSo7C3Bv+DvFhvkavPv0YJj
-        ktgRrELclzmlSKDyz6ZQg0bgpPY00ZkkjTnEb3MKFE9kOPQsWcag6mysA8Jg6yrC41whoX
-        /jXWu3Yd2A8DZigmyOCeaONKijTb9eOXAHcB/vnDZ7FrqVokCTRMYjaS7toa3A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661158854;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dM3ojszo3Veb8HoUmWERKHR8FJOVeplfXo3T1F8LY58=;
-        b=j34P7dibyDnyYA3Xyjlxq2hCc3/JTKJ2n7RxH2UgnSpB3GLctBP1Uwu4Zy89lDxnljQfqf
-        CSwhcVh1E7qt0vDw==
-From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/x86/lbr: Enable the branch type for the Arch
- LBR by default
-Cc:     Stephane Eranian <eranian@google.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        stable@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220816125612.2042397-1-kan.liang@linux.intel.com>
-References: <20220816125612.2042397-1-kan.liang@linux.intel.com>
+        Mon, 22 Aug 2022 05:03:16 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECBC18D
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:03:13 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3246910dac3so273997147b3.12
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:03:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=EuziAoq5ZbtPrSZbeUk8bQqTzuyS7XPxbOwKK2h6M3I=;
+        b=Sw3kIy20SNGugBW8dL2ZMcQGAgqJ/0rc8tznUC4Q0+BOOO85ccRBiVpJitf6eK1Iaa
+         RjQCiALJNCBQ6CFRTYn5FHPW8bV5kgVDvlP6Yq32hZslXgIJmJr+Jna1zxeXneR38Ihj
+         34zAejNuIsR38piTK9NXJDONa4Y76Jh9fsQBE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=EuziAoq5ZbtPrSZbeUk8bQqTzuyS7XPxbOwKK2h6M3I=;
+        b=fkRQLvGbZRIqAMw/YewGTJSt9tNoy5veJjj3nMReYFGYTPUiJr670cRg3ZAnD16Ds7
+         K0GFGiEn5a6MUvESkVs6iwozs0kP16FMtuHgsMjGvIsHPIs6Kb1qlnAcAS+f8tuJ0YuL
+         loTfudsIXX9g6f6wI2iZhidnnVWLwMu7f0fpaa2nnwV0T/FfAT2o9uPUTwfwnaZ7+dfp
+         t6c/5q26UMkJSmz+BFyedsCMvaUA8+0YZDuFBUWqrhVjP7/5zpUyy2NK867lr1jXKdQ8
+         QNPxXWbI1QJIegOXSnke0owL+lbhIv8wZ6ML4b+Yup3EPmeHBS107m9citD03D2b3Zuc
+         U3kg==
+X-Gm-Message-State: ACgBeo2AlHPa3JnwCB/AC807kwmjHW+ubEduZcAQPIU6KzO8T5wwsg6m
+        8EaBUeaT2WCzeG79VHAoAyjOvA6i1rU7FqdL+2o/8Q==
+X-Google-Smtp-Source: AA6agR6APdt78F3uw+1hsI55dL+JHbLtSlHcfqi0jLhAPn0QEEgxu7vETGl/x/2GaGSTbsdSnHe62HeLvEmG/XpC7hM=
+X-Received: by 2002:a05:6902:100b:b0:695:bd4e:95d6 with SMTP id
+ w11-20020a056902100b00b00695bd4e95d6mr2569366ybt.595.1661158993033; Mon, 22
+ Aug 2022 02:03:13 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <166115885282.401.13470060231625531121.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <20220815104739.v7.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
+ <Yvnq5o5f+qp5zs1c@kroah.com>
+In-Reply-To: <Yvnq5o5f+qp5zs1c@kroah.com>
+From:   Daniil Lunev <dlunev@chromium.org>
+Date:   Mon, 22 Aug 2022 19:03:02 +1000
+Message-ID: <CAONX=-fScRJt-j1USO6gKXm780S=XBGHVc_LUziSZDiStc5P6A@mail.gmail.com>
+Subject: Re: [PATCH v7] ufs: core: print UFSHCD capabilities in controller's
+ sysfs node
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Keoseong Park <keosung.park@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+On Mon, Aug 15, 2022 at 4:42 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> Please provide a lot more information about this in the changelog text.
+> What would you want to see here if you had to review this change?
 
-Commit-ID:     32ba156df1b1c8804a4e5be5339616945eafea22
-Gitweb:        https://git.kernel.org/tip/32ba156df1b1c8804a4e5be5339616945eafea22
-Author:        Kan Liang <kan.liang@linux.intel.com>
-AuthorDate:    Tue, 16 Aug 2022 05:56:11 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 19 Aug 2022 19:47:30 +02:00
+Hi Greg,
+Sorry for toppost, let me try again.
+Can you clarify what specifically is missing from the changelog?
+The comment used to be on the "c" file, but now is moved to the
+documentation. Is there anything specific missing? Or do you
+mean commit messages?
 
-perf/x86/lbr: Enable the branch type for the Arch LBR by default
-
-On the platform with Arch LBR, the HW raw branch type encoding may leak
-to the perf tool when the SAVE_TYPE option is not set.
-
-In the intel_pmu_store_lbr(), the HW raw branch type is stored in
-lbr_entries[].type. If the SAVE_TYPE option is set, the
-lbr_entries[].type will be converted into the generic PERF_BR_* type
-in the intel_pmu_lbr_filter() and exposed to the user tools.
-But if the SAVE_TYPE option is NOT set by the user, the current perf
-kernel doesn't clear the field. The HW raw branch type leaks.
-
-There are two solutions to fix the issue for the Arch LBR.
-One is to clear the field if the SAVE_TYPE option is NOT set.
-The other solution is to unconditionally convert the branch type and
-expose the generic type to the user tools.
-
-The latter is implemented here, because
-- The branch type is valuable information. I don't see a case where
-  you would not benefit from the branch type. (Stephane Eranian)
-- Not having the branch type DOES NOT save any space in the
-  branch record (Stephane Eranian)
-- The Arch LBR HW can retrieve the common branch types from the
-  LBR_INFO. It doesn't require the high overhead SW disassemble.
-
-Fixes: 47125db27e47 ("perf/x86/intel/lbr: Support Architectural LBR")
-Reported-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220816125612.2042397-1-kan.liang@linux.intel.com
----
- arch/x86/events/intel/lbr.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index 4f70fb6..47fca6a 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -1097,6 +1097,14 @@ static int intel_pmu_setup_hw_lbr_filter(struct perf_event *event)
- 
- 	if (static_cpu_has(X86_FEATURE_ARCH_LBR)) {
- 		reg->config = mask;
-+
-+		/*
-+		 * The Arch LBR HW can retrieve the common branch types
-+		 * from the LBR_INFO. It doesn't require the high overhead
-+		 * SW disassemble.
-+		 * Enable the branch type by default for the Arch LBR.
-+		 */
-+		reg->reg |= X86_BR_TYPE_SAVE;
- 		return 0;
- 	}
- 
+Thanks,
+Daniil
