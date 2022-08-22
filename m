@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8A3C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F8BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbiHVKdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 06:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
+        id S233376AbiHVKd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 06:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbiHVKda (ORCPT
+        with ESMTP id S233486AbiHVKdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 06:33:30 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274DA21B6
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 03:33:30 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id e4so7768234qvr.2
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 03:33:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=7biQyLR7kJdpU1WtkQOgvb5Tg9+FQQtrig74Eiy/kVo=;
-        b=JELjLkIpNcd4VCCyPrqAuWDw8LrY8z49NyEQFVOYJGwys6rEo6o9Q0/ONTSAvE2z5v
-         l/PbUhfwOd1suKSnPlsvd7lh61VMKSvKmvkCfnTA2Osg6Fm5OFnaOXhWmXx0QbuaA5RC
-         d+lezk/7PzbE0/VVtv+H7GTvwi8L40OuFfMHGehb67TwtZLZo0XLrY6PMTlq4VAl59GI
-         JjoGpUUMGmMRWR5H+T/nrlAfWIheEM/vqb2HsUd6NUVDFtUg5YWcZeV1o+YBMRYG4yj2
-         Zf7J1VxGuo6R6QdTsTMjpBVMFV3iENQEY6miZje9+xQXCrgFNAVcqAdQx49Epw1R9+/e
-         H4Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=7biQyLR7kJdpU1WtkQOgvb5Tg9+FQQtrig74Eiy/kVo=;
-        b=Kx64EKo5oMRoD6T8o4zypSRUgSAbVm/Nur+n4EMz1ur73TYeSijdOeFvwRMdYYeeZr
-         9m56jxiUYth3qnZZ/5tMb05A6kOnLcaxUyI91JWJIN1uvbRnDY9ujzd3xRPiswWpGY0I
-         q4cxYwfYnakJUyQyYEADNdxqYKZa96proA17p5D07F8cXBfvY3qH/wl8XI1h6bABJwsC
-         UauoLT1vmM1awQJGHuDXWKTQ2YPpnaWOYEsBlzjJQ/kB38VebjCK15/6mjelorFMoylf
-         00cs1uet4t1AEYJsUJ/2RQL74HoUYn/FGzrpreNZUHFlhMznn5brBxksvfHndtcyTSJP
-         RlEg==
-X-Gm-Message-State: ACgBeo1VN0/pWZbJeQ4g/s8PB0KZsTO/hqb1TqCyIY4PJRtUXgijY6Mj
-        OhP0WhhkxpuAsSqOq5cpAsA=
-X-Google-Smtp-Source: AA6agR4Y8CzCM94I8+mbSKTO7qptiETBHal4Zr+63IbKfwbKSCEBnW1MOXvbeQn8KxNDEOnSKRmUWA==
-X-Received: by 2002:ad4:5aae:0:b0:496:dcfc:92aa with SMTP id u14-20020ad45aae000000b00496dcfc92aamr4276349qvg.105.1661164409282;
-        Mon, 22 Aug 2022 03:33:29 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:901:9131::10])
-        by smtp.gmail.com with ESMTPSA id bw12-20020a05622a098c00b0031eddc83560sm8716516qtb.90.2022.08.22.03.33.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 03:33:28 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Heiko Stuebner <heiko@sntech.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Peter Geis <pgwipeout@gmail.com>
-Cc:     Markus Reichl <m.reichl@fivetechno.de>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] phy: rockchip-inno-usb2: Return zero after otg sync
-Date:   Mon, 22 Aug 2022 06:32:18 -0400
-Message-Id: <20220822103219.3985075-1-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 22 Aug 2022 06:33:51 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58147B4A7;
+        Mon, 22 Aug 2022 03:33:42 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.48:40060.967873379
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.8.199 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id C78612800A3;
+        Mon, 22 Aug 2022 18:33:31 +0800 (CST)
+X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id d3193f7cfc9d430590909a27ad267485 for j.vosburgh@gmail.com;
+        Mon, 22 Aug 2022 18:33:37 CST
+X-Transaction-ID: d3193f7cfc9d430590909a27ad267485
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, huyd12@chinatelecom.cn,
+        sunshouxin@chinatelecom.cn
+Subject: [PATCH] bonding: Remove unnecessary check
+Date:   Mon, 22 Aug 2022 03:31:29 -0700
+Message-Id: <20220822103130.3466-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The otg sync state patch reuses the ret variable, but fails to set it to
-zero after use. This leads to a situation when the otg port is in
-peripheral mode where the otg phy aborts halfway through setup. Fix this
-by setting ret to zero after use.
+This check is not necessary since the commit d5410ac7b0ba
+("net:bonding:support balance-alb interface with vlan to bridge").
 
-Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
-
-Reported-by: Markus Reichl <m.reichl@fivetechno.de>
-Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
-Tested-by: Markus Reichl <m.reichl@fivetechno.de>
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
 ---
- drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/bonding/bond_main.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-index 0b1e9337ee8e..5fc7c374a6b4 100644
---- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-+++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -1169,6 +1169,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
- 			/* do initial sync of usb state */
- 			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
- 			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
-+			ret = 0;
- 		}
- 	}
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 50e60843020c..6b0f0ce9b9a1 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1578,19 +1578,6 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
+ 
+ 	skb->dev = bond->dev;
+ 
+-	if (BOND_MODE(bond) == BOND_MODE_ALB &&
+-	    netif_is_bridge_port(bond->dev) &&
+-	    skb->pkt_type == PACKET_HOST) {
+-
+-		if (unlikely(skb_cow_head(skb,
+-					  skb->data - skb_mac_header(skb)))) {
+-			kfree_skb(skb);
+-			return RX_HANDLER_CONSUMED;
+-		}
+-		bond_hw_addr_copy(eth_hdr(skb)->h_dest, bond->dev->dev_addr,
+-				  bond->dev->addr_len);
+-	}
+-
+ 	return ret;
+ }
  
 -- 
-2.25.1
+2.27.0
 
