@@ -2,322 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5902FC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF3EC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235762AbiHVOPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37514 "EHLO
+        id S235695AbiHVONn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235746AbiHVOPW (ORCPT
+        with ESMTP id S235673AbiHVONj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:15:22 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D802CC86
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:15:20 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id a4so7940638qto.10
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:15:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
-        bh=7erYZR7y/baNHdFg/R+eq9CtBmAuN+I62W1+/+lw+cU=;
-        b=VGl87qAgSZFH5MQo+ucFhoxCnIbvfvn64GrCfEeXBnJta/mV/9ThbXHC4Z1Yw8tvQt
-         H30d7fI7JYw9d4r2DQM590OqsBL+0GT2ctVypAIYJdv3LW9zDW1onsLALZRmgRzCNujb
-         cU5uNXO8yXxGfK8yhQTh41pNMMVI6skHYZduyRzucyoxNFN6ldlVVJ8qWPSkxGgPDUjp
-         eeNfQipmPbvcTyvkyoo3LRMe9gb+V0vBubB3JMJ75OV17Fp6f2uogwHNWurKs+9ajlTS
-         xo6BEMzOfG2zvYz+Yx20o2WYRoHP4Xsr3V52hyxVX9G3aSyviZsaKwQaIOlP6L1FzWFH
-         enwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=7erYZR7y/baNHdFg/R+eq9CtBmAuN+I62W1+/+lw+cU=;
-        b=VKfqbvDX+dfzWmcNV2AdwqqAfHyDuDe6KXdhKPIf7Cr4gBtiB14rgTaDvGrUlvzElb
-         Xr76bMBph1xAGFjOZQF6qlbvPF1wwVs0N6aiIQy7RNERZWs64w/vybbYPVgX+roBICIQ
-         Qbn869N0tRcqx/Gj6wls0ry5/47Ni2JGVSw27lSDPeDI9Ms6BH+QsVC3UyH987NNCm52
-         bBbI7rkzhojYsqYgjW5rG249bKJ4U9e8VaUWjXzt/3SIrEsIydzlTZUGkGIEubg4vdPk
-         Siz+T3L1t9o9eqZdZrDHTUlmworHPiSTsK8svMQcYn+hR6tdmTZRssvC8DYhnz4MP+Fb
-         +NPw==
-X-Gm-Message-State: ACgBeo2NNAZojQ3hXNJ5Nn9kvKCmXZmcHSPZd1P1TWMmH3GYPELt02OW
-        192bV84jZ7ehBxGWn9VL++QnVQ==
-X-Google-Smtp-Source: AA6agR4eJVG9jPyBnQMQqk64yg+IQ0/B6Zje6l0qsBpO5D/bkbMtbjsyJJGN9JYXm9KZAObzs3WV0g==
-X-Received: by 2002:a05:622a:58d:b0:344:62be:dae with SMTP id c13-20020a05622a058d00b0034462be0daemr15450664qtb.596.1661177719836;
-        Mon, 22 Aug 2022 07:15:19 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
-        by smtp.gmail.com with ESMTPSA id l16-20020a37f910000000b006bbe6e89bdcsm7457760qkj.31.2022.08.22.07.15.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 07:15:19 -0700 (PDT)
-Message-ID: <e15165f60ce801dd502bfe1992ea430fe37c5a91.camel@ndufresne.ca>
-Subject: Re: [PATCH 2/2] [WIP]: media: Add Synaptics compressed tiled format
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Hsia-Jun Li <Randy.Li@synaptics.com>
-Cc:     Tomasz Figa <tfiga@chromium.org>, dri-devel@lists.freedesktop.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, sakari.ailus@linux.intel.com,
-        ribalda@chromium.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sebastian.hesselbarth@gmail.com, jszhang@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Mon, 22 Aug 2022 10:15:17 -0400
-In-Reply-To: <1f926989-eb13-14ee-e30d-ac6d01b86c52@synaptics.com>
-References: <20220808162750.828001-1-randy.li@synaptics.com>
-         <20220808162750.828001-3-randy.li@synaptics.com>
-         <CAAFQd5AKjpJ+fPAeCqdNnJbS4R7SdaHkfyW4qG1xXr-sE801pQ@mail.gmail.com>
-         <13d37c15-79f3-4e16-8cf4-fc37846f4a04@synaptics.com>
-         <Yv7HnHE7bLmgq5D0@pendragon.ideasonboard.com>
-         <6da7faf329128312f0862f555d1a855437ae99f3.camel@ndufresne.ca>
-         <50dd9b7a-8f48-0799-57f6-048d20de8dcc@synaptics.com>
-         <2662ac698898f71f60b9b7e0ad4703854de1d012.camel@ndufresne.ca>
-         <1f926989-eb13-14ee-e30d-ac6d01b86c52@synaptics.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Mon, 22 Aug 2022 10:13:39 -0400
+Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-mr2fra01on0615.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e19::615])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC236140
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:13:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mMsi9yZD0nO4RYWldJMJx1MilyeBEQ3+wkHH9fxk+P1WBL6J5g2CGRKe4WfzERxQvQolKcBJ9JGHfufqGuOgunJOd4UVqdAPmRPDK7E+w+xyG1ylfPxM1f/IKD9mLH6fb25EndIa76++tAEaSzYQUbjIEyB95sHCUcuJZyNZONeu088gx7LVIobxhj4jgW6YEAUTjmfmn1BZYLxAoK910CxkFLV7B77YaFPiMSOwuqdtMe0VIiuTABPaFleJGw35FVwDqhsYL4yfrRni7+QA1hLuCztAg0YKzkKdC/BQS0hUI2jWatj/CQz7zru9muSXP+mkbImca7Olp1oBR/P8tQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GZAnN3aou7SXs8gAChZYd5wnGki6/mDaz5AaUL9ZfsQ=;
+ b=Wb30JiCmXT1JSBICUNpLmd5k6BNl8S0stSiJ/3bzqQ5v7RRmEFKI12focBtabWFRHZZZ2wsWOp9cxU1GzekIcdRyOk5jNPDPr/ijSH9L94OLF+BN+aN3gcUh+pmBOTXTWtYfWevCpqbjcLkRU3xcSRPhX5/Bs/EpetTVtYcBR6E0ixoGS2Y49Bdo2vRQHt0E7qrvGqcKZ+rL7enNtH3wgRrO8Haj7U0ok/jh1Jh4TEk61WKtYyY7HrKtwriCkAZSmpvd5Ao6fPWodtwnRVJiy5OGwDgS1MEp2x7AbbS9v+NAGmLxdZqah16KsqfWNfkWls40+atWZfLmsTDB9sQv2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GZAnN3aou7SXs8gAChZYd5wnGki6/mDaz5AaUL9ZfsQ=;
+ b=TBMtjwBuqhZaJCErm8HmtQCDV0U6EntRZipfceDY3rL04+GfKGQbCxzuSYqKMq8o8Hhusw7c55lQAZ4TdxOBjDm/VAbKxzv+eMUYjms52VApCmNkUgXsXOqWkmO3gX34XX9wvZ7UU8jwRMcmTpbRlOcY3BGaMTkawBrhPcC5gZSZ+zQQCnOrs+N4ZxxbiGcrWUQUo3Pbe0bdCW11NWWwNSokjlSGl4yW/LAWisT66W3u8J3QV9tF0uKb83npuoDYT+7pVRQGhVtGZNMQw5J52QMGfCbE1JhBO4VU0JPLk7c4uKOsRtAKP2X+7h54uFLTgNxT2hdw8kEK0Apu7psVSQ==
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB1651.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:3::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Mon, 22 Aug
+ 2022 14:13:30 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::888e:a92e:a4ee:ce9e]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::888e:a92e:a4ee:ce9e%5]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 14:13:30 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+CC:     Nick Child <nick.child@ibm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH] powerpc: Add support for early debugging via Serial 16550
+ console
+Thread-Topic: [PATCH] powerpc: Add support for early debugging via Serial
+ 16550 console
+Thread-Index: AQHYtBCQTPmF1chLTkiejFUksD5Awq22z30AgAABRgCABCnQgA==
+Date:   Mon, 22 Aug 2022 14:13:30 +0000
+Message-ID: <d12435b4-0caa-ba06-f0a5-8c9268bb8dfd@csgroup.eu>
+References: <20220819211254.22192-1-pali@kernel.org>
+ <35c0ff6a-387d-3c01-66b3-f659cfe67c2a@infradead.org>
+ <20220819223848.lvxakjjzfdjvyqgu@pali>
+In-Reply-To: <20220819223848.lvxakjjzfdjvyqgu@pali>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 66975458-30de-4a79-7e91-08da84487d5f
+x-ms-traffictypediagnostic: MR1P264MB1651:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qAPg0Xz1C974OW+lxBojadHDUSPKWxjpD3/yyP5pMzOfsWj0E5ADcRo5JcQ71TgXjagU8//jaxrYZn6gRawK4AFGodxpmd3W4TIBFv3n+9fWhEViC9kthqPuDIRo9/3KGA29Fy0u8OBCkkrIj6m4E/wZ03VGRgs5/61pxfZ4XLcV+LfJlSYT7Mve47XfqFi414irMV2CdsYPx1FimhAF2TvM3W8CdNP1R5ScKIM+9keJMDnpyypScRMfOw0Jj8Z6KcfimwpOSROooYMLC21fUt8A3U/2bpKcSFzcSQULVPtjf6Lji0RifKaOS4OrklzB4spKVhhSbs1WNInPgyhpM+pn+mE5Uc+IvKjJ0I4sQi8EEmaDdQB1bfKgjgBZ4jk8SSTIHB7evHrdO11OeInx+q13sZOkKt8az5JsC+deHnW8x+/CC76L0y48oexhtaAlZBypEbcTcSeQ+UhD1EUtq/IqVhKmROYWDMnGGeG1GbCyOWWByZWqwPWAPhSYblK0vG0L3h9f+n9ZnZoarP8jnOaz3f2vm5QzIL2OSj6AEgY0uXjkYC4tc5vzgr5wah/qocOpr4LfuJb1ErMWarnD27FDbvSy5Qv1v0ay6y+Z64clwByP0jViHtx7Tkp3An36Kv8R/qcdrDz/W8upk2YftTBOzZ+26Z+LF47CtBqzxBL6UmE5jrVA5V4JCubWISP3Qbw20HFsEyETEJkYleXEmjT0WG8YKbVxH73eRYbiLopHeyz1m7zglsJTqFvv7uDDuuJ2lgtmUk8PCTAZGTtx/mOoREI3dL75sGY+pZfGzIVH8F8UZyQ/7Q25np2FHNc2DFaH0RROpL7fFvpEx+aK2jlOze0OgWffuPMbpZ0BwIs=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39850400004)(376002)(396003)(346002)(366004)(136003)(66946007)(8676002)(4326008)(66556008)(66476007)(66446008)(64756008)(38070700005)(86362001)(122000001)(31696002)(38100700002)(110136005)(54906003)(91956017)(36756003)(76116006)(31686004)(2616005)(6512007)(26005)(53546011)(66574015)(6506007)(6486002)(478600001)(966005)(71200400001)(186003)(316002)(8936002)(2906002)(41300700001)(83380400001)(44832011)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MHRwSWd6STlaSm9RUDR2ay9yUjZCS1BReTk1NVdDU09pcG9VWVBmUk1GaTcv?=
+ =?utf-8?B?Sm0yYVFXOVZhbk5qa2hDNEg2RFlMdVR4OElobmV1TDFlT3BvcjRwR3RxaHIz?=
+ =?utf-8?B?TFVFMHoycmh1eXBEa0pnNWtnL3hqWDZaaUlrZGV2YkYrSFNHTHB3Q0F4SDhR?=
+ =?utf-8?B?WDFiSW85V0Z4Tk1oSmlKM2Z2bkFQTXlpMEpWY0dKWDA0Q2VYZm1JMlFCWDBu?=
+ =?utf-8?B?OFYrQ0VLMnVJTEUxRm1Ga1REN3h1NHZuWU9rYkx3RkJmSHNRR0llV1hwQVhX?=
+ =?utf-8?B?VStvQm8ranVGaHNPb2N5WGlNTXZmWTMzY2d5dlRtSzBNazhNbkR1R1lGbXdo?=
+ =?utf-8?B?YnlaZFV4L0VzeldOcmptdVJZd3pENE5NSDVIdVVkMlpSbVlBTVJBM0ZGUjhh?=
+ =?utf-8?B?TXZBNS9DalZJSGVxY3EyKzBObkNRcGQ1blVPblFOZ2RKNlJ6Nzlab1k2dXN5?=
+ =?utf-8?B?dWM1ZnNDcndsWGlaaEErQkZtOGtoWFY1cU9MV0ljVU1CaGxEc1daOGRpUTNt?=
+ =?utf-8?B?L0F5aWVJWXFCeWV0SVdJeHV3ZFA4bW8vR0c5OUIzbWJyZ1JqUWEva2oyUnB6?=
+ =?utf-8?B?cE9PSkRyejJiR3dmMzFvVWxrSVFpL0hNaFdWakxuYm9SUWJ2VFltRFc0ekh0?=
+ =?utf-8?B?dlhwbkNlZWdFZHZQQm41djdOSWhweVJzZC9QazFUZnhCWjFuVHlRK3d4U2Mx?=
+ =?utf-8?B?eGExRlBCdVNHZ3VqVC9MaTZyM3VIVGJuMkpDekFiV3VuSEwyV0FFVDcveFRn?=
+ =?utf-8?B?aU5Vb3hscEFUNVltdGc1aHZCaEJWM3N1a1dFVlgzL0pZN1NhcUJtSE05WUNO?=
+ =?utf-8?B?bGhMV1FZVmJKYTVVQ2QvVzRXanhmNlU3c29wMUR0RjhURFovVHE2Sm9RQ3Rv?=
+ =?utf-8?B?Y2JITEI5SEVkUDc3QzhPU1hvZnlkTUJMZVRYa09GeE5YbjNuWlpZajJvOE5L?=
+ =?utf-8?B?dmk4VE8xRnlOeXBWY1VhY0FFVENsZkN1Qm8xT25DUVhJZS9YVzNNK1ZiUEVR?=
+ =?utf-8?B?Zk81bi9sbks2VWdLSUVPUDNJNlpWYnpJbVgvOENFNWxyY2J3cDFOTE0zVk1V?=
+ =?utf-8?B?bG0zSG43YzRsQ2J6NUpVVjVMdFVRdUlYSEVjQVgvNzY5N1ZKbldibVc5U2Z6?=
+ =?utf-8?B?SGZuVnRqRHNoSWdwbXpuK3JUMEUvNkZZSTJGejlRL09BRVM1NEVKSys3RTBx?=
+ =?utf-8?B?NHUxaExJNncyQ2JObGVyTVg2b1dTS0d2YVlUdHcvSjNZeHBoekVNVXFBV3JU?=
+ =?utf-8?B?ZjJjM2FFQ0dBeFZKc29TaHlKb2U2eHovYVJBZ1lZa0J3YnRQbFp6ZDEybFMw?=
+ =?utf-8?B?YTRRNDRTRzZnOTJSWUx5K1dlQ2Vmbm1tMXlQVE4vQjY3TzU0NWhDZXpUVG5S?=
+ =?utf-8?B?ZzV4NTAyZWNSV2ZRazZqS0RmMDZGeVJhbS9GNmI3ZDJvaEFzejBkYnZSazJR?=
+ =?utf-8?B?eXd2MmRaN2ZtTlhlQ0xMN0wwbGhVOEVoUDRYNjR5TEUzQW1VWEtnSDJtM3U1?=
+ =?utf-8?B?RWh0Ris3NEZ1K1duLzJMYitrMlJId3VUcllCYStyQVhyS3dYbC8zQWxIL0kz?=
+ =?utf-8?B?UTYrSzIrN2F6TTUvK3kxL2ZiNGdrQlp4MHE0WktSM0xzOWFwMlovTS8xbVdm?=
+ =?utf-8?B?NjBwV09qYlZrbk95VGZMWS9TMXdJZmxXdEhOZExVZ0tSWnRIT1U0Rnh6MVFl?=
+ =?utf-8?B?NnhhVitkRGpMVitSTmdCSFF1bmt2QXBnQmlCbzJNeVlPb0thcTlJWUE3cVd3?=
+ =?utf-8?B?a0JhTTREWEdRV3cvT01PUFJndWdTYkFRcjVXMStFRHpKL1VyRjdVdHhLcDFN?=
+ =?utf-8?B?eXlxZTlyZzQxU205NlhQc1ppUE5TQk1UbzFKQUN1RlY3WGhXNzVpUktzQ2Jw?=
+ =?utf-8?B?QlVQSnVteDRualJIU055NjZQUW5yR3RWMHFzczFxUFBKN1FHKzFzd2pCVWg0?=
+ =?utf-8?B?UFlOSXJDT2djY2ZoaTR6R2p3Q01NU1V0L2ZxalBWSm5PTE1XcTFteTczT3hx?=
+ =?utf-8?B?eGp2Y0tHTmtvNGw5UFNNTEl6WU5tYVpzN0c0MmJmeEJoTWRNN05qWEViU0ZE?=
+ =?utf-8?B?dklqWFJiZnJUcGFFUzAzb2FPdDkvWE1TSGozaE9zSHNpNmRGVnJyZU5iNkJh?=
+ =?utf-8?B?bnRNQWY3Wm5WVGZvNWxLWTZDTUNDenp6ekI4UDBqMWIrZTdEQXh4Vm5MbEx4?=
+ =?utf-8?Q?/JZ5NBHxzUUoRFwEXnNigF0=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C7694D459D8E4041A5F93812DB1C0C5C@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66975458-30de-4a79-7e91-08da84487d5f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2022 14:13:30.1799
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4NFtHt8+BvHVColj6dchyAyJDm24KmHACPsSPegaACV/Is8obN9tEIAsQ599gb2petqsXKkO1aLFt5E2OxruxGWwahrRTimx0RKRHFQaA0g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB1651
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le samedi 20 ao=C3=BBt 2022 =C3=A0 08:10 +0800, Hsia-Jun Li a =C3=A9crit=C2=
-=A0:
->=20
-> On 8/20/22 03:17, Nicolas Dufresne wrote:
-> > CAUTION: Email originated externally, do not click links or open attach=
-ments unless you recognize the sender and know the content is safe.
-> >=20
-> >=20
-> > Le vendredi 19 ao=C3=BBt 2022 =C3=A0 23:44 +0800, Hsia-Jun Li a =C3=A9c=
-rit :
-> > >=20
-> > > On 8/19/22 23:28, Nicolas Dufresne wrote:
-> > > > CAUTION: Email originated externally, do not click links or open at=
-tachments unless you recognize the sender and know the content is safe.
-> > > >=20
-> > > >=20
-> > > > Le vendredi 19 ao=C3=BBt 2022 =C3=A0 02:13 +0300, Laurent Pinchart =
-a =C3=A9crit :
-> > > > > On Thu, Aug 18, 2022 at 02:33:42PM +0800, Hsia-Jun Li wrote:
-> > > > > > On 8/18/22 14:06, Tomasz Figa wrote:
-> > > > > > > On Tue, Aug 9, 2022 at 1:28 AM Hsia-Jun Li <randy.li@synaptic=
-s.com> wrote:
-> > > > > > > >=20
-> > > > > > > > From: "Hsia-Jun(Randy) Li" <randy.li@synaptics.com>
-> > > > > > > >=20
-> > > > > > > > The most of detail has been written in the drm.
-> > > > >=20
-> > > > > This patch still needs a description of the format, which should =
-go to
-> > > > > Documentation/userspace-api/media/v4l/.
-> > > > >=20
-> > > > > > > > Please notice that the tiled formats here request
-> > > > > > > > one more plane for storing the motion vector metadata.
-> > > > > > > > This buffer won't be compressed, so you can't append
-> > > > > > > > it to luma or chroma plane.
-> > > > > > >=20
-> > > > > > > Does the motion vector buffer need to be exposed to userspace=
-? Is the
-> > > > > > > decoder stateless (requires userspace to specify the referenc=
-e frames)
-> > > > > > > or stateful (manages the entire decoding process internally)?
-> > > > > >=20
-> > > > > > No, users don't need to access them at all. Just they need a di=
-fferent
-> > > > > > dma-heap.
-> > > > > >=20
-> > > > > > You would only get the stateful version of both encoder and dec=
-oder.
-> > > > >=20
-> > > > > Shouldn't the motion vectors be stored in a separate V4L2 buffer,
-> > > > > submitted through a different queue then ?
-> > > >=20
-> > > > Imho, I believe these should be invisible to users and pooled separ=
-ately to
-> > > > reduce the overhead. The number of reference is usually lower then =
-the number of
-> > > > allocated display buffers.
-> > > >=20
-> > > You can't. The motion vector buffer can't share with the luma and chr=
-oma
-> > > data planes, nor the data plane for the compression meta data.
-> > >=20
-> > > You could consider this as a security requirement(the memory region f=
-or
-> > > the MV could only be accessed by the decoder) or hardware limitation.
-> > >=20
-> > > It is also not very easy to manage such a large buffer that would cha=
-nge
-> > > when the resolution changed.
-> >=20
-> > Your argument are just aiming toward the fact that you should not let t=
-he user
-> > allocate these in the first place. They should not be bound to the v4l2=
- buffer.
-> > Allocate these in your driver, and leave to your user the pixel buffer =
-(and
-> > compress meta) allocation work.
-> >=20
-> What I want to say is that userspace could allocate buffers then make=20
-> the v4l2 decoder import these buffers, but each planes should come from=
-=20
-> the right DMA-heaps. Usually the userspace would know better the memory=
-=20
-> occupation, it would bring some flexibility here.
->=20
-> Currently, they are another thing bothers me, I need to allocate a small=
-=20
-> piece of memory(less than 128KiB) as the compression metadata buffers as=
-=20
-> I mentioned here. And these pieces of memory should be located in a=20
-> small region, or the performance could be badly hurt, besides, we don't=
-=20
-> support IOMMU for this kind of data.
->=20
-> Any idea about assign a small piece of memory from a pre-allocated=20
-> memory or select region(I don't think I could reserve them in a=20
-> DMA-heap) for a plane in the MMAP type buffer ?
-
-A V4L2 driver should first implement the V4L2 semantic before adding option=
-al
-use case like buffer importation. For this reason, your V4L2 driver should =
-know
-all the memory requirements and how to allocate that memory. Later on, your
-importing driver will have to validate that the userland did it right at
-importation. This is to follow V4L2 semantic and security model. If you mov=
-e
-simply trust the userland (gralloc), you are not doing it right.
-
->=20
-> Besides, I am not very satisfied with the dynamic resolution change=20
-> steps if I understand it correct. Buffers reallocation should happen=20
-> when we receive the event not until the drain is done. A resolution=20
-> rising is very common when you are playing a network stream, it would be=
-=20
-> better that the decoder decided how many buffers it need for the=20
-> previous sequence while the userspace could reallocate the reset of=20
-> buffers in the CAPTURE queue.
-> > Other driver handle this just fine, if your v4l2 driver implement the v=
-4l2
-> > resolution change mechanism, is should be very simple to manage.
-
-This is a limitation of the queue design of V4L2. While streaming the buffe=
-rs
-associated with the queue must currently be large enough to support the sel=
-ected
-format. "large enough" in your case is complex, and validation must be
-programmed in your driver.
-
-There was discussion on perhaps extending on CREATE_BUFS feature, that let =
-you
-allocate at run-time for a different format/resolution (no drivers currentl=
-y
-allow that). The rules around that aren't specified (and will have to be de=
-fined
-before a driver starts making use of that). Note that to be usable, a
-DELETE_BUF(s) ioctl would probably be needed too.
-
-In current state, If your driver can support it, userland does not strictly=
- need
-to re-allocate if the resolution is changed to smaller. In most SVC scenari=
-os,
-the largest resolution is known in advance, so pre-allocation can happen to=
- the
-appropriate resolution and queue size. Re-allocation is then rarely trigger=
-ed at
-run time. Unlike your system, IOMMU system are not as affected by allocatio=
-n
-latency and manages to do gapless transition despite this inefficiency.
-
-Note that all this is pure recommendation. What I'm seeing here is a pixel
-format documented with Android assumptions rather then mainline, and sent
-without the associated implementation. This simply raises some question on =
-the
-viability of the whole. This is not a critic but just some verification tha=
-t
-ensure you are following the V4L2 spec.
-
-> >=20
-> > > > >=20
-> > > > > > > > Signed-off-by: Hsia-Jun(Randy) Li <randy.li@synaptics.com>
-> > > > > > > > ---
-> > > > > > > >     drivers/media/v4l2-core/v4l2-common.c | 1 +
-> > > > > > > >     drivers/media/v4l2-core/v4l2-ioctl.c  | 2 ++
-> > > > > > > >     include/uapi/linux/videodev2.h        | 2 ++
-> > > > > > > >     3 files changed, 5 insertions(+)
-> > > > > > > >=20
-> > > > > > > > diff --git a/drivers/media/v4l2-core/v4l2-common.c b/driver=
-s/media/v4l2-core/v4l2-common.c
-> > > > > > > > index e0fbe6ba4b6c..f645278b3055 100644
-> > > > > > > > --- a/drivers/media/v4l2-core/v4l2-common.c
-> > > > > > > > +++ b/drivers/media/v4l2-core/v4l2-common.c
-> > > > > > > > @@ -314,6 +314,7 @@ const struct v4l2_format_info *v4l2_for=
-mat_info(u32 format)
-> > > > > > > >                    { .format =3D V4L2_PIX_FMT_SGBRG12,     =
-  .pixel_enc =3D V4L2_PIXEL_ENC_BAYER, .mem_planes =3D 1, .comp_planes =3D =
-1, .bpp =3D { 2, 0, 0, 0 }, .hdiv =3D 1, .vdiv =3D 1 },
-> > > > > > > >                    { .format =3D V4L2_PIX_FMT_SGRBG12,     =
-  .pixel_enc =3D V4L2_PIXEL_ENC_BAYER, .mem_planes =3D 1, .comp_planes =3D =
-1, .bpp =3D { 2, 0, 0, 0 }, .hdiv =3D 1, .vdiv =3D 1 },
-> > > > > > > >                    { .format =3D V4L2_PIX_FMT_SRGGB12,     =
-  .pixel_enc =3D V4L2_PIXEL_ENC_BAYER, .mem_planes =3D 1, .comp_planes =3D =
-1, .bpp =3D { 2, 0, 0, 0 }, .hdiv =3D 1, .vdiv =3D 1 },
-> > > > > > > > +               { .format =3D V4L2_PIX_FMT_NV12M_V4H1C, .pi=
-xel_enc =3D V4L2_PIXEL_ENC_YUV, .mem_planes =3D 5, .comp_planes =3D 2, .bpp=
- =3D { 1, 2, 0, 0 }, .hdiv =3D 2, .vdiv =3D 2, .block_w =3D { 128, 128 }, .=
-block_h =3D { 128, 128 } },
-> > > > > > > >            };
-> > > > > > > >            unsigned int i;
-> > > > > > > >=20
-> > > > > > > > diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers=
-/media/v4l2-core/v4l2-ioctl.c
-> > > > > > > > index e6fd355a2e92..8f65964aff08 100644
-> > > > > > > > --- a/drivers/media/v4l2-core/v4l2-ioctl.c
-> > > > > > > > +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-> > > > > > > > @@ -1497,6 +1497,8 @@ static void v4l_fill_fmtdesc(struct v=
-4l2_fmtdesc *fmt)
-> > > > > > > >                    case V4L2_PIX_FMT_MT21C:        descr =
-=3D "Mediatek Compressed Format"; break;
-> > > > > > > >                    case V4L2_PIX_FMT_QC08C:        descr =
-=3D "QCOM Compressed 8-bit Format"; break;
-> > > > > > > >                    case V4L2_PIX_FMT_QC10C:        descr =
-=3D "QCOM Compressed 10-bit Format"; break;
-> > > > > > > > +               case V4L2_PIX_FMT_NV12M_V4H1C:  descr =3D "=
-Synaptics Compressed 8-bit tiled Format";break;
-> > > > > > > > +               case V4L2_PIX_FMT_NV12M_10_V4H3P8C:     des=
-cr =3D "Synaptics Compressed 10-bit tiled Format";break;
-> > > > > > > >                    default:
-> > > > > > > >                            if (fmt->description[0])
-> > > > > > > >                                    return;
-> > > > > > > > diff --git a/include/uapi/linux/videodev2.h b/include/uapi/=
-linux/videodev2.h
-> > > > > > > > index 01e630f2ec78..7e928cb69e7c 100644
-> > > > > > > > --- a/include/uapi/linux/videodev2.h
-> > > > > > > > +++ b/include/uapi/linux/videodev2.h
-> > > > > > > > @@ -661,6 +661,8 @@ struct v4l2_pix_format {
-> > > > > > > >     #define V4L2_PIX_FMT_NV12MT_16X16 v4l2_fourcc('V', 'M',=
- '1', '2') /* 12  Y/CbCr 4:2:0 16x16 tiles */
-> > > > > > > >     #define V4L2_PIX_FMT_NV12M_8L128      v4l2_fourcc('N', =
-'A', '1', '2') /* Y/CbCr 4:2:0 8x128 tiles */
-> > > > > > > >     #define V4L2_PIX_FMT_NV12M_10BE_8L128 v4l2_fourcc_be('N=
-', 'T', '1', '2') /* Y/CbCr 4:2:0 10-bit 8x128 tiles */
-> > > > > > > > +#define V4L2_PIX_FMT_NV12M_V4H1C v4l2_fourcc('S', 'Y', '1'=
-, '2')   /* 12  Y/CbCr 4:2:0 tiles */
-> > > > > > > > +#define V4L2_PIX_FMT_NV12M_10_V4H3P8C v4l2_fourcc('S', 'Y'=
-, '1', '0')   /* 12  Y/CbCr 4:2:0 10-bits tiles */
-> > > > > > > >=20
-> > > > > > > >     /* Bayer formats - see https://urldefense.proofpoint.co=
-m/v2/url?u=3Dhttp-3A__www.siliconimaging.com_RGB-2520Bayer.htm&d=3DDwIFaQ&c=
-=3D7dfBJ8cXbWjhc0BhImu8wVIoUFmBzj1s88r8EGyM0UY&r=3DP4xb2_7biqBxD4LGGPrSV6j-=
-jf3C3xlR7PXU-mLTeZE&m=3DlkQiuhx0yMAYHGcW-0WaHlF3e2etMHsu-FoNIBdZILGH6FPigwS=
-Amel2vAdcVLkp&s=3DJKsBzpb_3u9xv52MaMuT4U3T1pPqcObYkpHDBxvcx_4&e=3D   */
-> > > > > > > >     #define V4L2_PIX_FMT_SBGGR8  v4l2_fourcc('B', 'A', '8',=
- '1') /*  8  BGBG.. GRGR.. */
-> > > > >=20
-> > > >=20
-> > >=20
-> >=20
->=20
-
+DQoNCkxlIDIwLzA4LzIwMjIgw6AgMDA6MzgsIFBhbGkgUm9ow6FyIGEgw6ljcml0wqA6DQo+IE9u
+IEZyaWRheSAxOSBBdWd1c3QgMjAyMiAxNTozNDoxNCBSYW5keSBEdW5sYXAgd3JvdGU6DQo+PiBI
+aS0tDQo+Pg0KPj4gT24gOC8xOS8yMiAxNDoxMiwgUGFsaSBSb2jDoXIgd3JvdGU6DQo+Pj4gQ3Vy
+cmVudGx5IHBvd2VycGMgZWFybHkgZGVidWdnaW5nIGNvbnRhaW5zIGxvdCBvZiBwbGF0Zm9ybSBz
+cGVjaWZpYw0KPj4+IG9wdGlvbnMsIGJ1dCBkb2VzIG5vdCBzdXBwb3J0IHN0YW5kYXJkIFVBUlQg
+LyBzZXJpYWwgMTY1NTAgY29uc29sZS4NCj4+Pg0KPj4+IExhdGVyIGxlZ2FjeV9zZXJpYWwuYyBj
+b2RlIHN1cHBvcnRzIHJlZ2lzdGVyaW5nIFVBUlQgYXMgZWFybHkgZGVidWcgY29uc29sZQ0KPj4+
+IGZyb20gZGV2aWNlIHRyZWUgYnV0IGl0IGlzIG5vdCBlYXJseSBkdXJpbmcgYm9vdGluZywgYnV0
+IHJhdGhlciBsYXRlciBhZnRlcg0KPj4+IG1hY2hpbmUgZGVzY3JpcHRpb24gY29kZSBmaW5pc2hl
+cy4NCj4+Pg0KPj4+IFNvIGZvciByZWFsIGVhcmx5IGRlYnVnZ2luZyB2aWEgVUFSVCBpcyBjdXJy
+ZW50IGNvZGUgdW5zdWl0YWJsZS4NCj4+Pg0KPj4+IEFkZCBzdXBwb3J0IGZvciBuZXcgZWFybHkg
+ZGVidWdnaW5nIG9wdGlvbiBDT05GSUdfUFBDX0VBUkxZX0RFQlVHXzE2NTUwDQo+Pj4gd2hpY2gg
+ZW5hYmxlIFNlcmlhbCAxNjU1MCBjb25zb2xlIG9uIGFkZHJlc3MgZGVmaW5lZCBieSBuZXcgb3B0
+aW9uDQo+Pj4gQ09ORklHX1BQQ19FQVJMWV9ERUJVR18xNjU1MF9QSFlTQUREUiBhbmQgYnkgc3Ry
+aWRlIGJ5IG9wdGlvbg0KPj4+IENPTkZJR19QUENfRUFSTFlfREVCVUdfMTY1NTBfU1RSSURFLg0K
+Pj4+DQo+Pj4gV2l0aCB0aGlzIGNoYW5nZSBpdCBpcyBwb3NzaWJsZSB0byBkZWJ1ZyBwb3dlcnBj
+IG1hY2hpbmUgZGVzY3JpcHRvciBjb2RlLg0KPj4+IEZvciBleGFtcGxlIHRoaXMgZWFybHkgZGVi
+dWdnaW5nIGNvZGUgY2FuIHByaW50IG9uIHNlcmlhbCBjb25zb2xlIGFsc28NCj4+PiAiTm8gc3Vp
+dGFibGUgbWFjaGluZSBkZXNjcmlwdGlvbiBmb3VuZCIgZXJyb3Igd2hpY2ggaXMgZG9uZSBiZWZv
+cmUNCj4+PiBsZWdhY3lfc2VyaWFsLmMgY29kZS4NCj4+Pg0KPj4+IFNpZ25lZC1vZmYtYnk6IFBh
+bGkgUm9ow6FyIDxwYWxpQGtlcm5lbC5vcmc+DQo+Pj4gLS0tDQo+Pj4gVGVzdGVkIG9uIFAyMDIw
+IGJvYXJkLiBJdCBhbGxvd2VkIG1lIGRvIGRlYnVnIGFuZCBpbXBsZW1lbnQgdGhpcyBwYXRjaCBz
+ZXJpZXM6DQo+Pj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXhwcGMtZGV2LzIwMjIwODE5
+MTkxNTU3LjI4MTE2LTEtcGFsaUBrZXJuZWwub3JnLw0KPj4+IC0tLQ0KPj4+ICAgYXJjaC9wb3dl
+cnBjL0tjb25maWcuZGVidWcgICAgICAgfCAxNCArKysrKysrKysrKysrKw0KPj4+ICAgYXJjaC9w
+b3dlcnBjL2luY2x1ZGUvYXNtL3VkYmcuaCAgfCAgMSArDQo+Pj4gICBhcmNoL3Bvd2VycGMva2Vy
+bmVsL3VkYmcuYyAgICAgICB8ICAyICsrDQo+Pj4gICBhcmNoL3Bvd2VycGMva2VybmVsL3VkYmdf
+MTY1NTAuYyB8IDMzICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+Pj4gICA0IGZp
+bGVzIGNoYW5nZWQsIDUwIGluc2VydGlvbnMoKykNCj4+Pg0KPj4+IGRpZmYgLS1naXQgYS9hcmNo
+L3Bvd2VycGMvS2NvbmZpZy5kZWJ1ZyBiL2FyY2gvcG93ZXJwYy9LY29uZmlnLmRlYnVnDQo+Pj4g
+aW5kZXggOWYzNjNjMTQzZDg2Li5hNGU3ZDkwYTQ1ZDIgMTAwNjQ0DQo+Pj4gLS0tIGEvYXJjaC9w
+b3dlcnBjL0tjb25maWcuZGVidWcNCj4+PiArKysgYi9hcmNoL3Bvd2VycGMvS2NvbmZpZy5kZWJ1
+Zw0KPj4+IEBAIC0yNzYsNiArMjc2LDExIEBAIGNvbmZpZyBQUENfRUFSTFlfREVCVUdfT1BBTF9I
+VlNJDQo+Pj4gICAJICBTZWxlY3QgdGhpcyB0byBlbmFibGUgZWFybHkgZGVidWdnaW5nIGZvciB0
+aGUgUG93ZXJOViBwbGF0Zm9ybQ0KPj4+ICAgCSAgdXNpbmcgYW4gImh2c2kiIGNvbnNvbGUNCj4+
+PiAgIA0KPj4+ICtjb25maWcgUFBDX0VBUkxZX0RFQlVHXzE2NTUwDQo+Pj4gKwlib29sICJTZXJp
+YWwgMTY1NTAiDQo+Pj4gKwloZWxwDQo+Pj4gKwkgIFNlbGVjdCB0aGlzIHRvIGVuYWJsZSBlYXJs
+eSBkZWJ1Z2dpbmcgdmlhIFNlcmlhbCAxNjU1MCBjb25zb2xlDQo+Pj4gKw0KPj4+ICAgY29uZmln
+IFBQQ19FQVJMWV9ERUJVR19NRU1DT05TDQo+Pj4gICAJYm9vbCAiSW4gbWVtb3J5IGNvbnNvbGUi
+DQo+Pj4gICAJaGVscA0KPj4+IEBAIC0zNTUsNiArMzYwLDE1IEBAIGNvbmZpZyBQUENfRUFSTFlf
+REVCVUdfQ1BNX0FERFINCj4+PiAgIAkgIHBsYXRmb3JtIHByb2JpbmcgaXMgZG9uZSwgYWxsIHBs
+YXRmb3JtcyBzZWxlY3RlZCBtdXN0DQo+Pj4gICAJICBzaGFyZSB0aGUgc2FtZSBhZGRyZXNzLg0K
+Pj4+ICAgDQo+Pj4gK2NvbmZpZyBQUENfRUFSTFlfREVCVUdfMTY1NTBfUEhZU0FERFINCj4+PiAr
+CWhleCAiRWFybHkgZGVidWcgU2VyaWFsIDE2NTUwIHBoeXNpY2FsIGFkZHJlc3MiDQo+Pj4gKwlk
+ZXBlbmRzIG9uIFBQQ19FQVJMWV9ERUJVR18xNjU1MA0KPj4NCj4+IElzIHRoZXJlIGFueSBjaGFu
+Y2UgdGhhdCB5b3UgY291bGQgcHJvdmlkZSBhIGRlZmF1bHQgdmFsdWUgaGVyZQ0KPj4gc28gdGhh
+dCAnbWFrZSBvbGRkZWZjb25maWcnIGRvZXMgbm90IGVuZCB1cCBsaWtlIGl0IGRvZXMNCj4+IHdp
+dGhvdXQgaGF2aW5nIGEgZGVmYXVsdCB2YWx1ZT8NCj4gDQo+IE5vLiBCZWNhdXNlIHRoZXJlIGlz
+IG5vdCBhbnkgZGVmYXVsdCB2YWx1ZS4gUGh5c2ljYWwgYWRkcmVzcyBvZiAxNjU1MCBpcw0KPiBo
+YXJkbHkgSFcgZGVwZW5kZW50LiBQb3NzaWJseSBhbHNvIGJvb3Rsb2FkZXIgZGVwZW5kZW50IChp
+ZiBpdCBjYW4gcmVtYXANCj4gcGVyaXBoZXJhbHMgdG8gZGlmZmVyZW50IHBoeXNpY2FsIGFkZHJl
+c3NlcykuDQoNClRoZSBleGFjdCBzYW1lIHByb2JsZW0gZXhpc3RzIHdpdGggRUFSTFlfREVCVUdf
+Q1BNLiBOZXZlcnRoZWxlc3MgdGhlcmUgDQppcyBhIGRlZmF1bHQgQ09ORklHX1BQQ19FQVJMWV9E
+RUJVR19DUE1fQUREUi4gVGhpcyB2YWx1ZSBpcyB3cm9uZyBmb3IgDQpzb21lIHBlb3BsZSwgYnV0
+IGF0IGxlYXN0IGl0IGF2b2lkcyBwcm9tcHQgZHVyaW5nIHRoZSBidWlsZCBvZiBleGlzdGluZyAN
+CmRlZmNvbmZpZy4NCg0KT3RoZXIgc29sdXRpb24gaXMgdG8gdXBkYXRlIHRoZSBkZWZjb25maWdz
+IHdpdGggdGhlIGdvb2QgdmFsdWUgdG8gYXZvaWQgDQpnZXR0aW5nIGFuIGVtcHR5IHZhbHVlLg0K
+DQo+IA0KPiBVc2VyIF9oYXMgdG9fIHNwZWNpZnkgY29ycmVjdCBwaHlzaWNhbCBhZGRyZXNzIGlm
+IHdhbnQgdG8gdXNlIGVhcmx5DQo+IGRlYnVnIDE2NTUwIGNvbnNvbGUuDQoNCkJ5IHRoZSB3YWl0
+IHRoZSBidWlsZCByb2JvdCBkb2Vzbid0IG1pbmQuDQoNCj4gDQo+PiBDT05GSUdfUFBDX0VBUkxZ
+X0RFQlVHXzE2NTUwPXkNCj4+ICMgQ09ORklHX1BQQ19FQVJMWV9ERUJVR19NRU1DT05TIGlzIG5v
+dCBzZXQNCj4+IENPTkZJR19QUENfRUFSTFlfREVCVUdfMTY1NTBfUEhZU0FERFI9DQo+PiBDT05G
+SUdfUFBDX0VBUkxZX0RFQlVHXzE2NTUwX1NUUklERT0xDQo+Pg0KPj4gd2hpY2ggdGhlbiBjYXVz
+ZXMgYSBrY29uZmlnIHByb21wdCB3aGVuIHN0YXJ0aW5nDQo+PiB0aGUgYnVpbGQuLi4NCj4gDQo+
+IENhbm5vdCB3ZSBzZXQgc29tZWhvdyB0aGF0IFBQQ19FQVJMWV9ERUJVR18xNjU1MCB3b3VsZCBi
+ZSBkaXNhYmxlZCBieQ0KPiBkZWZhdWx0IHdoZW4gdXBncmFkaW5nIGRlZmNvbmZpZz8NCg0KVGhl
+IG9ubHkgc29sdXRpb24gSSBzZWUgaXMgdG8gcHV0IGl0IGF0IHRoZSBlbmQgb2YgdGhlIGxpc3Qs
+IHNvIHRoYXQgdGhlIA0KcHJldmlvdXMgZGVmYXVsdCB2YWx1ZSB3aGljaCBpcyBQUENfRUFSTFlf
+REVCVUdfTUVNQ09OUyBnZXRzIHNlbGVjdGVkLg0KDQoNCj4gDQo+Pj4gKw0KPj4+ICtjb25maWcg
+UFBDX0VBUkxZX0RFQlVHXzE2NTUwX1NUUklERQ0KPj4+ICsJaW50ICJFYXJseSBkZWJ1ZyBTZXJp
+YWwgMTY1NTAgc3RyaWRlIg0KPj4+ICsJZGVwZW5kcyBvbiBQUENfRUFSTFlfREVCVUdfMTY1NTAN
+Cj4+PiArCWRlZmF1bHQgMQ0KPj4+ICsNCj4+PiAgIGNvbmZpZyBGQUlMX0lPTU1VDQo+Pj4gICAJ
+Ym9vbCAiRmF1bHQtaW5qZWN0aW9uIGNhcGFiaWxpdHkgZm9yIElPTU1VIg0KPj4+ICAgCWRlcGVu
+ZHMgb24gRkFVTFRfSU5KRUNUSU9ODQo+Pg0KPj4gVGhhbmtzLg0KPj4gLS0gDQo+PiB+UmFuZHk=
