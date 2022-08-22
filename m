@@ -2,112 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1162FC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC57BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238754AbiHVXpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 19:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48482 "EHLO
+        id S237662AbiHVXpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 19:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231396AbiHVXpO (ORCPT
+        with ESMTP id S238888AbiHVXpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 19:45:14 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048D641D1E
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 16:45:11 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id s206so10801163pgs.3
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 16:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=d0Csk6K/KRDvQOW2pJh/wb18v7EwQgVkPuj58liA9sk=;
-        b=d0OjFOtnA74HEPODGOej0roBiHJdXfjGLLMCSA7Dja6dRiZnZ+AIa+/Zq6lX5Ml6bR
-         UhWPfGcABUeKPxY8LkSuTJTdmMgY16YD6uRueoeouqYr0jwXhuQd/vC3haQPN33MOxo8
-         p3cbT1GhwmDy66zEiQ8KCJgxILUB/5DBIK8oc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=d0Csk6K/KRDvQOW2pJh/wb18v7EwQgVkPuj58liA9sk=;
-        b=eD6pFRSOeOH4IDxofVjZenE0QE0pJ9oOXaFXl/ock4dyqyvC3ouHdmA/kdFPqH96tx
-         rcGlhENevou5DUwQK8x5kWQ+mgFKzIt3jZw3GFptLtAg+142Xg93XbVpR/4eQKaCnBlM
-         DuUNecNX/IeEHMm+7v7IcJ0i4o6wdeszUMMEawO9GYE6hEDbW4mm7ab5dK9bWX8aVMK2
-         wmFxFF8HC5ymvZ1n1kinGTt5Zl1qs2w4J3lw8Tu0ThibwV4z4soW9ak0hcyJIs4kN6u2
-         VXVaWUtKiQdozg0JsipsFQpRsmPp4Js1Pc9RoRnfpeHUqS99bbAEsCEJzgZmE0L7sotR
-         VR1A==
-X-Gm-Message-State: ACgBeo3N8RBMgpKqy2fku61ZOQ+n74lN9aLDHC8wUD1227ruU3Jj/evK
-        uFUNkNSDCKwixTGyz3OM48E+TvtYb5xsWQ==
-X-Google-Smtp-Source: AA6agR4N9JHSXn0/iMlmacfOfIr0W8bQdy9dMMxR+LBeppeS0cmq9y8V81RI4gycpJsfnvP43c5qaA==
-X-Received: by 2002:a63:8749:0:b0:41d:89d4:ce3d with SMTP id i70-20020a638749000000b0041d89d4ce3dmr17913148pge.344.1661211910403;
-        Mon, 22 Aug 2022 16:45:10 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:34e2:c40e:42d3:27e0])
-        by smtp.gmail.com with UTF8SMTPSA id h196-20020a6283cd000000b005367043e163sm4063261pfe.28.2022.08.22.16.45.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 16:45:09 -0700 (PDT)
-From:   Brian Norris <briannorris@chromium.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Brian Norris <briannorris@chromium.org>
-Subject: [PATCH] arm64: dts: rockchip: Pull up wlan wake# on Gru-Bob
-Date:   Mon, 22 Aug 2022 16:45:04 -0700
-Message-Id: <20220822164453.1.I75c57b48b0873766ec993bdfb7bc1e63da5a1637@changeid>
-X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
+        Mon, 22 Aug 2022 19:45:32 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893483ECFA;
+        Mon, 22 Aug 2022 16:45:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661211931; x=1692747931;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JEtffjsv/UU5sWGCyM3iXEbl5ZR5P6LGzBjiHq53Suo=;
+  b=hSL5iawT1IxYkN7mKGnmhagaDSae5m5rYlCVC08/XmRZdOFMJ9Gb5EX3
+   Jg2hZyIAfNuB7yv0Yal3VkFT9d6tRfEzxgUTqVs5qj8XAuc1EM5AWxVY8
+   BuDMP/3jT4iFcIBAxy4otQWrviwsFVRodRL1AifDjbZwPW0FOXVTKNTNB
+   icUFBxpSaKXJuS/IYTPjWL6/wAzXvZtobFbwNDNwOCd8VCdVovWLNR+Yi
+   kCTiU8VGS10nsXIuaxLkl6esvxUpiJaZX+9PXQwowBA6VMpuHyX0TSZQB
+   PbLmw8LJqjNDDkcUzLZUl8eGEiZjQ/ljz8P6St0vza82Qyoqm4yj+lMnj
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="319585897"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="319585897"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 16:45:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="642225949"
+Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 22 Aug 2022 16:45:15 -0700
+Received: from kbuild by dd9b29378baa with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQH6Y-0000rl-1P;
+        Mon, 22 Aug 2022 23:45:14 +0000
+Date:   Tue, 23 Aug 2022 07:44:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Markus Schneider-Pargmann <msp@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Fabien Parent <parent.f@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     kbuild-all@lists.01.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Markus Schneider-Pargmann <msp@baylibre.com>
+Subject: Re: [PATCH v4 2/4] clk: mediatek: Provide mtk_devm_alloc_clk_data
+Message-ID: <202208230714.8DNW6JjZ-lkp@intel.com>
+References: <20220822152652.3499972-3-msp@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822152652.3499972-3-msp@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Gru-Bob board does not have a pull-up resistor on its
-WLAN_HOST_WAKE# pin, but Kevin does. The production/vendor kernel
-specified the pin configuration correctly as a pull-up, but this didn't
-get ported correctly to upstream.
+Hi Markus,
 
-This means Bob's WLAN_HOST_WAKE# pin is floating, causing inconsistent
-wakeup behavior.
+Thank you for the patch! Perhaps something to improve:
 
-Note that bt_host_wake_l has a similar dynamic, but apparently the
-upstream choice was to redundantly configure both internal and external
-pull-up on Kevin (see the "Kevin has an external pull up" comment in
-rk3399-gru.dtsi). This doesn't cause any functional problem, although
-it's perhaps wasteful.
+[auto build test WARNING on clk/clk-next]
+[also build test WARNING on robh/for-next linus/master v6.0-rc2 next-20220822]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Fixes: 8559bbeeb849 ("arm64: dts: rockchip: add Google Bob")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
+url:    https://github.com/intel-lab-lkp/linux/commits/Markus-Schneider-Pargmann/clk-mediatek-Add-mt8365-support/20220822-233030
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git clk-next
+config: loongarch-randconfig-c004-20220821 (https://download.01.org/0day-ci/archive/20220823/202208230714.8DNW6JjZ-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 12.1.0
 
- arch/arm64/boot/dts/rockchip/rk3399-gru-bob.dts         | 5 +++++
- arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi | 1 +
- 2 files changed, 6 insertions(+)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-bob.dts b/arch/arm64/boot/dts/rockchip/rk3399-gru-bob.dts
-index 31ebb4e5fd33..0f9cc042d9bf 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru-bob.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-bob.dts
-@@ -88,3 +88,8 @@ h1_int_od_l: h1-int-od-l {
- 		};
- 	};
- };
-+
-+&wlan_host_wake_l {
-+	/* Kevin has an external pull up, but Bob does not. */
-+	rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>;
-+};
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-index cd074641884b..45796b9fd94f 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-@@ -578,6 +578,7 @@ wifi_perst_l: wifi-perst-l {
- 	};
- 
- 	wlan_host_wake_l: wlan-host-wake-l {
-+		/* Kevin has an external pull up, but Bob does not */
- 		rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
- 	};
- };
+cocci warnings: (new ones prefixed by >>)
+>> drivers/clk/mediatek/clk-mtk.c:64:1-6: WARNING: invalid free of devm_ allocated data
+
+vim +64 drivers/clk/mediatek/clk-mtk.c
+
+9741b1a68035b54 James Liao    2015-04-23  61  
+609cc5e1a82394e Chen-Yu Tsai  2022-05-19  62  void mtk_free_clk_data(struct clk_hw_onecell_data *clk_data)
+300796cad22153f Chun-Jie Chen 2021-09-14  63  {
+300796cad22153f Chun-Jie Chen 2021-09-14 @64  	kfree(clk_data);
+300796cad22153f Chun-Jie Chen 2021-09-14  65  }
+609cc5e1a82394e Chen-Yu Tsai  2022-05-19  66  EXPORT_SYMBOL_GPL(mtk_free_clk_data);
+300796cad22153f Chun-Jie Chen 2021-09-14  67  
+
 -- 
-2.37.2.609.g9ff673ca1a-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
