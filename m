@@ -2,138 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9DCC32793
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A66C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234020AbiHVIYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
+        id S230149AbiHVIYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233935AbiHVIXp (ORCPT
+        with ESMTP id S233936AbiHVIXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 04:23:45 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D84B9FE1;
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD27A1B7;
         Mon, 22 Aug 2022 01:23:34 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MB4yW0hwhzXdwW;
-        Mon, 22 Aug 2022 16:19:15 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 16:23:30 +0800
-From:   Yicong Yang <yangyicong@huawei.com>
-To:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-arm-kernel@lists.infradead.org>, <x86@kernel.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-doc@vger.kernel.org>
-CC:     <corbet@lwn.net>, <peterz@infradead.org>, <arnd@arndb.de>,
-        <linux-kernel@vger.kernel.org>, <darren@os.amperecomputing.com>,
-        <yangyicong@hisilicon.com>, <huzhanyuan@oppo.com>,
-        <lipeifeng@oppo.com>, <zhangshiming@oppo.com>, <guojian@oppo.com>,
-        <realmz6@gmail.com>, <linux-mips@vger.kernel.org>,
-        <openrisc@lists.librecores.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-riscv@lists.infradead.org>, <linux-s390@vger.kernel.org>,
-        Barry Song <21cnbao@gmail.com>, <wangkefeng.wang@huawei.com>,
-        <xhao@linux.alibaba.com>, <prime.zeng@hisilicon.com>,
-        <anshuman.khandual@arm.com>, Barry Song <v-songbaohua@oppo.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Nadav Amit <namit@vmware.com>,
-        Mel Gorman <mgorman@suse.de>
-Subject: [PATCH v3 3/4] mm: rmap: Extend tlbbatch APIs to fit new platforms
-Date:   Mon, 22 Aug 2022 16:21:19 +0800
-Message-ID: <20220822082120.8347-4-yangyicong@huawei.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220822082120.8347-1-yangyicong@huawei.com>
-References: <20220822082120.8347-1-yangyicong@huawei.com>
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27M7uEhY026376;
+        Mon, 22 Aug 2022 08:22:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=XD8p0yeIP6FHp1zRXk2g6v1Fja3jOBHVk/L7ZMjGmI8=;
+ b=QyNu8Da5aDSkBoajm5HOLzFcrUSw3mCvNG6jcONUDGrzlDL1Oz7/LWrCuMjgFC9J8jzj
+ boWkVIAMWf/YVY81s3iQn5JHjp8eSGyBLykmh4HliGAY04vhUkN3VIEdkrXhhmkGSGGQ
+ ly2ntitPkCnWYTgx2ixlGow3PYSQWHKXhm/T0ySWZCEoG5zrZ+dxF4Ad2AaekkZW1DVJ
+ ZgqCWYUVfOxwCChJoRVoQ2+6frnIRZ1GT1s4L8Hca+67kL9wpPgrTgbVGeMT+fqykLZc
+ gHMsfkIJQuE1nLuLX9D2Ul3bRc4Ihei14YsDXfGXAin0bMtxTyMoAxZQwD2tSxA7a4ax oA== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j2vwrbmb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 08:22:55 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27M8MshM030057
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 08:22:54 GMT
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 22 Aug 2022 01:22:49 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [RESEND v5 5/7] remoteproc: qcom: Add efuse evb selection control
+Date:   Mon, 22 Aug 2022 13:52:01 +0530
+Message-ID: <1661156523-22611-6-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 3Tuopd4S9JEuMmiEjuW_CP4BN3Nw9EfC
+X-Proofpoint-ORIG-GUID: 3Tuopd4S9JEuMmiEjuW_CP4BN3Nw9EfC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_04,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
+ malwarescore=0 clxscore=1015 mlxscore=0 bulkscore=0 adultscore=0
+ phishscore=0 lowpriorityscore=0 priorityscore=1501 suspectscore=0
+ mlxlogscore=909 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208220035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Barry Song <v-songbaohua@oppo.com>
+Add efuse evb selection control and enable it for starting ADSP.
 
-Add uaddr to tlbbatch APIs so that platforms like ARM64 are
-able to apply this on their specific hardware features. For
-ARM64, this could be sending tlbi into hardware queues for
-the page with this particular uaddr.
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Nadav Amit <namit@vmware.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Signed-off-by: Barry Song <v-songbaohua@oppo.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 ---
- arch/x86/include/asm/tlbflush.h |  3 ++-
- mm/rmap.c                       | 10 ++++++----
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/remoteproc/qcom_q6v5_adsp.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-index 8a497d902c16..5bd78ae55cd4 100644
---- a/arch/x86/include/asm/tlbflush.h
-+++ b/arch/x86/include/asm/tlbflush.h
-@@ -264,7 +264,8 @@ static inline u64 inc_mm_tlb_gen(struct mm_struct *mm)
- }
+diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
+index 701a615..b0a63a0 100644
+--- a/drivers/remoteproc/qcom_q6v5_adsp.c
++++ b/drivers/remoteproc/qcom_q6v5_adsp.c
+@@ -56,6 +56,7 @@
  
- static inline void arch_tlbbatch_add_mm(struct arch_tlbflush_unmap_batch *batch,
--					struct mm_struct *mm)
-+					struct mm_struct *mm,
-+					unsigned long uaddr)
- {
- 	inc_mm_tlb_gen(mm);
- 	cpumask_or(&batch->cpumask, &batch->cpumask, mm_cpumask(mm));
-diff --git a/mm/rmap.c b/mm/rmap.c
-index a17a004550c6..7187a72b63b1 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -642,12 +642,13 @@ void try_to_unmap_flush_dirty(void)
- #define TLB_FLUSH_BATCH_PENDING_LARGE			\
- 	(TLB_FLUSH_BATCH_PENDING_MASK / 2)
+ #define LPASS_BOOT_CORE_START	BIT(0)
+ #define LPASS_BOOT_CMD_START	BIT(0)
++#define LPASS_EFUSE_Q6SS_EVB_SEL 0x0
  
--static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable)
-+static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable,
-+				      unsigned long uaddr)
- {
- 	struct tlbflush_unmap_batch *tlb_ubc = &current->tlb_ubc;
- 	int batch, nbatch;
+ struct adsp_pil_data {
+ 	int crash_reason_smem;
+@@ -86,6 +87,7 @@ struct qcom_adsp {
+ 	struct clk_bulk_data *clks;
  
--	arch_tlbbatch_add_mm(&tlb_ubc->arch, mm);
-+	arch_tlbbatch_add_mm(&tlb_ubc->arch, mm, uaddr);
- 	tlb_ubc->flush_required = true;
+ 	void __iomem *qdsp6ss_base;
++	void __iomem *lpass_efuse;
  
- 	/*
-@@ -725,7 +726,8 @@ void flush_tlb_batched_pending(struct mm_struct *mm)
+ 	struct reset_control *pdc_sync_reset;
+ 	struct reset_control *restart;
+@@ -368,6 +370,9 @@ static int adsp_start(struct rproc *rproc)
+ 	/* Program boot address */
+ 	writel(adsp->mem_phys >> 4, adsp->qdsp6ss_base + RST_EVB_REG);
+ 
++	if (adsp->lpass_efuse)
++		writel(LPASS_EFUSE_Q6SS_EVB_SEL, adsp->lpass_efuse);
++
+ 	/* De-assert QDSP6 stop core. QDSP6 will execute after out of reset */
+ 	writel(LPASS_BOOT_CORE_START, adsp->qdsp6ss_base + CORE_START_REG);
+ 
+@@ -522,6 +527,11 @@ static int adsp_init_mmio(struct qcom_adsp *adsp,
+ 		return PTR_ERR(adsp->qdsp6ss_base);
  	}
- }
- #else
--static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable)
-+static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable,
-+				      unsigned long uaddr)
- {
- }
  
-@@ -1587,7 +1589,7 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
- 				 */
- 				pteval = ptep_get_and_clear(mm, address, pvmw.pte);
- 
--				set_tlb_ubc_flush_pending(mm, pte_dirty(pteval));
-+				set_tlb_ubc_flush_pending(mm, pte_dirty(pteval), address);
- 			} else {
- 				pteval = ptep_clear_flush(vma, address, pvmw.pte);
- 			}
++	adsp->lpass_efuse =  devm_platform_ioremap_resource_byname(pdev, "lpass_efuse");
++	if (IS_ERR(adsp->lpass_efuse)) {
++		adsp->lpass_efuse = NULL;
++		dev_dbg(adsp->dev, "failed to map LPASS efuse registers\n");
++	}
+ 	syscon = of_parse_phandle(pdev->dev.of_node, "qcom,halt-regs", 0);
+ 	if (!syscon) {
+ 		dev_err(&pdev->dev, "failed to parse qcom,halt-regs\n");
 -- 
-2.24.0
+2.7.4
 
