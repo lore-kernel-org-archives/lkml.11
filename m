@@ -2,67 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE69FC32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB6CC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234385AbiHVM4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
+        id S230087AbiHVM4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiHVM4h (ORCPT
+        with ESMTP id S229565AbiHVM4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:56:37 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B13B7DC;
-        Mon, 22 Aug 2022 05:56:35 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MBC2T1sTrz1N7Vq;
-        Mon, 22 Aug 2022 20:53:05 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
- (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
- 2022 20:56:32 +0800
-From:   Zeng Heng <zengheng4@huawei.com>
-To:     <djwong@kernel.org>
-CC:     <liwei391@huawei.com>, <yangyingliang@huawei.com>,
-        <zhangxiaoxu5@huawei.com>, <weiyongjun1@huawei.com>,
-        <zengheng4@huawei.com>, <linux-xfs@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] xfs: remove the redundant word in comment
-Date:   Mon, 22 Aug 2022 21:04:33 +0800
-Message-ID: <20220822130433.3079523-1-zengheng4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 22 Aug 2022 08:56:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B9FDF04;
+        Mon, 22 Aug 2022 05:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4HwX4Xt+0LlaFddOVA3H37jo/iFLtDmHfMsKNXH4QQE=; b=eAu42MNVE0/RHvTO426OcnNwWR
+        Ws7oJRD7bsbY6B2+ltxRHGG2LBrF2FJg7NYKyJEDzGTK7ZAjmW0UEN8WuttHIYFstYB80+S5H/ubL
+        NOnqDb4D9BfGNYZ57mkKykGDnnedm6YZOfQ5eTH96z1hNdkJjOgPu/YGzv6YxpT9V3LU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQ6yu-00EDun-VT; Mon, 22 Aug 2022 14:56:40 +0200
+Date:   Mon, 22 Aug 2022 14:56:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [RFC Patch net-next v2] net: dsa: microchip: lan937x: enable
+ interrupt for internal phy link detection
+Message-ID: <YwN9CMMhHDxB8mdj@lunn.ch>
+References: <20220822092017.5671-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500022.china.huawei.com (7.185.36.162)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822092017.5671-1-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just remove the redundant word "being" in comment.
+> +static irqreturn_t lan937x_switch_irq_thread(int irq, void *dev_id)
+> +{
+> +	struct ksz_device *dev = dev_id;
+> +	irqreturn_t result = IRQ_NONE;
+> +	u32 data;
+> +	int ret;
+> +
+> +	/* Read global interrupt status register */
+> +	ret = ksz_read32(dev, REG_SW_INT_STATUS__4, &data);
+> +	if (ret)
+> +		return result;
 
-Signed-off-by: Zeng Heng <zengheng4@huawei.com>
----
- fs/xfs/xfs_inode_item.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I don't think you can return negative error numbers here.
 
-diff --git a/fs/xfs/xfs_inode_item.c b/fs/xfs/xfs_inode_item.c
-index 6e19ece916bf..ca2941ab6cbc 100644
---- a/fs/xfs/xfs_inode_item.c
-+++ b/fs/xfs/xfs_inode_item.c
-@@ -550,7 +550,7 @@ xfs_inode_item_push(
- 
- 	if (!bp || (ip->i_flags & XFS_ISTALE)) {
- 		/*
--		 * Inode item/buffer is being being aborted due to cluster
-+		 * Inode item/buffer is being aborted due to cluster
- 		 * buffer deletion. Trigger a log force to have that operation
- 		 * completed and items removed from the AIL before the next push
- 		 * attempt.
--- 
-2.25.1
+> +
+> +	if (data & POR_READY_INT) {
+> +		ret = ksz_write32(dev, REG_SW_INT_STATUS__4, POR_READY_INT);
+> +		if (ret)
+> +			return result;
 
+Returning IRQ_NONE here seems wrong. You handle the interrupt, so
+should probably return IRQ_HANDLED.
+
+      Andrew
