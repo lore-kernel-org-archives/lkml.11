@@ -2,130 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77330C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880C0C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235685AbiHVOLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60786 "EHLO
+        id S235686AbiHVONF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235682AbiHVOL0 (ORCPT
+        with ESMTP id S232994AbiHVONC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:11:26 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC6A33E2C;
-        Mon, 22 Aug 2022 07:11:23 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 1952823430;
-        Mon, 22 Aug 2022 13:55:37 +0000 (UTC)
-Received: from pdx1-sub0-mail-a269.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id F205F2316A;
-        Mon, 22 Aug 2022 13:55:35 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661176536; a=rsa-sha256;
-        cv=none;
-        b=3omOJCF76GuHexFv/qn+hiLUUmfn7xeZC84hnGFQT+rvm4rXISSdNtlZVmrEE5sqtb7qu0
-        3inDTAnHBJfo+S+wp7aAATE21YP3PjKgbJ9C7QhYGOEU0j6cJwtyp3oH0tE4gSiL+OBW+U
-        1DL2QK/F6AN6MuJUhu2HEW5h8Wut2n5/oIxzrMIfjuUal1nbMnF4JAs3B4bYWCx+LM6eGO
-        Yc4LDkdGW1I8qj7+85o++qzprKZgxrtfobh1HEl6ikZ13fQz2bxXn7QoN/LKckqa8tJEEt
-        2nX+0knXTvg9iGDyNftTkxY8Wh8GjerVMbb27j2h6vN0JtGORFYafRY1AnZ6UA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661176536;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=csF531VNDYAPl7BDCtxROg1S1vDGD1Xfu0RVZFflFgw=;
-        b=ZvmlbUl9YVut82uc81/HTw+lLblqpFVw9EygzxtfrSza3T+55d90/r5bSwQbBJKLcBd1eP
-        62BbakMYs4pwykdF6hhicoBALGVfufFwXKZ7OS9F673ZnUL+B8yAg9xMS7g3Ng2kLUtnDt
-        kL3kY1/EcPW9HH3n1hfJCZwzvf1XJs6aMzkAWFB6BY5V/o7d7VZntOWqc3/ykYAzUf6Vl8
-        ZrwnFzdRpIcnJpC53MoRaIe6ibeCmRuZ/jMGV0ulEwplL4/jqczigLa1oWzOK3L4c/VL20
-        ehYj7B6W/FtjzN4/J+VW46cehQWQJpR8tn0b80TcyH+H36nxNrjeKJ35r/051A==
-ARC-Authentication-Results: i=1;
-        rspamd-79945fd77c-g497v;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Zesty-Army: 5b5717fe75be5fd0_1661176536659_1620849424
-X-MC-Loop-Signature: 1661176536659:101402978
-X-MC-Ingress-Time: 1661176536659
-Received: from pdx1-sub0-mail-a269.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.195 (trex/6.7.1);
-        Mon, 22 Aug 2022 13:55:36 +0000
-Received: from offworld (unknown [104.36.31.106])
+        Mon, 22 Aug 2022 10:13:02 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBF432EF0
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:13:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a269.dreamhost.com (Postfix) with ESMTPSA id 4MBDQZ3sRWzKj;
-        Mon, 22 Aug 2022 06:55:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661176535;
-        bh=csF531VNDYAPl7BDCtxROg1S1vDGD1Xfu0RVZFflFgw=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=purhyt64fbjx70+gG83TpY2jPCSW5nNdRsKMo2E1vKOMKSh2939nWpCf6L62aVxS1
-         XVRYEpBkL6OL2slgGlLRDPiwXn7C5eVwHPjt3LAOmS7vmu6rmAK8cRiHEsrno15B3t
-         OSKoQ77IUpZPFTzbIS3SWyFgXoz9Bn1oGZEKbmmY/Z7LtZ7b30ZInMcBX6PuWvWQr+
-         mMzIHELO8whLUjrUhgmlLQid7sPScz9wXRqJWgdjpRW1gReUH0RfGt9FRs7jwsUyUP
-         vKMEdFbqtOs8wDR54Nucu3waN0rVXPtJOReqRukQEhP3Ie8RB2HCwJ8MKpS1MfqZVE
-         nMdUf361w69Bw==
-Date:   Mon, 22 Aug 2022 06:37:36 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     linux-arch@vger.kernel.org, dan.j.williams@intel.com,
-        peterz@infradead.org, mark.rutland@arm.com, dave.jiang@intel.com,
-        Jonathan.Cameron@huawei.com, a.manzanares@samsung.com,
-        bwidawsk@kernel.org, alison.schofield@intel.com,
-        ira.weiny@intel.com, linux-cxl@vger.kernel.org,
-        nvdimm@lists.linux.dev, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arch/cacheflush: Introduce flush_all_caches()
-Message-ID: <20220822133736.roxmpj6sfo6gsij2@offworld>
-References: <20220819171024.1766857-1-dave@stgolabs.net>
- <YwMkUMiKf3ZyMDDF@infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YwMkUMiKf3ZyMDDF@infradead.org>
-User-Agent: NeoMutt/20220429
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5E84B1FE46;
+        Mon, 22 Aug 2022 14:13:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661177580; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=OZTNho0piDMRt5grNpBNNgNC36KxBYIItc3vdKu8/Wc=;
+        b=HxxBimv+8OH/UnifgYRTQIbi5UGiDsnh2rHhQn24Y/sVuMYaPWbMBG6n5Xv70h6R8Yo8hA
+        o4n/yIwgve7ELln+h91lEeZcRSRJTVsycB6pJ2ndHR971lGqODn/vZR7lzBBAmGyjf3zWW
+        /limqzisFnFjNygj7wHdE2iHcYywthg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661177580;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=OZTNho0piDMRt5grNpBNNgNC36KxBYIItc3vdKu8/Wc=;
+        b=yQFGn0S0SQblXcYnDLJCUALLYxWTo+wbhN968/o6PPLlpv/gmGfVgKV5/gO1iWV3StjRlB
+        8bV2bpUCto+4ZACw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2360F13523;
+        Mon, 22 Aug 2022 14:13:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id VaPQB+yOA2P6dgAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 22 Aug 2022 14:13:00 +0000
+Date:   Mon, 22 Aug 2022 16:12:59 +0200
+Message-ID: <874jy4cqok.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <jroedel@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [REGRESSION 5.19.x] AMD HD-audio devices missing on 5.19
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 21 Aug 2022, Christoph Hellwig wrote:
+Hi,
 
->On Fri, Aug 19, 2022 at 10:10:24AM -0700, Davidlohr Bueso wrote:
->> index b192d917a6d0..ac4d4fd4e508 100644
->> --- a/arch/x86/include/asm/cacheflush.h
->> +++ b/arch/x86/include/asm/cacheflush.h
->> @@ -10,4 +10,8 @@
->>
->>  void clflush_cache_range(void *addr, unsigned int size);
->>
->> +/* see comments in the stub version */
->> +#define flush_all_caches() \
->> +	do { wbinvd_on_all_cpus(); } while(0)
->
->Yikes.  This is just a horrible, horrible name and placement for a bad
->hack that should have no generic relevance.
+we've received regression reports about the missing HD-audio devices
+on AMD platforms, and this turned out to be caused by the commit
+512881eacfa72c2136b27b9934b7b27504a9efc2
+    bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
 
-Why does this have no generic relevance? There's already been discussions
-on how much wbinv is hated[0].
+The details are found in openSUSE bugzilla:
+  https://bugzilla.suse.com/show_bug.cgi?id=1202492
 
->Please fix up the naming to make it clear that this function is for a
->very specific nvdimm use case, and move it to a nvdimm-specific header
->file.
+The problem seems to be that HD-audio (both onboard analog and HDMI)
+PCI devices are assigned to the same IOMMU group as AMD graphics PCI
+device, and once after the AMDGPU is initialized beforehand, those
+audio devices can't be probed since iommu_device_use_default_domain()
+returns -EBUSY.
 
-Do you have any suggestions for a name? And, as the changelog describes,
-this is not nvdimm specific anymore, and the whole point of all this is
-volatile memory components for cxl, hence nvdimm namespace is bogus.
+I'm not sure whether it's specific to PCI bus due to the assignment
+logic of those IOMMU groups, or it's about the handling of the active
+domain assignment.  In anyway, disabling IOMMU works around the
+problem, and passing driver_managed_dma flag to the HD-audio driver
+was also confirmed to work around it, too.
 
-[0] https://lore.kernel.org/all/Yvtc2u1J%2Fqip8za9@worktop.programming.kicks-ass.net/
+The problem persists with 6.0-rc1 kernel.
 
-Thanks,
-Davidlohr
+If you have / can give any fix patch or debug patch, let me know; I'll
+build test kernels and ask the reporters.
+
+
+thanks,
+
+Takashi
