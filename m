@@ -2,74 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8187FC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE6AC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233363AbiHVNbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
+        id S235137AbiHVNbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235125AbiHVNb1 (ORCPT
+        with ESMTP id S235154AbiHVNbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:31:27 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC9F27B20;
-        Mon, 22 Aug 2022 06:31:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=57LbMv2SSV69f3b0nqG0xlqY4irKLICrqXlGHWibQ8I=; b=E9IrOodzNgd5O5GNBf3FPC8G5k
-        2wstz74s2L84/Swr1xrKCKsF2Z5JSjF3mCvcX57Co7549WPmaXErvTjyyDPKpBv/lqTnfTu7CeNJg
-        DcWWzzqndW3hOm2a/t7RhC40pKgrEzCJz7vsMvp9Wq1BgF8nsXC/62+7U6+sgpSejLgr1HX6EUvAi
-        H8hGCIn0GsiRJvn160g8GVRbT+pZLvxdgevjtb7cjJntEaKxdPB0kVzzwVwmf9gsaTbYFw1gTp5Fg
-        3sJA+uXOT/TvfKORiFPbQvfbeF3EHSgC9+UZgVBXfmIYJehP8cQlWirt/to6nKtKiJ+T0SK7SmJFn
-        gFxcQDYA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQ7W8-00EJNU-IM; Mon, 22 Aug 2022 13:31:00 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 69B549804A3; Mon, 22 Aug 2022 15:30:59 +0200 (CEST)
-Date:   Mon, 22 Aug 2022 15:30:59 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     =?utf-8?B?546L5rW35byb?= <wanghaichi@tju.edu.cn>
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        syzkaller@googlegroups.com, lishuochuan@tju.edu.cn
-Subject: Re: possible deadlock in __perf_install_in_context
-Message-ID: <YwOFE1uIYAT+lml2@worktop.programming.kicks-ass.net>
-References: <AFsAbgDYFNbqQK7Ox0JKtqpH.1.1661173960307.Hmail.3014218099@tju.edu.cn>
+        Mon, 22 Aug 2022 09:31:43 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0339C3204E
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:41 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id r10so6381815oie.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=6WVjOrRJCECWMxjcl8nSD1ItRBPOEa+Itaj/XCvb2go=;
+        b=oAGzPeSTZ0vxyJxjypstEFq2wlDSFbqy4W20nT26f4IonPW2btsHWwoI6TFovQKtPH
+         OVt0yKLAzY8ARGBubtDDx784QNp0bnfaQ5A7omPby/nVq0RAYC4O2m6qo+sNnDzyV/EF
+         ZbMR5HZWcC5IxJ/NHIOlo55BXThBNYjTLXxUuDXCLVm2KCd2vmcIML7uF2CuwVqvMpx5
+         PGWBdLdq95Y+GINSqToObZG5MY9yQv9MidDw4sH88GN1vK1y8Mr1pH+EyASoC6hGi6fm
+         CkGXP7qMVDbz+MA5+Dt2pVfOiYYxaA6k3Mi6ex+jHIBZeCR9E5Jl7AHHkVhXYpNpVNGB
+         nXaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=6WVjOrRJCECWMxjcl8nSD1ItRBPOEa+Itaj/XCvb2go=;
+        b=k3qcSDruZ3mqpyyALFOe1jvblIYuaS6gHldWQLRFXgIHVdaXh+HZt2jlTYl1c/QXI1
+         WMwCwzz9CFR9gL8i15lKPZN+WzxpWGhuv7QTr7BP5ncs2g4Vr5ZU+GKWmY+XbEFIcC8u
+         kx2FOJWyPYbwYOG9bNFJagFwWB6Vyms/3Ia0qGGDbJfc6VKWXP+gBnPKG6jOMX2szQ77
+         P6UL+KUHQRLMWaD+bMP0SlB2JJyOlLAJUu5UXNDAE/AvhWzvV6gEOkbH5x3PQQ/BQxll
+         LnjAFddr/Wp3RCDzOipDwwqvfYTHFdC8O7UKvW6MhkFn8KO2xF/ttZf3rSnlEZsT3JMb
+         IsQg==
+X-Gm-Message-State: ACgBeo2VQIRO/Ldy8aSAb5UIkhtuiN3kJwPYlKILsWGyjv0Brz3TDtZz
+        qvYCAC4FaemBV92gZE28BPIPLjkSsbUM7dB6H/w=
+X-Google-Smtp-Source: AA6agR6Cwk55gcuoQgIgnKhgffJRYAliThwIfgR7aCZCIUD7OUGPbbQunhOd6bmeVuKzHCAom2dWtNzACZFk33vO/JA=
+X-Received: by 2002:a05:6808:ecb:b0:33a:3b54:37f9 with SMTP id
+ q11-20020a0568080ecb00b0033a3b5437f9mr8913358oiv.33.1661175101159; Mon, 22
+ Aug 2022 06:31:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AFsAbgDYFNbqQK7Ox0JKtqpH.1.1661173960307.Hmail.3014218099@tju.edu.cn>
+References: <20220819210112.7924-1-rdunlap@infradead.org> <87o7wdkkt4.fsf@mpe.ellerman.id.au>
+ <YwNovfuf3pDBh2Zk@infradead.org>
+In-Reply-To: <YwNovfuf3pDBh2Zk@infradead.org>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 22 Aug 2022 09:31:30 -0400
+Message-ID: <CADnq5_NOedr2TGH0W9wVAPkrJyyJ_+eAkEUORbYvShY4UW90sw@mail.gmail.com>
+Subject: Re: [PATCH] powerpc: export cpu_smallcore_map for modules
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        "Gautham R . Shenoy" <ego@linux.vnet.ibm.com>,
+        amd-gfx@lists.freedesktop.org, "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Tejun Heo <tj@kernel.org>, Nicholas Piggin <npiggin@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 09:12:40PM +0800, 王海弛 wrote:
-> Dear Linux maintainers and reviewers:
-> We would like to report a linux kernel bug, found by a modified version of syzkaller.
-> May affected file: arch/x86/events/core.c, include/linux/perf_event.h
-> Kernel Version: 8fe31e0995f048d16b378b90926793a0aa4af1e5
-> Kernel Config: see attach, linux.config
-> Syzkaller Version: 3666edfeb55080ebe138d77417fa96fe2555d6bb
-> reproducing program: see attach, reproducing.txt (There are syz-reproducing program, C reproducing program and crash report created by syzkaller, both of which can replay the crash)
-> Feel free to  email us if any other infomations are needed. Hope the provided materials will help finding and fixing the bug.
-> The full log crash log are as follows:(also in the attach, crash.report)
-> -----------------
-> 
-> 
-> unchecked MSR access error: WRMSR to 0x188 (tried to write 0x0000000300530000) at rIP: 0xffffffff810287de (__wrmsr arch/x86/include/asm/msr.h:103 [inline])
-> unchecked MSR access error: WRMSR to 0x188 (tried to write 0x0000000300530000) at rIP: 0xffffffff810287de (native_write_msr arch/x86/include/asm/msr.h:160 [inline])
-> unchecked MSR access error: WRMSR to 0x188 (tried to write 0x0000000300530000) at rIP: 0xffffffff810287de (wrmsrl arch/x86/include/asm/msr.h:281 [inline])
-> unchecked MSR access error: WRMSR to 0x188 (tried to write 0x0000000300530000) at rIP: 0xffffffff810287de (__x86_pmu_enable_event arch/x86/events/intel/../perf_event.h:1120 [inline])
-> unchecked MSR access error: WRMSR to 0x188 (tried to write 0x0000000300530000) at rIP: 0xffffffff810287de (intel_pmu_enable_event+0x3ce/0xfe0 arch/x86/events/intel/core.c:2693)
+On Mon, Aug 22, 2022 at 9:16 AM Christoph Hellwig <hch@infradead.org> wrote:
+>
+> On Mon, Aug 22, 2022 at 01:40:23PM +1000, Michael Ellerman wrote:
+> > Randy Dunlap <rdunlap@infradead.org> writes:
+> > > drivers/gpu/drm/amd/amdkfd/kfd_device.c calls cpu_smt_mask().
+> > > This is an inline function on powerpc which references
+> > > cpu_smallcore_map.
+> > >
+> > > Fixes: 425752c63b6f ("powerpc: Detect the presence of big-cores via "ibm, thread-groups"")
+> > > Fixes: 7bc913085765 ("drm/amdkfd: Try to schedule bottom half on same core")
+> >
+> > That 2nd commit is not in mainline, only linux-next.
+> >
+> > I don't mind merging this fix preemptively, but is that SHA stable?
+>
+> I really do not think this has any business being exported at all.
+>
+> kfd_queue_work is not something that should be done in a driver.
+> Something like this belongs into the workqueue core, not in an
+> underdocumented helper in a random driver.
+>
+> Drm guys:  once again, please please work with the maintainers instead
+> of just making up random stuff in the drivers.
 
-I'm guess this is some sort of broken virt setup?
+Discussions are already ongoing with the workqueue folks.  I'll drop
+this for now.
+
+Alex
