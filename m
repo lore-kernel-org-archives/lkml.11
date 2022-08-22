@@ -2,130 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4505BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5920CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234203AbiHVJOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
+        id S233301AbiHVJQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiHVJNG (ORCPT
+        with ESMTP id S234452AbiHVJPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:13:06 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE04F2F012;
-        Mon, 22 Aug 2022 02:13:05 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id s11so7402083qtx.6;
-        Mon, 22 Aug 2022 02:13:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=oLhRD+x39eo4QrarK+tsqoJXBmbcLJZygmNFucd2Avo=;
-        b=msRFpykTXsCe/Pxd8Y6WfbL+jEIjV+02eeFydYh17S4cRtTLXt9VY9B2mKuhDkiFKv
-         W0jleKLm4DXs6spyttKlvblcS1D/lTPPdAFidZ4y3jLFD+S4oKfEnX/HQ5Na9IBUey6U
-         a0kXbS8Nk/UcIHPbs+4eI9g8yyYGujNUh2EKGozQQietcyyIMO0nIqymNnMtMqhaikyM
-         8gqy80bE+hulmDp3Wi6gnFSj8L0pBoBhoCWtUzCHzpNhGc0sAop+dm5dX/Gwcaf69lVs
-         N9GuJ7+UyxVdF+lDTM8GlCV9zGJSofbi6SxTSt8P3dxdUcNqVz6Z/360KnDrsoM7ms1L
-         Ge6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=oLhRD+x39eo4QrarK+tsqoJXBmbcLJZygmNFucd2Avo=;
-        b=nwgtli7oh5Mr25w3g4u/4Qe8HlyZ5I0CAU0isjP21Dh4TP1VqQZmCbEI1IxprEOdgs
-         i2JfWLXXXmttTieEg6ynlG7vgmexakE6iYo69ZXgpWEuc7yRAOa5aL2uSMuWhar3CsnG
-         ImrVtuCSz2BHHRYjD73BVnA8rCzIkr6a7doApQBKlCT0wpUsa+eI9mLt+stN5SgiaqLH
-         Yo5iIwV8yIIViKPPhmTZU69QD1E6IgyhB+BTtNxTxdCldd+ECz2tEx2i1OxUa7L7YV9E
-         HeknFFG5SMcIs54LYfAlM6J6FhaW244kPZvpN4i6ydfkfatK9baql+sn4zdCH3/+OzUA
-         p88A==
-X-Gm-Message-State: ACgBeo2zawxIUndr9WhpKst4Gj8V8sP2zvU/nnAoFpd8WVc9X09gOAK0
-        PNLwm7GXSO0WCxpreCqT5Q==
-X-Google-Smtp-Source: AA6agR4N9vnN8Gs4b6r+a2D+aUM9fVUuftjPg9+VD9tSWdsy6YeEUE5rTWIyu3/GFCwRnpeP5qFB9g==
-X-Received: by 2002:a05:622a:1214:b0:344:5ec8:d620 with SMTP id y20-20020a05622a121400b003445ec8d620mr14654563qtx.228.1661159585026;
-        Mon, 22 Aug 2022 02:13:05 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
-        by smtp.gmail.com with ESMTPSA id bw12-20020a05622a098c00b0031eddc83560sm8626117qtb.90.2022.08.22.02.13.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 02:13:04 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Dave Taht <dave.taht@gmail.com>,
-        Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH RFC v2 net-next 5/5] net/sched: sch_cbq: Use Qdisc backpressure infrastructure
-Date:   Mon, 22 Aug 2022 02:12:57 -0700
-Message-Id: <614f8f31e3b62dfebb8cb4707c81918a6c7e381d.1661158173.git.peilin.ye@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1661158173.git.peilin.ye@bytedance.com>
-References: <cover.1661158173.git.peilin.ye@bytedance.com>
+        Mon, 22 Aug 2022 05:15:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEE727B0A
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:14:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661159691;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D8PX8VGV+zxa485SufkBq+IWwGWuDtC3c/GfFCmctrA=;
+        b=TwEiBYTC/Q+1fGB7kM6sj1SNC1l90ZpCPZq0dr6uxVwZ/PcDqCXNiZm66XV5WXf2Ovss5w
+        ekUDMTaHEh3ku+NuABnlkn/8lmZsfJ49hFE68kOTBsiBlFvuYI1Rv9gCyllSNcw3jztfls
+        zPpb4hbJQAbvJsvQ7AphzMIJg4T/TP8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-361-IKkzy2GiPiOmwXPFZyABEQ-1; Mon, 22 Aug 2022 05:14:40 -0400
+X-MC-Unique: IKkzy2GiPiOmwXPFZyABEQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 56D341C13941;
+        Mon, 22 Aug 2022 09:14:40 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.142])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DCF19492C3B;
+        Mon, 22 Aug 2022 09:14:39 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH] vfio/fsl-mc: Fix a typo in a comment
+In-Reply-To: <Yvuy/qUwU7StueDV@ziepe.ca>
+Organization: Red Hat GmbH
+References: <2b65bf8d2b4d940cafbafcede07c23c35f042f5a.1659815764.git.christophe.jaillet@wanadoo.fr>
+ <YvKJTKYv2htxM1n/@ziepe.ca>
+ <db505c50-e855-5e94-1f09-173310177bda@wanadoo.fr>
+ <Yvuy/qUwU7StueDV@ziepe.ca>
+User-Agent: Notmuch/0.36 (https://notmuchmail.org)
+Date:   Mon, 22 Aug 2022 11:14:38 +0200
+Message-ID: <871qt8prlt.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+On Tue, Aug 16 2022, Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-Recently we introduced a Qdisc backpressure infrastructure (currently
-supports UDP sockets).  Use it in CBQ Qdisc.
+> On Tue, Aug 16, 2022 at 05:00:50PM +0200, Christophe JAILLET wrote:
+>> Le 09/08/2022 =C3=A0 18:20, Jason Gunthorpe a =C3=A9crit=C2=A0:
+>> > On Sat, Aug 06, 2022 at 09:56:13PM +0200, Christophe JAILLET wrote:
+>> > > L and S are swapped/
+>> > > s/VFIO_FLS_MC/VFIO_FSL_MC/
+>> > >=20
+>> > > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> > > ---
+>> > > All the dev_ logging functions in the file have the "VFIO_FSL_MC: "
+>> > > prefix.
+>> > > As they are dev_ function, the driver should already be displayed.
+>> > >=20
+>> > > So, does it make sense or could they be all removed?
+>> > > ---
+>> > >   drivers/vfio/fsl-mc/vfio_fsl_mc.c | 2 +-
+>> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+>> > >=20
+>> > > diff --git a/drivers/vfio/fsl-mc/vfio_fsl_mc.c b/drivers/vfio/fsl-mc=
+/vfio_fsl_mc.c
+>> > > index 3feff729f3ce..66d01db1d240 100644
+>> > > --- a/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+>> > > +++ b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+>> > > @@ -110,7 +110,7 @@ static void vfio_fsl_mc_close_device(struct vfio=
+_device *core_vdev)
+>> > >   	if (WARN_ON(ret))
+>> > >   		dev_warn(&mc_cont->dev,
+>> > > -			 "VFIO_FLS_MC: reset device has failed (%d)\n", ret);
+>> > > +			 "VFIO_FSL_MC: reset device has failed (%d)\n", ret);
+>> >=20
+>> > WARN_ON already prints, this is better written as
+>> >=20
+>> > WARN(ret, "VFIO_FSL_MC: reset device has failed (%d)\n", ret);
+>>=20
+>> Or maybe, just:
+>> if (ret)
+>> 	dev_warn(&mc_cont->dev,
+>> 		 "VFIO_FSL_MC: reset device has failed (%d)\n", ret);
+>>=20
+>> This keep information about the device, avoid the duplicate printing rel=
+ated
+>> to WARN_ON+dev_warn and is more in line with error handling in other fil=
+es.
+>>=20
+>> Do you agree or do you prefer a v2 as you proposed with WARN()?
+>
+> If the original author wrote WARN I would not degrade it to just a
+> dev_warn.
 
-Tested with 500 Mbits/sec rate limit using 16 iperf UDP 1 Gbit/sec
-clients.  Before:
-
-[  3]  0.0-15.0 sec  55.8 MBytes  31.2 Mbits/sec   1.185 ms 1073326/1113110 (96%)
-[  3]  0.0-15.0 sec  55.9 MBytes  31.3 Mbits/sec   1.001 ms 1080330/1120201 (96%)
-[  3]  0.0-15.0 sec  55.6 MBytes  31.1 Mbits/sec   1.750 ms 1078292/1117980 (96%)
-[  3]  0.0-15.0 sec  55.3 MBytes  30.9 Mbits/sec   0.895 ms 1089200/1128640 (97%)
-<...>                                                       ^^^^^^^^^^^^^^^^^^^^^
-
-Total throughput is 493.7 Mbits/sec and average drop rate is 96.13%.
-
-Now enable Qdisc backpressure for UDP sockets, with
-udp_backpressure_interval default to 100 milliseconds:
-
-[  3]  0.0-15.0 sec  54.2 MBytes  30.3 Mbits/sec   2.302 ms 54/38692 (0.14%)
-[  3]  0.0-15.0 sec  54.1 MBytes  30.2 Mbits/sec   2.227 ms 54/38671 (0.14%)
-[  3]  0.0-15.0 sec  53.5 MBytes  29.9 Mbits/sec   2.043 ms 57/38203 (0.15%)
-[  3]  0.0-15.0 sec  58.1 MBytes  32.5 Mbits/sec   1.843 ms 1/41480 (0.0024%)
-<...>                                                       ^^^^^^^^^^^^^^^^^
-
-Total throughput is 497.1 Mbits/sec (0.69% higher), average drop rate is
-0.08% (99.9% lower).
-
-Fairness between flows is slightly affected, with per-flow average
-throughput ranging from 29.9 to 32.6 Mbits/sec (compared with 30.3 to
-31.3 Mbits/sec).
-
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
- net/sched/sch_cbq.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index 91a0dc463c48..42e44f570988 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -381,6 +381,7 @@ cbq_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		return ret;
- 	}
- 
-+	qdisc_backpressure(skb);
- 	if (net_xmit_drop_count(ret)) {
- 		qdisc_qstats_drop(sch);
- 		cbq_mark_toplevel(q, cl);
--- 
-2.20.1
+Having to decide between losing the WARN and losing the device info, I'd
+just... fix the typo :)
 
