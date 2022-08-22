@@ -2,44 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BF1C32792
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BF3C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232833AbiHVGNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S232838AbiHVGOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232803AbiHVGNN (ORCPT
+        with ESMTP id S229727AbiHVGO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:13:13 -0400
+        Mon, 22 Aug 2022 02:14:28 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE320197
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:13:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD3127173
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:14:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=IynWQwuvKQj2zQWKQEeRgNviPfklztyfRPoZFsR2Bho=; b=D2mjhazKc7q2hFbo0lpeetG9vA
-        HcYi18m5B9jToI7Hba5gzV9WdvcrSm7wlni0IEsiwYebnivXQHi9plrpZ26PBzLJrlc0rHercl0qt
-        Kv/f+3Tbovtww9Lp5Pa3DCn5RIms2m0gaDLbfQSBUF8MWPH/azwEEpapMYlYdM/0/pFEoGeH/WGwQ
-        Wvy6uzxFr7XAwcp0NR+NW3p7RowkK8WQ0c7ajCoaXv+3JL3efV+eZniC/RYfPNzse4BVD5c7siqAY
-        RbqieLw33eLdDyYM2dic3XOFtHaCjVM5BdfcvAUCIAuWWGtnzwWqXM3hgMZkBuaF6zoQnB5CBXPRI
-        jn0K+rZA==;
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=+m7ASInd5HyWaBAQHUjqUsOTAxsljCftdMHP0CR28S8=; b=opuILnP/c/7p066ds4lZxvjvlM
+        mFtu/WpnLWA+u+wzyUG5GIVqxROzZHBvkD1yc5IREXqCUQeIll2MNLYTEur9a+8yt/3MNK6a1H+TO
+        Q4BQPumM1xuxzf2gYCZ5Aanf2h3JY4TbvVCT13EppPNxMKWeojjjpSg+Pd+wTmwSgfMPWOhm4FI6j
+        mA5wP4dDWk2BgkXCxIL5Lu6FdQ8Bsi47iGUoRI5JiMpHkO/gtxWon7Ir9EGwUULvEkx3eCKJGPorT
+        r7DPINYoEHvEXY7EHZ3+I79FQ3YFMeIag2uYzcoRqDPg58q3M6Hy0lbHllg116XZ9Md2ZX3QEiQqQ
+        dGqvDo6w==;
 Received: from [2001:4bb8:198:6528:7eb3:3a42:932d:eeba] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQ0gG-005Kaf-H1; Mon, 22 Aug 2022 06:13:00 +0000
+        id 1oQ0he-005L5Y-Po; Mon, 22 Aug 2022 06:14:27 +0000
 From:   Christoph Hellwig <hch@lst.de>
-To:     iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        David Rientjes <rientjes@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] dma-pool: factor out a calculate_pool_size helper
-Date:   Mon, 22 Aug 2022 08:12:53 +0200
-Message-Id: <20220822061255.151688-2-hch@lst.de>
+To:     akpm@linux-foundation.org, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] devres: remove devm_ioremap_np
+Date:   Mon, 22 Aug 2022 08:14:24 +0200
+Message-Id: <20220822061424.151819-1-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220822061255.151688-1-hch@lst.de>
-References: <20220822061255.151688-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -47,48 +42,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to calculate the pool size from dma_atomic_pool_init.
+devm_ioremap_np has never been used anywhere since it was added in early
+2021, so remove it.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- kernel/dma/pool.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ Documentation/driver-api/driver-model/devres.rst |  1 -
+ include/linux/io.h                               |  2 --
+ lib/devres.c                                     | 15 ---------------
+ 3 files changed, 18 deletions(-)
 
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 4d40dcce7604b..37008d4f6d7af 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -184,6 +184,14 @@ static __init struct gen_pool *__dma_atomic_pool_init(size_t pool_size,
- 	return pool;
+diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+index 55272942e721a..2af6c9c09e596 100644
+--- a/Documentation/driver-api/driver-model/devres.rst
++++ b/Documentation/driver-api/driver-model/devres.rst
+@@ -310,7 +310,6 @@ IOMAP
+   devm_ioremap()
+   devm_ioremap_uc()
+   devm_ioremap_wc()
+-  devm_ioremap_np()
+   devm_ioremap_resource() : checks resource, requests memory region, ioremaps
+   devm_ioremap_resource_wc()
+   devm_platform_ioremap_resource() : calls devm_ioremap_resource() for platform device
+diff --git a/include/linux/io.h b/include/linux/io.h
+index 5fc800390fe42..308f4f0cfb932 100644
+--- a/include/linux/io.h
++++ b/include/linux/io.h
+@@ -59,8 +59,6 @@ void __iomem *devm_ioremap_uc(struct device *dev, resource_size_t offset,
+ 				   resource_size_t size);
+ void __iomem *devm_ioremap_wc(struct device *dev, resource_size_t offset,
+ 				   resource_size_t size);
+-void __iomem *devm_ioremap_np(struct device *dev, resource_size_t offset,
+-				   resource_size_t size);
+ void devm_iounmap(struct device *dev, void __iomem *addr);
+ int check_signature(const volatile void __iomem *io_addr,
+ 			const unsigned char *signature, int length);
+diff --git a/lib/devres.c b/lib/devres.c
+index 55eb07e80cbb3..6baf43902eadb 100644
+--- a/lib/devres.c
++++ b/lib/devres.c
+@@ -103,21 +103,6 @@ void __iomem *devm_ioremap_wc(struct device *dev, resource_size_t offset,
  }
+ EXPORT_SYMBOL(devm_ioremap_wc);
  
-+static size_t calculate_pool_size(unsigned long zone_pages)
-+{
-+	unsigned long pages = zone_pages / (SZ_1G / SZ_128K);
-+
-+	pages = min_t(unsigned long, pages, MAX_ORDER_NR_PAGES);
-+	return max_t(size_t, pages << PAGE_SHIFT, SZ_128K);
-+}
-+
- static int __init dma_atomic_pool_init(void)
- {
- 	int ret = 0;
-@@ -192,11 +200,9 @@ static int __init dma_atomic_pool_init(void)
- 	 * If coherent_pool was not used on the command line, default the pool
- 	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
- 	 */
--	if (!atomic_pool_size) {
--		unsigned long pages = totalram_pages() / (SZ_1G / SZ_128K);
--		pages = min_t(unsigned long, pages, MAX_ORDER_NR_PAGES);
--		atomic_pool_size = max_t(size_t, pages << PAGE_SHIFT, SZ_128K);
--	}
-+	if (!atomic_pool_size)
-+		atomic_pool_size = calculate_pool_size(totalram_pages());
-+
- 	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
- 
- 	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
+-/**
+- * devm_ioremap_np - Managed ioremap_np()
+- * @dev: Generic device to remap IO address for
+- * @offset: Resource address to map
+- * @size: Size of map
+- *
+- * Managed ioremap_np().  Map is automatically unmapped on driver detach.
+- */
+-void __iomem *devm_ioremap_np(struct device *dev, resource_size_t offset,
+-			      resource_size_t size)
+-{
+-	return __devm_ioremap(dev, offset, size, DEVM_IOREMAP_NP);
+-}
+-EXPORT_SYMBOL(devm_ioremap_np);
+-
+ /**
+  * devm_iounmap - Managed iounmap()
+  * @dev: Generic device to unmap for
 -- 
 2.30.2
 
