@@ -2,80 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 984B5C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C017C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235025AbiHVN1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
+        id S235064AbiHVN2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234839AbiHVN1P (ORCPT
+        with ESMTP id S234953AbiHVN2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:27:15 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5064C31236;
-        Mon, 22 Aug 2022 06:27:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=hYtojPMz9irO+oG6WMN7GeV1hjHjMbyrt3xn3Ye5F4M=; b=telDdeV9S/RPd/vQa3QCYA2EwV
-        j7J6BAXROQxnM4A4VHodLqpzMKA7Gn8pDpgRD56fXBFHitsCJp22Pjy2lxhAtsrBna7V8xBWLMQQ4
-        Z8JH13HSrZ3qniUGmv+qpaN3GNlB+c+SxdhRu3RYkU9Wxr82pj8DnoRN0g4nS3i4ndyrxYYxo2MQq
-        oxQvQnn9+u2U2EYfBHefvA2K8e6R7jYe2SGBQ0c0MQznxWg0hS5MQi5iehENj4vttg8g198ciacrK
-        jINTr2LdNmF2lkzywXX3/kSlVPB52vOAicpy5sP3W68MZW10l5+Oag8FPttaNJYeQf7TxMvS5JOgE
-        u0YWhiNg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQ7SF-00EJDr-FL; Mon, 22 Aug 2022 13:26:59 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D50709804A3; Mon, 22 Aug 2022 15:26:56 +0200 (CEST)
-Date:   Mon, 22 Aug 2022 15:26:56 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sandipan Das <sandipan.das@amd.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, bp@alien8.de, acme@kernel.org, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        dave.hansen@linux.intel.com, like.xu.linux@gmail.com,
-        Stephane Eranian <eranian@google.com>, ananth.narayan@amd.com,
-        ravi.bangoria@amd.com, santosh.shukla@amd.com
-Subject: Re: [PATCH 04/13] x86/cpufeatures: Add LbrExtV2 feature bit
-Message-ID: <YwOEIESeDSuekmf8@worktop.programming.kicks-ass.net>
-References: <cover.1660211399.git.sandipan.das@amd.com>
- <172d2b0df39306ed77221c45ee1aa62e8ae0548d.1660211399.git.sandipan.das@amd.com>
- <YvotoHMaLE1XawiO@worktop.programming.kicks-ass.net>
- <CABPqkBQ1YLAu+sJC_U4QsQuo3PuzUwRDrNm9KcrUAEUxeBaYbg@mail.gmail.com>
- <YwNG1XzcyR5ys+rA@worktop.programming.kicks-ass.net>
- <06e9a357-422d-1870-ae72-18e74964caf3@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <06e9a357-422d-1870-ae72-18e74964caf3@amd.com>
+        Mon, 22 Aug 2022 09:28:17 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22063E9A;
+        Mon, 22 Aug 2022 06:28:15 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A17661A2999;
+        Mon, 22 Aug 2022 15:28:14 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 676081A23C3;
+        Mon, 22 Aug 2022 15:28:14 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B0690180031C;
+        Mon, 22 Aug 2022 21:28:12 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, vkoul@kernel.org,
+        marcel.ziswiler@toradex.com, kishon@ti.com
+Cc:     hongxing.zhu@nxp.com, linux-phy@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: [PATCH v1 0/2] Fix the wrong order of phy callbacks 
+Date:   Mon, 22 Aug 2022 21:10:54 +0800
+Message-Id: <1661173856-1192-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 06:22:25PM +0530, Sandipan Das wrote:
-> AMD LbrExtV2 is similar to Intel LBR. Unlike BRS, LbrExtV2 does not rely on
+Refer [1], phy_init() must be called before phy_power_on().
+This series used to fix the wrong order of the phy_init() and phy_power_on(),
+introduced by commit 1aa97b002258 ("phy: freescale: pcie: Initialize the imx8 pcie standalone phy driver")
+Tested on i.MX8MM EVK board when one NVME device is used.
 
-LbrExtV2 must be the most terrible name ever, please stop using it. Heck
-your own code calls it lbr_v2 wherever it can.
+[1]https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/phy/phy-core.c?id=v5.19-rc1#n233
 
-So can we please just kill that name entirely?
-
-$ quilt diff --combine - | grep -i lbrext_v2
-+       if (x86_pmu.version < 2 || !boot_cpu_has(X86_FEATURE_LBREXT_V2))
-+#define X86_FEATURE_LBREXT_V2          ( 3*32+17) /* AMD Last Branch Record Extension Version 2 */
-+       { X86_FEATURE_LBREXT_V2,        CPUID_EAX,  1, 0x80000022, 0 },
-
-Is the complete usage of this silly name.
-
-> interrupt holding. The branch records are "frozen" at the time of counter
-> overflow.
-
-Yes, I get all that. It is also significantly different from Intel LBR
-in all details and shares not a single line of code, so also calling it
-LBR is confusing at best.
-
-The MSRs are called AMD_SAMPL_BR, so why not call the thing BRS_V2 ?
+[PATCH v1 1/2] PCI: imx6: Fix the wrong order of phy_init() and
+[PATCH v1 2/2] phy: freescale: imx8m-pcie: Fix the wrong order of
