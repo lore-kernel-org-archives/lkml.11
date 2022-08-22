@@ -2,89 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6951EC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F07BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232454AbiHVGJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S232820AbiHVGK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbiHVGJf (ORCPT
+        with ESMTP id S232698AbiHVGKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:09:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D46E24F05
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:09:34 -0700 (PDT)
+        Mon, 22 Aug 2022 02:10:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6D126ACA;
+        Sun, 21 Aug 2022 23:10:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 250D2B80E88
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 949E7C433C1;
-        Mon, 22 Aug 2022 06:09:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EED060DD9;
+        Mon, 22 Aug 2022 06:10:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 569F6C433C1;
+        Mon, 22 Aug 2022 06:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661148571;
-        bh=jkfZw4GZo+upzS4/44GEBKA5bFWYoet3Hu9G/RHcY3s=;
+        s=korg; t=1661148653;
+        bh=kKKsZ4GkII0dFS941IxQN4QTvEsTuDg2s4nEEQ+FGZA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vWe7EWIPjr57tZHdahPOxSZbHiqx3NeDYX9EuhQYcVT4ZRfmE6c/7Pm/+FGwQIfke
-         xhyga+2I80lQUGCyd7oGDfHBjU3jktlKIcm2MQloVdLCbnxL142l09vYZ1kLpd2nVF
-         OAuuS//fXeq9M3ILrkaYRnFq3NPKlJ8xLZxUGACo=
-Date:   Mon, 22 Aug 2022 08:09:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org
-Subject: Re: [PATCH -next] driver core: switch to use dev_err_probe()
-Message-ID: <YwMdl/3ZBKAYsqN1@kroah.com>
-References: <20220819094656.1945653-1-yangyingliang@huawei.com>
- <Yv9a9+iREzQWYecQ@kroah.com>
- <1d4d1ef7-7386-cf8f-0a5a-04690ec27ed6@huawei.com>
+        b=kvqXOYE1Pd4AuAjlw/+eWbvYMpT/j7s+JXzhR5gFg+vXdbtjGLA9pmaF8tfK58JGm
+         il/mgp03FCSZANP00nUZVgDlCqsfsyIQEuWg3Fer4Tiy3mAsOyCeQLbV/LTCqJ/++D
+         vE4SpGGPv7pe0lHs3SV1kVhbSWBbdgn2YhtrEFTI=
+Date:   Mon, 22 Aug 2022 08:10:50 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daniil Lunev <dlunev@chromium.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Keoseong Park <keosung.park@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH v7] ufs: core: print UFSHCD capabilities in controller's
+ sysfs node
+Message-ID: <YwMd6iwUS+EBwXfL@kroah.com>
+References: <20220815104739.v7.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
+ <Yvnq5o5f+qp5zs1c@kroah.com>
+ <CAONX=-dc9Uj92SZXuhJOdJSBVYWAzNhx8__QQh8icB2D0ZM1=g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1d4d1ef7-7386-cf8f-0a5a-04690ec27ed6@huawei.com>
+In-Reply-To: <CAONX=-dc9Uj92SZXuhJOdJSBVYWAzNhx8__QQh8icB2D0ZM1=g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 10:10:22AM +0800, Yang Yingliang wrote:
-> Hi,
-> 
-> On 2022/8/19 17:42, Greg KH wrote:
-> > On Fri, Aug 19, 2022 at 05:46:56PM +0800, Yang Yingliang wrote:
-> > > Use dev_err_probe() to simplify code and print error code.
-> > > 
-> > > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> > > ---
-> > >   drivers/base/core.c | 8 +++-----
-> > >   1 file changed, 3 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/drivers/base/core.c b/drivers/base/core.c
-> > > index 753e7cca0f40..e51a09f9d0ec 100644
-> > > --- a/drivers/base/core.c
-> > > +++ b/drivers/base/core.c
-> > > @@ -2507,11 +2507,9 @@ static ssize_t uevent_store(struct device *dev, struct device_attribute *attr,
-> > >   	int rc;
-> > >   	rc = kobject_synth_uevent(&dev->kobj, buf, count);
-> > > -
-> > > -	if (rc) {
-> > > -		dev_err(dev, "uevent: failed to send synthetic uevent\n");
-> > > -		return rc;
-> > > -	}
-> > > +	if (rc)
-> > > +		return dev_err_probe(dev, rc,
-> > > +				     "uevent: failed to send synthetic uevent\n");
-> > I do not understand this at all, this is not on the probe path at all,
-> > so why is this function needed?
-> > 
-> > Have you tested this?  What was the resulting output before and after
-> > this change?
-> Yes, after this change, the error code will be print.
+On Mon, Aug 22, 2022 at 09:59:19AM +1000, Daniil Lunev wrote:
+> Hi Greg,
+> Can you clarify what specifically is missing from the changelog?
 
-You did not answer my question.
+What changelog?  I have no context here (remember, never top-post).
 
-Again, this is not on the probe() callback path, so why are you wanting
-to call dev_err_probe()?
-
-thanks,
+confused,
 
 greg k-h
