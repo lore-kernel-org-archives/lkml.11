@@ -2,80 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED895C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA15BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236283AbiHVSEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
+        id S235689AbiHVSEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236423AbiHVSD6 (ORCPT
+        with ESMTP id S236608AbiHVSEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:03:58 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594D02CC82;
-        Mon, 22 Aug 2022 11:03:58 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id p187so5835615oia.9;
-        Mon, 22 Aug 2022 11:03:58 -0700 (PDT)
+        Mon, 22 Aug 2022 14:04:08 -0400
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD202DA88;
+        Mon, 22 Aug 2022 11:04:07 -0700 (PDT)
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-11d08d7ece2so7123053fac.0;
+        Mon, 22 Aug 2022 11:04:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=esNtcNx3BW0ZYDyHJtcCsZAGZC+vRBsZkbC1+V6YdwA=;
-        b=TFjqIKk5GQjCmIwT98BjnxzTsJa2jL2miPnyMvgOZRiDk2Dw/tUwvn7MyDxY0DOoX8
-         E3LV34Db7jotsincJl31rTfsWJSdeTNBI8/0M32o3h3CacTnc8BsOfWTSWPguxJ6Y2kM
-         HiEDUuU/ma3Dqlgu2L2lLKlhwwmxOZxNeet1b5O8n5WFBt22UvcBm38IPXTLlRNvH+R3
-         KrQd2tB8SR6cDf4+cg1f6z2PW8ARmezgVfV+eEcAfjCEFGCnlG3eeLIk30Bnznc3GXyT
-         dKiWLd7gNn85Tjoy9VNvLT/7FaHaFSA10vfREt+yHGyts0TADSexb8acPa8m0lD+xhov
-         aSvw==
-X-Gm-Message-State: ACgBeo3t+nhBBRLbKDwbdterKT3eRJIDwfui3SxijovMCD7FR/2lymba
-        vEzHxeNAJvO5bF5AT7eA5Q==
-X-Google-Smtp-Source: AA6agR60bjoaWedKbnY/NS+tnW/H2Gz998DSgaZ40yNsNvcB/kC7hRFGHbUXBQym/1J5IOcu17Q8VQ==
-X-Received: by 2002:a05:6808:308e:b0:343:4b22:1a1e with SMTP id bl14-20020a056808308e00b003434b221a1emr9769893oib.102.1661191437571;
-        Mon, 22 Aug 2022 11:03:57 -0700 (PDT)
+        bh=pA++Iu9p2JopuB6JUITUXG7KLROVNcmOWnSn6LTggfc=;
+        b=iMvqlpnTAyzMy6YSMmpUUtVGGUVzUw2mi8e2ON665cV0m300q42CHR60kVXitbCVW/
+         wr9bfYRxIEFvQbPKEOIYvZFLoOmC0M6G0nWPLT2XMgY84eZl2JM2PAcyTCdkGCWNM5GZ
+         bLF6f1fAJgx2+yfxHvBZUJnN0U9P2j92ZQQZScm0Yv9thvniimZ8Sbn3n6T4bzZvjsVH
+         rewclG8QHnF2Qz/Vg+wW1//dloBN+iIUm8CZYT0WQf3IlLWKPFgqXIT6yAyie1ZpiK3O
+         4OsDMYrl2mKlCD7XOFXH7eXU0h0fP+i+F9tBF/kxfgtHWrsD/6+5X8Z9ymZ85imKspCA
+         V3bQ==
+X-Gm-Message-State: ACgBeo16ouc7EDhN8PPvprJbntj3gycagVPtNRPDt4a8PHg64Ai4EpHz
+        RiaUe47z7RzvilScfgFXh0NcD2dzVg==
+X-Google-Smtp-Source: AA6agR5hUiVd/6srf4Qzt7WmWVXXxN/fKwe2rBX366NnnuCtZ0xEIzK1+aEvcrFiEU87ZRniN+D4lw==
+X-Received: by 2002:a05:6870:64a1:b0:11c:5ca9:e519 with SMTP id cz33-20020a05687064a100b0011c5ca9e519mr12661713oab.4.1661191446430;
+        Mon, 22 Aug 2022 11:04:06 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id j4-20020a9d7384000000b0063711d42df5sm1656299otk.30.2022.08.22.11.03.56
+        by smtp.gmail.com with ESMTPSA id v23-20020a544497000000b0034480f7eec4sm2724879oiv.12.2022.08.22.11.04.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 11:03:57 -0700 (PDT)
-Received: (nullmailer pid 74561 invoked by uid 1000);
-        Mon, 22 Aug 2022 18:03:55 -0000
-Date:   Mon, 22 Aug 2022 13:03:55 -0500
+        Mon, 22 Aug 2022 11:04:06 -0700 (PDT)
+Received: (nullmailer pid 75047 invoked by uid 1000);
+        Mon, 22 Aug 2022 18:04:05 -0000
+Date:   Mon, 22 Aug 2022 13:04:05 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Kyungmin Park <kyungmin.park@samsung.com>,
-        Georgi Djakov <djakov@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Johnson Wang <johnson.wang@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Jia-Wei Chang <jia-wei.chang@mediatek.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>, linux-pm@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+Cc:     Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        linux-mediatek@lists.infradead.org, Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH v2] dt-bindings: interconnect: restrict opp-table to
+        dri-devel@lists.freedesktop.org, Heiko Stuebner <heiko@sntech.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>
+Subject: Re: [PATCH v2] dt-bindings: gpu: arm,mali: restrict opp-table to
  objects
-Message-ID: <20220822180355.GA74500-robh@kernel.org>
-References: <20220818061653.9524-1-krzysztof.kozlowski@linaro.org>
+Message-ID: <20220822180405.GA75021-robh@kernel.org>
+References: <20220818061713.9611-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220818061653.9524-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220818061713.9611-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 09:16:53 +0300, Krzysztof Kozlowski wrote:
+On Thu, 18 Aug 2022 09:17:13 +0300, Krzysztof Kozlowski wrote:
 > Simple 'opp-table:true' accepts a boolean property as opp-table, so
 > restrict it to object to properly enforce real OPP table nodes.
 > 
@@ -86,10 +71,9 @@ On Thu, 18 Aug 2022 09:16:53 +0300, Krzysztof Kozlowski wrote:
 > Changes since v1:
 > 1. Correct typo in msg.
 > ---
->  .../devicetree/bindings/interconnect/fsl,imx8m-noc.yaml        | 3 ++-
->  .../devicetree/bindings/interconnect/mediatek,cci.yaml         | 3 ++-
->  .../devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml   | 3 ++-
->  3 files changed, 6 insertions(+), 3 deletions(-)
+>  Documentation/devicetree/bindings/gpu/arm,mali-midgard.yaml | 3 ++-
+>  Documentation/devicetree/bindings/gpu/arm,mali-utgard.yaml  | 3 ++-
+>  2 files changed, 4 insertions(+), 2 deletions(-)
 > 
 
 Applied, thanks!
