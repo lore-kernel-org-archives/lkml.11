@@ -2,94 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388A4C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF944C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235519AbiHVPZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S236361AbiHVP0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236666AbiHVPZO (ORCPT
+        with ESMTP id S236526AbiHVPYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:25:14 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA34165A0;
-        Mon, 22 Aug 2022 08:22:41 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 22 Aug 2022 11:24:30 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6ACF54
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:20:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661181609; x=1692717609;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PxH1XESOn3k/TaEO+M/yHzwrNdK4vC1UrGySGCfqGZI=;
+  b=OStXxSH0ylWCfCKLDuyUgSvzfL2JRSZrKYOWI/EBavTeOi/JsDTtg0lI
+   j4UsGn9Ux75/WH+tZ2SZzutgUGZTtdMkadAOdBgKn3BZ1jyqgHf4awmcg
+   cxOdiKOwqdyF8PMur+UrujqMpVHbVTwJeDm5XGyJ8JRLVcZRdjprPbmUz
+   gdBAjhYGvZI9v4d/Mrz0Q+PC8X4HxBD1qRE2Ski9Uf8g9tvCRnMxOHHZ2
+   rouaGBWwSaDaa1srYSvy5GLCqqNECeypVyIlObMa/q7vBQgHjmU6nvG8G
+   oTe869NqOU4uufnjwvalqw+9mzmOaacSR8oCFq5hrBDv5VQnGAyhAspdV
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="355172261"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="355172261"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 08:20:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="612080496"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga007.fm.intel.com with ESMTP; 22 Aug 2022 08:20:08 -0700
+Received: from [10.252.212.31] (kliang2-mobl1.ccr.corp.intel.com [10.252.212.31])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 3EA0234EC1;
-        Mon, 22 Aug 2022 15:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661181760; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IOL95PlZNCLCsOY6utFi2W/Xy/Ym149lDYmmjkIy+6w=;
-        b=IyPmTXekZSgWSkO6Ocsaaa4F+Y02G7+M18vOfVuoh4O3uhBJCD8ZH+1cqZlJvU4jdFniPV
-        9+6meGNjoDCFPRwnCdenjrggEsrFSguaiYkCMCf7WB5JEZeWwxuWtvsr/QLy/Rh9Ra7NOj
-        1bM9pHRZwOq3dMJhfmvKE6DStQ+y0DI=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B6551332D;
-        Mon, 22 Aug 2022 15:22:40 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hvFvBECfA2PAFgAAMHmgww
-        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 15:22:40 +0000
-Date:   Mon, 22 Aug 2022 17:22:39 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Message-ID: <YwOfP/6PtS8BxNhz@dhcp22.suse.cz>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-4-shakeelb@google.com>
- <YwNe3HBxzF+fWb2n@dhcp22.suse.cz>
- <CALvZod5YGVSTvsg25P6goqyGEY21eVnahsXcs2BGsp6OXxLwsg@mail.gmail.com>
+        by linux.intel.com (Postfix) with ESMTPS id 269AF5806C8;
+        Mon, 22 Aug 2022 08:20:07 -0700 (PDT)
+Message-ID: <feb6f311-1379-7482-21e3-94cf7e797495@linux.intel.com>
+Date:   Mon, 22 Aug 2022 11:20:05 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALvZod5YGVSTvsg25P6goqyGEY21eVnahsXcs2BGsp6OXxLwsg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [RESEND PATCH] perf/x86/intel: Fix unchecked MSR access error for
+ Alder Lake N
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     acme@redhat.com, linux-kernel@vger.kernel.org,
+        alexander.shishkin@linux.intel.com, ak@linux.intel.com,
+        Jianfeng Gao <jianfeng.gao@intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>
+References: <20220818181530.2355034-1-kan.liang@linux.intel.com>
+ <Yv9EVP6O9r867om4@worktop.programming.kicks-ass.net>
+ <Yv9Kw21Wl/f6KJTk@worktop.programming.kicks-ass.net>
+ <b54cd275-4fa6-9b5c-fdc2-858d2f7c1b46@linux.intel.com>
+ <YwOKyBL7lNmyaFqs@worktop.programming.kicks-ass.net>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <YwOKyBL7lNmyaFqs@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 08:09:01, Shakeel Butt wrote:
-> On Mon, Aug 22, 2022 at 3:47 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> [...]
-> >
-> > > To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> > > ran the following workload in a three level of cgroup hierarchy with top
-> > > level having min and low setup appropriately. More specifically
-> > > memory.min equal to size of netperf binary and memory.low double of
-> > > that.
-> >
-> > a similar feedback to the test case description as with other patches.
+
+
+On 2022-08-22 9:55 a.m., Peter Zijlstra wrote:
+> On Mon, Aug 22, 2022 at 09:24:57AM -0400, Liang, Kan wrote:
+>> I think the only issue should be the PMU name. The non-hybrid PMU name
+>> is "cpu". The hybrid PMU name is "cpu_$coretype". If we move the
+>> ALDERLAKE_N to the non-hybrid PMU, the PMU name will be changed from
+>> "cpu_atom" to "cpu". It will be different from the rest of
+>> {ALDER,RAPTOP}LAKE.
+>>
+>> Also, I think we have to update the perf tool for the events because of
+>> the PMU name change.
+>>
+>> But I guess it should be OK, since the ALDERLAKE_N was just added and we
+>> know its an Atom-only system.
 > 
-> What more info should I add to the description? Why did I set up min
-> and low or something else?
+> cpu/caps/pmu_name should be 'Gracemont', which is exactly like all the
+> other !hybrid setups. Surely perf-tools already knows about this
+> pattern.
+> 
+> IOW, if you need to change perf-tools for this, someone did something
+> wrong somewhere.
 
-I do see why you wanted to keep the test consistent over those three
-patches. I would just drop the reference to the protection configuration
-because it likely doesn't make much of an impact, does it? It is the
-multi cpu setup and false sharing that makes the real difference. Or am
-I wrong in assuming that?
+The event list for ADL and RPL is different from the non-hybrid
+platforms. We combine the events from big core and small core into a
+single file and use the PMU name to distinguish from them. The PMU name
+is either cpu_core or cpu_atom.
 
--- 
-Michal Hocko
-SUSE Labs
+If we change the ADL-N to non-hybrid, the simplest way is to create a
+dedicate gracemont event list. Or we have to specially handle the ADL-N
+in the parsing codes. We have to update the tool for either way.
+
+> 
+> (also, I just noticed, 'Tremont' is the *only* PMU that has a
+> capitalized name, perhaps we don't want Gracemont to follow but instead
+> fix tremont if that is still possible)
+
+I don't think the tool rely on the name under cpu/caps/pmu_name.
+The event list rely on the CPU model number.
+It should be OK to fix the tremont name.
+
+
+Thanks,
+Kan
