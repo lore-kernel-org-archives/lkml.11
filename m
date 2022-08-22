@@ -2,118 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A50B9C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF73C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233019AbiHVGZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
+        id S232991AbiHVGZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233016AbiHVGY6 (ORCPT
+        with ESMTP id S233125AbiHVGZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:24:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7453312771;
-        Sun, 21 Aug 2022 23:24:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A97CB80E2C;
-        Mon, 22 Aug 2022 06:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C60FC433D6;
-        Mon, 22 Aug 2022 06:24:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661149487;
-        bh=FjGBRomwEACT3kJZ1nqAWJj3vryOLMkbXOehoUiRIus=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V6KrLcKk0kHlmoTuYPxvLdUYBNtcoAhfAj8CpaWwIKHnKbImsUJ0biProtL+pJ972
-         OPzn7LkZjU2WNJJKBKo0yo3xib0/G5ZKxr+QLsJEBLqePM9Av9eY3w3aXK6JHhv6cU
-         D8xpM9DzFGfF17z8WdQoQFOLUjunWSt3HIvfOHjc=
-Date:   Mon, 22 Aug 2022 08:24:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     SeongJae Park <sj@kernel.org>
-Cc:     akpm@linux-foundation.org, badari.pulavarty@intel.com,
-        damon@lists.linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3] mm/damon/dbgfs: avoid duplicate context directory
- creation
-Message-ID: <YwMhLHNfc7Fcdrd5@kroah.com>
-References: <20220821180853.2400-1-sj@kernel.org>
+        Mon, 22 Aug 2022 02:25:43 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A8710FDD
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:25:41 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 7509967373; Mon, 22 Aug 2022 08:25:37 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 08:25:37 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jinpu Wang <jinpu.wang@ionos.com>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        linux-nvme@lists.infradead.org
+Subject: Re: [PATCH v1 14/19] nvme-rdma: Fix error check for ib_dma_map_sg
+Message-ID: <20220822062537.GA21455@lst.de>
+References: <20220819060801.10443-1-jinpu.wang@ionos.com> <20220819060801.10443-15-jinpu.wang@ionos.com> <20220821055745.GA26064@lst.de> <CAMGffEkhQd6oGgg+m9AUkquYnkufyrt1ptEkg5LG_HE_7s-Vsw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220821180853.2400-1-sj@kernel.org>
+In-Reply-To: <CAMGffEkhQd6oGgg+m9AUkquYnkufyrt1ptEkg5LG_HE_7s-Vsw@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 06:08:53PM +0000, SeongJae Park wrote:
-> From: Badari Pulavarty <badari.pulavarty@intel.com>
+On Mon, Aug 22, 2022 at 07:12:23AM +0200, Jinpu Wang wrote:
+> On Sun, Aug 21, 2022 at 7:57 AM Christoph Hellwig <hch@lst.de> wrote:
+> >
+> > Please don't send me just two random patches out of a series, as I
+> > have no way to review them.  If the patches are independent, send them
+> > independently and if they depend on common prep work send the entire
+> > series to everyone.
+> Hi Christoph,
 > 
-> From: Badari Pulavarty <badari.pulavarty@intel.com>
+> As mentioned in the cover letter, the bugfixes are all independent,
+> for each of the drivers.
 
-Twice?
-
-> 
-> When user tries to create a DAMON context via the DAMON debugfs
-> interface with a name of an already existing context, the context
-> directory creation fails but a new context is created and added in the
-> internal data structure, due to absence of the directory creation
-> success check.  As a result, memory could leak and DAMON cannot be
-> turned on.  An example test case is as below:
-> 
->     # cd /sys/kernel/debug/damon/
->     # echo "off" >  monitor_on
->     # echo paddr > target_ids
->     # echo "abc" > mk_context
->     # echo "abc" > mk_context
->     # echo $$ > abc/target_ids
->     # echo "on" > monitor_on  <<< fails
-> 
-> Return value of 'debugfs_create_dir()' is expected to be ignored in
-> general, but this is an exceptional case as DAMON feature is depending
-> on the debugfs functionality and it has the potential duplicate name
-> issue.  This commit therefore fixes the issue by checking the directory
-> creation failure and immediately return the error in the case.
-> 
-> Fixes: 75c1c2b53c78 ("mm/damon/dbgfs: support multiple contexts")
-> Cc: <stable@vger.kernel.org> # 5.15.x
-> Signed-off-by: Badari Pulavarty <badari.pulavarty@intel.com>
-> Signed-off-by: SeongJae Park <sj@kernel.org>
-> ---
-> Changes from v2
-> (https://lore.kernel.org/damon/20220819171930.16166-1-sj@kernel.org/)
-> - Simply check the debugfs_create_dir() return value (Andrew Morton)
-> - Put a comment for justifying check of the return value (Greg KH)
-> 
-> Changes from v1
-> (https://lore.kernel.org/damon/DM6PR11MB3978994F75A4104D714437379C679@DM6PR11MB3978.namprd11.prod.outlook.com/)
-> - Manually check duplicate entry instead of checking
->   'debugfs_create_dir()' return value
-> - Reword commit message and the test case
-> 
-> Seems Badari have some email client issue, so I (SJ) am making this
-> third version of the patch based on Badari's final proposal and
-> reposting on behalf of Badari.
-> 
->  mm/damon/dbgfs.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
-> index 51d67c8050dd..3b55a1b219b5 100644
-> --- a/mm/damon/dbgfs.c
-> +++ b/mm/damon/dbgfs.c
-> @@ -818,6 +818,9 @@ static int dbgfs_mk_context(char *name)
->  		return -ENOENT;
->  
->  	new_dir = debugfs_create_dir(name, root);
-> +	/* Below check is required for a potential duplicated name case */
-> +	if (IS_ERR(new_dir))
-> +		return PTR_ERR(new_dir);
-
-Did you just leak the memory allocated above this check?  It's hard to
-determine as you are setting global variables.
-
-thanks,
-
-greg k-h
+I still haven't seen the cover letter as it was never sent to me.
+But if patches are independent please send a series per subsystem
+as that makes that very clear.
