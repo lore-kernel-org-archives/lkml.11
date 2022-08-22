@@ -2,96 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5643AC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10110C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233251AbiHVG5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S233309AbiHVHAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233169AbiHVG5J (ORCPT
+        with ESMTP id S230379AbiHVHAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:57:09 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9627427FFA;
-        Sun, 21 Aug 2022 23:57:08 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27M6ucFe114754;
-        Mon, 22 Aug 2022 01:56:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1661151398;
-        bh=I7jdU1zmmDs7myrWAvkwS8cEQtFHjbMlJ153YZHskLQ=;
-        h=From:To:CC:Subject:Date;
-        b=WrIliB40qK/oYcq3qw7E4QHBURMgehpQlDVDOKaj56+ttKOqqJMHvsboHiEGizU63
-         wXSIb54hxfCgPhWXQaZ8t/Czbefv7+Xqs1fEqkE9VKjh8xaKR8xPy+UqTnZz8TScOP
-         R60NUwqq7HK3mEjCbvur6vlx5QWn4cnoS1CFJV+U=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27M6uc0r030460
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 22 Aug 2022 01:56:38 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Mon, 22
- Aug 2022 01:56:37 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Mon, 22 Aug 2022 01:56:37 -0500
-Received: from uda0492258.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27M6uX36084154;
-        Mon, 22 Aug 2022 01:56:34 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <robh+dt@kernel.org>, <lee.jones@linaro.org>,
-        <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <kishon@ti.com>,
-        <vkoul@kernel.org>, <dan.carpenter@oracle.com>,
-        <grygorii.strashko@ti.com>, <rogerq@kernel.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <s-vadapalli@ti.com>
-Subject: [PATCH v3 0/2] Add support for QSGMII mode
-Date:   Mon, 22 Aug 2022 12:26:29 +0530
-Message-ID: <20220822065631.27933-1-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 22 Aug 2022 03:00:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C431EAE8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E9865CE0FC8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 458F9C433C1;
+        Mon, 22 Aug 2022 07:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661151615;
+        bh=GM0/nH6Y1mx/boMsnRZHYdSE5Zc2T1SoWyaoIz9p1u0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bZ5+mn/0bi9T7jbd8VqxAvhFAnXJrEY76K2/jc3GthZmV5Ij67TWH28SsIPVgD/3X
+         Pun6xo0XfQJSdDu3GcFmK1IciaO65g2SpCLN5uUgCOLFFcZ2Ew4agZEPffXlMW+Qay
+         ARcrodUSY/C/w9nfAp+Rb2Y3D1r2/pbNbylS4rT23+83mUYrbyPyVi3R2M5XAuVWdW
+         zkZQuZ0EoAS6QDeXjDQ4bGKq7i2YghWNzWMTLnKd3iIpXpYNB/7TG1ipc047eNahP4
+         c+lzQ/fz3mcodsZK6vB1LMzZi075VSwjLdkcKS8eTtmh8eX4a1UVjIbJsTXG9AkW0f
+         1J8xklf6LgKDA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 29A6FC4166F;
+        Mon, 22 Aug 2022 07:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Subject: Re: [PATCH] platform/chrome: fix double-free in chromeos_laptop_prepare()
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <166115161516.13978.12007993909417445952.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Aug 2022 07:00:15 +0000
+References: <20220813220843.2373004-1-subkhankulov@ispras.ru>
+In-Reply-To: <20220813220843.2373004-1-subkhankulov@ispras.ru>
+To:     Rustam Subkhankulov <subkhankulov@ispras.ru>
+Cc:     bleung@chromium.org, dmitry.torokhov@gmail.com,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        khoroshilov@ispras.ru, ldv-project@linuxtesting.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible for J7200 CPSW5G.
+Hello:
 
-Add support for QSGMII mode in phy-gmii-sel driver for CPSW5G in J7200.
+This patch was applied to chrome-platform/linux.git (for-kernelci)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-Change log:
+On Sun, 14 Aug 2022 01:08:43 +0300 you wrote:
+> If chromeos_laptop_prepare_i2c_peripherals() fails after allocating memory
+> for 'cros_laptop->i2c_peripherals', this memory is freed at 'err_out' label
+> and nonzero value is returned. Then chromeos_laptop_destroy() is called,
+> resulting in double-free error.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> 
+> [...]
 
-v2 -> v3:
-1. Add $ref to "phy@[0-9a-f]+$" pattern property in
-   Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml.
-2. Restrict the optional ti,qsgmii-main-ports property to
-   ti,j7200-cpsw5g-phy-gmii-sel property by adding an else statement and
-   disallowing it for other compatibles.
-3. Move the "items" constraint for the ti,qsgmii-main-ports property to
-   the place the property is defined.
+Here is the summary with links:
+  - platform/chrome: fix double-free in chromeos_laptop_prepare()
+    https://git.kernel.org/chrome-platform/c/6ad4194d6a1e
 
-v1->v2:
-1. Rename ti,enet-ctrl-qsgmii as ti,qsgmii-main-ports.
-2. Change ti,qsgmii-main-ports property from bitmask to integer.
-3.Update commit message with property name as ti,qsgmii-main-ports.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-v2: https://lore.kernel.org/r/20220816055848.111482-1-s-vadapalli@ti.com/
-v1: https://lore.kernel.org/r/20220531111221.22963-1-s-vadapalli@ti.com/
-
-Siddharth Vadapalli (2):
-  dt-bindings: phy: ti: phy-gmii-sel: Add bindings for J7200
-  phy: ti: gmii-sel: Add support for CPSW5G GMII SEL in J7200
-
- .../mfd/ti,j721e-system-controller.yaml       |  6 +++
- .../bindings/phy/ti,phy-gmii-sel.yaml         | 30 +++++++++++++-
- drivers/phy/ti/phy-gmii-sel.c                 | 40 +++++++++++++++++--
- 3 files changed, 72 insertions(+), 4 deletions(-)
-
---
-2.25.1
 
