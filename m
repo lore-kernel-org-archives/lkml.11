@@ -2,142 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C16C0C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0EEC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233424AbiHVHo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
+        id S231463AbiHVHrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233495AbiHVHok (ORCPT
+        with ESMTP id S229586AbiHVHrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:44:40 -0400
-Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A24ADEA6;
-        Mon, 22 Aug 2022 00:44:29 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MB48b1lGyz6TBgr;
-        Mon, 22 Aug 2022 15:42:55 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP2 (Coremail) with SMTP id Syh0CgCXzrraMwNjLnbBAg--.13909S3;
-        Mon, 22 Aug 2022 15:44:27 +0800 (CST)
-Subject: Re: [PATCH v7 1/9] blk-throttle: fix that io throttle can only work
- for single bio
-To:     Tejun Heo <tj@kernel.org>, Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        "yukuai (C)" <yukuai3@huawei.com>
-References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
- <20220802140415.2960284-2-yukuai1@huaweicloud.com>
- <Yvvx+/d2+OMROUOe@slm.duckdns.org>
- <712e0f29-94ba-d3d3-ce21-cba4d6092008@huaweicloud.com>
- <Yv0qbDR+cxKeZ3nD@slm.duckdns.org>
- <83c8b253-2ebb-5af6-8ce1-6dc3b84cf182@huaweicloud.com>
- <b1791e41-4945-a0d8-8067-3841ce10fddd@huaweicloud.com>
- <YwMvgN0YxNvkC1gm@slm.duckdns.org>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <8792d3f5-c07f-e080-ae29-b13d0f583f82@huaweicloud.com>
-Date:   Mon, 22 Aug 2022 15:44:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <YwMvgN0YxNvkC1gm@slm.duckdns.org>
-Content-Type: text/plain; charset=gbk; format=flowed
+        Mon, 22 Aug 2022 03:47:10 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastusazon11010000.outbound.protection.outlook.com [52.101.51.0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E6A6547;
+        Mon, 22 Aug 2022 00:47:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lrtgepj5nf8hwp6DSpXYCiF6rL8lJkWeVKTfjnLiJzxPzQ7sH1ZoR7Qx69QdQAkcR2Mx4TfWui3ug98YkjforDkZvYNMGZa7eyccYnH2xlTfp6Pxy03zgVq4csXRiyf0hvuLqU2hlSinzTTAn6uFfU1IyG6Gg2B1UBmKcoluJRztoVwvgEq6f8uN7lkXDCZlyKNzaZ90Nnlj77XE4j8oFMj15m+iEv3TNS/mBdTnUmbW3Ju67VfkH6pK8Olx0PadT7miJbmwWolFF+1qQX1VgiwWFaaqUzIzuS0PAx3nRol91kkYYKo/ROQ/XlgJw4rPYNV8wj06YbPsELhBRDr5XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=x7zyXXBqRo/ErW+hcdXqjdJ9CklJzgiRH2UNItkTzyw=;
+ b=cKrCbmPdvwZWejf6IA/mV//ILPREwD8RZAkeKQb6Qc1ftU2nwidOJCs1VYeEy2x1koARRyeaf7xYfyLqVfh7FXL0hm1gGwW64ufTjrwDPI0OAUmMSwJV5Men/OarE5mxAblBcS8NdCE/ueCo7b161V8n1pA0hZLuSIibv9dBYe2Z87Tb4/piJN7O3E3m+0yrxFZXkX0SddL4GjE0CFd0kyAqyxfpdxDw0u/JTzR/ZQY2xZd3k7vYJC3HoaQ3I2sKaCGex9Kk1S0+j03wixOtG6e8ZphQC0seCb3oDe3HXzdFTnDPCxD/OppLeyxlJSD52NLTR19A8oY+vglMpjj8Zw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x7zyXXBqRo/ErW+hcdXqjdJ9CklJzgiRH2UNItkTzyw=;
+ b=TW2Or7gztUHr54cwXNiTR0yQKZHxgXQ5SAlTPXD4++IcKPq2FoxrS6O8UWGW/rYTml+aLhZAw+yW9qFWd7bLSJJ9jmwBQqxuOaSU6sgpnQGADkuk28XB+ozXrukIWiyLd/lwy4QOBpLoPwzgAwd/s71nfMZe2pKHHHHCuHp+w0s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vmware.com;
+Received: from SA1PR05MB8311.namprd05.prod.outlook.com (2603:10b6:806:1e2::19)
+ by DM4PR05MB9253.namprd05.prod.outlook.com (2603:10b6:8:8c::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.8; Mon, 22 Aug
+ 2022 07:47:07 +0000
+Received: from SA1PR05MB8311.namprd05.prod.outlook.com
+ ([fe80::c0a2:3165:1ca9:254d]) by SA1PR05MB8311.namprd05.prod.outlook.com
+ ([fe80::c0a2:3165:1ca9:254d%7]) with mapi id 15.20.5566.014; Mon, 22 Aug 2022
+ 07:47:07 +0000
+From:   Ankit Jain <ankitja@vmware.com>
+To:     juri.lelli@redhat.com, bristot@redhat.com, l.stach@pengutronix.de,
+        suhui_kernel@163.com, msimmons@redhat.com, peterz@infradead.org,
+        glenn@aurora.tech, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     srivatsab@vmware.com, srivatsa@csail.mit.edu, akaher@vmware.com,
+        amakhalov@vmware.com, vsirnapalli@vmware.com,
+        sturlapati@vmware.com, bordoloih@vmware.com, keerthanak@vmware.com,
+        Ankit Jain <ankitja@vmware.com>
+Subject: [PATCH v4.19.y 0/4] sched/deadline: Fix panic due to nested priority inheritance
+Date:   Mon, 22 Aug 2022 13:13:44 +0530
+Message-Id: <20220822074348.218135-1-ankitja@vmware.com>
+X-Mailer: git-send-email 2.34.1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgCXzrraMwNjLnbBAg--.13909S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr45KF4UKrWfCr45Ww13CFg_yoW8KFWkpF
-        4I9wnYkrsrtrs29a9IqFsF9FyfJ3ykGFW5CFy5J3yfAFsrKryqyryxX34FvFnI9rZ8Ga9F
-        vr48K3s3Gw45ZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9F14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka
-        0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
-        kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
-        67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
-        CI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E
-        3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
-        sGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+X-ClientProxiedBy: SJ0PR13CA0027.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::32) To SA1PR05MB8311.namprd05.prod.outlook.com
+ (2603:10b6:806:1e2::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6d827589-8366-4920-2c3a-08da8412836f
+X-MS-TrafficTypeDiagnostic: DM4PR05MB9253:EE_
+X-LD-Processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rJXIO/v3oWrNvXd3kndAwiwL99k6Ak+tM1Il4NkI9rTErhHuu5LpMRbXgS3MjoTVEN/1pQFMqqfexmdolvIxwjSTbBJi9fVdUGQZk1C7i1aP6BU0VQc1t/95yjNx9JoeZhP07wPHrrDdLhotMaMqxU+7Ehyf1il6QcK5ydx/bVtW4/wFAvFe1HnV5+Q3+OnmtBiFsShhvTxm8ggtjC83vqEn1mVFJr4ZtLSF2bk1d9eK6W4ZaGVeB/c+BmUVLvRW3cBKCJMLsXox5M/SwB950+AupFOIuiKK1MSbT2yHh1lQmeAkqqTRK7xLrWfyjX4Pz4S9DhC6XKDHIaeacIcIkIiAFHFYSOl3+wmsbjFj2bhlxY5N/tPtqUSIAQ8hD+LGTRNO433nOOErQFOwZbIdYhy0jGGwX1QwHyjRvPCnxFtG/6B54fqxGCzM7VIIORtg6Zd7AJiyVYm2N+OUNPZHHlKgwMfELl/VfG4Zt3lMnPrH44zUIvt24I7w4hjqmECxydMIl+nw6px6SxY4q1qSjis6LMjeVFdMhZQo12v3HhsON9Um0n9ZD7ypyjuqwxERZCp0UUDECCAQwWK/mr+c/M9FD/eZca4v9iqQqLghjCPNgLwXT9adDANwufsxRpxu8a5H/rUZP9gakgen/WwccJlOSQuCKsNOrdNs1hXwuj/hqIraGU73ZxUmrS+5nSTnCi+KG5JR6LoXdSLM09PmlfpCRVADH0CXo8EXXbWvWH4L0zDI/Y0rHw17hSvhy/P+bwzUs08Q/QnGEjmX1SyCt+HCedfcF9q6msgwvloWnvym19EK/ijM5sVWAbjoxceolxYLxziLuqSgioE0udreAg63W968RWy4BPA/ouCYGq0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR05MB8311.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(39860400002)(346002)(396003)(376002)(86362001)(6666004)(83380400001)(36756003)(38350700002)(38100700002)(2616005)(52116002)(6506007)(26005)(921005)(186003)(1076003)(6512007)(478600001)(6486002)(107886003)(2906002)(4326008)(41300700001)(66946007)(5660300002)(4744005)(7416002)(66556008)(8676002)(8936002)(66476007)(316002)(218113003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SDZPUDNZU1BUNWczQlFZSHFKVWU2V3Y0cmNxVzhoNFlPdFhIN2tYbjBwSTBj?=
+ =?utf-8?B?KzZQaW5qOUJNQUF6MlpLZGt4Q1kzZDA1NkNxZTU4eCtaZmR4NVFhYTR2amVI?=
+ =?utf-8?B?a25haEZCOFREMktXMFE0SEJJWXRCdGpIRjZycnVhWWU5YXA4R3J6blhLL21m?=
+ =?utf-8?B?NjdPQzJVOStSUzZiNXNQZjZwTGlTVEV3b0x3UlJBQVkyUjM0Uy94MEhQeHZv?=
+ =?utf-8?B?d3NXT3cvUkdVUUVZNnJYVHc4UFp0S2tocTY3Q2lzc3kzNS9USjlUTjdqMGFO?=
+ =?utf-8?B?bVZ5WDJGNWpsYmNnNkFNVkVJMDBjMDVOUk9OSGlZYzlUR3lGR2lyZVkxUzRQ?=
+ =?utf-8?B?UHpSMiswV0RCR2FjUy9XK0xJSGxUcWVUSnVKbzNOcFp2c3dzZlFzbi9md2JW?=
+ =?utf-8?B?NWxEOFp4MjVLTEYyaHRjTlJRRDZIa1NyNDBGakd3TjU5dGZmaCtvck1oRXRn?=
+ =?utf-8?B?ZEFiQjNJNjEycXJibGlOSkFMYkw4ZTlyUlpEUFFNQktYNWlIYVZwTkN4N0ZF?=
+ =?utf-8?B?QWZ1Rk1JaStQdW4wcmNJeUxrVHhRQmh5ZEpzRVRwQ0l2YWNocWNRYU1rTzgy?=
+ =?utf-8?B?S0l3dDQxZkZWRXFvQTEwdGM0aW1tUyt6SUxHNHRPK2pIY1pYaWZBY0xxcFBU?=
+ =?utf-8?B?cG9OZjlrNFk0WmM4eWdIMUVJbDdJVFhiclA5YU03R0U3dU9YM1FIckxRckVC?=
+ =?utf-8?B?QkdUNUVGWmoxOFk2aHE4TGMrWWFURzd5TXN3QTE2OGRrTWg5S0U1Nk9kaTZq?=
+ =?utf-8?B?aXNLR1RybDRyUy9tNXVKR3lpaHYyZk10T2ZqVWc1VzR2MmVtOFNqS2F2TkZK?=
+ =?utf-8?B?MEZOc0Z6RVZOZXdSMEVrQVI5eElJN0dSZXNqbDA1OEp2NjRUTUtvdlVQMG9o?=
+ =?utf-8?B?Q0FTNFlPQTJYQm9hUEFWU2tjS0NaZmNVYnZLMkFJZU9ZaVB1Vk12YkJaODZ2?=
+ =?utf-8?B?MzlCcm1qMDgybHBUYld1RTF2emxSTndkaUp4Tnp4VGhZUEpXaGxlcFZ1QzVv?=
+ =?utf-8?B?bEo2Nm5PcUdrWEJJSGVxWE82a3ZnKzYraVJzNGdkcDMwUHMrMElmcGVLdWty?=
+ =?utf-8?B?U1dBVDRYZTFHMFpJNjBrZ3ZXcTVXTm1weWw0OW4zUkN4RDg0cDN0QlBlNU1l?=
+ =?utf-8?B?d3kzb0kwTTZobzREelQ0NXVndTlQclpTZGFRTzQwcmFxRVc5OXNRZHA4aXRI?=
+ =?utf-8?B?RDZSdWUzQXNYdFNnSmpDNitzM0hkVno4djhmTUdha2ZRblY0S1FWb1dLTk92?=
+ =?utf-8?B?cXZ4NXdVS1QvZWxMUk45V3hMRUIvTlFpckFyem8vc0N2QTJTQnpzamdhT3Jz?=
+ =?utf-8?B?Uk8wVFlUSU9iZTZLZEpSeEsyZlRyM0RjL29Mb0NoRktsRXd1Z0NFYlhXQjI5?=
+ =?utf-8?B?enB5UXdqR0JQUHp2ZUFtWEx0YzM5eDFNRVlOSVdYK2hCS1NpWnFza2NqQlJM?=
+ =?utf-8?B?T2FoOE9YTkh1aDlGSUJyYnZCazRneUZNR3d5SW1WdjJqZ21nd1dySEwxc0Zo?=
+ =?utf-8?B?VmVvb0dyQm1NalU1RDUvZXJtbGZmWWVjZWY5UFFsUTNxaW40Sktma2VQUCsz?=
+ =?utf-8?B?blVlZEVGRmRPcEdaeVN1UTN3OGNwRE8xY29NZUdmdzhVMXdMcUFwazJvMEoy?=
+ =?utf-8?B?aUNyellFOTU1T2dFQm5IZzYvR2ZVeG9QSSttN0p0VVQyQ3NhamJnb2RSUGpQ?=
+ =?utf-8?B?ZkZuYUdKck9xSDdlZjlESjNJcWd5bXRxYkh5L0o5NUhqTTBBcC8wdTZMTGhH?=
+ =?utf-8?B?M0pPQy9leElpaGJpWWIvSlljME5ndzRRdzRmTnZCdkQ5VmY3UXFMWWxyb0FN?=
+ =?utf-8?B?S3UwM0NacHZNZ1MycS9UTlR1ak9Fblc2bHgwK1pXNTUxYWFwMkJRd083MDhY?=
+ =?utf-8?B?UUhyU1BOWjZ6SmZvV1JoYmdocEV3NlVmWnpobHIvRWpZSkRwUVJwMlhRSkFm?=
+ =?utf-8?B?R0VnUk1zY0NENGp5a1ZWcmJEZmIrcCs5UnJRaWhveVFrcGVpaGpraFI3am1E?=
+ =?utf-8?B?Y050Sy81RG0xdW5hNzhGQXhYWksrdTcrSkd6UFdWS01tT2IxdThycFk3bnVy?=
+ =?utf-8?B?MHBwSUhkTUY5ZnhZanRaNGNTb2xBYzhoTHFCWFUwdEZpbDJCVEFRb0R3dytL?=
+ =?utf-8?Q?IDO4IwIuqh345aMvIWPzAfgkR?=
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d827589-8366-4920-2c3a-08da8412836f
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR05MB8311.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 07:47:07.7755
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: txdqbrJukj/ydJPWrwmR+BGSLDN3XB85q/uGC7xOIfpZ119wd7vUx5TTVvP4gP8eoXxvCaoZoUT+HrLD0mFzhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR05MB9253
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Tejun
+When a CFS task that was boosted by a SCHED_DEADLINE
+task boosts another CFS task (nested priority inheritance),
+Kernel panic is observed.
+Fixing priority inheritance changes the way how sched_deadline
+attributes are being inherited from original donor task.
 
-ÔÚ 2022/08/22 15:25, Tejun Heo Ð´µÀ:
-> Hello,
-> 
-> On Mon, Aug 22, 2022 at 11:06:44AM +0800, Yu Kuai wrote:
->> While implementing the new method, I found that there seems to be a
->> misunderstanding here, the code seems to try to add flag to split bio
->> so that it won't be throttled again for bps limit, however:
->>
->> 1) for blk throttle, split bio is issued directly and will never be
->> throttled again, while orignal bio will go through throttle path again.
->> 2) if cloned bio is directed to a new disk, the flag is cleared anyway.
-> 
-> Doesn't that make the current code correct then? But you were seeing
-> incorrect behaviors, right?
+Additional supporting patches are added to fix throttling of
+boosted tasks.
 
-According to the commit message in commit 111be8839817 ("block-throttle:
-avoid double charge"):
+Daniel Bristot de Oliveira (1):
+  sched/deadline: Unthrottle PI boosted threads while enqueuing
 
-If the bio is cloned/split, we copy the flag to new bio too to avoid a
-double charge.
+Lucas Stach (1):
+  sched/deadline: Fix stale throttling on de-/boosted tasks
 
-Which make me think the split bio will be resubmitted, and after
-implementing the new solution, I found that test result is not as
-expected. After spending sometime figuring out what is wrong, I found
-that split bio will be dispatched directly from caller, while orignal
-bio will be resubmitted.
+Juri Lelli (1):
+  sched/deadline: Fix priority inheritance with multiple scheduling
+    classes
 
-I guess commit 111be8839817 made a mistake, however, there should be
-no problem because orignal bio is flagged already, and it's handled
-correctly.
+Hui Su (1):
+  kernel/sched: Remove dl_boosted flag comment
 
-Anyway, I removed the code in __bio_clone() and check flag in
-__bio_split_to_limits in my patch:
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -760,8 +760,6 @@ EXPORT_SYMBOL(bio_put);
-  static int __bio_clone(struct bio *bio, struct bio *bio_src, gfp_t gfp)
-  {
-         bio_set_flag(bio, BIO_CLONED);
--       if (bio_flagged(bio_src, BIO_THROTTLED))
--               bio_set_flag(bio, BIO_THROTTLED);
-         bio->bi_ioprio = bio_src->bi_ioprio;
-         bio->bi_iter = bio_src->bi_iter;
+ include/linux/sched.h   |  13 ++--
+ kernel/sched/core.c     |  11 ++--
+ kernel/sched/deadline.c | 131 +++++++++++++++++++++++++---------------
+ 3 files changed, 96 insertions(+), 59 deletions(-)
 
-diff --git a/block/blk-merge.c b/block/blk-merge.c
-index ff04e9290715..10330bb038ca 100644
---- a/block/blk-merge.c
-+++ b/block/blk-merge.c
-@@ -358,6 +358,13 @@ struct bio *__bio_split_to_limits(struct bio *bio, 
-struct queue_limits *lim,
-                 blkcg_bio_issue_init(split);
-                 bio_chain(split, bio);
-                 trace_block_split(split, bio->bi_iter.bi_sector);
-+
-+               /*
-+                * original bio will be resubmited and throttled again, 
-clear
-+                * the iops flag so that it can be count again for iops 
-limit.
-+                */
-+               if (bio_flagged(bio, BIO_IOPS_THROTTLED))
-+                       bio_clear_flag(bio, BIO_IOPS_THROTTLED);
-                 submit_bio_noacct(bio);
-                 return split;
-         }
-
-
-> 
-> Thanks.
-> 
+-- 
+2.34.1
 
