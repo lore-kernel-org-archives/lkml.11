@@ -2,131 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2089C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 01:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA8FC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 01:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbiHVB6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 21:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        id S232139AbiHVB6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 21:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231851AbiHVB6a (ORCPT
+        with ESMTP id S232101AbiHVB6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 21:58:30 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04872B1E2
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 18:58:28 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id w138so6380199pfc.10
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 18:58:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=gXQ/2bk8gTLltrdpFsbWRVS9rtRGCVCeC4bAjRMRMXw=;
-        b=rpkht8giye/g3N5RJ0ZMXkOfO6sSljPgWEITR4esrqQ/bsrZRVQm6/vJbSR6nP8pPb
-         TUBjWzMh0Hl4NgmyPkxJy9rUPeKn9M3dhp0bnSRTn8gFTNPCsAQSG42sb6Ef8cLAHuWV
-         +DS8blIN3YOu0X7R5nl/slfsCFMG1Cxl5381P2Yh671THLYeC3RqrjiJmSCd7+72xqS7
-         XRz0FTYQC3FO8JPiFp/iEXW9ywC9S0K5QvOxu947tYY6B/2EJBWVdR3uMcVve1m8N1x0
-         Uy3r+e/26OgvSWIzJXgj8KBf0zcjnNldO6XWvac9RbNj//KSM8C5sGQb9Q7cVSo7xZ22
-         v+iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=gXQ/2bk8gTLltrdpFsbWRVS9rtRGCVCeC4bAjRMRMXw=;
-        b=gIlAinu4TI4WwMBCZTbCDs3U4dUrET6u0IMw0CICW6/phTTEOVUCbBuKG/PXFZVsaZ
-         KYvOV2j3pyZF5wshzQORCRNmbkJ6bRfUfQJ+9Fk24ZA8RZ4+vHXjZV4EW1Ztu17OvgO0
-         oxva0hFuCXCbLnJhLIVl/49lD3IOSaS/Yv8Ivrtt8QHukJFkH2WMoM+SpsaXbdQ91JSe
-         lzYnU4FeWfoYO7zoTo7pb/EA4xSf6Kssqi1HqBO9q2xLg/UI7yEvb6iE8XcYDkpeFYo3
-         DLUD9Ia0cmmUnS7OkkzuUonMKhF7AcHUbk1ITc77uPCbrdJnIdvym8FpWmO7lcqLfyFG
-         tH/g==
-X-Gm-Message-State: ACgBeo1adFjM57romO4qYcYplHNanqceGPAAUCHS7nfoCCet1TGFlX40
-        kkkXSyV42ZTkKpyYDo2Tmjq7PA==
-X-Google-Smtp-Source: AA6agR67BLrywojIIVs6gRpGTSLcWlBb3qXHhzeaxp0X9kLKCl6odwrUh6m2T+s/dIIFkheTv5q38w==
-X-Received: by 2002:aa7:88d1:0:b0:536:1b68:d3b6 with SMTP id k17-20020aa788d1000000b005361b68d3b6mr12626213pff.81.1661133507499;
-        Sun, 21 Aug 2022 18:58:27 -0700 (PDT)
-Received: from [10.255.88.113] ([139.177.225.247])
-        by smtp.gmail.com with ESMTPSA id c3-20020a170902d48300b0016a058b7547sm189557plg.294.2022.08.21.18.58.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Aug 2022 18:58:27 -0700 (PDT)
-Message-ID: <78d464bd-94db-a1bc-d864-d85f2751dca3@bytedance.com>
-Date:   Mon, 22 Aug 2022 09:58:22 +0800
+        Sun, 21 Aug 2022 21:58:33 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B935B484
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 18:58:29 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M9wRS4VxnzlVpZ;
+        Mon, 22 Aug 2022 09:55:16 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 22 Aug 2022 09:58:27 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
+ 2022 09:58:26 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Michal Hocko" <mhocko@suse.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Kemi Wang <kemi.wang@intel.com>,
+        "Kefeng Wang" <wangkefeng.wang@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH -next] mm, proc: collect percpu free pages into the free pages
+Date:   Mon, 22 Aug 2022 10:33:11 +0800
+Message-ID: <20220822023311.909316-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [PATCHSET for-6.1] kernfs, cgroup: implement kernfs_deactivate()
- and cgroup_file_show()
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com
-References: <20220820000550.367085-1-tj@kernel.org>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220820000550.367085-1-tj@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/20 08:05, Tejun Heo wrote:
-> Hello,
-> 
-> Currently, deactivated kernfs nodes are used for two purposes - during
-> removal to kill and drain nodes and during creation to make multiple
-> kernfs_nodes creations to succeed or fail as a group.
-> 
-> This patchset make kernfs [de]activation generic so that it can be used
-> anytime to deactivate (hide and drain) and activate (show) kernfs nodes,
-> and, on top, implement cgroup_file_show() which allows toggling cgroup file
-> visiblity.
-> 
-> This is for the following pending patchset to allow disabling PSI on
-> per-cgroup basis:
-> 
->  https://lore.kernel.org/all/20220808110341.15799-1-zhouchengming@bytedance.com/t/#u
-> 
-> which requires hiding the corresponding cgroup interface files while
-> disabled.
+The page on pcplist could be used, but not counted into memory free or
+avaliable, and pcp_free is only showed by show_mem() for now. Since commit
+d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+significant decrease in the display of free memory, with a large number
+of cpus and zones, the number of pages in the percpu list can be very
+large, so it is better to let user to know the pcp count.
 
-Hello,
+On a machine with 3 zones and 72 CPUs. Before commit d8a759b57035, the
+maximum amount of pages in the pcp lists was theoretically 162MB(3*72*768KB).
+After the patch, the lists can hold 324MB. It has been observed to be 114MB
+in the idle state after system startup in practice(increased 80 MB).
 
-It's so nice of you for implementing this! I will rebase on your work to
-do per-cgroup PSI disable/re-enable and test it today.
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ mm/page_alloc.c | 47 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 33 insertions(+), 14 deletions(-)
 
-Thanks!
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 033f1e26d15b..f8b46ac2c2a0 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5853,6 +5853,26 @@ static unsigned long nr_free_zone_pages(int offset)
+ 	return sum;
+ }
+ 
++static unsigned long nr_free_zone_pcplist_pages(struct zone *zone)
++{
++	unsigned long sum = 0;
++	int cpu;
++
++	for_each_online_cpu(cpu)
++		sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
++	return sum;
++}
++
++static unsigned long nr_free_pcplist_pages(void)
++{
++	unsigned long sum = 0;
++	struct zone *zone;
++
++	for_each_zone(zone)
++		sum += nr_free_zone_pcplist_pages(zone);
++	return sum;
++}
++
+ /**
+  * nr_free_buffer_pages - count number of pages beyond high watermark
+  *
+@@ -5894,7 +5914,8 @@ long si_mem_available(void)
+ 	 * Estimate the amount of memory available for userspace allocations,
+ 	 * without causing swapping or OOM.
+ 	 */
+-	available = global_zone_page_state(NR_FREE_PAGES) - totalreserve_pages;
++	available = global_zone_page_state(NR_FREE_PAGES) +
++		    nr_free_pcplist_pages() - totalreserve_pages;
+ 
+ 	/*
+ 	 * Not all the page cache can be freed, otherwise the system will
+@@ -5924,7 +5945,8 @@ void si_meminfo(struct sysinfo *val)
+ {
+ 	val->totalram = totalram_pages();
+ 	val->sharedram = global_node_page_state(NR_SHMEM);
+-	val->freeram = global_zone_page_state(NR_FREE_PAGES);
++	val->freeram = global_zone_page_state(NR_FREE_PAGES) +
++		       nr_free_pcplist_pages();
+ 	val->bufferram = nr_blockdev_pages();
+ 	val->totalhigh = totalhigh_pages();
+ 	val->freehigh = nr_free_highpages();
+@@ -5938,30 +5960,28 @@ void si_meminfo_node(struct sysinfo *val, int nid)
+ {
+ 	int zone_type;		/* needs to be signed */
+ 	unsigned long managed_pages = 0;
++	unsigned long free_pages = sum_zone_node_page_state(nid, NR_FREE_PAGES);
+ 	unsigned long managed_highpages = 0;
+ 	unsigned long free_highpages = 0;
+ 	pg_data_t *pgdat = NODE_DATA(nid);
+ 
+-	for (zone_type = 0; zone_type < MAX_NR_ZONES; zone_type++)
+-		managed_pages += zone_managed_pages(&pgdat->node_zones[zone_type]);
+-	val->totalram = managed_pages;
+-	val->sharedram = node_page_state(pgdat, NR_SHMEM);
+-	val->freeram = sum_zone_node_page_state(nid, NR_FREE_PAGES);
+-#ifdef CONFIG_HIGHMEM
+ 	for (zone_type = 0; zone_type < MAX_NR_ZONES; zone_type++) {
+ 		struct zone *zone = &pgdat->node_zones[zone_type];
+ 
++		managed_pages += zone_managed_pages(zone);
++		free_pages += nr_free_zone_pcplist_pages(zone);
++#ifdef CONFIG_HIGHMEM
+ 		if (is_highmem(zone)) {
+ 			managed_highpages += zone_managed_pages(zone);
+ 			free_highpages += zone_page_state(zone, NR_FREE_PAGES);
+ 		}
++#endif
+ 	}
++	val->totalram = managed_pages;
++	val->sharedram = node_page_state(pgdat, NR_SHMEM);
++	val->freeram = free_pages;
+ 	val->totalhigh = managed_highpages;
+ 	val->freehigh = free_highpages;
+-#else
+-	val->totalhigh = managed_highpages;
+-	val->freehigh = free_highpages;
+-#endif
+ 	val->mem_unit = PAGE_SIZE;
+ }
+ #endif
+@@ -6035,8 +6055,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+ 		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
+ 			continue;
+ 
+-		for_each_online_cpu(cpu)
+-			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
++		free_pcp += nr_free_zone_pcplist_pages(zone);
+ 	}
+ 
+ 	printk("active_anon:%lu inactive_anon:%lu isolated_anon:%lu\n"
+-- 
+2.25.1
 
-> 
-> This patchset contains the following seven patches.
-> 
->  0001-kernfs-Simply-by-replacing-kernfs_deref_open_node-wi.patch
->  0002-kernfs-Drop-unnecessary-mutex-local-variable-initial.patch
->  0003-kernfs-Refactor-kernfs_get_open_node.patch
->  0004-kernfs-Skip-kernfs_drain_open_files-more-aggressivel.patch
->  0005-kernfs-Make-kernfs_drain-skip-draining-more-aggressi.patch
->  0006-kernfs-Allow-kernfs-nodes-to-be-deactivated-and-re-a.patch
->  0007-cgroup-Implement-cgroup_file_show.patch
-> 
-> 0001-0003 are misc prep patches. 0004-0006 implement kernsf_deactivate().
-> 0008 implements cgroup_file_show() on top. The patches are also available in
-> the following git branch:
-> 
->  git://git.kernel.org/pub/scm/linux/kernel/git/tj/misc.git kernfs-deactivate
-> 
-> diffstat follows. Thanks.
-> 
->  fs/kernfs/dir.c             |  120 +++++++++++++++++++++++++++++++++++++++++-------------------
->  fs/kernfs/file.c            |  139 +++++++++++++++++++++++++++++++---------------------------------------
->  fs/kernfs/kernfs-internal.h |    1
->  include/linux/cgroup.h      |    1
->  include/linux/kernfs.h      |    2 +
->  kernel/cgroup/cgroup.c      |   23 +++++++++++
->  6 files changed, 172 insertions(+), 114 deletions(-)
-> 
-> --
-> tejun
-> 
-> 
