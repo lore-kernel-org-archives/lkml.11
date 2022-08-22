@@ -2,121 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0D6C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFF0C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236843AbiHVPmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50408 "EHLO
+        id S236733AbiHVPmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236755AbiHVPlw (ORCPT
+        with ESMTP id S236761AbiHVPl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:41:52 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170821CFC3;
-        Mon, 22 Aug 2022 08:41:48 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id e4so8395598qvr.2;
-        Mon, 22 Aug 2022 08:41:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :from:to:cc;
-        bh=cRvGK+nfZIMwtiejaDileiwHPvBs7s1NtuCURg1xkOE=;
-        b=jrIMSLP1O0YpmecScYkEyzJrB11luBCBk7dY8gXgO+9dVe6uTS9YjcXSs+Ta5OH1sV
-         dXHvi7zstA8c4+yeoSq6Ynqtg3+Pt1rYjxvkNcbx5rOihOE/RiUAWJp5bdf7H+4uz8tk
-         KywVzWly9gjOTSr8FzpDKLVQUOBlSeikDyiCQGM5ouYLMl1N7a5sOj8e6Dn3mZIlfqrg
-         doR5BHOHDXum4QOY+Kpf43/7h9SwVIYRj9yIktK86uPksWD11jIlT93UN5hUZFtKRE9W
-         Qoh6Pa7XE+GeU5tV50GZL695dNnS9HEKr2xWG2d7cAMi/OeM/Hp8umiCVKxSfLsjeu2Z
-         e5lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=cRvGK+nfZIMwtiejaDileiwHPvBs7s1NtuCURg1xkOE=;
-        b=WUyZEdc/J6SpJtYaKgDRdtw6FuwNaOq3ETd9z2ZGufhdR8WAVxxxPU+VCJYHZ1Z7hi
-         x0R8w2vdMJW0qj19W5emAqodw2I4/SSZ+jRKTZD4j3HzB3xeeuM/+aiBzzXRIulFgTfo
-         iZYjuoHfe4udyUUHIWONBqIv/EA1eS8/RJc8XpPCX3WLVNiBx09jf94Z5XbnDAuy1FaT
-         HCbDkQFUHhSLt5JeuKfEot4049oP8CnigUCCUcVjDDjl8yTyzHdgTud2XBGoxbOdtW3c
-         3JXMng9LdPczVvBia4IZ1vzCrLSDdVw89qeFyaQydCHtiqqQtf0rXSXGqyKyyqyRyoLW
-         9Hfg==
-X-Gm-Message-State: ACgBeo3c+ZmQ5zzjJDWst72S5VnYgWadziJplfCu06+nEFMiB6PpvJ1K
-        YTgEDUUWwh2PAA5osbN8uwY=
-X-Google-Smtp-Source: AA6agR76hATzF/fDLbd6N41mySAOy78wgkBSUZiZKFl8do1rkquH1626SX3sseMpeZ7SIVjZHhCKWA==
-X-Received: by 2002:a05:6214:e68:b0:474:89bf:ca1b with SMTP id jz8-20020a0562140e6800b0047489bfca1bmr16197681qvb.107.1661182907114;
-        Mon, 22 Aug 2022 08:41:47 -0700 (PDT)
-Received: from valhalla (2603-7081-5203-61c3-0000-0000-0000-1449.res6.spectrum.com. [2603:7081:5203:61c3::1449])
-        by smtp.gmail.com with ESMTPSA id u5-20020a05620a0c4500b006b5e296452csm10854329qki.54.2022.08.22.08.41.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 11:41:59 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6903F1F2EF;
+        Mon, 22 Aug 2022 08:41:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 29C6FED1;
+        Mon, 22 Aug 2022 08:41:57 -0700 (PDT)
+Received: from entos-ampere-02.shanghai.arm.com (entos-ampere-02.shanghai.arm.com [10.169.212.212])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6C8AF3F70D;
         Mon, 22 Aug 2022 08:41:45 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 11:41:43 -0400
-From:   Christopher Carbone <chris.m.carbone@gmail.com>
-To:     sudipm.mukherjee@gmail.com, teddy.wang@siliconmotion.com,
-        gregkh@linuxfoundation.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] Split multiple assignments to individual lines.
-Message-ID: <YwOjt+ZrQkKFGRH9@valhalla>
+From:   Jia He <justin.he@arm.com>
+To:     Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jan Luebbe <jlu@pengutronix.de>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Kani Toshi <toshi.kani@hpe.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        devel@acpica.org, "Rafael J . Wysocki" <rafael@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, linux-efi@vger.kernel.org,
+        nd@arm.com, "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        linux-doc@vger.kernel.org, Jia He <justin.he@arm.com>
+Subject: [RESEND PATCH v3 5/9] EDAC: Don't load chipset-specific edac drivers when ghes_edac is preferred
+Date:   Mon, 22 Aug 2022 15:40:44 +0000
+Message-Id: <20220822154048.188253-6-justin.he@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220822154048.188253-1-justin.he@arm.com>
+References: <20220822154048.188253-1-justin.he@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to Linux kernel coding style.
+edac_mc_add_mc* is too late in the init path and that check should happen
+as the very first thing in the driver init function.
 
-Reported by checkpatch:
-
-CHECK: multiple assignments should be avoided
-
-Signed-off-by: Christopher Carbone <chris.m.carbone@gmail.com>
+Suggested-by: Toshi Kani <toshi.kani@hpe.com>
+Signed-off-by: Jia He <justin.he@arm.com>
 ---
- drivers/staging/sm750fb/sm750.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/acpi/apei/ghes.c   | 13 +++++++++++--
+ drivers/edac/amd64_edac.c  |  3 +++
+ drivers/edac/edac_module.h |  1 +
+ drivers/edac/i10nm_base.c  |  3 +++
+ drivers/edac/igen6_edac.c  |  3 +++
+ drivers/edac/pnd2_edac.c   |  3 +++
+ drivers/edac/sb_edac.c     |  3 +++
+ drivers/edac/skx_base.c    |  3 +++
+ include/acpi/ghes.h        |  2 ++
+ 9 files changed, 32 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/sm750fb/sm750.c b/drivers/staging/sm750fb/sm750.c
-index dbd1159a2ef0..a0f8ae359248 100644
---- a/drivers/staging/sm750fb/sm750.c
-+++ b/drivers/staging/sm750fb/sm750.c
-@@ -386,7 +386,8 @@ static int lynxfb_ops_set_par(struct fb_info *info)
+diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+index e17e0ee8f842..327386f3cf33 100644
+--- a/drivers/acpi/apei/ghes.c
++++ b/drivers/acpi/apei/ghes.c
+@@ -1537,16 +1537,25 @@ static struct acpi_platform_list plat_list[] = {
+ 	{ } /* End */
+ };
  
- 	ret = lynxfb_set_color_offsets(info);
+-struct list_head *ghes_get_devices(void)
++bool ghes_edac_preferred(void)
+ {
+ 	int idx = -1;
  
--	var->height = var->width = -1;
-+	var->width = -1;
-+	var->height = var->width;
- 	var->accel_flags = 0;/*FB_ACCELF_TEXT;*/
- 
- 	if (ret) {
-@@ -498,7 +499,8 @@ static int lynxfb_ops_check_var(struct fb_var_screeninfo *var,
- 		return ret;
+ 	if (IS_ENABLED(CONFIG_X86)) {
+ 		idx = acpi_match_platform_list(plat_list);
+ 		if (idx < 0 && !ghes_edac_force)
+-			return NULL;
++			return false;
  	}
  
--	var->height = var->width = -1;
-+	var->width = -1;
-+	var->height = var->width;
- 	var->accel_flags = 0;/* FB_ACCELF_TEXT; */
++	return true;
++}
++EXPORT_SYMBOL_GPL(ghes_edac_preferred);
++
++struct list_head *ghes_get_devices(void)
++{
++	if (!ghes_edac_preferred())
++		return NULL;
++
+ 	return &ghes_devs;
+ }
+ EXPORT_SYMBOL_GPL(ghes_get_devices);
+diff --git a/drivers/edac/amd64_edac.c b/drivers/edac/amd64_edac.c
+index 2f854feeeb23..5314a934c2bf 100644
+--- a/drivers/edac/amd64_edac.c
++++ b/drivers/edac/amd64_edac.c
+@@ -4329,6 +4329,9 @@ static int __init amd64_edac_init(void)
+ 	int err = -ENODEV;
+ 	int i;
  
- 	/* check if current fb's video memory big enough to hold the onscreen*/
-@@ -723,7 +725,8 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
- 		0x800f0 + (int)crtc->channel * 0x140;
++	if (ghes_edac_preferred())
++		return -EBUSY;
++
+ 	owner = edac_get_owner();
+ 	if (owner && strncmp(owner, EDAC_MOD_STR, sizeof(EDAC_MOD_STR)))
+ 		return -EBUSY;
+diff --git a/drivers/edac/edac_module.h b/drivers/edac/edac_module.h
+index 96f6de0c8ff6..3826f82de487 100644
+--- a/drivers/edac/edac_module.h
++++ b/drivers/edac/edac_module.h
+@@ -11,6 +11,7 @@
+ #ifndef	__EDAC_MODULE_H__
+ #define	__EDAC_MODULE_H__
  
- 	pr_info("crtc->cursor.mmio = %p\n", crtc->cursor.mmio);
--	crtc->cursor.max_h = crtc->cursor.max_w = 64;
-+	crtc->cursor.max_w = 64;
-+	crtc->cursor.max_h = crtc->cursor.max_w;
- 	crtc->cursor.size = crtc->cursor.max_h * crtc->cursor.max_w * 2 / 8;
- 	crtc->cursor.vstart = sm750_dev->pvMem + crtc->cursor.offset;
++#include <acpi/ghes.h>
+ #include "edac_mc.h"
+ #include "edac_pci.h"
+ #include "edac_device.h"
+diff --git a/drivers/edac/i10nm_base.c b/drivers/edac/i10nm_base.c
+index 6cf50ee0b77c..691df9b51622 100644
+--- a/drivers/edac/i10nm_base.c
++++ b/drivers/edac/i10nm_base.c
+@@ -548,6 +548,9 @@ static int __init i10nm_init(void)
  
-@@ -1027,7 +1030,8 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
- 	if (!sm750_dev)
- 		return err;
+ 	edac_dbg(2, "\n");
  
--	sm750_dev->fbinfo[0] = sm750_dev->fbinfo[1] = NULL;
-+	sm750_dev->fbinfo[1] = NULL;
-+	sm750_dev->fbinfo[0] = sm750_dev->fbinfo[1];
- 	sm750_dev->devid = pdev->device;
- 	sm750_dev->revid = pdev->revision;
- 	sm750_dev->pdev = pdev;
++	if (ghes_edac_preferred())
++		return -EBUSY;
++
+ 	owner = edac_get_owner();
+ 	if (owner && strncmp(owner, EDAC_MOD_STR, sizeof(EDAC_MOD_STR)))
+ 		return -EBUSY;
+diff --git a/drivers/edac/igen6_edac.c b/drivers/edac/igen6_edac.c
+index a07bbfd075d0..4ac6d0c533ec 100644
+--- a/drivers/edac/igen6_edac.c
++++ b/drivers/edac/igen6_edac.c
+@@ -1271,6 +1271,9 @@ static int __init igen6_init(void)
+ 
+ 	edac_dbg(2, "\n");
+ 
++	if (ghes_edac_preferred())
++		return -EBUSY;
++
+ 	owner = edac_get_owner();
+ 	if (owner && strncmp(owner, EDAC_MOD_STR, sizeof(EDAC_MOD_STR)))
+ 		return -ENODEV;
+diff --git a/drivers/edac/pnd2_edac.c b/drivers/edac/pnd2_edac.c
+index a20b299f1202..4ddc43e6c420 100644
+--- a/drivers/edac/pnd2_edac.c
++++ b/drivers/edac/pnd2_edac.c
+@@ -1528,6 +1528,9 @@ static int __init pnd2_init(void)
+ 
+ 	edac_dbg(2, "\n");
+ 
++	if (ghes_edac_preferred())
++		return -EBUSY;
++
+ 	owner = edac_get_owner();
+ 	if (owner && strncmp(owner, EDAC_MOD_STR, sizeof(EDAC_MOD_STR)))
+ 		return -EBUSY;
+diff --git a/drivers/edac/sb_edac.c b/drivers/edac/sb_edac.c
+index 9678ab97c7ac..3ff604a5e95a 100644
+--- a/drivers/edac/sb_edac.c
++++ b/drivers/edac/sb_edac.c
+@@ -3506,6 +3506,9 @@ static int __init sbridge_init(void)
+ 
+ 	edac_dbg(2, "\n");
+ 
++	if (ghes_edac_preferred())
++		return -EBUSY;
++
+ 	owner = edac_get_owner();
+ 	if (owner && strncmp(owner, EDAC_MOD_STR, sizeof(EDAC_MOD_STR)))
+ 		return -EBUSY;
+diff --git a/drivers/edac/skx_base.c b/drivers/edac/skx_base.c
+index 1abc020d49ab..286370728552 100644
+--- a/drivers/edac/skx_base.c
++++ b/drivers/edac/skx_base.c
+@@ -653,6 +653,9 @@ static int __init skx_init(void)
+ 
+ 	edac_dbg(2, "\n");
+ 
++	if (ghes_edac_preferred())
++		return -EBUSY;
++
+ 	owner = edac_get_owner();
+ 	if (owner && strncmp(owner, EDAC_MOD_STR, sizeof(EDAC_MOD_STR)))
+ 		return -EBUSY;
+diff --git a/include/acpi/ghes.h b/include/acpi/ghes.h
+index e29327ee0b83..1c47018a1e43 100644
+--- a/include/acpi/ghes.h
++++ b/include/acpi/ghes.h
+@@ -73,9 +73,11 @@ int ghes_register_vendor_record_notifier(struct notifier_block *nb);
+ void ghes_unregister_vendor_record_notifier(struct notifier_block *nb);
+ 
+ struct list_head *ghes_get_devices(void);
++bool ghes_edac_preferred(void);
+ extern bool ghes_edac_force;
+ #else
+ static inline struct list_head *ghes_get_devices(void) { return NULL; }
++static bool ghes_edac_preferred(void) { return false; }
+ static bool ghes_edac_force;
+ #endif
+ 
 -- 
-2.37.2
+2.25.1
 
