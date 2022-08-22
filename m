@@ -2,92 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F56C38142
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59650C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233606AbiHVIFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
+        id S233666AbiHVIFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233659AbiHVIE5 (ORCPT
+        with ESMTP id S232785AbiHVIFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:04:57 -0400
-Received: from mail.fris.de (mail.fris.de [116.203.77.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D08DEB1;
-        Mon, 22 Aug 2022 01:04:25 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 6208FBFAFA;
-        Mon, 22 Aug 2022 10:04:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1661155463; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding:in-reply-to:references;
-        bh=/guGV0ra07b3IlhGeOCuArN7ww+4egM5anvKI+999M8=;
-        b=emWqcRmwo9IrbCEkslamJSpc8U6z3yS4KNDatFfVM6IHN9Lwaxf33qkLAh2X51vxe48UHu
-        zZaUDl4z6Enb5UJLDFqErDstG0kdIbKBwM/kq4vi4MyaYml3qtiSfkpQdJlJt2o9/nQXWc
-        B7kZgEoGs69u49C8KC0hPg9FaHFC3AQsOZe7zdMzBTmgBBke8oqrRCmIsG5fdu87DEtPHt
-        hqMcJvAQgz4m5qM3AgjyQWqR4zfytLqvNVKp8C+q5M9MZNtEgVmlWjP6+vLnyI8qAeMfj7
-        9j+isAaChX19oDyjKz/k6+MYLLbEufb5Tx5DSGu8Uk2uP0APR5pJjWi3YiuhhA==
-From:   Frieder Schrempf <frieder@fris.de>
-To:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: [PATCH v4 5/8] arm64: dts: imx8mm-kontron: Remove low DDRC operating point
-Date:   Mon, 22 Aug 2022 10:03:51 +0200
-Message-Id: <20220822080357.24478-6-frieder@fris.de>
-In-Reply-To: <20220822080357.24478-1-frieder@fris.de>
-References: <20220822080357.24478-1-frieder@fris.de>
+        Mon, 22 Aug 2022 04:05:02 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C12B10AE;
+        Mon, 22 Aug 2022 01:04:59 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 27M84u0h017804;
+        Mon, 22 Aug 2022 10:04:56 +0200
+Date:   Mon, 22 Aug 2022 10:04:56 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-x86_64@vger.kernel.org
+Subject: Re: LTS kernel Linux 4.14.290 unable to boot with edk2-ovmf (x86_64
+ UEFI runtime)
+Message-ID: <20220822080456.GB17080@1wt.eu>
+References: <2d6012e8-805d-4225-80ed-d317c28f1899@gmx.com>
+ <YwMhXX6OhROLZ/LR@kroah.com>
+ <1ed5a33a-b667-0e8e-e010-b4365f3713d6@gmx.com>
+ <YwMxRAfrrsPE6sNI@kroah.com>
+ <8aff5c17-d414-2412-7269-c9d15f574037@gmx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8aff5c17-d414-2412-7269-c9d15f574037@gmx.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On Mon, Aug 22, 2022 at 03:49:51PM +0800, Qu Wenruo wrote:
+> Yeah, I'm pretty sure my toolchain is too new for v4.14.0. But my distro
+> only provides the latest and mostly upstream packages.
 
-For some reason there is a problem with finding a DDR configuration
-that works on all operating points and all LPDDR4 types used on the
-SoM. Therefore the bootloader currently doesn't configure the lowest
-of the three operating points. Let's also skip this in the kernel
-devicetree to make sure it isn't used.
+Then there's something odd in your use case. Old kernels are aimed at
+those who need to have systems on which nothing changes. It's particularly
+strange to be stuck in the past for the kernel but to continually upgrade
+userland. Most often it's the opposite that's seen.
 
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
----
-Changes in v4:
-* none
+Regardless, if you need an older compiler, just use these ones:
 
-Changes in v3:
-* rebase on v6.0-rc1
+   https://mirrors.edge.kernel.org/pub/tools/crosstool/
 
-Changes in v2:
-* none
----
- arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+They go back to 4.9.4 for x86, you'll surely find the right one for your
+usage. I've long used 4.7.4 for kernels up to 4.9 and 6.5 for 4.19 and
+above, so something within that area will surely match your needs.
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-index 33179157f619..96ecdce67059 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-@@ -46,10 +46,6 @@ &ddrc {
- 	ddrc_opp_table: opp-table {
- 		compatible = "operating-points-v2";
- 
--		opp-25M {
--			opp-hz = /bits/ 64 <25000000>;
--		};
--
- 		opp-100M {
- 			opp-hz = /bits/ 64 <100000000>;
- 		};
--- 
-2.37.2
+> It may be a even worse disaster to find a way to rollback to older
+> toolchains using my distro...
 
+No, using a prebuilt toolchain like those above is quite trivial and
+it will avoid messing up with your local packages. That's the best
+solution I can recommend.
+
+Willy
