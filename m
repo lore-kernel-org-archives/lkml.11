@@ -2,167 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93452C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE3CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237249AbiHVRTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        id S236397AbiHVRWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237217AbiHVRS7 (ORCPT
+        with ESMTP id S235261AbiHVRWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:18:59 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86ED511C17;
-        Mon, 22 Aug 2022 10:18:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661188738; x=1692724738;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rvzhxAN923TZNtxOk4/pdjMAS98gjeFl05tyBxLutYE=;
-  b=VDb91db0sdPk/EH46ke/2lbUsvoa1O4zT2PUmgcoE3B+12NjtC+tbox6
-   fb4ejhZepEYvaCAq7Rqw4Ruq8QiKrtn1iB8KWx96vCngy9gzOYekaTWZb
-   2ev4Oc2TKQWJIIrRp/UdwzdOHQrx+b1lvvhlO4UOASYJxrK+fUpbHLD1j
-   yojxHeiwlx3BNl7kD+uE82Cr6lmZ+hrHXweqCSwGc6p38PfyPZbZYiuh3
-   yb5Yc3NX/0I+q7RZ+/QDx7wMSJIyh4I0KyXjFM1vMdPrRgviCrgHFCyCR
-   VfGmgNPr5VhPE6octcjnuAO360AxxyFek3rN0rh0qsyHCF9jGqgVU63o/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280445954"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="280445954"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 10:18:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="784929198"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 22 Aug 2022 10:18:56 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQB4h-0000W0-39;
-        Mon, 22 Aug 2022 17:18:55 +0000
-Date:   Tue, 23 Aug 2022 01:18:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: drivers/media/platform/intel/pxa_camera.c:2449:34: warning: unused
- variable 'pxa_camera_of_match'
-Message-ID: <202208230120.e4q8YyzQ-lkp@intel.com>
+        Mon, 22 Aug 2022 13:22:36 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429AF31DF4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:22:35 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ca13so11327430ejb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=VdTg/4wdB+0zmdu98+VeMVY0CWPWYaa4I1fhQHMo8eo=;
+        b=Zsg6h2upZ8zQKvB6ah1XxaGzM3rhYdKj2dfZP9rrHmItYctG+AGdCqgbAVOKebPUTw
+         5FMsd1V0Qc6FOPdxKbCKliKZ06RJS/OLrX8L5dLjB78MX1nxikMn8hiK69Jb7h3FTxFY
+         Pa3bEYeVHt6L5f95ShUcJ5q0ABh7vI8CUSeRyZOb2nEU502tZ8qklPsplhq3dPTJnSCL
+         T6LcRlqrSeDSU3WU0W3tfgksoKncqQlD7438YexT9jprFXNMP4+X9eZ4G9nNhQHU60cR
+         bVAPw9hkgpuGcndqjIRjCW2QA7LaoFVlzlvjIU3z2UqH1iqhuEVWIsx91mLg9Q0WPxK0
+         /wbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=VdTg/4wdB+0zmdu98+VeMVY0CWPWYaa4I1fhQHMo8eo=;
+        b=d087ZDaFkHWH6TXv/0wshpkJgXoI7SO/owOW6WG/3VhRdmhkp1oHL9x9W30E5DOW2E
+         4I0MtiapMv5lOZ9T+e0tkWrT0MYRmMbONlhPs8K1Pe3ML4K4enA31LcnxAv6sqbZF2dX
+         0LwAOYkNc2FqDIxlZGTa2/Il0zVzzD26CrH1ygHtzNVWeUYan+S5W8Ihp5167AFUVX3k
+         Tr4GWsGQgHhkwluQLIxHbqJK5ZJ3uZi7EBSmGPBYJ/GQiJZAcDFJXgKz7oV75ksv9nLs
+         xIaduEtvrRqgWRwKAV4eA3om1LiRkDFyIebh85AzcuZroofqIEz+An7OIizLkGJ0aiM/
+         RyQA==
+X-Gm-Message-State: ACgBeo3T5GA5z5SKFSSG/SgBEfb/mQCXwbX+hHElH5tASCyGKKqXvfky
+        C0pekbp9J8X25PDx7tiPxYy4cIXPsqn1zaVMhLjJ5A==
+X-Google-Smtp-Source: AA6agR6SpIhcY+9ozhUOGM1USr4oViHAl1oB/o7jHRziPRrYtk2y4HZwvtHfZi28FNbwyScUV+4Jo6wub+NwhZRAZNQ=
+X-Received: by 2002:a17:907:6e9f:b0:73d:8c60:9ec5 with SMTP id
+ sh31-20020a1709076e9f00b0073d8c609ec5mr2082684ejc.542.1661188953663; Mon, 22
+ Aug 2022 10:22:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220821150147.277753-1-sander@svanheule.net>
+In-Reply-To: <20220821150147.277753-1-sander@svanheule.net>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Mon, 22 Aug 2022 10:22:22 -0700
+Message-ID: <CAGS_qxqkFTn+1EtPt_tQjAJszocTv97aTcimVdo_QzCMOqDOZg@mail.gmail.com>
+Subject: Re: [PATCH v2] kunit: fix assert_type for comparison macros
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     Brendan Higgins <brendan.higgins@linux.dev>,
+        David Gow <davidgow@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro,
+On Sun, Aug 21, 2022 at 8:02 AM Sander Vanheule <sander@svanheule.net> wrote:
+>
+> When replacing KUNIT_BINARY_*_MSG_ASSERTION() macros with
+> KUNIT_BINARY_INT_ASSERTION(), the assert_type parameter was not always
+> correctly transferred.  Specifically, the following errors were
+> introduced:
+>   - KUNIT_EXPECT_LE_MSG() uses KUNIT_ASSERTION
+>   - KUNIT_ASSERT_LT_MSG() uses KUNIT_EXPECTATION
+>   - KUNIT_ASSERT_GT_MSG() uses KUNIT_EXPECTATION
+>
+> A failing KUNIT_EXPECT_LE_MSG() test thus prevents further tests from
+> running, while failing KUNIT_ASSERT_{LT,GT}_MSG() tests do not prevent
+> further tests from running.  This is contrary to the documentation,
+> which states that failing KUNIT_EXPECT_* macros allow further tests to
+> run, while failing KUNIT_ASSERT_* macros should prevent this.
+>
+> Revert the KUNIT_{ASSERTION,EXPECTATION} switches to fix the behaviour
+> for the affected macros.
+>
+> Fixes: 40f39777ce4f ("kunit: decrease macro layering for integer asserts")
+> Signed-off-by: Sander Vanheule <sander@svanheule.net>
 
-FYI, the error/warning still remains.
+Thanks for catching this!
+I scanned over the file again looking for other errors. I think this
+patch fixes all of them.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   1c23f9e627a7b412978b4e852793c5e3c3efc555
-commit: 95495f2aa9d8df1a7697bab24118544d3568f41d media: platform: place Intel drivers on a separate dir
-date:   5 months ago
-config: s390-randconfig-r034-20220822 (https://download.01.org/0day-ci/archive/20220823/202208230120.e4q8YyzQ-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project abce7acebd4c06c977bc4bd79170697f1122bc5e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=95495f2aa9d8df1a7697bab24118544d3568f41d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 95495f2aa9d8df1a7697bab24118544d3568f41d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/media/platform/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/media/platform/intel/pxa_camera.c:12:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/media/platform/intel/pxa_camera.c:12:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/media/platform/intel/pxa_camera.c:12:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/media/platform/intel/pxa_camera.c:2449:34: warning: unused variable 'pxa_camera_of_match' [-Wunused-const-variable]
-   static const struct of_device_id pxa_camera_of_match[] = {
-                                    ^
-   13 warnings generated.
-
-
-vim +/pxa_camera_of_match +2449 drivers/media/platform/intel/pxa_camera.c
-
-7254026cedd42d7 drivers/media/video/pxa_camera.c               Guennadi Liakhovetski 2011-06-29  2448  
-e9a1d94fa85542d drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29 @2449  static const struct of_device_id pxa_camera_of_match[] = {
-e9a1d94fa85542d drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2450  	{ .compatible = "marvell,pxa270-qci", },
-e9a1d94fa85542d drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2451  	{},
-e9a1d94fa85542d drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2452  };
-e9a1d94fa85542d drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2453  MODULE_DEVICE_TABLE(of, pxa_camera_of_match);
-e9a1d94fa85542d drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2454  
-
-:::::: The code at line 2449 was first introduced by commit
-:::::: e9a1d94fa85542d4f3046ac82d234a3c8349c948 [media] media: pxa_camera device-tree support
-
-:::::: TO: Robert Jarzmik <robert.jarzmik@free.fr>
-:::::: CC: Mauro Carvalho Chehab <m.chehab@samsung.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
