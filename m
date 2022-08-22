@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0AA5C38145
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C7FC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238196AbiHVTIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        id S237098AbiHVTIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238081AbiHVTIC (ORCPT
+        with ESMTP id S238090AbiHVTIE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:08:02 -0400
+        Mon, 22 Aug 2022 15:08:04 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0096A13F92;
-        Mon, 22 Aug 2022 12:07:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92FA217077;
+        Mon, 22 Aug 2022 12:08:03 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 42807DA9;
-        Mon, 22 Aug 2022 22:10:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 42807DA9
+        by mail.baikalelectronics.com (Postfix) with ESMTP id B278EDAF;
+        Mon, 22 Aug 2022 22:10:54 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com B278EDAF
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195451;
-        bh=rPnXGa4E/xeGmWWRdl2JzvAT9t1e1g5ZyBEEG7gtGKA=;
+        d=baikalelectronics.ru; s=mail; t=1661195454;
+        bh=MFqtz4e6LUMNlPiynDJkvf6PvWJf7XGMfVZ0Nv/X6dg=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=dlMppze5hfaT9XcEGB4Rhdb2khUYJQL36GunK5EFQfifRJ98ZHnxlJkSUwqOo/r4E
-         Sagaz/FI0ztBm/3pgycGqLEe2fuK8LjR/uerGHUKFqvPHhg9xaQpVnlBW1huDvsIOH
-         hr6M/vB5D7Qx6KVRH/Wx6+OCrGdzN0Yu0D/nPXz8=
+        b=YTMlJUTnCcXKcJCSzbIULdjIVWhVDDKIr/knpr/VnPcBb8ZrjzZWi7hYwVGvJ+VT0
+         3BIEJj3lDdxS3pSSjmXdX+4pWCVET0SVZBleovyFausbDz0XE8zVU2KsGGTo+Szstv
+         X4VbVvoGXQDvAkSnAycbNEQAgsxTWiyE2rLXTGPs=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:37 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:40 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh@kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
@@ -50,9 +50,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 07/20] EDAC/synopsys: Drop internal CE and UE counters
-Date:   Mon, 22 Aug 2022 22:07:17 +0300
-Message-ID: <20220822190730.27277-8-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 12/20] EDAC/mc: Replace spaces with tabs in memtype flags definition
+Date:   Mon, 22 Aug 2022 22:07:22 +0300
+Message-ID: <20220822190730.27277-13-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -63,51 +63,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-First of all they aren't exposed anyhow by the driver. Secondly the EDAC
-core already tracks the total amount of correctable and uncorrectable
-errors (see mem_ctl_info.{ce_mc,ue_mc} fields usage). Let's drop the
-useless internal counters then for good.
+Currently the memory type macros are partly defined with the multiple
+spaces between the macro name and its definition. Let's replace the spaces
+with tabs as the kernel coding style requires.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/edac/synopsys_edac.c | 8 --------
- 1 file changed, 8 deletions(-)
+ include/linux/edac.h | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index f38c326f2cf5..956de6fb3125 100644
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -308,8 +308,6 @@ struct synps_ecc_status {
-  * @message:		Buffer for framing the event specific info.
-  * @stat:		ECC status information.
-  * @p_data:		Platform data.
-- * @ce_cnt:		Correctable Error count.
-- * @ue_cnt:		Uncorrectable Error count.
-  * @poison_addr:	Data poison address.
-  * @row_shift:		Bit shifts for row bit.
-  * @col_shift:		Bit shifts for column bit.
-@@ -323,8 +321,6 @@ struct synps_edac_priv {
- 	char message[SYNPS_EDAC_MSG_SIZE];
- 	struct synps_ecc_status stat;
- 	const struct synps_platform_data *p_data;
--	u32 ce_cnt;
--	u32 ue_cnt;
- #ifdef CONFIG_EDAC_DEBUG
- 	ulong poison_addr;
- 	u32 row_shift[18];
-@@ -594,12 +590,8 @@ static irqreturn_t intr_handler(int irq, void *dev_id)
- 	if (status)
- 		return IRQ_NONE;
+diff --git a/include/linux/edac.h b/include/linux/edac.h
+index e730b3468719..fa4bda2a70f6 100644
+--- a/include/linux/edac.h
++++ b/include/linux/edac.h
+@@ -231,21 +231,21 @@ enum mem_type {
+ #define MEM_FLAG_DDR		BIT(MEM_DDR)
+ #define MEM_FLAG_RDDR		BIT(MEM_RDDR)
+ #define MEM_FLAG_RMBS		BIT(MEM_RMBS)
+-#define MEM_FLAG_DDR2           BIT(MEM_DDR2)
+-#define MEM_FLAG_FB_DDR2        BIT(MEM_FB_DDR2)
+-#define MEM_FLAG_RDDR2          BIT(MEM_RDDR2)
+-#define MEM_FLAG_XDR            BIT(MEM_XDR)
+-#define MEM_FLAG_DDR3           BIT(MEM_DDR3)
+-#define MEM_FLAG_RDDR3          BIT(MEM_RDDR3)
+-#define MEM_FLAG_LPDDR3         BIT(MEM_LPDDR3)
+-#define MEM_FLAG_DDR4           BIT(MEM_DDR4)
+-#define MEM_FLAG_RDDR4          BIT(MEM_RDDR4)
+-#define MEM_FLAG_LRDDR4         BIT(MEM_LRDDR4)
+-#define MEM_FLAG_LPDDR4         BIT(MEM_LPDDR4)
+-#define MEM_FLAG_DDR5           BIT(MEM_DDR5)
+-#define MEM_FLAG_RDDR5          BIT(MEM_RDDR5)
+-#define MEM_FLAG_LRDDR5         BIT(MEM_LRDDR5)
+-#define MEM_FLAG_NVDIMM         BIT(MEM_NVDIMM)
++#define MEM_FLAG_DDR2		BIT(MEM_DDR2)
++#define MEM_FLAG_FB_DDR2	BIT(MEM_FB_DDR2)
++#define MEM_FLAG_RDDR2		BIT(MEM_RDDR2)
++#define MEM_FLAG_XDR		BIT(MEM_XDR)
++#define MEM_FLAG_DDR3		BIT(MEM_DDR3)
++#define MEM_FLAG_RDDR3		BIT(MEM_RDDR3)
++#define MEM_FLAG_LPDDR3		BIT(MEM_LPDDR3)
++#define MEM_FLAG_DDR4		BIT(MEM_DDR4)
++#define MEM_FLAG_RDDR4		BIT(MEM_RDDR4)
++#define MEM_FLAG_LRDDR4		BIT(MEM_LRDDR4)
++#define MEM_FLAG_LPDDR4		BIT(MEM_LPDDR4)
++#define MEM_FLAG_DDR5		BIT(MEM_DDR5)
++#define MEM_FLAG_RDDR5		BIT(MEM_RDDR5)
++#define MEM_FLAG_LRDDR5		BIT(MEM_LRDDR5)
++#define MEM_FLAG_NVDIMM		BIT(MEM_NVDIMM)
+ #define MEM_FLAG_WIO2		BIT(MEM_WIO2)
+ #define MEM_FLAG_HBM2		BIT(MEM_HBM2)
  
--	priv->ce_cnt += priv->stat.ce_cnt;
--	priv->ue_cnt += priv->stat.ue_cnt;
- 	handle_error(mci, &priv->stat);
- 
--	edac_dbg(3, "Total error count CE %d UE %d\n",
--		 priv->ce_cnt, priv->ue_cnt);
- 
- 	if (priv->p_data->quirks & SYNPS_ZYNQMP_IRQ_REGS)
- 		writel(regval, priv->baseaddr + DDR_QOS_IRQ_STAT_OFST);
 -- 
 2.35.1
 
