@@ -2,83 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BCFC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B516C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbiHVNbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        id S235341AbiHVNay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235233AbiHVNbP (ORCPT
+        with ESMTP id S235047AbiHVNaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:31:15 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F92275F7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:14 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id gk3so21210927ejb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=8r7BIjoasIUEZdXg2N4q2u4F3zO3DOtklhLZqt6JWWg=;
-        b=D60msXWmUqbwg/uV8lvURpYnUYQo0L2zrsdfg4Yez2C2yk+mKZq4gDOfBq6lTm/xsb
-         1luO+bvGH0blaw7aqMaXBlZAOHiobEbk9vP9HOIBhBGoWdXmfj6Bk3Xr+NSr7+9Q5Jzw
-         uMN7FJUAN57h5sp0tOMxjBWsJvgVmc0TD8cmU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=8r7BIjoasIUEZdXg2N4q2u4F3zO3DOtklhLZqt6JWWg=;
-        b=v4JwF/yyxAsUAvdIlMDUpOTfa4p92q7cgeZAgtINSj6lTi/pjsYJaQZl9au8nYPsN/
-         3q8r650MAFhnLLUSUPjw55tAOWv1zyMs5TMhRU09ILU4ivl9cjXPSzlwkrUhXU1FdUAp
-         WhsUXumNZrfFfWd6m98ZCUQtULRrT8evtvpYVR5ViYXEI7FP9DYuF5W8yDvy3BHaVgGf
-         9ZPsun6S87DtbKmBnqdz/DsZpIj3x4xKA+McKeGnPYruB0Tz1V7OmopEhmAVuN2sMFcX
-         Y5oZlSLn3KLPxfRCvLold8jVN61V4JH3MCGrggVtgaz1dgj+LzSNjp4BJ2eU2aBs7Fnp
-         ZPSg==
-X-Gm-Message-State: ACgBeo0MvAQaSC54pzVW5TSAazHjSf9e7szWW4WCYSucLQmP9lcTX2XM
-        Ke5ob/7jyvsXNtspzECz14nVAhUJnNzrgbKf
-X-Google-Smtp-Source: AA6agR4cMJi4QZDEmrIl8aiE53u1XkQN8brkopflOn/DuwVyLGs9E7OXUpAY5c+CVrvWinhvw6pGew==
-X-Received: by 2002:a17:907:9605:b0:6f5:c66:7c13 with SMTP id gb5-20020a170907960500b006f50c667c13mr13640253ejc.66.1661175072692;
-        Mon, 22 Aug 2022 06:31:12 -0700 (PDT)
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com. [209.85.218.54])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906309100b0073ce4abf093sm4966682ejv.214.2022.08.22.06.31.11
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 06:31:12 -0700 (PDT)
-Received: by mail-ej1-f54.google.com with SMTP id vw19so7556727ejb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:31:11 -0700 (PDT)
-X-Received: by 2002:a17:906:9f2a:b0:730:bc30:da30 with SMTP id
- fy42-20020a1709069f2a00b00730bc30da30mr13133746ejc.763.1661175071574; Mon, 22
- Aug 2022 06:31:11 -0700 (PDT)
+        Mon, 22 Aug 2022 09:30:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB3B1F615;
+        Mon, 22 Aug 2022 06:30:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E829B8121C;
+        Mon, 22 Aug 2022 13:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 05D60C433D7;
+        Mon, 22 Aug 2022 13:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661175017;
+        bh=b78FFULhsO3Za6l2UbreH9pHhLIqoEqFwFu/lJt1sfo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=IsoMtGYjH+a8wVoz5Xl6W9iAKX5vDka6VdBsqzEP8GwyaydWjAYZMse3ViCIEhsCn
+         XV49PelLo17lst8zuUIWC7ZpHwrdO/qJ2FmCGYl0C3Q06KSObZmw8svrYJ50Xo76tw
+         AwMU6SwPMpzZOrlxGgkbyT2wcYXYWwrp9oU37m2Y7mbmeXeG6Lc7X+qVKbCse4e6AC
+         FXeg8zC6APA1/O32kcp4Kvnugzp91y4OEhK4btfNGiSYRdaZQOQgCM4yg45YzAxwVF
+         t0AvhxVNyVEa8mP8Bh+iAroVFPusXeBtm4VaPKJfRi3blsdWxOpW2F+MARCjgGQXyA
+         d0iC3w3goPCTw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E2C95C04E59;
+        Mon, 22 Aug 2022 13:30:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220808134106.70100-1-ribalda@chromium.org> <YwN+fU5ez0L5pi1j@pendragon.ideasonboard.com>
- <YwN/jeElxyXpyyfU@pendragon.ideasonboard.com>
-In-Reply-To: <YwN/jeElxyXpyyfU@pendragon.ideasonboard.com>
-From:   Ricardo Ribalda <ribalda@chromium.org>
-Date:   Mon, 22 Aug 2022 15:31:00 +0200
-X-Gmail-Original-Message-ID: <CANiDSCvyhUORSp7831DJsQGFF8Bw3uzEoTTV9FG8qunu-KrMyw@mail.gmail.com>
-Message-ID: <CANiDSCvyhUORSp7831DJsQGFF8Bw3uzEoTTV9FG8qunu-KrMyw@mail.gmail.com>
-Subject: Re: [PATCH] media: uvcvideo: Fix InterfaceProtocol for Quanta camera
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/8] net: lan966x: Add lag support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166117501692.5977.2992380067711592787.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Aug 2022 13:30:16 +0000
+References: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@armlinux.org.uk, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 at 15:07, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
+Hello:
 
->
-> As this is a v6.0 fix, would you mind submitting a v2 with these changes
-> ? Mauro could then pick it up directly.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Done. https://lore.kernel.org/linux-media/20220822131754.102393-1-ribalda@chromium.org/T/#u
+On Wed, 17 Aug 2022 21:34:41 +0200 you wrote:
+> Add lag support for lan966x.
+> First 4 patches don't do any changes to the current behaviour, they
+> just prepare for lag support. While the rest is to add the lag support.
+> 
+> v3->v4:
+> - aggregation configuration is global for all bonds, so make sure that
+>   there can't be enabled multiple configurations at the same time
+> - return error faster from lan966x_foreign_bridging_check, don't
+>   continue the search if the error is seen already
+> - flush fdb workqueue when a port leaves a bridge or lag.
+> 
+> [...]
 
-Thanks :)
+Here is the summary with links:
+  - [net-next,v4,1/8] net: lan966x: Add registers used to configure lag interfaces
+    https://git.kernel.org/netdev/net-next/c/7c300735a1a1
+  - [net-next,v4,2/8] net: lan966x: Split lan966x_fdb_event_work
+    https://git.kernel.org/netdev/net-next/c/9b4ed7d262f3
+  - [net-next,v4,3/8] net: lan966x: Flush fdb workqueue when port is leaving a bridge.
+    https://git.kernel.org/netdev/net-next/c/86bac7f11788
+  - [net-next,v4,4/8] net: lan966x: Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb
+    https://git.kernel.org/netdev/net-next/c/d6208adfc9a9
+  - [net-next,v4,5/8] net: lan966x: Extend lan966x_foreign_bridging_check
+    https://git.kernel.org/netdev/net-next/c/a751ea4d74e9
+  - [net-next,v4,6/8] net: lan966x: Add lag support for lan966x
+    https://git.kernel.org/netdev/net-next/c/cabc9d49333d
+  - [net-next,v4,7/8] net: lan966x: Extend FDB to support also lag
+    https://git.kernel.org/netdev/net-next/c/9be99f2d1d28
+  - [net-next,v4,8/8] net: lan966x: Extend MAC to support also lag interfaces.
+    https://git.kernel.org/netdev/net-next/c/e09ce97778e8
 
-
+You are awesome, thank you!
 -- 
-Ricardo Ribalda
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
