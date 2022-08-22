@@ -2,362 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DD3C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 692F6C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235578AbiHVOzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
+        id S235591AbiHVO6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235690AbiHVOza (ORCPT
+        with ESMTP id S235560AbiHVO6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:55:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5739186E9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:55:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661180128; x=1692716128;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=jp07TlypUxlyl1goj8H3yNz8FZQcolvoVw0g67erES0=;
-  b=kmvgYvripyI3eQecaQTHtHRM3Y5KQD0Av2SrHlNPBJOevuFWqGLBw75n
-   VPKKC0uGf++TVDAgxXFcZb+lIFslNNdRYfRtyNUNB0naDWfNTHu8BGYLR
-   IgWH52SdDEbGj1zm+Te1EX+zVnKsQpM6HM+JOzh+o8m+Xxzp9BU71KAVh
-   Ol9lKReZYhWudmRTKzYma27iKhI6D15AkZbR10iVMj1BtkRryqxdmvG4s
-   T4I7oy6l+J2vmFsZdDoDUjIHoQaZFPvINOD/+uOr2Gqw+8O7OVCvHjWBb
-   UuyDpiZERmED4qpENLtZBAeLkUgfsIu+8DQWWY3iTwHsKjFwTtGZjA8ii
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280403868"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="280403868"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 07:55:28 -0700
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="612072086"
-Received: from vjuntune-mobl1.ger.corp.intel.com (HELO [10.249.43.87]) ([10.249.43.87])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 07:55:26 -0700
-Message-ID: <18ee9831-eca1-ab84-61dc-bfef21f87515@linux.intel.com>
-Date:   Mon, 22 Aug 2022 16:55:23 +0200
+        Mon, 22 Aug 2022 10:58:40 -0400
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20060.outbound.protection.outlook.com [40.107.2.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C865DF21;
+        Mon, 22 Aug 2022 07:58:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bu5iP8jvD+J9kBE4VrbjszZHqwWaptQbmIr/6zE1YO1ywtGY7KoVFxxC11gjqxOnAPdYR2O0IpZB4vHfc1d4mtblBthBUBA9B/3VaUZ9cE84BseP4aV5H+CuSKoOIAwY5B9zQiFHmLLbIWuKh321roiHX7PMRy77MYMNS1H4AEV+M+jnTAqUVW8tNJ4yM8wbjgFw4HQQbRjhrKVnslaf6FfKqEH3pfmM8zKZ59ipXBFH95hCocWykRlGPfVe2qr/slzD4QG5odHdk+KN8DbWuxfFrFNXMjIdi9629cSA/TrVgLmr8X67zQqmIj25buvaZmQK6uVRa6q67CS4H+Tsaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HJYGu8VCO6uWZNqNtlg/SuFgD1KzkdAeuwCJSvK3RGU=;
+ b=bHi3vjXCicOpb/2+HTr6yHw3EZFH2sYiXjhk+Fpydv8G5dIltQefBPcDen/4moKqTtZ0eXFLJjM+Lc/zgxGxuJ3m4d7e/OlzgZcq+7A/oxt2XMuBJLTNAsQR2YensPepzFIXKHQSBz2/WemONluzvSuwqGk3Ra9BrBeDZhH/1Ykvr63HxlhD+2RuA51GLCt+YKd3QyW07pzn4FN9tm6T3V81EBcKAVVRADQGW48P0pmrNIrPpKzprML7uvcDbvcBpyXfkphpdWmAlVPRK1LIUn3Lz8CWh2YADhtFbzyTUVJ26KTSVQ50nvJlb6pGXIAQIjAV52bEZeP0szqLwCaGPw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HJYGu8VCO6uWZNqNtlg/SuFgD1KzkdAeuwCJSvK3RGU=;
+ b=PavCwrFhM13biuyPTVFVE/zJkXm+WxdLwzADEe02Ce3P41m8QgYNIviPZQ/b8mj5TJQlikgt0wpV5GYvOLL/b9JM5Zx2qqhOIAB4xEurgWddDO21NC9GDd7KYlkPrj/H1BWSba66REjqRuzZMC1/pRBig9DZQg6gbtjO637BoAdVU7kdJFJeQdvrzKl+Xj8lKA1Py3wWH+igko57b8zMwrc/ObpRk76a308RQ3ark2mNDQZsRGyQmolqeGF14S76uk+UIh4yz7Otk0musTEY5EWF/JjnapbvHgkLyq88wENdnyKncyrm4yIRvPFXZnDFH1OUtX7lPNDMfqjNBHfFoA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:269::8)
+ by AM7PR10MB3528.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:13a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19; Mon, 22 Aug
+ 2022 14:58:35 +0000
+Received: from PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::75ee:d5d2:6b1d:150b]) by PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::75ee:d5d2:6b1d:150b%3]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 14:58:35 +0000
+Date:   Mon, 22 Aug 2022 16:58:29 +0200
+From:   Henning Schild <henning.schild@siemens.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Pavel Machek <pavel@ucw.cz>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee@kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-leds@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>
+Cc:     Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>,
+        <simon.guinot@sequanux.org>
+Subject: Re: [PATCH v3 1/4] gpio-f7188x: Add GPIO support for Nuvoton
+ NCT6116
+Message-ID: <20220822165829.1e4fbc5f@md1za8fc.ad001.siemens.net>
+In-Reply-To: <20220811153908.31283-2-henning.schild@siemens.com>
+References: <20220811153908.31283-1-henning.schild@siemens.com>
+        <20220811153908.31283-2-henning.schild@siemens.com>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0118.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::13) To PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:269::8)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH 11/12] ASoC: cs42l42: Add Soundwire support
-Content-Language: en-US
-To:     Richard Fitzgerald <rf@opensource.cirrus.com>, broonie@kernel.org
-Cc:     patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-References: <20220819125230.42731-1-rf@opensource.cirrus.com>
- <20220819125230.42731-12-rf@opensource.cirrus.com>
- <44359e9c-4891-17e7-5e0d-392d4751ccf5@linux.intel.com>
- <8a280ad7-ee62-75e0-6bd0-d6396fa27db2@opensource.cirrus.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <8a280ad7-ee62-75e0-6bd0-d6396fa27db2@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e6e6298d-ba5e-4860-6cb4-08da844ec9ec
+X-MS-TrafficTypeDiagnostic: AM7PR10MB3528:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hKGq+2cQZfMp72v0qOeYc8oCPE8RjKVOA5IsVHDleytb8jcwRDg+RkzgDKF53XqeUkDw/jUAxpq6pLBN9/p9tyjl0JSIgNBjAniM/oFFIWWOlACBYB82tNKAD2Hqe0IHW3Xdl0RGdMp2A2Z3Fbmj1JAe3yiLaLJ0OyJkN3yfRiJ/DM/kPKALSDmuUeCzJzTLRO2Cu69JCwsJuAEzk8wIXISThzHq/oRLQFT0ZZUx/n5NgEiBPU1zWUVzpws9LCI2CyHIjCMzbA0cE2pI0URzCysBRmHmGDFJj9gA8vgEsE4TJC7aSqd96FDQ60jyPOlNUmWDMbSi5Rx3TEMFcNJcKsFFl1x/ea2ROpKY2e+heoqJqLLTIwrsXxdXhOXbIopgaXhrHmBoIPMnVMm3imp7B2M5Jx0BhujQLO+qBvmwPWBDZ7RUvTgrl8ngq5uOlEJ2Gvps3Hq8dJj6lLhFIj9SzRkrxi32yFd8fR3uVK9Zfv2jd06UpvIZO5Xw7+j+UcEMUzmzimrs/+c3GncBAIEso0mZak6Ukz+dTVwTn+J8yBHeVst3jObluedWZREdUSSXADwrKyOMWVSphAyWoIYFeDJ8uletu5/ciGZd3kLs4e4Fo/hvaAAl+7wDVrXEWKByQTmkU4vlUtzxkTZv3L9MG7Qzyf+kgvnZ5QE4ryLcijUEhVdaXp/fmmGiGbNkLT9hw5lj16lqI1lWFeS+5nNvAtQfRNgoB7J+ZYsN9jlVELHvIB83FtGdhTcgcj+VfEqx
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(366004)(39860400002)(376002)(136003)(316002)(66946007)(4326008)(66556008)(66476007)(8676002)(8936002)(186003)(1076003)(44832011)(110136005)(7416002)(5660300002)(2906002)(54906003)(82960400001)(41300700001)(6666004)(6512007)(86362001)(26005)(6506007)(921005)(9686003)(83380400001)(478600001)(6486002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/gNaoqNfP11xU04bbHqfA1FU4nmMIEWiNfTdE/dbwL9zR1+FNbj3kllgc1sF?=
+ =?us-ascii?Q?+5hg4kDb6aIhNiDN57+fKpeeoAxJgdXnbJczk6M25Ds4pmpb+nYTwUH0WsS4?=
+ =?us-ascii?Q?yXtNrZQOV5mx/f0qeEe7zO5Io15Fx2owU7xYSFhP9CMUr0Cwyw92Cp4VvTgu?=
+ =?us-ascii?Q?FLdiLzZxgjmecvRIBVYf3cjai0ZCur16flwbC5fptzxlPJXnhEvgZKn0OjSu?=
+ =?us-ascii?Q?tgzuEh0VMyal98G/hbC6ZgvBMVcJLBLZgTapbArW4zCWdF/OzDBl/zHDETBZ?=
+ =?us-ascii?Q?gF9x72cgwKJb4eMTB3FbhJLyyg7NuEA90CkowXQbHm9Qx3bT/rnPVHOFMVm7?=
+ =?us-ascii?Q?8S9iiDljjZox6KIcYV12ReoJAcwWJQ+CCidKTxam2PGh71h03oJZVl7TmK72?=
+ =?us-ascii?Q?Q/L2Z/Ue5OA0cjtCHTDqjxlrXoXqKVhk4nSPUSv//PlJWwJJ13W0ctQ/9nUV?=
+ =?us-ascii?Q?+Ascde8k3Qe2/L9w5ZbJ0L/73Ai0g1Us7cs8hkhvLNwgBE2eaQtAp9kiHMBQ?=
+ =?us-ascii?Q?iYVQsmdH65RNOdjp8oDKGllAe3aWSv4YgchGWSTiQCuce4lcaPL1/FcDCekf?=
+ =?us-ascii?Q?cNpA366LFA7Iq5N+9G4yIyCZlG/bCQFHED24OeZc+JcUQHaLmTtiD0+mgzRs?=
+ =?us-ascii?Q?lohPD29Ww1RfOqU2tAtHzhS9hkf/3kDDAcsOPeodGy59NcvMXcJIcNQIhoX4?=
+ =?us-ascii?Q?5jc7fx1fYYHbOcYjeM/VRBNa4/VvTjlrmT1fx6LVL+gVB8uRSMoOKzsN5vhp?=
+ =?us-ascii?Q?tzN8aLEl1/VDndERYmNdot2aNmjL2X8uaikiNr4VBg988Lc/scoq59lIOHdP?=
+ =?us-ascii?Q?GVRbyArHoLXX/WU1YzhhMSvrofg5ArkWH/M8ItOh1SjR44D0+lnHWdFxS5Tq?=
+ =?us-ascii?Q?eY8F1BJ1fNOvm6es0bAmOI8o/+EzIVPU9B0JoU9ZwJpqo6Bn+G/U/Q5YKFIo?=
+ =?us-ascii?Q?t8eWrJfzSsPPJQbUtFfxprE4xLjgKU/8X923akoamdGmqmH37cXPDyzjvuy2?=
+ =?us-ascii?Q?DKZ71eUs8R0P4fRysqHbHPI01WSbcp5psdU6SFbRJVgWrXFwhujUygoV1Khl?=
+ =?us-ascii?Q?jeoW7Ta2B2Swocwz4pPsgHTLT/ObNdr6ay8eWZw6sbrE51+iYh5wIp3jC0ny?=
+ =?us-ascii?Q?Q2qHL/O/rDA7JbG1o2w2sLPJtlM7/PU6MyJe3MzVPkd+xoAK7/PPFO4bBYGb?=
+ =?us-ascii?Q?68BDC1534Jvrp1k6iT3tJALOTJbmD5ClLSKRUhz6RtiW0bgMwP1zXEUCSmUv?=
+ =?us-ascii?Q?mbDymcbfNTXH+otDi8BUDTNlGDdJHUn+YkEugbzg3HgXEKkadTm8xJRLPx3D?=
+ =?us-ascii?Q?E7jlByNWkLSU7ZtpPpTJw13HEDsdpXNXn6B1WNNJA/i3ZYhiKKR/88wHnjSs?=
+ =?us-ascii?Q?e2bo+7cV8B24jHt3Z+S0h4wqzndDpMjmYo0/veoNhhKsNWtoRNzULi5u6WSz?=
+ =?us-ascii?Q?/cGJ6Z+200yH7lBkTzWOW1BvDbiwX65PMSvHtXnEgtA//JjE3ajwguHMmYjJ?=
+ =?us-ascii?Q?8ziJ3H8yCY+G+QQXceH0EeQRg+yqfIQh5Zs1Lj69yLLCgl0UE9x80zGvMMht?=
+ =?us-ascii?Q?570q7ONYRZDmMX4zdM9qH6YtQVIWDVAKxqIKLqgYFQ+rdHmJMDTZSdIaysMC?=
+ =?us-ascii?Q?TQ=3D=3D?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6e6298d-ba5e-4860-6cb4-08da844ec9ec
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 14:58:35.7314
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ihJtvrPX0oNze/pjhA/gnbKYfKc2P64rQsaPU3fNosXOsUnHCJiPUKcDPjgEvX3DB2EHMSbX2h7vAN9IjwNwq41XgsFsQXd3fPAv/oXCxqk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3528
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Richard for your answers, good discussion. There are several
-topics I could use more details to understand your line of thought and
-requirements, see below.
+Am Thu, 11 Aug 2022 17:39:05 +0200
+schrieb Henning Schild <henning.schild@siemens.com>:
 
->>> - Intel Soundwire host controllers have a low-power clock-stop mode that
->>>    requires resetting all peripherals when resuming. This is not
->>> compatible
->>>    with the plug-detect and button-detect because it will clear the
->>>    condition that caused the wakeup before the driver can handle it. So
->>>    clock-stop must be blocked when a snd_soc_jack handler is registered.
->>
->> What do you mean by 'clock-stop must be blocked'? The peripheral cannot
->> prevent the host from stopping the clock.
+> Add GPIO support for Nuvoton NCT6116 chip. Nuvoton SuperIO chips are
+> very similar to the ones from Fintek. In other subsystems they also
+> share drivers and are called a family of drivers.
 > 
-> Are you sure about that? We're going to have serious problems if the
-> Intel manager driver can clock-stop even though there are peripheral
-> drivers still using the clock.
+> For the GPIO subsystem the only difference is that the direction bit
+> is reversed and that there is only one data bit per pin. On the
+> SuperIO level the logical device is another one.
 > 
-> Currently the Intel code will only clock-stop when it goes into
-> runtime suspend, which only happens if all peripheral drivers are also
-> in runtime suspend. Or on system suspend, which is handled specially by
-> the cs42l42 driver. If you are saying this isn't guaranteed behavior
-> then we'll need to add something to the core Soundwire core code to tell
-> it when it's allowed to clock-stop.
-
-If the peripheral remains pm_runtime active, the manager will never
-suspend, but power-wise that's a non-starter.
-
-The premise is that the audio subsystem goes to a low-power state with
-only a detector running. The functionality will resume on *any* in-band
-wake coming from the peripheral.
-
-> I tried returning an error from the codec driver clk_stop() callback but
-> the core code and cadence code treat that as unexpected and dev_err()
-> it, then the intel.c code ignores the error and carries on suspending.
-
-Yes, we ignore those errors on purpose, because when the system restarts
-the device will have gone through a reset sequence. I don't see a good
-reason to prevent a pm_runtime or system suspend, this would have very
-large impacts on standby power.
-
->  Maybe this is explained
->> further down in this patch, but that statement is a bit odd.
->>
->> Even if the condition that caused the wakeup was cleared, presumably
->> when resetting the device the same condition will be raised again, no?
->>
->>> +static int cs42l42_sdw_dai_hw_params(struct snd_pcm_substream
->>> *substream,
->>> +                     struct snd_pcm_hw_params *params,
->>> +                     struct snd_soc_dai *dai)
->>> +{
->>> +    struct cs42l42_private *cs42l42 =
->>> snd_soc_component_get_drvdata(dai->component);
->>> +    struct sdw_stream_runtime *sdw_stream =
->>> snd_soc_dai_get_dma_data(dai, substream);
->>> +    struct sdw_stream_config sconfig;
->>> +    struct sdw_port_config pconfig;
->>> +    unsigned int pdn_mask;
->>> +    int ret;
->>> +
->>> +    if (!sdw_stream)
->>> +        return -EINVAL;
->>> +
->>> +    /* Needed for PLL configuration when we are notified of new bus
->>> config */
->>> +    cs42l42->sample_rate = params_rate(params);
->>> +
->>> +    memset(&sconfig, 0, sizeof(sconfig));
->>> +    memset(&pconfig, 0, sizeof(pconfig));
->>> +
->>> +    sconfig.frame_rate = params_rate(params);
->>> +    sconfig.ch_count = params_channels(params);
->>> +    sconfig.bps = snd_pcm_format_width(params_format(params));
->>> +    pconfig.ch_mask = GENMASK(sconfig.ch_count - 1, 0);
->>> +
->>> +    if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
->>> +        sconfig.direction = SDW_DATA_DIR_RX;
->>> +        pconfig.num = CS42L42_SDW_PLAYBACK_PORT;
->>> +        pdn_mask = CS42L42_HP_PDN_MASK;
->>> +    } else {
->>> +        sconfig.direction = SDW_DATA_DIR_TX;
->>> +        pconfig.num = CS42L42_SDW_CAPTURE_PORT;
->>> +        pdn_mask = CS42L42_ADC_PDN_MASK;
->>> +    }
->>> +
->>> +    /*
->>> +     * The DAI-link prepare() will trigger Soundwire DP prepare. But
->>> CS42L42
->>> +     * DP will only prepare if the HP/ADC is already powered-up. The
->>> +     * DAI prepare() and DAPM sequence run after DAI-link prepare()
->>> so the
->>> +     * PDN bit must be written here.
->>> +     */
->>
->> Why not make use of the callbacks that were added precisely to let the
->> codec driver perform device-specific operations? You can add your own
->> code in pre and post operation for both prepare and bank switch. It's
->> not clear why you would do this in a hw_params (which can be called
->> multiple times per ALSA conventions).
->>
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>  drivers/gpio/gpio-f7188x.c | 71
+> +++++++++++++++++++++++++++----------- 1 file changed, 51
+> insertions(+), 20 deletions(-)
 > 
-> Ah, I'd not noticed the port_prep callback. Maybe it didn't exist when
-> this code was first written.
+> diff --git a/drivers/gpio/gpio-f7188x.c b/drivers/gpio/gpio-f7188x.c
+> index 18a3147f5a42..7b05ecc611e9 100644
+> --- a/drivers/gpio/gpio-f7188x.c
+> +++ b/drivers/gpio/gpio-f7188x.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0-or-later
+>  /*
+>   * GPIO driver for Fintek Super-I/O F71869, F71869A, F71882, F71889
+> and F81866
+> + * and Nuvoton Super-I/O NCT6116D
 
-it's been upstream since 4.17 in 2018, and earlier in internal releases.
+That Kconfig item could also use an update, will include in next
+version.
 
->>> +    regmap_clear_bits(cs42l42->regmap, CS42L42_PWR_CTL1, pdn_mask);
->>> +    usleep_range(CS42L42_HP_ADC_EN_TIME_US,
->>> CS42L42_HP_ADC_EN_TIME_US + 1000);
->>> +
->>> +    ret = sdw_stream_add_slave(cs42l42->sdw_peripheral, &sconfig,
->>> &pconfig, 1, sdw_stream);
->>> +    if (ret) {
->>> +        dev_err(dai->dev, "Failed to add sdw stream: %d\n", ret);
->>> +        goto err;
->>> +    }
->>> +
->>> +    cs42l42_src_config(dai->component, params_rate(params));
->>> +
->>> +    return 0;
->>> +
->>> +err:
->>> +    regmap_set_bits(cs42l42->regmap, CS42L42_PWR_CTL1, pdn_mask);
->>> +
->>> +    return ret;
->>> +}
->>> +
+Henning
 
->>> +static void cs42l42_sdw_init(struct sdw_slave *peripheral)
->>> +{
->>> +    struct cs42l42_private *cs42l42 =
->>> dev_get_drvdata(&peripheral->dev);
->>> +    int ret = 0;
->>> +
->>> +    regcache_cache_only(cs42l42->regmap, false);
->>> +
->>> +    ret = cs42l42_init(cs42l42);
->>> +    if (ret < 0) {
->>> +        regcache_cache_only(cs42l42->regmap, true);
->>> +        return;
->>> +    }
->>> +
->>> +    /* Write out any cached changes that happened between probe and
->>> attach */
->>> +    ret = regcache_sync(cs42l42->regmap);
->>> +    if (ret < 0)
->>> +        dev_warn(cs42l42->dev, "Failed to sync cache: %d\n", ret);
->>> +
->>> +    /* Disable internal logic that makes clock-stop conditional */
->>> +    regmap_clear_bits(cs42l42->regmap, CS42L42_PWR_CTL3,
->>> CS42L42_SW_CLK_STP_STAT_SEL_MASK);
->>> +
->>> +    /*
->>> +     * pm_runtime is needed to control bus manager suspend, and to
->>
->> I don't think the intent is that the codec can control the manager
->> suspend, but that the manager cannot be suspended by the framework
->> unless the codec suspends first?
->>
-> 
-> That sounds the same to me. But I can re-word the comment.
+>   *
+>   * Copyright (C) 2010-2013 LaCie
+>   *
+> @@ -22,13 +23,12 @@
+>  #define SIO_LDSEL		0x07	/* Logical device
+> select */ #define SIO_DEVID		0x20	/* Device ID
+> (2 bytes) */ #define SIO_DEVREV		0x22	/* Device
+> revision */ -#define SIO_MANID		0x23	/* Fintek
+> ID (2 bytes) */ 
+> -#define SIO_LD_GPIO		0x06	/* GPIO logical
+> device */ #define SIO_UNLOCK_KEY		0x87	/* Key to
+> enable Super-I/O */ #define SIO_LOCK_KEY		0xAA
+> /* Key to disable Super-I/O */ 
+> -#define SIO_FINTEK_ID		0x1934	/* Manufacturer
+> ID */ +#define SIO_LD_GPIO_FINTEK	0x06	/* GPIO logical
+> device */ +#define SIO_LD_GPIO_NUVOTON	0x07	/* GPIO
+> logical device */ #define SIO_F71869_ID		0x0814
+> /* F71869 chipset ID */ #define SIO_F71869A_ID
+> 0x1007	/* F71869A chipset ID */ #define SIO_F71882_ID
+> 	0x0541	/* F71882 chipset ID */ @@ -37,7 +37,7 @@
+>  #define SIO_F81866_ID		0x1010	/* F81866 chipset
+> ID */ #define SIO_F81804_ID		0x1502  /* F81804 chipset
+> ID, same for f81966 */ #define SIO_F81865_ID
+> 0x0704	/* F81865 chipset ID */ -
+> +#define SIO_NCT6116D_ID		0xD283  /* NCT6116D chipset
+> ID */ 
+>  enum chips {
+>  	f71869,
+> @@ -48,6 +48,7 @@ enum chips {
+>  	f81866,
+>  	f81804,
+>  	f81865,
+> +	nct6116d,
+>  };
+>  
+>  static const char * const f7188x_names[] = {
+> @@ -59,10 +60,12 @@ static const char * const f7188x_names[] = {
+>  	"f81866",
+>  	"f81804",
+>  	"f81865",
+> +	"nct6116d",
+>  };
+>  
+>  struct f7188x_sio {
+>  	int addr;
+> +	int device;
+>  	enum chips type;
+>  };
+>  
+> @@ -170,6 +173,9 @@ static int f7188x_gpio_set_config(struct
+> gpio_chip *chip, unsigned offset, /* Output mode register (0:open
+> drain 1:push-pull). */ #define gpio_out_mode(base) (base + 3)
+>  
+> +#define gpio_dir_invert(type)	((type) == nct6116d)
+> +#define gpio_data_single(type)	((type) == nct6116d)
+> +
+>  static struct f7188x_gpio_bank f71869_gpio_bank[] = {
+>  	F7188X_GPIO_BANK(0, 6, 0xF0),
+>  	F7188X_GPIO_BANK(10, 8, 0xE0),
+> @@ -254,6 +260,17 @@ static struct f7188x_gpio_bank
+> f81865_gpio_bank[] = { F7188X_GPIO_BANK(60, 5, 0x90),
+>  };
+>  
+> +static struct f7188x_gpio_bank nct6116d_gpio_bank[] = {
+> +	F7188X_GPIO_BANK(0, 8, 0xE0),
+> +	F7188X_GPIO_BANK(10, 8, 0xE4),
+> +	F7188X_GPIO_BANK(20, 8, 0xE8),
+> +	F7188X_GPIO_BANK(30, 8, 0xEC),
+> +	F7188X_GPIO_BANK(40, 8, 0xF0),
+> +	F7188X_GPIO_BANK(50, 8, 0xF4),
+> +	F7188X_GPIO_BANK(60, 8, 0xF8),
+> +	F7188X_GPIO_BANK(70, 1, 0xFC),
+> +};
+> +
+>  static int f7188x_gpio_get_direction(struct gpio_chip *chip,
+> unsigned offset) {
+>  	int err;
+> @@ -264,13 +281,16 @@ static int f7188x_gpio_get_direction(struct
+> gpio_chip *chip, unsigned offset) err = superio_enter(sio->addr);
+>  	if (err)
+>  		return err;
+> -	superio_select(sio->addr, SIO_LD_GPIO);
+> +	superio_select(sio->addr, sio->device);
+>  
+>  	dir = superio_inb(sio->addr, gpio_dir(bank->regbase));
+>  
+>  	superio_exit(sio->addr);
+>  
+> -	if (dir & 1 << offset)
+> +	if (gpio_dir_invert(sio->type))
+> +		dir = ~dir;
+> +
+> +	if (dir & BIT(offset))
+>  		return GPIO_LINE_DIRECTION_OUT;
+>  
+>  	return GPIO_LINE_DIRECTION_IN;
+> @@ -286,10 +306,14 @@ static int f7188x_gpio_direction_in(struct
+> gpio_chip *chip, unsigned offset) err = superio_enter(sio->addr);
+>  	if (err)
+>  		return err;
+> -	superio_select(sio->addr, SIO_LD_GPIO);
+> +	superio_select(sio->addr, sio->device);
+>  
+>  	dir = superio_inb(sio->addr, gpio_dir(bank->regbase));
+> -	dir &= ~BIT(offset);
+> +
+> +	if (gpio_dir_invert(sio->type))
+> +		dir |= BIT(offset);
+> +	else
+> +		dir &= ~BIT(offset);
+>  	superio_outb(sio->addr, gpio_dir(bank->regbase), dir);
+>  
+>  	superio_exit(sio->addr);
+> @@ -307,11 +331,11 @@ static int f7188x_gpio_get(struct gpio_chip
+> *chip, unsigned offset) err = superio_enter(sio->addr);
+>  	if (err)
+>  		return err;
+> -	superio_select(sio->addr, SIO_LD_GPIO);
+> +	superio_select(sio->addr, sio->device);
+>  
+>  	dir = superio_inb(sio->addr, gpio_dir(bank->regbase));
+>  	dir = !!(dir & BIT(offset));
+> -	if (dir)
+> +	if (gpio_data_single(sio->type) || dir)
+>  		data = superio_inb(sio->addr,
+> gpio_data_out(bank->regbase)); else
+>  		data = superio_inb(sio->addr,
+> gpio_data_in(bank->regbase)); @@ -332,7 +356,7 @@ static int
+> f7188x_gpio_direction_out(struct gpio_chip *chip, err =
+> superio_enter(sio->addr); if (err)
+>  		return err;
+> -	superio_select(sio->addr, SIO_LD_GPIO);
+> +	superio_select(sio->addr, sio->device);
+>  
+>  	data_out = superio_inb(sio->addr,
+> gpio_data_out(bank->regbase)); if (value)
+> @@ -342,7 +366,10 @@ static int f7188x_gpio_direction_out(struct
+> gpio_chip *chip, superio_outb(sio->addr,
+> gpio_data_out(bank->regbase), data_out); 
+>  	dir = superio_inb(sio->addr, gpio_dir(bank->regbase));
+> -	dir |= BIT(offset);
+> +	if (gpio_dir_invert(sio->type))
+> +		dir &= ~BIT(offset);
+> +	else
+> +		dir |= BIT(offset);
+>  	superio_outb(sio->addr, gpio_dir(bank->regbase), dir);
+>  
+>  	superio_exit(sio->addr);
+> @@ -360,7 +387,7 @@ static void f7188x_gpio_set(struct gpio_chip
+> *chip, unsigned offset, int value) err = superio_enter(sio->addr);
+>  	if (err)
+>  		return;
+> -	superio_select(sio->addr, SIO_LD_GPIO);
+> +	superio_select(sio->addr, sio->device);
+>  
+>  	data_out = superio_inb(sio->addr,
+> gpio_data_out(bank->regbase)); if (value)
+> @@ -388,7 +415,7 @@ static int f7188x_gpio_set_config(struct
+> gpio_chip *chip, unsigned offset, err = superio_enter(sio->addr);
+>  	if (err)
+>  		return err;
+> -	superio_select(sio->addr, SIO_LD_GPIO);
+> +	superio_select(sio->addr, sio->device);
+>  
+>  	data = superio_inb(sio->addr, gpio_out_mode(bank->regbase));
+>  	if (param == PIN_CONFIG_DRIVE_OPEN_DRAIN)
+> @@ -449,6 +476,10 @@ static int f7188x_gpio_probe(struct
+> platform_device *pdev) data->nr_bank = ARRAY_SIZE(f81865_gpio_bank);
+>  		data->bank = f81865_gpio_bank;
+>  		break;
+> +	case nct6116d:
+> +		data->nr_bank = ARRAY_SIZE(nct6116d_gpio_bank);
+> +		data->bank = nct6116d_gpio_bank;
+> +		break;
+>  	default:
+>  		return -ENODEV;
+>  	}
+> @@ -485,12 +516,8 @@ static int __init f7188x_find(int addr, struct
+> f7188x_sio *sio) return err;
+>  
+>  	err = -ENODEV;
+> -	devid = superio_inw(addr, SIO_MANID);
+> -	if (devid != SIO_FINTEK_ID) {
+> -		pr_debug(DRVNAME ": Not a Fintek device at
+> 0x%08x\n", addr);
+> -		goto err;
+> -	}
+>  
+> +	sio->device = SIO_LD_GPIO_FINTEK;
+>  	devid = superio_inw(addr, SIO_DEVID);
+>  	switch (devid) {
+>  	case SIO_F71869_ID:
+> @@ -517,8 +544,12 @@ static int __init f7188x_find(int addr, struct
+> f7188x_sio *sio) case SIO_F81865_ID:
+>  		sio->type = f81865;
+>  		break;
+> +	case SIO_NCT6116D_ID:
+> +		sio->device = SIO_LD_GPIO_NUVOTON;
+> +		sio->type = nct6116d;
+> +		break;
+>  	default:
+> -		pr_info(DRVNAME ": Unsupported Fintek device
+> 0x%04x\n", devid);
+> +		pr_info(DRVNAME ": Unsupported device 0x%04x\n",
+> devid); goto err;
+>  	}
+>  	sio->addr = addr;
 
-the initial wording makes it sound like you want to actively control the
-manager state, that's different to letting the framework deal with the
-parent-child relationship.
-
-> 
->>> +     * recover from an unattach_request when the manager suspends.
->>> +     * Autosuspend delay must be long enough to enumerate.
->>
->> No, this last sentence is not correct. The enumeration can be done no
->> matter what pm_runtime state the Linux codec device is in. And it's
->> really the other way around, it's when the codec reports as ATTACHED
->> that the codec driver will be resumed.
->>
-> 
-> It can't if the device has powered off. So there has to be some way to
-> ensure the codec driver won't suspend before the core has completed
-> enumeration and notified an ATTACH to the codec driver.
-
-Powered-off? We don't have any mechanisms in SoundWire to deal with
-power. Can you describe what the sequence should be?
-
-All existing codecs will look for the sync pattern as soon as the bus
-reset is complete. The functionality behind the interface might be off,
-but that's a separate topic.
-
-if it's required to resume the child device when the manager resumes, so
-as to deal with sideband power management then indeed this would be a
-SoundWire core change. It's not hard to do, we've already implemented a
-loop to force codec devices to pm_runtime resume in a .prepare callback,
-we could tag the device with the flag.
-
->>> +     */
->>> +    pm_runtime_set_autosuspend_delay(cs42l42->dev, 3000);
->>> +    pm_runtime_use_autosuspend(cs42l42->dev);
->>> +    pm_runtime_set_active(cs42l42->dev);
->>> +    pm_runtime_enable(cs42l42->dev);
->>> +    pm_runtime_mark_last_busy(cs42l42->dev);
->>> +    pm_runtime_idle(cs42l42->dev);
->>> +}
-
->>>   static const struct snd_soc_dapm_route cs42l42_audio_map[] = {
->>> @@ -559,6 +564,20 @@ static int cs42l42_set_jack(struct
->>> snd_soc_component *component, struct snd_soc_
->>>   {
->>>       struct cs42l42_private *cs42l42 =
->>> snd_soc_component_get_drvdata(component);
->>>   +    /*
->>> +     * If the Soundwire controller issues bus reset when coming out of
->>> +     * clock-stop it will erase the jack state. This can lose button
->>> press
->>> +     * events, and plug/unplug interrupt bits take between 125ms and
->>> 1500ms
->>> +     * before they are valid again.
->>> +     * Prevent this by holding our pm_runtime to block clock-stop.
->>> +     */
->>> +    if (cs42l42->sdw_peripheral) {
->>> +        if (jk)
->>> +            pm_runtime_get_sync(cs42l42->dev);
->>> +        else
->>> +            pm_runtime_put_autosuspend(cs42l42->dev);
->>> +    }
->>> +
->>
->> I *really* don't understand this sequence.
->>
->> The bus will be suspended when ALL devices have been idle for some time.
->> If the user presses a button AFTER the bus is suspended, the device can
->> still use the in-band wake and resume.
-> 
-> Only if it has that capability. The cs42l42 has very limited wake
-> capability and cannot wake on interrupt, and it certainly can't accept
-> the Intel code resetting it before it has a chance to find out what
-> condition caused the wake.
-> 
->> Granted the button press will be lost but the plug/unplug status will
->> still be handled with a delay.
->>
-> 
-> I'm finding it difficult to believe it's acceptable to end users for
-> button events to be lost.
-
-I don't understand what 'limited wake functionality' means. It can
-either generate a wake or it cannot.
-
-In the event that it can, then the Intel manager will detect an in-band
-wake and restart the system. When the headset device enumerates and
-initializes, it should initiate a check for the jack status. Button
-press will be handled once plug-in status is confirmed.
-
-I don't think there is a requirement to keep track of every button press
-why the system is suspended. The user-experience is that the system
-restarts and plug-in or button-press are handled at some point. It would
-be counter-productive to prevent the Intel manager from suspending to
-save even 500ms on restart.
-
->>>       /* Prevent race with interrupt handler */
->>>       mutex_lock(&cs42l42->irq_lock);
->>>       cs42l42->jack = jk;
->>> @@ -1645,9 +1664,11 @@ irqreturn_t cs42l42_irq_thread(int irq, void
->>> *data)
->>>       unsigned int current_button_status;
->>>       unsigned int i;
->>>   +    pm_runtime_get_sync(cs42l42->dev);
->>>       mutex_lock(&cs42l42->irq_lock);
->>>       if (cs42l42->suspended || !cs42l42->init_done) {
->>>           mutex_unlock(&cs42l42->irq_lock);
->>> +        pm_runtime_put_autosuspend(cs42l42->dev);
->>>           return IRQ_NONE;
->>>       }
->>>   @@ -1750,6 +1771,8 @@ irqreturn_t cs42l42_irq_thread(int irq, void
->>> *data)
->>>       }
->>>         mutex_unlock(&cs42l42->irq_lock);
->>> +    pm_runtime_mark_last_busy(cs42l42->dev);
->>> +    pm_runtime_put_autosuspend(cs42l42->dev);
->>>         return IRQ_HANDLED;
->>
->> Again in SoundWire more you should not use a dedicated interrupt.
->> There's something missing in the explanations on why this thread is
->> required.
->>
-> 
-> Do you have a situation where it will actually cause a problem or are
-> you just saying that in an ideal world where all the hardware was
-> perfect it wouldn't need one?
-> Bear in mind that cs42l42 is roughly 7 years old so its Soundwire
-> implementation may not be all that you'd expect from a device designed
-> today to SW1.2 with Soundwire as its primary interface.
-
-Nothing is ideal in a standard, there's always different
-interpretations, that's ok.
-
-We've never seen a device with a dedicated interrupt line and I think
-it's only fair to ask why it was necessary. It's extra complexity for
-BIOS integration, possibly machine driver, and more validation work.
-
-If the message was that a dedicated interrupt line is required, let's
-enable it. If the in-band wake is good-enough, then let's avoid more
-options.
