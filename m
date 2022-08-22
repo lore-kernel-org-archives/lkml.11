@@ -2,164 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A12DC32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F42EC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235058AbiHVM35 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
+        id S234807AbiHVMcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235056AbiHVM3y (ORCPT
+        with ESMTP id S230503AbiHVMcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:29:54 -0400
+        Mon, 22 Aug 2022 08:32:45 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D92531EF7;
-        Mon, 22 Aug 2022 05:29:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF396BF4A;
+        Mon, 22 Aug 2022 05:32:44 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 18C4412FC;
-        Mon, 22 Aug 2022 05:29:56 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0E94B3F718;
-        Mon, 22 Aug 2022 05:29:50 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 13:29:48 +0100
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     <Conor.Dooley@microchip.com>
-Cc:     <geert@linux-m68k.org>, <devicetree@vger.kernel.org>,
-        <aou@eecs.berkeley.edu>, <samuel@sholland.org>,
-        <linux-kernel@vger.kernel.org>, <jernej.skrabec@gmail.com>,
-        <prabhakar.mahadev-lad.rj@bp.renesas.com>, <wens@csie.org>,
-        <robh+dt@kernel.org>, <palmer@dabbelt.com>,
-        <krzysztof.kozlowski+dt@linaro.org>, <paul.walmsley@sifive.com>,
-        <linux-riscv@lists.infradead.org>, <linux-sunxi@lists.linux.dev>
-Subject: Re: [PATCH 06/12] riscv: dts: allwinner: Add the D1 SoC base
- devicetree
-Message-ID: <20220822132948.17f5dc6c@donnerap.cambridge.arm.com>
-In-Reply-To: <538ae41e-664f-2efb-f941-9a063b727b6a@microchip.com>
-References: <20220815050815.22340-1-samuel@sholland.org>
-        <20220815050815.22340-7-samuel@sholland.org>
-        <20220815141159.10edeba5@donnerap.cambridge.arm.com>
-        <3cd9ed5b-8348-38ac-feb1-9a7da858cebc@microchip.com>
-        <932aaefd-e2ca-ef26-bf30-e315fb271ec5@sholland.org>
-        <ff9e8bd3-c5f7-6319-060e-250151087a8e@microchip.com>
-        <c6cba83ea9eea7fc41a9e78d0e45487b21f0f560.camel@icenowy.me>
-        <c7599abd-c4cf-9ddd-1e74-e47dec9366d4@microchip.com>
-        <CAMuHMdUHVpj9ikE2NxpBSBtTG8K6v92vGdbw3GLmEYUoVzatvg@mail.gmail.com>
-        <538ae41e-664f-2efb-f941-9a063b727b6a@microchip.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B03D612FC;
+        Mon, 22 Aug 2022 05:32:47 -0700 (PDT)
+Received: from [10.57.15.77] (unknown [10.57.15.77])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AEB0A3F718;
+        Mon, 22 Aug 2022 05:32:38 -0700 (PDT)
+Message-ID: <d5016c1e-55d9-4224-278a-50377d4c6454@arm.com>
+Date:   Mon, 22 Aug 2022 13:32:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 4/4] swiotlb: panic if nslabs is too small
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Yu Zhao <yuzhao@google.com>, dongli.zhang@oracle.com,
+        ak@linux.intel.com, akpm@linux-foundation.org,
+        alexander.sverdlin@nokia.com, andi.kleen@intel.com, bp@alien8.de,
+        bp@suse.de, cminyard@mvista.com, corbet@lwn.net,
+        damien.lemoal@opensource.wdc.com, dave.hansen@linux.intel.com,
+        iommu@lists.linux-foundation.org, joe.jin@oracle.com,
+        joe@perches.com, keescook@chromium.org, kirill.shutemov@intel.com,
+        kys@microsoft.com, linux-doc@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, ltykernel@gmail.com,
+        michael.h.kelley@microsoft.com, mingo@redhat.com,
+        m.szyprowski@samsung.com, parri.andrea@gmail.com,
+        paulmck@kernel.org, pmladek@suse.com, rdunlap@infradead.org,
+        tglx@linutronix.de, thomas.lendacky@amd.com,
+        Tianyu.Lan@microsoft.com, tsbogend@alpha.franken.de,
+        vkuznets@redhat.com, wei.liu@kernel.org, x86@kernel.org
+References: <20220611082514.37112-5-dongli.zhang@oracle.com>
+ <20220820012031.1285979-1-yuzhao@google.com>
+ <f8c743d8-fcbe-4ef7-5f86-d63086552ffd@arm.com>
+ <YwNn92WP3rP4ylZu@infradead.org>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YwNn92WP3rP4ylZu@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 12:13:42 +0000
-<Conor.Dooley@microchip.com> wrote:
-
-Hi,
-
-> On 22/08/2022 12:46, Geert Uytterhoeven wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Hi Conor, Andre,
-> > 
-> > On Sun, Aug 21, 2022 at 12:07 PM <Conor.Dooley@microchip.com> wrote:  
-> >> On 21/08/2022 07:45, Icenowy Zheng wrote:  
-> >>> 在 2022-08-20星期六的 17:29 +0000，Conor.Dooley@microchip.com写道：  
-> >>>> On 20/08/2022 18:24, Samuel Holland wrote:  
+On 2022-08-22 12:26, Christoph Hellwig wrote:
+> On Mon, Aug 22, 2022 at 10:49:09AM +0100, Robin Murphy wrote:
+>> Hmm, it's possible this might be quietly fixed by 20347fca71a3, but either
+>> way I'm not sure why we would need to panic *before* we've even tried to
+>> allocate anything, when we could simply return with no harm done? If we've
+>> ended up calculating (or being told) a buffer size which is too small to be
+>> usable, that should be no different to disabling SWIOTLB entirely.
 > 
-> >>>>> This is not feasible, due to the different #interrupt-cells. See
-> >>>>> https://lore.kernel.org/linux-riscv/CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisGxHMBPUEa8nTMFpzw@mail.gmail.com/
-> >>>>>
-> >>>>> Even if we share some file across architectures, you still have to
-> >>>>> update files
-> >>>>> in both places to get the interrupts properties correct.
-> >>>>>
-> >>>>> I get the desire to deduplicate things, but we already deal with
-> >>>>> updating the
-> >>>>> same/similar nodes across several SoCs, so that is nothing new. I
-> >>>>> think it would
-> >>>>> be more confusing/complicated to have all of the interrupts
-> >>>>> properties
-> >>>>> overridden in a separate file.  
-> >>>>
-> >>>> Yeah, should maybe have circled back after that conversation, would
-> >>>> have been
-> >>>> nice but if the DTC can't do it nicely then w/e.  
-> >>>
-> >>> Well, maybe we can overuse the facility of C preprocessor?
-> >>>
-> >>> e.g.
-> >>>
-> >>> ```
-> >>> // For ARM
-> >>> #define SOC_PERIPHERAL_IRQ(n) GIC_SPI n
-> >>> // For RISC-V
-> >>> #define SOC_PERIPHERAL_IRQ(n) n
-> >>> ```
-> >>>  
-> >>
-> >> Geert pointed out that this is not possible (at least on the Renesas
-> >> stuff) because the GIC interrupt numbers are not the same as the
-> >> PLIC's & the DTC is not able to handle the addition:
-> >> https://lore.kernel.org/linux-riscv/CAMuHMdXHSMcrVOH+vcrdRRF+i2TkMcFisGxHMBPUEa8nTMFpzw@mail.gmail.com/  
-> > 
-> > Without the ability to do additions in DTC, we could e.g. list both
-> > interrupts in the macro, like:
-> > 
-> >      // For ARM
-> >      #define SOC_PERIPHERAL_IRQ(na, nr) GIC_SPI na
-> >      // For RISC-V
-> >      #define SOC_PERIPHERAL_IRQ(na, nr) nr  
-> 
-> Do you think this is worth doing? Or are you just providing an
-> example of what could be done?
-> 
-> Where would you envisage putting these macros? I forget the order
-> of the CPP operations that are done, can they be put in the dts?
-> 
-> > 
-> > On Mon, Aug 22, 2022 at 12:52 PM Andre Przywara <andre.przywara@arm.com> wrote:  
-> >> There are interrupt-maps for that:
-> >> sun8i-r528.dtsi:
-> >>          soc {
-> >>                  #interrupt-cells = <1>;
-> >>                  interrupt-map = <0  18 &gic GIC_SPI  2 IRQ_TYPE_LEVEL_HIGH>,
-> >>                                  <0  19 &gic GIC_SPI  3 IRQ_TYPE_LEVEL_HIGH>,
-> >>                                  ....
-> >>
-> >> sun20i-d1.dtsi:
-> >>          soc {
-> >>                  #interrupt-cells = <1>;
-> >>                  interrupt-map = <0  18 &plic  18 IRQ_TYPE_LEVEL_HIGH>,
-> >>                                  <0  19 &plic  19 IRQ_TYPE_LEVEL_HIGH>,
-> >>
-> >> then, in the shared .dtsi:
-> >>                  uart0: serial@2500000 {
-> >>                          compatible = "snps,dw-apb-uart";
-> >>                          ...
-> >>                          interrupts = <18>;  
-> > 
-> > Nice! But it's gonna be a very large interrupt-map.  
-> 
-> I quite like the idea of not duplicating files across the archs
-> if it can be helped, but not at the expense of making them hard to
-> understand & I feel like unfortunately the large interrupt map is
-> in that territory.
+> Hmm.  I think this might be a philosophical question, but I think
+> failing the boot with a clear error report for a configuration that is
+> supposed to work but can't is way better than just panicing later on.
 
-Well, I don't know about the Renesas case, but as far as we know the
-Allwinner D1 and R528 are using the exact same die, just fused differently.
-So expressing this in a common .dtsi sounds very desirable, especially
-since a devicetree is an architecture agnostic data structure.
+Depends which context of "supposed to work" you mean there. The most 
+logical reason to end up with a tiny SWIOTLB size is because you don't 
+expect to need SWIOTLB, therefore if there's now a functional minimum 
+size limit, failing gracefully such that the system keeps working as 
+before is correct in that context. Even if we assume the expectation 
+goes the other way, then it should be on SWIOTLB to adjust the initial 
+allocation size to whatever minimum it now needs, which as I say it 
+looks like 20347fca71a3 might do anyway. Creating new breakage by 
+panicking instead of making a decision one way or the other was never 
+the right answer.
 
-And while it's true that a DT interrupt-map is not for the faint of heart,
-I think even the casual reader gets the idea quickly by looking at
-it, possibly guided by a comment.
-And it doesn't need to be very large. grep counted 32 genuine interrupts
-in the current .dtsi file, so I just put those ones needed in. If we need
-more IRQs later (quite likely), they are easily added, using copy&paste.
+>> Historically, passing "swiotlb=1" on the command line has been used to save
+>> memory when the user knows SWIOTLB isn't needed. That should definitely not
+>> be allowed to start panicking.
+> 
+> I've never seen swiotlb=1 advertized as a way to disable swiotlb.
+> That's always been swiotlb=noforce, which cleanly disables it.
 
-Cheers,
-Andre
+No, it's probably not been advertised as such, but it's what clearly 
+fell out of the available options before "noforce" was added (which was 
+considerably more recently than "always"), and the fact is that people 
+*are* still using it even today (presumably copy-pasted through Android 
+BSPs since before 4.10).
+
+Thanks,
+Robin.
