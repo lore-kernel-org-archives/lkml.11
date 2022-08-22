@@ -2,127 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E68C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A37C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbiHVDo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 23:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
+        id S232644AbiHVDq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 23:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232533AbiHVDox (ORCPT
+        with ESMTP id S231804AbiHVDq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 23:44:53 -0400
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F08E21DA40;
-        Sun, 21 Aug 2022 20:44:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=8gltV
-        +vzpxkeIlThBVdl+wrepht7HkRmfUlaR5myKzQ=; b=Mgst45uwvWmKFJcf562YY
-        hEaBaGJEPUORBIZv/J8Z/N0/SvyTSzb6U4K9Yh4I6nWK+XaT/lTj6YoreLa5tU0r
-        YZD/pt+JJ+Ecia71KDDwbv9rgy0qXu6YchDecwxHPJVFdtOPmPYjeT70vDjvFCVB
-        6I7hwI8Oa0YXQsrsAJyEEI=
-Received: from localhost.localdomain (unknown [39.99.236.58])
-        by smtp10 (Coremail) with SMTP id NuRpCgB3XREH+wJjyV1lAQ--.42651S2;
-        Mon, 22 Aug 2022 11:42:00 +0800 (CST)
-From:   Hongbin Wang <wh_bin@126.com>
-To:     steffen.klassert@secunet.com
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] xfrm: Drop unused argument
-Date:   Sun, 21 Aug 2022 23:41:47 -0400
-Message-Id: <20220822034147.2284570-1-wh_bin@126.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 21 Aug 2022 23:46:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8652495F;
+        Sun, 21 Aug 2022 20:46:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2BC1B80E72;
+        Mon, 22 Aug 2022 03:46:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94DACC433C1;
+        Mon, 22 Aug 2022 03:46:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661140012;
+        bh=RFNZNQQXYq+W/Ztgxu7x4hbjSIwxCSoZZrUPT41imIc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FGMxNHjn3gG/7V0VA+yKPhFhWlDsBcgfxKxV9wuJkzusw8Nh00Jkf1LCh+bk1uBNV
+         Va1C/uvFXwhsHF/jCNyD8/4FQJsqtWOit/WJT2+31FNftgDNOZPQoi6xK+K26vrtNE
+         DRmoOK7QPrHFGrpxE3AK8dQYuFGtIirUy5XMP6dYtrFtJTBRRuac63ZtJ3kTdMXFkc
+         Uig5pbzkIxgEla2JdpfO4qFiYYUni2/TTLDOXDCK9ZBPYjCXKzrg+n8JV7lNLTg9U9
+         i5VXUMhox3AGX73fx4SaVf3LSYFvs6bneBvGssGUwmIK5f+Pp91ASUY+B1RrNM47MC
+         8i5wUynVflSrg==
+Date:   Mon, 22 Aug 2022 11:46:46 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Li Yang <leoyang.li@nxp.com>
+Cc:     devicetree@vger.kernel.org, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Priyanka Jain <priyanka.jain@nxp.com>,
+        Santan Kumar <santan.kumar@nxp.com>,
+        Tao Yang <b31903@freescale.com>,
+        Yogesh Gaur <yogeshnarayan.gaur@nxp.com>,
+        Abhimanyu Saini <abhimanyu.saini@nxp.com>
+Subject: Re: [PATCH v2 4/6] arm64: dts: ls2081a-rdb: Add DTS for NXP
+ LS2081ARDB
+Message-ID: <20220822034646.GT149610@dragon>
+References: <20220817204357.21753-1-leoyang.li@nxp.com>
+ <20220817204357.21753-5-leoyang.li@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgB3XREH+wJjyV1lAQ--.42651S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxAFWUury7AFWrZFWxZr18Krg_yoW5GF4rpF
-        WDG3s0krWDXw12kw1xGF48CF13try0kwsFkrWrC3sYk345K34ruw1rJryjvFySyw1rJrW7
-        Xw4avrW8Ka1UJr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UFQ6AUUUUU=
-X-Originating-IP: [39.99.236.58]
-X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbiGAhlolpEHvWnVQAAsQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817204357.21753-5-leoyang.li@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unused argument from xfrm_policy_match,
-__xfrm_policy_eval_candidates and xfrm_policy_eval_candidates.
-No functional changes intended.
+On Wed, Aug 17, 2022 at 03:43:55PM -0500, Li Yang wrote:
+> From: Priyanka Jain <priyanka.jain@nxp.com>
+> 
+> This patch adds support for NXP LS2081ARDB board which has LS2081A SoC.
+> 
+> LS2081A SoC is 40-pin derivative of LS2088A SoC. From functional
+> perspective both are same. Hence, LS2088a SoC dtsi file is included
+> from LS2081ARDB dts.
+> 
+> Signed-off-by: Priyanka Jain <priyanka.jain@nxp.com>
+> Signed-off-by: Santan Kumar <santan.kumar@nxp.com>
+> Signed-off-by: Tao Yang <b31903@freescale.com>
+> Signed-off-by: Yogesh Gaur <yogeshnarayan.gaur@nxp.com>
+> Signed-off-by: Abhimanyu Saini <abhimanyu.saini@nxp.com>
+> Signed-off-by: Li Yang <leoyang.li@nxp.com>
+> ---
+>  arch/arm64/boot/dts/freescale/Makefile        |   1 +
+>  .../boot/dts/freescale/fsl-ls2081a-rdb.dts    | 131 ++++++++++++++++++
+>  2 files changed, 132 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/freescale/fsl-ls2081a-rdb.dts
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+> index 2cf55534c162..bf7c448fa817 100644
+> --- a/arch/arm64/boot/dts/freescale/Makefile
+> +++ b/arch/arm64/boot/dts/freescale/Makefile
+> @@ -36,6 +36,7 @@ dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls1088a-rdb.dtb
+>  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls1088a-ten64.dtb
+>  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2080a-qds.dtb
+>  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2080a-rdb.dtb
+> +dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2081a-rdb.dtb
+>  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2080a-simu.dtb
+>  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2088a-qds.dtb
+>  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2088a-rdb.dtb
+> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls2081a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-ls2081a-rdb.dts
+> new file mode 100644
+> index 000000000000..0148f8c93442
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/freescale/fsl-ls2081a-rdb.dts
+> @@ -0,0 +1,131 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Device Tree file for NXP LS2081A RDB Board.
+> + *
+> + * Copyright 2017 NXP
+> + *
+> + * Priyanka Jain <priyanka.jain@nxp.com>
+> + *
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include "fsl-ls2088a.dtsi"
+> +
+> +/ {
+> +	model = "NXP Layerscape 2081A RDB Board";
+> +	compatible = "fsl,ls2081a-rdb", "fsl,ls2081a";
+> +
+> +	aliases {
+> +		serial0 = &serial0;
+> +		serial1 = &serial1;
+> +	};
+> +
+> +	chosen {
+> +		stdout-path = "serial1:115200n8";
+> +	};
+> +};
+> +
+> +&dspi {
+> +	status = "okay";
+> +
+> +	n25q512a: flash@0 {
+> +		compatible = "jedec,spi-nor";
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		spi-max-frequency = <3000000>;
+> +		reg = <0>;
+> +	};
+> +};
+> +
+> +&esdhc {
+> +	status = "okay";
+> +};
+> +
+> +&ifc {
+> +	status = "disabled";
+> +};
+> +
+> +&i2c0 {
+> +	status = "okay";
+> +
+> +	pca9547: mux@75 {
+> +		compatible = "nxp,pca9547";
+> +		reg = <0x75>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		i2c@1 {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			reg = <0x1>;
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
----
- net/xfrm/xfrm_policy.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+Have a newline between properties and child node.
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index f1a0bab920a5..6264680b1f08 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -1889,7 +1889,7 @@ EXPORT_SYMBOL(xfrm_policy_walk_done);
-  */
- static int xfrm_policy_match(const struct xfrm_policy *pol,
- 			     const struct flowi *fl,
--			     u8 type, u16 family, int dir, u32 if_id)
-+			     u8 type, u16 family, u32 if_id)
- {
- 	const struct xfrm_selector *sel = &pol->selector;
- 	int ret = -ESRCH;
-@@ -2014,7 +2014,7 @@ static struct xfrm_policy *
- __xfrm_policy_eval_candidates(struct hlist_head *chain,
- 			      struct xfrm_policy *prefer,
- 			      const struct flowi *fl,
--			      u8 type, u16 family, int dir, u32 if_id)
-+			      u8 type, u16 family, u32 if_id)
- {
- 	u32 priority = prefer ? prefer->priority : ~0u;
- 	struct xfrm_policy *pol;
-@@ -2028,7 +2028,7 @@ __xfrm_policy_eval_candidates(struct hlist_head *chain,
- 		if (pol->priority > priority)
- 			break;
- 
--		err = xfrm_policy_match(pol, fl, type, family, dir, if_id);
-+		err = xfrm_policy_match(pol, fl, type, family, if_id);
- 		if (err) {
- 			if (err != -ESRCH)
- 				return ERR_PTR(err);
-@@ -2053,7 +2053,7 @@ static struct xfrm_policy *
- xfrm_policy_eval_candidates(struct xfrm_pol_inexact_candidates *cand,
- 			    struct xfrm_policy *prefer,
- 			    const struct flowi *fl,
--			    u8 type, u16 family, int dir, u32 if_id)
-+			    u8 type, u16 family, u32 if_id)
- {
- 	struct xfrm_policy *tmp;
- 	int i;
-@@ -2061,8 +2061,7 @@ xfrm_policy_eval_candidates(struct xfrm_pol_inexact_candidates *cand,
- 	for (i = 0; i < ARRAY_SIZE(cand->res); i++) {
- 		tmp = __xfrm_policy_eval_candidates(cand->res[i],
- 						    prefer,
--						    fl, type, family, dir,
--						    if_id);
-+						    fl, type, family, if_id);
- 		if (!tmp)
- 			continue;
- 
-@@ -2101,7 +2100,7 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
- 
- 	ret = NULL;
- 	hlist_for_each_entry_rcu(pol, chain, bydst) {
--		err = xfrm_policy_match(pol, fl, type, family, dir, if_id);
-+		err = xfrm_policy_match(pol, fl, type, family, if_id);
- 		if (err) {
- 			if (err == -ESRCH)
- 				continue;
-@@ -2120,7 +2119,7 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
- 		goto skip_inexact;
- 
- 	pol = xfrm_policy_eval_candidates(&cand, ret, fl, type,
--					  family, dir, if_id);
-+					  family, if_id);
- 	if (pol) {
- 		ret = pol;
- 		if (IS_ERR(pol))
--- 
-2.25.1
+Shawn
 
+> +			rtc@51 {
+> +				compatible = "nxp,pcf2129";
+> +				reg = <0x51>;
+> +			};
+> +		};
+> +
+> +		i2c@2 {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			reg = <0x2>;
+> +
+> +			ina220@40 {
+> +				compatible = "ti,ina220";
+> +				reg = <0x40>;
+> +				shunt-resistor = <500>;
+> +			};
+> +		};
+> +
+> +		i2c@3 {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			reg = <0x3>;
+> +
+> +			adt7481@4c {
+> +				compatible = "adi,adt7461";
+> +				reg = <0x4c>;
+> +			};
+> +		};
+> +	};
+> +};
+> +
+> +&qspi {
+> +	status = "okay";
+> +
+> +	s25fs512s0: flash@0 {
+> +		compatible = "jedec,spi-nor";
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		spi-rx-bus-width = <4>;
+> +		spi-tx-bus-width = <4>;
+> +		spi-max-frequency = <20000000>;
+> +		reg = <0>;
+> +	};
+> +
+> +	s25fs512s1: flash@1 {
+> +		compatible = "jedec,spi-nor";
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		spi-rx-bus-width = <4>;
+> +		spi-tx-bus-width = <4>;
+> +		spi-max-frequency = <20000000>;
+> +		reg = <1>;
+> +	};
+> +};
+> +
+> +&sata0 {
+> +	status = "okay";
+> +};
+> +
+> +&sata1 {
+> +	status = "okay";
+> +};
+> +
+> +&usb0 {
+> +	status = "okay";
+> +};
+> +
+> +&usb1 {
+> +	status = "okay";
+> +};
+> -- 
+> 2.37.1
+> 
