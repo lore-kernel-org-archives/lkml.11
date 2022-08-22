@@ -2,97 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50122C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0280C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237067AbiHVQe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 12:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
+        id S237078AbiHVQfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 12:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237022AbiHVQe0 (ORCPT
+        with ESMTP id S237072AbiHVQfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 12:34:26 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3F1419A3
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:34:23 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id d8so3667064lfq.0
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=2vQSeG17lzwccuXXheDklfdz+rvEzFZchuxcxOfWA70=;
-        b=QS+1k7+PE+rePGoe9S3/Sv5bzXx+MhKRdXlXZFyr/Fbt5c6Cz9Zaanza+Ak1wKazBk
-         m/rIfz7sa8ff2z4xpc0om5KqeFWYh/69V8JYMeB2GHSkRL7O9KD8hncg+smlKcyWWVPT
-         MqFz/Ce4uMUr1qiCsX2rfd2wEeDM899inOCWguVFSAHBHudGjIfswLuaL70NbPhh6wak
-         eStexTI6QP7EpgiA3CHeM8D1rfdZiMDqMUNmbiNeMo+s5hO0ktzSywOJxF751Wa/eKMR
-         do7TXBX3bO0L16iRgPQ1jbgVrKwlcLIreT0U2UkFsZhZ5rRebQfMNqFHxKluHLm67odY
-         uBSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=2vQSeG17lzwccuXXheDklfdz+rvEzFZchuxcxOfWA70=;
-        b=krBHWpArmxPQoAcA8J3nO1CCIzF7MS9YPv02idzb4w/7Ei6AdmxDhztM2A4yvKFfqW
-         XKwNcxapFDBDmHeEAUegGYayd+sfBFH3N+wb0vpbHpFJEGzkyOXqEQ03gToJqn3N7PIF
-         S2Bsd4OIyG/n6/cp8gtz41roljbTikInqDDBDxP33HakfkWtDWDYYhKJPMa2y4Bc3lZL
-         Nie2NmNshzca5OF70f0BJ86RGTSaMZHS1ZNlMhzaJ9OF3jzUam8dCgZu1F8+3i6tYepK
-         ijxN9Ww+emAxnKtHcw9SPaLn1v5aYfO0qXdFgFok4HkDlz1mV7zzn1eAA2S9TqD7IogY
-         eVcA==
-X-Gm-Message-State: ACgBeo3ooQpeamEvSsAKm32ludtMX+Zqw986ZM1jFcQWohXhhK1OheJD
-        ws2D0w7fzsxWmlja3xR1VQsWcqHCcUpB10x/vze8Pg==
-X-Google-Smtp-Source: AA6agR5wdEQEK+Retm/u5BnbwMryz3pxZ3P0il+KFDxb5lpW/sWxxXD0EVQECkE4rzxIJGgJ1jK/jYaZzrJSAyb58/M=
-X-Received: by 2002:a05:6512:2356:b0:492:e06d:7530 with SMTP id
- p22-20020a056512235600b00492e06d7530mr2582685lfu.103.1661186062033; Mon, 22
- Aug 2022 09:34:22 -0700 (PDT)
+        Mon, 22 Aug 2022 12:35:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DFB419B5;
+        Mon, 22 Aug 2022 09:35:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A06D60F91;
+        Mon, 22 Aug 2022 16:35:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9A6C433C1;
+        Mon, 22 Aug 2022 16:35:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661186113;
+        bh=y+S14L9OvviihyJrTKTyBpSCtDnXo0ez48uTpsNV6nU=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=lyem7v7qG2dX54DKpJXyPnPgJ7xyn/xVuXitSa+rlVhFDoX8HpWPNpwKremUVOFCl
+         UT4s1aS4bknHE7pC7qCfA/NiBqutcvzeOzyyvjV0vXti4iH9rJ9JEoKM9gpKB8rlkT
+         W+jdZSpZTu1P7zh8gTQb358aD3IGTdA4t4bz2hITbtPMzV4bAJjRX6oUDqTHgITcQn
+         x2LwTh9vWSVxrL3cRTCdVM/2fx14h31VLKlFnmDQh78IFVddHQwK9SNEVE1jR3S7hV
+         j7jZ9n/tOUsyJ6i71cApIo5m+HPVY7zexaGVZmmqPq4cYAAsKHdPMFiZXeyE6x3qfT
+         DTafXmwAAGNDw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 01A895C03F3; Mon, 22 Aug 2022 09:35:13 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 09:35:12 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] rcu: Simplify the code logic of rcu_init_nohz()
+Message-ID: <20220822163512.GG6159@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220817014253.1982-1-thunder.leizhen@huawei.com>
+ <20220817014253.1982-3-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-References: <YwNMUlAmu/qCjuva@debian>
-In-Reply-To: <YwNMUlAmu/qCjuva@debian>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 22 Aug 2022 09:34:09 -0700
-Message-ID: <CAKwvOd=9ozTdeYDWzY0i-hrD4Vew5qPAcamx6wo_Y7PA+nCYBA@mail.gmail.com>
-Subject: Re: build failure of next-20220822 due to 4e6bedd3c396 ("ASoC:
- codecs: add support for the TI SRC4392 codec")
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Matt Flax <flatmax@flatmax.com>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817014253.1982-3-thunder.leizhen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 2:28 AM Sudip Mukherjee (Codethink)
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi All,
->
-> Not sure if it has been reported,
+On Wed, Aug 17, 2022 at 09:42:53AM +0800, Zhen Lei wrote:
+> When CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or CONFIG_NO_HZ_FULL=y, additional
+> CPUs need to be added to 'rcu_nocb_mask'. But 'rcu_nocb_mask' may be not
+> available now, due to 'rcu_nocbs' is not specified. Check and initialize
+> 'rcu_nocb_mask' before using it. This code simplification strictly follows
+> this logic, compared with old implementations, unnecessary crossovers are
+> avoided and easy to understand.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-Hi Sudip,
-Thanks for the report.  Two ways you can check if it's already been reported:
-1. Check our issue tracker
-(https://github.com/ClangBuiltLinux/linux/issues), you'll see that it
-has been (https://github.com/ClangBuiltLinux/linux/issues/1691 ->
-https://lore.kernel.org/all/YvvbKry5FVFbNdcI@dev-arch.thelio-3990X/)
-2. Search for the warning message on lore.
-(https://lore.kernel.org/all/ -> search for
-"sound/soc/codecs/src4xxx.c Wsometimes" ->
-https://lore.kernel.org/all/?q=sound%2Fsoc%2Fcodecs%2Fsrc4xxx.c+Wsometimes
-and you'll see two reports from bots and two from humans).
+This looks like a nice simplification, but I will wait for your response
+on Patch 1/1 before trying it out.
 
-> builds of arm64 with clang failed to
-> build next-20220822 with the error:
->
-> sound/soc/codecs/src4xxx.c:280:3: error: variable 'd' is used uninitialized whenever switch default is taken [-Werror,-Wsometimes-uninitialized]
->                 default:
->                 ^~~~~~~
+							Thanx, Paul
 
-
--- 
-Thanks,
-~Nick Desaulniers
+> ---
+>  kernel/rcu/tree_nocb.h | 32 +++++++++-----------------------
+>  1 file changed, 9 insertions(+), 23 deletions(-)
+> 
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index ff763e7dc53551f..3c59b12f4465af1 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -1209,44 +1209,30 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
+>  void __init rcu_init_nohz(void)
+>  {
+>  	int cpu;
+> -	bool need_rcu_nocb_mask = false;
+> -	bool offload_all = false;
+>  	struct rcu_data *rdp;
+> +	const struct cpumask *cpumask = NULL;
+>  
+>  #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+> -	if (!cpumask_available(rcu_nocb_mask)) {
+> -		need_rcu_nocb_mask = true;
+> -		offload_all = true;
+> -	}
+> -#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
+> -
+> -#if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
+> -		need_rcu_nocb_mask = true;
+> -		offload_all = false; /* NO_HZ_FULL has its own mask. */
+> -	}
+> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+> +	cpumask = cpu_possible_mask;
+> +#elif defined(CONFIG_NO_HZ_FULL)
+> +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+> +		cpumask = tick_nohz_full_mask;
+> +#endif
+>  
+> -	if (need_rcu_nocb_mask) {
+> +	if (cpumask) {
+>  		if (!cpumask_available(rcu_nocb_mask)) {
+>  			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
+>  				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
+>  				return;
+>  			}
+>  		}
+> +
+> +		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
+>  	}
+>  
+>  	if (!cpumask_available(rcu_nocb_mask))
+>  		return;
+>  
+> -#if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running)
+> -		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+> -
+> -	if (offload_all)
+> -		cpumask_setall(rcu_nocb_mask);
+> -
+>  	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+>  		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+>  		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+> -- 
+> 2.25.1
+> 
