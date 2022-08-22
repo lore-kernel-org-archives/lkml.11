@@ -2,90 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58470C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 152CEC32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 10:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234015AbiHVKyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 06:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
+        id S234125AbiHVK4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 06:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233960AbiHVKyG (ORCPT
+        with ESMTP id S229637AbiHVK4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 06:54:06 -0400
-Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B972510570
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 03:54:04 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id Q54Do2dalkifIQ54Do40A4; Mon, 22 Aug 2022 12:54:02 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 22 Aug 2022 12:54:02 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <23fbee0f-4d9c-344f-9fb4-f9cc77f38ed3@wanadoo.fr>
-Date:   Mon, 22 Aug 2022 12:54:00 +0200
+        Mon, 22 Aug 2022 06:56:43 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6FF31EDC;
+        Mon, 22 Aug 2022 03:56:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661165802; x=1692701802;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=sJN5WeBsvGXOKHDiMc4Ct+sVwyokaJcZFdngtgXZnI8=;
+  b=hTS4gtAA8Rpp/MUzUewua/vLimdIGNLldSB6eGrh0dnlk1hnRGzNlO/j
+   gRYBcjrH3hpZNveDQhjLFWfU4SYD9JEFBLST9Mt/Vy2OkoY5ii52tpRCc
+   QWuPst6qnWJey6jrwQeMatMFLgux9Z7NLsPJGnikr+1cv08HixbOGBLJq
+   O21zX2RDZWNfk6h+xSZDpROVdpfIp7mikjCCqNq4MP9U4AptdOD8BFtvS
+   xPoP1elkSk59in6D/cfiRu+w5G45zFyH7ktb/gXKBJDc0hBhBF0vcWhpb
+   BVIclPLrMcL+eNMuPUt7FqKz5z0qQE8E1UX7HE1Bn7W/b1LDIWJP9wJ0g
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="292125783"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="292125783"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 03:56:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="751243026"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 22 Aug 2022 03:56:37 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 22 Aug 2022 13:56:36 +0300
+Date:   Mon, 22 Aug 2022 13:56:36 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: Dell XPS 13 9370: ucsi_acpi USBC000:00: UCSI_GET_PDOS returned 0
+ bytes
+Message-ID: <YwNg5L7ymdSgHUrJ@kuha.fi.intel.com>
+References: <726661bf-b95f-02fc-e7c5-c222820ee257@molgen.mpg.de>
+ <Yv+sqa8wdqiuSUZ3@kroah.com>
+ <ab679efe-df85-d2d2-2a4e-842ff9b59b6d@molgen.mpg.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] media: dw100: Fix an error handling path in dw100_probe()
-Content-Language: en-US
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Xavier Roumegue <xavier.roumegue@oss.nxp.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-media@vger.kernel.org
-References: <7213b90d0d872be154cff81aec1ad8a4a77116af.1661161223.git.christophe.jaillet@wanadoo.fr>
- <YwNS5jr2+ersua9B@pendragon.ideasonboard.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <YwNS5jr2+ersua9B@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <ab679efe-df85-d2d2-2a4e-842ff9b59b6d@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 22/08/2022 à 11:56, Laurent Pinchart a écrit :
-> Hi Christophe,
-> 
-> Thank you for the patch.
-> 
-> On Mon, Aug 22, 2022 at 11:40:43AM +0200, Christophe JAILLET wrote:
->> After a successful call to media_device_init() it is safer to call
->> media_device_init().
-> 
-> I assume you meant media_device_cleanup() ? With this fixed,
+Hi Paul,
 
-+1.
-I assume that it can be fixed when applied (otherwise tell me and I'll 
-send a v2).
-
-CJ
-
+On Fri, Aug 19, 2022 at 05:59:54PM +0200, Paul Menzel wrote:
+> Am 19.08.22 um 17:30 schrieb Greg KH:
+> > On Fri, Aug 19, 2022 at 03:37:00PM +0200, Paul Menzel wrote:
 > 
-> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > > On the Dell XPS 13 9370 with Debian sid/unstable, connecting a Dell DA300
+> > > port replicator Linux 5.18.16 logs a warning:
+> > > 
+> > > ```
+> > > $ dmesg
+> > > [    0.000000] Linux version 5.18.0-4-amd64 (debian-kernel@lists.debian.org)
+> > > (gcc-11 (Debian 11.3.0-5) 11.3.0, GNU ld (GNU Binutils for Debian)
+> > > 2.38.90.20220713) #1 SMP PREEMPT_DYNAMIC Debian 5.18.16-1 (2022-08-10)
+> > > [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-5.18.0-4-amd64
+> > > root=UUID=56f398e0-1e25-4fda-aa9f-611dece4b333 ro quiet
+> > > […]
+> > > [    0.000000] DMI: Dell Inc. XPS 13 9370/0RMYH9, BIOS 1.21.0 07/06/2022
+> > > […]
+> > > [   13.900028] ucsi_acpi USBC000:00: UCSI_GET_PDOS returned 0 bytes
+> > > ```
+> > 
+> > What warning?
 > 
->> Add the missing call in the error handling path of the probe, as already
->> done in the remove function.
->>
->> Fixes: bd090d4d995a ("media: dw100: Add i.MX8MP dw100 dewarper driver")
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->>   drivers/media/platform/nxp/dw100/dw100.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/media/platform/nxp/dw100/dw100.c b/drivers/media/platform/nxp/dw100/dw100.c
->> index 94518f0e486b..b3b057798ab6 100644
->> --- a/drivers/media/platform/nxp/dw100/dw100.c
->> +++ b/drivers/media/platform/nxp/dw100/dw100.c
->> @@ -1623,6 +1623,7 @@ static int dw100_probe(struct platform_device *pdev)
->>   error_v4l2:
->>   	video_unregister_device(vfd);
->>   err_m2m:
->> +	media_device_cleanup(&dw_dev->mdev);
->>   	v4l2_m2m_release(dw_dev->m2m_dev);
->>   err_v4l2:
->>   	v4l2_device_unregister(&dw_dev->v4l2_dev);
-> 
+> `ucsi_acpi USBC000:00: UCSI_GET_PDOS returned 0 bytes` has log level
+> warning.
 
+Thanks for the report.
+
+That warning is meant to indicate that the underlying firmware (most
+likely the Embedded Controller firmware) is buggy and unable to tell
+us the Power Data Objects (PDO) that the partner device advertised.
+
+However, you will also see the warning if the firmware has notified
+our driver about a contract with the partner simply before making
+those objects available for the operating system. That problem is
+known, and it has actually already been worked around in the driver -
+the PDOs are now "polled" for a while after the firmware notification.
+
+I'll see if I can reproduce the problem so I understand exactly what's
+going on in this case - I should have access to one of those XPS 13
+9370 laptops.
+
+But I'll in any case clean up this part of the driver, so the warning
+should go away - one way or the other.
+
+thanks,
+
+-- 
+heikki
