@@ -2,408 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39027C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D743C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237901AbiHVSyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        id S237912AbiHVSyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235783AbiHVSyL (ORCPT
+        with ESMTP id S237471AbiHVSyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:54:11 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31311CFFB;
-        Mon, 22 Aug 2022 11:53:31 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id gb36so23030532ejc.10;
-        Mon, 22 Aug 2022 11:53:31 -0700 (PDT)
+        Mon, 22 Aug 2022 14:54:14 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A9933D5AB;
+        Mon, 22 Aug 2022 11:53:48 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id EEA00DA2;
+        Mon, 22 Aug 2022 21:57:00 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com EEA00DA2
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=unpDgp0GN+36aPx7b7wAqjDgWTMftsZDnqdX612zzIo=;
-        b=f/jScuuazjc+r8t7rQA6ORn6g+H8W5l0jGDaPdxaJlmffeWemDYKW+TE7PiyRZgqet
-         rOtOB8utpOWfEyCY14FJRMFNCmgO3IQrq07Art1BmFBG2AzqefvrwPjxob5IC6pCEzkL
-         51wr1lVUmmi8EKh+jCDbr1wtMkD4TZyKVYcDCANuI58Vs+c4srJEu9lnhPi0hq3VU690
-         Z/HYM+XcOZ7YCcwqDqywp4YjCgWZi2ah1RgDaCjmPserCWVGReluIgD9kpmTbiFdsA8e
-         llr7VSe/Z5Cr+4AbTa1BLRnch8r4FqYaiQRfnlepQGuXx1EUt9VSfpV0ifvAJSTyF35I
-         a1MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=unpDgp0GN+36aPx7b7wAqjDgWTMftsZDnqdX612zzIo=;
-        b=n0ablVI66Oj069OnCP/+MGjyYfE//8C/zcQIHxLmrKr482PcfuqRMNVNpLRbmKg0hL
-         Lvq2L8N2fUlXjZt0QZlMesaurpEJtSCNJWw5kij+9c0nZ/oO5F/ljz2PW3z+nOw3mkTa
-         l0tEslM8pZQjzWPdatB0xJIaYtkibA3UXmkx4t6zmirORD8bL/VfThrcHgLLALhQGvnU
-         NbBmVH84Y3fG0MKDCva4qtV2dBTq9sVchW7O6alGjY1s+2Ao4YvrbFdKs9SJfIQ1J2Bp
-         5JoxE9SMT+7LsCk978By/dnObujuEnrCQh4s1khBI1h2CoDPFp90bNgny88EFEVBEXLY
-         +4fA==
-X-Gm-Message-State: ACgBeo3co5ZDvQrGsYpPcEG/6dcheB73ZwYYAZLUjDkk+TrWV3xoZPlM
-        9l0TnzORa2QOECJY85o3RVg=
-X-Google-Smtp-Source: AA6agR4RasncWSA6NEW1Qj6B8xhUiktERFitqXfNA48bawadSL2enIBBvT23SMmKTghITEdoKrYIzg==
-X-Received: by 2002:a17:906:8b81:b0:733:183b:988e with SMTP id nr1-20020a1709068b8100b00733183b988emr13782883ejc.457.1661194410349;
-        Mon, 22 Aug 2022 11:53:30 -0700 (PDT)
-Received: from nuc ([2a02:168:633b:1:1e69:7aff:fe05:97e6])
-        by smtp.gmail.com with ESMTPSA id e4-20020a056402088400b0043cb1a83c9fsm119175edy.71.2022.08.22.11.53.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 11:53:29 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 20:53:27 +0200
-From:   =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
-To:     Xiu Jianfeng <xiujianfeng@huawei.com>
-Cc:     mic@digikod.net, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org, corbet@lwn.net,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH -next 3/5] landlock/selftests: add selftests for chmod
- and chown
-Message-ID: <YwPQpz0lV5CVBVeK@nuc>
-References: <20220822114701.26975-1-xiujianfeng@huawei.com>
- <20220822114701.26975-4-xiujianfeng@huawei.com>
+        d=baikalelectronics.ru; s=mail; t=1661194621;
+        bh=m9aZ/RTbTNANM5LEXVsexSnotMe67IHTU66AJVo2BeI=;
+        h=From:To:CC:Subject:Date:From;
+        b=rzF4c1K3U/kc2lgoDmO3C1pSfCG2sWluGe1qshUQgsCdfQ+RcO65nGT2uHMfay389
+         ywdmDu6VwL/a2aIaFlryhlyc+2G/aY9I3ukCKBADOnkjOY5dN1GEBi/+P62viJ3mIr
+         c1yyLP4fgNsvCva17Wk/bj8BS+cAo05JAg9P3ROs=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 21:53:46 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND v5 00/24] dmaengine: dw-edma: Add RP/EP local DMA controllers support
+Date:   Mon, 22 Aug 2022 21:53:08 +0300
+Message-ID: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822114701.26975-4-xiujianfeng@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 07:46:59PM +0800, Xiu Jianfeng wrote:
-> Add the following simple testcases:
-> 1. chmod/fchmod: remove S_IWUSR and restore S_IWUSR with or without
-> restriction.
-> 2. chown/fchown: set original uid and gid with or without restriction,
-> because chown needs CAP_CHOWN and testcase framework don't have this
-> capability, setting original uid and gid is ok to cover landlock
-> function.
->
-> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-> ---
->  tools/testing/selftests/landlock/fs_test.c | 228 +++++++++++++++++++++
->  1 file changed, 228 insertions(+)
->
-> diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
-> index 5b55b93b5570..f47b4ccd2b26 100644
-> --- a/tools/testing/selftests/landlock/fs_test.c
-> +++ b/tools/testing/selftests/landlock/fs_test.c
-> @@ -59,6 +59,9 @@ static const char file2_s2d3[] = TMP_DIR "/s2d1/s2d2/s2d3/f2";
->
->  static const char dir_s3d1[] = TMP_DIR "/s3d1";
->  static const char file1_s3d1[] = TMP_DIR "/s3d1/f1";
-> +static const char file2_s3d1[] = TMP_DIR "/s3d1/f2";
-> +static const char file3_s3d1[] = TMP_DIR "/s3d1/f3";
-> +
->  /* dir_s3d2 is a mount point. */
->  static const char dir_s3d2[] = TMP_DIR "/s3d1/s3d2";
->  static const char dir_s3d3[] = TMP_DIR "/s3d1/s3d2/s3d3";
-> @@ -211,6 +214,8 @@ static void create_layout1(struct __test_metadata *const _metadata)
->  	create_file(_metadata, file2_s2d3);
->
->  	create_file(_metadata, file1_s3d1);
-> +	create_file(_metadata, file2_s3d1);
-> +	create_file(_metadata, file3_s3d1);
->  	create_directory(_metadata, dir_s3d2);
->  	set_cap(_metadata, CAP_SYS_ADMIN);
->  	ASSERT_EQ(0, mount("tmp", dir_s3d2, "tmpfs", 0, "size=4m,mode=700"));
-> @@ -234,6 +239,8 @@ static void remove_layout1(struct __test_metadata *const _metadata)
->  	EXPECT_EQ(0, remove_path(file1_s2d1));
->
->  	EXPECT_EQ(0, remove_path(file1_s3d1));
-> +	EXPECT_EQ(0, remove_path(file2_s3d1));
-> +	EXPECT_EQ(0, remove_path(file3_s3d1));
->  	EXPECT_EQ(0, remove_path(dir_s3d3));
->  	set_cap(_metadata, CAP_SYS_ADMIN);
->  	umount(dir_s3d2);
-> @@ -3272,6 +3279,227 @@ TEST_F_FORK(layout1, truncate)
->  	EXPECT_EQ(0, test_creat(file_in_dir_w));
->  }
->
-> +static int test_chmod(const char *path)
+This is a final patchset in the series created in the framework of
+my Baikal-T1 PCIe/eDMA-related work:
 
-Nitpicks:
- - const char *const path
- - short documentation? :)
+[1: Done v5] PCI: dwc: Various fixes and cleanups
+Link: https://lore.kernel.org/linux-pci/20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru/
+Merged: kernel 6.0-rc1
+[2: Done v4] PCI: dwc: Add hw version and dma-ranges support
+Link: https://lore.kernel.org/linux-pci/20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru
+Merged: kernel 6.0-rc1
+[3: In-review v5] PCI: dwc: Add generic resources and Baikal-T1 support
+Link: https://lore.kernel.org/linux-pci/20220822184701.25246-1-Sergey.Semin@baikalelectronics.ru/
+[4: Done v5] dmaengine: dw-edma: Add RP/EP local DMA support
+Link: ---you are looking at it---
 
-> +{
-> +	int ret;
-> +	struct stat st;
-> +	mode_t mode;
-> +
-> +	ret = stat(path, &st);
-> +	if (ret < 0)
-> +		return errno;
-> +	/* save original mode in order to restore */
-> +	mode = st.st_mode & 0777;
-> +	/* remove S_IWUSR */
-> +	ret = chmod(path, mode & ~0200);
-> +	if (ret < 0)
-> +		return errno;
-> +	ret = stat(path, &st);
-> +	if (ret < 0)
-> +		return errno;
-> +	/* check if still has S_IWUSR */
-> +	if (st.st_mode & 0200)
-> +		return -EFAULT;
-> +	/* restore the original mode */
-> +	ret = chmod(path, mode);
-> +	if (ret < 0)
-> +		return errno;
-> +	return 0;
-> +}
+Note it is very recommended to merge the patchsets in the same order as
+they are listed in the set above in order to have them applied smoothly.
+Nothing prevents them from being reviewed synchronously though.
 
-I would argue this can be simpler, with the following reasoning:
+Please note originally this series was self content, but due to Frank
+being a bit faster in his work submission I had to rebase my patchset onto
+his one. So now this patchset turns to be dependent on the Frank' work:
 
- - Does the file have the right mode after chmod()?
+Link: https://lore.kernel.org/linux-pci/20220524152159.2370739-1-Frank.Li@nxp.com/
 
-   I claim that fs_test should care only about the question of whether
-   EACCES is returned or not. If fs_test were to also check for the
-   side effects of these operations, it would eventually contain tests
-   for the full file system API, not just for Landlock. That seems out
-   of scope :)
+Here is a short summary regarding this patchset. The series starts with
+fixes patches. We discovered that the dw-edma-pcie.c driver incorrectly
+initializes the LL/DT base addresses for the platforms with not matching
+CPU and PCIe memory spaces. It is fixed by using the pci_bus_address()
+method to get a correct base address. After that you can find a series of
+the interleaved xfers fixes. It turned out the interleaved transfers
+implementation didn't work quite correctly from the very beginning for
+instance missing src/dst addresses initialization, etc. In the framework
+of the next two patches we suggest to add a new platform-specific
+callback - pci_address() and use it to convert the CPU address to the PCIe
+space address. It is at least required for the DW eDMA remote End-point
+setup on the platforms with not-matching CPU/PCIe address spaces. In case
+of the DW eDMA local RP/EP setup the conversion will be done automatically
+by the outbound iATU (if no DMA-bypass flag is specified for the
+corresponding iATU window). Then we introduce a set of the patches to make
+the DebugFS part of the code supporting the multi-eDMA controllers
+platforms. It starts with several cleanup patches and is closed joining
+the Read/Write channels into a single DMA-device as they originally should
+have been. After that you can find the patches with adding the non-atomic
+io-64 methods usage, dropping DT-region descriptors allocation, replacing
+chip IDs with the device name. In addition to that in order to have the
+eDMA embedded into the DW PCIe RP/EP supported we need to bypass the
+dma-ranges-based memory ranges mapping since in case of the root port DT
+node it's applicable for the peripheral PCIe devices only. Finally at the
+series closure we introduce a generic DW eDMA controller support being
+available in the DW PCIe Root Port/Endpoint driver.
 
- - Undoing the chmod() operation
+Link: https://lore.kernel.org/linux-pci/20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v2:
+- Drop the patches:
+  [PATCH 1/25] dmaengine: dw-edma: Drop dma_slave_config.direction field usage
+  [PATCH 2/25] dmaengine: dw-edma: Fix eDMA Rd/Wr-channels and DMA-direction semantics
+  since they are going to be merged in in the framework of the
+  Frank's patchset.
+- Add a new patch: "dmaengine: dw-edma: Release requested IRQs on
+  failure."
+- Drop __iomem qualifier from the struct dw_edma_debugfs_entry instance
+  definition in the dw_edma_debugfs_u32_get() method. (@Manivannan)
+- Add a new patch: "dmaengine: dw-edma: Rename DebugFS dentry variables to
+  'dent'." (@Manivannan)
+- Slightly extend the eDMA name array size. (@Manivannan)
+- Change the specific DMA mapping comment a bit to being
+  clearer. (@Manivannan)
+- Add a new patch: "PCI: dwc: Add generic iATU/eDMA CSRs space detection
+  method."
+- Don't fail eDMA detection procedure if the DW eDMA driver couldn't probe
+  device. That happens if the driver is disabled. (@Manivannan)
+- Add "dma" registers resource mapping procedure. (@Manivannan)
+- Move the eDMA CSRs space detection into the dw_pcie_map_detect() method.
+- Remove eDMA on the dw_pcie_ep_init() internal errors. (@Manivannan)
+- Remove eDMA in the dw_pcie_ep_exit() method.
+- Move the dw_pcie_edma_detect() method execution to the tail of the
+  dw_pcie_ep_init() function.
 
-   I'm not sure whether it's worth the effort to restore the exact
-   state before that function returns. As long as the flags suffice to
-   remove the test directory at the end, it probably doesn't matter
-   much what exact mode they have?
+Link: https://lore.kernel.org/linux-pci/20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v3:
+- Conditionally set dchan->dev->device.dma_coherent field since it can
+  be missing on some platforms. (@Manivannan)
+- Drop the patch: "PCI: dwc: Add generic iATU/eDMA CSRs space detection
+  method". A similar modification has been done in another patchset.
+- Add more comprehensive and less regression prune eDMA block detection
+  procedure.
+- Drop the patch: "dma-direct: take dma-ranges/offsets into account in
+  resource mapping". It will be separately reviewed.
+- Remove Manivannan tb tag from the modified patches.
+- Rebase onto the kernel v5.18.
 
-I think this could just be
+Link: https://lore.kernel.org/linux-pci/20220610091459.17612-1-Sergey.Semin@baikalelectronics.ru
+Changelog v4:
+- Rabase onto the laters Frank Li series:
+Link: https://lore.kernel.org/all/20220524152159.2370739-1-Frank.Li@nxp.com/
+- Add Vinod' Ab-tag.
+- Rebase onto the kernel v5.19-rcX.
 
-  if (chmod(path, mode) < 0)
-          return errno;
-  return 0
+Link: https://lore.kernel.org/linux-pci/20220728142841.12305-1-Sergey.Semin@baikalelectronics.ru
+Changelog v5:
+- Just resend.
+- Rebase onto the kernel v6.0-rc2.
 
-and it would be a bit simpler to understand :)
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-By: Vinod Koul <vkoul@kernel.org>
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: "Krzysztof Wilczyński" <kw@linux.com>
+Cc: linux-pci@vger.kernel.org
+Cc: dmaengine@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-The same argument applies also to the other test_...() functions.
+Serge Semin (24):
+  dmaengine: Fix dma_slave_config.dst_addr description
+  dmaengine: dw-edma: Release requested IRQs on failure
+  dmaengine: dw-edma: Convert ll/dt phys-address to PCIe bus/DMA address
+  dmaengine: dw-edma: Fix missing src/dst address of the interleaved
+    xfers
+  dmaengine: dw-edma: Don't permit non-inc interleaved xfers
+  dmaengine: dw-edma: Fix invalid interleaved xfers semantics
+  dmaengine: dw-edma: Add CPU to PCIe bus address translation
+  dmaengine: dw-edma: Add PCIe bus address getter to the remote EP
+    glue-driver
+  dmaengine: dw-edma: Drop chancnt initialization
+  dmaengine: dw-edma: Fix DebugFS reg entry type
+  dmaengine: dw-edma: Stop checking debugfs_create_*() return value
+  dmaengine: dw-edma: Add dw_edma prefix to the DebugFS nodes descriptor
+  dmaengine: dw-edma: Convert DebugFS descs to being kz-allocated
+  dmaengine: dw-edma: Rename DebugFS dentry variables to 'dent'
+  dmaengine: dw-edma: Simplify the DebugFS context CSRs init procedure
+  dmaengine: dw-edma: Move eDMA data pointer to DebugFS node descriptor
+  dmaengine: dw-edma: Join Write/Read channels into a single device
+  dmaengine: dw-edma: Use DMA-engine device DebugFS subdirectory
+  dmaengine: dw-edma: Use non-atomic io-64 methods
+  dmaengine: dw-edma: Drop DT-region allocation
+  dmaengine: dw-edma: Replace chip ID number with device name
+  dmaengine: dw-edma: Bypass dma-ranges mapping for the local setup
+  dmaengine: dw-edma: Skip cleanup procedure if no private data found
+  PCI: dwc: Add DW eDMA engine support
 
-> +static int test_fchmod(const char *path)
+ drivers/dma/dw-edma/dw-edma-core.c            | 216 +++++-----
+ drivers/dma/dw-edma/dw-edma-core.h            |  10 +-
+ drivers/dma/dw-edma/dw-edma-pcie.c            |  24 +-
+ drivers/dma/dw-edma/dw-edma-v0-core.c         |  60 +--
+ drivers/dma/dw-edma/dw-edma-v0-core.h         |   1 -
+ drivers/dma/dw-edma/dw-edma-v0-debugfs.c      | 372 ++++++++----------
+ drivers/dma/dw-edma/dw-edma-v0-debugfs.h      |   5 -
+ .../pci/controller/dwc/pcie-designware-ep.c   |  12 +-
+ .../pci/controller/dwc/pcie-designware-host.c |  13 +-
+ drivers/pci/controller/dwc/pcie-designware.c  | 186 +++++++++
+ drivers/pci/controller/dwc/pcie-designware.h  |  20 +
+ include/linux/dma/edma.h                      |  18 +-
+ include/linux/dmaengine.h                     |   2 +-
+ 13 files changed, 583 insertions(+), 356 deletions(-)
 
-I initially took the same approach for test_ftruncate() but eventually
-settled on using an approach where the file is open()ed before
-restricting the thread with Landlock. This eliminates the potential
-confusion where test_ftruncate() returns an error but the caller can't
-distinguish whether the error is from open() or from ftruncate(). It
-also makes fchmod testable even in scenarios where the file cannot be
-opened because of missing Landlock rights.
+-- 
+2.35.1
 
-> +{
-> +	int ret, fd;
-> +	struct stat st;
-> +	mode_t mode;
-> +
-> +	ret = stat(path, &st);
-> +	if (ret < 0)
-> +		return errno;
-> +	/* save original mode in order to restore */
-> +	mode = st.st_mode & 0777;
-> +
-> +	fd = openat(AT_FDCWD, path, O_RDWR | O_CLOEXEC);
-> +	if (fd < 0)
-> +		return errno;
-> +	/* remove S_IWUSR */
-> +	ret = fchmod(fd, mode & ~0200);
-> +	if (ret < 0)
-> +		goto err;
-> +	ret = stat(path, &st);
-> +	if (ret < 0)
-> +		goto err;
-> +	/* check if still has S_IWUSR */
-> +	if (st.st_mode & 0200) {
-> +		ret = -1;
-> +		errno = -EFAULT;
-> +		goto err;
-> +	}
-> +	/* restore the original mode */
-> +	ret = fchmod(fd, mode);
-> +err:
-> +	if (close(fd) < 0)
-> +		return errno;
-> +	return ret ? errno : 0;
-> +}
-
-> +static int test_chown(const char *path)
-> +{
-> +	int ret;
-> +	struct stat st;
-> +
-> +	ret = stat(path, &st);
-> +	if (ret < 0)
-> +		return errno;
-> +	/*
-> +	 * chown needs CAP_CHOWN to modify uid and/or gid, however
-> +	 * there is no such capability when the testcases framework
-> +	 * setup, so just chown to original uid/gid, which can also
-> +	 * cover the function in landlock.
-> +	 */
-> +	ret = chown(path, st.st_uid, st.st_gid);
-> +	if (ret < 0)
-> +		return errno;
-> +	return 0;
-> +}
-> +
-> +static int test_fchown(const char *path)
-> +{
-> +	int ret, fd;
-> +	struct stat st;
-> +
-> +	ret = stat(path, &st);
-> +	if (ret < 0)
-> +		return errno;
-> +	fd = openat(AT_FDCWD, path, O_RDWR | O_CLOEXEC);
-> +	if (fd < 0)
-> +		return errno;
-> +	/*
-> +	 * fchown needs CAP_CHOWN to modify uid and/or gid, however
-> +	 * there is no such capability when the testcases framework
-> +	 * setup, so just fchown to original uid/gid, which can also
-> +	 * cover the function in landlock.
-> +	 */
-> +	ret = fchown(fd, st.st_uid, st.st_gid);
-> +	if (close(fd) < 0)
-> +		return errno;
-> +	return ret ? errno : 0;
-> +}
-> +
-> +TEST_F_FORK(layout1, unhandled_chmod)
-> +{
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = file2_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{
-> +			.path = file3_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{},
-> +	};
-> +	const int ruleset_fd =
-> +		create_ruleset(_metadata, ACCESS_RW, rules);
-> +
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	ASSERT_EQ(0, test_chmod(file2_s3d1));
-> +	ASSERT_EQ(0, test_fchmod(file2_s3d1));
-> +	ASSERT_EQ(0, test_chmod(file3_s3d1));
-> +	ASSERT_EQ(0, test_chmod(dir_s3d1));
-
-*optional* because the existing tests are already inconsistent about it
-
-These four ASSERT_EQ() calls are independent scenarios and could be
-done with EXPECT_EQ(), which would be more in line with the approach
-that this test framework takes. (Same for the other tests below)
-
-Compare previous discussion at:
-https://lore.kernel.org/all/Yvd3+fy+mDBop+YA@nuc/
-
-> +}
-> +
-> +TEST_F_FORK(layout1, chmod)
-> +{
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = file2_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE |
-> +				  LANDLOCK_ACCESS_FS_CHMOD,
-> +		},
-> +		{
-> +			.path = file3_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{},
-> +	};
-> +	const int ruleset_fd =
-> +		create_ruleset(_metadata, ACCESS_RW | LANDLOCK_ACCESS_FS_CHMOD, rules);
-> +
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	ASSERT_EQ(0, test_chmod(file2_s3d1));
-> +	ASSERT_EQ(0, test_fchmod(file2_s3d1));
-> +	ASSERT_EQ(EACCES, test_chmod(file3_s3d1));
-> +	ASSERT_EQ(EACCES, test_chmod(dir_s3d1));
-> +}
-> +
-> +TEST_F_FORK(layout1, no_chown)
-
-"unhandled_chown" to be consistent with the other one above?
-
-> +{
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = file2_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{
-> +			.path = file3_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{},
-> +	};
-> +	const int ruleset_fd =
-> +		create_ruleset(_metadata, ACCESS_RW, rules);
-> +
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	ASSERT_EQ(0, test_chown(file2_s3d1));
-> +	ASSERT_EQ(0, test_fchown(file2_s3d1));
-> +	ASSERT_EQ(0, test_chown(file3_s3d1));
-> +	ASSERT_EQ(0, test_chown(dir_s3d1));
-> +}
-> +
-> +TEST_F_FORK(layout1, chown)
-> +{
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = file2_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE |
-> +				  LANDLOCK_ACCESS_FS_CHOWN,
-
-It might be useful to also check a scenario where the chown right is
-granted on a directory (and as a consequence, both the directory
-itself as well as its contents can be chowned)?  (Same for chmod)
-
-> +		},
-> +		{
-> +			.path = file3_s3d1,
-> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-> +		},
-> +		{},
-> +	};
-> +	const int ruleset_fd =
-> +		create_ruleset(_metadata, ACCESS_RW | LANDLOCK_ACCESS_FS_CHOWN, rules);
-> +
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	ASSERT_EQ(0, test_chown(file2_s3d1));
-> +	ASSERT_EQ(0, test_fchown(file2_s3d1));
-> +	ASSERT_EQ(EACCES, test_chown(file3_s3d1));
-> +	ASSERT_EQ(EACCES, test_chown(dir_s3d1));
-> +}
-> +
->  /* clang-format off */
->  FIXTURE(layout1_bind) {};
->  /* clang-format on */
-> --
-> 2.17.1
->
-
---
