@@ -2,107 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DF0C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F926C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238346AbiHVXU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 19:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
+        id S238581AbiHVXVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 19:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232057AbiHVXUy (ORCPT
+        with ESMTP id S238553AbiHVXVF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 19:20:54 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B21E51A27
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 16:20:54 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id c3so12836456vsc.6
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 16:20:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=mBK6+o6j2+LotCf9yizAJHX+fJSdClQm/ts8RAL5b8U=;
-        b=sqD+PAPbDVU9CLXulqfqsL3lHh3OuDUG94kxY4GfaAGOv0bWY0XrU48QjChcINwFtf
-         salod/xp4xKGuALe3sFKfA9Bj0ArmA16BjiA2XMNitS1fl0IUaRnIuXKsMwMuckTUdVG
-         RChpp9PDTMb4WwKcwizkIwdIhteub8KOQsqNx7Ue78k59/Gb4okiIcbNqtNW27NiuZdX
-         Vt7+OnUE9E8XMjHf/KC5y4a4Hly+6TTcA8h2zmcXcV5nsgQ/1SOe9UR2m6ShM9IHqUPY
-         7NK0E7YlzRPj/fYfFRfMff+NihzP43hxumJ6cEEL8iGvXKK/OGdf4N549ralRG1mt8U+
-         9vlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=mBK6+o6j2+LotCf9yizAJHX+fJSdClQm/ts8RAL5b8U=;
-        b=AOPErjFYKYO6NvUtHNpQLn9dsql3BZZ5ln75MQAmZ6Xyw0vEuNqhnOR9eeU3N23FzV
-         qVr6qPc2dMpIM7HqAb0ml2jKzikO1Zcg/6Ic82b7AtXA8q4R0OcaFoV8PgqttzjIoEqE
-         uRAxnVFyoukpBZnaVIWfkbPYNGFQUANAuxh/l/iPnxgC57PKLn2Cu7ADNyU97Uo3KrV0
-         6/soCToIBsPdbAk6hv5bIqsJcSRnntYJFdbhgGctTxMcYZd0tZazWFpjutPV2ym1VroS
-         AVSKHd0mM7i+w+S09Cfb4Bw5xM1QY2oxoYtWASOX4YGh132z70HxQ8WDYU7z1HrdDd6x
-         HN8w==
-X-Gm-Message-State: ACgBeo3x8zRDd0EMs1EYVBOu3YMgxFXUEH6Pg3iW1IQRrOh1OnfBMQgH
-        kfVlBSDZr9hwOUmX2yX5l3KgEuSlZL7pKAEXddic8g==
-X-Google-Smtp-Source: AA6agR5sKW4nrM3CN3TZoWhDbp0nd4726mDl9MWrNuIWkNfHs3XGmx2OlWmpPeTyS5Xs7YN96PqFfc2LP10bn8wnLA8=
-X-Received: by 2002:a67:d504:0:b0:390:3c26:7aa2 with SMTP id
- l4-20020a67d504000000b003903c267aa2mr5290241vsj.15.1661210453110; Mon, 22 Aug
- 2022 16:20:53 -0700 (PDT)
+        Mon, 22 Aug 2022 19:21:05 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA56B4C611;
+        Mon, 22 Aug 2022 16:21:03 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27MNKlD1095371;
+        Mon, 22 Aug 2022 18:20:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661210447;
+        bh=C0FWmK5NWDetoYxTMdBSgA+aZlJ6uevaafIo09ZQuZU=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=yuhUBge02UEvwbeSkVrCFb4nJ2jpTUKB/569BGKiY1uPpbGPJ2mO5gL3UT8ZjDiUY
+         gWTfpbsFEnQz3vHtvY29fkTtsflyAfi9B5wqbM+0EOqWOo/d91E9CTW6rD2mrgalUo
+         G2iiUrDVvM7z8uUyDeAyi1zz7EyNZEGP90iLGbDU=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27MNKlMe019768
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 22 Aug 2022 18:20:47 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Mon, 22
+ Aug 2022 18:20:47 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Mon, 22 Aug 2022 18:20:47 -0500
+Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27MNKkkR122207;
+        Mon, 22 Aug 2022 18:20:46 -0500
+From:   Andrew Davis <afd@ti.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Daniel Tang <dt.tangr@gmail.com>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Andrew Davis <afd@ti.com>
+Subject: [PATCH 1/2] ARM: nspire: Use syscon-reboot to handle restart
+Date:   Mon, 22 Aug 2022 18:20:45 -0500
+Message-ID: <20220822232046.1230-2-afd@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220822232046.1230-1-afd@ti.com>
+References: <20220822232046.1230-1-afd@ti.com>
 MIME-Version: 1.0
-References: <20220531223100.510392-1-surenb@google.com> <20220531223100.510392-2-surenb@google.com>
- <20220822152119.96d40c884078229ee3e6b25e@linux-foundation.org>
- <CAOUHufbysRjhX_AiFirjvWCR129t4_bELd1wFQG+fBsZpzhgYw@mail.gmail.com>
- <20220822154822.366a9e4527b748cf99d98637@linux-foundation.org>
- <CAOUHufa1zc3fMWsyyz1uB6_gsgVPk1Hw_T31WzWK58QVgsQSAQ@mail.gmail.com> <20220822161603.9e19edfe2daaea3bf591910a@linux-foundation.org>
-In-Reply-To: <20220822161603.9e19edfe2daaea3bf591910a@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Mon, 22 Aug 2022 17:20:17 -0600
-Message-ID: <CAOUHufbyWwkOAJTD4G82sLcwE_33Yy=s4Q+gGBujwXvEBZ8iqA@mail.gmail.com>
-Subject: Re: [PATCH RESEND v2 2/2] mm: delete unused MMF_OOM_VICTIM flag
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Suren Baghdasaryan <surenb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        David Rientjes <rientjes@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>, brauner@kernel.org,
-        Christoph Hellwig <hch@infradead.org>, oleg@redhat.com,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 5:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Mon, 22 Aug 2022 16:59:29 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > > > @@ -4109,7 +4109,7 @@ static int walk_pud_range(p4d_t *p4d, unsigned
-> > > > long start, unsigned long end,
-> > > >
-> > > >                 walk_pmd_range(&val, addr, next, args);
-> > > >
-> > > > -               if (mm_is_oom_victim(args->mm))
-> > > > +               if (test_bit(MMF_OOM_REAP_QUEUED, &args->mm->flags))
-> > > >                         return 1;
-> > > >
-> > > >                 /* a racy check to curtail the waiting time */
-> > >
-> > > Oh.  Why?  What does this change do?
-> >
-> > The MMF_OOM_REAP_QUEUED flag is similar to the deleted MMF_OOM_VICTIM
-> > flag, but it's set at a later stage during an OOM kill.
-> >
-> > When either is set, the OOM reaper is probably already freeing the
-> > memory of this mm_struct, or at least it's going to. So there is no
-> > need to dwell on it in the reclaim path, hence not about correctness.
->
-> Thanks.  That sounds worthy of some code comments?
+Writing this bit can be handled by the syscon-reboot driver. Add the
+info to DT and remove the machine_desc version.
 
-Will do. Thanks.
+Signed-off-by: Andrew Davis <afd@ti.com>
+---
+ arch/arm/boot/dts/nspire.dtsi |  7 +++++++
+ arch/arm/mach-nspire/Kconfig  |  2 ++
+ arch/arm/mach-nspire/mmio.h   |  3 ---
+ arch/arm/mach-nspire/nspire.c | 10 ----------
+ 4 files changed, 9 insertions(+), 13 deletions(-)
+
+diff --git a/arch/arm/boot/dts/nspire.dtsi b/arch/arm/boot/dts/nspire.dtsi
+index bb240e6a3a6f..6357b803521e 100644
+--- a/arch/arm/boot/dts/nspire.dtsi
++++ b/arch/arm/boot/dts/nspire.dtsi
+@@ -172,7 +172,14 @@ rtc: rtc@90090000 {
+ 			};
+ 
+ 			misc: misc@900a0000 {
++				compatible = "syscon", "simple-mfd";
+ 				reg = <0x900a0000 0x1000>;
++
++				reboot {
++					compatible = "syscon-reboot";
++					offset = <0x08>;
++					value = <0x02>;
++				};
+ 			};
+ 
+ 			pwr: pwr@900b0000 {
+diff --git a/arch/arm/mach-nspire/Kconfig b/arch/arm/mach-nspire/Kconfig
+index eb9916233dea..37e2dae60c2b 100644
+--- a/arch/arm/mach-nspire/Kconfig
++++ b/arch/arm/mach-nspire/Kconfig
+@@ -9,5 +9,7 @@ config ARCH_NSPIRE
+ 	select ARM_VIC
+ 	select ARM_TIMER_SP804
+ 	select NSPIRE_TIMER
++	select POWER_RESET
++	select POWER_RESET_SYSCON
+ 	help
+ 	  This enables support for systems using the TI-NSPIRE CPU
+diff --git a/arch/arm/mach-nspire/mmio.h b/arch/arm/mach-nspire/mmio.h
+index 48e32f13f311..2ce0656139ec 100644
+--- a/arch/arm/mach-nspire/mmio.h
++++ b/arch/arm/mach-nspire/mmio.h
+@@ -5,9 +5,6 @@
+  *	Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
+  */
+ 
+-#define NSPIRE_MISC_PHYS_BASE		0x900A0000
+-#define NSPIRE_MISC_HWRESET		0x08
+-
+ #define NSPIRE_PWR_PHYS_BASE		0x900B0000
+ #define NSPIRE_PWR_VIRT_BASE		0xFEEB0000
+ #define NSPIRE_PWR_BUS_DISABLE1		0x18
+diff --git a/arch/arm/mach-nspire/nspire.c b/arch/arm/mach-nspire/nspire.c
+index 2d4abb0288b9..1e13337972dd 100644
+--- a/arch/arm/mach-nspire/nspire.c
++++ b/arch/arm/mach-nspire/nspire.c
+@@ -27,16 +27,6 @@ static const char *const nspire_dt_match[] __initconst = {
+ 	NULL,
+ };
+ 
+-static void nspire_restart(enum reboot_mode mode, const char *cmd)
+-{
+-	void __iomem *base = ioremap(NSPIRE_MISC_PHYS_BASE, SZ_4K);
+-	if (!base)
+-		return;
+-
+-	writel(2, base + NSPIRE_MISC_HWRESET);
+-}
+-
+ DT_MACHINE_START(NSPIRE, "TI-NSPIRE")
+ 	.dt_compat	= nspire_dt_match,
+-	.restart	= nspire_restart,
+ MACHINE_END
+-- 
+2.36.1
+
