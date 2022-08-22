@@ -2,126 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14965C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8266C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233985AbiHVUrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:47:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        id S237704AbiHVUu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236379AbiHVUrS (ORCPT
+        with ESMTP id S234517AbiHVUux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:47:18 -0400
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3893558E8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:47:16 -0700 (PDT)
-Received: by mail-oo1-xc29.google.com with SMTP id q6-20020a4aa886000000b0044b06d0c453so1527333oom.11
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:47:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=CiUQYh3VkiWrk7tILV4WC/5iJ5EWLzTZ3MjP1qEF7c8=;
-        b=Hsb8llLcCL5ye2Z1lqzLqQ5cJaN623wjXgZbZAKSVPUcaGQ4lifDMMvfKYdSBd9dH0
-         kjK+6CYpgcUhbQwCp6AbH3VLnrFqtgHOeiApzuGxkpLvYQ0bkd8DvTjlqcYrDaC945/R
-         nM3dtwz+EtI8WFzTTDhrNWStQ+Y1BEqOcEhG6ehcdarjul31QtQXTt5HybvYGHtJ7p0h
-         ONu9mpBTlJQXWdRZ5NZTLHtqp2BQS6Ldo/bqOUaHeI6dPKvCFu7s/fsYhI8j9KYixQbo
-         pOgibeL86RlnEusH1XgtmvKa7rrIJSuP7W1DOkt2OG+vsEWTffdHCVkPiFHhwwWj2hqq
-         +9Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=CiUQYh3VkiWrk7tILV4WC/5iJ5EWLzTZ3MjP1qEF7c8=;
-        b=ctylIY9cQnIKUFLfA/ZYMsTxAaX0qF5FxpvPRBQbMr5MzkrCIMBSEayzN16d7IAAZm
-         wlT9lReXCxcpov+M7jydfINrB9KgVvZ64889FvEJL8MpUIQXcG6IBR8RyG/vqQUkSFuz
-         IwHnXpcYIgEZ3kD2hullK2qdxcOXMdKPHCGcZCtzIAD0IqEQSq0LCGnwb8kgTaHBGhmm
-         jI/G9Yjpt3/M1jujGu458n8ce8rsIyHv1rOsqCE3Jaa+HGhVOcAxv/LhmGFVhQ7n0YCH
-         sv3RirDMuyBf7EqKyNQSfXEVdNnYSSLGaT/2w/lLrDE1gAyOTTT6rO+xJ3FsUgGqQEMk
-         GC6w==
-X-Gm-Message-State: ACgBeo3J4jGqBmhxa6ZJt5wZJwF/0kDfz0CXdPCpUwkgoZTmDJIA0MME
-        puIBskafMa38XhR5V6/4jOfcEZaWL94pUVPjngB6
-X-Google-Smtp-Source: AA6agR4W34m/vYq0DZq0hZL9WLXp7hmQ13PfWphv2yMytGfb/PPKXo++l1OmQuvD/SmBi1dHMG7JW9KoymzW1Zcy9HI=
-X-Received: by 2002:a4a:94a6:0:b0:435:f61e:d7a1 with SMTP id
- k35-20020a4a94a6000000b00435f61ed7a1mr7144494ooi.82.1661201236122; Mon, 22
- Aug 2022 13:47:16 -0700 (PDT)
+        Mon, 22 Aug 2022 16:50:53 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6896C50040;
+        Mon, 22 Aug 2022 13:50:51 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id A3F7E1C0005; Mon, 22 Aug 2022 22:50:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
+        t=1661201449;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fZ/pgSVExMd0u5k55JxcceZ7T5/ac1VGYLI2Pl48nAw=;
+        b=BjtHnrzjejjTBlfHYD7qko+43NbC0qN1C1K4S0mY7A24qVUxhC1tCg0mIqxqpEUrnPgVla
+        srBaus38/LBTcnsHCLDzt12gsBpbBgyexLT6miJ+oRzX/rw1I+IX/k2JaQXXJYjwcuxFqI
+        v7Jn4drq8K1FyUHs5S63KguG+ySahcg=
+Date:   Mon, 22 Aug 2022 22:50:49 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        icenowy@aosc.xyz, martijn@brixit.nl,
+        kernel list <linux-kernel@vger.kernel.org>,
+        phone-devel@vger.kernel.org, mchehab@kernel.org,
+        linux-media@vger.kernel.org
+Subject: Re: gc2145 camera driver (front camera on PinePhone)
+Message-ID: <20220822205049.GA18272@duo.ucw.cz>
+References: <20220822180531.GA27226@duo.ucw.cz>
+ <20220822182058.xnpwfdjm7zmoid7y@core>
 MIME-Version: 1.0
-References: <20220817164851.3574140-1-joefradley@google.com>
- <20220817164851.3574140-3-joefradley@google.com> <CABVgOSkRRMDz14cpsYBi7SaefbOhGc9V+z+pY_tULkk12Fb-EA@mail.gmail.com>
-In-Reply-To: <CABVgOSkRRMDz14cpsYBi7SaefbOhGc9V+z+pY_tULkk12Fb-EA@mail.gmail.com>
-From:   Joe Fradley <joefradley@google.com>
-Date:   Mon, 22 Aug 2022 13:47:05 -0700
-Message-ID: <CAF-60z2dc=5A9+3a8+v7F-CunKKesUD+2Q6OTEpmrpUa1SvcDA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] kunit: no longer call module_info(test, "Y") for
- kunit modules
-To:     David Gow <davidgow@google.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Brendan Higgins <brendan.higgins@linux.dev>,
-        kernel-team@android.com,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
+Content-Disposition: inline
+In-Reply-To: <20220822182058.xnpwfdjm7zmoid7y@core>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 1:34 AM David Gow <davidgow@google.com> wrote:
->
-> On Thu, Aug 18, 2022 at 12:49 AM Joe Fradley <joefradley@google.com> wrote:
-> >
-> > Because KUnit test execution is not a guarantee with the kunit.enable
-> > parameter we want to be careful to only taint the kernel only if an
-> > actual test runs. Calling module_info(test, "Y") for every KUnit module
-> > automatically causes the kernel to be tainted upon module load. Therefore,
-> > we're removing this call and relying on the KUnit framework to taint the
-> > kernel or not.
-> >
-> > Signed-off-by: Joe Fradley <joefradley@google.com>
-> > ---
->
-> Thanks!
->
-> This definitely fixes an assumption I'd had about KUnit-usage which
-> definitely doesn't hold: that all KUnit tests would be in their own
-> modules (or at least that those modules wouldn't need to be loaded on
-> otherwise production systems). Given this isn't the case for a number
-> of modules (thuderbolt, apparmor, probably soon amdgpu), it makles
-> sense to get rid of this and only taint the kernel when the test is
-> actually run, not just when it's loaded.
->
-> This could be considered a fix for c272612cb4a2 ("kunit: Taint the
-> kernel when KUnit tests are run"), as it'd already be possible to
-> load, e.g., thunderbolt, but prevent the tests from executing with a
-> filter glob which doesn't match any tests. That possibly shouldn't
-> taint the kernel.
 
-Great, thank you for the review.
+--UlVJffcvxoiEqYs2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
-> Reviewed-by: David Gow <davidgow@google.com>
-> Fixes: c272612cb4a2 ("kunit: Taint the kernel when KUnit tests are run")
->
-> Cheers,
-> -- David
->
-> >  include/kunit/test.h | 1 -
-> >  1 file changed, 1 deletion(-)
-> >
-> > diff --git a/include/kunit/test.h b/include/kunit/test.h
-> > index c958855681cc..f23d3954aa17 100644
-> > --- a/include/kunit/test.h
-> > +++ b/include/kunit/test.h
-> > @@ -251,7 +251,6 @@ static inline int kunit_run_all_tests(void)
-> >  #endif /* IS_BUILTIN(CONFIG_KUNIT) */
-> >
-> >  #define __kunit_test_suites(unique_array, ...)                                \
-> > -       MODULE_INFO(test, "Y");                                                \
-> >         static struct kunit_suite *unique_array[]                              \
-> >         __aligned(sizeof(struct kunit_suite *))                                \
-> >         __used __section(".kunit_test_suites") = { __VA_ARGS__ }
-> > --
-> > 2.37.1.595.g718a3a8f04-goog
-> >
+Hi!
+
+> > I'd like to mainline support for gc2145 camera on pinephone. So far I
+> > did trivial cleanups over the Megi's driver. I started with 5.15
+> > version from Mobian.  I guess yaml description of the binding needs to
+> > be provided, too? (Would someone have a good starting point here?)
+> >=20
+> > Any hints? Are there better starting points?
+>=20
+> Here's some reverse engineering work: https://xnux.eu/tablet-hacking/#017
+> that went into it, that may be helpful.
+
+Thanks for pointer. I was able to find register descriptions (etc) on
+the web, but I assume you already know about these?
+
+Best regards,
+								Pavel
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
+
+--UlVJffcvxoiEqYs2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYwPsKQAKCRAw5/Bqldv6
+8rDwAJ4gLtDlsznXiPxQoOv8TKYRJ6siuwCbBH6YrDQfUFBZ8FoTiPkbEnHrQps=
+=2MYQ
+-----END PGP SIGNATURE-----
+
+--UlVJffcvxoiEqYs2--
