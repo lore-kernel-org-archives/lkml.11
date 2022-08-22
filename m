@@ -2,325 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E5DC32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86FDBC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235818AbiHVRiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        id S236281AbiHVRjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235410AbiHVRiP (ORCPT
+        with ESMTP id S236164AbiHVRjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:38:15 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2B1110;
-        Mon, 22 Aug 2022 10:38:12 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MGeVit025666;
-        Mon, 22 Aug 2022 17:38:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=Cpq/ix/oYD3ocVt+6D6DZU0b87AtIZu3p/OQDBnTwyQ=;
- b=AlcTbd17m511Iaen+w+HugICU07QHbn6nKawWjbK/3Am529Dg+KlGwFBPniWzPIYQ1A0
- O/mCFOhlh7PbZTaDK7kAb5xcA/uw19Mx9n26CmXKIDTOW/qFktwSjiurBTDlQ+Uzf1fS
- rMQFqtAL7hd12TOWbGnTuReKXaIdlHqo82I/EMimG+OikUh1OvErKvukickkTn57Zvsc
- 6ofq1KnBTpPXYHJ2Rt4i6dJkYVLa1gWMuBg+vMJ2OqY04JRbEiv10BdM02QaKl5a69Dt
- 4Lz/JZ0Rq0QazpBWSIcnQCoKW8mBTamwwlF6wUnLcfyL4Xey9uXTksDrvVf+PlWyB5nC 5g== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j4dgy04x5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 17:38:05 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27MHX4Za028378
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 17:33:04 GMT
-Received: from [10.111.171.135] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 22 Aug
- 2022 10:33:00 -0700
-Message-ID: <724d695d-0293-db81-7014-57cb96bd6d4b@quicinc.com>
-Date:   Mon, 22 Aug 2022 10:32:58 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/msm/dp: add atomic_check to bridge ops
+        Mon, 22 Aug 2022 13:39:02 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC563342B;
+        Mon, 22 Aug 2022 10:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661189940; x=1692725940;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=56J3BaFEq21EQ2evXLfHjiL1CH3IElyselRwXcR0iIY=;
+  b=Vpt+L2PLRg6lqJevpjOxeSQf2WUFQYWdPfvPl9arNWVQbsbjM9qsbS59
+   thdQl3IM5nSC+LHjD3hZLHW4FDXYH/vterCAKyWuqDrU5DjVp7VFTVcPU
+   E78Ii/H0Jcw1DsLRzLmT0rv6TeGm1jXe2Eptj2uk9zldUU25TPlOWLEer
+   dKmTncPtiaTFh74vxHl1bl4nGYjbkYyYdYi6I3SPKUkw6CnMyiPwY15C4
+   WxrrzI0YrlENVRi4WjI/i3EK/9CTkc89aCWb0oLaZgJcRltQtXuYVFtdl
+   yI8cJpTls03q1jzjcDwzUJehiIm5QRxmwP1TvfAYeU5buLOL5P3znz7zM
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="355209352"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="355209352"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 10:38:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="559837688"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga003.jf.intel.com with ESMTP; 22 Aug 2022 10:38:58 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 22 Aug 2022 10:38:58 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 22 Aug 2022 10:38:58 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Mon, 22 Aug 2022 10:38:58 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Mon, 22 Aug 2022 10:38:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SDWSbLL0O+F29JzE9SOwG69/r3oO8U/5gjqyZ9ecy2/OuEm234kWBY7W5v1HvkPYDSivMMr+NlTkg0zkM0Bpwa2R++1HMI/h6zcMMWJ0dvmuwqrunyKvFdLn4SXneFm2k1fA/va+e52qDrbXQQEZVRi5vpvkVyUoXSnht4qzInmohR0eKMjxhhw1m3bhEORn1CMn3xKdnpJWOfNwC6Px+2RluqZ9AqS6N4gjjg18L+dpxwVg12R1V18StIbzP5VNmC12yZAuYyVZVD6pfZIsEYlE6v/vnnnV5uf16I25qlNkonvJhpyktixDNzzwFnHA0krvqv4PbiBLb5ZX5muPLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=56J3BaFEq21EQ2evXLfHjiL1CH3IElyselRwXcR0iIY=;
+ b=CCRGtUplOaCyfVbXSXhgYGKXG8oJy+x0myLICe+uH5fZ+q78t6nNEW1K8qB9LDfmXhSXDf5T6HuvS3L3DeoVFxTG/ecwOiBjHvfia/k9jeWC8sX52NfDrypiZ1fFOCxC3+ZnrTb2Vw5Q6DCMwPCDp48ubbMCPxT86JJSL2CLaf26pgKAuuPiVnKASm7hnJZEUVE3m+FQZbz8xwLZLOdDItHnf1Bi3cWozqNdAzTolkCt3Cx5n4uhvLOdvIZqwGqkzhC5gxm2tb94slYgxJviCEx8OyrDyenrW9xIEV9XcIAeuZDjAU0Rd3giUYG0lkOLHkzA7lmbH20DFsm692Se4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM5PR11MB1899.namprd11.prod.outlook.com (2603:10b6:3:10b::14)
+ by DM6PR11MB3564.namprd11.prod.outlook.com (2603:10b6:5:137::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Mon, 22 Aug
+ 2022 17:38:56 +0000
+Received: from DM5PR11MB1899.namprd11.prod.outlook.com
+ ([fe80::e5bc:d418:aa62:955c]) by DM5PR11MB1899.namprd11.prod.outlook.com
+ ([fe80::e5bc:d418:aa62:955c%10]) with mapi id 15.20.5546.023; Mon, 22 Aug
+ 2022 17:38:55 +0000
+Message-ID: <2d608273-e37d-cb2c-45da-3213aba55f8e@intel.com>
+Date:   Mon, 22 Aug 2022 10:38:51 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v1] uio: dfl: add IOPLL user-clock feature id
 Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_sbillaka@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <quic_aravindh@quicinc.com>, <freedreno@lists.freedesktop.org>
-References: <1660759314-28088-1-git-send-email-quic_khsieh@quicinc.com>
- <f211520a-cb9c-1202-0752-7bb200726ae8@linaro.org>
- <d4b3c303-fc20-537d-0e69-6e19826b6e59@quicinc.com>
- <266c0531-344e-5589-2143-02ab1fe9b276@linaro.org>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <266c0531-344e-5589-2143-02ab1fe9b276@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 7OtSuzIJ0Ep6KAs1LRMbv4guMg6nNk4F
-X-Proofpoint-GUID: 7OtSuzIJ0Ep6KAs1LRMbv4guMg6nNk4F
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_10,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- spamscore=0 suspectscore=0 phishscore=0 lowpriorityscore=0 clxscore=1015
- priorityscore=1501 adultscore=0 mlxlogscore=999 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208220073
+To:     Xu Yilun <yilun.xu@intel.com>
+CC:     Peter Colberg <peter.colberg@intel.com>, Wu Hao <hao.wu@intel.com>,
+        "Tom Rix" <trix@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-fpga@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <matthew.gerlach@linux.intel.com>,
+        <basheer.ahmed.muddebihal@intel.com>, <tianfei.zhang@intel.com>,
+        <marpagan@redhat.com>, <lgoncalv@redhat.com>
+References: <20220817213746.4986-1-peter.colberg@intel.com>
+ <Yv29ev8OKyEYcaf/@yilunxu-OptiPlex-7050>
+ <acdf9c04-0816-5995-da90-c53153ffac59@intel.com>
+ <YwMKzC6HwjYqDxIs@yilunxu-OptiPlex-7050>
+From:   Russ Weight <russell.h.weight@intel.com>
+In-Reply-To: <YwMKzC6HwjYqDxIs@yilunxu-OptiPlex-7050>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: MW4PR04CA0140.namprd04.prod.outlook.com
+ (2603:10b6:303:84::25) To DM5PR11MB1899.namprd11.prod.outlook.com
+ (2603:10b6:3:10b::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ed69a2d6-4130-4ec4-0c3d-08da84652fa3
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3564:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gb5m6PcYkrPu1Zap+92pxwa2OiUI5qr7YcLbR4FGiIVy0n+QLKnVDX9imHaMC1F3m7blO+xFJ/BOAwTsQuxgBNUF/6bcqJYg2PIiA3n+wkRsc4TPh1nLPR2SB4abfg0hogCiwIz+rvwLpLN/xjv8I0BxZHOfXre9cRE2FpEs6oTXCP8BqODQYHEO+32RTG3139Ao+XZT45CiLXJkz8XAc3tW1d2sO8lEbSes9y94IVZbZp7yJPFyl38BeJzYD2+gbKrXVQ2vylmkBevBSvaLQ8zhXy8gJM/ByOSMbF7aokJ51WgtyYn/xqdEpsqqzn84ktQW5QGvcqIz/rGw+foexIRKJxMNw9tfhoyL3YkEY1C86vuNWJQDxwyE013RBeJqc6vlFjj+nZ/4w0XtElK1u6/wH/8vcXC4HL+O0PVbc8TrVslkNcJ+c+uMbsQGRi0iGnApIRq6cdz0ROAu+4Hgnr6FcfnBzerr0XtmSUErlS4M1JIAS8/kfrt4sTVhl2JfbdU8cXMepUF9YnPcxavGcR+OMb0VpFDu5mryXUL+upLD5cCjwv0hk943VuFbzL+b6cjfEnUTBCvw+9GJbDI+kubfzwmaOpDVS2khe2vVJ/rrkkixYNlV6JFc+NuwksRA4ASWloibQ7FmS+Te+ljG0Qk+QAXgdXE7P3gEbxZXlvSSiJaeizbUisejbQGzViEhYc22h6UtATKw5nlOq6dZruIuiJ9oYgUUCguD3Z/59W4XN4fPhRjwCum/zlFcPPrgcFe+vOIXoUPnOC5lOSfnnkRf9uMVIGbqfptirzE0rGLRd+o09LCfpxblTTXbo06Hx8DuVRKakm+AAu249kNmwp0fwI2ZhDoIe/qDjhUhE5U=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB1899.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39860400002)(376002)(346002)(366004)(136003)(82960400001)(86362001)(31696002)(38100700002)(316002)(54906003)(37006003)(6636002)(966005)(8936002)(6862004)(5660300002)(66946007)(66556008)(66476007)(8676002)(4326008)(2906002)(83380400001)(186003)(2616005)(478600001)(6486002)(41300700001)(26005)(53546011)(6512007)(6506007)(6666004)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dC9VYkNzQXZLSWlXcFduUFdieTNaRmtvc2lQeEV0QVkrc25WVUUzMnROTVRx?=
+ =?utf-8?B?MFZDcVVzWWh4V01lVmtnaGdRYkJCT1ZrZWt6bUExZStOV0RHb2pLWlcyelJU?=
+ =?utf-8?B?SGNldFZISFgzWDF5ZmU1TlgvU2ZwcVRkUUNKdm1LenpkYnIwa202UGNQM2lB?=
+ =?utf-8?B?dWJqKzhIV2wxSTVSdGdhaGNHWlg2RFcwb0o2N1p2b2gyVGNkVHNaamdkSW9l?=
+ =?utf-8?B?NHVBTkZrejlWOHhaNnYrdUJ2V2x2emZoWGVMMGNzUm94ME9ua2JScVZxeUNs?=
+ =?utf-8?B?Y2lWeG1PWDJOcFNiOWhwVWdlNEpwVGJjbGlBQTVzK01oL0RDMk5tK1hzdE9T?=
+ =?utf-8?B?Nk82bkdlV1FOYWh2SUdEYVozcFR6UDQ2SDZGU3VLYzFidzR6ZmRRTTVpalJF?=
+ =?utf-8?B?Z3MyMXBUQmNnQ0I5TmdyTXo5cmN5TzNDL3FEWC9tQWx5L2twUW1QTHlDd1Fw?=
+ =?utf-8?B?T3Z2aEJpYVU5WUtHYnlGeFBhZlRvK245K0Q1M0JsMEZwYVk0c1B5aW15aUFt?=
+ =?utf-8?B?TGFVWmh0TzJGRlpPQ1JsczhwV1VpcTRVSVM5TlFLSFJJNHg2dWlFWm1uMTFP?=
+ =?utf-8?B?cW04L3c3K01JUGFjQnNNWGVLOUdwdDIycTNxQjNaNEtQWU9uNlFubWJ6NEhw?=
+ =?utf-8?B?aUNiSnphdmJiUGxLRFB3L2cyUUJXejdkRDFGNEVUeDNTN1FGS0lhMUUyR3VK?=
+ =?utf-8?B?NnVJQTdyQUc4cVJya3REbG1rR2daOHU5TVoybWJmUkE5SUJ1RGovcXFtWW4x?=
+ =?utf-8?B?MFF4SHVQSEIrNTVJN1FxV0lCVjBjNklNM0xuVjJjaEVROXlocDNja2g0bzhH?=
+ =?utf-8?B?dXBVdy9rcW9LVEgycDhYMmJBWFEvV2NCWVBEOUJoTGJmem9kdUd5NVpEOTBv?=
+ =?utf-8?B?TmtHQ0tXK3dseGUrTndKdXdob0RlRlJCUTVocm4wQ1Q3R1hKOGkzaXRmdkxa?=
+ =?utf-8?B?RHZFMzlHUXA4WFE3bUFMaHRHeE1BeTE2MXFLdnFRUlNhRzQyMGhXMW41V3F1?=
+ =?utf-8?B?WmcwRlYyOWY2dGFPOFVCYk5HcVNxNjNoRjR5RDd5emw4M1dheGpPQkxGQ2Q0?=
+ =?utf-8?B?dDRNak5lM01DRHdzenp0ajFlLzQ3U2FZYnFEaTA1QmlVbVgxeGtKYU5ydFYr?=
+ =?utf-8?B?RTFHVys2L2dBSGY0TWhDU1lQd3RBb1hwS01rQmJ3MG96NHVhU3FvUTArTzQ3?=
+ =?utf-8?B?Ykk5bCs0Ymt4anNkT09BdWtxQkczVnRjdzc3clRma01CYkFEaTNmMHQwQ0hl?=
+ =?utf-8?B?Q2tvZG5TMXFqbDN0VEE0Q0J2TklBVUlFa0ZLVjB3L0JqaHNyUUc4cE5GMkU2?=
+ =?utf-8?B?ZXBKbWhSOGJZWFJndU5jcGpXc0FGd1M4ZG5xdlYyekUzWDlNMGl1Tzl4bW1J?=
+ =?utf-8?B?VTNIY29LbXdGUEV3VUhycm1zRGlQVit1TVRudWdtSCtuOHM0RGZmWE9OU1Aw?=
+ =?utf-8?B?ZDdFc1dOY20zWWVmdDV5d3UvL2dMVlJ6MU1TOEt2a3RnSjFLWUIxWDArTUNU?=
+ =?utf-8?B?MDZENGRJQ0lFQW01aXJ0WjZwWjlGMVRhM3lLVkk5ZnA1V0NoVVRHQmdrbzZx?=
+ =?utf-8?B?MWtFMUxKZkttWCs1N0UvMkxieEExYUF1RWVSSGE1b2Q5cTJwcEliRGdSTGtY?=
+ =?utf-8?B?T0YveFFSeDRhdXhhVXN0QWtCckozOCticUlCTy9WTXVyKzRSN2paL3NYUi9s?=
+ =?utf-8?B?d3ZzYXlBeDdLckROeTN5TTZ0L005bHF0Y1pTc2t2b0dCL2t6a1VlYmdkTXNY?=
+ =?utf-8?B?OXcvbmNjSmdNSjNEUi9ZaGdic0thRHgyNlo3di8yamtMSnFodHVJVFdWdVdB?=
+ =?utf-8?B?OEgxNWJnL1hibExCbkNia0kxS1l2Z0lBd01ERUJPRk1La0RkOVl0TWcwbHZy?=
+ =?utf-8?B?dTZGMThvZFBCMEc5aFhIQURqMjFMNHZVLzRHbS9ZZTFnVDhoNTc1RzFzZTZn?=
+ =?utf-8?B?NFNtMFRtV1Q1UGFCL1JKMVJhSE9VZnJiYTU3Q3g4Qy9kUTQ3b2t1WHkxYjA5?=
+ =?utf-8?B?djBsaDVnRHFkN3lOd2h1RUNxWEJ2bVgrMXM3K2ExR25LeDE1Wlh2VFAxR2Z2?=
+ =?utf-8?B?eDRiQ280MWoya3ZuNEhUL0pxenZGNzFNUGxST1JWNFhTQ3BHaGU2WitZWllz?=
+ =?utf-8?B?S0IrRWJqSUtvbkpLdjIwWWcwUWdrSmNPS1dQRUV0YkZEL2Q0Q0dkZDJ3Ym1Y?=
+ =?utf-8?B?SlE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed69a2d6-4130-4ec4-0c3d-08da84652fa3
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1899.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 17:38:55.3999
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XMvs93MYFD5++MSUSBye8hDmNTj8eMud86mNvKQTPFr/UZB2TWFL6JmC/xU1yAJd5TdtTg/KMQm77kE8P59pfGjhsABSojMqhPAn0Ji7pp4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3564
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 8/22/2022 9:49 AM, Dmitry Baryshkov wrote:
-> On 22/08/2022 19:38, Abhinav Kumar wrote:
->> Hi Dmitry
->>
->> On 8/22/2022 9:18 AM, Dmitry Baryshkov wrote:
->>> On 17/08/2022 21:01, Kuogee Hsieh wrote:
->>>> DRM commit_tails() will disable downstream crtc/encoder/bridge if
->>>> both disable crtc is required and crtc->active is set before pushing
->>>> a new frame downstream.
->>>>
->>>> There is a rare case that user space display manager issue an extra
->>>> screen update immediately followed by close DRM device while down
->>>> stream display interface is disabled. This extra screen update will
->>>> timeout due to the downstream interface is disabled but will cause
->>>> crtc->active be set. Hence the followed commit_tails() called by
->>>> drm_release() will pass the disable downstream crtc/encoder/bridge
->>>> conditions checking even downstream interface is disabled.
->>>> This cause the crash to happen at dp_bridge_disable() due to it trying
->>>> to access the main link register to push the idle pattern out while 
->>>> main
->>>> link clocks is disabled.
->>>>
->>>> This patch adds atomic_check to prevent the extra frame will not
->>>> be pushed down if display interface is down so that crtc->active
->>>> will not be set neither. This will fail the conditions checking
->>>> of disabling down stream crtc/encoder/bridge which prevent
->>>> drm_release() from calling dp_bridge_disable() so that crash
->>>> at dp_bridge_disable() prevented.
->>>
->>> I must admit I had troubles parsing this description. However if I 
->>> got you right, I think the check that the main link clock is running 
->>> in the dp_bridge_disable() or dp_ctrl_push_idle() would be a better fix.
->>
->> Originally, thats what was posted 
->> https://patchwork.freedesktop.org/patch/496984/.
-> 
-> This patch is also not so correct from my POV. It checks for the hpd 
-> status, while in reality it should check for main link clocks being 
-> enabled.
-> 
+On 8/21/22 21:49, Xu Yilun wrote:
+> On 2022-08-18 at 17:38:35 -0600, Russ Weight wrote: >> >> >> On 8/17/22 2=
+1:18, Xu Yilun wrote: >>> On 2022-08-17 at 17:37:46 -0400, Peter Colberg wr=
+ote: >>>> Add a Device Feature List (DFL) feature id for the >>>> configura=
+ble IOPLL user clock source, which can be used to >>>> configure the clock =
+speeds that are used for RTL logic that is >>>> programmed into the Partial=
+ Reconfiguration (PR) region of an >>>> FPGA. >>> Why not use linux clock f=
+ramework for this IOPLL? And let the PR >>> driver set it togeter with the =
+RTL logic reporgramming? >> >> Hi Yilun, >> >> We previously explored the p=
+ossibility of plugging into the linux >> clock framework. For this device, =
+setting a desired frequency is >> heavily dependent on a table of values th=
+at must be programmed in >> order to achieve the desired clock speeds. >> >=
+> Here is an example table, indexed by frequency. The first element >> in e=
+ach entry is the frequency in kHz: >> >> https://github.com/OPAE/opae-sdk/b=
+lob/master/libraries/plugins/xfpga/usrclk/fpga_user_clk_freq.h >> >>
+>> >> >> >> >> We previously experimented with a kernel-space driver. The
+>> implementation exported a sysfs node into which the table values >> for =
+the desired frequency would be written in order to set the >> desired frequ=
+ency. The function of the driver was to execute the >> logic required to pr=
+ogram the device. We did not think this >> implementation should be up-stre=
+amed. >> >> It isn't practical to upstream the frequency tables as they are=
+ >> subject to change for future devices. For example, if the >> reference =
+frequency changed in a future device, a whole new table >> of values would =
+have to be added for the new device. In a recent >> transition to a new dev=
+ice, the range of frequencies was increased >> which required an extension =
+to an existing table. > > Making a table for the inputs & outputs is always=
+ a easier way to > get things done, but the trade off is, as you said, exte=
+nsion to the > table every time for new outputs. > > So do we really need a=
+ll parameters to be in a table, or these are > actually the outcome of some=
+ calculation? Is it possible just > Implementing the calculation.
+For each desired frequency, the table values are produced by calling
+the quartus tool, the same tool that generates the IOPLL RTL logic.
+The quartus tool allows the RTL designer to select different options
+which can affect the table values. For example, the current IOPLL
+used in OFS has two frequency outputs and the desired relationship
+between the two frequencies is 1x/2x until the 2x frequency reaches
+a threshold (about 800MHz) and then the relationship is modified.
 
-We can push another fix to check for the clk state instead of the hpd 
-status. But I must say we are again just masking something which the fwk 
-should have avoided isnt it?
+To convert this process into an algorithm would require reverse
+engineering the quartus algorithm for the set of variables and
+clock relationships in a specific implementation. The resulting
+algorithm would have a very narrow application; we would have to
+upstream additional algorithms for future, modified implementations.
+Also, customers have the ability to modify the IOPLL implementation
+if they choose. A table driven driver enables customers to easily
+adapt the driver to their implementation.
 
-As per the doc in the include/drm/drm_bridge.h it says,
+We think a userspace table-driven driver is the best approach for
+supporting the user clock.
 
-"*
-  * The bridge can assume that the display pipe (i.e. clocks and timing
-  * signals) feeding it is still running when this callback is called.
-  *"
+- Russ
 
-By adding an extra layers of protection in the driver, we are just 
-avoiding another issue but the commit should not have been issued in the 
-first place.
+> > > If I remember correctly, linux clk framework enables a generic clk > =
+caculation mechanism. It encourages people to model the internal > refclk, =
+plls (and deviders?) separately and construct the clk tree. > Then the spec=
+ified calculation could be simpler for each clk driver. > > I'm not sure th=
+e clk framework fits all your need, but please > investigate it firstly. > =
+>> >> A previous implementation of the user clock was also implemented >> i=
+n user-space. The kernel driver exported each of the registers, >> but all =
+of the logic was implemented in user-space. The kernel >> portion can be vi=
+ewed here: >> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/l=
+inux.git/tree/drivers/fpga/dfl-afu-main.c#n380 >> >> >> >> >> >> >> This is=
+ our reasoning in choosing to implement this driver in
+>> user-space. Would you consider a uio based user-space driver to be >> ac=
+ceptable for in this case? > > As usual, we firstly make clear why existing=
+ framework cannot fit > the case and should be implemented in userspace, th=
+en everything > would be OK. > > Thanks, Yilun > >> >> - Russ >> >> >>> >>>=
+ Thanks, Yilun >>> >>>> The DFL feature id table can be found at: >>>> http=
+s://github.com/OPAE/dfl-feature-id >>>> >>>> Signed-off-by: Peter Colberg <=
+peter.colberg@intel.com> --- >>>> drivers/uio/uio_dfl.c | 2 ++ 1 file chang=
+ed, 2 insertions(+) >>>> >>>> diff --git a/drivers/uio/uio_dfl.c b/drivers/=
+uio/uio_dfl.c >>>> index 8f39cc8bb034..69e93f3e7faf 100644 --- >>>> a/drive=
+rs/uio/uio_dfl.c +++ b/drivers/uio/uio_dfl.c @@ -46,10 >>>> +46,12 @@ stati=
+c int uio_dfl_probe(struct dfl_device *ddev) >>>> >>>> #define FME_FEATURE_=
+ID_ETH_GROUP 0x10 #define >>>> FME_FEATURE_ID_HSSI_SUBSYS 0x15 +#define >>>=
+> PORT_FEATURE_ID_IOPLL_USRCLK 0x14 >>>> >>>> static const struct dfl_devic=
+e_id uio_dfl_ids[] =3D { { FME_ID, >>>> FME_FEATURE_ID_ETH_GROUP }, { FME_I=
+D, >>>>
+FME_FEATURE_ID_HSSI_SUBSYS }, + { PORT_ID, >>>> PORT_FEATURE_ID_IOPLL_USRCL=
+K }, { } }; MODULE_DEVICE_TABLE(dfl, >>>> uio_dfl_ids); -- 2.28.0 >>>> >>
 
-So shouldnt we do both then? That is add protection to check if clock is 
-ON and also, reject commits when display is disconnected.
-
->>
->> Then it seemed like we were just protecting against an issue in the 
->> framework which was allowing the frames to be pushed even after the 
->> display was disconnected. The DP driver did send out the disconnect 
->> event correctly and as per the logs, this frame came down after that 
->> and the DRM fwk did allow it.
->>
->> So after discussing on IRC with Rob, we came up with this approach that
->> if the display is not connected, then atomic_check should fail. That 
->> way the commit will not happen.
->>
->> Just seemed a bit cleaner instead of adding all our protections.
-> 
-> The check to fail atomic_check if display is not connected seems out of 
-> place. In its current way it begs go to the upper layer, forbidding 
-> using disconnected sinks for all the drivers. There is nothing special 
-> in the MSM DP driver with respect to the HPD events processing and 
-> failing atomic_check() based on that.
-> 
-
-Why all the drivers? This is only for MSM DP bridge.
-
->>
->>>
->>>>
->>>> SError Interrupt on CPU7, code 0x00000000be000411 -- SError
->>>> CPU: 7 PID: 3878 Comm: Xorg Not tainted 5.19.0-stb-cbq #19
->>>> Hardware name: Google Lazor (rev3 - 8) (DT)
->>>> pstate: a04000c9 (NzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>>> pc : __cmpxchg_case_acq_32+0x14/0x2c
->>>> lr : do_raw_spin_lock+0xa4/0xdc
->>>> sp : ffffffc01092b6a0
->>>> x29: ffffffc01092b6a0 x28: 0000000000000028 x27: 0000000000000038
->>>> x26: 0000000000000004 x25: ffffffd2973dce48 x24: 0000000000000000
->>>> x23: 00000000ffffffff x22: 00000000ffffffff x21: ffffffd2978d0008
->>>> x20: ffffffd2978d0008 x19: ffffff80ff759fc0 x18: 0000000000000000
->>>> x17: 004800a501260460 x16: 0441043b04600438 x15: 04380000089807d0
->>>> x14: 07b0089807800780 x13: 0000000000000000 x12: 0000000000000000
->>>> x11: 0000000000000438 x10: 00000000000007d0 x9 : ffffffd2973e09e4
->>>> x8 : ffffff8092d53300 x7 : ffffff808902e8b8 x6 : 0000000000000001
->>>> x5 : ffffff808902e880 x4 : 0000000000000000 x3 : ffffff80ff759fc0
->>>> x2 : 0000000000000001 x1 : 0000000000000000 x0 : ffffff80ff759fc0
->>>> Kernel panic - not syncing: Asynchronous SError Interrupt
->>>> CPU: 7 PID: 3878 Comm: Xorg Not tainted 5.19.0-stb-cbq #19
->>>> Hardware name: Google Lazor (rev3 - 8) (DT)
->>>> Call trace:
->>>>   dump_backtrace.part.0+0xbc/0xe4
->>>>   show_stack+0x24/0x70
->>>>   dump_stack_lvl+0x68/0x84
->>>>   dump_stack+0x18/0x34
->>>>   panic+0x14c/0x32c
->>>>   nmi_panic+0x58/0x7c
->>>>   arm64_serror_panic+0x78/0x84
->>>>   do_serror+0x40/0x64
->>>>   el1h_64_error_handler+0x30/0x48
->>>>   el1h_64_error+0x68/0x6c
->>>>   __cmpxchg_case_acq_32+0x14/0x2c
->>>>   _raw_spin_lock_irqsave+0x38/0x4c
->>>>   lock_timer_base+0x40/0x78
->>>>   __mod_timer+0xf4/0x25c
->>>>   schedule_timeout+0xd4/0xfc
->>>>   __wait_for_common+0xac/0x140
->>>>   wait_for_completion_timeout+0x2c/0x54
->>>>   dp_ctrl_push_idle+0x40/0x88
->>>>   dp_bridge_disable+0x24/0x30
->>>>   drm_atomic_bridge_chain_disable+0x90/0xbc
->>>>   drm_atomic_helper_commit_modeset_disables+0x198/0x444
->>>>   msm_atomic_commit_tail+0x1d0/0x374
->>>>   commit_tail+0x80/0x108
->>>>   drm_atomic_helper_commit+0x118/0x11c
->>>>   drm_atomic_commit+0xb4/0xe0
->>>>   drm_client_modeset_commit_atomic+0x184/0x224
->>>>   drm_client_modeset_commit_locked+0x58/0x160
->>>>   drm_client_modeset_commit+0x3c/0x64
->>>>   __drm_fb_helper_restore_fbdev_mode_unlocked+0x98/0xac
->>>>   drm_fb_helper_set_par+0x74/0x80
->>>>   drm_fb_helper_hotplug_event+0xdc/0xe0
->>>>   __drm_fb_helper_restore_fbdev_mode_unlocked+0x7c/0xac
->>>>   drm_fb_helper_restore_fbdev_mode_unlocked+0x20/0x2c
->>>>   drm_fb_helper_lastclose+0x20/0x2c
->>>>   drm_lastclose+0x44/0x6c
->>>>   drm_release+0x88/0xd4
->>>>   __fput+0x104/0x220
->>>>   ____fput+0x1c/0x28
->>>>   task_work_run+0x8c/0x100
->>>>   do_exit+0x450/0x8d0
->>>>   do_group_exit+0x40/0xac
->>>>   __wake_up_parent+0x0/0x38
->>>>   invoke_syscall+0x84/0x11c
->>>>   el0_svc_common.constprop.0+0xb8/0xe4
->>>>   do_el0_svc+0x8c/0xb8
->>>>   el0_svc+0x2c/0x54
->>>>   el0t_64_sync_handler+0x120/0x1c0
->>>>   el0t_64_sync+0x190/0x194
->>>> SMP: stopping secondary CPUs
->>>> Kernel Offset: 0x128e800000 from 0xffffffc008000000
->>>> PHYS_OFFSET: 0x80000000
->>>> CPU features: 0x800,00c2a015,19801c82
->>>> Memory Limit: none
->>>>
->>>> Fixes: 8a3b4c17f863 ("drm/msm/dp: employ bridge mechanism for 
->>>> display enable and disable")
->>>> Reported-by: Leonard Lausen <leonard@lausen.nl>
->>>> Suggested-by: Rob Clark <robdclark@gmail.com>
->>>> Closes: https://gitlab.freedesktop.org/drm/msm/-/issues/17
->>>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->>>> ---
->>>>   drivers/gpu/drm/msm/dp/dp_drm.c | 23 +++++++++++++++++++++++
->>>>   1 file changed, 23 insertions(+)
->>>>
->>>> diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c 
->>>> b/drivers/gpu/drm/msm/dp/dp_drm.c
->>>> index 6df25f7..c682588 100644
->>>> --- a/drivers/gpu/drm/msm/dp/dp_drm.c
->>>> +++ b/drivers/gpu/drm/msm/dp/dp_drm.c
->>>> @@ -31,6 +31,25 @@ static enum drm_connector_status 
->>>> dp_bridge_detect(struct drm_bridge *bridge)
->>>>                       connector_status_disconnected;
->>>>   }
->>>> +static int dp_bridge_atomic_check(struct drm_bridge *bridge,
->>>> +                struct drm_bridge_state *bridge_state,
->>>> +                struct drm_crtc_state *crtc_state,
->>>> +                struct drm_connector_state *conn_state)
->>>> +{
->>>> +    struct msm_dp *dp;
->>>> +
->>>> +    dp = to_dp_bridge(bridge)->dp_display;
->>>> +
->>>> +    drm_dbg_dp(dp->drm_dev, "is_connected = %s\n",
->>>> +        (dp->is_connected) ? "true" : "false");
->>>> +
->>>> +    if (bridge->ops & DRM_BRIDGE_OP_HPD)
->>>> +        return (dp->is_connected) ? 0 : -ENOTCONN;
-> 
-> This raises questions if this will work for the configurations when 
-> other bridge is used for HPD events.
-> 
-> Let's not mix the levels of processing. If we should not disable the 
-> link because it is already disabled, let's just do so rather than 
-> failing the atomic_check().
-> 
-
-This is only for MSM DP's bridge. If we use another bridge which is 
-capable of handling its own HPD, then that time MSM DP's bridge shouldnt 
-set this flag.
-
-We can even replace this check with just checking if connector_type is 
-DP but that would again open the discussion of having DP/eDP specific 
-checks so we did it this way.
-
-
->>>> +
->>>> +    return 0;
->>>> +}
->>>> +
->>>> +
->>>>   /**
->>>>    * dp_bridge_get_modes - callback to add drm modes via 
->>>> drm_mode_probed_add()
->>>>    * @bridge: Poiner to drm bridge
->>>> @@ -61,6 +80,9 @@ static int dp_bridge_get_modes(struct drm_bridge 
->>>> *bridge, struct drm_connector *
->>>>   }
->>>>   static const struct drm_bridge_funcs dp_bridge_ops = {
->>>> +    .atomic_duplicate_state = 
->>>> drm_atomic_helper_bridge_duplicate_state,
->>>> +    .atomic_destroy_state   = drm_atomic_helper_bridge_destroy_state,
->>>> +    .atomic_reset           = drm_atomic_helper_bridge_reset,
->>>>       .enable       = dp_bridge_enable,
->>>>       .disable      = dp_bridge_disable,
->>>>       .post_disable = dp_bridge_post_disable,
->>>> @@ -68,6 +90,7 @@ static const struct drm_bridge_funcs dp_bridge_ops 
->>>> = {
->>>>       .mode_valid   = dp_bridge_mode_valid,
->>>>       .get_modes    = dp_bridge_get_modes,
->>>>       .detect       = dp_bridge_detect,
->>>> +    .atomic_check = dp_bridge_atomic_check,
->>>>   };
->>>>   struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, 
->>>> struct drm_device *dev,
->>>
-> 
