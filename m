@@ -2,52 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 162A3C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAFCC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232126AbiHVUqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
+        id S233195AbiHVUrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbiHVUqR (ORCPT
+        with ESMTP id S232105AbiHVUrO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:46:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC823C8D8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:46:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA59612F0
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 20:46:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762CBC433C1;
-        Mon, 22 Aug 2022 20:46:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1661201175;
-        bh=SghH8Nrp72EYmNHkfS2Su+N3acNErB/MMeXnCWr0FWw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=w/5S5yHvqLe4rn4+8QrvpzAI8sHdrqWkI2wYwQyV6HoFz31bKOb8b9QtSEQA3Xs43
-         3jJIjOEnEMrCa51TkWHkzF83bQz0Gbw5c1uwHyFyp8Oc93w75x/i9R14g/JPMnRcys
-         5FN2XzO6r7VEcj6FK5X3Ocei/rti8QXp7VLYRoaw=
-Date:   Mon, 22 Aug 2022 13:46:14 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC PATCH] compat: update linux/compat.h and kernel/sys_ni.c
-Message-Id: <20220822134614.aeb6f3ce279ded4559037de1@linux-foundation.org>
-In-Reply-To: <20220822194310.31796-1-rdunlap@infradead.org>
-References: <20220822194310.31796-1-rdunlap@infradead.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 22 Aug 2022 16:47:14 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF2C558DE
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:47:14 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id l18-20020a6bd112000000b0067cb64ad9b2so6347016iob.20
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:47:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=ckYm9/frTHKg5Q1caJilSY/IDUA7LKV/J33LIJTS+6o=;
+        b=xlx5Shf3WIL0aBc2q5a2rtZ1tbuwsdP+zZ64/0IRSxi0e0PBGvdgJfUDWK0pzXWwf2
+         fT9xRf20+5ZBkQRXRLjgsxnJ5iWODrSo0hlynszlyIxvWd9mOWgR+4SdwKS3zmZeFaPW
+         6PgoiTZu7RVF+BtwhirAMXInouddunqXRKJ9Pfb1rq5Ry9f2Ddt+nH+3brRYdrQXA7ES
+         rOPPJ1vtulE+LwCbJk19Pk8JWLUptEXHflLR80hQSVlUq7Vv92T7CNy2hsol7i/iNX3Q
+         2TCJJFJ1ylUDf6RF2BzlBJvusQfP7zziuMrogM7ZajQ+gdyNhJTEkfB/2czzrRkR6njv
+         PaTA==
+X-Gm-Message-State: ACgBeo0vwqKLMZiGt3N2A4tUOh8jzc/gFpk4cOzJvmZWxmRgzLkDoAU+
+        zKXxHhDlDvn1UGPWaO7BIgG2X+FtRxXwgak5fk6fGbUwL3x6
+X-Google-Smtp-Source: AA6agR6YKQu5Soa4+q0bPpVeFbN8zg4kkMp/JQTJsc3IEH4Oq0YU6kHxNZ9NCy4plQ/ZFex72UUsvPyPZFK9XSwxn+cG2NVsEMVN
+MIME-Version: 1.0
+X-Received: by 2002:a05:6638:1683:b0:345:9e65:cd07 with SMTP id
+ f3-20020a056638168300b003459e65cd07mr10403135jat.128.1661201233559; Mon, 22
+ Aug 2022 13:47:13 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 13:47:13 -0700
+In-Reply-To: <000000000000b5187d05e6c08086@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006d456105e6da8d58@google.com>
+Subject: Re: [syzbot] INFO: task hung in scsi_remove_host
+From:   syzbot <syzbot+bafeb834708b1bb750bc@syzkaller.appspotmail.com>
+To:     bvanassche@acm.org, dsterba@suse.com, hch@lst.de, hdanton@sina.com,
+        jejb@linux.ibm.com, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, martin.petersen@oracle.com,
+        ming.lei@redhat.com, nborisov@suse.com,
+        syzkaller-bugs@googlegroups.com, wqu@suse.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 12:43:10 -0700 Randy Dunlap <rdunlap@infradead.org> wrote:
+syzbot has bisected this issue to:
 
-> Add conditional syscalls entries in kernel/sys_ni.c
-> for any syscalls that are arch- or config-dependent.
+commit ae643a74ebdb150b004601d0d5fe5a1faba9b04d
+Author: Qu Wenruo <wqu@suse.com>
+Date:   Sun May 22 11:47:48 2022 +0000
 
-What is the reason for this?  What effects does it have?
+    btrfs: introduce a data checksum checking helper
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=176ef485080000
+start commit:   e3f259d33c0e Merge tag 'i2c-for-6.0-rc2' of git://git.kern..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14eef485080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10eef485080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3bd9363f7b80ef9c
+dashboard link: https://syzkaller.appspot.com/bug?extid=bafeb834708b1bb750bc
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=108e1a3d080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=154720f3080000
+
+Reported-by: syzbot+bafeb834708b1bb750bc@syzkaller.appspotmail.com
+Fixes: ae643a74ebdb ("btrfs: introduce a data checksum checking helper")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
