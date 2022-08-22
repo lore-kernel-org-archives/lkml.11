@@ -2,100 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496D2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758B1C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231422AbiHVHTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41120 "EHLO
+        id S233079AbiHVHWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiHVHTT (ORCPT
+        with ESMTP id S231273AbiHVHV6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:19:19 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97C813CDA;
-        Mon, 22 Aug 2022 00:19:18 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so10356496pjf.2;
-        Mon, 22 Aug 2022 00:19:18 -0700 (PDT)
+        Mon, 22 Aug 2022 03:21:58 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3967A29C88
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:21:57 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id 2so4641613edx.2
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:21:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=03jo1+f8X3EXXKFUBIJeAZG4V9px5mryHYSkj2Zd4n8=;
-        b=pA1jdg+xuB/MBjFO+tnrbUfRwIwk8NjKBvPbX+U4uSnJRafMOMjI1atzqhTXmwpcqU
-         uqI1cx1w0+la3/N0efzt/xCZPOEr8jcmHKGPbu4eyJY5L8quVq0kMXd2U5jJihWlHLMQ
-         t/H2lBPFheBrxEMtX9M/6OZAv9EPCyuL/BS0pTQWMeRDb9JI3dTBNI0ZCkdR+sqRAUfl
-         /uR8B/OYtM/yOYbX2ysxkNFmvWqRCURrVsnMtZn4HMoHnmio0uF20f4cxu/6222nHcvV
-         oACmN3WweoN00q1OnZ2LXwlHAYxdWhBYcgLFynvR0Dby2+514Y3l8dg63zyQvGRWaeow
-         KF7A==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=K9GqH8J2Rtwg9al68hkNDhdyAqH2iZ0okDuLSh58pgQ=;
+        b=lcomsdQYETH++8/O8lDI76zbdmo8u73NvmYlTumg800wRLlB85LnH8xGZR3hpnq2ng
+         YM2W5trM6h53BduUHjBwQU5/ATLm3SpfWgCKzjNs6OSd0XUlv/Kd3ywDUtBkITmkN68p
+         Ec1JBUOsQpTNRVcdVnbVT04cmjsQKxHMk09ymwk+FCwhX7Y7ZEdVEBiRWVcgPpRLtkai
+         HuqgsCXZYusUEMAe51bTP7zo7Z6RjFOgZ4v7iij8PEn5jrov1ZG5fH2voQNQWozsJuPw
+         UohDEWX/Iga/EJHAw6mBbg3Lqixv/zy8AlYNtBgEDSkqVC1a5dQ/yfrbVyi1gM64LVRz
+         PFJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=03jo1+f8X3EXXKFUBIJeAZG4V9px5mryHYSkj2Zd4n8=;
-        b=m0+KLSXhLZrKNKjigQ5dRRDsbuXPlsqAlM/zBq8u3DX5rCDLPWajxCiBjT/0HG8YH4
-         yYhKQvD1wApaianq8TAuG+i1mJDoaDQs+TM11T0H0KkqQU6/rwDNW3MLta8T0ADrgJUo
-         +Cc9M46slLpgQ3juPdTPvjywVR8hz3dnvsDrDPBjK39Cne9GL+reNCNI++z1+mkcHL06
-         2IiDTd62RJeitDGzRK5Pirizz18XBd0nXaqXir+6uc0zbqs/kp/PTMcKSnxX8jqHqa+E
-         58H5TPo2OfhjMrHCkR165ZHCP9aDDuZC5O8xPrhg7gz1zGonhCtsptSFPriOBhowWt+X
-         uWhQ==
-X-Gm-Message-State: ACgBeo0LAK2udfrB1PgJsRgqcClWsCt0IVXyCV7JPL4OERvIt5g52tkb
-        HBQSrvyME9v0BgRJ8rtF/Iw=
-X-Google-Smtp-Source: AA6agR5WnXDUV5MQwujJjQN1TuZSCgnkZwKzqgjYDKUr/W2Bcn0Lx5PJjWBL1OVFtGd288lgYqyGbg==
-X-Received: by 2002:a17:903:1d1:b0:172:e12b:71b2 with SMTP id e17-20020a17090301d100b00172e12b71b2mr6141394plh.60.1661152758257;
-        Mon, 22 Aug 2022 00:19:18 -0700 (PDT)
-Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id d7-20020a17090ad3c700b001f3095af6a9sm7330394pjw.38.2022.08.22.00.19.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 00:19:17 -0700 (PDT)
-From:   Haimin Zhang <tcs.kernel@gmail.com>
-X-Google-Original-From: Haimin Zhang <tcs_kernel@tencent.com>
-To:     alex.aring@gmail.com, stefan@datenfreihafen.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Haimin Zhang <tcs_kernel@tencent.com>
-Subject: [PATCH] net/ieee802154: fix uninit value bug in dgram_sendmsg
-Date:   Mon, 22 Aug 2022 15:19:02 +0800
-Message-Id: <20220822071902.3419042-1-tcs_kernel@tencent.com>
-X-Mailer: git-send-email 2.27.0
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=K9GqH8J2Rtwg9al68hkNDhdyAqH2iZ0okDuLSh58pgQ=;
+        b=Umx3Zs7/CyytPglQIPxPIN4nINUghRjCd8mwZBuK4444DlFbnXzB8fy5I92toFdLVg
+         ORvcTvx5RRs93M8cPy4csM1AWlruHVd+2IVB4dXVKhiltS558YSOy9HK+rYaI+Y6YuKW
+         b6EGuXjylaPS5NsFJohNnR65u1Dg/WYR0TXTUdgpiq+gzBhEb+MEH0ZjWqOP5yQx8sjf
+         GwmFB07oEYzqPbYJAOTo+jCausQy5B8pJnXSEmTr7lATa0ecZ3ss7iYMZPSnwFbhxfYV
+         M/xfLZ77iIXl7mIUy1f2pctdeDlLrP6aDkO2LY55N+7h9epKgFuOE3lZ2ZM2+Zs2AxbT
+         3wqQ==
+X-Gm-Message-State: ACgBeo0dI0huWtFYAc/cuiDX9weu+c7dT4biMBSPG5QH/Ugj6VAwPJDE
+        ILrbmY4V/rPPH3/NuVwDJvdo87JNhp1I1YulrSZQhw==
+X-Google-Smtp-Source: AA6agR5/dTruYi9JrVkQ29gedLbwsDM/e6eJkPzc08FKA8BZSy+t8ph/0TIYsU90d5dOm1Ah5JSQ4Eb2qgytDr4Pfk0=
+X-Received: by 2002:aa7:c84f:0:b0:446:2bfb:5a63 with SMTP id
+ g15-20020aa7c84f000000b004462bfb5a63mr12780779edt.172.1661152915747; Mon, 22
+ Aug 2022 00:21:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220728091712.13395-1-m.zatovic1@gmail.com> <20220728091712.13395-2-m.zatovic1@gmail.com>
+In-Reply-To: <20220728091712.13395-2-m.zatovic1@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 22 Aug 2022 09:21:44 +0200
+Message-ID: <CACRpkdZKAzsdhyky1bEax3Jra0+MLYbu+LNWuk2KGAfEkBvBLQ@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 2/2] devicetree: bindings: bus: add Wiegand driver documentation
+To:     =?UTF-8?B?TWFydGluIFphxaVvdmnEjQ==?= <m.zatovic1@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        mani@kernel.org, hemantk@codeaurora.org, elder@linaro.org,
+        f.fainelli@gmail.com, Michael.Srba@seznam.cz,
+        jeffrey.l.hugo@gmail.com, gregkh@linuxfoundation.org,
+        bjorn.andersson@linaro.org, saravanak@google.com,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is uninit value bug in dgram_sendmsg function in
-net/ieee802154/socket.c when the length of valid data pointed by the
-msg->msg_name isn't verified.
+On Thu, Jul 28, 2022 at 11:17 AM Martin Za=C5=A5ovi=C4=8D <m.zatovic1@gmail=
+.com> wrote:
 
-This length is specified by msg->msg_namelen. Function
-ieee802154_addr_from_sa is called by dgram_sendmsg, which use
-msg->msg_name as struct sockaddr_ieee802154* and read it, that will
-eventually lead to uninit value read. So we should check the length of
-msg->msg_name is not less than sizeof(struct sockaddr_ieee802154)
-before entering the ieee802154_addr_from_sa.
+> Wiegand write-only driver requires definitions of two GPIO lines
+> in the devicetree. This adds the documentation of their
+> definitions.
 
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
----
- net/ieee802154/socket.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On top of the other comments:
 
-diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
-index 718fb77bb..efbe08590 100644
---- a/net/ieee802154/socket.c
-+++ b/net/ieee802154/socket.c
-@@ -655,6 +655,10 @@ static int dgram_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	if (msg->msg_name) {
- 		DECLARE_SOCKADDR(struct sockaddr_ieee802154*,
- 				 daddr, msg->msg_name);
-+		if (msg->msg_namelen < sizeof(*daddr)) {
-+			err = -EINVAL;
-+			goto out_skb;
-+		}
- 
- 		ieee802154_addr_from_sa(&dst_addr, &daddr->addr);
- 	} else {
--- 
-2.27.0
+> +  Both data lines are initially pulled up.
 
+That makes it sound like they are both open drain, right? Just like I2C.
+
+> +  wiegand-data-hi-gpios:
+> +  wiegand-data-lo-gpios:
+
+So these should be tagged with (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)
+See the I2C bindings in
+Documentation/devicetree/bindings/i2c/i2c-gpio.yaml
+
+> +        wiegand-data-hi-gpios =3D <&gpio2 1 GPIO_ACTIVE_HIGH>;
+> +        wiegand-data-lo-gpios =3D <&gpio2 2 GPIO_ACTIVE_HIGH>;
+
+ (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN) on both then!
+
+Yours,
+Linus Walleij
