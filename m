@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78813C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7533FC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231804AbiHVDvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 23:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
+        id S232583AbiHVDwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 23:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbiHVDvi (ORCPT
+        with ESMTP id S232391AbiHVDwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 23:51:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32E920F5E
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 20:51:36 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M9yy01ctMzlWGb;
-        Mon, 22 Aug 2022 11:48:24 +0800 (CST)
-Received: from dggphis33418.huawei.com (10.244.148.83) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 11:51:34 +0800
-From:   Gaosheng Cui <cuigaosheng1@huawei.com>
-To:     <cezary.rojewski@intel.com>,
-        <pierre-louis.bossart@linux.intel.com>,
-        <liam.r.girdwood@linux.intel.com>,
-        <peter.ujfalusi@linux.intel.com>,
-        <yung-chuan.liao@linux.intel.com>,
-        <ranjani.sridharan@linux.intel.com>,
-        <kai.vehmanen@linux.intel.com>, <broonie@kernel.org>,
-        <perex@perex.cz>, <tiwai@suse.com>, <cuigaosheng1@huawei.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] ASoC: Intel: fix unused-variable warning in probe_codec
-Date:   Mon, 22 Aug 2022 11:51:33 +0800
-Message-ID: <20220822035133.2147381-1-cuigaosheng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 21 Aug 2022 23:52:30 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4860520F70;
+        Sun, 21 Aug 2022 20:52:29 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M9yyh20Q2zkWVZ;
+        Mon, 22 Aug 2022 11:49:00 +0800 (CST)
+Received: from CHINA (10.175.102.38) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
+ 2022 11:52:26 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Bamvor Jian Zhang <bamv2005@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <linux-gpio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] gpio: mockup: remove gpio debugfs when remove device
+Date:   Mon, 22 Aug 2022 04:10:25 +0000
+Message-ID: <20220822041025.3221406-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.244.148.83]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.102.38]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In configurations with CONFIG_SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC=n,
-gcc warns about an unused variable:
+GPIO mockup debugfs is created in gpio_mockup_probe() but
+forgot to remove when remove device. This patch add a devm
+managed callback for removing them.
 
-sound/soc/intel/skylake/skl.c: In function ‘probe_codec’:
-sound/soc/intel/skylake/skl.c:729:18: error: unused variable ‘skl’ [-Werror=unused-variable]
-  struct skl_dev *skl = bus_to_skl(bus);
-                  ^~~
-cc1: all warnings being treated as errors
-
-Fixes: 3fd63658caed9 ("ASoC: Intel: Drop hdac_ext usage for codec device creation")
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
- sound/soc/intel/skylake/skl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v1 -> v2: return from devm_add_xx directly as Bartosz's suggestion
+---
+ drivers/gpio/gpio-mockup.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/skylake/skl.c b/sound/soc/intel/skylake/skl.c
-index c7c1cad2a753..52a041d6144c 100644
---- a/sound/soc/intel/skylake/skl.c
-+++ b/sound/soc/intel/skylake/skl.c
-@@ -726,8 +726,8 @@ static int probe_codec(struct hdac_bus *bus, int addr)
- 	unsigned int cmd = (addr << 28) | (AC_NODE_ROOT << 20) |
- 		(AC_VERB_PARAMETERS << 8) | AC_PAR_VENDOR_ID;
- 	unsigned int res = -1;
--	struct skl_dev *skl = bus_to_skl(bus);
- #if IS_ENABLED(CONFIG_SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC)
-+	struct skl_dev *skl = bus_to_skl(bus);
- 	struct hdac_hda_priv *hda_codec;
- #endif
- 	struct hda_codec *codec;
+diff --git a/drivers/gpio/gpio-mockup.c b/drivers/gpio/gpio-mockup.c
+index 8943cea92764..a2e505a7545c 100644
+--- a/drivers/gpio/gpio-mockup.c
++++ b/drivers/gpio/gpio-mockup.c
+@@ -373,6 +373,13 @@ static void gpio_mockup_debugfs_setup(struct device *dev,
+ 	}
+ }
+ 
++static void gpio_mockup_debugfs_cleanup(void *data)
++{
++	struct gpio_mockup_chip *chip = data;
++
++	debugfs_remove_recursive(chip->dbg_dir);
++}
++
+ static void gpio_mockup_dispose_mappings(void *data)
+ {
+ 	struct gpio_mockup_chip *chip = data;
+@@ -455,7 +462,7 @@ static int gpio_mockup_probe(struct platform_device *pdev)
+ 
+ 	gpio_mockup_debugfs_setup(dev, chip);
+ 
+-	return 0;
++	return devm_add_action_or_reset(dev, gpio_mockup_debugfs_cleanup, chip);
+ }
+ 
+ static const struct of_device_id gpio_mockup_of_match[] = {
 -- 
-2.25.1
+2.34.1
 
