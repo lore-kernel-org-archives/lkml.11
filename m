@@ -2,113 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B17C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0CBC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235144AbiHVUGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        id S231942AbiHVUG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbiHVUFv (ORCPT
+        with ESMTP id S231845AbiHVUG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:05:51 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D734620C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:05:49 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-11c4d7d4683so14237167fac.8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=1naA9vNk3/eH1I9D52GSl1kXImc5DsL+BHAHMfWytNg=;
-        b=FiL9UObuk3rpCWubxZ8WQ+aemJSVWBIbauSNQt/grOIvCnzA79D7l8a00R/sJEoeII
-         lcMZJgKezXZ5AXKJzJSiFwtJphdeeRSUBzRwFqCiPCQFBAXwJ0//1YeBpwznoBRQhwrv
-         CAchVzvYi3Z/R/49n2gQ0GOAS3n4xbdTjcfNWIsrfkiFZs+cl3DOdWFS0qmc5h1gOBos
-         z4x8GnKVitthJaWRr8IfQ79VrvBt8z4dowPq45yXpuhQI7XyvUZVZAik77xaDsFZTRk8
-         2UiRHMJo6tiLzthK8QEdovMA1tboLi0ey97QxHLRypsUluIr084U21cdg41j9tk8SiI9
-         Vlyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=1naA9vNk3/eH1I9D52GSl1kXImc5DsL+BHAHMfWytNg=;
-        b=LP7IUuNOLm7l3TJfguCsDx4nqXsP8cJBKn1ClkrTFqiCP2tSrOtnTaal7JbK3WBjVe
-         JZK3E0vaOuzAoXtd4LIqQwgRNXOE+QdWK2FIYaUKfeZw8lpAOHvWt9JVQMI6cIayHB/w
-         2IZSYVuR98kHSh54gtFwadRUm4rj06lf10hRNhbYY2JabofnbqAvx/1XJaiw8UtI5EhW
-         xFS987IFi46Lptrr6ewpcGa5O/ZCe8Ve2xdyZ1IYVwDaSNqJ6ZBsz2OlsdtdAOU5K163
-         DBKaXrRrwhN8R29UaVBF08JhRKM75XUT98ZnjhfX4gfZgJa5Ln3obc+uhGouCxnK2w01
-         z7HQ==
-X-Gm-Message-State: ACgBeo056Syv1KGFVPdBk+7pBFRo/zghHkpLnqgnBt7dWa9CgPKcbUNm
-        e6Jbd30dEeexnsgXssPVz5tkgJSZNcfnGtziWc4=
-X-Google-Smtp-Source: AA6agR7sPlq70WfnkK/fn8Kr8gLJ6XcQxfG0rnSlznVKc2vdkpVpZQAvPXLCiRSQSruyWOMySRZTiuZGaBBHxpqsue0=
-X-Received: by 2002:a05:6870:e98b:b0:10d:fe5c:f818 with SMTP id
- r11-20020a056870e98b00b0010dfe5cf818mr21365oao.106.1661198749228; Mon, 22 Aug
- 2022 13:05:49 -0700 (PDT)
+        Mon, 22 Aug 2022 16:06:26 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C173ECF6;
+        Mon, 22 Aug 2022 13:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661198784; x=1692734784;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cjbm02nhLq/yvBwocNL850XgZfOqljzpsTMUZOzel3Q=;
+  b=XDsKhI2WCfM+Op4ZAOFcOo843yFKndfMUO1C/rdZ5B56eEBbI9rz6Rca
+   DX3oy3jeGbCI6eKYrsK3wywzIYMOPF+LZ3IfgDRjcVYuIp7iN9Hw3yAKI
+   nfGpF3kxndCx8BlYRCuG0Wx70j2/q+JfiBW4dGxdmzwouzsNGGeZH4Ua5
+   poYfJTmLyF10x9GWuBPSt1bv+m1I3SLsw1FTV9ATaBIJeDzXdzw/3NCBp
+   GnuDWO/Oqy/AN4+u+0xuPxYmKzq1xbaGH2Vpqgl31IfEHn0JwdJygJTNk
+   2bJtl5iYU+kwbWmc7CwzNDerglxWiovYTrNj70y/4RZSsWpuRDG1f094z
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="170410083"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Aug 2022 13:06:23 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 22 Aug 2022 13:06:17 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Mon, 22 Aug 2022 13:06:17 -0700
+Date:   Mon, 22 Aug 2022 22:10:31 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <srinivas.kandagatla@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH 1/2] dt-bindings: lan966x-otpc: document Lan966X OTPC
+Message-ID: <20220822201031.yhi6bbbzgt5pvchr@soft-dev3-1.localhost>
+References: <20220818164405.1953698-1-horatiu.vultur@microchip.com>
+ <20220818164405.1953698-2-horatiu.vultur@microchip.com>
+ <550e652e-4541-c1e6-33a7-d5555f0cb266@linaro.org>
+ <20220822060456.sl343a3a3uifini7@soft-dev3-1.localhost>
+ <20220822181701.GA89665-robh@kernel.org>
 MIME-Version: 1.0
-References: <20220821062528.13416-1-tales.aparecida@gmail.com>
-In-Reply-To: <20220821062528.13416-1-tales.aparecida@gmail.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 22 Aug 2022 16:05:37 -0400
-Message-ID: <CADnq5_MMAjk3-YzgCEtkk9228Mwwnc3oTSXkNG17CdTafYjoGg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd/display: remove unneeded defines from bios parser
-To:     Tales Aparecida <tales.aparecida@gmail.com>
-Cc:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220822181701.GA89665-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+The 08/22/2022 13:17, Rob Herring wrote:
 
-Alex
+Hi Rob,
 
-On Sun, Aug 21, 2022 at 2:41 AM Tales Aparecida
-<tales.aparecida@gmail.com> wrote:
->
-> Removes DEFINEs that should have been removed after they were
-> introduced to ObjectID.h by the commit abea57d70e90
-> ("drm/amdgpu: Add BRACKET_LAYOUT_ENUMs to ObjectID.h")
->
-> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
-> ---
->  .../drm/amd/display/dc/bios/bios_parser2.c    | 19 -------------------
->  1 file changed, 19 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c b/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c
-> index 09fbb7ad5362..ead4da11a992 100644
-> --- a/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c
-> +++ b/drivers/gpu/drm/amd/display/dc/bios/bios_parser2.c
-> @@ -44,25 +44,6 @@
->
->  #include "bios_parser_common.h"
->
-> -/* Temporarily add in defines until ObjectID.h patch is updated in a few days */
-> -#ifndef GENERIC_OBJECT_ID_BRACKET_LAYOUT
-> -#define GENERIC_OBJECT_ID_BRACKET_LAYOUT          0x05
-> -#endif /* GENERIC_OBJECT_ID_BRACKET_LAYOUT */
-> -
-> -#ifndef GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID1
-> -#define GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID1  \
-> -       (GRAPH_OBJECT_TYPE_GENERIC << OBJECT_TYPE_SHIFT |\
-> -       GRAPH_OBJECT_ENUM_ID1 << ENUM_ID_SHIFT |\
-> -       GENERIC_OBJECT_ID_BRACKET_LAYOUT << OBJECT_ID_SHIFT)
-> -#endif /* GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID1 */
-> -
-> -#ifndef GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID2
-> -#define GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID2  \
-> -       (GRAPH_OBJECT_TYPE_GENERIC << OBJECT_TYPE_SHIFT |\
-> -       GRAPH_OBJECT_ENUM_ID2 << ENUM_ID_SHIFT |\
-> -       GENERIC_OBJECT_ID_BRACKET_LAYOUT << OBJECT_ID_SHIFT)
-> -#endif /* GENERICOBJECT_BRACKET_LAYOUT_ENUM_ID2 */
-> -
->  #define DC_LOGGER \
->         bp->base.ctx->logger
->
-> --
-> 2.37.2
->
+> 
+> > > On 18/08/2022 19:44, Horatiu Vultur wrote:
+> > > > Document Lan966x OTP controller.
+> > > >
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    items:
+> > > > +      - const: microchip,lan966x-otpc
+> > >
+> > > No wildcards in compatible (which will also affect the file name as it
+> > > should match the compatible).
+> >
+> > Ok, I will replace lan966x with lan966 as the SoC is defined (SOC_LAN966)
+> 
+> Pretty sure that's still a wildcard for the SoC family. 9668 or 9662 are
+> the ones we already have. Yes, there's already a bunch of 966x
+> compatibles, but that's not a pattern that should continue.
+
+OK, I can use the lan9668 and lan9662 as compatible string.
+But then how should the file be named? As it need to match the
+compatible string.
+
+> 
+> Rob
+
+-- 
+/Horatiu
