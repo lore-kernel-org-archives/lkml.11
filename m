@@ -2,276 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E82E2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D21C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234843AbiHVMDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
+        id S234914AbiHVMEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234860AbiHVMDh (ORCPT
+        with ESMTP id S234862AbiHVMDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:03:37 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775EECE09
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 05:03:35 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E20CB34506;
-        Mon, 22 Aug 2022 12:03:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1661169813; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=j6GGe1B1GcDSiVUcTHVHFJ2yjgqtF8csatDB5bOHinE=;
-        b=deOW83m0Kc3UdTqvUwVAJx0rOjSGlq4gLtF8eDIyyTRcnTESuFVc6JpaAsykMH8R0DKbne
-        5LZGP1x1Q3KjitVlE9B+SyD56Rv7FXBcnX7zfTDay6HPjBYKkx0e5YjFf9CRgSECADPVdc
-        L/2QTHerj/nu4oVI0x+iqHroSuuj6+0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1661169813;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=j6GGe1B1GcDSiVUcTHVHFJ2yjgqtF8csatDB5bOHinE=;
-        b=0jzeqjBx2hbiawBNHDbMgby4rWkjRuR/OuN+2I7XB2PYOrO7aEJjITH4xnXtx4jYlZyk+o
-        SfbwDSU1i/DEeOBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B138C13523;
-        Mon, 22 Aug 2022 12:03:33 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id +raXKpVwA2P1PgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 22 Aug 2022 12:03:33 +0000
-Message-ID: <ac08e3f6-f167-2382-5266-959e7339c04a@suse.cz>
-Date:   Mon, 22 Aug 2022 14:03:33 +0200
+        Mon, 22 Aug 2022 08:03:53 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3E2BF45
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 05:03:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661169831; x=1692705831;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=N4IygWGbFvd1xw7DblqtBUK8DO5oWv3ABVwqtuqqmPE=;
+  b=lIR75HXJuzDTpD0r7LFbsPPGWvUfoqDk5n1F5Wh8pfhzkIQCXK1q0klx
+   LXrpllibUPuh3dzsAyJvsB23ZAvhNXUS3e3oH9cvEjdFvKFYkpX58zAmf
+   71Mh1mzySzmjtAtQj7eUCcxWANNeGm8m2LPRgi/qA525hLgaA7et0vQKL
+   ENgb1e7kLVkdcCuaJ3KVHn7X6AgJWSI6siuSjyW1BPLLS5BFiwl+2nIru
+   fYhVxkdR6g8PTBlBwGWRpXIuSq/HXWlmoDwyP34N/Jl/S+r+FFVjZ154s
+   MD+WSKe4AE+hLAF9oOIptIb7rqBxu65QekDorQ/NZlOKtj+dlXqBlkv0e
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="294183778"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="294183778"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 05:03:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="751259944"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 22 Aug 2022 05:03:49 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQ69k-0005JD-2J;
+        Mon, 22 Aug 2022 12:03:48 +0000
+Date:   Mon, 22 Aug 2022 20:03:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: {standard input}:12363: Error: Insn slot not set in unwind record.
+Message-ID: <202208221921.b20Q8McO-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH] mm/slab_common: Deleting kobject in kmem_cache_destroy()
- without holding slab_mutex/cpu_hotplug_lock
-To:     Waiman Long <longman@redhat.com>, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Xin Long <lucien.xin@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220809205901.76595-1-longman@redhat.com>
- <48b66d90-34ae-8666-d9ee-2d36c82a6653@suse.cz>
- <34d80543-322f-9c76-ad7d-d7c734163fa0@redhat.com>
-Content-Language: en-US
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <34d80543-322f-9c76-ad7d-d7c734163fa0@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/10/22 16:08, Waiman Long wrote:
-> On 8/10/22 05:34, Vlastimil Babka wrote:
->> On 8/9/22 22:59, Waiman Long wrote:
->>> A circular locking problem is reported by lockdep due to the following
->>> circular locking dependency.
->>>
->>>    +--> cpu_hotplug_lock --> slab_mutex --> kn->active#126 --+
->>>    |                                                         |
->>>    +---------------------------------------------------------+
->>
->> This sounded familiar and I've found a thread from January:
->>
->> https://lore.kernel.org/all/388098b2c03fbf0a732834fc01b2d875c335bc49.1642170196.git.lucien.xin@gmail.com/
->>
->> But that seemed to be specific to RHEL-8 RT kernel and not reproduced with
->> mainline. Is it different this time? Can you share the splats?
-> 
-> I think this is easier to reproduce on a RT kernel, but it also happens in a
-> non-RT kernel. One example splat that I got was
-> 
-> [ 1777.114757] ======================================================
-> [ 1777.121646] WARNING: possible circular locking dependency detected
-> [ 1777.128544] 4.18.0-403.el8.x86_64+debug #1 Not tainted
-> [ 1777.134280] ------------------------------------------------------
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   15b3f48a4339e3c16acf18624e2b7f60bc5e9a2c
+commit: d4252071b97d2027d246f6a82cbee4d52f618b47 add barriers to buffer_uptodate and set_buffer_uptodate
+date:   13 days ago
+config: ia64-randconfig-r001-20220820 (https://download.01.org/0day-ci/archive/20220822/202208221921.b20Q8McO-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d4252071b97d2027d246f6a82cbee4d52f618b47
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout d4252071b97d2027d246f6a82cbee4d52f618b47
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash
 
-Yeah that's non-RT, but still 4.18 kernel, as in Xin Long's thread
-referenced above. That wasn't reproducible in current mainline and I would
-expect yours also isn't, because it would be reported by others too.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Also in both cases the lockdep (in 4.18) seems to have issue with
-cpus_read_lock() which is a rwsem taken for read, so not really exclusive in
-order to cause the reported deadlock.
+All errors (new ones prefixed by >>):
 
-So I suspected lockdep was improved since 4.18 to not report a false
-positive, but we never confirmed.
+   {standard input}:7964: Error: Register number out of range 0..1
+   {standard input}:7964: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7962: Warning: This is the location of the conflicting usage
+   {standard input}:7966: Error: Register number out of range 0..1
+   {standard input}:7966: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7962: Warning: This is the location of the conflicting usage
+   {standard input}:7966: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7964: Warning: This is the location of the conflicting usage
+   {standard input}:7967: Error: Register number out of range 0..1
+   {standard input}:7967: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7962: Warning: This is the location of the conflicting usage
+   {standard input}:7967: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7964: Warning: This is the location of the conflicting usage
+   {standard input}:7967: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7966: Warning: This is the location of the conflicting usage
+   {standard input}:7968: Error: Register number out of range 0..1
+   {standard input}:7968: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7962: Warning: This is the location of the conflicting usage
+   {standard input}:7968: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7964: Warning: This is the location of the conflicting usage
+   {standard input}:7968: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7966: Warning: This is the location of the conflicting usage
+   {standard input}:7968: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7967: Warning: This is the location of the conflicting usage
+   {standard input}:7971: Error: Register number out of range 0..1
+   {standard input}:7972: Error: Register number out of range 0..1
+   {standard input}:7972: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 37
+   {standard input}:7971: Warning: This is the location of the conflicting usage
+   {standard input}:8857: Error: Register number out of range 0..2
+   {standard input}:8857: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8857: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8853: Warning: This is the location of the conflicting usage
+   {standard input}:8858: Error: Register number out of range 0..2
+   {standard input}:8858: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8858: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8853: Warning: This is the location of the conflicting usage
+   {standard input}:8858: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8858: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8857: Warning: This is the location of the conflicting usage
+   {standard input}:8859: Error: Register number out of range 0..2
+   {standard input}:8859: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8859: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8853: Warning: This is the location of the conflicting usage
+   {standard input}:8859: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8859: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8857: Warning: This is the location of the conflicting usage
+   {standard input}:8859: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8859: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8858: Warning: This is the location of the conflicting usage
+   {standard input}:8862: Error: Register number out of range 0..2
+   {standard input}:8863: Error: Register number out of range 0..2
+   {standard input}:8863: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 41
+   {standard input}:8863: Warning: Only the first path encountering the conflict is reported
+   {standard input}:8862: Warning: This is the location of the conflicting usage
+   {standard input}:9529: Error: Register number out of range 0..3
+   {standard input}:9529: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9529: Warning: Only the first path encountering the conflict is reported
+   {standard input}:9524: Warning: This is the location of the conflicting usage
+   {standard input}:9530: Error: Register number out of range 0..3
+   {standard input}:9530: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9530: Warning: Only the first path encountering the conflict is reported
+   {standard input}:9524: Warning: This is the location of the conflicting usage
+   {standard input}:9530: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9530: Warning: Only the first path encountering the conflict is reported
+   {standard input}:9529: Warning: This is the location of the conflicting usage
+   {standard input}:9533: Error: Register number out of range 0..3
+   {standard input}:9534: Error: Register number out of range 0..3
+   {standard input}:9534: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9534: Warning: Only the first path encountering the conflict is reported
+   {standard input}:9533: Warning: This is the location of the conflicting usage
+   {standard input}:9626: Error: Register number out of range 0..3
+   {standard input}:9626: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9621: Warning: This is the location of the conflicting usage
+   {standard input}:9627: Error: Register number out of range 0..3
+   {standard input}:9627: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9621: Warning: This is the location of the conflicting usage
+   {standard input}:9627: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9626: Warning: This is the location of the conflicting usage
+   {standard input}:9630: Error: Register number out of range 0..3
+   {standard input}:9631: Error: Register number out of range 0..3
+   {standard input}:9631: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 39
+   {standard input}:9630: Warning: This is the location of the conflicting usage
+   {standard input}:10882: Error: Register number out of range 0..6
+   {standard input}:11721: Error: Register number out of range 0..4
+   {standard input}:11722: Error: Register number out of range 0..4
+   {standard input}:11722: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 46
+   {standard input}:11722: Warning: Only the first path encountering the conflict is reported
+   {standard input}:11721: Warning: This is the location of the conflicting usage
+   {standard input}:11726: Error: Register number out of range 0..4
+   {standard input}:12079: Error: Register number out of range 0..4
+   {standard input}:12080: Error: Register number out of range 0..4
+   {standard input}:12080: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 46
+   {standard input}:12079: Warning: This is the location of the conflicting usage
+   {standard input}:12084: Error: Register number out of range 0..4
+   {standard input}:12336: Error: Register number out of range 0..4
+   {standard input}:12337: Error: Register number out of range 0..4
+   {standard input}:12337: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 46
+   {standard input}:12337: Warning: Only the first path encountering the conflict is reported
+   {standard input}:12336: Warning: This is the location of the conflicting usage
+   {standard input}:12341: Error: Register number out of range 0..4
+>> {standard input}:12363: Error: Insn slot not set in unwind record.
+   {standard input}:12363: Fatal error: Section switching in code is not supported.
 
-So I'm still not convinced mainline needs any fix right now, but I'll check
-the v3 anyway in case it simplifies things wrt the kernfs locking, which
-does complicate stuff in any case.
-
-> [ 1777.141176] slub_cpu_partia/4113 is trying to acquire lock:
-> [ 1777.147395] ffffffffaef95b20 (cpu_hotplug_lock){++++}-{0:0}, at:
-> cpu_partial_store+0x47/0xa0
-> [ 1777.156837]
->                but task is already holding lock:
-> [ 1777.163346] ffff88811bd17578 (kn->count#126){++++}-{0:0}, at:
-> kernfs_fop_write+0x1d0/0x410
-> [ 1777.172591]
->                which lock already depends on the new lock.
-> 
-> [ 1777.181718]
->                the existing dependency chain (in reverse order) is:
-> [ 1777.190070]
->                -> #2 (kn->count#126){++++}-{0:0}:
-> [ 1777.196688]        lock_acquire+0x1db/0x8e0
-> [ 1777.201360]        __kernfs_remove+0x617/0x800
-> [ 1777.206320]        kernfs_remove+0x1d/0x30
-> [ 1777.210891]        kobject_del+0x8e/0x150
-> [ 1777.215360]        kmem_cache_destroy+0x10d/0x130
-> [ 1777.220615]        bioset_exit+0x1e3/0x2c0
-> [ 1777.225189]        blk_release_queue+0x20d/0x310
-> [ 1777.230336]        kobject_release+0x105/0x390
-> [ 1777.235296] scsi_device_dev_release_usercontext+0x5e3/0xd60
-> [ 1777.242198]        execute_in_process_context+0x27/0x130
-> [ 1777.248131]        device_release+0xa1/0x210
-> [ 1777.252899]        kobject_release+0x105/0x390
-> [ 1777.257857]        scsi_alloc_sdev+0xa1e/0xc80
-> [ 1777.262820]        scsi_probe_and_add_lun+0x809/0x2da0
-> [ 1777.268557]        __scsi_scan_target+0x1c1/0xb60
-> [ 1777.273801]        scsi_scan_channel+0xe2/0x150
-> [ 1777.278855]        scsi_scan_host_selected+0x1fb/0x2a0
-> [ 1777.284590]        do_scan_async+0x3e/0x440
-> [ 1777.289258]        async_run_entry_fn+0xd8/0x660
-> [ 1777.294413]        process_one_work+0x919/0x17c0
-> [ 1777.299568]        worker_thread+0x87/0xb40
-> [ 1777.304227]        kthread+0x30d/0x3c0
-> [ 1777.308411]        ret_from_fork+0x3a/0x50
-> [ 1777.312984]
->                -> #1 (slab_mutex){+.+.}-{3:3}:
-> [ 1777.319309]        lock_acquire+0x1db/0x8e0
-> [ 1777.323978]        __mutex_lock+0x154/0x15d0
-> [ 1777.328745]        kmem_cache_destroy+0x3f/0x130
-> [ 1777.333898]        bioset_exit+0x1e3/0x2c0
-> [ 1777.338469]        blk_release_queue+0x20d/0x310
-> [ 1777.343623]        kobject_release+0x105/0x390
-> [ 1777.348582] scsi_device_dev_release_usercontext+0x5e3/0xd60
-> [ 1777.355481]        execute_in_process_context+0x27/0x130
-> [ 1777.361409]        device_release+0xa1/0x210
-> [ 1777.366175]        kobject_release+0x105/0x390
-> [ 1777.371135]        scsi_alloc_sdev+0xa1e/0xc80
-> [ 1777.376096]        scsi_probe_and_add_lun+0x809/0x2da0
-> [ 1777.381824]        __scsi_scan_target+0x1c1/0xb60
-> [ 1777.387073]        scsi_scan_channel+0xe2/0x150
-> [ 1777.392128]        scsi_scan_host_selected+0x1fb/0x2a0
-> [ 1777.397864]        do_scan_async+0x3e/0x440
-> [ 1777.402533]        async_run_entry_fn+0xd8/0x660
-> [ 1777.407688]        process_one_work+0x919/0x17c0
-> [ 1777.412841]        worker_thread+0x87/0xb40
-> [ 1777.417509]        kthread+0x30d/0x3c0
-> [ 1777.421693]        ret_from_fork+0x3a/0x50
-> [ 1777.426263]
->                -> #0 (cpu_hotplug_lock){++++}-{0:0}:
-> [ 1777.433168]        check_prevs_add+0x3fa/0x18b0
-> [ 1777.438226]        __lock_acquire+0x21b3/0x2b80
-> [ 1777.443273]        lock_acquire+0x1db/0x8e0
-> [ 1777.447940]        cpus_read_lock+0x40/0xc0
-> [ 1777.452611]        cpu_partial_store+0x47/0xa0
-> [ 1777.457571]        slab_attr_store+0x20/0x30
-> [ 1777.462338]        kernfs_fop_write+0x255/0x410
-> [ 1777.467394]        vfs_write+0x157/0x460
-> [ 1777.471777]        ksys_write+0xb8/0x170
-> [ 1777.476155]        do_syscall_64+0xa5/0x450
-> [ 1777.480828]        entry_SYSCALL_64_after_hwframe+0x6a/0xdf
-> [ 1777.487041]
->                other info that might help us debug this:
-> 
-> [ 1777.495975] Chain exists of:
->                  cpu_hotplug_lock --> slab_mutex --> kn->count#126
-> 
-> [ 1777.507443]  Possible unsafe locking scenario:
-> 
-> [ 1777.514049]        CPU0                    CPU1
-> [ 1777.519102]        ----                    ----
-> [ 1777.524155]   lock(kn->count#126);
-> [ 1777.527956]                                lock(slab_mutex);
-> [ 1777.534274] lock(kn->count#126);
-> [ 1777.540885]   lock(cpu_hotplug_lock);
-> [ 1777.544964]
->                 *** DEADLOCK ***
-> 
-> [ 1777.551570] 3 locks held by slub_cpu_partia/4113:
-> [ 1777.556820]  #0: ffff8881319884d0 (sb_writers#4){.+.+}-{0:0}, at:
-> vfs_write+0x31c/0x460
-> [ 1777.565771]  #1: ffff888161d39490 (&of->mutex){+.+.}-{3:3}, at:
-> kernfs_fop_write+0x1ad/0x410
-> [ 1777.575203]  #2: ffff88811bd17578 (kn->count#126){++++}-{0:0}, at:
-> kernfs_fop_write+0x1d0/0x410
-> [ 1777.584928]
->                stack backtrace:
-> [ 1777.589792] CPU: 65 PID: 4113 Comm: slub_cpu_partia Kdump: loaded Not
-> tainted 4.18.0-403.el8.x86_64+debug #1
-> [ 1777.600767] Hardware name: Lenovo ThinkSystem SR635 -[7Y98XXXXXX]-/System
-> Board, BIOS CFE103A 07/04/2019
-> [ 1777.611342] Call Trace:
-> [ 1777.614072]  dump_stack+0x5c/0x80
-> [ 1777.617777]  check_noncircular+0x27f/0x320
-> [ 1777.622352]  ? print_circular_bug+0x440/0x440
-> [ 1777.627215]  ? kernel_text_address+0x125/0x140
-> [ 1777.632170]  ? mark_lock.part.31+0xf4/0xd40
-> [ 1777.636841]  ? is_dynamic_key+0x220/0x220
-> [ 1777.641326]  check_prevs_add+0x3fa/0x18b0
-> [ 1777.645798]  ? sched_clock+0x5/0x10
-> [ 1777.649695]  ? sched_clock_cpu+0x18/0x1e0
-> [ 1777.654175]  ? check_irq_usage+0xa20/0xa20
-> [ 1777.658750]  ? find_held_lock+0x1c0/0x1c0
-> [ 1777.663225]  ? sched_clock_cpu+0x18/0x1e0
-> [ 1777.667705]  __lock_acquire+0x21b3/0x2b80
-> [ 1777.672192]  lock_acquire+0x1db/0x8e0
-> [ 1777.676279]  ? cpu_partial_store+0x47/0xa0
-> [ 1777.680854]  ? rcu_read_unlock+0x50/0x50
-> [ 1777.685239]  ? sysfs_file_ops+0x160/0x160
-> [ 1777.689718]  cpus_read_lock+0x40/0xc0
-> [ 1777.693806]  ? cpu_partial_store+0x47/0xa0
-> [ 1777.698380]  cpu_partial_store+0x47/0xa0
-> [ 1777.702761]  slab_attr_store+0x20/0x30
-> [ 1777.706944]  kernfs_fop_write+0x255/0x410
-> [ 1777.711424]  vfs_write+0x157/0x460
-> [ 1777.715224]  ksys_write+0xb8/0x170
-> [ 1777.719023]  ? __ia32_sys_read+0xb0/0xb0
-> [ 1777.723406]  ? lockdep_hardirqs_on_prepare+0x294/0x3e0
-> [ 1777.729144]  ? do_syscall_64+0x22/0x450
-> [ 1777.733429]  do_syscall_64+0xa5/0x450
-> [ 1777.737518]  entry_SYSCALL_64_after_hwframe+0x6a/0xdf
-> [ 1777.743159] RIP: 0033:0x7f4fe9b2ead8
-> [ 1777.747153] Code: 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f 80 00 00 00 00
-> f3 0f 1e fa 48 8d 05 45 4c 2a 00 8b 00 85 c0 75 17 b8 01 00 00 00 0f 05 <48>
-> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 49 89 d4 55
-> [ 1777.768112] RSP: 002b:00007ffcc2173d48 EFLAGS: 00000246 ORIG_RAX:
-> 0000000000000001
-> [ 1777.776565] RAX: ffffffffffffffda RBX: 0000000000000002 RCX:
-> 00007f4fe9b2ead8
-> [ 1777.784530] RDX: 0000000000000002 RSI: 000055d41293eb70 RDI:
-> 0000000000000001
-> [ 1777.792495] RBP: 000055d41293eb70 R08: 000000000000000a R09:
-> 0000000000000003
-> [ 1777.800459] R10: 000000000000000a R11: 0000000000000246 R12:
-> 00007f4fe9dcf6e0
-> [ 1777.808425] R13: 0000000000000002 R14: 00007f4fe9dca860 R15:
-> 0000000000000002
-> 
-> The cpu_partial_store() method call flush_all() which takes the
-> cpu_hotplug_lock completing the cycle.
-> 
-> Cheers,
-> Longman
-> 
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
