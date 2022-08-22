@@ -2,147 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB133C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A95C32793
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbiHVJt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50260 "EHLO
+        id S234555AbiHVJwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiHVJtY (ORCPT
+        with ESMTP id S233690AbiHVJwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:49:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B9D629821;
-        Mon, 22 Aug 2022 02:49:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA29213D5;
-        Mon, 22 Aug 2022 02:49:24 -0700 (PDT)
-Received: from [10.57.15.77] (unknown [10.57.15.77])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 536F13F718;
-        Mon, 22 Aug 2022 02:49:15 -0700 (PDT)
-Message-ID: <f8c743d8-fcbe-4ef7-5f86-d63086552ffd@arm.com>
-Date:   Mon, 22 Aug 2022 10:49:09 +0100
+        Mon, 22 Aug 2022 05:52:53 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5B32982F
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:52:49 -0700 (PDT)
+From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1661161966; bh=vlMP781/oXy0hq0r4ltXOAMB3iba6lm5wXlI3u78Kgw=;
+        h=From:To:Cc:Subject:Date;
+        b=f7I3ouv1HuHUcHG2reTt21c57K0g62OrI/HNlNy7838nkBYjVjP8isR/FQU00B6Vg
+         5xsWVT7cICDooy/rVlSEz/t84v2/r5P8254lrPDzBqDzuoLNKPNC2bmfZLdb9XvW11
+         7CRTyQ6hTgcBIANPVcqLZTCy/7Ptxca9/yEsS0JM=
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+Subject: [PATCH] ASoC: dapm: Export new 'graph.dot' file in debugfs
+Date:   Mon, 22 Aug 2022 11:52:42 +0200
+Message-Id: <20220822095242.3779-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v1 4/4] swiotlb: panic if nslabs is too small
-Content-Language: en-GB
-To:     Yu Zhao <yuzhao@google.com>, dongli.zhang@oracle.com
-Cc:     ak@linux.intel.com, akpm@linux-foundation.org,
-        alexander.sverdlin@nokia.com, andi.kleen@intel.com, bp@alien8.de,
-        bp@suse.de, cminyard@mvista.com, corbet@lwn.net,
-        damien.lemoal@opensource.wdc.com, dave.hansen@linux.intel.com,
-        hch@infradead.org, iommu@lists.linux-foundation.org,
-        joe.jin@oracle.com, joe@perches.com, keescook@chromium.org,
-        kirill.shutemov@intel.com, kys@microsoft.com,
-        linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        ltykernel@gmail.com, michael.h.kelley@microsoft.com,
-        mingo@redhat.com, m.szyprowski@samsung.com, parri.andrea@gmail.com,
-        paulmck@kernel.org, pmladek@suse.com, rdunlap@infradead.org,
-        tglx@linutronix.de, thomas.lendacky@amd.com,
-        Tianyu.Lan@microsoft.com, tsbogend@alpha.franken.de,
-        vkuznets@redhat.com, wei.liu@kernel.org, x86@kernel.org
-References: <20220611082514.37112-5-dongli.zhang@oracle.com>
- <20220820012031.1285979-1-yuzhao@google.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220820012031.1285979-1-yuzhao@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-20 02:20, Yu Zhao wrote:
->> Panic on purpose if nslabs is too small, in order to sync with the remap
->> retry logic.
->>
->> In addition, print the number of bytes for tlb alloc failure.
->>
->> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
->> ---
->>   kernel/dma/swiotlb.c | 6 +++++-
->>   1 file changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index fd21f4162f4b..1758b724c7a8 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -242,6 +242,9 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
->>   	if (swiotlb_force_disable)
->>   		return;
->>   
->> +	if (nslabs < IO_TLB_MIN_SLABS)
->> +		panic("%s: nslabs = %lu too small\n", __func__, nslabs);
-> 
-> Hi,
-> 
-> This patch breaks MIPS. Please take a look. Thanks.
+Provide a DOT summary of the DAPM graph in a newly added 'graph.dot'
+file in debugfs, placed in the card's DAPM directory.
 
-Hmm, it's possible this might be quietly fixed by 20347fca71a3, but 
-either way I'm not sure why we would need to panic *before* we've even 
-tried to allocate anything, when we could simply return with no harm 
-done? If we've ended up calculating (or being told) a buffer size which 
-is too small to be usable, that should be no different to disabling 
-SWIOTLB entirely.
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+---
 
-Historically, passing "swiotlb=1" on the command line has been used to 
-save memory when the user knows SWIOTLB isn't needed. That should 
-definitely not be allowed to start panicking.
+Sample output: https://cutebit.org/macaudio-j274.svg
+(With unupstreamed sound drivers on Mac mini (2020))
 
-(once again, another patch which was not CCed to the correct reviewers, 
-sigh...)
+The helper bufprintf macro triggers checkpath.pl:
 
-Thanks,
-Robin.
+ERROR: Macros with complex values should be enclosed in parentheses
+#47: FILE: sound/soc/soc-dapm.c:2235:
++#define bufprintf(...) \
++               ret += scnprintf(buf + ret, bufsize - ret, __VA_ARGS__)
 
-> On v5.19.0:
->    Linux version 5.19.0 (builder@buildhost) (mips64-openwrt-linux-musl-gcc (OpenWrt GCC 11.2.0 r19590-042d558536) 11.2.0, GNU ld (GNU Binutils) 2.37) #0 SMP Sun Jul 31 15:12:47 2022
->    Skipping L2 locking due to reduced L2 cache size
->    CVMSEG size: 0 cache lines (0 bytes)
->    printk: bootconsole [early0] enabled
->    CPU0 revision is: 000d9301 (Cavium Octeon II)
->    Kernel sections are not in the memory maps
->    Wasting 278528 bytes for tracking 4352 unused pages
->    Initrd not found or empty - disabling initrd
->    Using appended Device Tree.
->    software IO TLB: SWIOTLB bounce buffer size adjusted to 0MB
->    software IO TLB: mapped [mem 0x0000000004b0c000-0x0000000004b4c000] (0MB)
-> 
-> On v6.0-rc1, with
->    commit 0bf28fc40d89 ("swiotlb: panic if nslabs is too small")
->    commit 20347fca71a3 ("swiotlb: split up the global swiotlb lock")
->    commit 534ea58b3ceb ("Revert "MIPS: octeon: Remove vestiges of CONFIG_CAVIUM_RESERVE32"")
-> 
->    Linux version 6.0.0-rc1 (builder@buildhost) (mips64-openwrt-linux-musl-gcc (OpenWrt GCC 11.2.0 r19590-042d558536) 11.2.0, GNU ld (GNU Binutils) 2.37) #0 SMP Sun Jul 31 15:12:47 2022
->    Failed to allocate CAVIUM_RESERVE32 memory area
->    Skipping L2 locking due to reduced L2 cache size
->    CVMSEG size: 0 cache lines (0 bytes)
->    printk: bootconsole [early0] enabled
->    CPU0 revision is: 000d9301 (Cavium Octeon II)
->    Kernel sections are not in the memory maps
->    Wasting 278528 bytes for tracking 4352 unused pages
->    Initrd not found or empty - disabling initrd
->    Using appended Device Tree.
->    software IO TLB: SWIOTLB bounce buffer size adjusted to 0MB
->    software IO TLB: area num 1.
->    Kernel panic - not syncing: swiotlb_init_remap: nslabs = 128 too small
-> 
-> On v6.0-rc1, with
->    commit 20347fca71a3 ("swiotlb: split up the global swiotlb lock")
->    commit 534ea58b3ceb ("Revert "MIPS: octeon: Remove vestiges of CONFIG_CAVIUM_RESERVE32"")
-> 
->    Linux version 6.0.0-rc1+ (builder@buildhost) (mips64-openwrt-linux-musl-gcc (OpenWrt GCC 11.2.0 r19590-042d558536) 11.2.0, GNU ld (GNU Binutils) 2.37) #0 SMP Sun Jul 31 15:12:47 2022
->    Failed to allocate CAVIUM_RESERVE32 memory area
->    Skipping L2 locking due to reduced L2 cache size
->    CVMSEG size: 0 cache lines (0 bytes)
->    printk: bootconsole [early0] enabled
->    CPU0 revision is: 000d9301 (Cavium Octeon II)
->    Kernel sections are not in the memory maps
->    Wasting 278528 bytes for tracking 4352 unused pages
->    Initrd not found or empty - disabling initrd
->    Using appended Device Tree.
->    software IO TLB: SWIOTLB bounce buffer size adjusted to 0MB
->    software IO TLB: area num 1.
->    software IO TLB: mapped [mem 0x0000000004c0c000-0x0000000004c4c000] (0MB)
+but adding in {} to the macro body interferes with the if/else
+constructions later, so I left it as-is.
+
+ sound/soc/soc-dapm.c | 141 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 141 insertions(+)
+
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index 73b8bd452ca7..86524908c3fd 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -2210,6 +2210,143 @@ static const struct file_operations dapm_bias_fops = {
+ 	.llseek = default_llseek,
+ };
+ 
++static ssize_t dapm_graph_read_file(struct file *file, char __user *user_buf,
++				    size_t count, loff_t *ppos)
++{
++	struct snd_soc_card *card = file->private_data;
++	struct snd_soc_dapm_context *dapm;
++	struct snd_soc_dapm_path *p;
++	struct snd_soc_dapm_widget *w;
++	struct snd_soc_pcm_runtime *rtd;
++	struct snd_soc_dapm_widget *wdone[16];
++	struct snd_soc_dai *dai;
++	int i, num_wdone = 0, cluster = 0;
++	char *buf;
++	ssize_t bufsize;
++	ssize_t ret = 0;
++
++	bufsize = 1024 * card->num_dapm_widgets;
++	buf = kmalloc(bufsize, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
++
++	mutex_lock(&card->dapm_mutex);
++
++#define bufprintf(...) \
++		ret += scnprintf(buf + ret, bufsize - ret, __VA_ARGS__)
++
++	bufprintf("digraph dapm {\n");
++	bufprintf("label=\"%s\";\n", card->name);
++
++	/*
++	 * Print the user-visible PCM devices of the card.
++	 */
++	bufprintf("subgraph cluster_%d {\n", cluster++);
++	bufprintf("label=\"PCM devices\";style=filled;fillcolor=lightgray;\n");
++	for_each_card_rtds(card, rtd) {
++		if (rtd->dai_link->no_pcm)
++			continue;
++
++		bufprintf("w%pK [label=\"%d: %s\"];\n", rtd,
++			  rtd->pcm->device, rtd->dai_link->name);
++	}
++	bufprintf("};\n");
++
++	/*
++	 * Print the playback/capture widgets of CPU-side DAIs, and link
++	 * them to the PCM devices. Keep a list of already printed
++	 * widgets in 'wdone', so they will be skipped later. Do not put
++	 * these widgets in a component cluster like we will do with
++	 * the other widgets later, since that just clutters the graph.
++	 */
++	for_each_card_rtds(card, rtd) {
++		for_each_rtd_cpu_dais(rtd, i, dai) {
++			if (dai->playback_widget) {
++				w = dai->playback_widget;
++				bufprintf("w%pK [label=\"%s\"];\n", w, w->name);
++				if (!rtd->dai_link->no_pcm)
++					bufprintf("w%pK -> w%pK;\n", rtd, w);
++				wdone[num_wdone] = w;
++				if (num_wdone < ARRAY_SIZE(wdone))
++					num_wdone++;
++			}
++
++			if (dai->capture_widget) {
++				w = dai->capture_widget;
++				bufprintf("w%pK [label=\"%s\"];\n", w, w->name);
++				if (!rtd->dai_link->no_pcm)
++					bufprintf("w%pK -> w%pK;\n", w, rtd);
++				wdone[num_wdone] = w;
++				if (num_wdone < ARRAY_SIZE(wdone))
++					num_wdone++;
++			}
++		}
++	}
++
++	for_each_card_dapms(card, dapm) {
++		const char *prefix = soc_dapm_prefix(dapm);
++
++		if (dapm != &card->dapm) {
++			bufprintf("subgraph cluster_%d {\n", cluster++);
++			if (prefix && dapm->component)
++				bufprintf("label=\"%s (%s)\";\n", prefix,
++					  dapm->component->name);
++			else if (dapm->component)
++				bufprintf("label=\"%s\";\n",
++					  dapm->component->name);
++		}
++
++		for_each_card_widgets(dapm->card, w) {
++			const char *name = w->name;
++			bool skip = false;
++
++			if (w->dapm != dapm)
++				continue;
++
++			if (list_empty(&w->edges[0]) && list_empty(&w->edges[1]))
++				continue;
++
++			for (i = 0; i < num_wdone; i++)
++				if (wdone[i] == w)
++					skip = true;
++			if (skip)
++				continue;
++
++			if (prefix && strlen(name) > strlen(prefix) + 1)
++				name += strlen(prefix) + 1;
++
++			bufprintf("w%pK [label=\"%s\"];\n", w, name);
++		}
++
++		if (dapm != &card->dapm)
++			bufprintf("}\n");
++	}
++
++	list_for_each_entry(p, &card->paths, list) {
++		if (p->name)
++			bufprintf("w%pK -> w%pK [label=\"%s\"];\n",
++				  p->source, p->sink, p->name);
++		else
++			bufprintf("w%pK -> w%pK;\n", p->source, p->sink);
++	}
++
++	bufprintf("}\n");
++#undef bufprintf
++
++	mutex_unlock(&card->dapm_mutex);
++
++	ret = simple_read_from_buffer(user_buf, count, ppos, buf, ret);
++
++	kfree(buf);
++	return ret;
++}
++
++static const struct file_operations dapm_graph_fops = {
++	.open = simple_open,
++	.read = dapm_graph_read_file,
++	.llseek = default_llseek,
++};
++
+ void snd_soc_dapm_debugfs_init(struct snd_soc_dapm_context *dapm,
+ 	struct dentry *parent)
+ {
+@@ -2220,6 +2357,10 @@ void snd_soc_dapm_debugfs_init(struct snd_soc_dapm_context *dapm,
+ 
+ 	debugfs_create_file("bias_level", 0444, dapm->debugfs_dapm, dapm,
+ 			    &dapm_bias_fops);
++
++	if (dapm == &dapm->card->dapm)
++		debugfs_create_file("graph.dot", 0444, dapm->debugfs_dapm,
++				    dapm->card, &dapm_graph_fops);
+ }
+ 
+ static void dapm_debugfs_add_widget(struct snd_soc_dapm_widget *w)
+-- 
+2.33.0
+
