@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D09C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 511E1C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234682AbiHVLFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
+        id S234560AbiHVLFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234284AbiHVLEX (ORCPT
+        with ESMTP id S234304AbiHVLEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 07:04:23 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C22D275F7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:04:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EE727B12
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:04:19 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Dw-0005PT-TV; Mon, 22 Aug 2022 13:04:04 +0200
+        id 1oQ5Dx-0005Rs-Ce; Mon, 22 Aug 2022 13:04:05 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Dv-001HmB-NY; Mon, 22 Aug 2022 13:04:03 +0200
+        id 1oQ5Dw-001Hmb-JZ; Mon, 22 Aug 2022 13:04:04 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Ds-009gzi-Ft; Mon, 22 Aug 2022 13:04:00 +0200
+        id 1oQ5Ds-009h0K-Hv; Mon, 22 Aug 2022 13:04:00 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 11/17] net: dsa: microchip: ksz9477: remove MII_CTRL1000 check from ksz9477_w_phy()
-Date:   Mon, 22 Aug 2022 13:03:52 +0200
-Message-Id: <20220822110358.2310055-12-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 15/17] net: dsa: microchip: ksz9477: remove unused "on" variable
+Date:   Mon, 22 Aug 2022 13:03:56 +0200
+Message-Id: <20220822110358.2310055-16-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220822110358.2310055-1-o.rempel@pengutronix.de>
 References: <20220822110358.2310055-1-o.rempel@pengutronix.de>
@@ -55,33 +55,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reason why PHYlib may access MII_CTRL1000 on the chip without GBit
-support is only if chip provides wrong information about extended caps
-register. This issue is now handled by ksz9477_r_phy_quirks()
-
-With proper regmap_ranges provided for all chips we will be able to catch this
-kind of bugs any way. So, remove this sanity check.
+This variable is not used on ksz9477 side. Remove it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz9477.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 62a03b3b918df..cb5bd0ceb8df4 100644
+index bfefb60ec91bf..609bd63f4cdb1 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -342,10 +342,6 @@ int ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
- 	if (addr >= dev->phy_port_cnt)
- 		return 0;
+@@ -1070,7 +1070,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
  
--	/* No gigabit support.  Do not write to this register. */
--	if (!(dev->features & GBIT_SUPPORT) && reg == MII_CTRL1000)
--		return -ENXIO;
--
- 	return ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
- }
+ 			/* enable cpu port */
+ 			ksz9477_port_setup(dev, i, true);
+-			p->on = 1;
+ 		}
+ 	}
  
+@@ -1080,7 +1079,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 		p = &dev->ports[i];
+ 
+ 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+-		p->on = 1;
+ 		if (dev->chip_id == 0x00947700 && i == 6) {
+ 			p->sgmii = 1;
+ 		}
 -- 
 2.30.2
 
