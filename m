@@ -2,103 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 516CDC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7B2C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiHVGMY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
+        id S232799AbiHVGNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiHVGMV (ORCPT
+        with ESMTP id S232791AbiHVGNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:12:21 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A92A26AD2;
-        Sun, 21 Aug 2022 23:12:21 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id h20-20020a056830165400b00638ac7ddba5so7064090otr.4;
-        Sun, 21 Aug 2022 23:12:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:reply-to:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=xRBPID2afPJAp96OqaGvBdjqx78UAxNzgaJTyGjabr8=;
-        b=fAsoPJBfZm1Q3Pe+7+Kgk49YdcBBzb5wbtHRNl3NBQ8lbJi6wNFGOyGP+hoP0LKlyB
-         VYzze1ue1TiTDDgBtSEp6kziMzbSiH5Fii+zpt7cBoV90iAQvRLmQHESUpqo3Y2Wp0tT
-         txhLSz77VhTqtxhPw3vHrTEWUE1Rg3dXr9mmw80FeRscTk39kroT1YD6ySvLqCPXYB/M
-         jKGtS5Jkl9M0Xr8BvbyheUI4MSQ3LYilhkgfoy9UPRCTcOE8FZLGdRPd5ma1WAVAWUHJ
-         rX8xGUAGM5/iqMLz3tWKZo8+A29cJCX4/zNpzemWmun70fPvCnhrk/oSR+OdcQSW3niU
-         7edw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:reply-to:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=xRBPID2afPJAp96OqaGvBdjqx78UAxNzgaJTyGjabr8=;
-        b=GDmbLoeM4H5ljqQY3FvjqMmqus7MvH38CTOUOPYK/hVR0rHUS/gPlm7r4CyiGTrqQ5
-         /ZTKHs+8YZ36SCBnWFwSqhDkxLG1crLaZYt0aEK970mw0INpvChvkJ70dZcH5FJmWz+H
-         C5Uk3n2VoNABbWQH9F+lYrNjVErQIw6cdBwHfCTEc77oF+wqzeMWAFrUEvyQVMDSE2eO
-         6lRCrhKS665f71bmOyW2TskDwbxTJ+2ZIBMyO3kd6hNu1Q8OsVfpyYEu1/quV0m+Njed
-         WdSOOW8K0BZrS+Qtot7+8glD2hdO5s0btaY/owzzjLuwfZCuztxN8MgDfiDh6QXIddyi
-         gR3A==
-X-Gm-Message-State: ACgBeo33geumml56BpLk6OmlwwStbg+amnqz+fn3iAGnHDoD0GG6ZkU9
-        se3DDVr3YyHYjyEvA0jfVJJVuV2m6h2kgYHrKR4=
-X-Google-Smtp-Source: AA6agR5/3lpDfPcI8hjqmqqJiTVbPVyi0UuVROvgrbHtJM/EtFwkEW7IgrfmM3wwNBrbhTG/o1jOsrLr57VaSHZoKMc=
-X-Received: by 2002:a05:6830:2a8e:b0:638:c41c:d5a1 with SMTP id
- s14-20020a0568302a8e00b00638c41cd5a1mr7455068otu.367.1661148740694; Sun, 21
- Aug 2022 23:12:20 -0700 (PDT)
+        Mon, 22 Aug 2022 02:13:10 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E012826AFD
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=TqqOOw0uhy2BOLXONZwDPAEaW+S+ReMGePsEGcFCqXI=; b=TwRnSnsi/4lCtlOFxjs6yTDmZX
+        H9HWsHEoCVyZDcMKflKmMU0T09mJ0y6u6gLKMLmvZ+a0UwxDMon6Q71l/WZ1tbcB1Y9Kug4PmNpie
+        C9Tb+7YfmWWqbBjku3TZ8pxBdXtn6SeFYoUZ5GBE1O1hKKwHUr2QJ25EtLXlHlQuhfelp958Ppd1P
+        Qp0U5AM7hYyHL870keovGZ+CagHDvvVd3Y550ZjzLGBs9NZP1QCnvveo6b5IftQ8k43digDbUPAzI
+        GULC37fK/MdiljCJOmmq/PDIG506LHPQgtUn2G++WcQfrUa335I6r/qG9e0dpyyITRbbK3diLTOPK
+        Bq2wZL8Q==;
+Received: from [2001:4bb8:198:6528:7eb3:3a42:932d:eeba] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQ0gJ-005Kbg-3N; Mon, 22 Aug 2022 06:13:03 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        David Rientjes <rientjes@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] dma-pool: don't return errors from dma_atomic_pool_init
+Date:   Mon, 22 Aug 2022 08:12:54 +0200
+Message-Id: <20220822061255.151688-3-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220822061255.151688-1-hch@lst.de>
+References: <20220822061255.151688-1-hch@lst.de>
 MIME-Version: 1.0
-References: <CAADnVQJFc9AnH_9CW+bSRotkKvOmkO9jq-RF6dmyPYOpq691Yg@mail.gmail.com>
- <20220819190640.2763586-1-ndesaulniers@google.com> <CAHk-=whLcuvDDS3rZfEgDrwbdJrTx8HCRNiZ5cDc80-_gzHCxw@mail.gmail.com>
-In-Reply-To: <CAHk-=whLcuvDDS3rZfEgDrwbdJrTx8HCRNiZ5cDc80-_gzHCxw@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Mon, 22 Aug 2022 08:11:44 +0200
-Message-ID: <CA+icZUUX1gPvnExa=zyVqB8xYOTai+nfHp6E7+qRE2mXXa2M=A@mail.gmail.com>
-Subject: Re: [PATCH v2] asm goto: eradicate CC_HAS_ASM_GOTO
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        linux-kbuild@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-        kvm@vger.kernel.org, llvm@lists.linux.dev,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Borislav Petkov <bp@suse.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 7:13 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Applied directly, just because I love seeing old nasty stuff like this go away.
->
->              Linus
+Returning errors from initcalls does not change a thing, thus don't
+bother with returning -ENOMEM if one of the pool allocations failed.
 
-Hi,
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+---
+ kernel/dma/pool.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-Small nitpick:
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 37008d4f6d7af..4b4c59d05e436 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -194,8 +194,6 @@ static size_t calculate_pool_size(unsigned long zone_pages)
+ 
+ static int __init dma_atomic_pool_init(void)
+ {
+-	int ret = 0;
+-
+ 	/*
+ 	 * If coherent_pool was not used on the command line, default the pool
+ 	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
+@@ -207,23 +205,17 @@ static int __init dma_atomic_pool_init(void)
+ 
+ 	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
+ 						    GFP_KERNEL);
+-	if (!atomic_pool_kernel)
+-		ret = -ENOMEM;
+ 	if (has_managed_dma()) {
+ 		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!atomic_pool_dma)
+-			ret = -ENOMEM;
+ 	}
+ 	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
+ 		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA32);
+-		if (!atomic_pool_dma32)
+-			ret = -ENOMEM;
+ 	}
+ 
+ 	dma_atomic_pool_debugfs_init();
+-	return ret;
++	return 0;
+ }
+ postcore_initcall(dma_atomic_pool_init);
+ 
+-- 
+2.30.2
 
---- a/arch/x86/include/asm/rmwcc.h
-+++ b/arch/x86/include/asm/rmwcc.h
-...
--#if !defined(__GCC_ASM_FLAG_OUTPUTS__) && defined(CONFIG_CC_HAS_ASM_GOTO)
-+#ifndef __GCC_ASM_FLAG_OUTPUTS__
-...
--#else /* defined(__GCC_ASM_FLAG_OUTPUTS__) ||
-!defined(CONFIG_CC_HAS_ASM_GOTO) */
-+#else /* defined(__GCC_ASM_FLAG_OUTPUTS__) */
-...
--#endif /* defined(__GCC_ASM_FLAG_OUTPUTS__) ||
-!defined(CONFIG_CC_HAS_ASM_GOTO) */
-+#endif /* defined(__GCC_ASM_FLAG_OUTPUTS__) */
-
-Shouldn't that be...
-
-#if !defined(__GCC_ASM_FLAG_OUTPUTS__)
-
-...to fit the 2 comments?
-
-Best regards,
--Sedat-
