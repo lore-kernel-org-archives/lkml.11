@@ -2,90 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 568E9C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D011C32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233525AbiHVLxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
+        id S233777AbiHVLzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbiHVLxc (ORCPT
+        with ESMTP id S229749AbiHVLzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:53:32 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 518B560DA;
-        Mon, 22 Aug 2022 04:53:29 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 27MBrQVM019212;
-        Mon, 22 Aug 2022 13:53:26 +0200
-Date:   Mon, 22 Aug 2022 13:53:26 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-x86_64@vger.kernel.org
-Subject: Re: LTS kernel Linux 4.14.290 unable to boot with edk2-ovmf (x86_64
- UEFI runtime)
-Message-ID: <20220822115326.GD17080@1wt.eu>
-References: <2d6012e8-805d-4225-80ed-d317c28f1899@gmx.com>
- <YwMhXX6OhROLZ/LR@kroah.com>
- <1ed5a33a-b667-0e8e-e010-b4365f3713d6@gmx.com>
- <YwMxRAfrrsPE6sNI@kroah.com>
- <8aff5c17-d414-2412-7269-c9d15f574037@gmx.com>
- <20220822080456.GB17080@1wt.eu>
- <4c42af33-dc05-315a-87d9-be0747a74df4@gmx.com>
- <20220822083044.GC17080@1wt.eu>
- <9aa83875-0a05-6b28-b4df-4071ba8ee343@gmx.com>
+        Mon, 22 Aug 2022 07:55:13 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109905F67;
+        Mon, 22 Aug 2022 04:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1661169314; x=1692705314;
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject;
+  bh=LHol80d0QNnSsMm0XGb4D7IAnOiH2Nib3sBTmd/UCIc=;
+  b=cHXgaMuTzmF3SUsSQb0J2ML8bVw2N8tahmTpoUqlZpZ3LvEN+ODNAEMu
+   EvsfwobdkO9EjT8G5Mszq141L1X5CsIwrgzMlw/doQdX9wg9uJPF3cNXM
+   OspeaV6KOIExfuV/lxzcVmOb6rxrdloN1YYd8JY0n5KopHQoY6gihPsPy
+   E=;
+Subject: Re: [PATCH v2 04/16] hwmon: (mr75203) add Moortec PVT controller
+ reset-control-skip property
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:55:01 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com (Postfix) with ESMTPS id 938504C0013;
+        Mon, 22 Aug 2022 11:54:57 +0000 (UTC)
+Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Mon, 22 Aug 2022 11:54:56 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Mon, 22 Aug 2022 11:54:57 +0000
+Received: from [10.220.236.67] (10.220.236.67) by mail-relay.amazon.com
+ (10.43.60.234) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
+ Transport; Mon, 22 Aug 2022 11:54:52 +0000
+Message-ID: <9757d669-c205-4ccd-78e0-3af6941d3177@amazon.com>
+Date:   Mon, 22 Aug 2022 14:54:52 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9aa83875-0a05-6b28-b4df-4071ba8ee343@gmx.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>
+CC:     <jdelvare@suse.com>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <talel@amazon.com>,
+        <hhhawa@amazon.com>, <jonnyc@amazon.com>, <hanochu@amazon.com>,
+        <ronenk@amazon.com>, <itamark@amazon.com>, <shellykz@amazon.com>,
+        <shorer@amazon.com>, <amitlavi@amazon.com>, <almogbs@amazon.com>,
+        <dwmw@amazon.co.uk>, <rtanwar@maxlinear.com>,
+        "Farber, Eliav" <farbere@amazon.com>
+References: <20220817054321.6519-1-farbere@amazon.com>
+ <20220817054321.6519-5-farbere@amazon.com>
+ <20220818195742.GA3287145@roeck-us.net>
+From:   "Farber, Eliav" <farbere@amazon.com>
+In-Reply-To: <20220818195742.GA3287145@roeck-us.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 07:07:19PM +0800, Qu Wenruo wrote:
-> 
-> 
-> On 2022/8/22 16:30, Willy Tarreau wrote:
-> > On Mon, Aug 22, 2022 at 04:19:49PM +0800, Qu Wenruo wrote:
-> > > > Regardless, if you need an older compiler, just use these ones:
-> > > > 
-> > > >      https://mirrors.edge.kernel.org/pub/tools/crosstool/
-> > > > 
-> > > > They go back to 4.9.4 for x86, you'll surely find the right one for your
-> > > > usage. I've long used 4.7.4 for kernels up to 4.9 and 6.5 for 4.19 and
-> > > > above, so something within that area will surely match your needs.
-> > > 
-> > > BTW, it would be way more awesome if the page can provide some hint on
-> > > the initial release date of the compilers.
-> > > 
-> > > It would help a lot of choose the toolchain then.
-> > 
-> > It wouldn't help, if you look closely, you'll notice that in the "other
-> > releases" section you have the most recent version of each of them. That
-> > does not preclude the existence of the branch earlier. For example gcc-9
-> > was released in 2019 and 9.5 was emitted 3 years later. That's quite an
-> > amplitude that doesn't help.
-> 
-> Maybe I'm totally wrong, but if GCC10.1 is released May 2020, and even
-> 10.4 is released 2022, then shouldn't we expect the kernel releases
-> around 2020 can be compiled for all GCC 10.x releases?
-> 
-> Thus the initial release date should be a good enough hint for most cases.
+On 8/18/2022 11:01 PM, Guenter Roeck wrote:
+> On Wed, Aug 17, 2022 at 05:43:09AM +0000, Eliav Farber wrote:
+>> Adding a "reset-control-skip" bool property to the mr75203 node will
+>> avoid looking up and obtaining a reference to a reset controller.
+>>
+>
+> This seems overly complex. WHy not just declare the "resets"
+> property optional ? 
+Fixed. I declared "resets" property  as optional, and modified the driver
+to support it being optional instead of the change I did.
+Will be part of next version.
 
-If you speak about initial release, yes that should generally be a valid
-assumption.
-
-> If go this method, for v4.14 I guess I should go gcc 7.x, as gcc 7.1 is
-> released May 2017, even the latest 7.5 is released 2019.
-
-Then it should definitely work. But I think you're spending way too much
-time comparing dates and discussing on the subject. By the time it took
-to check these dates, you could already have downloaded one such compiler
-and built a kernel to verify it did build correctly ;-)
-
-Willy
+--
+Thanks, Eliav
