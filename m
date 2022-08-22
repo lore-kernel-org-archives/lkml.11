@@ -2,114 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF944C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CDBC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236361AbiHVP0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
+        id S236509AbiHVP1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236526AbiHVPYa (ORCPT
+        with ESMTP id S236407AbiHVP0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:24:30 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6ACF54
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:20:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661181609; x=1692717609;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=PxH1XESOn3k/TaEO+M/yHzwrNdK4vC1UrGySGCfqGZI=;
-  b=OStXxSH0ylWCfCKLDuyUgSvzfL2JRSZrKYOWI/EBavTeOi/JsDTtg0lI
-   j4UsGn9Ux75/WH+tZ2SZzutgUGZTtdMkadAOdBgKn3BZ1jyqgHf4awmcg
-   cxOdiKOwqdyF8PMur+UrujqMpVHbVTwJeDm5XGyJ8JRLVcZRdjprPbmUz
-   gdBAjhYGvZI9v4d/Mrz0Q+PC8X4HxBD1qRE2Ski9Uf8g9tvCRnMxOHHZ2
-   rouaGBWwSaDaa1srYSvy5GLCqqNECeypVyIlObMa/q7vBQgHjmU6nvG8G
-   oTe869NqOU4uufnjwvalqw+9mzmOaacSR8oCFq5hrBDv5VQnGAyhAspdV
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="355172261"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="355172261"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 08:20:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="612080496"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Aug 2022 08:20:08 -0700
-Received: from [10.252.212.31] (kliang2-mobl1.ccr.corp.intel.com [10.252.212.31])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 269AF5806C8;
-        Mon, 22 Aug 2022 08:20:07 -0700 (PDT)
-Message-ID: <feb6f311-1379-7482-21e3-94cf7e797495@linux.intel.com>
-Date:   Mon, 22 Aug 2022 11:20:05 -0400
+        Mon, 22 Aug 2022 11:26:43 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E6A3ECC0
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:24:36 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id vw19so8261468ejb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:24:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=+T86Wl72f+FeWeRtOGkVlmWRkAxRXlHA5m5R3vqpGWs=;
+        b=Ol0z0PkAjZXBna32Isqt8G4NNZVcvypCiD7npmdqQUrUng9iYrmXQC6mZ9uyeKe+HU
+         cL69L/rzWsjJlHO2ALmaAx1ltJf+3dbncIBnOawpF4XoHXnqoZeovsw5Xc+gbrZTFEjY
+         dCjgW6BBlBQ0ZCL3PY9LQlTsHnuxHWVSPkhNw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=+T86Wl72f+FeWeRtOGkVlmWRkAxRXlHA5m5R3vqpGWs=;
+        b=k6Xn5921p7BRXdzkynhH/OX2HKPF86D7l0l5KmVoQORBKPPXA5Ns/RBDgoIczlVm8c
+         xygjL2LiXoh2FoyiphzKZ3cV6qM4BhQMVnynZPYOBfn7npSqpxmLQMxC22lFY4Av+ehx
+         N2TSFMmr5OFa6WOSsxNkGLoVowBDEMUrUaIRqqBl88VqcKsBxbF6BvOqpepO70kyryYR
+         JVkFSxpxSw5hEhHIu3RX6m5RAlkqkE52pTfPSeufrRb4bRHCI3aN/Smlh2Ha+vFOy55M
+         DP6z8Ey4BZiiZGQhgDgf+4/FVCIFODl4XW2qDL4m9vbaxaHdoAlQzHIAXw2lTkU3MFhv
+         6gew==
+X-Gm-Message-State: ACgBeo3Jk4LV2RO9IfU3HDnCXvBLsLBw5ARuGRu4IJVVCcsI+R+j89lO
+        fILLBnLHBaf5viB4LP1C1Dv7q1MamE+2hKKdnqu9BA==
+X-Google-Smtp-Source: AA6agR5j8M3rqBkCxM8dnHG6ED3RCNQdniNKcKwM4yLtbj+oQVl6x+Revnno5eoSlvEEgoKpvmg1Nap22zvMyWaen9w=
+X-Received: by 2002:a17:906:8a4a:b0:73d:8471:e34b with SMTP id
+ gx10-20020a1709068a4a00b0073d8471e34bmr2856240ejc.523.1661181874865; Mon, 22
+ Aug 2022 08:24:34 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RESEND PATCH] perf/x86/intel: Fix unchecked MSR access error for
- Alder Lake N
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     acme@redhat.com, linux-kernel@vger.kernel.org,
-        alexander.shishkin@linux.intel.com, ak@linux.intel.com,
-        Jianfeng Gao <jianfeng.gao@intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>
-References: <20220818181530.2355034-1-kan.liang@linux.intel.com>
- <Yv9EVP6O9r867om4@worktop.programming.kicks-ass.net>
- <Yv9Kw21Wl/f6KJTk@worktop.programming.kicks-ass.net>
- <b54cd275-4fa6-9b5c-fdc2-858d2f7c1b46@linux.intel.com>
- <YwOKyBL7lNmyaFqs@worktop.programming.kicks-ass.net>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <YwOKyBL7lNmyaFqs@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220822115257.7457-1-goriainov@ispras.ru>
+In-Reply-To: <20220822115257.7457-1-goriainov@ispras.ru>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Mon, 22 Aug 2022 17:24:24 +0200
+Message-ID: <CAJfpeguyD-znkZVwmiYZCK6tMsoJc+UzMKnkWxb7TToT1DFb4Q@mail.gmail.com>
+Subject: Re: [PATCH] ovl: Fix potential memory leak
+To:     Stanislav Goriainov <goriainov@ispras.ru>
+Cc:     linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 22 Aug 2022 at 13:53, Stanislav Goriainov <goriainov@ispras.ru> wrote:
+>
+> ovl: Fix potential memory leak in ovl_lookup()
+>
+> If memory for uperredirect was allocated with kstrdup()
+> in upperdir != NULL and d.redirect != NULL path,
+> it may be lost when upperredirect is reassigned later.
 
-
-On 2022-08-22 9:55 a.m., Peter Zijlstra wrote:
-> On Mon, Aug 22, 2022 at 09:24:57AM -0400, Liang, Kan wrote:
->> I think the only issue should be the PMU name. The non-hybrid PMU name
->> is "cpu". The hybrid PMU name is "cpu_$coretype". If we move the
->> ALDERLAKE_N to the non-hybrid PMU, the PMU name will be changed from
->> "cpu_atom" to "cpu". It will be different from the rest of
->> {ALDER,RAPTOP}LAKE.
->>
->> Also, I think we have to update the perf tool for the events because of
->> the PMU name change.
->>
->> But I guess it should be OK, since the ALDERLAKE_N was just added and we
->> know its an Atom-only system.
-> 
-> cpu/caps/pmu_name should be 'Gracemont', which is exactly like all the
-> other !hybrid setups. Surely perf-tools already knows about this
-> pattern.
-> 
-> IOW, if you need to change perf-tools for this, someone did something
-> wrong somewhere.
-
-The event list for ADL and RPL is different from the non-hybrid
-platforms. We combine the events from big core and small core into a
-single file and use the PMU name to distinguish from them. The PMU name
-is either cpu_core or cpu_atom.
-
-If we change the ADL-N to non-hybrid, the simplest way is to create a
-dedicate gracemont event list. Or we have to specially handle the ADL-N
-in the parsing codes. We have to update the tool for either way.
-
-> 
-> (also, I just noticed, 'Tremont' is the *only* PMU that has a
-> capitalized name, perhaps we don't want Gracemont to follow but instead
-> fix tremont if that is still possible)
-
-I don't think the tool rely on the name under cpu/caps/pmu_name.
-The event list rely on the CPU model number.
-It should be OK to fix the tremont name.
-
+Can't happen because the first assignment of upperredirect will only
+happen if upperdentry is non-NULL, while second one will only happen
+if upperdentry is NULL.   I understand why static checker fails to see
+this: it doesn't know that dentry->d_name will never contain '/'.  In
+this case the looped call to ovl_lookup_single() can be ignored and it
+is trivial to prove that d.redirect can only be set if *ret is
+non-NULL.
 
 Thanks,
-Kan
+Miklos
