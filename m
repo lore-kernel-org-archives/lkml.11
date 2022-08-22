@@ -2,114 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D86CBC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA02EC32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbiHVTPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
+        id S237745AbiHVTPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238327AbiHVTOx (ORCPT
+        with ESMTP id S238332AbiHVTOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 15:14:53 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 344A52CC85;
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0ACD2F381;
+        Mon, 22 Aug 2022 12:14:46 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-11c896b879bso14076782fac.3;
+        Mon, 22 Aug 2022 12:14:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=+9mYtYRdtFYJ0G4uhdbdFfotHF7Sh4Tm00IctJc4L4s=;
+        b=PDvyOTd4ewNzUM1BUZaKm/vj5dItr+56cU6UuzIE5XGvD7WOAgNbwz67E8qlXhHbuM
+         fSXg3p/+lBXmhyX8P91qdrx4+glo0TBcl2M6WV+M0BkNLt6L+Fj87z1tthju+WHVBK1L
+         utKaIHZf4lPeRyvZNLPmKESVnwwIUq8RM2t2BZ8y/hLxYBSEveUrqEyD6BGwxvr3peoG
+         bJTdMxJUjnePlzlVx86amAbdLgVk5lyffMqRrfqZGS7U+k569uqpd/b28lAjofic59S0
+         8mxznaKb3dJrDGrKnW2CfXJNRQHyoovSGa9WjyDWRLEDfgIuwUPAr6UzWSSHdpZsweFe
+         mUgA==
+X-Gm-Message-State: ACgBeo032mSJaADijtwIUhNcr5Hqnr3s6I9sHtKEM0AGOT1mI7NuNwSw
+        +Y/0REdVgndj1//aKA4Jaw==
+X-Google-Smtp-Source: AA6agR5oYMphkHrwtR9ftlAb0utmEIuJpCmM4Twje7fpd6P2+GKlfXYkStDRhzqW/KE83WCop63FmA==
+X-Received: by 2002:a05:6870:6193:b0:11d:3674:69e3 with SMTP id a19-20020a056870619300b0011d367469e3mr3957587oah.83.1661195686011;
+        Mon, 22 Aug 2022 12:14:46 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id g203-20020aca39d4000000b00342d18cc2fdsm2731970oia.53.2022.08.22.12.14.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 22 Aug 2022 12:14:45 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id F417BDA9;
-        Mon, 22 Aug 2022 22:17:47 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com F417BDA9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195868;
-        bh=5GQ+Lu5cZ60j6lrIxqJ+5IoeFT+Ib3LpXYUblly4fgw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=VxHKtOBKCmupuVgUwx44ECfZReAwyoEC+G9WUuq7V9pmyO3bH1goI500dA5CN6p2L
-         qK5HpM//a9OHI1o671uOL/ihciiFTXqGDwF+w2kcUU799WqEtcgQWZxuaYsYRUGjZs
-         td5gAY7gnAyO/uwir9Ss6CZwdSfKvXZwrGEydx44=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:14:33 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 07/18] EDAC/synopsys: Parse ADDRMAP[7-8] CSRs for (LP)DDR4 only
-Date:   Mon, 22 Aug 2022 22:14:16 +0300
-Message-ID: <20220822191427.27969-8-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
+Received: (nullmailer pid 248067 invoked by uid 1000);
+        Mon, 22 Aug 2022 19:14:43 -0000
+Date:   Mon, 22 Aug 2022 14:14:43 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Apurva Nandan <a-nandan@ti.com>
+Cc:     Santosh Shilimkar <ssantosh@kernel.org>,
+        linux-kernel@vger.kernel.org, Nishanth Menon <nm@ti.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Tero Kristo <kristo@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marc Zyngier <maz@kernel.org>, Hari Nagalla <hnagalla@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-mmc@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH 1/3] dt-bindings: irqchip: ti,sci-inta: Fix warning
+ '#interrupt-cells' was unexpected
+Message-ID: <20220822191443.GA247988-robh@kernel.org>
+References: <20220819190729.32358-1-a-nandan@ti.com>
+ <20220819190729.32358-2-a-nandan@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819190729.32358-2-a-nandan@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These CSRs contain the SDRAM Bank Groups and row[16]/row[17] bits mapping,
-which are applicable for the DDR4 and LPDDR4 memory only. For the rest of
-the memories the ADDRMAP[7-8] are unused by the controller and may be read
-as garbage (for instance, return an outcome of the previous read
-operation). The retrieved values might be perceived by the HIF/SDRAM
-mapping detection procedure as normal bit positions, which is wrong. So
-let's parse these registers only if they are applicable for the detected
-DDR protocol.
+On Sat, 20 Aug 2022 00:37:27 +0530, Apurva Nandan wrote:
+> #interrupt-cells = <0> property is required in device tree for
+> ti,sci-inta nodes, or else we will have following warning when building
+> device tree files with W=2 warning level.
+> 
+> arch/arm64/boot/dts/ti/k3-j721e-main.dtsi:147.51-156.5: Warning (interrupt_provider): /bus@100000/main-navss/interrupt-controller@33d00000: Missing #interrupt-cells in interrupt provider
+> 
+> And further, #interrupt-cells is required to be in yaml bindings as well
+> to prevent following schema warnings:
+> 
+> k3-j721e-common-proc-board.dtb: interrupt-controller@33d00000: Unevaluated properties are not allowed ('#interrupt-cells' was unexpected)
+> From schema: linux/Documentation/devicetree/bindings/interrupt-controller/ti,sci-inta.yaml
+> 
+> Add #interrupt-cells property in ti,sci-inta.yaml
+> 
+> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
+> ---
+>  .../devicetree/bindings/interrupt-controller/ti,sci-inta.yaml  | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/edac/synopsys_edac.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index b6296bbd1a45..998600670c75 100644
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -1005,12 +1005,15 @@ static void snps_setup_row_address_map(struct snps_edac_priv *priv, u32 *addrmap
- 	priv->row_shift[15] = (((addrmap[6] >> 24) & ROW_MAX_VAL_MASK) ==
- 				ROW_MAX_VAL_MASK) ? 0 : (((addrmap[6] >> 24) &
- 				ROW_MAX_VAL_MASK) + ROW_B15_BASE);
--	priv->row_shift[16] = ((addrmap[7] & ROW_MAX_VAL_MASK) ==
--				ROW_MAX_VAL_MASK) ? 0 : ((addrmap[7] &
--				ROW_MAX_VAL_MASK) + ROW_B16_BASE);
--	priv->row_shift[17] = (((addrmap[7] >> 8) & ROW_MAX_VAL_MASK) ==
--				ROW_MAX_VAL_MASK) ? 0 : (((addrmap[7] >> 8) &
--				ROW_MAX_VAL_MASK) + ROW_B17_BASE);
-+
-+	if (priv->info.sdram_mode == MEM_DDR4 || priv->info.sdram_mode == MEM_LPDDR4) {
-+		priv->row_shift[16] = ((addrmap[7] & ROW_MAX_VAL_MASK) ==
-+					ROW_MAX_VAL_MASK) ? 0 : ((addrmap[7] &
-+					ROW_MAX_VAL_MASK) + ROW_B16_BASE);
-+		priv->row_shift[17] = (((addrmap[7] >> 8) & ROW_MAX_VAL_MASK) ==
-+					ROW_MAX_VAL_MASK) ? 0 : (((addrmap[7] >> 8) &
-+					ROW_MAX_VAL_MASK) + ROW_B17_BASE);
-+	}
- }
- 
- static void snps_setup_column_address_map(struct snps_edac_priv *priv, u32 *addrmap)
-@@ -1126,6 +1129,10 @@ static void snps_setup_bank_address_map(struct snps_edac_priv *priv, u32 *addrma
- 
- static void snps_setup_bg_address_map(struct snps_edac_priv *priv, u32 *addrmap)
- {
-+	/* Bank group signals are available on the DDR4 memory only */
-+	if (priv->info.sdram_mode != MEM_DDR4)
-+		return;
-+
- 	priv->bankgrp_shift[0] = (addrmap[8] &
- 				BANKGRP_MAX_VAL_MASK) + BANKGRP_B0_BASE;
- 	priv->bankgrp_shift[1] = (((addrmap[8] >> 8) & BANKGRP_MAX_VAL_MASK) ==
--- 
-2.35.1
-
+Acked-by: Rob Herring <robh@kernel.org>
