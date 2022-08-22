@@ -2,111 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1A6C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7668CC32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235527AbiHVOrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
+        id S235648AbiHVOuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235472AbiHVOpY (ORCPT
+        with ESMTP id S235556AbiHVOun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:45:24 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2C3186E7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:45:22 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id h24so13503410wrb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=IMH0wVoJhc1Ycztouvr0JOiX6tFg+IdkseqQF/l41XU=;
-        b=a8LgB6dxvrnNo6HSr4dF5TcaSB3xK2TzxBTQ26T+saIpMMsbc+pnRQmDiKvyCs6fnQ
-         e7JYnQJqHdwpHEHIrIhIt9lJgT3lfL6D+bSfTbgooakUDnTJZ+o7wlT6EuAMY7D09Rpm
-         70AKRn3UycXyqhN5AHvG/scg9YgbcAsV05Bk0vsx6aVHlQBNanO54Ml1rKIF1RxN5o3t
-         h2PbBGmyJAkhITziNuUL8vZFxUShDqZbNG1ENDTaKz3ByPQp5tMv1uyZPhk1TFx5cVaM
-         w/MwQPDP5lgtsyHJ+pAiUzI/k2HNoVMFPn9aEA5ymjILZaK7px0bjajdhz6bU8p0oJdG
-         R2+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=IMH0wVoJhc1Ycztouvr0JOiX6tFg+IdkseqQF/l41XU=;
-        b=TIhhVCVBWIBB5raXlB57j4c0Q9U4f9qp7dhBDJZG6HmYFiBZcKl54Eyh6zJtpI1C9R
-         Q2QWE+8IUzllX12EhVUMxlfhglK14I6eDxg3Yd44eMVAAe9iK3satD3WPq2yE9MdhhLw
-         sB/H6HxTwELcW8mPq1yhi5Nu6CTZjSg6ICXhGiVsR6R93JlkdooffNz02bgmSxaYxFe+
-         taqaCC25RHN8G6r8vkFS1HL4Lvx2gXZVWIV6xlC6oVRCqJImbsyvWZP0DdRdH3dIdEbZ
-         p4d43vFPmPCYwWfEf55VUniLj2H0wzsCN8/+h7D67gcGw1UdpGBrrJEQF5ufl9RbKSch
-         iQ2w==
-X-Gm-Message-State: ACgBeo1O3pZrC45UKkdF0vpi/JUtqhR2tJymyGsQ0ynwvTv4yXwao7b1
-        yfKe9CC2oQgwfRH5ZWWS4ePyOA==
-X-Google-Smtp-Source: AA6agR4erdnjvw/jkmfls/AyT/KCqbqXNSZqdyKxtQx5jliqXa0V0rwxhFEY6l7D749SDWll+tEa4w==
-X-Received: by 2002:a05:6000:104f:b0:225:29be:a39c with SMTP id c15-20020a056000104f00b0022529bea39cmr10779384wrx.641.1661179520706;
-        Mon, 22 Aug 2022 07:45:20 -0700 (PDT)
-Received: from blmsp.fritz.box ([2001:4090:a245:8020:2658:1f7c:362:3e99])
-        by smtp.gmail.com with ESMTPSA id z24-20020a1cf418000000b003a5dadcf1a8sm14670935wma.19.2022.08.22.07.45.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 07:45:20 -0700 (PDT)
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Fabien Parent <parent.f@gmail.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH v3 0/4] soc: mediatek: MT8365 power support
-Date:   Mon, 22 Aug 2022 16:42:59 +0200
-Message-Id: <20220822144303.3438467-1-msp@baylibre.com>
-X-Mailer: git-send-email 2.37.2
+        Mon, 22 Aug 2022 10:50:43 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF0B37F85;
+        Mon, 22 Aug 2022 07:50:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661179794; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=YQAijLv/Lbe14OzPr0mzRNLoZDvTRpLfUEXGcqbBRD0kKEJpxanXVquWrV+UG5BzCpVTbdpPoAfaViDmO9Thws5J0c/C/ZmEqZR8VtXXLZFdpiPT5dhkCNxH5RYO6XpSVtnLc61mL2bJv9t5T0ojwqy6+HcfHjsM4Hrol7pNWKU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1661179794; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=1/As8HiBTtKLJWHkLMxaHWVm4vefy+krh2lK8/Fqr0c=; 
+        b=TLge55SnZLPUoGrT3ldSzWOlKutcuTsQAYnfBs7JCAqCgRV1wbWsTQUWKWM2pSJutvr96D9XHXfRvsNBunzD/gwaGQw9XZPpTekvU/4of0P9v/757osBcs+OCLxj80qJGA/FKe7vf8XyjzTJbGH+JMP9NFVu75rk74NoZl1FK48=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661179794;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=1/As8HiBTtKLJWHkLMxaHWVm4vefy+krh2lK8/Fqr0c=;
+        b=tdihgEUStPOrWmTSRI9/Urp0AQkosKaE04zWb59kO++QUug9D9Dh7yg7ZAdWlIwi
+        Z5wK8l4x9vv1rdJ8J/S4ap7hYq8nBhqYIhipepmCZujkrMcN+P2bDtN5kMtxSN9YAj3
+        fqrA3hGM7sj5i5bEjtHU5fIST9eXwUm9KONh4Naw=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1661179783103133.49004819986476; Mon, 22 Aug 2022 20:19:43 +0530 (IST)
+Date:   Mon, 22 Aug 2022 20:19:43 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Matthew Wilcox" <willy@infradead.org>
+Cc:     "david" <david@fromorbit.com>, "djwong" <djwong@kernel.org>,
+        "fgheet255t" <fgheet255t@gmail.com>, "hch" <hch@infradead.org>,
+        "linux-ext4" <linux-ext4@vger.kernel.org>,
+        "linux-fsdevel" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "linux-xfs" <linux-xfs@vger.kernel.org>,
+        "riteshh" <riteshh@linux.ibm.com>,
+        "syzbot+a8e049cd3abd342936b6" 
+        <syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com>,
+        "syzkaller-bugs" <syzkaller-bugs@googlegroups.com>
+Message-ID: <182c607e79a.820e4a7012709.6365464609772129416@siddh.me>
+In-Reply-To: <YwOWiDKhVxm7m0fa@casper.infradead.org>
+References: <182c028abf0.2dc6f7c973088.2963173753499991828@siddh.me>
+ <20220821114816.24193-1-code@siddh.me> <YwOWiDKhVxm7m0fa@casper.infradead.org>
+Subject: Re: [syzbot] WARNING in iomap_iter
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, 22 Aug 2022 20:15:28 +0530  Matthew Wilcox  wrote:
+> On Sun, Aug 21, 2022 at 05:18:16PM +0530, Siddh Raman Pant wrote:
+> > @@ -979,9 +979,15 @@ loop_set_status_from_info(struct loop_device *lo,
+> >  
+> >       lo->lo_offset = info->lo_offset;
+> >       lo->lo_sizelimit = info->lo_sizelimit;
+> > +     lo->lo_flags = info->lo_flags;
+> > +
+> > +     /* loff_t/int vars are assigned __u64/__u32 vars (respectively) */
+> > +     if (lo->lo_offset < 0 || lo->lo_sizelimit < 0 || lo->lo_flags < 0)
+> > +             return -EOVERFLOW;
+> 
+> Why would you check lo_flags?  That really, really should be an unsigned
+> type.
 
-this series contains patches related to the support of mt8365 power
-domains. Thanks for your feedback so far.
+I agree, but the loop_device struct has (see line 54 of loop.c):
+        int             lo_flags;
 
-Best,
-Markus
+Thus, I checked for it, as we are not changing any types.
 
-Changes in v3:
-- Mainly redesigned WAY_EN patch to be easier to understand
-- Rebased onto v6.0-rc1
-- Several other stuff that is described in the individual patches
-
-Changes in v2:
-- Updated error handling path for scpsys_power_on()
-- Minor updates described in each patch
-
-Previous versions:
-v1 - https://lore.kernel.org/linux-mediatek/20220530204214.913251-1-fparent@baylibre.com/
-v2 - https://lore.kernel.org/linux-mediatek/20220725081853.1636444-1-msp@baylibre.com/
-
-Alexandre Bailon (2):
-  soc: mediatek: Add support of WAY_EN operations
-  soc: mediatek: add support of MTK_SCPD_STRICT_BUSP cap
-
-Fabien Parent (2):
-  dt-bindings: power: Add MT8365 power domains
-  soc: mediatek: pm-domains: Add support for MT8365
-
- .../power/mediatek,power-controller.yaml      |   2 +
- drivers/soc/mediatek/mt8365-pm-domains.h      | 147 +++++++++++++
- drivers/soc/mediatek/mtk-pm-domains.c         | 194 ++++++++++++++----
- drivers/soc/mediatek/mtk-pm-domains.h         |  29 ++-
- .../dt-bindings/power/mediatek,mt8365-power.h |  19 ++
- 5 files changed, 346 insertions(+), 45 deletions(-)
- create mode 100644 drivers/soc/mediatek/mt8365-pm-domains.h
- create mode 100644 include/dt-bindings/power/mediatek,mt8365-power.h
-
--- 
-2.37.2
-
+Thanks,
+Siddh
