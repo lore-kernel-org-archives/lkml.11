@@ -2,90 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4738C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D7FC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236591AbiHVSAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
+        id S236315AbiHVSA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233350AbiHVSAC (ORCPT
+        with ESMTP id S235716AbiHVSAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:00:02 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7714620A
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:00:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661191201; x=1692727201;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CPFy24F8sy/omsQamBjsDDWtFQi9GRtcPb64gkgr7Dg=;
-  b=TlxDTKJV7C6Mqd3a47CnHsTly9zEKaVmQ6SqZcVl59aKZlsOvV/O6dpf
-   QDuoQy3zEtBDVoC5dsOjAJbszd2GTVhbCYU3N0Muny3MO5V9Tq7G+QTf7
-   NXYocQbJwdY0GQvZqvVNdnlR6xIAYDvr7sO3oRLAyfrvn9UeU+OTjCwFB
-   kxsHVqS7MpAGfyrwZqx0o2XFeu+HZ2+KOSjPoDTxxloZ+miaDzxTVy7os
-   sD9ek2Y9Z3hotlHyIuDvEyvX9nzwSUXy19cX/W4wWbZQVLCrovqshDLHa
-   sHXnlxEQJfeCa4at/SfUHL7ipcBFdr0SXSC3ZJRa/p/1/qggKf8ola8li
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273235463"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="273235463"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:00:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="751379047"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Aug 2022 10:59:58 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQBiQ-0000Y5-12;
-        Mon, 22 Aug 2022 17:59:58 +0000
-Date:   Tue, 23 Aug 2022 01:59:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>
-Subject: ld.lld: error: undefined symbol: drm_gem_fb_begin_cpu_access
-Message-ID: <202208230156.Vo2ozAm4-lkp@intel.com>
+        Mon, 22 Aug 2022 14:00:54 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0B246214
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:00:53 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id c4so8130340iof.3
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Yy+VCdeRgyIswu0CubtFfhUCsZgH35AGFG4Ign730ws=;
+        b=Mo+5ifl51BAeqfBpFxhVxm/AfNbeeoQ/9eB5mIIsoaF06OdGvL3SX6o5cyHpgQ3Qfo
+         WG5wV//8QaYLWW+It1muL+YFBS8gqV99Ds2cAn92ukJ/uJ27xOI6q9/lfOx2PJ5jHPLK
+         26tsZLwQ0HTIcDLjt/RpJbCVcnhkt1FY0i4Jw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Yy+VCdeRgyIswu0CubtFfhUCsZgH35AGFG4Ign730ws=;
+        b=T5IFqqR71rIas8qsF/PMp6cGExvkAyx2P3iYNToSAo8Z4+fqB7KtNNRFH7fCxVs3pS
+         zHMaCibxdIIXhm4Xya/xrE5gHAMWTIybbr8bKFqphMkhZj1ZkWpwLt7jGnEwBajyqSMk
+         stqFpaIC/ORLSIrYaA+hDTGEPuOXWkYNqymIiKFog387bejH3BqWX3v2n8y/u1lsDyzH
+         K3DE05ReboUrRaGwhLULv/o1yzBR5JOWbMwiHdHQSXzUyvhvKmOioHgqD0ClHhfRsOSe
+         wdNIHj5ywjrivPBN9EN1FsW53KiZ3UbsS/QeBNRj+OR8IlWvcPixZcmXeaZXf2NwYgzh
+         Y39w==
+X-Gm-Message-State: ACgBeo27NR9iqPWnVXwY9qoxQn69FLNMRK3VRD8xwkRR2NrrCZF4hTMC
+        UuOQeLnucdOQhPcb1icurjtxfYy0UluX2uFj6hZDjg==
+X-Google-Smtp-Source: AA6agR4PiAg9W3J1Kjke4ZDulydfcB5kDGfFIWEbvF6a+CadWvvy79fC0sF+MDSVFsweS5N3LvlJoANsx/yaGdmPsGU=
+X-Received: by 2002:a5d:9914:0:b0:67c:2039:caff with SMTP id
+ x20-20020a5d9914000000b0067c2039caffmr9087348iol.201.1661191252848; Mon, 22
+ Aug 2022 11:00:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com> <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
+In-Reply-To: <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Mon, 22 Aug 2022 14:00:41 -0400
+Message-ID: <CAEXW_YTtQNTLEj9wz9ETt=6USLYO2yrJcSZ-mkiVVHj7y6Z12g@mail.gmail.com>
+Subject: Re: [PATCH] wait_on_bit: add an acquire memory barrier
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   1c23f9e627a7b412978b4e852793c5e3c3efc555
-commit: 08971eea06db3377ea1f9ff4f95a5df5f6c9aeb7 drm/mipi-dbi: Use framebuffer dma-buf helpers
-date:   1 year, 1 month ago
-config: x86_64-randconfig-a002-20220822 (https://download.01.org/0day-ci/archive/20220823/202208230156.Vo2ozAm4-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=08971eea06db3377ea1f9ff4f95a5df5f6c9aeb7
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 08971eea06db3377ea1f9ff4f95a5df5f6c9aeb7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Mon, Aug 22, 2022 at 1:39 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Mon, Aug 22, 2022 at 10:08 AM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > So why don't we just create a "test_bit_acquire()" and be done with
+> > it? We literally created clear_bit_unlock() for the opposite reason,
+> > and your comments about the new barrier hack even point to it.
+>
+> Here's a patch that is
+>
+>  (a) almost entirely untested (I checked that one single case builds
+> and seems to generate the expected code)
+>
+>  (b) needs some more loving
+>
+> but seems to superficially work.
+>
+> At a minimum this needs to be split into two (so the bitop and the
+> wait_on_bit parts split up), and that whole placement of
+> <asm/barrier.h> and generic_bit_test_acquire() need at least some
+> thinking about, but on the whole it seems reasonable.
+>
+> For example, it would make more sense to have this in
+> <asm-generic/bitops/lock.h>, but not all architectures include that,
+> and some do their own version. I didn't want to mess with
+> architecture-specific headers, so this illogically just uses
+> generic-non-atomic.h.
+>
+> Maybe just put it in <linux/bitops.h> directly?
+>
+> So I'm not at all claiming that this is a great patch. It definitely
+> needs more work, and a lot more testing.
+>
+> But I think this is at least the right _direction_ to take here.
+>
+> And yes, I think it also would have been better if
+> "clear_bit_unlock()" would have been called "clear_bit_release()", and
+> we'd have more consistent naming with our ordered atomics. But it's
+> probably not worth changing.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Also, as a suggestion to Mikulas or whoever works on this - update the
+ORDERING section of Documentation/atomic_bitops.txt too?
 
-All errors (new ones prefixed by >>):
+Thanks,
 
->> ld.lld: error: undefined symbol: drm_gem_fb_begin_cpu_access
-   >>> referenced by drm_mipi_dbi.c:207 (drivers/gpu/drm/drm_mipi_dbi.c:207)
-   >>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
---
->> ld.lld: error: undefined symbol: drm_gem_fb_end_cpu_access
-   >>> referenced by drm_mipi_dbi.c:227 (drivers/gpu/drm/drm_mipi_dbi.c:227)
-   >>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ - Joel
