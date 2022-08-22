@@ -2,280 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D360BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0776C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236257AbiHVQSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 12:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
+        id S236778AbiHVQSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 12:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234679AbiHVQSK (ORCPT
+        with ESMTP id S236450AbiHVQSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 12:18:10 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328953AE62;
-        Mon, 22 Aug 2022 09:18:07 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id E10B74C248F;
-        Mon, 22 Aug 2022 16:18:06 +0000 (UTC)
-Received: from pdx1-sub0-mail-a277.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 208124C30AB;
-        Mon, 22 Aug 2022 16:18:06 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661185086; a=rsa-sha256;
-        cv=none;
-        b=he+6pfStdmUtiqfFr7MpsEEKqlodSKxXS27hOGjoIxEm1s0DdiWXMw9ZOg5M7eMBWIm4KV
-        nEDhKJcEZrBO6MlzLBr1dvSKlzqSpIauxILzGKq9xB7V2AiquGDh+eqKtV+FmFllMx9uJH
-        MI1djFbYXbAkMy+ai8Or4KEx5QLrY+3xLKGJ4Hx7gKju6mPw5RdPkTjOJ3zfv7XVm8G6uo
-        8yq49ISAU+P2/xE9QwR4Q6aXeTj3GOtm+E6MYza85YGf7gVkxFArupPUFFYfGh2t3JzAbT
-        Pp3qxxwyu/m9yEI4lIUSb17ygoSXUWl5hRnjlIYJpOq2/RErmdofGxuL/wgd+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661185086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=6WTVl+O0uOXo5Sob6hcZzuOu9eJCgnmbOZgt8cwx8c4=;
-        b=mdghzveEMKbiCVY3D4osZG9FXyryXTONDjhm3U2a4clCvjAWR9a01Xvnp0VqokAwwfypfq
-        AUqB9Baksd5Wc/PtwYYd91s+O83pZooOr1QWJ26o8zPkb82uJTNwjuDFvSBEHKbZtd1+vC
-        GRMjn2HdsFYEhqWQBtrDL/gmLixFIYaVvo2eUHFoU5D+AigoC6bK/3MF6LPTcqk1cBhEgr
-        axgP3mIEpMMxkOUo1lekNb8Tom96uGlD+5wGecbImS9YOgC9t6HVHE0H5dE5acwuqJm7kP
-        dNHwlSNkq+GujL8EwdPw9aDkJ+1vVyliEjruOhUp+MIE0f29+hWdPBuc2/oXxg==
-ARC-Authentication-Results: i=1;
-        rspamd-79945fd77c-k4h86;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Decisive-Attack: 5bf7aeac017f5eb8_1661185086491_4271913256
-X-MC-Loop-Signature: 1661185086491:3361885017
-X-MC-Ingress-Time: 1661185086491
-Received: from pdx1-sub0-mail-a277.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.110.28.247 (trex/6.7.1);
-        Mon, 22 Aug 2022 16:18:06 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a277.dreamhost.com (Postfix) with ESMTPSA id 4MBHb10qYWz2m;
-        Mon, 22 Aug 2022 09:18:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661185085;
-        bh=6WTVl+O0uOXo5Sob6hcZzuOu9eJCgnmbOZgt8cwx8c4=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=IjeBNlAdvNsiUgUNnyuOGYPz/hn8cBrst79pooavCeMKw4M7B8CUOV957izl1hpSO
-         9AbQjYdX128EIQ666RHUEF/6auwXEPei37PdCeFEm7ju+IrIlE4O1E/xDCj9IFgnpc
-         83r8y+r4tF13YnZ1ZJgJJ4NSl/KpWFpGR3R2sbL9JBgZhrClS48yInWNLckQE9/Gev
-         Wj7bMiTzUMpYWcBMtB1TVptbrF0qknXsA8OIu3Af9ICpSUz1evWleZLjZmWz+czZTS
-         wt+vbaguInNMV6vJJyKiUG2w+8isqwbpQI7kkZiC5hlBazD8VqS9hEr6bSosVVQmcs
-         G+4BJ4ZLlfh8g==
-Date:   Mon, 22 Aug 2022 09:18:02 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     ira.weiny@intel.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        a.manzanares@samsung.com, linux-kernel@vger.kernel.org,
-        linux-cxl@vger.kernel.org
-Subject: Re: [RFC PATCH 0/9] CXL: Read and clear event logs
-Message-ID: <20220822161802.h47v7yfrqufeltqt@offworld>
-References: <20220813053243.757363-1-ira.weiny@intel.com>
+        Mon, 22 Aug 2022 12:18:40 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BF81D0CE
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:18:32 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id d68so8693391iof.11
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:18:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=28liATqWCnenPmSSbmsfL1Qb8/cCcnlC13eU8jycOoY=;
+        b=brSaED4ax4SJscfe+HTsieLi7/Mk77XKfVCSrTh3ORLHqjwNzyWIJQvtoTLzJNTl77
+         jDSSXgytEhg2nWzkcQrVLS2nbFjSleoOA+GWELyUGlFT1YYG+/2tE/70Nz3GLIgjm7d0
+         O5yUggh8qVq5I+6TV3xYGNCbUqTwZa9q/0S76cgldppLfIe0fN9cMz/RYiWzwRhyMNK6
+         kc80PHvKA5GXOp8b1rHk/eYBNz1Spo6l7bgXtgSnUOskcaRMgKX7PXqigjAm9VJ8T6n7
+         VZASR85i0P6Qj/ldZMZuWZsWa4Mf/pqAynvFl4vpaA22LLvWplwhSKXERP4qeidz4mrO
+         pFSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=28liATqWCnenPmSSbmsfL1Qb8/cCcnlC13eU8jycOoY=;
+        b=K/pu0d7FtRqSHO4rzBrFMyjZINTV5GwLXMu3ggIYjVUymeWKLviQrNnRaC68OrJLxt
+         Wx/lD+NFSAXZDyj/30oWwFjMIpdQbxg2OHpuGuD/FazbTkRTo9OyaQx7MSRzADI9FHt5
+         0tsrbXQLExtieWjHnpT1ph6W+b+Ij7Gaz7Re1mLIcZQ/MSQQittz424fHi/7L8ZKw75y
+         rKiFBbXq1rWGU4B5jNTBT0kXlZguOAUMlQ2xwdeC9ELJC4ryEC1CtlFw0aSAW68NMhZW
+         yyQKfBTfyav0aUq5WQcV7VaDZlFNUGNz5lYc/OI0AeOSMkkGipy5ow4o4whIsZnwI0w6
+         LDvw==
+X-Gm-Message-State: ACgBeo0QRVz/27+hUYORONHocxr4GAv/VjKt3j0xv73FIQ0ph963mgMD
+        YPLJrLB2gEpjrqOlMkAJSod4TqOr7gSHr3l8CzyNQA==
+X-Google-Smtp-Source: AA6agR7DaLdD5v8vkDX3umoS6oSedE+nyg/hFLRDB6jS5QtPV07mT06RicLD1fu7DxWjr63YxdENVP8+A/z/LYikUnw=
+X-Received: by 2002:a02:5d42:0:b0:349:e1a7:f08d with SMTP id
+ w63-20020a025d42000000b00349e1a7f08dmr1725304jaa.61.1661185111863; Mon, 22
+ Aug 2022 09:18:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220813053243.757363-1-ira.weiny@intel.com>
-User-Agent: NeoMutt/20220429
+References: <20220819190558.477166-1-axelrasmussen@google.com> <20220819160752.777ef64b@kernel.org>
+In-Reply-To: <20220819160752.777ef64b@kernel.org>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Mon, 22 Aug 2022 09:17:57 -0700
+Message-ID: <CAJHvVcgfdkrQSsoenyanjtuav9OK4w9YKVqinUiMrkvdgtB4sg@mail.gmail.com>
+Subject: Re: [PATCH] selftests: fix a couple missing .gitignore entries
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrei Vagin <avagin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Kees Cook <keescook@chromium.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linuxkselftest <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 12 Aug 2022, ira.weiny@intel.com wrote:
-
->From: Ira Weiny <ira.weiny@intel.com>
+On Fri, Aug 19, 2022 at 4:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
->Event records inform the OS of various device events.  Events are not needed
->for any kernel operation but various user level software will want to track
->events.
+> On Fri, 19 Aug 2022 12:05:58 -0700 Axel Rasmussen wrote:
+> > Some recent commits added new test binaries, but forgot to add those to
+> > .gitignore. Now, after one does "make -C tools/testing/selftests", one
+> > ends up with some untracked files in the kernel tree.
+> >
+> > Add the test binaries to .gitignore, to avoid this minor annoyance.
+> >
+> > Fixes: d8b6171bd58a ("selftests/io_uring: test zerocopy send")
+> > Fixes: 6342140db660 ("selftests/timens: add a test for vfork+exit")
+> > Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> > ---
+> >  tools/testing/selftests/net/.gitignore    | 3 ++-
+> >  tools/testing/selftests/timens/.gitignore | 1 +
+> >  2 files changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+> > index 0e5751af6247..02abf8fdfd3a 100644
+> > --- a/tools/testing/selftests/net/.gitignore
+> > +++ b/tools/testing/selftests/net/.gitignore
+> > @@ -39,4 +39,5 @@ toeplitz
+> >  tun
+> >  cmsg_sender
+> >  unix_connect
+> > -tap
+> > \ No newline at end of file
+> > +tap
+> > +io_uring_zerocopy_tx
 >
->Add event reporting through the trace event mechanism.  On driver load read and
->clear all device events.
->
->Normally interrupts will trigger new events to be reported as they occur.
->Because the interrupt code is still being worked on this series provides a
->cxl-test mechanism to create a series of events and trigger the reporting of
->those events.
+> Could you make the io_uring test the first in the file?
+> That'd gets us closest to the alphabetical ordering (I know the file is
+> not ordered now, but we should start moving that way).
 
-Where is this irq code being worked on? I've asked about this for async mbox
-commands, and Jonathan has also posted some code for the PMU implementation.
+It isn't that it's mostly ordered with a few exceptions, to me it
+looks entirely random. I don't mind moving the one I'm adding but, I'm
+not sure it gives much value given that.
 
-Could we not just start with an initial MSI/MSI-X support? Then gradually
-interested users can be added? So each "feature" would need to do implement
-it's "get message number" and to install the isr just do the standard:
-
-      irq = pci_irq_vector(pdev, num);
-      irq_name = devm_kasprintf(dev, GFP_KERNEL, "%s_%s\n", dev_name(dev),
-			       cxl_irq_cap_table[feature].name);
-      rc = devm_request_irq(dev, irq, isr_fn, IRQF_SHARED, irq_name, info);
-
-The only complexity I see for this is to know the number of vectors to request
-apriori, for which we'd have to get the larges value of all CXL features that
-can support interrupts. Something like the following? One thing I have not
-considered in this is the DOE stuff.
-
-Thanks,
-Davidlohr
-
-------
-diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
-index 88e3a8e54b6a..b334d2f497c1 100644
---- a/drivers/cxl/cxlmem.h
-+++ b/drivers/cxl/cxlmem.h
-@@ -245,6 +245,8 @@ struct cxl_dev_state {
-	resource_size_t component_reg_phys;
-	u64 serial;
-
-+	int irq_type; /* MSI-X, MSI */
-+
-	struct xarray doe_mbs;
-
-	int (*mbox_send)(struct cxl_dev_state *cxlds, struct cxl_mbox_cmd *cmd);
-diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
-index eec597dbe763..95f4b91f43b1 100644
---- a/drivers/cxl/cxlpci.h
-+++ b/drivers/cxl/cxlpci.h
-@@ -53,15 +53,6 @@
-  #define	    CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK			GENMASK(15, 8)
-  #define     CXL_DVSEC_REG_LOCATOR_BLOCK_OFF_LOW_MASK		GENMASK(31, 16)
-
--/* Register Block Identifier (RBI) */
--enum cxl_regloc_type {
--	CXL_REGLOC_RBI_EMPTY = 0,
--	CXL_REGLOC_RBI_COMPONENT,
--	CXL_REGLOC_RBI_VIRT,
--	CXL_REGLOC_RBI_MEMDEV,
--	CXL_REGLOC_RBI_TYPES
--};
--
-  static inline resource_size_t cxl_regmap_to_base(struct pci_dev *pdev,
-						 struct cxl_register_map *map)
-  {
-@@ -75,4 +66,44 @@ int devm_cxl_port_enumerate_dports(struct cxl_port *port);
-  struct cxl_dev_state;
-  int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm);
-  void read_cdat_data(struct cxl_port *port);
-+
-+#define CXL_IRQ_CAPABILITY_TABLE				\
-+	C(ISOLATION, "isolation", NULL),			\
-+	C(PMU, "pmu_overflow", NULL), /* per pmu instance */	\
-+	C(MBOX, "mailbox", NULL), /* primary-only */		\
-+	C(EVENT, "event", NULL),
-+
-+#undef C
-+#define C(a, b, c) CXL_IRQ_CAPABILITY_##a
-+enum  { CXL_IRQ_CAPABILITY_TABLE };
-+#undef C
-+#define C(a, b, c) { b, c }
-+/**
-+ * struct cxl_irq_cap - CXL feature that is capable of receiving MSI/MSI-X irqs.
-+ *
-+ * @name: Name of the device generating this interrupt.
-+ * @get_max_msgnum: Get the feature's largest interrupt message number. In cases
-+ *                  where there is only one instance it also indicates which
-+ *                  MSI/MSI-X vector is used for the interrupt message generated
-+ *                  in association with the feature. If the feature does not
-+ *                  have the Interrupt Supported bit set, then return -1.
-+ */
-+struct cxl_irq_cap {
-+	const char *name;
-+	int (*get_max_msgnum)(struct cxl_dev_state *cxlds);
-+};
-+
-+static const
-+struct cxl_irq_cap cxl_irq_cap_table[] = { CXL_IRQ_CAPABILITY_TABLE };
-+#undef C
-+
-+/* Register Block Identifier (RBI) */
-+enum cxl_regloc_type {
-+	CXL_REGLOC_RBI_EMPTY = 0,
-+	CXL_REGLOC_RBI_COMPONENT,
-+	CXL_REGLOC_RBI_VIRT,
-+	CXL_REGLOC_RBI_MEMDEV,
-+	CXL_REGLOC_RBI_TYPES
-+};
-+
-  #endif /* __CXL_PCI_H__ */
-diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index faeb5d9d7a7a..c0fe78e0559b 100644
---- a/drivers/cxl/pci.c
-+++ b/drivers/cxl/pci.c
-@@ -387,6 +387,52 @@ static int cxl_setup_regs(struct pci_dev *pdev, enum cxl_regloc_type type,
-	return rc;
-  }
-
-+static void cxl_pci_free_irq_vectors(void *data)
-+{
-+	pci_free_irq_vectors(data);
-+}
-+
-+static int cxl_pci_alloc_irq_vectors(struct cxl_dev_state *cxlds)
-+{
-+	struct device *dev = cxlds->dev;
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	int rc, i, vectors = -1;
-+
-+	for (i = 0; i < ARRAY_SIZE(cxl_irq_cap_table); i++) {
-+		int irq;
-+
-+		if (!cxl_irq_cap_table[i].get_max_msgnum)
-+			continue;
-+
-+		irq = cxl_irq_cap_table[i].get_max_msgnum(cxlds);
-+		vectors = max_t(int, irq, vectors);
-+	}
-+
-+	if (vectors == -1)
-+		return -EINVAL; /* no irq support whatsoever */
-+
-+	vectors++;
-+	rc = pci_alloc_irq_vectors(pdev, vectors, vectors, PCI_IRQ_MSIX);
-+	if (rc < 0) {
-+		rc = pci_alloc_irq_vectors(pdev, vectors, vectors, PCI_IRQ_MSI);
-+		if (rc < 0)
-+			return rc;
-+
-+		cxlds->irq_type = PCI_IRQ_MSI;
-+	} else {
-+		cxlds->irq_type = PCI_IRQ_MSIX;
-+	}
-+
-+	if (rc != vectors) {
-+		pci_err(pdev, "Not enough interrupts; use polling where supported\n");
-+		/* Some got allocated; clean them up */
-+		cxl_pci_free_irq_vectors(pdev);
-+		return -ENOSPC;
-+	}
-+
-+	return devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
-+}
-+
-  static void cxl_pci_destroy_doe(void *mbs)
-  {
-	xa_destroy(mbs);
-@@ -476,6 +522,9 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-
-	cxlds->component_reg_phys = cxl_regmap_to_base(pdev, &map);
-
-+	if (cxl_pci_alloc_irq_vectors(cxlds))
-+		cxlds->irq_type = 0;
-+
-	devm_cxl_pci_create_doe(cxlds);
-
-	rc = cxl_pci_setup_mailbox(cxlds);
+Would folks object to just adding a second commit to this which sorts
+the file? Since this file isn't changed frequently, I would say the
+risk of annoying conflicts is pretty low.
