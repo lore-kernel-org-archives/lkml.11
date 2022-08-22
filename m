@@ -2,63 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4548CC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 01:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2089C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 01:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231986AbiHVB4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 21:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
+        id S232033AbiHVB6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 21:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbiHVB4C (ORCPT
+        with ESMTP id S231851AbiHVB6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 21:56:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F73B21275;
-        Sun, 21 Aug 2022 18:56:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFBA660ED9;
-        Mon, 22 Aug 2022 01:56:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72459C433D6;
-        Mon, 22 Aug 2022 01:55:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661133361;
-        bh=T059SpFikatAQPavbk/b8RUTHmR7/7WII6tgYENSA2Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K5TyOZrHISWxehces3ddt7KOEEaw57sj+ZOu2rZCHSWuSdzRl7N/M9C8e8m1ds//n
-         eslQcKkqhxcjSI274GCC9q0+1hzogb4ygEwg5/gNlrdZTymwMxyFvF3155QPASTiBl
-         BiE4pvmDCgLKZANhMbqDtIOwBiLJ0rfiZLuvlH4+NrIuTtYTm/tvaoAzlCX41BCZE3
-         8JVdD9KAEN+6xAPsXO02qXKJ0O8t0N2IisIBCWHy5jPPvaXW11VCw+/FvdLFCTcOt0
-         0Olsvd7YKrkmfEK2nehUp6y85SK7jHW9bLsj6RW4bq4mfuE118NF3HRpS1FTh/7bsb
-         38FRU8s9dGu9g==
-Date:   Mon, 22 Aug 2022 09:55:55 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: imx8mm-venice-gw7903: add digital I/O ctl
- gpios
-Message-ID: <20220822015555.GJ149610@dragon>
-References: <20220812172334.14171-1-tharvey@gateworks.com>
+        Sun, 21 Aug 2022 21:58:30 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04872B1E2
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 18:58:28 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id w138so6380199pfc.10
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 18:58:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=gXQ/2bk8gTLltrdpFsbWRVS9rtRGCVCeC4bAjRMRMXw=;
+        b=rpkht8giye/g3N5RJ0ZMXkOfO6sSljPgWEITR4esrqQ/bsrZRVQm6/vJbSR6nP8pPb
+         TUBjWzMh0Hl4NgmyPkxJy9rUPeKn9M3dhp0bnSRTn8gFTNPCsAQSG42sb6Ef8cLAHuWV
+         +DS8blIN3YOu0X7R5nl/slfsCFMG1Cxl5381P2Yh671THLYeC3RqrjiJmSCd7+72xqS7
+         XRz0FTYQC3FO8JPiFp/iEXW9ywC9S0K5QvOxu947tYY6B/2EJBWVdR3uMcVve1m8N1x0
+         Uy3r+e/26OgvSWIzJXgj8KBf0zcjnNldO6XWvac9RbNj//KSM8C5sGQb9Q7cVSo7xZ22
+         v+iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=gXQ/2bk8gTLltrdpFsbWRVS9rtRGCVCeC4bAjRMRMXw=;
+        b=gIlAinu4TI4WwMBCZTbCDs3U4dUrET6u0IMw0CICW6/phTTEOVUCbBuKG/PXFZVsaZ
+         KYvOV2j3pyZF5wshzQORCRNmbkJ6bRfUfQJ+9Fk24ZA8RZ4+vHXjZV4EW1Ztu17OvgO0
+         oxva0hFuCXCbLnJhLIVl/49lD3IOSaS/Yv8Ivrtt8QHukJFkH2WMoM+SpsaXbdQ91JSe
+         lzYnU4FeWfoYO7zoTo7pb/EA4xSf6Kssqi1HqBO9q2xLg/UI7yEvb6iE8XcYDkpeFYo3
+         DLUD9Ia0cmmUnS7OkkzuUonMKhF7AcHUbk1ITc77uPCbrdJnIdvym8FpWmO7lcqLfyFG
+         tH/g==
+X-Gm-Message-State: ACgBeo1adFjM57romO4qYcYplHNanqceGPAAUCHS7nfoCCet1TGFlX40
+        kkkXSyV42ZTkKpyYDo2Tmjq7PA==
+X-Google-Smtp-Source: AA6agR67BLrywojIIVs6gRpGTSLcWlBb3qXHhzeaxp0X9kLKCl6odwrUh6m2T+s/dIIFkheTv5q38w==
+X-Received: by 2002:aa7:88d1:0:b0:536:1b68:d3b6 with SMTP id k17-20020aa788d1000000b005361b68d3b6mr12626213pff.81.1661133507499;
+        Sun, 21 Aug 2022 18:58:27 -0700 (PDT)
+Received: from [10.255.88.113] ([139.177.225.247])
+        by smtp.gmail.com with ESMTPSA id c3-20020a170902d48300b0016a058b7547sm189557plg.294.2022.08.21.18.58.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 21 Aug 2022 18:58:27 -0700 (PDT)
+Message-ID: <78d464bd-94db-a1bc-d864-d85f2751dca3@bytedance.com>
+Date:   Mon, 22 Aug 2022 09:58:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220812172334.14171-1-tharvey@gateworks.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.1.2
+Subject: Re: [PATCHSET for-6.1] kernfs, cgroup: implement kernfs_deactivate()
+ and cgroup_file_show()
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com
+References: <20220820000550.367085-1-tj@kernel.org>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220820000550.367085-1-tj@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 10:23:34AM -0700, Tim Harvey wrote:
-> The GW7903-C revision introduced two additional GPIO's for controlling
-> the digital I/O direction. Add them.
+On 2022/8/20 08:05, Tejun Heo wrote:
+> Hello,
 > 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> Currently, deactivated kernfs nodes are used for two purposes - during
+> removal to kill and drain nodes and during creation to make multiple
+> kernfs_nodes creations to succeed or fail as a group.
+> 
+> This patchset make kernfs [de]activation generic so that it can be used
+> anytime to deactivate (hide and drain) and activate (show) kernfs nodes,
+> and, on top, implement cgroup_file_show() which allows toggling cgroup file
+> visiblity.
+> 
+> This is for the following pending patchset to allow disabling PSI on
+> per-cgroup basis:
+> 
+>  https://lore.kernel.org/all/20220808110341.15799-1-zhouchengming@bytedance.com/t/#u
+> 
+> which requires hiding the corresponding cgroup interface files while
+> disabled.
 
-Applied, thanks!
+Hello,
+
+It's so nice of you for implementing this! I will rebase on your work to
+do per-cgroup PSI disable/re-enable and test it today.
+
+Thanks!
+
+> 
+> This patchset contains the following seven patches.
+> 
+>  0001-kernfs-Simply-by-replacing-kernfs_deref_open_node-wi.patch
+>  0002-kernfs-Drop-unnecessary-mutex-local-variable-initial.patch
+>  0003-kernfs-Refactor-kernfs_get_open_node.patch
+>  0004-kernfs-Skip-kernfs_drain_open_files-more-aggressivel.patch
+>  0005-kernfs-Make-kernfs_drain-skip-draining-more-aggressi.patch
+>  0006-kernfs-Allow-kernfs-nodes-to-be-deactivated-and-re-a.patch
+>  0007-cgroup-Implement-cgroup_file_show.patch
+> 
+> 0001-0003 are misc prep patches. 0004-0006 implement kernsf_deactivate().
+> 0008 implements cgroup_file_show() on top. The patches are also available in
+> the following git branch:
+> 
+>  git://git.kernel.org/pub/scm/linux/kernel/git/tj/misc.git kernfs-deactivate
+> 
+> diffstat follows. Thanks.
+> 
+>  fs/kernfs/dir.c             |  120 +++++++++++++++++++++++++++++++++++++++++-------------------
+>  fs/kernfs/file.c            |  139 +++++++++++++++++++++++++++++++---------------------------------------
+>  fs/kernfs/kernfs-internal.h |    1
+>  include/linux/cgroup.h      |    1
+>  include/linux/kernfs.h      |    2 +
+>  kernel/cgroup/cgroup.c      |   23 +++++++++++
+>  6 files changed, 172 insertions(+), 114 deletions(-)
+> 
+> --
+> tejun
+> 
+> 
