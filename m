@@ -2,125 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A042C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4738C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237262AbiHVR7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
+        id S236591AbiHVSAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237348AbiHVR7f (ORCPT
+        with ESMTP id S233350AbiHVSAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:59:35 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB81F45F59
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:59:33 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id bq11so7611032wrb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:59:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=7yBJRGwvl/pzUs+EDHj7+n2SkDx+t8AASlR3dqtZZaU=;
-        b=YrTEYKKZZJ4+AKSYYoKlNFNH/p/HLBInnCt9pvlW0TOn3RykpWYHy34gjepSzQZY7R
-         Yv7//FXhXGLAk+nHdErdXid773KJEqpXbQ3V7zZoD77P3KYy25Xb5dbumGodd1uCgAVT
-         DXVyeMdRK+clNTwopsLiF0MzjeDfIaiUspH4h3vB+OcwBNn68ZPIC00EK/MA70F/v3Z8
-         +1+l3Duh0ZbIxXAzlF5zScOTz1q4UY0FXnf9iFlZwJfQIS34YFtOubfJ4P1GYK1EPq3a
-         aLhk0jo/R7tLEzIWKW5sgPe0JOVORpSQnhj+tNR8BfVTLLffCJM1pTSRWul4Mke3e5OU
-         yu4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=7yBJRGwvl/pzUs+EDHj7+n2SkDx+t8AASlR3dqtZZaU=;
-        b=7z9IS4wYROF6YQnh0QCYztdXPrDKGYuxsyeDs8L5yPrSVhoQMVvoLPr1wsz51+13C6
-         9zaE1OGBvzbgERKt3UxNkzMwMZ/VPVE9sedyS4OgPBp83b9PS8cLhocNbKv1Pi2Tjmvh
-         7XOESrnV18zmAnb6RRfs7cHwqVk4C6Ltqd41EZhCzOxZwhdu9fP37oEmxbVeHmM0Lhes
-         UbSWYsaUikpw3Fvwu4iV1/YJTx2lQtcrbrMjpyl9mwk33GX3Gt+4kYjezVfV1bWCsDUc
-         j3GBhxL8gMSHUAMUpxYEL8lxSI6z+mMlTz4K7gO2Psu59wchM+mn6mSViFYbuZ59jnpF
-         Yp5g==
-X-Gm-Message-State: ACgBeo20Z9W8KSVkmVrnuOdmpD2Cp6lVbPQRML/1g45NSp7+UBCMvkvt
-        d8Dm0R7zpzrBqNOrCjS7k9c=
-X-Google-Smtp-Source: AA6agR54fhx4TBdfypPsE0ikMuSvjARjCrHEb/YsmcAd6NF2wc6qTzPphSV/Qw7BzJQhbB9NLke3pQ==
-X-Received: by 2002:a05:6000:156b:b0:222:c789:cb2d with SMTP id 11-20020a056000156b00b00222c789cb2dmr11648628wrz.197.1661191172237;
-        Mon, 22 Aug 2022 10:59:32 -0700 (PDT)
-Received: from [192.168.1.100] (p54a07b82.dip0.t-ipconnect.de. [84.160.123.130])
-        by smtp.gmail.com with ESMTPSA id r38-20020a05600c322600b003a2e92edeccsm17150184wmp.46.2022.08.22.10.59.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 10:59:31 -0700 (PDT)
-Message-ID: <5102d3a2-56b1-7111-72c9-905cd56f86bf@gmail.com>
-Date:   Mon, 22 Aug 2022 19:59:28 +0200
+        Mon, 22 Aug 2022 14:00:02 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7714620A
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:00:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661191201; x=1692727201;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CPFy24F8sy/omsQamBjsDDWtFQi9GRtcPb64gkgr7Dg=;
+  b=TlxDTKJV7C6Mqd3a47CnHsTly9zEKaVmQ6SqZcVl59aKZlsOvV/O6dpf
+   QDuoQy3zEtBDVoC5dsOjAJbszd2GTVhbCYU3N0Muny3MO5V9Tq7G+QTf7
+   NXYocQbJwdY0GQvZqvVNdnlR6xIAYDvr7sO3oRLAyfrvn9UeU+OTjCwFB
+   kxsHVqS7MpAGfyrwZqx0o2XFeu+HZ2+KOSjPoDTxxloZ+miaDzxTVy7os
+   sD9ek2Y9Z3hotlHyIuDvEyvX9nzwSUXy19cX/W4wWbZQVLCrovqshDLHa
+   sHXnlxEQJfeCa4at/SfUHL7ipcBFdr0SXSC3ZJRa/p/1/qggKf8ola8li
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273235463"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="273235463"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:00:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="751379047"
+Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 22 Aug 2022 10:59:58 -0700
+Received: from kbuild by dd9b29378baa with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQBiQ-0000Y5-12;
+        Mon, 22 Aug 2022 17:59:58 +0000
+Date:   Tue, 23 Aug 2022 01:59:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>
+Subject: ld.lld: error: undefined symbol: drm_gem_fb_begin_cpu_access
+Message-ID: <202208230156.Vo2ozAm4-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] staging: r8188eu: remove unused module parameter
- rtw_chip_version
-Content-Language: en-US
-To:     Michael Straube <straube.linux@gmail.com>,
-        gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220821123138.8070-1-straube.linux@gmail.com>
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-In-Reply-To: <20220821123138.8070-1-straube.linux@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/21/22 14:31, Michael Straube wrote:
-> The module parameter rtw_chip_version sets the chip_version field of
-> struct registry_priv but that field is never used in the driver code.
-> Remove the unused module parameter.
-> 
-> Signed-off-by: Michael Straube <straube.linux@gmail.com>
-> ---
->   drivers/staging/r8188eu/include/drv_types.h | 1 -
->   drivers/staging/r8188eu/os_dep/os_intfs.c   | 3 ---
->   2 files changed, 4 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/include/drv_types.h b/drivers/staging/r8188eu/include/drv_types.h
-> index 79351b3aa60d..1bd0c8f3a358 100644
-> --- a/drivers/staging/r8188eu/include/drv_types.h
-> +++ b/drivers/staging/r8188eu/include/drv_types.h
-> @@ -37,7 +37,6 @@
->   #define FW_RTL8188EU	"rtlwifi/rtl8188eufw.bin"
->   
->   struct registry_priv {
-> -	u8	chip_version;
->   	u8	rfintfs;
->   	u8	lbkmode;
->   	u8	hci;
-> diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
-> index 2d2a1c27d433..dd4e6aac3509 100644
-> --- a/drivers/staging/r8188eu/os_dep/os_intfs.c
-> +++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
-> @@ -22,7 +22,6 @@ MODULE_FIRMWARE(FW_RTL8188EU);
->   #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable, */
->   
->   /* module param defaults */
-> -static int rtw_chip_version = 0x00;
->   static int rtw_rfintfs = HWPI;
->   static int rtw_lbkmode;/* RTL8712_AIR_TRX; */
->   static int rtw_network_mode = Ndis802_11IBSS;/* Ndis802_11Infrastructure; infra, ad-hoc, auto */
-> @@ -104,7 +103,6 @@ char *rtw_initmac;  /*  temp mac address if users want to use instead of the mac
->   
->   module_param(rtw_initmac, charp, 0644);
->   module_param(rtw_channel_plan, int, 0644);
-> -module_param(rtw_chip_version, int, 0644);
->   module_param(rtw_rfintfs, int, 0644);
->   module_param(rtw_lbkmode, int, 0644);
->   module_param(rtw_network_mode, int, 0644);
-> @@ -151,7 +149,6 @@ static uint loadparam(struct adapter *padapter)
->   {
->   	struct registry_priv  *registry_par = &padapter->registrypriv;
->   
-> -	registry_par->chip_version = (u8)rtw_chip_version;
->   	registry_par->rfintfs = (u8)rtw_rfintfs;
->   	registry_par->lbkmode = (u8)rtw_lbkmode;
->   	registry_par->network_mode  = (u8)rtw_network_mode;
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   1c23f9e627a7b412978b4e852793c5e3c3efc555
+commit: 08971eea06db3377ea1f9ff4f95a5df5f6c9aeb7 drm/mipi-dbi: Use framebuffer dma-buf helpers
+date:   1 year, 1 month ago
+config: x86_64-randconfig-a002-20220822 (https://download.01.org/0day-ci/archive/20220823/202208230156.Vo2ozAm4-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=08971eea06db3377ea1f9ff4f95a5df5f6c9aeb7
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 08971eea06db3377ea1f9ff4f95a5df5f6c9aeb7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Tested-by: Philipp Hortmann <philipp.g.hortmann@gmail.com> # Edimax N150
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> ld.lld: error: undefined symbol: drm_gem_fb_begin_cpu_access
+   >>> referenced by drm_mipi_dbi.c:207 (drivers/gpu/drm/drm_mipi_dbi.c:207)
+   >>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: drm_gem_fb_end_cpu_access
+   >>> referenced by drm_mipi_dbi.c:227 (drivers/gpu/drm/drm_mipi_dbi.c:227)
+   >>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
