@@ -2,123 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8AAC32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C54BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234772AbiHVMLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
+        id S234645AbiHVMMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbiHVMLu (ORCPT
+        with ESMTP id S230127AbiHVMMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:11:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F046139BBE;
-        Mon, 22 Aug 2022 05:11:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C66E60F54;
-        Mon, 22 Aug 2022 12:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A8CEC433D6;
-        Mon, 22 Aug 2022 12:11:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661170308;
-        bh=qlFZMRmORJx3pmxEKn6IHSdAQDOoiVQCJitACZQ+pxw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QFJviwCYstOFDQOqrRCt8gOwzCDCAEE5h+veoHYoCCT/3NwFmfxc2Eq9m28PIJv2y
-         ChKMNCEtMhEpsBIkhbd4pq7uu+kjzWLnKGZrRIPph7/BX5fXU84Y4/hxQCKUC5xbhP
-         imfyjgcV3iM2LZuGVavEuPjnlclfboBnczqbDnRBduOrfvcpnAHD69y4Zu2QUA4XJU
-         D6dWTDlqFEFIQx9KfcLf9/8mscMD1Zg6IvsAQTTVEkwHyyKRhk9001qiyj7CasJGJK
-         0+OJAWrW6hbMPAr/S6OkzwHrc7pnbc3YMpdbhRjf92ZHUyIkGTXbR7VBcUc0nBCiKl
-         kCYCPXxg0b8GQ==
-From:   Christian Brauner <brauner@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Seth Forshee <sforshee@kernel.org>
-Subject: [GIT PULL] fs idmapped fixes for v6.0-rc3
-Date:   Mon, 22 Aug 2022 14:11:25 +0200
-Message-Id: <20220822121125.715295-1-brauner@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 22 Aug 2022 08:12:30 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE083A4A1;
+        Mon, 22 Aug 2022 05:12:28 -0700 (PDT)
+X-QQ-mid: bizesmtp83t1661170338twb7vb34
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 22 Aug 2022 20:12:16 +0800 (CST)
+X-QQ-SSF: 01000000002000C0D000B00A0000000
+X-QQ-FEAT: RLrSOnjbvYHVsoZ0KgpA3ywFWIMAxPdBZL8kKszameGgDMNy/jmgbK3uJOZ35
+        A4brLhdDqDexZgqW0m16AkoNfbdcjCFsH8rj9O7v2ONzD8Pt3dW1BFpLtUIL3y0q0TqHJb8
+        fkH62SCUgr9x5puxKNFTfQ8BH7hW/ez88J6SEeLkYx/XrsyZ/3XQkSf/wsywWDhtcunv0MC
+        gv8ALqRQtrYYL8LQ0z+a70qMZdvvspVW+/XS5R+inPwoXloa+sMYP04Dw6FGKjy+fpH90d2
+        5D2uIPTCIfeIA/jdqDgDWugxNcBkrdQOjc5Uu8lzRTdWQ3QoB30hrJtOCtPQn+mfh6K8UBS
+        bV5tx41sABhmS3iSUGmrf3c0g54opdp48sL8CSbJ6Ahjv4KabFL24bpL1y6vcWce4jyUVws
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] serial/8250: fix repeated words in comments
+Date:   Mon, 22 Aug 2022 20:12:10 +0800
+Message-Id: <20220822121210.19425-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Linus,
+ Delete the redundant word 'have'.
+ Delete the redundant word 'don't'.
 
-/* Summary */
-This contains a few fixes:
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-- Since Seth joined as co-maintainer for idmapped mounts we decided to use a
-  shared git tree. Konstantin suggested we use vfs/idmapping.git on kernel.org
-  under the vfs/ namespace. So this updates the tree in the maintainers file.
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index ac8bfa042391..f60b7a8e4f70 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -345,7 +345,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+ }
+ 
+ /*
+- * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
++ * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have
+  * some differences in how we want to handle flow control.
+  */
+ static void omap_8250_set_termios(struct uart_port *port,
+@@ -579,7 +579,7 @@ static void omap_serial_fill_features_erratas(struct uart_8250_port *up,
+ 
+ 	/*
+ 	 * AM65x SR1.0, AM65x SR2.0 and J721e SR1.0 don't
+-	 * don't have RHR_IT_DIS bit in IER2 register. So drop to flag
++	 * have RHR_IT_DIS bit in IER2 register. So drop to flag
+ 	 * to enable errata workaround.
+ 	 */
+ 	if (soc_device_match(k3_soc_devices))
+-- 
+2.36.1
 
-- Ensure that POSIX ACLs checking, getting, and setting works correctly
-  for filesystems mountable with a filesystem idmapping that want to support
-  idmapped mounts. Since no filesystems mountable with an fs_idmapping do yet
-  support idmapped mounts there is no problem. But this could change in the
-  future, so add a check to refuse to create idmapped mounts when the mounter
-  is not privileged over the mount's idmapping.
-
-- Check that caller is privileged over the idmapping that will be attached to a
-  mount. Currently no FS_USERNS_MOUNT filesystems support idmapped mounts, thus
-  this is not a problem as only CAP_SYS_ADMIN in init_user_ns is allowed to set
-  up idmapped mounts. But this could change in the future, so add a check to
-  refuse to create idmapped mounts when the mounter is not privileged over the
-  mount's idmapping.
-
-- Fix POSIX ACLs for ntfs3. While looking at our current POSIX ACL handling in
-  the context of some overlayfs work I went through a range of other
-  filesystems checking how they handle them currently and encountered a few
-  bugs in ntfs3. I've sent this some time ago and the fixes haven't been picked
-  up even though the pull request for other ntfs3 fixes got sent after. This
-  should really be fixed as right now POSIX ACLs are broken in certain
-  circumstances for ntfs3.
-
-/* Testing */
-All patches are based on v6.0-rc1 and have been sitting in linux-next. No build
-failures or warnings were observed and fstests, selftests, and LTP have seen no
-regressions.
-
-/* Conflicts */
-At the time of creating this PR no merge conflicts were reported from
-linux-next and no merge conflicts showed up doing a test-merge with current
-mainline.
-
-The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
-
-  Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
-
-are available in the Git repository at:
-
-  ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/vfs/idmapping.git tags/fs.idmapped.fixes.v6.0-rc3
-
-for you to fetch changes up to 0c3bc7899e6dfb52df1c46118a5a670ae619645f:
-
-  ntfs: fix acl handling (2022-08-22 12:52:23 +0200)
-
-Please consider pulling these changes from the signed fs.idmapped.fixes.v6.0-rc3 tag.
-
-Thanks!
-Christian
-
-----------------------------------------------------------------
-fs.idmapped.fixes.v6.0-rc3
-
-----------------------------------------------------------------
-Christian Brauner (3):
-      acl: handle idmapped mounts for idmapped filesystems
-      MAINTAINERS: update idmapping tree
-      ntfs: fix acl handling
-
-Seth Forshee (1):
-      fs: require CAP_SYS_ADMIN in target namespace for idmapped mounts
-
- MAINTAINERS          |  2 +-
- fs/namespace.c       |  7 +++++++
- fs/ntfs3/xattr.c     | 16 +++++++---------
- fs/overlayfs/inode.c | 11 +++++++----
- fs/posix_acl.c       | 15 +++++++++------
- 5 files changed, 31 insertions(+), 20 deletions(-)
