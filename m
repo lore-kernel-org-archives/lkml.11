@@ -2,121 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DCCC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB251C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237646AbiHVS6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S238177AbiHVS61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237840AbiHVSyZ (ORCPT
+        with ESMTP id S238369AbiHVS4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:54:25 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60A0A40E34;
-        Mon, 22 Aug 2022 11:54:08 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 5A301DA7;
-        Mon, 22 Aug 2022 21:57:18 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 5A301DA7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661194638;
-        bh=fnw6YfcisLG+r+b0P4r7zw/J8l1QC0hxTccFKPF3fXM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=bXkDAz5zp1/wCkzRD3SAfCdNtBCSrVDS1s7XwG4aAH+/EGLWXzwzHo3L2+8WGTsZ2
-         GUcDhegWHU3yhUnsoVFe4yuaerCr9K7Mg0KhD1tq8JMjp7rTJa/zH9gcMUPCS65lcB
-         kRkRd46WtZuUFbehIkZ8wkOqCXDR5zLN5UucnA+8=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 21:54:03 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v5 22/24] dmaengine: dw-edma: Bypass dma-ranges mapping for the local setup
-Date:   Mon, 22 Aug 2022 21:53:30 +0300
-Message-ID: <20220822185332.26149-23-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 22 Aug 2022 14:56:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A551B46
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661194560;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6Sc/GFE/h4auZJmdG2OSNqDhNL2VL4Oyu1Hp2vRC3HE=;
+        b=Nw83tg1/OYHthpzCVXPi7OuUSWE05fgMc+kx9OOP51J5BMydsfnfsLYY4AKv23jdOSKczs
+        Tt5QyBR4QpD06R5zcxQq53A7+h2L1BFTE1D1AC0xBXZ9mH+BDRbJN5Y96f9Z4tZy1KAb7e
+        mS1eYRvzOh0G2wMAHAUYV269KglW2lc=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-235-70QYZs6SNpqYXCsssa1xNQ-1; Mon, 22 Aug 2022 14:55:59 -0400
+X-MC-Unique: 70QYZs6SNpqYXCsssa1xNQ-1
+Received: by mail-qt1-f199.google.com with SMTP id cj19-20020a05622a259300b003446920ea91so8993725qtb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:55:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=6Sc/GFE/h4auZJmdG2OSNqDhNL2VL4Oyu1Hp2vRC3HE=;
+        b=RkYyq7pIW/L/5R9nDx29Qt3REB5fALr1Y1DxmQHAdGXwqu2aIMlXC3nBNiOIoL84Yl
+         PRbcG82IOzrNhCdp9zITBMwJy1ZiabSGsdsigy7XmLhmHHwPtDq7vOqA9CcoB9B+X9q7
+         JZC19Nxheba9s1lvoocs10BeQmdDBVttmppHUDcFK5Ir7WXUtTIFyRUXrxOPuE3oxyOW
+         SPRPSiMGLlYHf26qz6PPzeuyReclNNhxzAI6CeyFa43E4lup2x6wMXhArxOrqUY134rZ
+         NUtZAb5nOkkgWFdsEheEMRSu4cVJMH7Phesg3/FX7zgvGA5dZWVfduGmZnRwIywirkYh
+         joDA==
+X-Gm-Message-State: ACgBeo2Izpyb0+nqPuhNHL8PgMPo2rVgpLW6g2EAke2evItoKuFl2E3u
+        AkYl9O2l9bqchXqnrh+1ybde50HuLiJJHW4HOQHsENcQPNjzb6ytE2CfjBD5YgFjMQ8PqUYiX9l
+        yWjFbfNZiHk0AZvlfLpwIYRpH
+X-Received: by 2002:a05:622a:451:b0:344:ad2f:692c with SMTP id o17-20020a05622a045100b00344ad2f692cmr9157285qtx.604.1661194558425;
+        Mon, 22 Aug 2022 11:55:58 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4SPwSXVCYhU6Mx1Y/ng2/oG6o7hMCWS3u5m4ddUxyWRbRC8YCvqK2IPkivSnUKC63Wynm2Tg==
+X-Received: by 2002:a05:622a:451:b0:344:ad2f:692c with SMTP id o17-20020a05622a045100b00344ad2f692cmr9157248qtx.604.1661194558179;
+        Mon, 22 Aug 2022 11:55:58 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id n1-20020ac86741000000b0031eebfcb369sm9093468qtp.97.2022.08.22.11.55.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 11:55:57 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 14:55:55 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     Marc Zyngier <maz@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, pbonzini@redhat.com,
+        corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, oliver.upton@linux.dev,
+        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
+        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
+        shan.gavin@gmail.com
+Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
+ tracking
+Message-ID: <YwPRO0r2sfzcbgyz@xz-m1.local>
+References: <20220819005601.198436-1-gshan@redhat.com>
+ <20220819005601.198436-2-gshan@redhat.com>
+ <87lerkwtm5.wl-maz@kernel.org>
+ <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DW eDMA doesn't perform any translation of the traffic generated on the
-CPU/Application side. It just generates read/write AXI-bus requests with
-the specified addresses. But in case if the dma-ranges DT-property is
-specified for a platform device node, Linux will use it to map the CPU
-memory regions into the DMAable bus ranges. This isn't what we want for
-the eDMA embedded into the locally accessed DW PCIe Root Port and
-End-point. In order to work that around let's set the chan_dma_dev flag
-for each DW eDMA channel thus forcing the client drivers to getting a
-custom dma-ranges-less parental device for the mappings.
+Hi, Gavin,
 
-Note it will only work for the client drivers using the
-dmaengine_get_dma_device() method to get the parental DMA device.
+On Mon, Aug 22, 2022 at 11:58:20AM +1000, Gavin Shan wrote:
+> > For context, the documentation says:
+> > 
+> > <quote>
+> > - if KVM_CAP_DIRTY_LOG_RING is available, a number of pages at
+> >    KVM_DIRTY_LOG_PAGE_OFFSET * PAGE_SIZE. [...]
+> > </quote>
+> > 
+> > What is the reason for picking this particular value?
+> > 
+> 
+> It's inherited from x86. I don't think it has to be this particular value.
+> The value is used to distinguish the region's owners like kvm_run, KVM_PIO_PAGE_OFFSET,
+> KVM_COALESCED_MMIO_PAGE_OFFSET, and KVM_DIRTY_LOG_PAGE_OFFSET.
+> 
+> How about to have 2 for KVM_DIRTY_LOG_PAGE_OFFSET in next revision?
+> The virtual area is cheap, I guess it's also nice to use x86's
+> pattern to have 64 for KVM_DIRTY_LOG_PAGE_OFFSET.
+> 
+>     #define KVM_COALESCED_MMIO_PAGE_OFFSET   1
+>     #define KVM_DIRTY_LOG_PAGE_OFFSET        2
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-By: Vinod Koul <vkoul@kernel.org>
+It was chosen not to be continuous of previous used offset because it'll be
+the 1st vcpu region that can cover multiple & dynamic number of pages.  I
+wanted to leave the 3-63 (x86 used offset 2 already) for small fields so
+they can be continuous, which looks a little bit cleaner.
 
----
+Currently how many pages it'll use depends on the size set by the user,
+though there's a max size limited by KVM_DIRTY_RING_MAX_ENTRIES, which is a
+maximum of 1MB memory.
 
-Changelog v2:
-- Fix the comment a bit to being clearer. (@Manivannan)
+So I think setting it to 2 is okay, as long as we keep the rest 1MB address
+space for the per-vcpu ring structure, so any new vcpu fields (even if only
+1 page will be needed) need to be after that maximum size of the ring.
 
-Changelog v3:
-- Conditionally set dchan->dev->device.dma_coherent field since it can
-  be missing on some platforms. (@Manivannan)
-- Remove Manivannan' rb and tb tags since the patch content has been
-  changed.
----
- drivers/dma/dw-edma/dw-edma-core.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Thanks,
 
-diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
-index 6a8282eaebaf..4f56149dc8d8 100644
---- a/drivers/dma/dw-edma/dw-edma-core.c
-+++ b/drivers/dma/dw-edma/dw-edma-core.c
-@@ -716,6 +716,26 @@ static int dw_edma_alloc_chan_resources(struct dma_chan *dchan)
- 	if (chan->status != EDMA_ST_IDLE)
- 		return -EBUSY;
- 
-+	/* Bypass the dma-ranges based memory regions mapping for the eDMA
-+	 * controlled from the CPU/Application side since in that case
-+	 * the local memory address is left untranslated.
-+	 */
-+	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
-+		dchan->dev->chan_dma_dev = true;
-+
-+#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+		dchan->dev->device.dma_coherent = chan->dw->chip->dev->dma_coherent;
-+#endif
-+
-+		dma_coerce_mask_and_coherent(&dchan->dev->device,
-+					     dma_get_mask(chan->dw->chip->dev));
-+		dchan->dev->device.dma_parms = chan->dw->chip->dev->dma_parms;
-+	} else {
-+		dchan->dev->chan_dma_dev = false;
-+	}
-+
- 	pm_runtime_get(chan->dw->chip->dev);
- 
- 	return 0;
 -- 
-2.35.1
+Peter Xu
 
