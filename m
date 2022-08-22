@@ -2,162 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E3DC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7414BC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236201AbiHVRfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
+        id S236229AbiHVRgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237061AbiHVRfL (ORCPT
+        with ESMTP id S235780AbiHVRgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:35:11 -0400
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D0540BC6;
-        Mon, 22 Aug 2022 10:35:07 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 535298E25E2;
-        Mon, 22 Aug 2022 17:35:03 +0000 (UTC)
-Received: from pdx1-sub0-mail-a277.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 713E78E0C8E;
-        Mon, 22 Aug 2022 17:35:02 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661189702; a=rsa-sha256;
-        cv=none;
-        b=QCAl5xH3V3JdRF4LDIGoG/mm3ITqYi00GwJlCI/NfKiZThuyeQXhjjrcOFt0iVo0h2L2q7
-        VGvU/z4b6QHSdwkySQlQPjkdvZvRqKN1nJBQu0vNysq5wiGO6xdY44H/rNrtuuW0TUugHz
-        i6f1sfC/myz4jpm/05unIwjeBRHpt+liFz/vQRfq/E72xbmpo7UZNkkA6X55naogjNYeZV
-        1+/+P6X4D26Lb84/V1z14ZpC6Lp/SV73twFWDhe29KUm+tpyLyQRiOVgApRstUqG6/ZoOB
-        ayTqzrHuvjFnhINVQSP6T90/JnRieS+zs0QLTIovvrewtOaulrKyEFtb8hXl6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661189702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=LZt4EKW2Klj6HswzcAhuLRqO+KGezqgdN643l6Y4ioE=;
-        b=z0IZxbGdIOluzPrYLkJroyVo8BpCEz0yNM2h+IdIFPvrm6PiqXxvXx+bJKsdHxWJAWjSoI
-        RCobVIsaenMkSuZhjTJLc+cmpkA/XxuKCzHCx6hBGkq1fL1nX3BEG+s9eNWrxr5Hfbdsz5
-        sb5x/W0jgkR2SB2T8vusMJc5yyfmKZaYravWLh46vYfGqiWmIp0pumJ6PIBm/+N6MzkDUn
-        bPNIMBejliodQMELpt9njDgfBRcdNoI3OsJQTZ03+nV8ASv9FmvnicWeWIbRrYoBIwPgRy
-        ZMFeWqBudF1HwuDOZ6cTlRz+pfpfPXzcZQvvID69YCkMbpC/NEmmZWSwzUsY2w==
-ARC-Authentication-Results: i=1;
-        rspamd-769cfffc99-7h8h8;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Desert-Battle: 64f1b0cf2bad831f_1661189702782_2177706590
-X-MC-Loop-Signature: 1661189702782:1915979762
-X-MC-Ingress-Time: 1661189702782
-Received: from pdx1-sub0-mail-a277.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.115.45.14 (trex/6.7.1);
-        Mon, 22 Aug 2022 17:35:02 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a277.dreamhost.com (Postfix) with ESMTPSA id 4MBKHn5vY1z2m;
-        Mon, 22 Aug 2022 10:35:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661189702;
-        bh=LZt4EKW2Klj6HswzcAhuLRqO+KGezqgdN643l6Y4ioE=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=l+fH5hxu/zaQqAJKbNMZ9Nf0CpAuK+rlYGBnom8QOROjy/XPzxtZlbeCVKhDLgNnV
-         sQLXQ2uPR+JtbbGQsQwn8GrQ37dGN+3omNW3QUBED8gzmMptjwUmr2PMTgjDqta9OL
-         1mbgdNU5xTc6QQnzDmW3EbVfruZEOjar1gL9KlJSbJm/9tgOaM6bo7rCqqMUN/gu3Y
-         DLlILDsEx5po5LGy/uyxI/gK0SMz7AMnPC1SqCvcK18dYmcdu+C2OYkr03vJPmk5WJ
-         sjhapDwHu92nTf3EsfreAUqm3wkySCtZRCyuBVcKWNYVZCqndmg4OANuWFjlw97QiV
-         nQpTCzIvtlYUA==
-Date:   Mon, 22 Aug 2022 10:17:03 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Adam Manzanares <a.manzanares@samsung.com>
-Cc:     "alison.schofield@intel.com" <alison.schofield@intel.com>,
-        "vishal.l.verma@intel.com" <vishal.l.verma@intel.com>,
-        "ira.weiny@intel.com" <ira.weiny@intel.com>,
-        "widawsk@kernel.org" <widawsk@kernel.org>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "Jonathan.Cameron@huawei.com" <Jonathan.Cameron@huawei.com>,
-        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] cxl: Replace HDM decoder granularity magic numbers
-Message-ID: <20220822171703.sfizbmn6retpxggi@offworld>
-References: <CGME20220822170552uscas1p1b1ee530bf38a14806010d65d1b593ab0@uscas1p1.samsung.com>
- <20220822170510.125082-1-a.manzanares@samsung.com>
+        Mon, 22 Aug 2022 13:36:43 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0FF40BC2
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:36:42 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id d8so3904415lfq.0
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:36:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=l2rPagMbz8Ll9r+EAEfWnyCiHgWknUSiBzGwF24uJk0=;
+        b=rkm3YncQHWPEopQMVxS6CGvBPR0tQWz1GP1xmn9k+eDL0IppgfyOTC7LFzIQUcrjt/
+         rpkYHV5mlBbtH82wFj59Ah71pgPkb0kwl6QDEKROEG4HZ9yeE/nJzIRRevz9AmvWtPnM
+         mBZQSq1WAcMDV9CGrIhL3G7w2LRi0y4FRw7Hb9tybs5tzWqIyWaGglRttLrnLGPmN5ED
+         3Y83W5xGK9vrmBrufO1ZCvdFQXNntYKSB3JdypcQ53BYYhjvvtzDkYdlNUf1v9PXsZZJ
+         3FkafOGnCDzGQzK6lzeyXu9sZReH2MPRNYto/edeoww6G3xNm+MNaBN2Cd44A8fnmfsI
+         T0SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=l2rPagMbz8Ll9r+EAEfWnyCiHgWknUSiBzGwF24uJk0=;
+        b=RB20+QmwM9xyaFiatSa4VJhyyD87JNmm7wdYZkbxm6K0TBEx2fin/0rUzr0nDZwWoD
+         14NpOXlQierObNLgxP0cQEKSDCJqE2FQpyPm8WeATarPwocZPrXSjdt5QHFzovxUPaBp
+         8doPVb7DFi6S0ZvGD3t05YH07u704Qdodrw1g6yYDOL5FKodtoM9klF4rfFQor338bw5
+         LsExNegnFOLN9mzCUXAwSlDthwf1CCrg1INZujztTuIDAm+tygeDplVPi4a9rjQL4DJV
+         On5JgvQo4xBdW/poqENwihsxdK/5FLfC6V3Cx2lXJG77JkpUkmfEnwmnpn9eijGuAADU
+         JXow==
+X-Gm-Message-State: ACgBeo22Eh3q2aFe3U/UGd1EXZKhGhcnCM+QqTMlWyO/wtXsOclapGxP
+        bg73Jc1cKYhEmcrRGa6ItYhKGj8ekO5XwFXCSGIMkmte+wGlZA==
+X-Google-Smtp-Source: AA6agR78MoVIqPrV/wcpSd+Kmiw5aVyZviq+7uMPr6m3nZUVOJIPLZCv8B6ZgvDJI6DTtrUc+qo0Qyb+h7GKwBJxF+I=
+X-Received: by 2002:a05:6512:3090:b0:48b:6e1:1b55 with SMTP id
+ z16-20020a056512309000b0048b06e11b55mr8155377lfd.535.1661189800517; Mon, 22
+ Aug 2022 10:36:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822170510.125082-1-a.manzanares@samsung.com>
-User-Agent: NeoMutt/20220429
+References: <20220822022646.98581-1-tales.aparecida@gmail.com> <20220822022646.98581-3-tales.aparecida@gmail.com>
+In-Reply-To: <20220822022646.98581-3-tales.aparecida@gmail.com>
+From:   Sadiya Kazi <sadiyakazi@google.com>
+Date:   Mon, 22 Aug 2022 23:06:29 +0530
+Message-ID: <CAO2JNKWbL+=j1Kk+hKpM=7AKi_BYxyQmiQvjNMCN7GJtFHtnyg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/8] Documentation: KUnit: avoid repeating "kunit.py
+ run" in start.rst
+To:     Tales Aparecida <tales.aparecida@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        David Gow <davidgow@google.com>, corbet@lwn.net,
+        brendan.higgins@linux.dev, Trevor Woerner <twoerner@gmail.com>,
+        siqueirajordao@riseup.net, mwen@igalia.com, andrealmeid@riseup.net,
+        mairacanal@riseup.net, Isabella Basso <isabbasso@riseup.net>,
+        magalilemes00@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Adam Manzanares wrote:
-
->When reviewing the CFMWS parsing code that deals with the HDM decoders,
->I noticed a couple of magic numbers. This commit replaces these magic numbers
->with constants defined by the CXL 2.0 specification.
-
-Please use 3.0 spec :)
-
-Actually the whole drivers/cxl/* could use updating the comments for 3.0.
-
->Signed-off-by: Adam Manzanares <a.manzanares@samsung.com>
->---
-> drivers/cxl/cxl.h | 11 +++++++----
-> 1 file changed, 7 insertions(+), 4 deletions(-)
+On Mon, Aug 22, 2022 at 8:00 AM Tales Aparecida
+<tales.aparecida@gmail.com> wrote:
 >
->diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
->index f680450f0b16..ba3a66b5b9cd 100644
->--- a/drivers/cxl/cxl.h
->+++ b/drivers/cxl/cxl.h
->@@ -61,6 +61,10 @@
-> #define CXL_HDM_DECODER0_SKIP_LOW(i) CXL_HDM_DECODER0_TL_LOW(i)
-> #define CXL_HDM_DECODER0_SKIP_HIGH(i) CXL_HDM_DECODER0_TL_HIGH(i)
+> Combine two sections mentioning "kunit.py run" to streamline the
+> getting-started guide. Update "kunit.py run" expected output in
+> the guide and run_wrapper.
 >
->+/* HDM decoder control register constants CXL 2.0 8.2.5.12.7 */
-
-This now becomes 8.2.4.19.7.
-
->+#define CXL_DECODER_MIN_GRANULARITY 256
->+#define CXL_DECODER_MAX_GRANULARITY_ORDER 6
-
-Considering there is a single user, I don't think we need to add
-the CXL_DECODER_MAX_GRANULARITY_ORDER. And if a new one is added
-it would be better to keep symmetry (bytes) and just do
-CXL_DECODER_MAX_GRANULARITY, but that's probably the reason why
-it doesn't exist in the first place.
-
->+
-> static inline int cxl_hdm_decoder_count(u32 cap_hdr)
-> {
->	int val = FIELD_GET(CXL_HDM_DECODER_COUNT_MASK, cap_hdr);
->@@ -71,9 +75,9 @@ static inline int cxl_hdm_decoder_count(u32 cap_hdr)
-> /* Encode defined in CXL 2.0 8.2.5.12.7 HDM Decoder Control Register */
-> static inline int cxl_to_granularity(u16 ig, unsigned int *val)
-> {
->-	if (ig > 6)
->+	if (ig > CXL_DECODER_MAX_GRANULARITY_ORDER)
->		return -EINVAL;
->-	*val = 256 << ig;
->+	*val = CXL_DECODER_MIN_GRANULARITY << ig;
->	return 0;
-> }
+> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
 >
->@@ -96,7 +100,7 @@ static inline int cxl_to_ways(u8 eniw, unsigned int *val)
+> ---
+> Notes:
+>     Update the expected output and the note that follows it (Ma=C3=ADra C=
+anal and
+>     Sadiya Kazi). The output was updated on the commit: 45ba7a893ad8
+>     ("kunit: kunit_tool: Separate out config/build/exec/parse")
+>     Add word "step" to note and fix the case of "kernel".
+> ---
+
+Thanks, Tales. This looks good to me.
+
+Reviewed-by: Sadiya Kazi<sadiyakazi@google.com>
+
+Cheers,
+Sadiya
+
+>  Documentation/dev-tools/kunit/run_wrapper.rst |  2 +-
+>  Documentation/dev-tools/kunit/start.rst       | 38 ++++++++-----------
+>  2 files changed, 16 insertions(+), 24 deletions(-)
 >
-> static inline int granularity_to_cxl(int g, u16 *ig)
-> {
->-	if (g > SZ_16K || g < 256 || !is_power_of_2(g))
->+	if (g > SZ_16K || g < CXL_DECODER_MIN_GRANULARITY || !is_power_of_2(g))
-
-Looks good.
-
-Thanks,
-Davidlohr
+> diff --git a/Documentation/dev-tools/kunit/run_wrapper.rst b/Documentatio=
+n/dev-tools/kunit/run_wrapper.rst
+> index 518cf87ea732..6b33caf6c8ab 100644
+> --- a/Documentation/dev-tools/kunit/run_wrapper.rst
+> +++ b/Documentation/dev-tools/kunit/run_wrapper.rst
+> @@ -22,7 +22,7 @@ We should see the following:
+>
+>  .. code-block::
+>
+> -       Generating .config...
+> +       Configuring KUnit Kernel ...
+>         Building KUnit kernel...
+>         Starting KUnit kernel...
+>
+> diff --git a/Documentation/dev-tools/kunit/start.rst b/Documentation/dev-=
+tools/kunit/start.rst
+> index e730df1f468e..2e31350a85e1 100644
+> --- a/Documentation/dev-tools/kunit/start.rst
+> +++ b/Documentation/dev-tools/kunit/start.rst
+> @@ -19,7 +19,21 @@ can run kunit_tool:
+>
+>         ./tools/testing/kunit/kunit.py run
+>
+> -For more information on this wrapper, see:
+> +If everything worked correctly, you should see the following:
+> +
+> +.. code-block::
+> +
+> +       Configuring KUnit Kernel ...
+> +       Building KUnit Kernel ...
+> +       Starting KUnit Kernel ...
+> +
+> +The tests will pass or fail.
+> +
+> +.. note ::
+> +   Because it is building a lot of sources for the first time,
+> +   the ``Building KUnit Kernel`` step may take a while.
+> +
+> +For detailed information on this wrapper, see:
+>  Documentation/dev-tools/kunit/run_wrapper.rst.
+>
+>  Creating a ``.kunitconfig``
+> @@ -74,28 +88,6 @@ you if you have not included dependencies for the opti=
+ons used.
+>     tools like ``make menuconfig O=3D.kunit``. As long as its a superset =
+of
+>     ``.kunitconfig``, kunit.py won't overwrite your changes.
+>
+> -Running Tests (KUnit Wrapper)
+> ------------------------------
+> -1. To make sure that everything is set up correctly, invoke the Python
+> -   wrapper from your kernel repository:
+> -
+> -.. code-block:: bash
+> -
+> -       ./tools/testing/kunit/kunit.py run
+> -
+> -If everything worked correctly, you should see the following:
+> -
+> -.. code-block::
+> -
+> -       Generating .config ...
+> -       Building KUnit Kernel ...
+> -       Starting KUnit Kernel ...
+> -
+> -The tests will pass or fail.
+> -
+> -.. note ::
+> -   Because it is building a lot of sources for the first time, the
+> -   ``Building KUnit kernel`` may take a while.
+>
+>  Running Tests without the KUnit Wrapper
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --
+> 2.37.2
+>
