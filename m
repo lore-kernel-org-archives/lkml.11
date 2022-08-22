@@ -2,112 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2284BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC93C32792
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238442AbiHVTS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
+        id S237783AbiHVTVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238434AbiHVTSd (ORCPT
+        with ESMTP id S238677AbiHVTUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:18:33 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E00E52DD7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:17:32 -0700 (PDT)
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 27MJGoj4021387
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:16:50 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 27MJGoj4021387
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1661195810;
-        bh=T4uH5LE9rwdE2mxLY8gFgbberK4lQnmO5E4/BP1T0DA=;
+        Mon, 22 Aug 2022 15:20:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA7CF587
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:20:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE787B818AB
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 19:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CA6C43140
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 19:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661196010;
+        bh=YAfavG/ehhE5NO9shqEPNYUydHcq4aFWFE3Ux0//VA0=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=oOMkIlmfBMaDjJW4dvHHfRky0Hgs+xJ12QL9glru0xfZetX/NmPVnLyxJ9eee3raJ
-         jWYxpgiDRn7zAflZrBAGzd2vIKv6i0tb1ZdnDGM9Czrdvk9iTSLyxEqMxN5lMEnRGc
-         WIzxoR4fs955Z/4xo1qG+hqLoz2dflGX9+nIUHtj0ENaGxRiiWpAf7wboorDHlFj1s
-         dUXEqaODyexu60xQ4cF1hiYis36SfHuuHFLEjlyHJQJvxFlaj9PlX57cu4EMStudjY
-         0ZDK6X7Exlldc19ZSMLJIKqLKPP1ZNRwTTXBd+twesrNrUxOEvSRlY3AnGKGIouBiu
-         kAiyr1Av8WkUw==
-X-Nifty-SrcIP: [209.85.167.174]
-Received: by mail-oi1-f174.google.com with SMTP id n124so2423918oih.7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:16:50 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2kzVl6GCc5bSgenYunfeHzL8gLEh8FVA1CCXcpXm604wYBUSkN
-        TEFvhZFMwuYktpqFickg8ar6C7J3uYUMSKdARjY=
-X-Google-Smtp-Source: AA6agR717mpG90ugWMLiyVx+ynWHTylQ648Aa5m8evGr6iogFZUQOyFf7ESfDVv/rlQgqHWZEFafl+rzw0r/vsoWNjQ=
-X-Received: by 2002:a05:6808:2099:b0:343:49f5:5300 with SMTP id
- s25-20020a056808209900b0034349f55300mr9252301oiw.287.1661195809494; Mon, 22
- Aug 2022 12:16:49 -0700 (PDT)
+        b=WPRq9dFpR2DmM5QiwIT7sJgAJYG0vpVHHuV86AODxSCo0brrLcrp76MF8TmtVDs4r
+         diJ05stN5YM3Cde8QcG7AUKCcy9gQDCHAkUff+fIRNn7syZp+ICWfo2uA1xfhVO1zs
+         gNV08PtgROWIRN7W+EektUH7u+3Fm2dyWLG3jm97njwmc7ZkRuPDNgyU1ZFt6/I4p8
+         xuNJhtnzcAnf3JdGr5FTpvgt+nN4TG7V6odd01vhLP4yHe0BimP3vyq1a0ZgEt6DT1
+         QOrh7Eon2QtwvwbpnNKc3HkNkkfHibSWakxGivSB036tU+obf554oQWun5dQzMrGtX
+         ADo9L4pcBFzgw==
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-11c4d7d4683so14079986fac.8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:20:10 -0700 (PDT)
+X-Gm-Message-State: ACgBeo0WZRRRtleRwCOtnZBnBPOdnWcdT+jYwfbqJmBqwWv4xMz3qs9c
+        LVya/J2shwBAHETjo8P7ailxd/3lotLLcvL4TWo=
+X-Google-Smtp-Source: AA6agR7fxD/zVMg/15SFvG+w3nBNLTDtCCSgMdmUk5wkoIsi8amKFTENTNYHD5eQOv4iMvq07aklOAvHZpcIssiA1a4=
+X-Received: by 2002:a05:6870:961d:b0:10d:7606:b212 with SMTP id
+ d29-20020a056870961d00b0010d7606b212mr9771332oaq.166.1661196009638; Mon, 22
+ Aug 2022 12:20:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <202208210645.72NkUj0g-lkp@intel.com> <CAKwvOd=VD-Oxtko-tq=GjcLZg5tNj_cMZwMhw7NqBbOYLxuidA@mail.gmail.com>
- <YwPPMK3ouRi0wJBT@dev-arch.thelio-3990X>
-In-Reply-To: <YwPPMK3ouRi0wJBT@dev-arch.thelio-3990X>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 23 Aug 2022 04:16:13 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASfDnUxuTEwiiN4FjGf3PdkDVJOidAON-CD4vyiatQx9g@mail.gmail.com>
-Message-ID: <CAK7LNASfDnUxuTEwiiN4FjGf3PdkDVJOidAON-CD4vyiatQx9g@mail.gmail.com>
-Subject: Re: [linux-stable-rc:queue/4.14 13/175] Makefile:877: *** Recursive
- variable 'LDFLAGS' references itself (eventually). Stop.
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel test robot <lkp@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220821080608.27486-1-ogabbay@kernel.org> <20220822105240.3cb3002c@gandalf.local.home>
+In-Reply-To: <20220822105240.3cb3002c@gandalf.local.home>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Mon, 22 Aug 2022 22:19:42 +0300
+X-Gmail-Original-Message-ID: <CAFCwf131743JdP=jETiEaZUbKDHVXZ_=-uc1-_RfT-91_XPyDw@mail.gmail.com>
+Message-ID: <CAFCwf131743JdP=jETiEaZUbKDHVXZ_=-uc1-_RfT-91_XPyDw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] Adding support for trace events to habanalabs
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 3:47 AM Nathan Chancellor <nathan@kernel.org> wrote:
+On Mon, Aug 22, 2022 at 5:52 PM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> On Mon, Aug 22, 2022 at 10:05:50AM -0700, Nick Desaulniers wrote:
-> > On Sat, Aug 20, 2022 at 3:51 PM kernel test robot <lkp@intel.com> wrote:
-> > >
-> > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.14
-> > > head:   ed8a2f4d20af62ebd64e4092d988d4ae6b54657c
-> > > commit: 17c47886b521ae64a733f41364def799797e45ef [13/175] Makefile: link with -z noexecstack --no-warn-rwx-segments
-> > > config: arc-randconfig-r043-20220821 (https://download.01.org/0day-ci/archive/20220821/202208210645.72NkUj0g-lkp@intel.com/config)
-> > > compiler: arc-elf-gcc (GCC) 7.5.0
-> > > reproduce (this is a W=1 build):
-> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > >         chmod +x ~/bin/make.cross
-> > >         # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=17c47886b521ae64a733f41364def799797e45ef
-> > >         git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-> > >         git fetch --no-tags linux-stable-rc queue/4.14
-> > >         git checkout 17c47886b521ae64a733f41364def799797e45ef
-> > >         # save the config file
-> > >         mkdir build_dir && cp config build_dir/.config
-> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
-> > >
-> > > If you fix the issue, kindly add following tag where applicable
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > >
-> > > All errors (new ones prefixed by >>):
-> > >
-> > > >> Makefile:877: *** Recursive variable 'LDFLAGS' references itself (eventually).  Stop.
-> >
-> > Thanks for the report!
-> >
-> > That's not something that I've seen before...
-> >
-> > Masahiro, does ARCH=arc do something special to LDFLAGS?
-> >
-> > This report is a randconfig against a branch of stable for arc, so
-> > guessing this might be more obscure than usual.
+> On Sun, 21 Aug 2022 11:06:05 +0300
+> Oded Gabbay <ogabbay@kernel.org> wrote:
 >
-> I suspect this would be fixed with commit ce99d0bf312d ("kbuild: clear
-> LDFLAGS in the top Makefile"), which backports cleanly to 4.14.
+> > Thanks for your comments. We have fixed the patches according to them.
+> >
+> > You wrote the first patch is r-b, but I took the liberty to add your r-b to
+> > all three patches, I hope you don't object.
 >
-> Cheers,
-> Nathan
+> I usually only add the r-b to the patches that add TRACE_EVENT(), and
+> sometimes to those that modify them. Because that's what I know best. The
+> usage of the trace events is usually subsystem specific and I tend not to
+> add a r-b for them because people might think I understand how they are
+> being used ;-)
+>
+> But in this case, since I did recommend some tricks in those extra patches,
+> you can keep the tag for them.
+>
+> Here's my disclaimer for all these patches:
+>
+> ***
+>
+> Reviewed only from the tracing point of view, I have no idea if the content
+> held in the trace is correct or not.
+>
+> ***
+>
+> ;-)
+>
+> -- Steve
 
-Ah, yes.
-Please back-port that commit. Thanks!
+Disclaimer duly noted Steve ;-)
+Thanks for the review.
 
-
--- 
-Best Regards
-Masahiro Yamada
+Oded
