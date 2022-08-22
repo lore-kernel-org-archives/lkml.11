@@ -2,99 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B55D4C32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 068B4C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234911AbiHVMGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
+        id S234928AbiHVMHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234862AbiHVMG2 (ORCPT
+        with ESMTP id S234862AbiHVMHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:06:28 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD5839BB3;
-        Mon, 22 Aug 2022 05:06:27 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id AEB7E34537;
-        Mon, 22 Aug 2022 12:06:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1661169986;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kc5mGUgbC9e93/8VtvBmXTPzMo+Wf+Vj9kC1tsuV+5U=;
-        b=XQ0ngXOXIn08K6CbVR0BrzxyQduDBpj+CyfEbs3m+0Y8unmyFlodAreccqTmNhd0frQPGE
-        fR+2iHeigcnU9GerNJAsqPiB/ydhxgBYmYrzLD3vvG/MLNf6d4RLYMlXsC5XdmWhVPknIa
-        5WtkXpqHqjhFfon0+dAxat6VSOy0S/Q=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1661169986;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kc5mGUgbC9e93/8VtvBmXTPzMo+Wf+Vj9kC1tsuV+5U=;
-        b=Nqfem3JipBVmHs68SZ1NcjQM/iQ7oMz0tKwWT1VnDui74mlU3jXY+2tp7oC+GJV9XOheHn
-        vNCoFIA+Cfjc5wCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6D40013523;
-        Mon, 22 Aug 2022 12:06:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 9DaLGUJxA2MpQAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Mon, 22 Aug 2022 12:06:26 +0000
-Date:   Mon, 22 Aug 2022 14:01:13 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     bingjingc <bingjingc@synology.com>
-Cc:     fdmanana@kernel.org, josef@toxicpanda.com, dsterba@suse.com,
-        clm@fb.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robbieko@synology.com,
-        bxxxjxxg@gmail.com
-Subject: Re: [PATCH v3 0/2] btrfs: send: fix failures when processing inodes
- with no links
-Message-ID: <20220822120112.GT13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, bingjingc <bingjingc@synology.com>,
-        fdmanana@kernel.org, josef@toxicpanda.com, dsterba@suse.com,
-        clm@fb.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robbieko@synology.com,
-        bxxxjxxg@gmail.com
-References: <20220812144233.132960-1-bingjingc@synology.com>
+        Mon, 22 Aug 2022 08:07:22 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3750339BBC;
+        Mon, 22 Aug 2022 05:07:21 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1661170001txl6mzdn
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 22 Aug 2022 20:06:39 +0800 (CST)
+X-QQ-SSF: 01000000002000C0D000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4m1XgG8B6AP/kJtqaE0mJj6j7qwJI03u6WS7tx5jEQ2pm9PxITr5
+        rbUSKzKwoz9OWwCOsRVzPKH36fxal0QFN/sqdebBghyMp1Bp+Kj3R5km95KemhjB6U/boD/
+        UQBRkll3ZbAylv4awr24cisZa8GpgLqEiv7wTa3Ewg+phDdDL91k4p44Q5gV+1y99j1e4Mb
+        wi503zQyMBObcvvSDnpXSCWTPmCucWpDIa72G4+/TId8GNoVgWtPXxgrXm+seJCedOSU2Cc
+        Ykfta4mlJxUp6aNoX7MDEZaLSLOWI8Fp4lRdcX7snQGoiRyUmsdVuSdQaWCftUskXNuEqJg
+        P7XjUtycrAEI7o4gS1P0WeDP22/3cOWX7LAop5wo6Xr/hJ9AOwnL2bwUunLdQ==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] tty/seria: fix repeated words in comments
+Date:   Mon, 22 Aug 2022 20:06:33 +0800
+Message-Id: <20220822120633.16753-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220812144233.132960-1-bingjingc@synology.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 10:42:31PM +0800, bingjingc wrote:
-> From: BingJing Chang <bingjingc@synology.com>
-> 
-> There is a bug causing send failures when processing an orphan directory
-> with no links. In commit 46b2f4590aab ("Btrfs: fix send failure when root
-> has deleted files still open")', the orphan inode issue was addressed. The
-> send operation fails with a ENOENT error because of any attempts to
-> generate a path for the inode with a link count of zero. Therefore, in that
-> patch, sctx->ignore_cur_inode was introduced to be set if the current inode
-> has a link count of zero for bypassing some unnecessary steps. And a helper
-> function btrfs_unlink_all_paths() was introduced and called to clean up old
-> paths found in the parent snapshot. However, not only regular files but
-> also directories can be orphan inodes. So if the send operation meets an
-> orphan directory, it will issue a wrong unlink command for that directory
-> now. Soon the receive operation fails with a EISDIR error. Besides, the
-> send operation also fails with a ENOENT error later when it tries to
-> generate a path of it.
-> 
-> 
-> BingJing Chang (2):
->   btrfs: send: refactor get_inode_info()
->   btrfs: send: fix failures when processing inodes with no links
+ Delete the redundant word 'as'.
+ Delete the redundant word 'the'.
 
-Added to misc-next, thanks.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 2 +-
+ drivers/tty/serial/kgdboc.c     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 0d6e62f6bb07..fff4fa8d73ca 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2787,7 +2787,7 @@ static int __maybe_unused lpuart_suspend(struct device *dev)
+ 		 * EDMA driver during suspend will forcefully release any
+ 		 * non-idle DMA channels. If port wakeup is enabled or if port
+ 		 * is console port or 'no_console_suspend' is set the Rx DMA
+-		 * cannot resume as as expected, hence gracefully release the
++		 * cannot resume as expected, hence gracefully release the
+ 		 * Rx DMA path before suspend and start Rx DMA path on resume.
+ 		 */
+ 		if (irq_wake) {
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 79b7db8580e0..a471fc132acb 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -343,7 +343,7 @@ static int param_set_kgdboc_var(const char *kmessage,
+ 	 * Configure with the new params as long as init already ran.
+ 	 * Note that we can get called before init if someone loads us
+ 	 * with "modprobe kgdboc kgdboc=..." or if they happen to use the
+-	 * the odd syntax of "kgdboc.kgdboc=..." on the kernel command.
++	 * odd syntax of "kgdboc.kgdboc=..." on the kernel command.
+ 	 */
+ 	if (configured >= 0)
+ 		ret = configure_kgdboc();
+-- 
+2.36.1
+
