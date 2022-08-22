@@ -2,236 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BB3C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70154C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237511AbiHVSbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57876 "EHLO
+        id S237433AbiHVSbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237545AbiHVSaQ (ORCPT
+        with ESMTP id S237618AbiHVSar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:30:16 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF3704A80D;
-        Mon, 22 Aug 2022 11:29:54 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 2A72DD5F;
-        Mon, 22 Aug 2022 21:32:57 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 2A72DD5F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661193177;
-        bh=I3BqipZnlSoZ4zjQmP5m9pmq2YSrZyjEN8smWhboj70=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=IXPk4Gw3X7B16QouRRMELuzhx6qino6CWRq9CaaGRNETyDSu72wmiRZtIKNtl5jlY
-         lvWTLJoO16JVrIF9iTFwD/8RkAM5I5/T+PxuiLBhb8r0fiirUjMXd2SbOmPnREqRg2
-         CODPtpWPrfuUAIBzUzBFBBRoX2gFb4/Hz2Gmy0Co=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 21:29:42 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH RESEND v10 6/7] clk: baikal-t1: Add DDR/PCIe directly controlled resets support
-Date:   Mon, 22 Aug 2022 21:29:32 +0300
-Message-ID: <20220822182934.23734-7-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220822182934.23734-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220822182934.23734-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 22 Aug 2022 14:30:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B86E48E89;
+        Mon, 22 Aug 2022 11:30:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14F70B816E6;
+        Mon, 22 Aug 2022 18:30:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65407C433C1;
+        Mon, 22 Aug 2022 18:30:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661193043;
+        bh=OoTba3ydHbqkNB71cUiP4uky5w7voNgWy8VPUNjG+KI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M7AO1nBKtRpjLwZAcfu3G3zEiXPS6YHJnnZnepO6S2YOr1eJHx3OXmRXeOOOoIfF5
+         s5xZ9MWWQSHPD5zT9oTn66n+h+1T1z00iXRXWvSmfFw6MRjul/AhG5y8Ml+SHlsTDv
+         eQc+MI/J17X1T+HdAXaX5yaOKKF1B+riE3rhTjeqI6TFH3U1pubpPLW/Sz5A3bbDT0
+         pIqBc2GMAlXklZF4dx+X21nYORgVM2aJsKoN3KyREKeu/AFU9CctSichWE+u+Nbu2i
+         WhFnap504LZOq32O0AkLm4PXkDM/83Oq0i+N14ReZzuqFU4JSyOqM5I6j4CGfopjvg
+         eftOcZKkj9m7g==
+Received: by pali.im (Postfix)
+        id 1D03E97B; Mon, 22 Aug 2022 20:30:40 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 20:30:39 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] powerpc/85xx: DTS: Add CPLD definitions for P1021RDB
+ Combo Board CPL Design
+Message-ID: <20220822183039.sfpupym236ubkeio@pali>
+References: <20220819084433.26011-1-pali@kernel.org>
+ <20220822170056.GA4135542-robh@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <20220822170056.GA4135542-robh@kernel.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Aside with a set of the trigger-like resets Baikal-T1 CCU provides two
-additional blocks with directly controlled reset signals. In particular it
-concerns DDR full and initial resets and various PCIe sub-domains resets.
-Let's add the direct reset assertion/de-assertion of the corresponding
-flags support into the Baikal-T1 CCU driver then. It will be required at
-least for the PCIe platform driver. Obviously the DDR controller isn't
-supposed to be fully reset in the kernel, so the corresponding controls
-are added just for the sake of the interface implementation completeness.
+On Monday 22 August 2022 12:00:56 Rob Herring wrote:
+> On Fri, Aug 19, 2022 at 10:44:33AM +0200, Pali Rohár wrote:
+> > P1021RDB Combo Board CPLD Design is used on following Freescale boards:
+> > P1021RDB-PC, P1020RDB-PD, P1020MBG-PC, P1020UTM-PC and P2020RDB-PCA.
+> > 
+> > Add CPLD definitions for all these boards for which already exist DTS file.
+> > 
+> > CPLD has bank size 128kB, it is connected via CS3 on LBC and mapped to
+> > memory range 0xFFA00000~0xFFA1FFFF.
+> > 
+> > As CPLD firmware is common on all these boards, use just one compatible
+> > string "fsl,p1021rdb-pc-cpld".
+> > 
+> > In some DTS files is CPLD already defined, but definition is either
+> > incomplete or wrong. So fix it.
+> > 
+> > All these boards have via CPLD connected max6370 watchdog at offset 0x2
+> > with GPIO 11, status led at offset 0x8 and reset controller at offset 0xd.
+> > Additionally P1020MBG-PC and P1020RDB-PD boards have FXO led at offset 0x9
+> > and FXS leds at offset 0xa.
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > ---
+> >  arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi    | 92 +++++++++++++++++++
+> >  arch/powerpc/boot/dts/fsl/p1020mbg-pc_32b.dts |  6 +-
+> >  arch/powerpc/boot/dts/fsl/p1020mbg-pc_36b.dts |  6 +-
+> >  arch/powerpc/boot/dts/fsl/p1020rdb-pd.dts     | 44 +++++++--
+> >  arch/powerpc/boot/dts/fsl/p1020utm-pc.dtsi    | 37 ++++++++
+> >  arch/powerpc/boot/dts/fsl/p1020utm-pc_32b.dts |  4 +-
+> >  arch/powerpc/boot/dts/fsl/p1020utm-pc_36b.dts |  4 +-
+> >  arch/powerpc/boot/dts/fsl/p1021rdb-pc.dtsi    | 37 ++++++++
+> >  arch/powerpc/boot/dts/fsl/p1021rdb-pc_32b.dts |  5 +-
+> >  arch/powerpc/boot/dts/fsl/p1021rdb-pc_36b.dts |  5 +-
+> >  arch/powerpc/boot/dts/fsl/p2020rdb-pc.dtsi    | 33 ++++++-
+> >  11 files changed, 251 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi b/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi
+> > index a24699cfea9c..c73996dcd809 100644
+> > --- a/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi
+> > +++ b/arch/powerpc/boot/dts/fsl/p1020mbg-pc.dtsi
+> > @@ -83,6 +83,95 @@
+> >  		compatible = "vitesse-7385";
+> >  		reg = <0x2 0x0 0x20000>;
+> >  	};
+> > +
+> > +	cpld@3,0 {
+> > +		#address-cells = <1>;
+> > +		#size-cells = <1>;
+> > +		compatible = "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
+> > +		reg = <0x3 0x0 0x20000>;
+> > +		ranges = <0x0 0x3 0x0 0x20000>;
+> > +
+> > +		watchdog@2 {
+> > +			compatible = "maxim,max6370";
+> > +			reg = <0x2 0x1>;
+> > +			gpios = <&gpio 11 1>;
+> > +		};
+> > +
+> > +		led@8 {
+> 
+> The register-bit-led schema says this should be 'led@8,0'. Did you 
+> run 'dtbs_check'? 
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+No, it does not work and I lost interest to trying setup machine for it again.
 
----
+> But that's going to conflict with what simple-bus schema says.
 
-Changelog v6:
-- Refactor the code to support the linear reset IDs only. (@Philipp)
+Another reason why not try it again. Lot of schemas says that are in
+conflict, nobody understand it and when I ask how to do it, I just get
+silence or answer which does not work on the real hw. And if there is
+some schema error message then it looks like it was generated by random
+word generator.
 
-Changelog v7:
-- Drop empty line from the sys_rst_info structure initialization block.
-  (@Philipp)
----
- drivers/clk/baikal-t1/ccu-rst.c     | 66 +++++++++++++++++++++++++++++
- drivers/clk/baikal-t1/ccu-rst.h     | 10 +++++
- include/dt-bindings/reset/bt1-ccu.h |  9 ++++
- 3 files changed, 85 insertions(+)
+> I don't 
+> know that 'simple-bus' is really appropriate here. The CPLD isn't really 
+> just a bus. 'simple-mfd' is what's more commonly used with 'syscon'.
 
-diff --git a/drivers/clk/baikal-t1/ccu-rst.c b/drivers/clk/baikal-t1/ccu-rst.c
-index 7db52633270f..40023ea67463 100644
---- a/drivers/clk/baikal-t1/ccu-rst.c
-+++ b/drivers/clk/baikal-t1/ccu-rst.c
-@@ -35,18 +35,29 @@
- #define CCU_AXI_HWA_BASE		0x054
- #define CCU_AXI_SRAM_BASE		0x058
- 
-+#define CCU_SYS_DDR_BASE		0x02c
- #define CCU_SYS_SATA_REF_BASE		0x060
- #define CCU_SYS_APB_BASE		0x064
-+#define CCU_SYS_PCIE_BASE		0x144
- 
- #define CCU_RST_DELAY_US		1
- 
- #define CCU_RST_TRIG(_base, _ofs)		\
- 	{					\
-+		.type = CCU_RST_TRIG,		\
-+		.base = _base,			\
-+		.mask = BIT(_ofs),		\
-+	}
-+
-+#define CCU_RST_DIR(_base, _ofs)		\
-+	{					\
-+		.type = CCU_RST_DIR,		\
- 		.base = _base,			\
- 		.mask = BIT(_ofs),		\
- 	}
- 
- struct ccu_rst_info {
-+	enum ccu_rst_type type;
- 	unsigned int base;
- 	unsigned int mask;
- };
-@@ -79,6 +90,15 @@ static const struct ccu_rst_info axi_rst_info[] = {
- static const struct ccu_rst_info sys_rst_info[] = {
- 	[CCU_SYS_SATA_REF_RST] = CCU_RST_TRIG(CCU_SYS_SATA_REF_BASE, 1),
- 	[CCU_SYS_APB_RST] = CCU_RST_TRIG(CCU_SYS_APB_BASE, 1),
-+	[CCU_SYS_DDR_FULL_RST] = CCU_RST_DIR(CCU_SYS_DDR_BASE, 1),
-+	[CCU_SYS_DDR_INIT_RST] = CCU_RST_DIR(CCU_SYS_DDR_BASE, 2),
-+	[CCU_SYS_PCIE_PCS_PHY_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 0),
-+	[CCU_SYS_PCIE_PIPE0_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 4),
-+	[CCU_SYS_PCIE_CORE_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 8),
-+	[CCU_SYS_PCIE_PWR_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 9),
-+	[CCU_SYS_PCIE_STICKY_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 10),
-+	[CCU_SYS_PCIE_NSTICKY_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 11),
-+	[CCU_SYS_PCIE_HOT_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 12),
- };
- 
- static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
-@@ -86,6 +106,9 @@ static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
- 	struct ccu_rst *rst = to_ccu_rst(rcdev);
- 	const struct ccu_rst_info *info = &rst->rsts_info[idx];
- 
-+	if (info->type != CCU_RST_TRIG)
-+		return -EOPNOTSUPP;
-+
- 	regmap_update_bits(rst->sys_regs, info->base, info->mask, info->mask);
- 
- 	/* The next delay must be enough to cover all the resets. */
-@@ -94,8 +117,51 @@ static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
- 	return 0;
- }
- 
-+static int ccu_rst_set(struct reset_controller_dev *rcdev,
-+		       unsigned long idx, bool high)
-+{
-+	struct ccu_rst *rst = to_ccu_rst(rcdev);
-+	const struct ccu_rst_info *info = &rst->rsts_info[idx];
-+
-+	if (info->type != CCU_RST_DIR)
-+		return high ? -EOPNOTSUPP : 0;
-+
-+	return regmap_update_bits(rst->sys_regs, info->base,
-+				  info->mask, high ? info->mask : 0);
-+}
-+
-+static int ccu_rst_assert(struct reset_controller_dev *rcdev,
-+			  unsigned long idx)
-+{
-+	return ccu_rst_set(rcdev, idx, true);
-+}
-+
-+static int ccu_rst_deassert(struct reset_controller_dev *rcdev,
-+			    unsigned long idx)
-+{
-+	return ccu_rst_set(rcdev, idx, false);
-+}
-+
-+static int ccu_rst_status(struct reset_controller_dev *rcdev,
-+			  unsigned long idx)
-+{
-+	struct ccu_rst *rst = to_ccu_rst(rcdev);
-+	const struct ccu_rst_info *info = &rst->rsts_info[idx];
-+	u32 val;
-+
-+	if (info->type != CCU_RST_DIR)
-+		return -EOPNOTSUPP;
-+
-+	regmap_read(rst->sys_regs, info->base, &val);
-+
-+	return !!(val & info->mask);
-+}
-+
- static const struct reset_control_ops ccu_rst_ops = {
- 	.reset = ccu_rst_reset,
-+	.assert = ccu_rst_assert,
-+	.deassert = ccu_rst_deassert,
-+	.status = ccu_rst_status,
- };
- 
- struct ccu_rst *ccu_rst_hw_register(const struct ccu_rst_init_data *rst_init)
-diff --git a/drivers/clk/baikal-t1/ccu-rst.h b/drivers/clk/baikal-t1/ccu-rst.h
-index 68214d777465..d6e8b2f671f4 100644
---- a/drivers/clk/baikal-t1/ccu-rst.h
-+++ b/drivers/clk/baikal-t1/ccu-rst.h
-@@ -13,6 +13,16 @@
- 
- struct ccu_rst_info;
- 
-+/*
-+ * enum ccu_rst_type - CCU Reset types
-+ * @CCU_RST_TRIG: Self-deasserted reset signal.
-+ * @CCU_RST_DIR: Directly controlled reset signal.
-+ */
-+enum ccu_rst_type {
-+	CCU_RST_TRIG,
-+	CCU_RST_DIR,
-+};
-+
- /*
-  * struct ccu_rst_init_data - CCU Resets initialization data
-  * @sys_regs: Baikal-T1 System Controller registers map.
-diff --git a/include/dt-bindings/reset/bt1-ccu.h b/include/dt-bindings/reset/bt1-ccu.h
-index 3578e83026bc..c691efaa678f 100644
---- a/include/dt-bindings/reset/bt1-ccu.h
-+++ b/include/dt-bindings/reset/bt1-ccu.h
-@@ -21,5 +21,14 @@
- 
- #define CCU_SYS_SATA_REF_RST		0
- #define CCU_SYS_APB_RST			1
-+#define CCU_SYS_DDR_FULL_RST		2
-+#define CCU_SYS_DDR_INIT_RST		3
-+#define CCU_SYS_PCIE_PCS_PHY_RST	4
-+#define CCU_SYS_PCIE_PIPE0_RST		5
-+#define CCU_SYS_PCIE_CORE_RST		6
-+#define CCU_SYS_PCIE_PWR_RST		7
-+#define CCU_SYS_PCIE_STICKY_RST		8
-+#define CCU_SYS_PCIE_NSTICKY_RST	9
-+#define CCU_SYS_PCIE_HOT_RST		10
- 
- #endif /* __DT_BINDINGS_RESET_BT1_CCU_H */
--- 
-2.35.1
+Sorry, I do not understand those schemas anymore. And based on previous
+failures, I'm not going to try it again.
 
+It is a _bus_ and it was tested that it works as a bus with more
+existing drivers.
+
+> > +			compatible = "register-bit-led";
+> > +			reg = <0x8 0x1>;
+> > +			offset = <0x8>;
+> > +			mask = <0x1>;
+> > +			active-low;
+> > +			default-state = "keep";
+> > +			label = "status";
+> > +			function = "status";
+> > +			color = <6>; /* LED_COLOR_ID_YELLOW */
+> > +		};
+> 
