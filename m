@@ -2,110 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F21B1C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C45C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbiHVWVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 18:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S238160AbiHVW2D convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 18:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231466AbiHVWVX (ORCPT
+        with ESMTP id S232461AbiHVW2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 18:21:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824B84D26A;
-        Mon, 22 Aug 2022 15:21:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A25F6134E;
-        Mon, 22 Aug 2022 22:21:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8ED8C433D6;
-        Mon, 22 Aug 2022 22:21:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1661206881;
-        bh=5+dnYijmph9j6r03H83ENF5D6tCqRSMA7zXrvGscJRw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y0ue13+62oMUgAjV9ILcmIWjJ5FwskKcbdYBwur2vKZDZoKkHxLRAJKvyfOsz+dV0
-         74pW5JwXQXaPIb712dr/YhnST0oSv/xswDTRK3h/2XcaDedtlKB/veiDOwKmlL20EZ
-         5FtdESRE0T6NFirhe6oY/KR/1TrxXyasW+gEPXVI=
-Date:   Mon, 22 Aug 2022 15:21:19 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
-        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
-        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
-        hch@infradead.org, oleg@redhat.com, david@redhat.com,
-        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
-        jhubbard@nvidia.com, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, kernel-team@android.com,
-        Yu Zhao <yuzhao@google.com>
-Subject: Re: [PATCH RESEND v2 2/2] mm: delete unused MMF_OOM_VICTIM flag
-Message-Id: <20220822152119.96d40c884078229ee3e6b25e@linux-foundation.org>
-In-Reply-To: <20220531223100.510392-2-surenb@google.com>
-References: <20220531223100.510392-1-surenb@google.com>
-        <20220531223100.510392-2-surenb@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 22 Aug 2022 18:28:01 -0400
+X-Greylist: delayed 4256 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 15:27:59 PDT
+Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693D1491F2;
+        Mon, 22 Aug 2022 15:27:59 -0700 (PDT)
+Received: from [45.44.224.220] (port=49006 helo=[192.168.1.179])
+        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <olivier@trillion01.com>)
+        id 1oQEn7-0007uE-5u;
+        Mon, 22 Aug 2022 17:17:01 -0400
+Message-ID: <61abfb5a517e0ee253b0dc7ba9cd32ebd558bcb0.camel@trillion01.com>
+Subject: Re: [PATCH 2/2] coredump: Allow coredumps to pipes to work with
+ io_uring
+From:   Olivier Langlois <olivier@trillion01.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        io-uring@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 22 Aug 2022 17:16:59 -0400
+In-Reply-To: <87mtd3rals.fsf_-_@email.froward.int.ebiederm.org>
+References: <192c9697e379bf084636a8213108be6c3b948d0b.camel@trillion01.com>
+         <9692dbb420eef43a9775f425cb8f6f33c9ba2db9.camel@trillion01.com>
+         <87h7i694ij.fsf_-_@disp2133>
+         <1b519092-2ebf-3800-306d-c354c24a9ad1@gmail.com>
+         <b3e43e07c68696b83a5bf25664a3fa912ba747e2.camel@trillion01.com>
+         <13250a8d-1a59-4b7b-92e4-1231d73cbdda@gmail.com>
+         <878rw9u6fb.fsf@email.froward.int.ebiederm.org>
+         <303f7772-eb31-5beb-2bd0-4278566591b0@gmail.com>
+         <87ilsg13yz.fsf@email.froward.int.ebiederm.org>
+         <8218f1a245d054c940e25142fd00a5f17238d078.camel@trillion01.com>
+         <a29a1649-5e50-4221-9f44-66a35fbdff80@kernel.dk>
+         <87y1wnrap0.fsf_-_@email.froward.int.ebiederm.org>
+         <87mtd3rals.fsf_-_@email.froward.int.ebiederm.org>
+Organization: Trillion01 Inc
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.3 
+MIME-Version: 1.0
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - trillion01.com
+X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
+X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 15:31:00 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
-
-> With the last usage of MMF_OOM_VICTIM in exit_mmap gone, this flag is
-> now unused and can be removed.
+On Wed, 2022-07-20 at 11:51 -0500, Eric W. Biederman wrote:
 > 
-> ...
->
-> --- a/include/linux/oom.h
-> +++ b/include/linux/oom.h
-> @@ -77,15 +77,6 @@ static inline bool tsk_is_oom_victim(struct task_struct * tsk)
->  	return tsk->signal->oom_mm;
->  }
->  
-> -/*
-> - * Use this helper if tsk->mm != mm and the victim mm needs a special
-> - * handling. This is guaranteed to stay true after once set.
-> - */
-> -static inline bool mm_is_oom_victim(struct mm_struct *mm)
-> -{
-> -	return test_bit(MMF_OOM_VICTIM, &mm->flags);
-> -}
-> -
+> Now that io_uring like everything else stops for coredumps in
+> get_signal the code can once again allow any interruptible
+> condition after coredump_wait to interrupt the coredump.
+> 
+> Clear TIF_NOTIFY_SIGNAL after coredump_wait, to guarantee that
+> anything that sets TIF_NOTIFY_SIGNAL before coredump_wait completed
+> won't cause the coredumps to interrupted.
+> 
+> With all of the other threads in the process stopped io_uring doesn't
+> call task_work_add on the thread running do_coredump.  Combined with
+> the clearing of TIF_NOTIFY_SIGNAL this allows processes that use
+> io_uring to coredump through pipes.
+> 
+> Restore dump_interrupted to be a simple call to signal_pending
+> effectively reverting commit 06af8679449d ("coredump: Limit what can
+> interrupt coredumps").  At this point only SIGKILL delivered to the
+> coredumping thread should be able to cause signal_pending to return
+> true.
+> 
+> A nice followup would be to find a reliable race free way to modify
+> task_work_add and probably set_notify_signal to skip setting
+> TIF_NOTIFY_SIGNAL once it is clear a task will no longer process
+> signals and other interruptible conditions.  That would allow
+> TIF_NOTIFY_SIGNAL to be cleared where TIF_SIGPENDING is cleared in
+> coredump_zap_process.
+> 
+> To be as certain as possible that this works, I tested this with
+> commit 1d5f5ea7cb7d ("io-wq: remove worker to owner tw dependency")
+> reverted.  Which means that not only is TIF_NOTIFY_SIGNAL prevented
+> from stopping coredumps to pipes, the sequence of stopping threads to
+> participate in the coredump avoids deadlocks that were possible
+> previously.
+> 
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> 
+Hi Eric,
 
-The patch "mm: multi-gen LRU: support page table walks" from the MGLRU
-series
-(https://lkml.kernel.org/r/20220815071332.627393-9-yuzhao@google.com)
-adds two calls to mm_is_oom_victim(), so my build broke.
+What is stopping the task calling do_coredump() to be interrupted and
+call task_work_add() from the interrupt context?
 
-I assume the fix is simply
+This is precisely what I was experiencing last summer when I did work
+on this issue.
 
---- a/mm/vmscan.c~mm-delete-unused-mmf_oom_victim-flag-fix
-+++ a/mm/vmscan.c
-@@ -3429,9 +3429,6 @@ static bool should_skip_mm(struct mm_str
- 	if (size < MIN_LRU_BATCH)
- 		return true;
- 
--	if (mm_is_oom_victim(mm))
--		return true;
+My understanding of how async I/O works with io_uring is that the task
+is added to a wait queue without being put to sleep and when the
+io_uring callback is called from the interrupt context, task_work_add()
+is called so that the next time io_uring syscall is invoked, pending
+work is processed to complete the I/O.
+
+So if:
+
+1. io_uring request is initiated AND the task is in a wait queue
+2. do_coredump() is called before the I/O is completed
+
+IMHO, this is how you end up having task_work_add() called while the
+coredump is generated.
+
+So far, the only way that I have found making sure that this was not
+happening was to cancel every pending io_uring requests before writing
+the coredump by calling io_uring_task_cancel():
+
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -43,7 +43,7 @@
+ #include <linux/timekeeping.h>
+ #include <linux/sysctl.h>
+ #include <linux/elf.h>
 -
- 	return !mmget_not_zero(mm);
- }
++#include <linux/io_uring.h>
+ #include <linux/uaccess.h>
+ #include <asm/mmu_context.h>
+ #include <asm/tlb.h>
+@@ -561,6 +561,8 @@
+ 		need_suid_safe = true;
+ 	}
  
-@@ -4127,9 +4124,6 @@ restart:
- 
- 		walk_pmd_range(&val, addr, next, args);
- 
--		if (mm_is_oom_victim(args->mm))
--			return 1;
--
- 		/* a racy check to curtail the waiting time */
- 		if (wq_has_sleeper(&walk->lruvec->mm_state.wait))
- 			return 1;
-_
++	io_uring_task_cancel();
++
+ 	retval = coredump_wait(siginfo->si_signo, &core_state);
+ 	if (retval < 0)
+ 		goto fail_creds;
 
-Please confirm?
+
+Greetings,
+
