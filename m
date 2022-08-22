@@ -2,88 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B14C5C32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE4DC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237602AbiHVSiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S235746AbiHVSi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236455AbiHVSho (ORCPT
+        with ESMTP id S236531AbiHVSh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:37:44 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1444248E93;
-        Mon, 22 Aug 2022 11:37:38 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 11:37:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1661193456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3icLRlffoR+2bh6AZBpCk9+vi7OPaMiHjmut8kzqVHM=;
-        b=HbWlYxX1EJmz75AZbYDPBp74453btzjOhTRWKtlJOGuc1jQO24pHe/hVo32YJuG3ao8+iO
-        ZKgUv+hqXTU6VWEGEungqgWleeZt4YEED0xXWrB3WsujuUR2ZsuOFwGTRy18nWJVgzW3fD
-        YRJ16tZfmzfWWnGq3Ow3YE7Ru4ZjXyg=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Message-ID: <YwPM6o1+pZ2kRyy3@P9FQF9L96D>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-4-shakeelb@google.com>
+        Mon, 22 Aug 2022 14:37:56 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C6F22F67A;
+        Mon, 22 Aug 2022 11:37:44 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id A7088DA9;
+        Mon, 22 Aug 2022 21:40:51 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com A7088DA9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1661193651;
+        bh=1w09WlHzsLJJ1Iix44RngaZfNGmBziRoxLwbJ26Cixk=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=S8nTTgFaEUPw32poHVgVhp+HHIdD7manyGv9290LHKhLcnu6CZxJpF+4IK9SZ1wCn
+         p2ke4lMIGoT0Xc6VcOlxQX2+oMTxONEm97LIgpODzKAq6Ifr/QJrTq2WPutIviHUw0
+         WjOrg8wANOnpWxFBshcldZ8t+pxvjKyyVTpjLA2U=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 21:37:37 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH v7 08/23] ata: libahci_platform: Sanity check the DT child nodes number
+Date:   Mon, 22 Aug 2022 21:37:13 +0300
+Message-ID: <20220822183728.24434-9-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220822183728.24434-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220822183728.24434-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822001737.4120417-4-shakeelb@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 12:17:37AM +0000, Shakeel Butt wrote:
-> For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
-> machines and the network intensive workloads requiring througput in
-> Gbps, 32 is too small and makes the memcg charging path a bottleneck.
-> For now, increase it to 64 for easy acceptance to 6.0. We will need to
-> revisit this in future for ever increasing demand of higher performance.
-> 
-> Please note that the memcg charge path drain the per-cpu memcg charge
-> stock, so there should not be any oom behavior change.
-> 
-> To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> ran the following workload in a three level of cgroup hierarchy with top
-> level having min and low setup appropriately. More specifically
-> memory.min equal to size of netperf binary and memory.low double of
-> that.
-> 
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> 
-> Results (average throughput of netperf):
-> Without (6.0-rc1)       10482.7 Mbps
-> With patch              17064.7 Mbps (62.7% improvement)
-> 
-> With the patch, the throughput improved by 62.7%.
+Having greater than AHCI_MAX_PORTS (32) ports detected isn't that critical
+from the further AHCI-platform initialization point of view since
+exceeding the ports upper limit will cause allocating more resources than
+will be used afterwards. But detecting too many child DT-nodes doesn't
+seem right since it's very unlikely to have it on an ordinary platform. In
+accordance with the AHCI specification there can't be more than 32 ports
+implemented at least due to having the CAP.NP field of 5 bits wide and the
+PI register of dword size. Thus if such situation is found the DTB must
+have been corrupted and the data read from it shouldn't be reliable. Let's
+consider that as an erroneous situation and halt further resources
+allocation.
 
-This is pretty significant!
+Note it's logically more correct to have the nports set only after the
+initialization value is checked for being sane. So while at it let's make
+sure nports is assigned with a correct value.
 
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-I wonder only if we want to make it configurable (Idk a sysctl or maybe
-a config option) and close the topic.
+---
 
-Thanks!
+Changelog v2:
+- Drop the else word from the child_nodes value checking if-else-if
+  statement (@Damien) and convert the after-else part into the ternary
+  operator-based statement.
+
+Changelog v4:
+- Fix some logical mistakes in the patch log. (@Sergei Shtylyov)
+- Replace "?:" operator with if-else statement. (@Damien)
+---
+ drivers/ata/libahci_platform.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+index 814804582d1d..579039956917 100644
+--- a/drivers/ata/libahci_platform.c
++++ b/drivers/ata/libahci_platform.c
+@@ -451,14 +451,24 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
+ 		}
+ 	}
+ 
+-	hpriv->nports = child_nodes = of_get_child_count(dev->of_node);
++	/*
++	 * Too many sub-nodes most likely means having something wrong with
++	 * the firmware.
++	 */
++	child_nodes = of_get_child_count(dev->of_node);
++	if (child_nodes > AHCI_MAX_PORTS) {
++		rc = -EINVAL;
++		goto err_out;
++	}
+ 
+ 	/*
+ 	 * If no sub-node was found, we still need to set nports to
+ 	 * one in order to be able to use the
+ 	 * ahci_platform_[en|dis]able_[phys|regulators] functions.
+ 	 */
+-	if (!child_nodes)
++	if (child_nodes)
++		hpriv->nports = child_nodes;
++	else
+ 		hpriv->nports = 1;
+ 
+ 	hpriv->phys = devm_kcalloc(dev, hpriv->nports, sizeof(*hpriv->phys), GFP_KERNEL);
+-- 
+2.35.1
+
