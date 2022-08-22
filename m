@@ -2,112 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEECBC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5164FC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237250AbiHVRKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        id S235807AbiHVRKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234096AbiHVRJw (ORCPT
+        with ESMTP id S237175AbiHVRKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:09:52 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F80C422FC
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:09:08 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ca13so11255349ejb.9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:09:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=FBSmStkotiGF5Og7ExawLkOys7P/24UjQfsLmwYIr/M=;
-        b=a1uslqfzoUrzXGd0AtZpa/7qVFuOyaBocH8utbCHMh+IkSOo3bi2iA+PM0xZRNUJXv
-         t1cspoXmBEBzEkIS9Wllb9Qh/U1c5tYnnJ4nHm80ZZthOK6BkFbBx1u7VhL2Ep9q2HGo
-         sz1FnS+mb8UOtjAbiizHgEwMu4Gfjzk0Cl1cM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=FBSmStkotiGF5Og7ExawLkOys7P/24UjQfsLmwYIr/M=;
-        b=Ztgs2yfOZgeYw7MoQ9unVl16Gm9bCs8SOGrhl8Pzx/D4MvXKssZ3aZTCJM1o/aly7d
-         xCdX9d1dlxdAFxsv0t4rDtTNVIhrC5CjuRypAgDh0zEmommFHwR2wMWwJvfdVD2f0eR2
-         h/XOp3vKZKwCieur+Nxm4OUZ0NSN6ch6d6jbjE7MVRtWoKjagXViwuKbpCxuGUa6aziu
-         tB48QYV8JtTNdd2mdcTzzpSVtVCK3cmsXg4xFRX89jQ1B01+6V/huQig8ckOLIkWxaXd
-         SUX2FvN1N6MB7Z3nBq+7HJiBSUc8oveODDTH55csM4EXR56gsmMsoraz8eGpZEL4fPwv
-         AXhA==
-X-Gm-Message-State: ACgBeo1varbUimvS2+1s5D+QMtaS8Edjq68jgggyHQzKsmmKJSomt8Ch
-        tjVkGXiyj1KAdTFBhe/Yx0/LAaQlu6uWVj2l
-X-Google-Smtp-Source: AA6agR7fM49rkpjBt7Is6pFsXAkbGNnn583eCSC3MqCuOskDElTIM0ivCcfUSb83yy37klL0roOdHA==
-X-Received: by 2002:a17:906:9bd8:b0:73d:83d1:2222 with SMTP id de24-20020a1709069bd800b0073d83d12222mr3250852ejc.557.1661188146313;
-        Mon, 22 Aug 2022 10:09:06 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id 2-20020a170906218200b0073306218484sm6405339eju.26.2022.08.22.10.09.05
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 10:09:05 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id l33-20020a05600c1d2100b003a645240a95so4008900wms.1
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:09:05 -0700 (PDT)
-X-Received: by 2002:a05:600c:657:b0:3a5:e4e6:ee24 with SMTP id
- p23-20020a05600c065700b003a5e4e6ee24mr15334285wmm.68.1661188144843; Mon, 22
- Aug 2022 10:09:04 -0700 (PDT)
+        Mon, 22 Aug 2022 13:10:05 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D578D12080;
+        Mon, 22 Aug 2022 10:09:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GfKp3f5Ymjt+SyhQzhhn3iVb0y52yLjbBLoTgaA5xs4=; b=uLIU1bPiItlu2CDatqKOvToPOH
+        nbgk39pNb19R5/5maF372B1mztcC+7Mjyx0KZysUxfFVvNDJz+zvwWox+cpv1B/5LWeghFG8BX2DV
+        PpbEGAbKGfRcfx7aN2glwSt4K+8/tJoZOxsThRjcPJ/AurT2ZEU3tTYeOUsQzTm7OmKU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQAvV-00EFF2-Gk; Mon, 22 Aug 2022 19:09:25 +0200
+Date:   Mon, 22 Aug 2022 19:09:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net] net: phy: Warn if phy is attached when removing
+Message-ID: <YwO4RdY2HT2nYXBf@lunn.ch>
+References: <20220816163701.1578850-1-sean.anderson@seco.com>
+ <20220819164519.2c71823e@kernel.org>
+ <YwAo42QkTgD0kOqz@shell.armlinux.org.uk>
+ <b476d7b1-1221-2275-e445-6a70b3a31fe6@seco.com>
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 22 Aug 2022 10:08:48 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com>
-Message-ID: <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com>
-Subject: Re: [PATCH] wait_on_bit: add an acquire memory barrier
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b476d7b1-1221-2275-e445-6a70b3a31fe6@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 2:39 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
->
-> I'd like to ask what do you think about this patch?
+> In the last thread I posted this snippet:
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index a74b320f5b27..05894e1c3e59 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -27,6 +27,7 @@
+>  #include <linux/phy.h>
+>  #include <linux/phy_led_triggers.h>
+>  #include <linux/property.h>
+> +#include <linux/rtnetlink.h>
+>  #include <linux/sfp.h>
+>  #include <linux/skbuff.h>
+>  #include <linux/slab.h>
+> @@ -3111,6 +3112,13 @@ static int phy_remove(struct device *dev)
+>  {
+>         struct phy_device *phydev = to_phy_device(dev);
+>  
+> +	// I'm pretty sure this races with multiple unbinds...
+> +       rtnl_lock();
+> +       device_unlock(dev);
+> +       dev_close(phydev->attached_dev);
+> +       device_lock(dev);
+> +       rtnl_unlock();
+> +       WARN_ON(phydev->attached_dev);
+> +
+>         cancel_delayed_work_sync(&phydev->state_queue);
+>  
+>         mutex_lock(&phydev->lock);
+> ---
+> 
+> Would this be acceptable? Can the locking be fixed?
 
-I really don't like it. It adds a pointless read barrier only because
-you didn't want to do it properly.
+Code like this should not be hidden in the PHY layer. If we decide to
+go down this path it probably should be in net/core/dev.c.
 
-On x86, it doesn't matter, since rmb is a no-op and only a scheduling
-barrier (and not noticeable in this case anyway).
+I suggest you talk to the maintainers of that file, probably Eric
+Dumazet, give him a clear explanation of the problem, and see what he
+suggests.
 
-On other architectures, it might.
-
-But on all architectures it's just ugly.
-
-I suggested in an earlier thread that you just do it right with an
-explicit smp_load_acquire() and a manual bit test.
-
-So why don't we just create a "test_bit_acquire()" and be done with
-it? We literally created clear_bit_unlock() for the opposite reason,
-and your comments about the new barrier hack even point to it.
-
-Why is "clear_bit_unlock()" worthy of a real helper, but
-"test_bit_acquire()" is not and people who want it have to use this
-horrendous hack?
-
-Please stop adding random barriers already. Just do it right. I've
-said this before, why do you then keep doing this and asking for
-comments?
-
-My reply will remain the same: JUST DO IT RIGHT.
-
-                Linus
+	Andrew
