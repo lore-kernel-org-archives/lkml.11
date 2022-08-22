@@ -2,79 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3FAC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FD1C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236149AbiHVTRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
+        id S238466AbiHVTP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238452AbiHVTQx (ORCPT
+        with ESMTP id S238348AbiHVTOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:16:53 -0400
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DEF4BD16;
-        Mon, 22 Aug 2022 12:16:44 -0700 (PDT)
-Received: by mail-ot1-f52.google.com with SMTP id br15-20020a056830390f00b0061c9d73b8bdso8349285otb.6;
-        Mon, 22 Aug 2022 12:16:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=4Oa/UMWYkVYWBruwLqUl1catmvheetRkDDVHMlQt8JM=;
-        b=PgMdZZFDyx3PXp6lthMUGXsP2x39lLRhwYPXs5SRSV60kGo6D0i5cIZyjlXyF58oA3
-         iB8kDLuONUzE+ocUonkRwviYWDib+xNE2XCxyNH/yE/qNyrBbVVEfmGcf3jmhdssb4kr
-         smPaxvwHt7r09ech9k2Eweva4VLUfXWTsztCGUIckxL3u8DPVDQsBhQhgaZYHdPLb/Xk
-         CPqBMwyikLLqW625CcKKyCCsgm/ojJa3uirkSJm0VEFjPTGlQyhddOEMr0Psr73ehUwL
-         PJ9d0ejsBI4yAcEhBt8DyZezUBZssNoqeEUB2NQkZ9jyd11MK/fk5Ij5GIR0b6gkqL4R
-         BmLQ==
-X-Gm-Message-State: ACgBeo0BUJFHg/aE+BSfk7n7CCtcDG415niBmA07tU9hur8zNJEhO0YR
-        QjKiwyUUjastVvxZaOV94RBP1P73Dg==
-X-Google-Smtp-Source: AA6agR6ysS5OEqWcPt4oYYbtHtpUsEkrszbDwDzYSWv6EaU9kt1STyzXD3ZeTVZu+8EwJYE8qMYxLw==
-X-Received: by 2002:a05:6830:d81:b0:616:abfa:796f with SMTP id bv1-20020a0568300d8100b00616abfa796fmr8212916otb.18.1661195803382;
-        Mon, 22 Aug 2022 12:16:43 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x19-20020a4a6213000000b004320b0cc5acsm2595504ooc.48.2022.08.22.12.16.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 12:16:43 -0700 (PDT)
-Received: (nullmailer pid 262091 invoked by uid 1000);
-        Mon, 22 Aug 2022 19:16:42 -0000
-Date:   Mon, 22 Aug 2022 14:16:42 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Apurva Nandan <a-nandan@ti.com>
-Cc:     Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-mmc@vger.kernel.org,
-        Nishanth Menon <nm@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Tero Kristo <kristo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, Hari Nagalla <hnagalla@ti.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 3/3] dt-bindings: interrupt-controller: Fix 'reg' was
- unexpected
-Message-ID: <20220822191642.GA262042-robh@kernel.org>
-References: <20220819190729.32358-1-a-nandan@ti.com>
- <20220819190729.32358-4-a-nandan@ti.com>
+        Mon, 22 Aug 2022 15:14:53 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4243D2B609;
+        Mon, 22 Aug 2022 12:14:47 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 9B660DAA;
+        Mon, 22 Aug 2022 22:17:48 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9B660DAA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1661195868;
+        bh=S4Cpg3F9AoedZ1cfMlJGVURz8OADsydtqtvGr0KhezI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=h+bT8RkjDOm7fmyJhnYYUGLPCtCDoa7TYf8uXnrCp8tKFOGDUSFS9cGpjin6WzVjl
+         evjrlOYibix15LOovSQ6iaKF4gySj8Y9b8Pm972Cz3oGuCKlxC3bKqx2xM3iOifoMx
+         YnLmymo6T7Z7n/dkdrGgao3AeCME0W5sTBB/H/pI=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:14:34 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 08/18] EDAC/synopsys: Parse ADDRMAP[0] CSR for multi-ranks case only
+Date:   Mon, 22 Aug 2022 22:14:17 +0300
+Message-ID: <20220822191427.27969-9-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819190729.32358-4-a-nandan@ti.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 20 Aug 2022 00:37:29 +0530, Apurva Nandan wrote:
-> Fix the following warning in dtbs_check
-> interrupt-controller@a00000: Unevaluated properties are not allowed ('reg' was unexpected)
-> 
-> Add the reg property in the schema.
-> 
-> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
-> ---
->  .../devicetree/bindings/interrupt-controller/ti,sci-intr.yaml  | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+The ADDRMAP[0] CSR contains the SDRAM Rank bits mapping. Obviously it's
+applicable for the multi-ranked memory only. If either the attached memory
+isn't multi-ranked or the controller simply doesn't support the multi-rank
+memory, parsing the ADDRMAP[0] CSR will be not just pointless, but in the
+later case erroneous since the CSR may contain garbage data. So make sure
+the ADDRMAP[0] register is only parsed if the multi-ranked memory setup
+has been detected.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+---
+ drivers/edac/synopsys_edac.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
+index 998600670c75..e7f8d448850b 100644
+--- a/drivers/edac/synopsys_edac.c
++++ b/drivers/edac/synopsys_edac.c
+@@ -1143,9 +1143,12 @@ static void snps_setup_bg_address_map(struct snps_edac_priv *priv, u32 *addrmap)
+ 
+ static void snps_setup_rank_address_map(struct snps_edac_priv *priv, u32 *addrmap)
+ {
+-	priv->rank_shift[0] = ((addrmap[0] & RANK_MAX_VAL_MASK) ==
+-				RANK_MAX_VAL_MASK) ? 0 : ((addrmap[0] &
+-				RANK_MAX_VAL_MASK) + RANK_B0_BASE);
++	/* Ranks mapping is unavailable for the single-ranked memory */
++	if (priv->info.ranks > 1) {
++		priv->rank_shift[0] = ((addrmap[0] & RANK_MAX_VAL_MASK) ==
++					RANK_MAX_VAL_MASK) ? 0 : ((addrmap[0] &
++					RANK_MAX_VAL_MASK) + RANK_B0_BASE);
++	}
+ }
+ 
+ /**
+-- 
+2.35.1
+
