@@ -2,74 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A3BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66295C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234733AbiHVNeK convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
+        id S235183AbiHVNe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234147AbiHVNeC (ORCPT
+        with ESMTP id S234128AbiHVNey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:34:02 -0400
-Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F1E15A0C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:34:00 -0700 (PDT)
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 22 Aug 2022 09:34:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9052A955
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:34:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.emlix.com (Postfix) with ESMTPS id 575EF601A4;
-        Mon, 22 Aug 2022 15:04:37 +0200 (CEST)
-From:   Rolf Eike Beer <eb@emlix.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/6] mm: pagewalk: don't check vma in walk_page_range_novma()
-Date:   Mon, 22 Aug 2022 15:00:47 +0200
-Message-ID: <21585888.EfDdHjke4D@devpool047>
-Organization: emlix GmbH
-In-Reply-To: <3200642.44csPzL39Z@devpool047>
-References: <3200642.44csPzL39Z@devpool047>
+        by sin.source.kernel.org (Postfix) with ESMTPS id 43479CE12D2
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:34:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E66C433D6;
+        Mon, 22 Aug 2022 13:34:47 +0000 (UTC)
+Date:   Mon, 22 Aug 2022 09:35:03 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <song@kernel.org>
+Cc:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ftrace: makes ops_references_rec() inline
+Message-ID: <20220822093503.40cb4551@gandalf.local.home>
+In-Reply-To: <CAPhsuW6gAHPeRF0cqpi0Z4znWbw+rhz3h4yXYOWQ-__zPY7LoA@mail.gmail.com>
+References: <87fshpggb7.wl-kuninori.morimoto.gx@renesas.com>
+        <CAPhsuW6gAHPeRF0cqpi0Z4znWbw+rhz3h4yXYOWQ-__zPY7LoA@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Directly call walk_pgd_range() as that is everything that will actually
-happen in __walk_page_range() besides checking if the vma is set.
+On Mon, 22 Aug 2022 00:28:58 -0700
+Song Liu <song@kernel.org> wrote:
 
-Signed-off-by: Rolf Eike Beer <eb@emlix.com>
----
- mm/pagewalk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Sun, Aug 21, 2022 at 7:31 PM Kuninori Morimoto
+> <kuninori.morimoto.gx@renesas.com> wrote:
+> >
+> > commit 53cd885bc5c3e ("ftrace: Allow IPMODIFY and DIRECT ops on the
+> > same function") changed ops_references_rec() inline to function,
+> > thus we will get below error if .config doesn't have CONFIG_MODULES.
+> >
+> >   CC      kernel/trace/ftrace.o
+> > ${linux}/kernel/trace/ftrace.c:3149:1: error: 'ops_references_rec' \
+> > defined but not used [-Werror=unused-function]
+> >  3149 | ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
+> >       | ^~~~~~~~~~~~~~~~~~
+> > cc1: all warnings being treated as errors
+> > make[2]: *** [${linux}/scripts/Makefile.build:249: kernel/trace/ftrace.o] error 1
+> > make[1]: *** [${linux}/scripts/Makefile.build:466: kernel/trace] error 2
+> > make: *** [/opt/disk_cd/morimoto/linux/Makefile:1843: kernel] error 2
+> >
+> > This patch makes it to inline again, and fixes the issue.
+> >
+> > Fixes:  53cd885bc5c3e ("ftrace: Allow IPMODIFY and DIRECT ops on the same function")
+> > CC: Song Liu <song@kernel.org>
+> > Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>  
+> 
+> Acked-by: Song Liu <song@kernel.org>
+> 
+> Thanks for the fix!
 
-diff --git a/mm/pagewalk.c b/mm/pagewalk.c
-index c67b2532db8f..a06eb100fe4e 100644
---- a/mm/pagewalk.c
-+++ b/mm/pagewalk.c
-@@ -517,7 +517,7 @@ int walk_page_range_novma(struct mm_struct *mm, unsigned long start,
- 
- 	mmap_assert_locked(walk.mm);
- 
--	return __walk_page_range(start, end, &walk);
-+	return walk_pgd_range(start, end, &walk);
- }
- 
- int walk_page_vma(struct vm_area_struct *vma, const struct mm_walk_ops *ops,
--- 
-2.37.2
+Wrong fix.
 
+The correct fix is here[1], and because the breakage went through the BPF
+tree, I could not apply it. Now that both the BPF and my tree is in Linus's
+tree, I can apply it and now will do so.
 
--- 
-Rolf Eike Beer, emlix GmbH, http://www.emlix.com
-Fon +49 551 30664-0, Fax +49 551 30664-11
-Gothaer Platz 3, 37083 Göttingen, Germany
-Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
-Geschäftsführung: Heike Jordan, Dr. Uwe Kracke – Ust-IdNr.: DE 205 198 055
+-- Steve
 
-emlix - smart embedded open source
-
-
-
+[1] https://lore.kernel.org/all/20220801084745.1187987-1-wangjingjin1@huawei.com/
