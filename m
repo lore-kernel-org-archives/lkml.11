@@ -2,90 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED3AC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8946C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237345AbiHVRQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
+        id S237197AbiHVRSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237324AbiHVRP6 (ORCPT
+        with ESMTP id S237194AbiHVRSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:15:58 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DEC1D33B
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:15:57 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id bn9so3697134ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:15:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=3B91h+yrTjwS7I4FUx77uKxPNz+E7GshMHnIapiZTc8=;
-        b=L9QS1hKwgWBMx6ma10ELOh9eQnoZAT8Szdd1iSgK+rhGHKoZ6Mtm7TdVEyday19ApG
-         R3x87oAm5OhNvqgvSNUuuRIalt/FEzvZraWsVRATJVhrk2zNUxrDG1DaPfqa1gnvRiET
-         GrjSk+xWXT3q1YI3kCSOaTd1UTyO1DACmUkCAqSUglcPKmJP1VWpzOVBZaafRTN020KX
-         qgfAE13dDMgRhUjuX7bsxL0AleLwvYnfTTynsdyZJ0GrQ26JoQvufwKvqsGlC2wbb9YA
-         nfXmXt03p+fYISvL3GLe/omMfhMvZoA6T2eo0unJ3CCi/WCwLifw7v7K7vddOmcEa/u+
-         O91Q==
+        Mon, 22 Aug 2022 13:18:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495CA63D8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:18:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661188698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fDT0NzG0FkOZTyIfEMiwc/td94ymUGlK2/HiuIYhkVw=;
+        b=NOytNCjQoTGdKqw4Sn38wuuTWykjqkxtbmT2gpgjR4o79XChLdO9odu0sZaiF4lD+RsZy6
+        NwM9pLM9+foGZZgOitZMvceRV5mYkK8mPUNW3fhrLRUWhQp4BPKlEiJnFPNii6m8EhMQcL
+        ARLrnCXA19fzcREBRRjTj4P3jfHTL74=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-461-2FZZ6Xi7MteDX4P7JIe-5A-1; Mon, 22 Aug 2022 13:18:15 -0400
+X-MC-Unique: 2FZZ6Xi7MteDX4P7JIe-5A-1
+Received: by mail-wm1-f71.google.com with SMTP id i132-20020a1c3b8a000000b003a537064611so6636773wma.4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:18:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=3B91h+yrTjwS7I4FUx77uKxPNz+E7GshMHnIapiZTc8=;
-        b=wMsF45ZLUAUeg91PI4HHfFdusxyP6EYj7zCemVgWtbdSlIBHczaaIT7G278X9592GI
-         9VPXGBZt178RvQIzdRKULw0m5weWIkO5lqNdR8Cu2fpdr+HK9pttqhlgLKrYXn5OWkAW
-         CUZZR0aAXzjUA5MVP1DdKbr2Uxa58Op9hkh+bnz3JrrTlC1KPvQglfuQ38cAe95wsiAg
-         4lI15OQ/cHfDH4+SunbGKeIqjv1+5YIMOtJkLyl9iaz9hYSCfx3Rl9YZ1BKWLiZkpnMz
-         fDazNJ32kkBOe+Rb1qr5btwfUB4vzb3xfTICfxxF8O0rbOBgWFcOp48uyKR9fRbWYnAD
-         fbkQ==
-X-Gm-Message-State: ACgBeo0QEO/st+rpFF+VIfG0+vaIna8AyI/UFJjZJdDBsMIZZ97ujdiZ
-        nMcjMyRvifmUYrex5Hmtq6c1Pg==
-X-Google-Smtp-Source: AA6agR45NEMpbO0Z9AzrrsVon/LA0ZrvVtjVxutO5v+1o6P1YNcB95+XrUkQ2XHqrbFf16qxDUfE0w==
-X-Received: by 2002:a2e:3314:0:b0:261:d144:faa4 with SMTP id d20-20020a2e3314000000b00261d144faa4mr1232145ljc.208.1661188555755;
-        Mon, 22 Aug 2022 10:15:55 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id w9-20020a05651203c900b0048b0bf9f4bfsm2010195lfp.140.2022.08.22.10.15.54
+        bh=fDT0NzG0FkOZTyIfEMiwc/td94ymUGlK2/HiuIYhkVw=;
+        b=B+e0Tl0O3S5NsvtYuCVcLsLCOxMI0DLrkJfnQ/o7P77fBuG9ICyKNQF+wncNjDN+n2
+         cSZW3yh4ciicI4ghqtzRM3351mzx78CXdJJytcMm/86KiIVNDy5yie2U1XG4Fk2IZaE7
+         ZKGguKeGWGOjr5B1cdqdAOWeIvAmwr969A7sFuDuwD3gCikCIXHjWG0ZzT4g4lELAt+V
+         oag8b4tzOKRp67PfRHW4YJ22gKW7rKOjMt536V5aFrUhYQTguxuXFrI9smnSSc+C4fxR
+         gQ/YYRP79oPeLa/3XexnodoPLnwjoo6b1ThOUHoVwSTQ8jYg93Ys0wder141DWx9CP1E
+         RsMw==
+X-Gm-Message-State: ACgBeo0gVUk47nj4yAjIwmgoA9xSRmuiwCFB3pPJOvmgSO+R/JxnfkGy
+        K4KnYbSZ5i8I6rG1KA89GxF9EnRi6+s2TFLp4zxN4VuzJRhd3+3YoEuwo5mtoRteNhyqTvg6cFJ
+        xvMwBDSTbUoF52FjHIO9OAl6+
+X-Received: by 2002:a05:600c:42ca:b0:3a6:3b06:92bd with SMTP id j10-20020a05600c42ca00b003a63b0692bdmr9729424wme.11.1661188694048;
+        Mon, 22 Aug 2022 10:18:14 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6+IYglItshBwaPPpRAzS01T43FN9+dUi4FLjFhCug7p7YEh483os0Z+YBPlQqSBN5wAQivlA==
+X-Received: by 2002:a05:600c:42ca:b0:3a6:3b06:92bd with SMTP id j10-20020a05600c42ca00b003a63b0692bdmr9729415wme.11.1661188693822;
+        Mon, 22 Aug 2022 10:18:13 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id x2-20020adfffc2000000b0021e5bec14basm11950426wrs.5.2022.08.22.10.18.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 10:15:55 -0700 (PDT)
-Message-ID: <f0016468-16f9-aca1-c362-805bfd141e57@linaro.org>
-Date:   Mon, 22 Aug 2022 20:15:54 +0300
+        Mon, 22 Aug 2022 10:18:13 -0700 (PDT)
+Message-ID: <aac8f6c9-c817-cde3-03ef-5c203899d269@redhat.com>
+Date:   Mon, 22 Aug 2022 19:18:12 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH] drm/msm: De-open-code some CP_EVENT_WRITE
-Content-Language: en-GB
-To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220821155441.1092134-1-robdclark@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220821155441.1092134-1-robdclark@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] mailmap: Update Oliver's email address
+Content-Language: en-US
+To:     Oliver Upton <oliver.upton@linux.dev>,
+        Marc Zyngier <maz@kernel.org>
+Cc:     kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+References: <20220819190158.234290-1-oliver.upton@linux.dev>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220819190158.234290-1-oliver.upton@linux.dev>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/08/2022 18:54, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On 8/19/22 21:01, Oliver Upton wrote:
+> While I'm still at Google, I've since switched to a linux.dev account
+> for working upstream.
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> Add an alias to the new address.
+> 
+> Signed-off-by: Oliver Upton<oliver.upton@linux.dev>
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Queued, thanks.
 
--- 
-With best wishes
-Dmitry
+Paolo
 
