@@ -2,119 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C36C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D97A7C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238489AbiHVTXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
+        id S238254AbiHVTX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238726AbiHVTVA (ORCPT
+        with ESMTP id S238582AbiHVTWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:21:00 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21B7B1835F;
-        Mon, 22 Aug 2022 12:20:41 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id A9BF0DA4;
-        Mon, 22 Aug 2022 22:23:38 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com A9BF0DA4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661196218;
-        bh=/tarMJ/Lpj3lIo7Fjjl2T4vGuOsDP7eZcPqYpQHmyVA=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=AZgKD+ROYiobj4UbtS2PCkhDBf1p0+AAaqTuVPXRQZus1qjGmWJan6PRcgf3/MVMj
-         NJ27n6XkwcZr/ORq5JeGVY66k27tMRLBREGblr/90OoW0bB22xu9XbR12x983VFHhw
-         seyXp6YOdG3WNxxYeZoOJcRauBJ9jNlqM4tJP+Y4=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:20:24 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+        Mon, 22 Aug 2022 15:22:05 -0400
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF4A48EB7;
+        Mon, 22 Aug 2022 12:21:32 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id h20-20020a056830165400b00638ac7ddba5so8371611otr.4;
+        Mon, 22 Aug 2022 12:21:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=dLuy42xybjawVvlwKq6PcTXdKNjM/zlBr9syVIOuOUc=;
+        b=Kg9JWkf56w3Bh9AyBps4C5jpIw5GZGoGt6rDJuxPpu3Zot9upIURlf18U9PTeuoVEY
+         p5vKBW7Nc5u3PLsWER7xu9pRZ9/P9oQhXR0awbY0vQhMwYaAI7qPXjUb9TL6mRFY49WS
+         luINECFy5u6hTsYrIDhG4XkqEZJhv7dHRvoTr29J5WtYS3/a3etR40q/wQEmuqN/dfpV
+         TaAa65EexezcE0z12hwKlFraOgkl+1d8v7JdijONLB+JVia9Lnknd2nww/6AJlybpYLk
+         G2Bp6p7Oiv9Zy+QGSyZhkMfbbvd2w9FsFy/AzfJTOHiEB64luwDcICCs1+JfYWsMZykx
+         VHcg==
+X-Gm-Message-State: ACgBeo392RwYb0R6hYFEwOrptWR2u/LfSaHfSdwYgm1kOnsoyq/n26Is
+        tQZL+gqkl19uVEq46Q9nzA==
+X-Google-Smtp-Source: AA6agR7ddkKQDSebPyTEWK0KoRUwJdvioaZ5/ox3N9C7Dih8cAiNGW2HHL0ILp2VaJE5MUM54nOLkg==
+X-Received: by 2002:a9d:6019:0:b0:639:25fb:c8aa with SMTP id h25-20020a9d6019000000b0063925fbc8aamr2951391otj.64.1661196091707;
+        Mon, 22 Aug 2022 12:21:31 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bx14-20020a0568081b0e00b003450abf4404sm2752855oib.21.2022.08.22.12.21.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 12:21:31 -0700 (PDT)
+Received: (nullmailer pid 288097 invoked by uid 1000);
+        Mon, 22 Aug 2022 19:21:30 -0000
+Date:   Mon, 22 Aug 2022 14:21:30 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     linux-kernel@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        linux-riscv@lists.infradead.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 13/13] EDAC/synopsys: Add Baikal-T1 DDRC support
-Date:   Mon, 22 Aug 2022 22:19:56 +0300
-Message-ID: <20220822191957.28546-14-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v3 2/7] dt-bindings: PCI: microchip,pcie-host: fix
+ missing clocks properties
+Message-ID: <20220822192130.GA288034-robh@kernel.org>
+References: <20220819231415.3860210-1-mail@conchuod.ie>
+ <20220819231415.3860210-3-mail@conchuod.ie>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819231415.3860210-3-mail@conchuod.ie>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Baikal-T1 SoC is equipped with the DW uMCTl2 DDRC of v2.61a with 32-bit
-DQ-bus accepting DDR2/DDR3 SDRAMs of up to 2 ranks, 1:2 HIF/SDRAM clocks
-rate ratio, HIF interface burst length of 8 Full DQ-bus words, 40-bit
-System/Application address width and 128-bits data width, 3 System address
-regions with block size 256MB. There is SEC/DED ECC capability with Scrub
-(RMW) and Scrubber features.
+On Sat, 20 Aug 2022 00:14:11 +0100, Conor Dooley wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
+> 
+> Recent versions of dt-schema warn about unevaluatedProperties:
+> arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dtb: pcie@2000000000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'legacy-interrupt-controller', 'microchip,axi-m-atr0' were unexpected)
+>         From schema: Documentation/devicetree/bindings/pci/microchip,pcie-host.yaml
+> 
+> The clocks are required to enable interfaces between the FPGA fabric
+> and the core complex, so add them to the binding.
+> 
+> Fixes: 6ee6c89aac35 ("dt-bindings: PCI: microchip: Add Microchip PolarFire host binding")
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+> dt-schema v2022.08 is required to replicate
+> ---
+>  .../bindings/pci/microchip,pcie-host.yaml     | 27 +++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> 
 
-Since the Baikal-T1 DDR controller is capable of the ECC let's add it to
-the DW uMCTL2 DDRC EDAC driver. The most of the parameters above will be
-autodetected except HIF burst length and SAR block size, which will be set
-by means of the Baikal-T1-specific initialization method. The controller
-compatible string "baikal,bt1-ddrc" will be used to attach the driver to
-the kernel device. It's chosen in accordance with the just updated
-DT-bindings.
-
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/edac/synopsys_edac.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index f86d1be2702a..9780f61ac84c 100644
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -1342,6 +1342,20 @@ static int zynqmp_init_plat(struct snps_edac_priv *priv)
- 	return 0;
- }
- 
-+/*
-+ * bt1_init_plat - Baikal-T1-specific platform initialization.
-+ * @priv:	DDR memory controller private data.
-+ *
-+ * Return: always zero.
-+ */
-+static int bt1_init_plat(struct snps_edac_priv *priv)
-+{
-+	priv->info.hif_burst_len = SNPS_DDR_BL8;
-+	priv->sys_app_map.minsize = DDR_MIN_SARSIZE;
-+
-+	return 0;
-+}
-+
- /**
-  * snps_get_dtype - Return the controller memory width.
-  * @mstr:	Master CSR value.
-@@ -2470,6 +2484,7 @@ static int snps_mc_remove(struct platform_device *pdev)
- 
- static const struct of_device_id snps_edac_match[] = {
- 	{ .compatible = "xlnx,zynqmp-ddrc-2.40a", .data = zynqmp_init_plat },
-+	{ .compatible = "baikal,bt1-ddrc", .data = bt1_init_plat },
- 	{ .compatible = "snps,ddrc-3.80a" },
- 	{ }
- };
--- 
-2.35.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
