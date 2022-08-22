@@ -2,212 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79C0C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C09BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233209AbiHVIlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S233916AbiHVIlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233407AbiHVIk5 (ORCPT
+        with ESMTP id S233677AbiHVIlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:40:57 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CAD26101;
-        Mon, 22 Aug 2022 01:40:56 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27M8RKva006168;
-        Mon, 22 Aug 2022 08:40:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : in-reply-to : mime-version;
- s=corp-2022-7-12; bh=VfqHMGFtIPy8qos8yATeUuPVXWc3E5Np/suIq6FvCno=;
- b=dPvJvKsYqg1DPf2iz3/gpsuSf45qy/PksZBYImyBarNUxPvyGI3YvDPAdSrudLUu7UFn
- hFI7XKD2xsFpEWFCb7jr2pXMjb6/taOqc3xGG2SV3Ggj9w9yF+9izNSZBZjTBhenMCi+
- CBXYa/kBGJvOBcY2mHQRes8M2z19R1LaF6bNQ08k4V9g5Py7oRMtJk97oPb64anVFUuz
- qICEi+twYXiTA7qvEmZOdB7zHcTFRvaiunBalP9DonBG7M3FYvLaYGUSylZPRSPak0jt
- s9E5Ct1N0rTnV9yNPwrdo6cmQFCV+XbtvbZNdPxSmTOOxbjjq9zrVXTat+IYJZLh5O0m Og== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j46a6r169-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Aug 2022 08:40:32 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27M8Zwc8038244;
-        Mon, 22 Aug 2022 08:40:31 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2104.outbound.protection.outlook.com [104.47.70.104])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3j3mkfs5a1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Aug 2022 08:40:31 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gOwOLfOTrdDH6m20x0+O6urLyoKrt19ahbFaI6jPmfibjCoTeFBHLlb2Vou2pZghJ0TnzrAes8mwpkq8NpPhL+VDL9IWeOuq+jxgnfyGZtxYygIxjAdf+BScxjfoHB7vMhFgQpsqiZL+PxqNCjXf3yJhX2PIo4pdy2HnDN7bGDED0OUoI4GrejDGXwKY6SKizH23/Xa5N/l4P5iGWEqmhGOgzJWVNqf5oXJZY2LP1FIe69Lt6UImGu4RNbNNdECfhnCcrbKgD9HTsrzR2T9fj6AnwDixuA8CosEiP3WR3Lcl/TqhK7Pg1FgiywNEvT/J1/6G7a/UQL01abS2oVhErA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VfqHMGFtIPy8qos8yATeUuPVXWc3E5Np/suIq6FvCno=;
- b=MpOPsXHD7OmT/TbO6g6NCcqJc+s9EGpjivjekQc8mgE/axNC1H/E21oHyrEFPql1Z0tQp/p6++EOwa1mJCy/r+oxbqEQ07gKINORJG5YLFZWo2DKjN0x9W1A9kBxeKuwBSaNwHlOGBzUhW6FVsfPdgW7XyakgSupBogREaxorZ6oX+C4y/33PZjHAimLkXgTGSyAzrvVqQWDCu1QySVJ2GaG60kXtQyszN5PUxoxTv4Z//QcFqByhrVtjkmqhpO+ocaEKcuNZvMwN5uV0EbpLoN8spyHw57RJ5nHhi6GwrkjMPIVJOcV7gcmlyuPHLeKy6bg6Yn2VHB44hMzxXoM3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VfqHMGFtIPy8qos8yATeUuPVXWc3E5Np/suIq6FvCno=;
- b=NKaw04Ky373JFZU7fxH2HUuDmZ/VZRhTqWF0/xmIL75COSiFyP6BKB2+5iFW/lzKDfAeTuxmACM4ueXqTNXYQL0l+wqcXQpLCoJLrUz5bD5Q8FVh0lL9qemf9gLWbGPb1MzsvWIc1+QVWatlgMolrclkvZ88oKYyFeuYMmYLB8g=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CY4PR10MB1895.namprd10.prod.outlook.com
- (2603:10b6:903:123::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Mon, 22 Aug
- 2022 08:40:27 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
- 08:40:27 +0000
-Date:   Mon, 22 Aug 2022 11:40:14 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Qin Jian <qinjian@cqplus1.com>,
-        sboyd@kernel.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org, mturquette@baylibre.com,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Qin Jian <qinjian@cqplus1.com>
-Subject: Re: [PATCH] clk: Add Sunplus SP7021 clock driver
-Message-ID: <202208212144.aUofUlUt-lkp@intel.com>
+        Mon, 22 Aug 2022 04:41:05 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771592CE38
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:41:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 286CE1FA97;
+        Mon, 22 Aug 2022 08:41:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661157662; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EzR9tGV0YlhEOmfruAvW0cXww15mvI4CUK6MB+b2qr4=;
+        b=c9tnZuvOiAIP+UjwwtTDj3xbTxNkduqeaspvVvPR/kbF1R0gqgZtAeavLjMbud4oj3DN02
+        TFlOeGlUPsgibjQbyttZNh2L/iRRwoKemWKQrkqgUtjAgH5eyaA1OZSQqLv59/HhZS9X8d
+        hHTEARc7L0roosGDLlf9FxP76SukgNk=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 066B31332D;
+        Mon, 22 Aug 2022 08:41:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id m2M4Ox1BA2MQXQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 08:41:01 +0000
+Date:   Mon, 22 Aug 2022 10:41:01 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        David Rientjes <rientjes@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
+Message-ID: <YwNBHbYXpatJHD0K@dhcp22.suse.cz>
+References: <20220817060647.1032426-1-hch@lst.de>
+ <20220817060647.1032426-4-hch@lst.de>
+ <Yvzk2wE7ta+zSZOQ@dhcp22.suse.cz>
+ <20220821104416.GC30530@lst.de>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220817070113.415971-1-qinjian@cqplus1.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR2P264CA0164.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:1::27) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 92cf6e26-2203-4716-35a7-08da8419f659
-X-MS-TrafficTypeDiagnostic: CY4PR10MB1895:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: k3BFcxZCfxWd/9RmBQS3LOLpIDylyCrAkissrCMnv11TXtxhx/nR5ySODFyBMkF7E+8bxpJzfOWokTkvpBfwbv3XRreAezoKOVZ+G84NlvQ7oLg2ro9fQZX/NHONClceQK3U0nOlY5oX+sV5wVGO22FCI3b+VqMmUU3E+s2FbpXVJ2I2OsSI0V8YI1ewPaG7YNDrYZcePtZw43/G807LIQBUk+ZIf1ENku8oRyT1hEGtYSR+wVCk5MlU/skVY+OYVgGL9gKLJ+aUTWWOhFpC7BF9YSb+TSumxxt8m0o1c4P/0gC+4b4QRtURv5jNqmjfgdeS8CuHbuYQ2eIb8vzDgf1dflI7UQKey6wslaOVxkKkNPWbcHMsYsQ7iz+/DyiYx97h6KNqYpcDHT0GrYGrF3onpBfYELQS+7vmZN8BgGi6zX5FUiVUNndcUvFv73PoxtHrBe+K5SbyrKLkTWtEFeBsCMkmHYC0GN8HNeFnrf4PhjCFyc3luPbETuI5XBMuqxxBV7HsNnn5P9VYECyIra1+JK1F1pI90rk70qXg/exCC4mecDG9ysXSzTeIJEcti8xhCxUM/OZuq+8ebwffjToP50bhFPPzCBQjdeGwso3dh0bo9bx9dsPtU9e971c5lZEbqjE3HFuQqTfwMfu2uqX8iD51kQ7bcl7kGeYCAR7i3sgSngyTMQElmJWbigjX12+yScOKmRKHMWY/Dy9etLD0/3sw+uPFAKBPWAGYMkULBg8hbXcalz03EIEGFmLiS/SAIcklSR/y3q+GrgT+I8vgjVlaWh61+WLu84ejkp9H2Az0lnQ2ziM4ZnB07/6czIpfLbEWRJ9AIq9DO9ZbtQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(396003)(39860400002)(376002)(366004)(136003)(86362001)(316002)(83380400001)(26005)(52116002)(6506007)(6666004)(9686003)(6512007)(1076003)(966005)(186003)(38350700002)(66946007)(6486002)(44832011)(38100700002)(478600001)(41300700001)(8936002)(66556008)(8676002)(2906002)(4326008)(36756003)(5660300002)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E0TnpwQGkiwJjBPqsvB8DPdan1ZuK7wJtw3lGHd7KRgE0Ri3v8hwEQpPNzXK?=
- =?us-ascii?Q?SnHCkAe0qEcZJNWXNhTeLqRfsn4waVwUu/V1OAritfsr6U/OBqKTv/TSlOR4?=
- =?us-ascii?Q?RAMXjyzXrGx5PvIxN3N/677yscbwJiQYy1gNgHgyPyXpMTyePVp9lCII5Kyt?=
- =?us-ascii?Q?KqJm468hFXa1ASAvjpJo7bAS9Mc1Hljf8WZ7jRZypqgFTtkDAY4xsIM/TnjV?=
- =?us-ascii?Q?ft1j7JR6WMy/rrNGt51J3PiMblWILwc4zS5GvKWWhSsn+IW/8xHJWLhpmCY9?=
- =?us-ascii?Q?BEKANo3TVdxQNxQake3XFvaXOCTFMGpLV48HWdQDZZOHxssHMCCr2XhbY0hi?=
- =?us-ascii?Q?6ufH7RO2wi35Mq1pyGiB2QqD/MXQdNt07st9Q8DXJd7YeLVIdy2mTJaCSxdG?=
- =?us-ascii?Q?T9+ctBhanSo6OsDY3Xb5tkPebA3b+f9Brm4jgV42MgKPK/XnforzVhXkLOE4?=
- =?us-ascii?Q?qG5F0XtOrhv0gJSLhrC1LT+QMDxIRxH9+gXBGZhDTTngl5Hh9oVeN+svfH14?=
- =?us-ascii?Q?FoVyCIEwtvGbubm6PTL99aFLRaR/PzUJ4bGaJ76agCI8K3OpHjH2KrOHndzj?=
- =?us-ascii?Q?+r+pAwemK2fkaDToRaj7OQQRCfeqMuhRA0cGYqbGSp1u+wpEVbiYaPw7fG8O?=
- =?us-ascii?Q?jG4z3Z+YzWGiYC0fJaqKqtB0B1ryqmhdac0t/zVs4oU/dkME5QkTVT+uKQB2?=
- =?us-ascii?Q?Q+a26vhsMt/+FDujdpERAY+ATOK6KPwfXKFQ7VrHY+TdvkkE6Yq6C3cwvWUv?=
- =?us-ascii?Q?/GI68xR+C+SILAlq+3kLUdDl0nDhKy4qKwA38DJFW65ebYlcHuuC2TBGqZh/?=
- =?us-ascii?Q?J9Uc1FdkZVBV/44v0uROOBqgYWKAi5OfcsJ2R9o7ZjZEjB6IO9SiWKB5Hvp/?=
- =?us-ascii?Q?f/YiAyvTG3D1NAh3vhMzXLTGr3WZItoHjghlgAAtBxNjgnk++Cm4hpH9M1/C?=
- =?us-ascii?Q?6JeVNLdKoaejErB2k1PAKYOdRs6X0ZzXqnqm0lJqfPnKhjAUAqCschm+Fw72?=
- =?us-ascii?Q?LXG8eow5CG4zjf5wUYxQp8ixVhvwyOPKGRywLMvTC+KSCdMgRjBkk5Z+IdvI?=
- =?us-ascii?Q?CXcWZeENbshpdOZXmrIdepCRJKekED0Ff1S6NN4JqsZyGjEuD9bgd68fyc8v?=
- =?us-ascii?Q?kZblvt/RGPjxLCQFCpDNSZVTDkF7hw5+6pudPmUoZO5X2QEISCR2tEDfRbRv?=
- =?us-ascii?Q?p6GcePkeBbPwgTnWp0plmBzuhn7zohksgrP/iiIVqGIzEuD45JVcr1cwzZna?=
- =?us-ascii?Q?z/hUwfITRp5js5Ni35b2MfadR2BAFCcKh948NPIGd4tI15IB8KfmBR6WDYfc?=
- =?us-ascii?Q?MEUk690nc814L5HfULPtfh/obSne8uHeGLTQ6Yfajx35PT07rPmexU4OZh11?=
- =?us-ascii?Q?DLb02bNgANLmuCQvRZzQxcPrU8mjbZzSkXKND/Ur1CTn+k/sXw34B1YniH5z?=
- =?us-ascii?Q?ZQJ+s82fLWbXdRhepOxzILeNR7qoqPyyImBxaFlu/xLCiYrjeBu6SSzfQ4Z2?=
- =?us-ascii?Q?52oFfgZemVmKevcfXsm6vttHES291MdWdaAPC/NBlr8ORpoCDOj1GsNCyzbp?=
- =?us-ascii?Q?Yw/z5y/830MZzrRVJ2SiXmTjrU9NoM51T+hEpNTyqoiTZvLBuVF9Go1UJ5G9?=
- =?us-ascii?Q?Cg=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 92cf6e26-2203-4716-35a7-08da8419f659
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 08:40:27.2499
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NZFW8ka2bSwhubQgWBFLmByIWwoaXfM+kNXQjTxgiWc0reDUiEQgTY5fyQQca6CNUXiUcvGloFQKgNpeW8ZJPDwu3hZTbXSl0EoAMTeWjaI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1895
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_04,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0
- phishscore=0 malwarescore=0 spamscore=0 mlxlogscore=999 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208220036
-X-Proofpoint-ORIG-GUID: eoMgX1hhtfRsFilP8qG96OUFymAtIAMK
-X-Proofpoint-GUID: eoMgX1hhtfRsFilP8qG96OUFymAtIAMK
+In-Reply-To: <20220821104416.GC30530@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qin,
+On Sun 21-08-22 12:44:16, Christoph Hellwig wrote:
+> On Wed, Aug 17, 2022 at 02:53:47PM +0200, Michal Hocko wrote:
+> > Yes this is much more reasonable estimation. Especially for the DMA
+> > zone. I still believe some downscaling would make sense but as said
+> > earlier nothing to really insist on. Also you likely want to have
+> > pr_warn for non-poppulated DMA zone as pointed in other thread[1].
+> 
+> So I think the warning would be useful, but how do we detect that the
+> zone should exist and is empty vs the case where it doesn't even
+> exist based on a runtime decision?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Qin-Jian/clk-Add-Sunplus-SP7021-clock-driver/20220817-151010
-base:   568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-config: arm64-randconfig-m031-20220821 (https://download.01.org/0day-ci/archive/20220821/202208212144.aUofUlUt-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
+ZONE_DMA existance is not runtime controlable (at least on x86). We only
+have 2 possible cases. There is no memory released into the page
+allocator (zone_managed_pages == 0) because the physical memory range
+has been reserved during early boot or it has been consumed by somebody.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+From the DMA pool allocator they are effectively the same case because
+the pool fails to allocate. From the reporting POV those cases could be
+arguably different because the later case can report the meminfo while
+the !managed case doesn't have much to report about except for "You do
+not have anything there". TBH I am not really sure whether the full
+meminfo report is all that useful because there is not much you can
+learn from that anyway. The full report looks like this
 
-smatch warnings:
-drivers/clk/clk-sp7021.c:171 plltv_integer_div() error: buffer overflow 'm_table' 19 <= 19 (assuming for loop doesn't break)
+: [   14.017417][    T1] swapper/0: page allocation failure: order:10, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0-7
+: [   14.017429][    T1] CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.14.21-150400.22-default #1 SLE15-SP4 0b6a6578ade2de5c4a0b916095dff44f76ef1704
+: [   14.017434][    T1] Hardware name: FUJITSU PRIMEQUEST 2800E3/D3752, BIOS PRIMEQUEST 2000 Series BIOS Version 01.52 11/23/2021
+: [   14.017437][    T1] Call Trace:
+: [   14.017444][    T1]  <TASK>
+: [   14.017449][    T1]  dump_stack_lvl+0x45/0x57
+: [   14.017469][    T1]  warn_alloc+0xfe/0x160
+: [   14.017490][    T1]  __alloc_pages_slowpath.constprop.112+0xc27/0xc60
+: [   14.017497][    T1]  ? rdinit_setup+0x2b/0x2b
+: [   14.017509][    T1]  ? rdinit_setup+0x2b/0x2b
+: [   14.017512][    T1]  __alloc_pages+0x2d5/0x320
+: [   14.017517][    T1]  alloc_page_interleave+0xf/0x70
+: [   14.017531][    T1]  atomic_pool_expand+0x4a/0x200
+: [   14.017541][    T1]  ? rdinit_setup+0x2b/0x2b
+: [   14.017544][    T1]  __dma_atomic_pool_init+0x44/0x90
+: [   14.017556][    T1]  dma_atomic_pool_init+0xad/0x13f
+: [   14.017560][    T1]  ? __dma_atomic_pool_init+0x90/0x90
+: [   14.017562][    T1]  do_one_initcall+0x41/0x200
+: [   14.017581][    T1]  kernel_init_freeable+0x236/0x298
+: [   14.017589][    T1]  ? rest_init+0xd0/0xd0
+: [   14.017596][    T1]  kernel_init+0x16/0x120
+: [   14.017599][    T1]  ret_from_fork+0x22/0x30
+: [   14.017604][    T1]  </TASK>
+: [   14.017605][    T1] Mem-Info:
+: [   14.017956][    T1] active_anon:0 inactive_anon:0 isolated_anon:0
+: [   14.017956][    T1]  active_file:0 inactive_file:0 isolated_file:0
+: [   14.017956][    T1]  unevictable:0 dirty:0 writeback:0
+: [   14.017956][    T1]  slab_reclaimable:876 slab_unreclaimable:30300
+: [   14.017956][    T1]  mapped:0 shmem:0 pagetables:12 bounce:0
+: [   14.017956][    T1]  free:3170151735 free_pcp:6868 free_cma:0
+: [   14.017962][    T1] Node 0 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:7200kB pagetables:4kB all_unreclaimable? no
+: [   14.017969][    T1] Node 1 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:6728kB pagetables:16kB all_unreclaimable? no
+: [   14.017973][    T1] Node 2 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:6800kB pagetables:0kB all_unreclaimable? no
+: [   14.017977][    T1] Node 3 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:6960kB pagetables:0kB all_unreclaimable? no
+: [   14.017982][    T1] Node 4 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:6656kB pagetables:0kB all_unreclaimable? no
+: [   14.017985][    T1] Node 5 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:6784kB pagetables:24kB all_unreclaimable? no
+: [   14.017989][    T1] Node 6 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:6928kB pagetables:4kB all_unreclaimable? no
+: [   14.017994][    T1] Node 7 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:7072kB pagetables:0kB all_unreclaimable? no
+: [   14.018026][    T1] Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+: [   14.018035][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018063][    T1] Node 0 DMA32 free:0kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1313380kB managed:1154392kB mlocked:0kB bounce:0kB free_pcp:216kB local_pcp:0kB free_cma:0kB
+: [   14.018070][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018098][    T1] Node 0 Normal free:1583344560kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1609039872kB managed:1583858824kB mlocked:0kB bounce:0kB free_pcp:12692kB local_pcp:256kB free_cma:0kB
+: [   14.018105][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018132][    T1] Node 1 Normal free:1585397152kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1585429652kB mlocked:0kB bounce:0kB free_pcp:1772kB local_pcp:76kB free_cma:0kB
+: [   14.018138][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018161][    T1] Node 2 Normal free:1585394152kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1585429652kB mlocked:0kB bounce:0kB free_pcp:2292kB local_pcp:48kB free_cma:0kB
+: [   14.018166][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018191][    T1] Node 3 Normal free:1585394052kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1585429652kB mlocked:0kB bounce:0kB free_pcp:2336kB local_pcp:0kB free_cma:0kB
+: [   14.018197][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018232][    T1] Node 4 Normal free:1585397584kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1585429652kB mlocked:0kB bounce:0kB free_pcp:1764kB local_pcp:68kB free_cma:0kB
+: [   14.018238][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018264][    T1] Node 5 Normal free:1585349060kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1585386604kB mlocked:0kB bounce:0kB free_pcp:1924kB local_pcp:32kB free_cma:0kB
+: [   14.018270][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018300][    T1] Node 6 Normal free:1585395340kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1585429652kB mlocked:0kB bounce:0kB free_pcp:2160kB local_pcp:72kB free_cma:0kB
+: [   14.018305][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018330][    T1] Node 7 Normal free:1584934880kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:1610612736kB managed:1584970756kB mlocked:0kB bounce:0kB free_pcp:2316kB local_pcp:100kB free_cma:0kB
+: [   14.018335][    T1] lowmem_reserve[]: 0 0 0 0 0
+: [   14.018339][    T1] Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
+: [   14.018352][    T1] Node 0 DMA32: 0*4kB 0*8kB 0*16kB 0*32kB 0*64kB 0*128kB 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 0kB
+: [   14.018361][    T1] Node 0 Normal: 1*4kB (U) 1*8kB (M) 0*16kB 1*32kB (E) 1*64kB (U) 2*128kB (ME) 2*256kB (ME) 2*512kB (UM) 1*1024kB (E) 0*2048kB 386558*4096kB (M) = 1583344492kB
+: [   14.018377][    T1] Node 1 Normal: 17*4kB (UM) 1*8kB (U) 2*16kB (UM) 2*32kB (UE) 1*64kB (E) 2*128kB (UM) 3*256kB (UME) 2*512kB (ME) 1*1024kB (E) 2*2048kB (ME) 387058*4096kB (M) = 1585396972kB
+: [   14.018393][    T1] Node 2 Normal: 44*4kB (UM) 1*8kB (U) 1*16kB (M) 1*32kB (U) 2*64kB (UE) 3*128kB (UME) 3*256kB (UME) 2*512kB (UM) 0*1024kB 3*2048kB (UME) 387057*4096kB (M) = 1585394152kB
+: [   14.018409][    T1] Node 3 Normal: 37*4kB (UM) 0*8kB 1*16kB (M) 1*32kB (U) 1*64kB (E) 3*128kB (UME) 3*256kB (UME) 2*512kB (ME) 0*1024kB 3*2048kB (UME) 387057*4096kB (M) = 1585394052kB
+: [   14.018423][    T1] Node 4 Normal: 43*4kB (UM) 1*8kB (E) 2*16kB (UM) 1*32kB (E) 2*64kB (UE) 1*128kB (M) 3*256kB (UME) 3*512kB (UME) 1*1024kB (E) 2*2048kB (ME) 387058*4096kB (M) = 1585397492kB
+: [   14.018438][    T1] Node 5 Normal: 27*4kB (UM) 0*8kB 1*16kB (M) 0*32kB 1*64kB (E) 2*128kB (ME) 2*256kB (UM) 3*512kB (UME) 2*1024kB (UE) 2*2048kB (ME) 387046*4096kB (M) = 1585349052kB
+: [   14.018451][    T1] Node 6 Normal: 46*4kB (UM) 0*8kB 2*16kB (UM) 0*32kB 2*64kB (UE) 2*128kB (UM) 2*256kB (UM) 1*512kB (M) 2*1024kB (UE) 3*2048kB (UME) 387057*4096kB (M) = 1585395288kB
+: [   14.018465][    T1] Node 7 Normal: 30*4kB (UM) 3*8kB (UME) 0*16kB 2*32kB (ME) 2*64kB (ME) 2*128kB (ME) 1*256kB (U) 2*512kB (UM) 2*1024kB (ME) 2*2048kB (UE) 386945*4096kB (M) = 1584934736kB
+: [   14.018480][    T1] 0 total pagecache pages
+: [   14.018483][    T1] 0 pages in swap cache
+: [   14.018484][    T1] Swap cache stats: add 0, delete 0, find 0/0
+: [   14.018486][    T1] Free swap  = 0kB
+: [   14.018487][    T1] Total swap = 0kB
+: [   14.018488][    T1] 3221164600 pages RAM
+: [   14.018489][    T1] 0 pages HighMem/MovableOnly
+: [   14.018490][    T1] 50531051 pages reserved
+: [   14.018491][    T1] 0 pages cma reserved
+: [   14.018492][    T1] 0 pages hwpoisoned
 
-vim +171 drivers/clk/clk-sp7021.c
+From that the only useful information for me as the MM developer would
+be 
+: swapper/0: page allocation failure: order:10, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0-7
 
-5673230d6a56d6 Qin Jian 2022-08-17  145  static long plltv_integer_div(struct sp_pll *clk, unsigned long freq)
-5673230d6a56d6 Qin Jian 2022-08-17  146  {
-5673230d6a56d6 Qin Jian 2022-08-17  147  	/* valid m values: 27M must be divisible by m */
-5673230d6a56d6 Qin Jian 2022-08-17  148  	static const u32 m_table[] = {
-5673230d6a56d6 Qin Jian 2022-08-17  149  		1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32
-5673230d6a56d6 Qin Jian 2022-08-17  150  	};
-5673230d6a56d6 Qin Jian 2022-08-17  151  	u32 m, n, r;
-5673230d6a56d6 Qin Jian 2022-08-17  152  	unsigned long fvco, nf;
-5673230d6a56d6 Qin Jian 2022-08-17  153  	long ret;
-5673230d6a56d6 Qin Jian 2022-08-17  154  
-5673230d6a56d6 Qin Jian 2022-08-17  155  	freq = clamp(freq, F_MIN, F_MAX);
-5673230d6a56d6 Qin Jian 2022-08-17  156  
-5673230d6a56d6 Qin Jian 2022-08-17  157  	/* DIVR 0~3 */
-5673230d6a56d6 Qin Jian 2022-08-17  158  	for (r = 0; r <= 3; r++) {
-5673230d6a56d6 Qin Jian 2022-08-17  159  		fvco = freq << r;
-5673230d6a56d6 Qin Jian 2022-08-17  160  		if (fvco <= FVCO_MAX)
-5673230d6a56d6 Qin Jian 2022-08-17  161  			break;
-5673230d6a56d6 Qin Jian 2022-08-17  162  	}
-5673230d6a56d6 Qin Jian 2022-08-17  163  
-5673230d6a56d6 Qin Jian 2022-08-17  164  	/* DIVM */
-5673230d6a56d6 Qin Jian 2022-08-17  165  	for (m = 0; m < ARRAY_SIZE(m_table); m++) {
-5673230d6a56d6 Qin Jian 2022-08-17  166  		nf = fvco * m_table[m];
-5673230d6a56d6 Qin Jian 2022-08-17  167  		n = nf / F_27M;
-5673230d6a56d6 Qin Jian 2022-08-17  168  		if ((n * F_27M) == nf)
-5673230d6a56d6 Qin Jian 2022-08-17  169  			break;
-5673230d6a56d6 Qin Jian 2022-08-17  170  	}
-5673230d6a56d6 Qin Jian 2022-08-17 @171  	m = m_table[m];
-                                                ^^^^^^^^^^^^^^^
-If we know the for loop is going to break then why bother with a limit?
+because this tells me that this is 4MB request
+[...]
+: Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
 
-5673230d6a56d6 Qin Jian 2022-08-17  172  
-5673230d6a56d6 Qin Jian 2022-08-17  173  	if (!m) {
-5673230d6a56d6 Qin Jian 2022-08-17  174  		ret = -EINVAL;
-5673230d6a56d6 Qin Jian 2022-08-17  175  		goto err_not_found;
-5673230d6a56d6 Qin Jian 2022-08-17  176  	}
-5673230d6a56d6 Qin Jian 2022-08-17  177  
-5673230d6a56d6 Qin Jian 2022-08-17  178  	/* save parameters */
-5673230d6a56d6 Qin Jian 2022-08-17  179  	clk->p[SEL_FRA] = 0;
-5673230d6a56d6 Qin Jian 2022-08-17  180  	clk->p[DIVR]    = r;
-5673230d6a56d6 Qin Jian 2022-08-17  181  	clk->p[DIVN]    = n;
-5673230d6a56d6 Qin Jian 2022-08-17  182  	clk->p[DIVM]    = m;
-5673230d6a56d6 Qin Jian 2022-08-17  183  
-5673230d6a56d6 Qin Jian 2022-08-17  184  	return freq;
-5673230d6a56d6 Qin Jian 2022-08-17  185  
-5673230d6a56d6 Qin Jian 2022-08-17  186  err_not_found:
-5673230d6a56d6 Qin Jian 2022-08-17  187  	pr_err("%s: %s freq:%lu not found a valid setting\n",
-5673230d6a56d6 Qin Jian 2022-08-17  188  	       __func__, clk_hw_get_name(&clk->hw), freq);
-5673230d6a56d6 Qin Jian 2022-08-17  189  
-5673230d6a56d6 Qin Jian 2022-08-17  190  	return ret;
-5673230d6a56d6 Qin Jian 2022-08-17  191  }
+because this tells me that the zone is populated (managed is 16MB) but mostly consumed (free == 160kB)
 
+and 
+: Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
+
+because this would tell me whether the zone was fragmented to satisfy the
+allocation if free would be large enough to cover the request (not in
+this case)
+
+We could improve the reporting here and drop all the nodes which do not
+have DMA zone populated which would shrink the overall size. On the
+other hand there are parts which are not all that interesting in this
+case but useful they are useful in most other situations - i.e. the
+stack trace or cumulative stats.
+
+IMHO it would be more useful to have something like this instead. This
+would reduce the output to the 
+Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
+for all nodes, which should tell the whole story because it would tell
+both the fragmentation as well as the lack of memory case.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 7898e29bcfb5..5e16a899c620 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1828,6 +1828,7 @@ extern void pagefault_out_of_memory(void);
+ #define SHOW_MEM_FILTER_NODES		(0x0001u)	/* disallowed nodes */
+ 
+ extern void show_free_areas(unsigned int flags, nodemask_t *nodemask);
++extern void show_zone_free_area(struct zone *zone);
+ 
+ #ifdef CONFIG_MMU
+ extern bool can_do_mlock(void);
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 2a6c71311a17..a4b125a7ae90 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -197,14 +197,27 @@ static struct gen_pool * __init __maybe_unused zone_pool_init(int zone_idx,
+ {
+ 	struct pglist_data *pgdat;
+ 	unsigned long nr_pages = 0;
++	struct gen_pool *pool;
++	size_t pool_size = 0;
+ 
+ 	for_each_online_pgdat(pgdat)
+ 		nr_pages += zone_managed_pages(&pgdat->node_zones[zone_idx]);
+ 
+-	if (!nr_pages)
+-		return NULL;
++	/*
++	 * memory failure report can be pretty noisy so limit the report to
++	 * necessary minumum
++	 * */
++	if (nr_pages) {
++		pool_size = calculate_pool_size(nr_pages);
++		pool = __dma_atomic_pool_init(pool_size, gfp | __GFP_NOWARN);
++	}
+ 
+-	return __dma_atomic_pool_init(calculate_pool_size(nr_pages), gfp);
++	if (!pool) {
++		pr_info("Failed to pre-allocate pool to %lu pages\n", pool_size);
++		for_each_online_pgdat(pgdat)
++			show_zone_free_area(&pgdat->node_zones[zone_idx]);
++	}
++	return pool
+ }
+ 
+ static int __init dma_atomic_pool_init(void)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index b5b14b78c4fd..49ff8f156b7a 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5926,6 +5926,38 @@ static void show_migration_types(unsigned char type)
+ 	printk(KERN_CONT "(%s) ", tmp);
+ }
+ 
++void show_zone_free_area(struct zone *zone)
++{
++	unsigned int order;
++	unsigned long nr[MAX_ORDER], flags, total = 0;
++	unsigned char types[MAX_ORDER];
++
++	show_node(zone);
++	printk(KERN_CONT "%s: ", zone->name);
++
++	spin_lock_irqsave(&zone->lock, flags);
++	for (order = 0; order < MAX_ORDER; order++) {
++		struct free_area *area = &zone->free_area[order];
++		int type;
++
++		nr[order] = area->nr_free;
++		total += nr[order] << order;
++
++		types[order] = 0;
++		for (type = 0; type < MIGRATE_TYPES; type++) {
++			if (!free_area_empty(area, type))
++				types[order] |= 1 << type;
++		}
++	}
++	spin_unlock_irqrestore(&zone->lock, flags);
++	for (order = 0; order < MAX_ORDER; order++) {
++		printk(KERN_CONT "%lu*%lukB ",
++		       nr[order], K(1UL) << order);
++		if (nr[order])
++			show_migration_types(types[order]);
++	}
++	printk(KERN_CONT "= %lukB\n", K(total));
++}
+ /*
+  * Show free area list (used inside shift_scroll-lock stuff)
+  * We also calculate the percentage fragmentation. We do this by counting the
+@@ -6093,37 +6125,9 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+ 	}
+ 
+ 	for_each_populated_zone(zone) {
+-		unsigned int order;
+-		unsigned long nr[MAX_ORDER], flags, total = 0;
+-		unsigned char types[MAX_ORDER];
+-
+ 		if (show_mem_node_skip(filter, zone_to_nid(zone), nodemask))
+ 			continue;
+-		show_node(zone);
+-		printk(KERN_CONT "%s: ", zone->name);
+-
+-		spin_lock_irqsave(&zone->lock, flags);
+-		for (order = 0; order < MAX_ORDER; order++) {
+-			struct free_area *area = &zone->free_area[order];
+-			int type;
+-
+-			nr[order] = area->nr_free;
+-			total += nr[order] << order;
+-
+-			types[order] = 0;
+-			for (type = 0; type < MIGRATE_TYPES; type++) {
+-				if (!free_area_empty(area, type))
+-					types[order] |= 1 << type;
+-			}
+-		}
+-		spin_unlock_irqrestore(&zone->lock, flags);
+-		for (order = 0; order < MAX_ORDER; order++) {
+-			printk(KERN_CONT "%lu*%lukB ",
+-			       nr[order], K(1UL) << order);
+-			if (nr[order])
+-				show_migration_types(types[order]);
+-		}
+-		printk(KERN_CONT "= %lukB\n", K(total));
++		show_zone_free_area(zone);
+ 	}
+ 
+ 	hugetlb_show_meminfo();
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
-
+Michal Hocko
+SUSE Labs
