@@ -2,90 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F773C32792
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5F4C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236680AbiHVPlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        id S236687AbiHVPlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234683AbiHVPlA (ORCPT
+        with ESMTP id S235097AbiHVPlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:41:00 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775581CFC0;
-        Mon, 22 Aug 2022 08:40:59 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id f17so4552603pfk.11;
-        Mon, 22 Aug 2022 08:40:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=rk9SRCNftCXw4ksd+nOSPjNTRiAuzJr7RvJiVNql6UM=;
-        b=O4vuEFEkJRlTwdN5y1v9qKYbQMZ/LDJmgySuo9UvcuTnO9sANcT7+zck7c+0cmh4Jc
-         m57EnWe0Q3dh0oVrD8foo2mxUrRfoDjtV4/uCVGUGn+kUeUWzplzA637uPDSIcYKma0r
-         DpTgfMtTAThyyLbyBJuI+7qBLm6yVv6y0Q+iDxVCMeCqjmEFK6yNtMMGCgrEBOKZfbee
-         z0XxnQTUubPM1uGa1sCMqfXnoqsQ1afKZF00Dlq/y40LopmAFH+Jmuy0DBB7ratofrzX
-         KM/ODuqseNPILKG09uepYRl9cEXhehgXfYItn6pwOHOGOZKxI7np53JEax6LF4xD5hKK
-         a+AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=rk9SRCNftCXw4ksd+nOSPjNTRiAuzJr7RvJiVNql6UM=;
-        b=3hamUounmLgbMK/Wa34kUwEySjp8WJjGJzXnqtTWKf8qLOBLJjRzJQVgwrE2LFYPyR
-         w5A7TUFcuIyqWgNyUObeh81GffrqMEoksI5PF4PkrEMjlLqvuDxWJQw6vQp4XJjZm8oh
-         zEFST8pLBeNJiatJ483j70bt8wXit16smr6fG8gzxdtsWH9P+p4M+yjwlaOe7/nRrRK/
-         MnRjj41awz5b2Qf6qBF/s0EFWU8utj23E+ZlTpx1I38D7Ht0o/SsPf/MILyiILgImVbX
-         j30ZYNKnwteiOI72EySa7DR5UhcaUuqFhLkRG97x2q+aHfuKc7afu9RJaxko1UUB9cBg
-         Scdw==
-X-Gm-Message-State: ACgBeo2TqybBMwFHrdaNnwS0bUrg715BEr/BrpjYTik8h0V/dHq9WDhH
-        OpFI8WYr/Q36DbqsK4WNGIAKFXWsvgm5+f3u
-X-Google-Smtp-Source: AA6agR5gl+Oek7jTSV2Py3XeGLz3Megkxk4EWM1wUwvswOLUWLHaz+rIRKSN8NH+NaRKi7TziiuRGA==
-X-Received: by 2002:a63:81c6:0:b0:42a:3d97:723c with SMTP id t189-20020a6381c6000000b0042a3d97723cmr13682587pgd.9.1661182859027;
-        Mon, 22 Aug 2022 08:40:59 -0700 (PDT)
-Received: from localhost ([36.112.204.208])
-        by smtp.gmail.com with ESMTPSA id w19-20020a656953000000b0040c40b022fbsm7370993pgq.94.2022.08.22.08.40.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 08:40:58 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     dan.carpenter@oracle.com
-Cc:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
-        khalid.masum.92@gmail.com, kuba@kernel.org,
-        linux-afs@lists.infradead.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, paskripkin@gmail.com,
-        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
-Date:   Mon, 22 Aug 2022 23:39:43 +0800
-Message-Id: <20220822153944.6204-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220822140532.GF2695@kadam>
-References: <20220822140532.GF2695@kadam>
+        Mon, 22 Aug 2022 11:41:03 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3E71CB12;
+        Mon, 22 Aug 2022 08:41:01 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MFLBL8020163;
+        Mon, 22 Aug 2022 15:40:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=lddkyQHtWAfy+8kCR5xXy2/UWZSf+wIC546gE9xT5jo=;
+ b=cwWnKnfoClt3sgXZBbYK/p6r/k7vxvI6KoHJ3ma9UMShwYUoHmWXfm+PymNvxd2eGcn4
+ yIG+zkRQjzSV8aQpHEjxzYjmh7/b02KSYVt8Hy1Fg2Dgf7IN3dFHnou25prl5CfRL/dU
+ QVVj9skO4eXYQXogoJOIXUj4fSNck7a0vAcgvSUgY6VKjQUG7NiWrqBDcJZtsWvG1giV
+ KfEl2/V4T9e2DQ7VXPDtnP7DskoZ/TCJMVNw43v1qaqsH4YMsUC3Kv/p6bNqNB+nrEUC
+ Os6S+fvzP7M0cr56i1mGyjxK+WDXHaUPQFiFNcudNvc07ueL23tjaaHq9I+LJNDxDFhS Sw== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4cc80gs1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 15:40:48 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27MFa3SU004850;
+        Mon, 22 Aug 2022 15:40:46 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3j2q899w85-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 15:40:46 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27MFehtG32702762
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 15:40:43 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7015BA405C;
+        Mon, 22 Aug 2022 15:40:43 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F16AAA4054;
+        Mon, 22 Aug 2022 15:40:40 +0000 (GMT)
+Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com (unknown [9.163.20.129])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 22 Aug 2022 15:40:40 +0000 (GMT)
+Message-ID: <ceb8f09a4cb2de67f40604d03ee0c475feb3130a.camel@linux.ibm.com>
+Subject: Re: [PATCH] iversion: update comments with info about atime updates
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Jeff Layton <jlayton@kernel.org>, linux-fsdevel@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-xfs@vger.kernel.org,
+        linux-ext4@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Dave Chinner <david@fromorbit.com>
+Date:   Mon, 22 Aug 2022 11:40:39 -0400
+In-Reply-To: <20220822133309.86005-1-jlayton@kernel.org>
+References: <20220822133309.86005-1-jlayton@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: p0ILes2ft5G78Rkn64Y3bsWGXPf2Mefm
+X-Proofpoint-ORIG-GUID: p0ILes2ft5G78Rkn64Y3bsWGXPf2Mefm
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_10,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 clxscore=1011 mlxscore=0 lowpriorityscore=0 bulkscore=0
+ priorityscore=1501 adultscore=0 phishscore=0 spamscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208220067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 at 22:06, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> On Mon, Aug 22, 2022 at 07:55:27PM +0600, Khalid Masum wrote:
-> > >
-> > > /*
-> > > + * @holding_mutex: An indication whether caller can still holds
-> > > + * the call->user_mutex when returned to caller.
-> >
-> > Maybe we can use mutex_is_locked instead of using the holding_mutex
-> > parameter to get whether call->user_mutex is still held.
->
-> That doesn't work.  What if there is contention for the lock and someone
-> else took it.  Locks under contention are sort of the whole point of
-> locking so it's highly likely.
-I trid this before, it doesn't work as Dan points out. I think
-it seems that mutex_is_locked() only checks whether there is a task
-holding the mutex, but do not check whether it is current task holding
-mutex. I also tried lockdep_is_held(), lockdep_is_held() seems can detect
-call->user_mutex is still held accurately, although this cannot be the patch.
+On Mon, 2022-08-22 at 09:33 -0400, Jeff Layton wrote:
+> Add an explicit paragraph codifying that atime updates due to reads
+> should not be counted against the i_version counter. None of the
+> existing subsystems that use the i_version want those counted, and
+> there is an easy workaround for those that do.
+> 
+> Cc: NeilBrown <neilb@suse.de>
+> Cc: Trond Myklebust <trondmy@hammerspace.com>
+> Cc: Dave Chinner <david@fromorbit.com>
+> Link: https://lore.kernel.org/linux-xfs/166086932784.5425.17134712694961326033@noble.neil.brown.name/#t
+> Signed-off-by: Jeff Layton <jlayton@kernel.org>
+> ---
+>  include/linux/iversion.h | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/iversion.h b/include/linux/iversion.h
+> index 3bfebde5a1a6..da6cc1cc520a 100644
+> --- a/include/linux/iversion.h
+> +++ b/include/linux/iversion.h
+> @@ -9,8 +9,8 @@
+>   * ---------------------------
+>   * The change attribute (i_version) is mandated by NFSv4 and is mostly for
+>   * knfsd, but is also used for other purposes (e.g. IMA). The i_version must
+> - * appear different to observers if there was a change to the inode's data or
+> - * metadata since it was last queried.
+> + * appear different to observers if there was an explicit change to the inode's
+> + * data or metadata since it was last queried.
+>   *
+>   * Observers see the i_version as a 64-bit number that never decreases. If it
+>   * remains the same since it was last checked, then nothing has changed in the
+> @@ -18,6 +18,12 @@
+>   * anything about the nature or magnitude of the changes from the value, only
+>   * that the inode has changed in some fashion.
+>   *
+> + * Note that atime updates due to reads or similar activity do _not_ represent
+> + * an explicit change to the inode. If the only change is to the atime and it
+
+Thanks, Jeff.  The ext4 patch increments i_version on file metadata
+changes.  Could the wording here be more explicit to reflect changes
+based on either inode data or metadata changes?
+
+thanks,
+
+Mimi
+
+> + * wasn't set via utimes() or a similar mechanism, then i_version should not be
+> + * incremented. If an observer cares about atime updates, it should plan to
+> + * fetch and store them in conjunction with the i_version.
+> + *
+>   * Not all filesystems properly implement the i_version counter. Subsystems that
+>   * want to use i_version field on an inode should first check whether the
+>   * filesystem sets the SB_I_VERSION flag (usually via the IS_I_VERSION macro).
+
+
