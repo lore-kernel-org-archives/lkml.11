@@ -2,71 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C25DAC32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF93BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237138AbiHVSR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
+        id S237220AbiHVSTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237194AbiHVSRZ (ORCPT
+        with ESMTP id S236933AbiHVSTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:17:25 -0400
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE6F459BA;
-        Mon, 22 Aug 2022 11:17:23 -0700 (PDT)
-Received: by mail-ot1-f47.google.com with SMTP id 53-20020a9d0838000000b006371d896343so8236685oty.10;
-        Mon, 22 Aug 2022 11:17:23 -0700 (PDT)
+        Mon, 22 Aug 2022 14:19:34 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CC74454A
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:19:33 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id m5so5779405lfj.4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:19:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=IUUq+zBZLLg7nojFWalzeoFMBrQ1c6+AbxuzsjXnnkg=;
+        b=qwv6CgAI+Xx/7UTpw6T/ZwxnK4PJa+dbt690i+fuM/1sif7ZADV/O9QXCEJRlnKjZE
+         Ru3jeVaAfUzF7cF34EncOm3b6aFamhkKhhbZVgtwmURwlLh9YyNsAUphwo08z8XJt49e
+         Z5LgmPb66CsA24nrNJN9alP/0l7nQyZII/eRhuQheF6Vod3YIeBhxfDPDKReQL8CZePc
+         NwOulHDWQMcwsM2rvkoCfNu4RsQsAYfxVI7j/fejE4eZen/g3YIXTyFDo4UOv5XcJakH
+         lT2L0ox1+PS016xsibOIxwnTk8AKkWPHlEs+8ZabMrvevqIeLvPMJ1CDPgKAuuSB8NRd
+         y10w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=bB+q1z4yBbnmaHBU7kr7LN8RBfV9bHPhNi4Br2WHnnk=;
-        b=YjRQsohuPTxmXGTGlyuZNifLkJHhJT4zmeA+GIiXo2o1GjWd5iWfHR8HRAOtY9W/EG
-         7mFyrU2TfqGhM1BmWi5BbRRFobrBXXEjl7fz5zf2bE9ZCriCTGNvsFEEzu7FzT6GW4VI
-         8MkMDON6eDn/O82MSaF7B3jUEfNtTyX3a4FAzJTlChPAp9cTvm/YfpitWz6KAHXCG6tF
-         H4ZQqkYmPv2xQVauJTB4BPPZZApnrKA305m/1XvUd6wUZ2JbEbED5UTdl0NvR3cqpqn9
-         DeTkSLtN0SKe/6yPaZtCnNfoVZ6TyEhKfoxWoA1RwSBge16AuyjbMd2/VAcmFbmyu3m7
-         jPKw==
-X-Gm-Message-State: ACgBeo3eU6K4yKnUvL8nvbhb8LGWhlf+yc8tRkGiwEhMwWvvpI4F98WH
-        4HF6iEU4gdhqjJOSqr4c8K/qie9XkQ==
-X-Google-Smtp-Source: AA6agR6h5QNkB2gDk4rpRbFKa4t96UmZVEMTE3I9dobtvH5HqlZEKK/V8Gl/p44SC3FL0ovOZVr40Q==
-X-Received: by 2002:a05:6830:6986:b0:61c:fd55:5b64 with SMTP id cy6-20020a056830698600b0061cfd555b64mr8050801otb.92.1661192242833;
-        Mon, 22 Aug 2022 11:17:22 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bx14-20020a0568081b0e00b003450abf4404sm2729041oib.21.2022.08.22.11.17.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 11:17:22 -0700 (PDT)
-Received: (nullmailer pid 97831 invoked by uid 1000);
-        Mon, 22 Aug 2022 18:17:21 -0000
-Date:   Mon, 22 Aug 2022 13:17:21 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Frank Rowand <frowand.list@gmail.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH] of: move from strlcpy with unused retval to strscpy
-Message-ID: <20220822181721.GA97772-robh@kernel.org>
-References: <20220818210054.7157-1-wsa+renesas@sang-engineering.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=IUUq+zBZLLg7nojFWalzeoFMBrQ1c6+AbxuzsjXnnkg=;
+        b=YPVirnlugn369EOJpnlJh4ujTREnr0qQeixKQI6jt05k0ajfjAGj3GZQj0AhoD+oKT
+         qKRnM5X86YgiAjZoLL5pYgiHZ0HEePEtvGS7hqlOuMYJYJMGkJer0jeX+BMuzo5LbB6c
+         Gx2+UVLDrO4WnJUhDfmlsFGvPWJyhJO98NCgs8DS8EPWriwH7i6ogAUdAs1VEe07wzAn
+         lrYQfXVWAeaV7H6cZQI2TiCeFNXYpmmbIWP8RXUozPhNGF/G5tRMIEwteCcLnU+09SwA
+         QQr/sagu+BQ1oeCnLtPbBJFHWZCvxW8pxGV1tW7RZqCbgdj2TqLWFojG/lU0xNXaMVkV
+         I3qw==
+X-Gm-Message-State: ACgBeo3hxvEPeG9UjiLmIHSyzBwBeJ9DrN7M6iP731j2VPQGroogfzyG
+        8n7oLlIQ6JTJcmiK4uOhoTg0yA==
+X-Google-Smtp-Source: AA6agR4NQSLOz5tBwgjn8bV1QR7qbJBs3EDjgJIHcoMa/jKzn+hSicxXOXpcYEVPQ7N2K9pjbl2zkg==
+X-Received: by 2002:ac2:4d45:0:b0:492:d8a2:de61 with SMTP id 5-20020ac24d45000000b00492d8a2de61mr4449767lfp.313.1661192371259;
+        Mon, 22 Aug 2022 11:19:31 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id t5-20020a195f05000000b00491734dcb89sm2028163lfb.196.2022.08.22.11.19.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 11:19:30 -0700 (PDT)
+Message-ID: <ff2e2037-b1c6-8c0c-a0b1-41986522a2c8@linaro.org>
+Date:   Mon, 22 Aug 2022 21:19:29 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818210054.7157-1-wsa+renesas@sang-engineering.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v6 04/17] dt-bindings: spi: dw: Add AMD Pensando Elba SoC
+ SPI Controller bindings
+Content-Language: en-US
+To:     Brad Larson <brad@pensando.io>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        adrian.hunter@intel.com, alcooperx@gmail.com,
+        andy.shevchenko@gmail.com, arnd@arndb.de, blarson@amd.com,
+        brijeshkumar.singh@amd.com, catalin.marinas@arm.com,
+        gsomlo@gmail.com, gerg@linux-m68k.org, krzk@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        broonie@kernel.org, yamada.masahiro@socionext.com,
+        p.zabel@pengutronix.de, piotrs@cadence.com, p.yadav@ti.com,
+        rdunlap@infradead.org, robh+dt@kernel.org, samuel@sholland.org,
+        fancer.lancer@gmail.com, suravee.suthikulpanit@amd.com,
+        thomas.lendacky@amd.com, ulf.hansson@linaro.org, will@kernel.org,
+        devicetree@vger.kernel.org
+References: <20220820195750.70861-1-brad@pensando.io>
+ <20220820195750.70861-5-brad@pensando.io>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220820195750.70861-5-brad@pensando.io>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 23:00:53 +0200, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
+On 20/08/2022 22:57, Brad Larson wrote:
+> From: Brad Larson <blarson@amd.com>
 > 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> The AMD Pensando Elba SoC has integrated the DW APB SPI Controller
+> 
+> Signed-off-by: Brad Larson <blarson@amd.com>
 > ---
->  drivers/of/base.c     | 2 +-
->  drivers/of/fdt.c      | 6 +++---
->  drivers/of/unittest.c | 2 +-
->  3 files changed, 5 insertions(+), 5 deletions(-)
+>  .../devicetree/bindings/spi/snps,dw-apb-ssi.yaml      | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
+> diff --git a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+> index 37c3c272407d..403d6416f7ac 100644
+> --- a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+> +++ b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+> @@ -37,6 +37,15 @@ allOf:
+>      else:
+>        required:
+>          - interrupts
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - amd,pensando-elba-spi
+> +    then:
+> +      required:
+> +        - amd,pensando-elba-syscon
 
-Applied, thanks!
+There is no such property. You cannot make it required without first
+defining it.
+
+>  
+>  properties:
+>    compatible:
+> @@ -75,6 +84,8 @@ properties:
+>                - renesas,r9a06g032-spi # RZ/N1D
+>                - renesas,r9a06g033-spi # RZ/N1S
+>            - const: renesas,rzn1-spi   # RZ/N1
+> +      - description: AMD Pensando Elba SoC SPI Controller
+> +        const: amd,pensando-elba-spi
+
+Don't add stuff at the end, but in some logical (usually alphabetical)
+place. The order is already broken as everyone likes to add stuff in
+conflict-style, so just add it before baikal, for example.
+
+
+Best regards,
+Krzysztof
