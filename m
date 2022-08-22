@@ -2,158 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A46C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E37A5C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234489AbiHVJeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
+        id S233890AbiHVJhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233952AbiHVJeF (ORCPT
+        with ESMTP id S231577AbiHVJhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:34:05 -0400
-Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA19B3056D
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:34:03 -0700 (PDT)
-Received: from CHE01-ZR0-obe.outbound.protection.outlook.com
- (mail-zr0che01lp2107.outbound.protection.outlook.com [104.47.22.107]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-52-PaoHaJAPOA-PClQx9v18jQ-2; Mon, 22 Aug 2022 11:33:59 +0200
-X-MC-Unique: PaoHaJAPOA-PClQx9v18jQ-2
-Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3b::9) by
- GV0P278MB0020.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:1e::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.16; Mon, 22 Aug 2022 09:33:57 +0000
-Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
- ([fe80::cd78:5df6:612c:455f]) by ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
- ([fe80::cd78:5df6:612c:455f%2]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
- 09:33:57 +0000
-From:   Marcel Ziswiler <marcel.ziswiler@toradex.com>
-To:     "max.oss.09@gmail.com" <max.oss.09@gmail.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>
-CC:     "laurent.pinchart@ideasonboard.com" 
-        <laurent.pinchart@ideasonboard.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-imx@nxp.com" <linux-imx@nxp.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: Re: [PATCH] arm64: dts: imx8mp-verdin: add cpu-supply
-Thread-Topic: [PATCH] arm64: dts: imx8mp-verdin: add cpu-supply
-Thread-Index: AQHYtfxXyCA2zZWBu0ue6vTfegxv4626qJ4A
-Date:   Mon, 22 Aug 2022 09:33:56 +0000
-Message-ID: <ba07beb3bc498cc3ab7c1eb46052ac3c8110b515.camel@toradex.com>
-References: <20220822075342.2611279-1-max.oss.09@gmail.com>
-In-Reply-To: <20220822075342.2611279-1-max.oss.09@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 848ce84f-566c-409e-4921-08da84216fc4
-x-ms-traffictypediagnostic: GV0P278MB0020:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: +WkbfIPdkWSGiiRYw3Gaw1lStju4w0N8PgX4BZd1j0crxkGVFkztlLSxkjJsIxgFVdtYOu14lzJJGYHggEAlbxbsBh/SOXS5lQh4mEuUgKApt4Fi40vPUgu7T3kjf4sjbQ4+9aayxVVs3zNdQ/dz/vw3ewdhvMtQm9ZX+Z4scuL8S13Y45e87TInXp1wG7GhLSmoiUXAQ6YEfm87YxOcBkeTqtAGvzC4vbJNu+pjAaawLNXFJ3qGrwCaGqNawQYR+xLFhdHbMfgXGtMhODqa7nMTYOwMsWZVa7qYti5w6xucTBK91z0il8xjx+txN3QnTQk2G+5o4jEcPKwNLnHrlpupbRfvQYxVGo7/03yiv/66JQG4YVHXzL7FwKKgFqqQH9ZB9Ux+2GNS3fsGnEH5pJHoG9CUWWOsDfI+KiiKtE9eFXTicpyKIH/ZYzCSS8Bx2J/dJFc6JwVMKIPRhdxGxULl6D2mv2Df1mQhxbU2gXPpN9Lxy4WI1kQeoKTrmL1i9Ecx6/KfR/OMvFBtPU6uArAepyyos8crEzPg18/QPKxRYAccQUCwPudVXyBlDA1X9Rh9xEHaIb2BITsiasr045wY4V/zfNmv7hX2hHz7Qc8AFwRsVt+L77E4U6/9AUKANqRKXfeLL6t5Qmn89Nx5/wUfuUwEg726GsYVRTYsJPHauTaohvt1EwF6AONF31P7dYt1ocAc9TzxT1e4PSJyc/GGEMdi7um6vBk0yvdq91wSPqPY9BhAccQCqCyluJiD0mbRyAJmQrXK6P4K2F+mACrB8a3BvaVKAfNL47Mp23g=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(346002)(39840400004)(366004)(396003)(4326008)(8676002)(64756008)(316002)(66446008)(110136005)(66556008)(54906003)(6636002)(91956017)(76116006)(66946007)(66476007)(5660300002)(8936002)(7416002)(44832011)(2906002)(122000001)(38100700002)(86362001)(36756003)(38070700005)(478600001)(6506007)(71200400001)(6486002)(186003)(41300700001)(83380400001)(6512007)(26005)(2616005)(32563001);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QmhiMEVSTHNJYzBhZE9YSDVtVDlDT2t5b09NVzlzR2h5b2pycHJjSGlvZy95?=
- =?utf-8?B?QWIyTFNLd1JOaFIyZXdlVmxseXZ3bUxsVkJuZktzRXhGZ1l3eWpuRlY3K25u?=
- =?utf-8?B?TVAyakFuMU9hcnZkQkVCK2NDSmszajE5K2hYZlRXY3U5aURTejQ4UHRFQ1lO?=
- =?utf-8?B?aFUwcWxvd1hhMXhWK0t4ZW1WVTlmRVNGYlJ0WVNNekxOdVB3ZFp4dnVIMTFq?=
- =?utf-8?B?WlAxNk5wS3JqNGtlKzQzOG9USFc2UEtMcnRxL1hvSzJyWjRwaEE1citadms3?=
- =?utf-8?B?bE9hd295NVprUm56OS9QcHA1MXFGb0JLL3ljNXZiSGNjWTZ6MENxV0c5dDIw?=
- =?utf-8?B?TW14ZHJ1M0wvREUwR1dOcG5pQ3p6NnpZdjNrb3laTExzLzRXTXA2WnZ3VDVH?=
- =?utf-8?B?V1g1aml3WWJxbHJ0bkxEY0pYaHRzL0NOMmFZTDVIMWg3dzc2a0FnUWZuNitv?=
- =?utf-8?B?YXh2WENoQVJ5VFByb2E0MU16OXdaY3NyNlRyeHc1dkZiTk9DdGdPR3ViUUdh?=
- =?utf-8?B?R0kwWGxUNTArQVdKOE5CZ3JrK2Y3TVNneGdBOVFqbmUvQ0UyeSswaXQrTlFr?=
- =?utf-8?B?SWNkQ1ZLMVlKcGxJTlRkSXlvZ2JaTThpNUZRM1gzUHNxL1haK2ZoU043QzVk?=
- =?utf-8?B?N0NnbTRndS9DOGFvVWJ1OE9EdmhCcmNEWVFxaVZHSkNVeGVvQWRhQlQ3K3cx?=
- =?utf-8?B?aWNqajdtcyt5NHBOcEJyZTRRTEU2aHdFNElJb2ZzbzJnUGw2cm1zT0tIOTE3?=
- =?utf-8?B?bXNqbjV1MUllTlNqUldSNTFWa1hzNndHSWtUdWJrUTljM3JWUlNJNnFibUZj?=
- =?utf-8?B?NEU1cnUwbytqempNanRXV0VnYVBmNFhMd3Qwak16NzhWdkxlaEIwSERmSVNx?=
- =?utf-8?B?UnFFVlMxdmNxWldYK1NyQ21aSmlheG5sNG9NbUZEb3h1Yll6MzlvS2U2b0tK?=
- =?utf-8?B?Tk12SktaQkdKRDBSbVkxVEluMXBBREVZQ3QreWdIczMrSlh0RmVQdlFwazhr?=
- =?utf-8?B?WDdaNnp3Znc0VWtLR2RHTDdBWFUyYTQvVmowV243QnF1UHFtb3h6cWZ4T0hx?=
- =?utf-8?B?aUJyQmpFL0NhSUpBdmwyc3JWOFJBRkZvRGVZU09zdmp2ZWFweFMvc2JNU1Jk?=
- =?utf-8?B?VGhSU3ZYaDZuMUdQUEtvK1VjbGllRWFZMy9mVWY0VnlYb3JCZ3NWbVNRTzlC?=
- =?utf-8?B?bm1aVDlGK3E4MlJJNngrY2FidXQ5S0htVllUVGhuNkx1c2JaSXlIenduMUMz?=
- =?utf-8?B?N2poQ2NYWk1wdUc4dkY3OXI0SGk0MDJuQm5YN01qTGp1SlRyY3FMc0JpeDdu?=
- =?utf-8?B?SmhUbVA2THBlTmlXK2FUVFZlK3EyY3laU1ZEK1lXWEJkeXI2UjN6L3NRMkJz?=
- =?utf-8?B?Y0pQaGxRaHJUUHM2RzBvZWc4alc1SEVuWjQ1TmV6OXFNdlBRNisxM3R0a3lT?=
- =?utf-8?B?a1lCVHc5WmorRlRqb0VuU01ZYk1JQjFsK3gweUpkZVVKMHNTMVEzRkt4ZXpk?=
- =?utf-8?B?YnQraksyVzNYVEk3K0lSaFRYV2lPOTBCSnY1NHAvb1dHdUVmSmdCb2hLSmxT?=
- =?utf-8?B?VndpeEZkUjNrM0g5VHF2UkVpbFdtSFFkb0Z6Y0ZTbnZNNFBWM1pDNVk2R0FH?=
- =?utf-8?B?WGQzY0hsaURrYmlZZGFzZm5oY2c3TDZYekxvbEFxb1FoU1BJZnVDN0IxMVF3?=
- =?utf-8?B?dWh1YnFaYlJXZWc5R3Y0cVJrZHR0VTFncW5ESjJHSXJwRmVNNjhGRVFBbSs1?=
- =?utf-8?B?dWVwY2JnYXhiQm4rVWozcjFybGFpQU0wV0tDZWZsc1dZME8vRG9pTXRQN3J2?=
- =?utf-8?B?SjF2anBUdWpCNnVmd0M4c2tiTVR0dEVMb3BhWVRMdml2Q3pSNXJRUU1sUGxX?=
- =?utf-8?B?cWdUekFOVXV6cHIrSjljUGhLSDJkMWVFaElKcWdOZjFsZDNJZkEyK0U5VTAz?=
- =?utf-8?B?MkRic053WUxlSTZPbk1SdGpTcHlIYTVMQVFkTytnN3IzYlZxVWh0WFVIMW9R?=
- =?utf-8?B?WXlQTFRwMHh4amc5Y3RGOGxHT0RvWkx6NFFNU3UxNW9NWW1pb1VZYU1YOHBM?=
- =?utf-8?B?bFN5TWJvYTRPVGIrUms4UlkrT09CeUdQWlFFYUZYRWdvejdsVmtERkhtV3lp?=
- =?utf-8?B?RHRpR3p6ZE13amhFYU10U1pOY0F1NnNoeXJFbjA1ZS9jdnJqZ0pCb0JYcGk2?=
- =?utf-8?B?Wnc9PQ==?=
+        Mon, 22 Aug 2022 05:37:06 -0400
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFB631222;
+        Mon, 22 Aug 2022 02:37:05 -0700 (PDT)
+Received: by mail-qv1-f54.google.com with SMTP id e4so7691203qvr.2;
+        Mon, 22 Aug 2022 02:37:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=4HGc3LZLIVD8kqIdt1raEGvcbUqauzF4BNbgPe7E/m4=;
+        b=C7ccB4CycVRJv72vSwLjvRDuXYNwbRaO9VvHK4Xdaerjtsy4KeGOjp0aFh770m4nu1
+         HALlZR9QvNJfiOsRO3ho0/XJxdEYmEuFUShdODqhABDdZcxYk/KvOKnZlG6CJ1GmMTp3
+         oM4oX2n3BcKGRICoPwzO9nGDIilquNXt6+p1eTgIRmWsjeYDOqOH2VVEkherztqYVDhD
+         +kw9r0HAnQPafSAjUZ057D5EgDkGASae9QaIvs4La9CVKl3RNZapt493DCSm0VdhUHNE
+         bxXF+YybYaLtcqp5vDLOlI6jVBm+FpsvLDMvoUOgp0JGht+638XGGiP7+UdEzlpkUWpI
+         tEig==
+X-Gm-Message-State: ACgBeo389od51o0C2+KWag4vY2tB6lEGtxdqr7uVjEHBp6Y5HJrbpI7v
+        bnrj1hY1sZKZAQ/mfGrdst/oH2HEXhaEgA==
+X-Google-Smtp-Source: AA6agR6GmlbC2f4z7hgwx5WbGHXNk19XFqFpchxiFKoaQl4FdGMGTS/MiKuCJrTmNkl/Lg7uhP4Jig==
+X-Received: by 2002:a0c:b31a:0:b0:473:8062:b1b4 with SMTP id s26-20020a0cb31a000000b004738062b1b4mr14902520qve.85.1661161024315;
+        Mon, 22 Aug 2022 02:37:04 -0700 (PDT)
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
+        by smtp.gmail.com with ESMTPSA id x2-20020ae9e642000000b006b5e50057basm10169314qkl.95.2022.08.22.02.37.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 02:37:03 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-3376851fe13so243520667b3.6;
+        Mon, 22 Aug 2022 02:37:03 -0700 (PDT)
+X-Received: by 2002:a25:cbcf:0:b0:695:2d3b:366 with SMTP id
+ b198-20020a25cbcf000000b006952d3b0366mr12458894ybg.365.1661161022925; Mon, 22
+ Aug 2022 02:37:02 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 848ce84f-566c-409e-4921-08da84216fc4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2022 09:33:57.0101
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cu6j92a+kkbYheSTSTtO0XmjZ+MBXUJTlPwu8QFAB+4jhVG2ZYg8QxrYOc5AUP6c528OUD9Uq63AjPw2KSG7PCFB99rXSJspL8HwNTxg0ME=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV0P278MB0020
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-ID: <EA39AAE2C22761488196B365588889BD@CHEP278.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <20220821113512.2056409-1-mail@conchuod.ie>
+In-Reply-To: <20220821113512.2056409-1-mail@conchuod.ie>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 22 Aug 2022 11:36:51 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV_dpijX7YqSR+24wWDQr4roi7EBm1nbhJuWkoidAcCng@mail.gmail.com>
+Message-ID: <CAMuHMdV_dpijX7YqSR+24wWDQr4roi7EBm1nbhJuWkoidAcCng@mail.gmail.com>
+Subject: Re: [PATCH 0/6] Add an asm-generic cpuinfo_op declaration
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     Michal Simek <monstr@monstr.eu>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Kees Cook <keescook@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gTW9uLCAyMDIyLTA4LTIyIGF0IDA5OjUzICswMjAwLCBNYXggS3J1bW1lbmFjaGVyIHdyb3Rl
-Ogo+IEZyb206IE1heCBLcnVtbWVuYWNoZXIgPG1heC5rcnVtbWVuYWNoZXJAdG9yYWRleC5jb20+
-Cj4gCj4gQWRkIHRoZSBjcHUtc3VwcGx5IHByb3BlcnR5IHRvIGFsbCBDUFUgbm9kZXMgdG8gZW5h
-YmxlIHRoZSBjcHVmcmVxCj4gZHJpdmVyLgo+IAo+IFNpZ25lZC1vZmYtYnk6IE1heCBLcnVtbWVu
-YWNoZXIgPG1heC5rcnVtbWVuYWNoZXJAdG9yYWRleC5jb20+CgpBY2tlZC1ieTogTWFyY2VsIFpp
-c3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+Cgo+IC0tLQo+IAo+IMKgLi4uL2Jv
-b3QvZHRzL2ZyZWVzY2FsZS9pbXg4bXAtdmVyZGluLmR0c2nCoMKgwqDCoMKgIHwgMTggKysrKysr
-KysrKysrKysrKystCj4gwqAxIGZpbGUgY2hhbmdlZCwgMTcgaW5zZXJ0aW9ucygrKSwgMSBkZWxl
-dGlvbigtKQo+IAo+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9p
-bXg4bXAtdmVyZGluLmR0c2kgYi9hcmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9pbXg4bXAt
-Cj4gdmVyZGluLmR0c2kKPiBpbmRleCBmMDYyZmRiYjI3MTkuLmRiYzIyYjY3MmZiMyAxMDA2NDQK
-PiAtLS0gYS9hcmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9pbXg4bXAtdmVyZGluLmR0c2kK
-PiArKysgYi9hcmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9pbXg4bXAtdmVyZGluLmR0c2kK
-PiBAQCAtMTQ2LDYgKzE0NiwyMiBAQCByZXNlcnZlZC1tZW1vcnkgewo+IMKgwqDCoMKgwqDCoMKg
-wqB9Owo+IMKgfTsKPiDCoAo+ICsmQTUzXzAgewo+ICvCoMKgwqDCoMKgwqDCoGNwdS1zdXBwbHkg
-PSA8JnJlZ192ZGRfYXJtPjsKPiArfTsKPiArCj4gKyZBNTNfMSB7Cj4gK8KgwqDCoMKgwqDCoMKg
-Y3B1LXN1cHBseSA9IDwmcmVnX3ZkZF9hcm0+Owo+ICt9Owo+ICsKPiArJkE1M18yIHsKPiArwqDC
-oMKgwqDCoMKgwqBjcHUtc3VwcGx5ID0gPCZyZWdfdmRkX2FybT47Cj4gK307Cj4gKwo+ICsmQTUz
-XzMgewo+ICvCoMKgwqDCoMKgwqDCoGNwdS1zdXBwbHkgPSA8JnJlZ192ZGRfYXJtPjsKPiArfTsK
-PiArCj4gwqAmY3B1X2FsZXJ0MCB7Cj4gwqDCoMKgwqDCoMKgwqDCoHRlbXBlcmF0dXJlID0gPDk1
-MDAwPjsKPiDCoH07Cj4gQEAgLTQ1Myw3ICs0NjksNyBAQCBCVUNLMSB7Cj4gwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJlZ3Vs
-YXRvci1yYW1wLWRlbGF5ID0gPDMxMjU+Owo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4gwqAKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoEJVQ0syIHsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoHJlZ192ZGRfYXJtOiBCVUNLMiB7Cj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG54cCxkdnMt
-cnVuLXZvbHRhZ2UgPSA8OTUwMDAwPjsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgbnhwLGR2cy1zdGFuZGJ5LXZvbHRhZ2Ug
-PSA8ODUwMDAwPjsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgcmVndWxhdG9yLWFsd2F5cy1vbjsK
+Hi Conor,
 
+On Sun, Aug 21, 2022 at 1:36 PM Conor Dooley <mail@conchuod.ie> wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
+>
+> RISC-V is missing a prototype for cpuinfo_op. Rather than adding yet
+> another `extern const struct seq_operations cpuinfo_op;` to an arch
+> specific header file, create an asm-generic variant and migrate the
+> existing arch variants there too. Obv. there are other archs that use
+> cpuinfo_op but don't declare it and surely also have the same warning?
+> I went for the minimum change here, but would be perfectly happy to
+> extend the change to all archs if this change is worthwhile. Or just
+> make a header in arch/riscv, any of the three work for me!
+>
+> If this isn't the approach I should've gone for, any direction would
+> be great :) I tried pushing this last weekend to get LKP to test it but
+> I got neither a build success nor a build failure email from it, so
+> I figured I may as well just send the patches..
+>
+> I wasn't too sure if this could be a single patch, so I split it out
+> into a patch fixing the issue on RISC-V & copy-paste patches for each
+> arch that I moved.
+
+Thanks for your series!
+
+> Conor Dooley (6):
+>   asm-generic: add a cpuinfo_ops definition in shared code
+>   microblaze: use the asm-generic version of cpuinfo_op
+>   s390: use the asm-generic version of cpuinfo_op
+>   sh: use the asm-generic version of cpuinfo_op
+>   sparc: use the asm-generic version of cpuinfo_op
+>   x86: use the asm-generic version of cpuinfo_op
+>
+>  arch/microblaze/include/asm/processor.h | 2 +-
+>  arch/riscv/include/asm/processor.h      | 1 +
+>  arch/s390/include/asm/processor.h       | 2 +-
+>  arch/sh/include/asm/processor.h         | 2 +-
+>  arch/sparc/include/asm/cpudata.h        | 3 +--
+>  arch/x86/include/asm/processor.h        | 2 +-
+>  include/asm-generic/processor.h         | 7 +++++++
+>  7 files changed, 13 insertions(+), 6 deletions(-)
+>  create mode 100644 include/asm-generic/processor.h
+
+I was a bit surprised not to find fs/proc/cpuinfo.c in the diffstat
+above. That file already has an external declaration for cpuinfo_op,
+and uses it rather unconditionally (that is, if CONFIG_PROC_FS=y)
+on all architectures.
+
+So I think you can just move that to include/linux/processor.h, include
+the latter everywhere, and drop all architecture-specific copies.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
