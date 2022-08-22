@@ -2,96 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CCFC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D63CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235012AbiHVMZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33624 "EHLO
+        id S234185AbiHVM0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiHVMZf (ORCPT
+        with ESMTP id S235010AbiHVM0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:25:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED698E0F;
-        Mon, 22 Aug 2022 05:25:34 -0700 (PDT)
+        Mon, 22 Aug 2022 08:26:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648252AC5C;
+        Mon, 22 Aug 2022 05:26:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BB16B81132;
-        Mon, 22 Aug 2022 12:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91E5C433D7;
-        Mon, 22 Aug 2022 12:25:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F396C60F54;
+        Mon, 22 Aug 2022 12:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B52BC433C1;
+        Mon, 22 Aug 2022 12:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661171132;
-        bh=m1TktFVlldD0iGrCw8ofyQ/cTXQAPa0Io0sL/xjSK9Q=;
+        s=k20201202; t=1661171170;
+        bh=Ri26gF7yUd8i7s+mQIJeKN0Kh94Q0DOYvnDj0MwMB8M=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n2tKqYsOAV0KDcN/tiWD5ojdxWXInPmQ1ZXUVnZpVWilKUtal+F6WTmtPKGSVLpbF
-         wjR3d31j4PDGKhaGSLOVT4dCUqiBOtxFzIHYXYI0J1WFBSpeMmiCJnrMeHQYbZuQdv
-         4UFhGgxdhtQMM5TPyPz3ViXyhcdedkCZpEEz6mKJcwz94ib3Nvs03iZRzmLX+WBhBL
-         FsgY6X6V7fdkKJaP3onOjCaAhW26svc5X11kBQGzR1EqhjgTEncKB56NCFfjTRbgP8
-         uvTWbICwqkUTa8IO9UBis2Qg+GtM03FKVwWmeghUHSTMU65xUeZoJq9ahN06+kOm+/
-         KYuNtJGJoek7w==
-Date:   Mon, 22 Aug 2022 13:25:23 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Brad Larson <brad@pensando.io>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, adrian.hunter@intel.com,
-        alcooperx@gmail.com, andy.shevchenko@gmail.com, arnd@arndb.de,
-        blarson@amd.com, brijeshkumar.singh@amd.com,
-        catalin.marinas@arm.com, gsomlo@gmail.com, gerg@linux-m68k.org,
-        krzk@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee.jones@linaro.org, yamada.masahiro@socionext.com,
-        p.zabel@pengutronix.de, piotrs@cadence.com, p.yadav@ti.com,
-        rdunlap@infradead.org, robh+dt@kernel.org, samuel@sholland.org,
-        fancer.lancer@gmail.com, suravee.suthikulpanit@amd.com,
-        thomas.lendacky@amd.com, will@kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 17/17] mmc: sdhci-cadence: Support mmc hardware reset
-Message-ID: <YwN1s4bEKP2jX8Qm@sirena.org.uk>
-References: <20220820195750.70861-1-brad@pensando.io>
- <20220820195750.70861-18-brad@pensando.io>
- <CAPDyKFoYdQirftoEQAMBwXKXqSo-tu9EUvL6B6vHCj6cDd14ug@mail.gmail.com>
+        b=oAOxOBHt69sGX5JQD1T0NjIlmtUrNXlGSCRAojbKOaA7EpFG3usQHgel8QMAC5DCf
+         mzNz3/0K/DuVzM4WamZlM8dcgFmBJry+f7TkC6l9KmaVo8GzecocxUm3Z4tuKk9pCX
+         vmNrS/Lg0P7wL3xjGdc75BobaWUPZcKCpqloCKiUQv/roAFh3K2d7+2/OEZc35gX+h
+         I76tvEbj3O+PqrGbe+uzK2+Drxj0PmUx/PuceR5S87528zSjenUprWKtGoVRmLERaU
+         JGi1MtLPe8TFlQnud4BS2/uG6H+4rIclW+epgTFJ9vXOiHKDGOdyR7/DFQTiw6ERDU
+         UkWZR71YBoTaQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oQ6VL-0001bH-5z; Mon, 22 Aug 2022 14:26:07 +0200
+Date:   Mon, 22 Aug 2022 14:26:07 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     =?utf-8?B?5peg5ZCN?= <yuanjilin@cdjrlc.com>
+Cc:     gregkh <gregkh@linuxfoundation.org>,
+        linux-usb <linux-usb@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] usb/serial: fix repeated words in comments
+Message-ID: <YwN138qeP74YZ9Em@hovoldconsulting.com>
+References: <20220821153441.6165-1-yuanjilin@cdjrlc.com>
+ <tencent_1AC094251C7AD08A5B832814@qq.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="WTu6/ccq9jWtsAFn"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAPDyKFoYdQirftoEQAMBwXKXqSo-tu9EUvL6B6vHCj6cDd14ug@mail.gmail.com>
-X-Cookie: Do not write in this space.
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_1AC094251C7AD08A5B832814@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Aug 22, 2022 at 07:47:39PM +0800, 无名 wrote:
+> Replace 'mode' with 'or'
 
---WTu6/ccq9jWtsAFn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This is not a proper commit message as it only says what you do, not
+why. Try to spell it out.
 
-On Mon, Aug 22, 2022 at 12:53:22PM +0200, Ulf Hansson wrote:
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com&gt;
+> ---
 
-> Other than the comments above, I wonder about what merging strategy we
-> should use for the series. I believe it looks fine for me to pick up
-> the mmc related patches, thus we can apply patches on a per subsystem
-> basis, right?
+Missing changelog here.
 
-Yes, if there's no relationship between the different subsystem
-components (which looks like the case?) they should probably just go
-separately - they can probably be submitted separately too.
+> &nbsp;drivers/usb/serial/mct_u232.h | 4 ++--
+> &nbsp;1 file changed, 2 insertions(+), 2 deletions(-)
 
---WTu6/ccq9jWtsAFn
-Content-Type: application/pgp-signature; name="signature.asc"
+This patch is corrupt and looks like it was sent as HTML too.
 
------BEGIN PGP SIGNATURE-----
+Also look at the git log for this file and use the common Subject
+prefix.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMDdbIACgkQJNaLcl1U
-h9CrnQf/R4IGSSuvA+pTi1ROvJpYHxOoK6FAG8Ycn1tJWAbnibo3z/Zh9CAvgPFX
-PCVYAuRbfJuV23rSlmJsrwkJEoOb5+kjfkBtRwA2ANra5+IXeoHGBxplvSiIQDOl
-BVbcHOg4W3fn7hHy6x+Mkv/hMNo5V8zgeS+/p6Gl/l2MzXdmwJOSYQjCRjHiGqN8
-Vg3cJZsXsfBMO0fLsYYJyxRHgkVsMjAzIq+2m6YgUp3YHsRgeTFf3NMC485S3afs
-ywRgJt0Qm+ooktyFBKSWLkIliKN3WqxD+k7hAY1A2Nxolpgdujxg2gvJ8N7QfQDQ
-luu7bymmtiES89rc5qPHEcSwAAUkUQ==
-=rg/C
------END PGP SIGNATURE-----
+It's also customary to CC people that have helped review your patch.
 
---WTu6/ccq9jWtsAFn--
+Johan
