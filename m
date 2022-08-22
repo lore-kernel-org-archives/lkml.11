@@ -2,75 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57405C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAB5C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233467AbiHVMJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
+        id S234932AbiHVMJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232460AbiHVMI5 (ORCPT
+        with ESMTP id S234960AbiHVMJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:08:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A75B175A9;
-        Mon, 22 Aug 2022 05:08:55 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47C0012FC;
-        Mon, 22 Aug 2022 05:08:58 -0700 (PDT)
-Received: from [10.57.14.241] (unknown [10.57.14.241])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 11DA13F718;
-        Mon, 22 Aug 2022 05:08:52 -0700 (PDT)
-Message-ID: <638e0a6e-10d2-8552-a61f-c4c001a2cbe9@arm.com>
-Date:   Mon, 22 Aug 2022 13:08:51 +0100
+        Mon, 22 Aug 2022 08:09:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EECF39BBF
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 05:09:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5985C1FE82;
+        Mon, 22 Aug 2022 12:09:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661170154; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BQf11C2SztSHaAc1fCCEYoFCW50NZH5mzh9dLltQPVs=;
+        b=p4lTmBdyCOljd88Lou0ApPiNTcrg55ISrXyy2Z2lgw6d95MbM2hP18vHea0UGA5CSG1Fju
+        7wgNx7ZgREOAm0apcWAR9/w46u0ucAGD/W+pMXpik/faroXcSl+gpHFdH+Ac/ev+kpgFsw
+        IdmcniYJyPob4UtDLTruYq88xgtW5xk=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 36B9F13523;
+        Mon, 22 Aug 2022 12:09:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id gm7eC+pxA2MlQQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 12:09:14 +0000
+Date:   Mon, 22 Aug 2022 14:09:13 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        David Rientjes <rientjes@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
+Message-ID: <YwNx6Q+FSwpKUOQ2@dhcp22.suse.cz>
+References: <20220817060647.1032426-1-hch@lst.de>
+ <20220817060647.1032426-4-hch@lst.de>
+ <Yvzk2wE7ta+zSZOQ@dhcp22.suse.cz>
+ <20220821104416.GC30530@lst.de>
+ <YwNBHbYXpatJHD0K@dhcp22.suse.cz>
+ <20220822111447.GA8935@lst.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 2/2] cpufreq: CPPC: Change FIE default
-Content-Language: en-US
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     rafael@kernel.org, lenb@kernel.org, viresh.kumar@linaro.org,
-        robert.moore@intel.com, punit.agrawal@bytedance.com,
-        ionela.voinescu@arm.com, pierre.gondois@arm.com,
-        linux-kernel@vger.kernel.org, devel@acpica.org,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org
-References: <20220819162547.141333-1-jeremy.linton@arm.com>
- <20220819162547.141333-3-jeremy.linton@arm.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220819162547.141333-3-jeremy.linton@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822111447.GA8935@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/19/22 17:25, Jeremy Linton wrote:
-> FIE is mostly implemented as PCC mailboxes on arm machines.  This was
-> enabled by default without any data suggesting that it does anything
-> but hurt system performance. Lets change the default to 'n' until
-> hardware appears which clearly benefits.
+On Mon 22-08-22 13:14:47, Christoph Hellwig wrote:
+> On Mon, Aug 22, 2022 at 10:41:01AM +0200, Michal Hocko wrote:
+> > ZONE_DMA existance is not runtime controlable (at least on x86).
 > 
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> ---
->   drivers/cpufreq/Kconfig.arm | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/cpufreq/Kconfig.arm b/drivers/cpufreq/Kconfig.arm
-> index 954749afb5fe..ad66d8f15db0 100644
-> --- a/drivers/cpufreq/Kconfig.arm
-> +++ b/drivers/cpufreq/Kconfig.arm
-> @@ -22,7 +22,7 @@ config ACPI_CPPC_CPUFREQ
->   config ACPI_CPPC_CPUFREQ_FIE
->   	bool "Frequency Invariance support for CPPC cpufreq driver"
->   	depends on ACPI_CPPC_CPUFREQ && GENERIC_ARCH_TOPOLOGY
-> -	default y
-> +	default n
->   	help
->   	  This extends frequency invariance support in the CPPC cpufreq driver,
->   	  by using CPPC delivered and reference performance counters.
+> This is more about ZONE_DMA32 that can disappear if all memory is
+> inside ZONE_DMA.  That is highly unusual (but still possible) with a
+> tiny x86-style ZONE_DMA, but can happen with a larger one other
+> architectures.
 
-LGTM
+OK, so you are worried about configurations that lack ZONE_DMA32 because
+that memory range is covered by ZONE_DMA? I thought though simply do not
+have CONFIG_ZONE_DMA32. Or am I wrong here?
 
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+-- 
+Michal Hocko
+SUSE Labs
