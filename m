@@ -2,146 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F52C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3FDC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236328AbiHVPM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55760 "EHLO
+        id S236349AbiHVPNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236453AbiHVPKy (ORCPT
+        with ESMTP id S235988AbiHVPJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:10:54 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F13402CE;
-        Mon, 22 Aug 2022 08:08:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661180887; x=1692716887;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=AZ3zcJFxLqvw4hD/FAvZLDC1AGZmGOi9qxc+JOuXmN4=;
-  b=HgSRTyOy9C2Em8KRmDUMh1r+1UAS5wurIp9AaV2rSH75N1KOLrf90qas
-   GN5SBUiJZqi9mDs2xIOyekmeMGXRlwxLZyIX5a4/RhE+/5FHOTsRBhjJ5
-   gytp7kascbQonZNyqQmh0hJKs+H2O9/0MGGZx73ODhTfLLyDvYTEWnRhC
-   GEWXyNnCow/vFB2Zasovho8dAimdnSvGgMmQztPe4k64p7ZvBFiAKG8Dq
-   NJqLdkEzuc7cw9Q6ds5wJzeHPvEgWZoWA6XetG1wl8xY/V2O+L0Ho5i6q
-   rMz6F1alzqxaLUABQzjcIjMzJCOBtsnQQV/BafluRVTcFKtqa0ho8VTE5
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379727738"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="379727738"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 08:06:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="712213742"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 22 Aug 2022 08:06:48 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQ90p-0000Mx-2I;
-        Mon, 22 Aug 2022 15:06:47 +0000
-Date:   Mon, 22 Aug 2022 23:05:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-doc@vger.kernel.org
-Subject: [linux-stable-rc:linux-5.18.y 3493/3591] htmldocs:
- Documentation/tty/device_drivers/oxsemi-tornado.rst:41: WARNING: Inline
- interpreted text or phrase reference start-string without end-string.
-Message-ID: <202208222259.iWiGmKuH-lkp@intel.com>
+        Mon, 22 Aug 2022 11:09:25 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAA23ECE1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:07:18 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MEkUt9022008;
+        Mon, 22 Aug 2022 15:06:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=wyalKh797xvHrt0qBZcmItmpSg/yJyiwBv0++1LzgZY=;
+ b=lhgLdVHb/W9AgiiOc/KLygLyxDv9EU6OzJPDqccHCP1o621nxGivdKnvpTsuLBBe3H1y
+ Zr1NZ9qcHjwg50xuSqf7SwnDFqdNW3bA4Vw7wP4IhI2hml4kFsaFSMcUxmHXzAFgaS2c
+ fI6/hEQx9LXr6A9o2QOdLvW8I5e9j4lV5ctDwVSezhBqTo4PXjEpY6Gifdco8S5vhdNS
+ Q52dVVnSAwnF+qK+sjVNsj0eqOgEbdvBR5HjQKoy2buK43FEKzBw3CyNV0n37XgGkBKv
+ scf4bNyKpwGnoztSjoD7NhG51S2V3rtnlku/oA8DRPJX5jPEth1VEoe7xZ7xVHSoK1/W /Q== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j4btmg2xf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 15:06:38 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27ME4NdT035436;
+        Mon, 22 Aug 2022 15:06:37 GMT
+Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam04lp2044.outbound.protection.outlook.com [104.47.73.44])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j3mq1u1em-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 15:06:37 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b0VAoLbD/FbAVf2ldTwZXiRb3HAzzbK3IAPdSGAkGh84yZIYp44uUwndJUgPDyoOyAy0f2RHSgL3jZL6I9S6+RV4Ksyhm6mDJ+iFWrWci0Y/0OXCc9S6edmPST1Ax9MPVx+Q1unh+myKG3qlB4zX0Olx1GP1hs52pSeiQ0SNVo+zOj66JtCd6/DuB1vpCCbdjydwh/b+Tgs9lThw9ULIwtjqRDs8XJpQIbk+9eiY3jh3fAPQ/K4hhPBs1lvhJK1v74Z3o3OgrPQTWUdASQyARdtNw+qd9BYkku08sC+It+mihWfgJrzMazxs0A6pFTW2cfzhV3t5c2PZSjzdUEDEKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wyalKh797xvHrt0qBZcmItmpSg/yJyiwBv0++1LzgZY=;
+ b=nSo5gVSmMB4KWsSAu2b/Kql4zP7tSgQZAj4OKuiXROLLgAOezABHSp69gbmDnzojWLB0D+hIxHZVL4Q1KrDH2a7tXGUniJ47gOfcA1jWUq9OhY2thal9niKuURybOBMoR7+hZAbZ/DoocjqxbBTIKNmikLnMa+l9LqCD//K+G60AzEVinDMGPNEJedN17BoHKcAI9u0+ri4CUBYW0081lEaO/7noZPbkEwL/0z+j1xPaquj10pXQCjkkKLx0TbrdFr0LjIn6yhoX4Zvxkn716+MplPki3qDdQ/9CrFERB/KrnhQjJ3Wxra//dn5dr7UT5UXwOccxYWq7jDjmeZ0qUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wyalKh797xvHrt0qBZcmItmpSg/yJyiwBv0++1LzgZY=;
+ b=uzHps4l8tMz8esvP0rxghiMnxFfEFLmb4rBHtAaX37qoWvSsSlXwRmUJx1EMVmSAF9wIV078DjtTHvFnIEZozZZOkfFAnNB0t7+BPx5cLHP0Rxvhxv327pWtSj53nKBVjsGySiu+SML6sJYM3fs7LofJLVztFG9/ROHiRZ3PfC8=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by DM5PR10MB1433.namprd10.prod.outlook.com (2603:10b6:3:e::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5546.21; Mon, 22 Aug 2022 15:06:34 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::3d34:ebb5:d9df:98b3]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::3d34:ebb5:d9df:98b3%5]) with mapi id 15.20.5546.023; Mon, 22 Aug 2022
+ 15:06:34 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Liam Howlett <liam.howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH v13 58/70] mm/mprotect: use maple tree navigation instead of
+ vma linked list
+Thread-Topic: [PATCH v13 58/70] mm/mprotect: use maple tree navigation instead
+ of vma linked list
+Thread-Index: AQHYtjjCkqw9gd/s70yV945B+ch+Rg==
+Date:   Mon, 22 Aug 2022 15:06:30 +0000
+Message-ID: <20220822150128.1562046-59-Liam.Howlett@oracle.com>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+In-Reply-To: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.35.1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 213d2e44-0a30-486f-5e73-08da844fe752
+x-ms-traffictypediagnostic: DM5PR10MB1433:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: D4+bzsisjIhLIVi49MkXEyma8qgrpFFr1VoKug62qB05jYktyx3/t9vmY/ZOvIB2ST2FvB7x1WVckx71VJn4MNZIa0U3Mj2OGAJOH0O1xi9wODMqjuQ9WMX5QfJpzARedkAPWlDxBrYM2VYdeC9lXSYlN1IIt/YZrEN8ZAVE/febfTCRs51tFdsfKcm1N5vA2DdAKvqkF94uHQWsLQhrvOEE4vYnPSLA+aKajBL2+8FgOEzomJJxS12QmuMHYfvsDBDV5JC0K+wBOtPJaMpgCqPTjmO0bU4gplT+3EssexUMUihWq0Y8HI9wBcxIesZTvLshmth1/EJj3cGx+zyA0E3X3fU7yS0M3M+rcUFVhVETLlipG8slmcKsi1yUbVJx7gi5NRO9cF82NqfDjQAtTf259SSwNaLO/6QZbJd0WpOGIHqp7/WGB4gQrgzL5VvCnazEZppfjpDt+rGcGMm0gerdALP+XgQig9DaqbmtllThNemQKvOXVGfvkXCTN+XRot0Q6h88XKR93ccOkWea0NUtYVeeNhMOEcw2pT7GRPuubMenu8kho0icABy/vduRTNXPDIWhYCbRGwpRyUki31PJsLYPfGupeKmzF+QUJl1yj5SWpK14yAEmMrMDqLCS8J5utmodmqSiFzSRITbMwQfu3cTL1xiXRD5Zyh8/vi9bC/GJpi2Cc6s9uaiQafIBHnJY2M7P7+xIfoOKYtoDZ/Go1XDOYh6vBUFt5B9onrapRvOzLLUq+d8/RViG6OMWIprBITkPGr5Aq6UMuL7eRg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(396003)(136003)(39860400002)(366004)(5660300002)(8936002)(38100700002)(122000001)(36756003)(41300700001)(44832011)(6486002)(6666004)(316002)(71200400001)(76116006)(91956017)(110136005)(8676002)(4326008)(64756008)(66446008)(66476007)(66556008)(66946007)(54906003)(478600001)(186003)(1076003)(6512007)(26005)(83380400001)(2616005)(6506007)(2906002)(38070700005)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?lZs5AnrkgFt0pEemIBEoN1D7xZ4yKeWbM+TWY61xcYI3jr63ExoYuACepJ?=
+ =?iso-8859-1?Q?UUfbmzt5rihvjeaOgWubNmz9iSy/T7qnbKiyOSP85E+JROai92P2IjfuBX?=
+ =?iso-8859-1?Q?P3bzgrSqe8uHVJjW8yZFKIzDaNnvAKYIPsjjwauwNV80C8438yoqOJhhn3?=
+ =?iso-8859-1?Q?x7DuFIPXsWjI9ZMqedum7UhAnL7C5rI/OfMk7sBX9vZ5riMkHh/IQOXq4q?=
+ =?iso-8859-1?Q?BC9CanasMa+Z9kPFL+dNmQpokb8MhzLENKrx9gkqL3uaOuhyzFajVGfrUf?=
+ =?iso-8859-1?Q?YKzxDj27yW+TsRQna5xWz6fFNv5d9mBWo9GK1s3fXU6daUBNsjrXGihEYf?=
+ =?iso-8859-1?Q?5K5fKrBTcLJhlbWv06kjMhtCfI2RiUY1aolpt6ImmrQjOt2dOjUuyrvK9j?=
+ =?iso-8859-1?Q?NrdOGmEcKHH/ageQJdYva5G7unQ3TPnisZEDQvo30ML1romlGCSRdrf5Io?=
+ =?iso-8859-1?Q?pEG5AaTFm+ramlOiVwpQGigPxg2iPIbIRzmidrczHraqrks3jZ2gPLCL/e?=
+ =?iso-8859-1?Q?EKxJLR6T/ccYGn0hUwH6UE2ofTMeonK6+ItxZLb3OiZWaDJOIk6rhd+w8r?=
+ =?iso-8859-1?Q?N6y80ED34o+NpNURFgb/BawppL8RbCp4zWoRT+/vczqpXelFAjOfaBu2I8?=
+ =?iso-8859-1?Q?6epcElgQsPAcZa6i31Nwkw5tP0f1Xuf5czHOHJsRaJQxGjKpwxApr7DC3a?=
+ =?iso-8859-1?Q?UCD2v9UZlEkqRmg+XZFETB/1RITMr/+0uK6C2zwrrbr7kUu11oGEmbFZx8?=
+ =?iso-8859-1?Q?OxKW9z3Se8LWu7mcZbApSzNa+1FseSB6XpkoBywXSYZjQVSPeZER4p1pwb?=
+ =?iso-8859-1?Q?+nmOc/a0GzcAqKhFZvS7dvAwbFLplFz9FUCi55wuv5lTcTM6aA8StwGki8?=
+ =?iso-8859-1?Q?7qYHSjqSnuBo+omFwO4MACquvZDd7ITNgxwuuWM/KbchMpq6zc6PyRM3NI?=
+ =?iso-8859-1?Q?UmIx477N+Ox4Gbk7D/j2CUtd9chSt43373FlEjqHRAI/Ym4K8U1JLGF4/u?=
+ =?iso-8859-1?Q?x6ceRWTbyJOPCsSVak3qWt0YXFVz35axZ0Z3jYmcVyKXv1fExJHBjGi/xi?=
+ =?iso-8859-1?Q?dBmuf62cLmzvLurxv8u9+sqqFTBPaMPdzH2+44yykPls+Ci+pMOBwQhRwd?=
+ =?iso-8859-1?Q?C768xqzHKFywCTDJ5eO4OgVjtssdFeuwqO9RLge/n9aiuz3ndX6fcQOnBi?=
+ =?iso-8859-1?Q?qm2GkAnnFo3K9q0AMIXFvQr2DvNiTVKJAqH9tzEMgoSrvfbeRx0nw6uYJo?=
+ =?iso-8859-1?Q?UKCeNTSTtVNqmygLa/Uk5tdn5YmuvBVsQCPDxm65hIkgTtIlzBP3q8mlPP?=
+ =?iso-8859-1?Q?VZO6UMx0UI3PmcfHV0Su0KC8Myur+GFY6G0urGc8QaD1dbCTBnbRKY4+ZK?=
+ =?iso-8859-1?Q?uuNTEhna6mjNIF280OfbmzEMO8ayjOW8c9cdRcNLKm5G9VTA06OaY4q4Bw?=
+ =?iso-8859-1?Q?IlVJ4DHFReP3BL1O2Wmmcorw2aZyoJkvQKpLYvclKOH5lAkIqnj0WwA19R?=
+ =?iso-8859-1?Q?9oryO+ad16EI1Huk1yetvSHPbT1EcZ2uBvdz3FkBaouQnf4uTCcUyVRowC?=
+ =?iso-8859-1?Q?moCg0v2q8nSqGTialYkCafdTD6uou0wO+F8vv4QIs4ssEa3uGZL5SY5RWv?=
+ =?iso-8859-1?Q?/O4Zvwpnow+Cbhok07PrF52xHc0e61PLmcIqvx16vM75WQQ1cdUmoiVw?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 213d2e44-0a30-486f-5e73-08da844fe752
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2022 15:06:30.8472
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dzmq0SW1Lkb1E+qeWFg8GLhzrZc9X++11Xesp0Xy9tU2N9dJer9ENH1GSiHfmmcJIQLhgRd8e22507iNzooEdg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1433
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_09,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 adultscore=0 bulkscore=0
+ mlxlogscore=999 spamscore=0 phishscore=0 suspectscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208220065
+X-Proofpoint-GUID: 8216mKPr939Dhy9jtSPO0hnmKe3vBF9t
+X-Proofpoint-ORIG-GUID: 8216mKPr939Dhy9jtSPO0hnmKe3vBF9t
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-head:   22a992953741ad79c07890d3f4104585e52ef26b
-commit: ca2e1cc1f82f619eeb2aa22f06f01097bac355fd [3493/3591] serial: 8250: Add proper clock handling for OxSemi PCIe devices
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=ca2e1cc1f82f619eeb2aa22f06f01097bac355fd
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.18.y
-        git checkout ca2e1cc1f82f619eeb2aa22f06f01097bac355fd
-        make menuconfig
-        # enable CONFIG_COMPILE_TEST, CONFIG_WARN_MISSING_DOCUMENTS, CONFIG_WARN_ABI_ERRORS
-        make htmldocs
+From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/mprotect.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-All warnings (new ones prefixed by >>):
-
->> Documentation/tty/device_drivers/oxsemi-tornado.rst:41: WARNING: Inline interpreted text or phrase reference start-string without end-string.
->> Documentation/tty/device_drivers/oxsemi-tornado.rst:96: WARNING: Block quote ends without a blank line; unexpected unindent.
->> Documentation/tty/device_drivers/oxsemi-tornado.rst: WARNING: document isn't included in any toctree
-
-vim +41 Documentation/tty/device_drivers/oxsemi-tornado.rst
-
-    40	
-  > 41	Here are the figures for the standard and some non-standard baud rates
-    42	(including those quoted in Oxford Semiconductor documentation), giving
-    43	the requested rate (r), the actual rate yielded (a) and its deviation
-    44	from the requested rate (d), and the values of the oversampling rate
-    45	(tcr), the clock prescaler (cpr) and the divisor (div) produced by the
-    46	new `get_divisor' handler:
-    47	
-    48	r: 15625000, a: 15625000.00, d:  0.0000%, tcr:  4, cpr:  1.000, div:     1
-    49	r: 12500000, a: 12500000.00, d:  0.0000%, tcr:  5, cpr:  1.000, div:     1
-    50	r: 10416666, a: 10416666.67, d:  0.0000%, tcr:  6, cpr:  1.000, div:     1
-    51	r:  8928571, a:  8928571.43, d:  0.0000%, tcr:  7, cpr:  1.000, div:     1
-    52	r:  7812500, a:  7812500.00, d:  0.0000%, tcr:  8, cpr:  1.000, div:     1
-    53	r:  4000000, a:  4000000.00, d:  0.0000%, tcr:  5, cpr:  3.125, div:     1
-    54	r:  3686400, a:  3676470.59, d: -0.2694%, tcr:  8, cpr:  2.125, div:     1
-    55	r:  3500000, a:  3496503.50, d: -0.0999%, tcr: 13, cpr:  1.375, div:     1
-    56	r:  3000000, a:  2976190.48, d: -0.7937%, tcr: 14, cpr:  1.500, div:     1
-    57	r:  2500000, a:  2500000.00, d:  0.0000%, tcr: 10, cpr:  2.500, div:     1
-    58	r:  2000000, a:  2000000.00, d:  0.0000%, tcr: 10, cpr:  3.125, div:     1
-    59	r:  1843200, a:  1838235.29, d: -0.2694%, tcr: 16, cpr:  2.125, div:     1
-    60	r:  1500000, a:  1492537.31, d: -0.4975%, tcr:  5, cpr:  8.375, div:     1
-    61	r:  1152000, a:  1152073.73, d:  0.0064%, tcr: 14, cpr:  3.875, div:     1
-    62	r:   921600, a:   919117.65, d: -0.2694%, tcr: 16, cpr:  2.125, div:     2
-    63	r:   576000, a:   576036.87, d:  0.0064%, tcr: 14, cpr:  3.875, div:     2
-    64	r:   460800, a:   460829.49, d:  0.0064%, tcr:  7, cpr:  3.875, div:     5
-    65	r:   230400, a:   230414.75, d:  0.0064%, tcr: 14, cpr:  3.875, div:     5
-    66	r:   115200, a:   115207.37, d:  0.0064%, tcr: 14, cpr:  1.250, div:    31
-    67	r:    57600, a:    57603.69, d:  0.0064%, tcr:  8, cpr:  3.875, div:    35
-    68	r:    38400, a:    38402.46, d:  0.0064%, tcr: 14, cpr:  3.875, div:    30
-    69	r:    19200, a:    19201.23, d:  0.0064%, tcr:  8, cpr:  3.875, div:   105
-    70	r:     9600, a:     9600.06, d:  0.0006%, tcr:  9, cpr:  1.125, div:   643
-    71	r:     4800, a:     4799.98, d: -0.0004%, tcr:  7, cpr:  2.875, div:   647
-    72	r:     2400, a:     2400.02, d:  0.0008%, tcr:  9, cpr:  2.250, div:  1286
-    73	r:     1200, a:     1200.00, d:  0.0000%, tcr: 14, cpr:  2.875, div:  1294
-    74	r:      300, a:      300.00, d:  0.0000%, tcr: 11, cpr:  2.625, div:  7215
-    75	r:      200, a:      200.00, d:  0.0000%, tcr: 16, cpr:  1.250, div: 15625
-    76	r:      150, a:      150.00, d:  0.0000%, tcr: 13, cpr:  2.250, div: 14245
-    77	r:      134, a:      134.00, d:  0.0000%, tcr: 11, cpr:  2.625, div: 16153
-    78	r:      110, a:      110.00, d:  0.0000%, tcr: 12, cpr:  1.000, div: 47348
-    79	r:       75, a:       75.00, d:  0.0000%, tcr:  4, cpr:  5.875, div: 35461
-    80	r:       50, a:       50.00, d:  0.0000%, tcr: 16, cpr:  1.250, div: 62500
-    81	r:       25, a:       25.00, d:  0.0000%, tcr: 16, cpr:  2.500, div: 62500
-    82	r:        4, a:        4.00, d:  0.0000%, tcr: 16, cpr: 20.000, div: 48828
-    83	r:        2, a:        2.00, d:  0.0000%, tcr: 16, cpr: 40.000, div: 48828
-    84	r:        1, a:        1.00, d:  0.0000%, tcr: 16, cpr: 63.875, div: 61154
-    85	
-    86	With the baud base set to 15625000 and the unsigned 16-bit UART_DIV_MAX
-    87	limitation imposed by `serial8250_get_baud_rate' standard baud rates
-    88	below 300bps become unavailable in the regular way, e.g. the rate of
-    89	200bps requires the baud base to be divided by 78125 and that is beyond
-    90	the unsigned 16-bit range.  The historic spd_cust feature can still be
-    91	used by encoding the values for, the prescaler, the oversampling rate
-    92	and the clock divisor (DLM/DLL) as follows to obtain such rates if so
-    93	required:
-    94	
-    95	 31 29 28             20 19   16 15                            0
-  > 96	+-----+-----------------+-------+-------------------------------+
-    97	|0 0 0|    CPR2:CPR     |  TCR  |            DLM:DLL            |
-    98	+-----+-----------------+-------+-------------------------------+
-    99	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index 3a4de77161e9..5bb37e639bfa 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -674,6 +674,7 @@ static int do_mprotect_pkey(unsigned long start, size_t=
+ len,
+ 	const bool rier =3D (current->personality & READ_IMPLIES_EXEC) &&
+ 				(prot & PROT_READ);
+ 	struct mmu_gather tlb;
++	MA_STATE(mas, &current->mm->mm_mt, start, start);
+=20
+ 	start =3D untagged_addr(start);
+=20
+@@ -705,7 +706,7 @@ static int do_mprotect_pkey(unsigned long start, size_t=
+ len,
+ 	if ((pkey !=3D -1) && !mm_pkey_is_allocated(current->mm, pkey))
+ 		goto out;
+=20
+-	vma =3D find_vma(current->mm, start);
++	vma =3D mas_find(&mas, ULONG_MAX);
+ 	error =3D -ENOMEM;
+ 	if (!vma)
+ 		goto out;
+@@ -731,7 +732,7 @@ static int do_mprotect_pkey(unsigned long start, size_t=
+ len,
+ 	if (start > vma->vm_start)
+ 		prev =3D vma;
+ 	else
+-		prev =3D vma->vm_prev;
++		prev =3D mas_prev(&mas, 0);
+=20
+ 	tlb_gather_mmu(&tlb, current->mm);
+ 	for (nstart =3D start ; ; ) {
+@@ -794,7 +795,7 @@ static int do_mprotect_pkey(unsigned long start, size_t=
+ len,
+ 		if (nstart >=3D end)
+ 			break;
+=20
+-		vma =3D prev->vm_next;
++		vma =3D find_vma(current->mm, prev->vm_end);
+ 		if (!vma || vma->vm_start !=3D nstart) {
+ 			error =3D -ENOMEM;
+ 			break;
+--=20
+2.35.1
