@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056E4C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0C4C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238648AbiHVTWN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S238661AbiHVTWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238699AbiHVTU5 (ORCPT
+        with ESMTP id S238710AbiHVTU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:20:57 -0400
+        Mon, 22 Aug 2022 15:20:58 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CFC613D08;
-        Mon, 22 Aug 2022 12:20:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1392F15807;
+        Mon, 22 Aug 2022 12:20:32 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id F3AD4DA5;
-        Mon, 22 Aug 2022 22:23:29 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com F3AD4DA5
+        by mail.baikalelectronics.com (Postfix) with ESMTP id E3F3EDA2;
+        Mon, 22 Aug 2022 22:23:35 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com E3F3EDA2
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661196210;
-        bh=hYISXOPwelQMZEnoI/XHwiZ9SYWjZeM4wKuUzRG7AZg=;
+        d=baikalelectronics.ru; s=mail; t=1661196215;
+        bh=6swM1whTtvPfTaOrJikk+hfpL/sTWjJYu/9G57jnEaU=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=CVqMr9a2i8OyAqPdjse8KdEXMb7CJiqMEPrqqZnHa83BaoCXuPH1Vqw/Pc8Ei87x4
-         zmAhXhx+IN+58j1KxMEiaJ47jHVCfoMEjwwjo77b5dxMU20QbkNSm19ArqSFu2wS6n
-         /p3p5/1qKZtUVG3102H1WmvwppI32aas0TxXsT44=
+        b=E0Z4/y2TB16bsvPvNSif5uE2i/GjZiWpqaEZ+QAe86dss87n2sYQ9z+0ldrpxSjgt
+         FFbRT+idoxGExAMS2/ZTczPBB2PFo04ls3stzAFa58ZMRSytIVDR7XQlXTeAut7Ko2
+         asARih1+dYjDIcjzgi7CztslfGvoZVjBlTpVW/IU=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:20:15 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:20:21 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Michal Simek <michal.simek@xilinx.com>,
         Borislav Petkov <bp@alien8.de>,
@@ -49,9 +49,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 03/13] EDAC/synopsys: Add multi-ranked memory support
-Date:   Mon, 22 Aug 2022 22:19:46 +0300
-Message-ID: <20220822191957.28546-4-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 09/13] EDAC/synopsys: Add DFI alert_n IRQ support
+Date:   Mon, 22 Aug 2022 22:19:52 +0300
+Message-ID: <20220822191957.28546-10-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -62,81 +62,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DW uMCTL2 DDRC supports multi-rank memory attached to the controller. If
-so the MSTR.active_ranks field will be set with the populated ranks
-bitfield. It is permitted to have one, two or four ranks activated at a
-time [1]. Since we now have the number of ranks determined in the
-controller configuration detection procedure, it can be easily used for
-accordingly extending the MCI chip-select layer. In case of the ECC errors
-the affected rank will be read from the CE/UE address CSRs [2].
+In accordance with [1] DW uMCTL2 DDR controller can generate an IRQ in
+case if an attached SDRAM detects a CRC/Parity error. That capability is
+mainly applicable for the DDR4 memory which has an additional signals
+PARITY/ALERT_n indicating the even SDRAM address/command parity signal and
+alert if the parity turns to be not even. But in accordance with [1] at
+least the SDRAM address/command parity is calculated irrespective of the
+memory protocol and then sent out by means of the dfi_parity_n signal
+further to the DDR PHY. So depending on the DDR protocol and the DDR PHY
+implementation the CRC/Parity error can be checked at some point
+independently from the DDR devices type and then signaled via the
+dfi_alert_n line. In anycase it would be very much useful to catch the
+event and at least warn the user about problems with the DFI/SDRAM signals
+integrity.
 
-Note we need to drop the ranks from the total memory size calculation
-since multiple ranks are taken into account by means of the layer[0]
-definition.
+So here we suggest to add the DFI CRC/Parity IRQs handling support. First
+the IRQ line is requested by the name "dfi_e" (defined in the DT-bindings)
+and register its handler in case of the platform with the individual DW
+uMCTL2 DDRC IRQs. If individual IRQs are unavailable the common IRQ
+handler will call the DFI CRC/Parity event handler. Note the handler
+doesn't do much. It just checks the IRQ status, reads the number of
+errors, reports the fatal error to the MCI core and clears the IRQ status.
+Alas neither the erroneous SDRAM address nor the executed command are
+available in this case. Secondly the DFI CRC/Parity IRQ is
+enabled/disabled together with the ECC CE/UE interrupts in the controller
+probe procedure.  Finally the CRC/Parity capability is advertised by the
+EDAC controller capabilities flags.
 
 [1] DesignWare® Cores Enhanced Universal DDR Memory Controller (uMCTL2)
-    Databook, Version 3.91a, October 2020, p.739
-[2] DesignWare® Cores Enhanced Universal DDR Memory Controller (uMCTL2)
-    Databook, Version 3.91a, October 2020, p.821, p.832
+    Databook, Version 3.91a, October 2020, p.131-132
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/edac/synopsys_edac.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/edac/synopsys_edac.c | 78 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 75 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index 90b57986a9b5..872ad9a164a7 100644
+index e7d59238c5ca..cdfa0e16bc5c 100644
 --- a/drivers/edac/synopsys_edac.c
 +++ b/drivers/edac/synopsys_edac.c
-@@ -23,9 +23,6 @@
+@@ -80,6 +80,12 @@
+ #define ECC_POISON0_OFST		0xB8
+ #define ECC_POISON1_OFST		0xBC
  
- #include "edac_module.h"
++/* DDR CRC/Parity register */
++#define DDR_CRCPARCTL0_OFST		0xC0
++#define DDR_CRCPARCTL1_OFST		0xC4
++#define DDR_CRCPARCTL2_OFST		0xC8
++#define DDR_CRCPARSTAT_OFST		0xCC
++
+ /* DDR Address map0 Registers */
+ #define DDR_ADDRMAP0_OFST		0x200
  
--/* Number of cs_rows needed per memory controller */
--#define SNPS_EDAC_NR_CSROWS		1
--
- /* Number of channels per memory controller */
- #define SNPS_EDAC_NR_CHANS		1
+@@ -153,6 +159,13 @@
+ #define ECC_CEADDR1_BANK_MASK		GENMASK(23, 16)
+ #define ECC_CEADDR1_COL_MASK		GENMASK(11, 0)
  
-@@ -795,7 +792,7 @@ static void snps_handle_error(struct mem_ctl_info *mci, struct snps_ecc_status *
- 
- 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, p->ce_cnt,
- 				     PHYS_PFN(sys), offset_in_page(sys),
--				     pinf->syndrome, 0, 0, -1,
-+				     pinf->syndrome, pinf->sdram.rank, 0, -1,
- 				     priv->message, "");
- 	}
- 
-@@ -812,7 +809,7 @@ static void snps_handle_error(struct mem_ctl_info *mci, struct snps_ecc_status *
- 
- 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, p->ue_cnt,
- 				     PHYS_PFN(sys), offset_in_page(sys),
--				     pinf->syndrome, 0, 0, -1,
-+				     pinf->syndrome, pinf->sdram.rank, 0, -1,
- 				     priv->message, "");
- 	}
- 
-@@ -1411,10 +1408,7 @@ static u64 snps_get_sdram_size(struct snps_edac_priv *priv)
- 			size++;
- 	}
- 
--	for (i = 0; i < DDR_MAX_RANK_WIDTH; i++) {
--		if (map->rank[i] != DDR_ADDRMAP_UNUSED)
--			size++;
--	}
-+	/* Skip the ranks since the multi-rankness is determined by layer[0] */
- 
- 	return 1ULL << (size + priv->info.dq_width);
++/* DDR CRC/Parity register definitions */
++#define DDR_CRCPARCTL0_CLR_ALRT_ERRCNT	BIT(2)
++#define DDR_CRCPARCTL0_CLR_ALRT_ERR	BIT(1)
++#define DDR_CRCPARCTL0_EN_ALRT_IRQ	BIT(0)
++#define DDR_CRCPARSTAT_ALRT_ERR		BIT(16)
++#define DDR_CRCPARSTAT_ALRT_CNT_MASK	GENMASK(15, 0)
++
+ /* ECC Poison register shifts */
+ #define ECC_POISON0_RANK_MASK		GENMASK(27, 24)
+ #define ECC_POISON0_COL_MASK		GENMASK(11, 0)
+@@ -829,6 +842,48 @@ static irqreturn_t snps_ue_irq_handler(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
  }
-@@ -1468,7 +1462,7 @@ static struct mem_ctl_info *snps_mc_create(struct snps_edac_priv *priv)
- 	struct mem_ctl_info *mci;
  
- 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
--	layers[0].size = SNPS_EDAC_NR_CSROWS;
-+	layers[0].size = priv->info.ranks;
- 	layers[0].is_virt_csrow = true;
- 	layers[1].type = EDAC_MC_LAYER_CHANNEL;
- 	layers[1].size = SNPS_EDAC_NR_CHANS;
++/**
++ * snps_dfi_irq_handler - DFI CRC/Parity error interrupt handler.
++ * @irq:        IRQ number.
++ * @dev_id:     Device ID.
++ *
++ * Return: IRQ_NONE, if interrupt not set or IRQ_HANDLED otherwise.
++ */
++static irqreturn_t snps_dfi_irq_handler(int irq, void *dev_id)
++{
++	struct mem_ctl_info *mci = dev_id;
++	struct snps_edac_priv *priv = mci->pvt_info;
++	unsigned long flags;
++	u32 regval;
++	u16 ecnt;
++
++	/* Make sure IRQ is caused by an DFI alert error */
++	regval = readl(priv->baseaddr + DDR_CRCPARSTAT_OFST);
++	if (!(regval & DDR_CRCPARSTAT_ALRT_ERR))
++		return IRQ_NONE;
++
++	/* Just a number of CRC/Parity errors is available */
++	ecnt = FIELD_GET(DDR_CRCPARSTAT_ALRT_CNT_MASK, regval);
++
++	/* Report the detected errors with just the custom message */
++	snprintf(priv->message, SNPS_EDAC_MSG_SIZE,
++		 "DFI CRC/Parity error detected on dfi_alert_n");
++
++	edac_mc_handle_error(HW_EVENT_ERR_FATAL, mci, ecnt,
++			     0, 0, 0, 0, 0, -1, priv->message, "");
++
++	/* Make sure the DFI alert IRQ status is cleared */
++	spin_lock_irqsave(&priv->lock, flags);
++
++	regval = readl(priv->baseaddr + DDR_CRCPARCTL0_OFST) |
++		 DDR_CRCPARCTL0_CLR_ALRT_ERR | DDR_CRCPARCTL0_CLR_ALRT_ERRCNT;
++	writel(regval, priv->baseaddr + DDR_CRCPARCTL0_OFST);
++
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return IRQ_HANDLED;
++}
++
+ /**
+  * snps_com_irq_handler - Interrupt IRQ signal handler.
+  * @irq:        IRQ number.
+@@ -844,6 +899,8 @@ static irqreturn_t snps_com_irq_handler(int irq, void *dev_id)
+ 
+ 	rc |= snps_ue_irq_handler(irq, dev_id);
+ 
++	rc |= snps_dfi_irq_handler(irq, dev_id);
++
+ 	return rc;
+ }
+ 
+@@ -859,11 +916,16 @@ static void snps_enable_irq(struct snps_edac_priv *priv)
+ 		return;
+ 	}
+ 
+-	/* IRQs Enable/Disable feature has been available since v3.10a */
++	/*
++	 * ECC IRQs Enable/Disable feature has been available since v3.10a,
++	 * while CRC/Parity interrupts control - since v2.10a.
++	 */
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+ 	writel(ECC_CTRL_EN_CE_IRQ | ECC_CTRL_EN_UE_IRQ,
+ 	       priv->baseaddr + ECC_CLR_OFST);
++	writel(DDR_CRCPARCTL0_EN_ALRT_IRQ,
++	       priv->baseaddr + DDR_CRCPARCTL0_OFST);
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ }
+@@ -883,6 +945,7 @@ static void snps_disable_irq(struct snps_edac_priv *priv)
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+ 	writel(0, priv->baseaddr + ECC_CLR_OFST);
++	writel(0, priv->baseaddr + DDR_CRCPARCTL0_OFST);
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ }
+@@ -1483,7 +1546,8 @@ static struct mem_ctl_info *snps_mc_create(struct snps_edac_priv *priv)
+ 	mci->mtype_cap = MEM_FLAG_LPDDR | MEM_FLAG_DDR2 | MEM_FLAG_LPDDR2 |
+ 			 MEM_FLAG_DDR3 | MEM_FLAG_LPDDR3 |
+ 			 MEM_FLAG_DDR4 | MEM_FLAG_LPDDR4;
+-	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
++	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED | EDAC_FLAG_PARITY;
++	mci->edac_cap = mci->edac_ctl_cap;
+ 
+ 	if (priv->info.caps & SNPS_CAP_ECC_SCRUB) {
+ 		mci->scrub_mode = SCRUB_HW_SRC;
+@@ -1493,7 +1557,6 @@ static struct mem_ctl_info *snps_mc_create(struct snps_edac_priv *priv)
+ 		mci->scrub_cap = SCRUB_FLAG_SW_SRC;
+ 	}
+ 
+-	mci->edac_cap = EDAC_FLAG_SECDED;
+ 	mci->ctl_name = "snps_umctl2_ddrc";
+ 	mci->dev_name = SNPS_EDAC_MOD_STRING;
+ 	mci->mod_name = SNPS_EDAC_MOD_VER;
+@@ -1559,6 +1622,15 @@ static int snps_request_ind_irq(struct mem_ctl_info *mci)
+ 		return rc;
+ 	}
+ 
++	irq = platform_get_irq_byname_optional(priv->pdev, "dfi_e");
++	if (irq > 0) {
++		rc = devm_request_irq(dev, irq, snps_dfi_irq_handler, 0, "dfi_e", mci);
++		if (rc) {
++			edac_printk(KERN_ERR, EDAC_MC, "Failed to request DFI IRQ\n");
++			return rc;
++		}
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
