@@ -2,97 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE501C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC7AC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235479AbiHVOJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
+        id S235462AbiHVOJv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235462AbiHVOJE (ORCPT
+        with ESMTP id S235630AbiHVOJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:09:04 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3B525290
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:09:02 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-11c5505dba2so12964370fac.13
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:09:02 -0700 (PDT)
+        Mon, 22 Aug 2022 10:09:49 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0782132EF0;
+        Mon, 22 Aug 2022 07:09:49 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id d71so9453881pgc.13;
+        Mon, 22 Aug 2022 07:09:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=igSf/TxTkVuRcHrBbiiQMryoJhzhxyi4i/AdL/IKB1M=;
-        b=8PMSwRgXTbp4Xgnxp3O8KZuqs7DWc2jx4iPEcWpKpIU5J5NFednVVBqMJ02EqmdlmJ
-         HgFBJH3ReDcpA0Rlx4B4UzxuPuRSQK5CCjNywrQuzLDnmvDPJD/DFQvWJaI1dP5doF/u
-         LBHcIH3iE/hx6Fbj1y7646s7mhW/kOwTAMPCK6761bbl810bv86ZWhk5unOfA1Ub6oMJ
-         tFN6t5qXY6h1oUXPK6N43KVvdMrStNomBA0GVawVbXI+2iLXqEhfveFbgRmEaaWLk0+u
-         RN9La20QfEdyRvWgHphW028C/uW8q0wvYzGZY7McoRuPC5cL+mvyZUc9pS7DRrdFBE7v
-         C7hQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=QqKZtUuDZr8epml/4TWu2DuBoI/5UNTO8X2q916obAU=;
+        b=RFoT9WZkCeKGDhrABTAwR/oNnBYpdK2+cncWYnOdJnK1BQ6gBfsj+PrxwkpBsRmxUA
+         XQ/7mIG1bHOZvaMxGWMJ3A3YSOyx07lYsjKQUESuWk3H0Rib3+IwdbgF0+JE/d5KDykW
+         7ZEoFBwMBpgv7wFPOrujo/qfQ8bV75XDbX/V+F46kCXTMoD6ChzecfXJ7pEoAL7Yle61
+         QfVUNT/K1x5f3X5OAi2llahBZ7Q4+cRR9qDzgF5xRfo42vie93P2eatLG6fnzAAPubTh
+         woH56+IzmXZu40h3tAV/CfprHSOjjcpnofiHIyN+2S7+MMxNkDUZ2SfO+qPuaxD9X9Wk
+         FA+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=igSf/TxTkVuRcHrBbiiQMryoJhzhxyi4i/AdL/IKB1M=;
-        b=wKhqQvgFlMZQd1dNfhjjpM+2wnutR9WVXsUpZqQ045kHbMe6/fl1YblA5zfyx6/SIG
-         xxjZiHG9Ol7A2Nej5mK7OUBN5VHp1xMSqLUT5P2S1XRqHY7YPxpua1WYnXAMjRjUSwWW
-         wJi5BqTzesz0dYHgkf+d6V3xpFgbguRWJD4QlGYxgbOhDSzBf/Hi0MWZEKtyn3UeYeII
-         86/syPSffAl9KTreG1kjk9VoXdykPB/iPuALueECcCMd94oLH+OAT0XXYf6+iuGM71QV
-         9Lx2FtIrh/ilNisI30nveRZsH3YatpMhHVvONgKrojP5fyhQuhoF2mDdvksmWGADZarF
-         5UjA==
-X-Gm-Message-State: ACgBeo2krQIJWxpcmbn6EOZR3gn9UorBzfUxAmWShl8d4WjMCH6hMZk6
-        u8fT5D5KOup688dOE8qlovuvJcU0u1DWChCsZO24
-X-Google-Smtp-Source: AA6agR6cdETMfd/SjAWaIc+njLRHCYDbZQEGlFvahUPtrNZEvI2MntCyPPrurmD7nZrG3gL/k/zPMwRlqbCbiVLrVAw=
-X-Received: by 2002:a05:6870:7092:b0:11d:83fe:9193 with SMTP id
- v18-20020a056870709200b0011d83fe9193mr820426oae.41.1661177342105; Mon, 22 Aug
- 2022 07:09:02 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=QqKZtUuDZr8epml/4TWu2DuBoI/5UNTO8X2q916obAU=;
+        b=5kqRfFDvlaB8YIRqAFU+Q5dVezZexdBt/+ksnYIHlJWcNta8VvDdWfV4NP+gAFxPLx
+         zo8vd/G+KVPJQU/3xD3gJ8/HM45V8Y31xPVRMSDA1Gp8CiE5f8f4rTxgtsJBjWTm9BLk
+         zyaSwte3iUMYCpGV4Yz84A8pnobbTzKxrbZXzefodICXE2IcbbYeiv0j58mzd2rPUjsS
+         5HG4qq07D2GC8W182hzUHo8Xxf4Ngfj9fjFystGUVqnhcXgoEMRxX205tgAVd3vsOTc2
+         VeB59EeI/RGD0HHLB1R4TYvzjrYc2zr1X0B0cXd0+8D9ludciobIbPq9IBEAbq2hJtK5
+         sPKQ==
+X-Gm-Message-State: ACgBeo2CnSZsKSVnaisCjR3dWF0XpU473Y3ruI0Vf05kZVfoxECF8kZn
+        7O8pMQoePYQZOJj3d/jXhYaPiXQRCwU=
+X-Google-Smtp-Source: AA6agR4oDS5asvwrF+m/y9egx7Oi3BAvt54PEa8m6FAll71+1WXqQx4MVFGkxoOC7L9W+sgoHQWp/Q==
+X-Received: by 2002:a65:6cc7:0:b0:42a:4d40:8dc1 with SMTP id g7-20020a656cc7000000b0042a4d408dc1mr12257889pgw.321.1661177388433;
+        Mon, 22 Aug 2022 07:09:48 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z12-20020aa79e4c000000b00535e950aa28sm7941944pfq.131.2022.08.22.07.09.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 07:09:47 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 22 Aug 2022 07:09:46 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+Cc:     wim@linux-watchdog.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com, kernel@pengutronix.de,
+        linux-imx@nxp.com, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout issue
+Message-ID: <20220822140946.GC4087281@roeck-us.net>
+References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
+ <20220816043643.26569-5-alice.guo@oss.nxp.com>
 MIME-Version: 1.0
-References: <20220729090513.1467-1-liutie4@huawei.com>
-In-Reply-To: <20220729090513.1467-1-liutie4@huawei.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 22 Aug 2022 10:08:51 -0400
-Message-ID: <CAHC9VhT-UHMc6XSiCwnA90w0C9xNYHZcZhuDidh7HmddHcgEig@mail.gmail.com>
-Subject: Re: [PATCH] audit: Modifying indentation issue.
-To:     l00581214 <liutie4@huawei.com>
-Cc:     eparis@redhat.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hewenliang4@huawei.com,
-        linfeilong@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816043643.26569-5-alice.guo@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 5:05 AM l00581214 <liutie4@huawei.com> wrote:
->
-> From: Tie Liu <liutie4@huawei.com>
->
-> Modifying indentation issue in audit_rate_check().
->
-> Signed-off-by: Tie Liu <liutie4@huawei.com>
+On Tue, Aug 16, 2022 at 12:36:40PM +0800, Alice Guo (OSS) wrote:
+> From: Ye Li <ye.li@nxp.com>
+> 
+> According to measure on i.MX7ULP and i.MX8ULP, the RCS done needs
+> about 3400us and 6700us respectively. So current 20us timeout is
+> not enough. When reconfiguring is on-going, unlock and configure CS
+> will lead to unknown result.
+> 
+> Increase the wait timeout value to 10ms and check the return value
+> of RCS wait to fix the issue
+> 
+
+You'll have to find a better solution. An active (non-sleep) wait of
+10 ms is unacceptable.
+
+Guenter
+
+> Signed-off-by: Ye Li <ye.li@nxp.com>
+> Signed-off-by: Alice Guo <alice.guo@nxp.com>
+> Reviewed-by: Jacky Bai <ping.bai@nxp.com>
+> Acked-by: Jason Liu <jason.hui.liu@nxp.com>
 > ---
->  kernel/audit.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-
-While I agree that the style in this patch is preferable to the
-existing style in the code, I'm growing weary of these minor style
-change from developers who have not contributing any other meaningful
-change to the audit subsystem.  Once you have established a history of
-useful contributions to the audit subsystem feel free to (re)submit
-this patch.
-
-> diff --git a/kernel/audit.c b/kernel/audit.c
-> index 7690c29d4..deeede166 100644
-> --- a/kernel/audit.c
-> +++ b/kernel/audit.c
-> @@ -324,7 +324,8 @@ static inline int audit_rate_check(void)
->         unsigned long           elapsed;
->         int                     retval     = 0;
->
-> -       if (!audit_rate_limit) return 1;
-> +       if (!audit_rate_limit)
-> +               return 1;
->
->         spin_lock_irqsave(&lock, flags);
->         if (++messages < audit_rate_limit) {
-
--- 
-paul-moore.com
+>  drivers/watchdog/imx7ulp_wdt.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/watchdog/imx7ulp_wdt.c b/drivers/watchdog/imx7ulp_wdt.c
+> index a0f6b8cea78f..12715c248688 100644
+> --- a/drivers/watchdog/imx7ulp_wdt.c
+> +++ b/drivers/watchdog/imx7ulp_wdt.c
+> @@ -39,7 +39,7 @@
+>  #define DEFAULT_TIMEOUT	60
+>  #define MAX_TIMEOUT	128
+>  #define WDOG_CLOCK_RATE	1000
+> -#define WDOG_WAIT_TIMEOUT	20
+> +#define WDOG_WAIT_TIMEOUT	10000
+>  
+>  static bool nowayout = WATCHDOG_NOWAYOUT;
+>  module_param(nowayout, bool, 0000);
+> @@ -80,7 +80,7 @@ static int imx7ulp_wdt_enable(struct watchdog_device *wdog, bool enable)
+>  		writel(val | WDOG_CS_EN, wdt->base + WDOG_CS);
+>  	else
+>  		writel(val & ~WDOG_CS_EN, wdt->base + WDOG_CS);
+> -	imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> +	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+>  
+>  enable_out:
+>  	local_irq_enable();
+> @@ -127,7 +127,9 @@ static int imx7ulp_wdt_set_timeout(struct watchdog_device *wdog,
+>  	if (ret)
+>  		goto timeout_out;
+>  	writel(val, wdt->base + WDOG_TOVAL);
+> -	imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> +	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> +	if (ret)
+> +		goto timeout_out;
+>  
+>  	wdog->timeout = timeout;
+>  
+> -- 
+> 2.17.1
+> 
