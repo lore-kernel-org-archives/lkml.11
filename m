@@ -2,120 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C016C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48117C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235321AbiHVUOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
+        id S231253AbiHVUOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbiHVUOG (ORCPT
+        with ESMTP id S235412AbiHVUOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:14:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F83311C39;
-        Mon, 22 Aug 2022 13:14:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3186B818C4;
-        Mon, 22 Aug 2022 20:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0BF4C433C1;
-        Mon, 22 Aug 2022 20:14:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661199243;
-        bh=2eMArH3oTnfVZ7xyuUPC1MFLtY362q3YhN4a5dAfrmc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PpeqziVzy4KxHIkZ0JSfcaEQbP83+uVD3nGDRHK+OV4/16sxgQ3/e3iflKnbMOJ4Z
-         2xQn6NvTFGz3A/7UV5nvYNk9rUexI60WOiMj+QaowA6uUtvMm+nT0B42m79Vwr5npP
-         kCg3HT1Wgj8d+G1Q2oasYCthG8ccJMVd5LEABG11AJcGS0q9UtCDGNVP9cFNX8LI+n
-         UgoC/u5OQuyo1LQWiVH8VYc1b0LPom3ca7qglA0y1nIIuYFbjP7mbB8se6MwqwMeWL
-         oiDZkoMQ5EZWR34Dvo9Ixtm2Z2SmT5u9ERAezSI4GiXdvWQOOh/awSfgGkQ+cZHuUR
-         FPkOGrR03xLQw==
-Date:   Mon, 22 Aug 2022 20:39:35 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Ciprian Regus <ciprian.regus@analog.com>
-Cc:     <krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add docs for LTC2499
-Message-ID: <20220822203935.02cfb580@jic23-huawei>
-In-Reply-To: <20220822202435.7dd54583@jic23-huawei>
-References: <20220822125106.1106798-1-ciprian.regus@analog.com>
-        <20220822125106.1106798-2-ciprian.regus@analog.com>
-        <20220822202435.7dd54583@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 22 Aug 2022 16:14:14 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5F513D25
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:14:13 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id w19so23467107ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:14:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=NcQ3vX1YjUpsOQRgUWmgxapa0uiEuU6f+lfCONgZ/IY=;
+        b=i/eur7XtNYwa1twMdba92gOV4mGghw3I/Fu1ZM6jqkBohPR+IRAshk9mxip/TjM6Wf
+         FYH/Xu2vwZlZ7X5pZk++eft/r6S8CBVEEBeXZDfwZWYBBLfbx7MPZ3egt+FfAepCKIxw
+         yAnytPn9TD7uroDJX27hR3xPvb5a6aE2FXzRE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=NcQ3vX1YjUpsOQRgUWmgxapa0uiEuU6f+lfCONgZ/IY=;
+        b=0m1VhQE1rZvVG7+YKhdGLHMChUXYeB4exyt/IceIsAjgFFsGX7fp7UHUpFlFPc628N
+         ZY9WicVAEayRv8Zg834zlsb647JILM3gQx6SpKcYadSk/6Mh63hMOat5kPhLZlxrvUCV
+         DQ8HkSFZTYjBNUg3FeOzL+8L+UOdvakF7RgJFXxpYAYGTavjNtyVfKUDME0rWOCd0yv9
+         ytAyBPKDm/eH4H+IOqg6R+zA1gHe4RDjusSWDdAGBbRxXYI9ADrB27j0ZO6aGgfvB3qo
+         +FDNsTXa9PtoiecAQaiNt2NrbQ1ZqHqZVPTJcvihR1A7NTaVy1h7OhYz3uamzNnqmHOW
+         T7gw==
+X-Gm-Message-State: ACgBeo1eI8DU8HZUWcWbwIoJZBwzzCEVmN4Ou6G1Hy8XRiBv1Um5AuS3
+        QsxSVGSaIXoFyVBtBMc6uOFBpUkpOx1Lt7IxrwY=
+X-Google-Smtp-Source: AA6agR4pVAKV6y83HDgMBVpVTVl5/rfTBPIdTQVwuNw9XnrD0zQbrNOrBDrEv7BHRTZaRtykeFAITg==
+X-Received: by 2002:a17:907:1c01:b0:6f4:2692:e23 with SMTP id nc1-20020a1709071c0100b006f426920e23mr13875695ejc.243.1661199251799;
+        Mon, 22 Aug 2022 13:14:11 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id s24-20020a056402165800b0043df042bfc6sm220864edx.47.2022.08.22.13.14.09
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 13:14:11 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id h24so14559060wrb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:14:09 -0700 (PDT)
+X-Received: by 2002:a05:6000:1541:b0:222:cf65:18d7 with SMTP id
+ 1-20020a056000154100b00222cf6518d7mr11483631wry.659.1661199249451; Mon, 22
+ Aug 2022 13:14:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220726102024.1.Icc838fe7bf0ef54a014ab2fee8af311654f5342a@changeid>
+ <20220822193153.zn2oxljmd76awqot@halaneylaptop>
+In-Reply-To: <20220822193153.zn2oxljmd76awqot@halaneylaptop>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 22 Aug 2022 13:13:55 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=V_V-M1fJmeWH_=wG4GB9GERL9ToAZTwAjX9i-6k6QkWA@mail.gmail.com>
+Message-ID: <CAD=FV=V_V-M1fJmeWH_=wG4GB9GERL9ToAZTwAjX9i-6k6QkWA@mail.gmail.com>
+Subject: Re: [PATCH] regulator: qcom-rpmh: Implement get_optimum_mode(), not set_load()
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     Mark Brown <broonie@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 20:24:35 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Hi,
 
-> On Mon, 22 Aug 2022 15:51:04 +0300
-> Ciprian Regus <ciprian.regus@analog.com> wrote:
-> 
-> > Update the bindings documentation for ltc2497 to include the ltc2499.
-> > 
-> > Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>  
-> Looks fine to me.  Maybe a separate patch to add the ltc2496 binding
-> given the driver is included in this MAINTAINERS entry?
-> A random comment inline.
-> 
-> Jonathan
-> 
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml | 6 +++++-
-> >  MAINTAINERS                                                 | 1 +
-> >  2 files changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> > index c1772b568cd1..7bb30eafc543 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> > @@ -13,10 +13,14 @@ description: |
-> >    16bit ADC supporting up to 16 single ended or 8 differential inputs.
-> >    I2C interface.
-> >  
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/2497fb.pdf
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/2499fe.pdf
-> > +
-> >  properties:
-> >    compatible:
-> > -    const:
-> > +    enum:
-> >        lltc,ltc2497
-> > +      lltc,ltc2499
+On Mon, Aug 22, 2022 at 12:32 PM Andrew Halaney <ahalaney@redhat.com> wrote:
+>
+> Hey Douglas,
+>
+> On Tue, Jul 26, 2022 at 10:20:29AM -0700, Douglas Anderson wrote:
+> > Since we don't actually pass the load to the firmware, switch to using
+> > get_optimum_mode() instead of open-coding it.
+> >
+> > This is intended to have no effect other than cleanup.
+>
+> I hate to post something without looking into it very deeply, but with
+> this statement about no effect I figured I'd report what I'm noticing
+> before diving deeper.
+>
+> I'm currently playing with the dts patches in [0], and without this
+> patch (and a hack patch applied that is unrelated to this) the board boots
+> fine. With this patch applied I get the messages reported in [1] (which I
+> think is still a clean up that should be applied) and the board fails to
+> boot due to regulator_enable() failing at the first invocation I see.
+>
+> Is that something you expect?
+>
+> Here's the ultimate failure message for regulator_enable():
+>
+>     [    1.213419] ufshcd-qcom 1d84000.ufs: Adding to iommu group 0
+>     [    1.219492] ufshcd-qcom 1d84000.ufs: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
+>     [    1.230287] ufshcd-qcom 1d84000.ufs: ufshcd_populate_vreg: Unable to find vccq2-supply regulator, assuming enabled
+>     [    1.241079] vreg_l17c: invalid input voltage found
+>     [    1.246002] ufshcd-qcom 1d84000.ufs: ufshcd_enable_vreg: vcc enable failed, err=-22
+>     [    1.253952] ufshcd-qcom 1d84000.ufs: Initialization failed
+>     [    1.259622] ufshcd-qcom 1d84000.ufs: ufshcd_pltfrm_init() failed -22
+>     [    1.266151] ufshcd-qcom: probe of 1d84000.ufs failed with error -22
+>
+> [0] https://lore.kernel.org/all/20220722143711.17563-1-quic_ppareek@quicinc.com/
+> [1] https://lore.kernel.org/all/166118500944.215002.10320899094541954077.b4-ty@kernel.org/
 
-Oops. Benefit of Rob's build bot later.
+Ah, I see what's happening.
 
-       enum:
-         - lltc,ltc2497
-         - lltc,ltc2499
+When we were using set_load() all the regulator core did was call into
+RPMH and tell it the load.
 
-Just goes to show how wonderful automatic checking is :)
+...but with the get_optimum_mode() the regulator core needs to also
+pass the input and output voltages to RPMH as part of the API call
+(even though RPMH ignores them). That means that if the input voltages
+or output voltages are not known then it will error out before it even
+calls to RPMH. This all might be made worse by the fact that RPMH
+regulators boot up not knowing what their voltage is (see
+"vreg->voltage_selector = -ENOTRECOVERABLE" in
+rpmh_regulator_init_vreg()).
 
-Jonathan
+Ah, I guess it's failing to get the "input" voltage though. I guess
+officially you could fix that by specifying the input supplies? I know
+we never bothered doing that on any trogdor devices, though. If I
+remember correctly all of the magic init that the firmware does for
+RPMH already magically makes the input supplies get enabled / voltage
+tuned properly so we decided that wasn't a benefit to modeling them in
+Linux...
 
-> >  
-> >    reg: true
-> >    vref-supply: true
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 9d7f64dc0efe..3c847619ceb1 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -1327,6 +1327,7 @@ W:	https://ez.analog.com/linux-software-drivers
-> >  F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-> >  F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-> >  F:	Documentation/devicetree/bindings/iio/*/adi,*
-> > +F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> >  F:	Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml  
-> 
-> Unrelated question, but why is this here given the wild cards above match?
-> 
-> >  F:	drivers/iio/*/ad*
-> >  F:	drivers/iio/adc/ltc249*  
+...hmmm, so I tried to figure out why I didn't see a failure and I
+realized that in trogdor we never actually set
+`regulator-allow-set-load` so basically we're not running this code at
+all, so when I boot tested it on my hardware it wasn't terribly
+useful. :(
 
+I guess at this point I'll wait for Mark to give his suggestion for
+what to do. Options I'm aware of:
+
+a) ${SUBJECT} patch was written as a cleanup as per Mark's request and
+we could just revert it.
+
+b) We could make it so that failures to get the input/output voltages
+doesn't count as an error when going through the get_optimum_mode()
+path.
+
+
+-Doug
