@@ -2,311 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E38C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9307AC32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238400AbiHVTRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
+        id S238452AbiHVTSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238404AbiHVTPR (ORCPT
+        with ESMTP id S238496AbiHVTSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:15:17 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A3E53FA24;
-        Mon, 22 Aug 2022 12:15:00 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 2F297DB0;
-        Mon, 22 Aug 2022 22:17:54 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 2F297DB0
+        Mon, 22 Aug 2022 15:18:15 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB874DB7A;
+        Mon, 22 Aug 2022 12:17:17 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id gt3so10757409ejb.12;
+        Mon, 22 Aug 2022 12:17:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195874;
-        bh=WgRtkS0UOu8MMj2JUNKRYh1FdsBEkSO3jekpOwwUBjk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=ZxFSbwKON/6IcUPUXI/hfPgA6cqoMWUq9CeZvRcedfueUa7L7FvQXEEBM9qv7IJCo
-         Ke0Tbu0snbfFn3FcxnGYYgcmBSQd+HIBUyYb9cA28KJJMWcFQhWHBEMiGF+DIvuUzL
-         4YUjmkMaureLxBWl2mlgCxBu9CxS1fhurDuYAjDE=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:14:40 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 16/18] EDAC/synopsys: Add erroneous page-frame/offset reporting
-Date:   Mon, 22 Aug 2022 22:14:25 +0300
-Message-ID: <20220822191427.27969-17-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220822191427.27969-1-Sergey.Semin@baikalelectronics.ru>
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=Ww/zLVja8aGocviQTazyplD8WiIYTW+lQEN/JOcoOp0=;
+        b=eSIXWq3zBlZ5kRMrRBBhgnmPJWSwhwcolElJUXH3iiGx2gcK8xoKHZAuL6ll5nXc/r
+         vF3y4kQ+Fik0eYXxR1dWkOJAtDytOn7JlYDZ/knhqgKi++Q1T26q9ud0edqY2LkVoQoF
+         en6JrFaydF6c3gvy8u2RLYbyLaHnndUYLwv0R5d4shdPm4+Uhult19HUJH31gkRF8VAK
+         JrfgOedDtM55nkjmbnhPvWq2H2yA/mzbHH1gQN0Hpgm7MfkqaAlNGa1KiyKRBE0QtXeO
+         Nk5Xn9TtGxSCtWR4QoyGYSH4O22DcGowNF99CsAw/T3JFlaKgikr1hGqU6d2asSjDJpY
+         z/Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=Ww/zLVja8aGocviQTazyplD8WiIYTW+lQEN/JOcoOp0=;
+        b=3b4AC2Pi0zaWcbOC4X702GoIMZj3n+CqjXu6+PFNgWF/t5M4/XTGT60QdEREBjd1U6
+         pk+fWayG2SKv8i5fS36cvzLpdaucOPnGXxocbIzY5IRc+1FtNIIVqHVOMiBkHLOziDz7
+         Kttdio0aznG7XcwFXg1pJOp1yxTf9rXrvxLokIE4azA5ObdY5Sh/B07OfUJCmmgYN1ly
+         dtc041eXvGZ+7+3XIr0NI8gLKuCnzeggVAyIv7onRAPt2qO5RBoKv3oKRM9Eq2s3hSvq
+         xWZOTUjjxD7i48iHBkS/1hSfhpRa0zW3ysrcWTSXu2gU73RPomjnr4erOve27b0yESct
+         mudA==
+X-Gm-Message-State: ACgBeo3jt581mB3a+66u/hFBUvrarELbxh+B5bbmvCGMM61aBg+rIhIo
+        e8QPcvBg3YbLvZ9cQoQK4qM=
+X-Google-Smtp-Source: AA6agR74OXBMyMhgrrICVycGtQDBtWfFv0yng7NSivL2HvsIdp9lfatgEQrDaKYmO5dMRCVWay3U5Q==
+X-Received: by 2002:a17:907:c15:b0:73d:8337:3aa8 with SMTP id ga21-20020a1709070c1500b0073d83373aa8mr3788064ejc.254.1661195833128;
+        Mon, 22 Aug 2022 12:17:13 -0700 (PDT)
+Received: from nuc ([2a02:168:633b:1:1e69:7aff:fe05:97e6])
+        by smtp.gmail.com with ESMTPSA id bt2-20020a0564020a4200b0043d7b19abd0sm168795edb.39.2022.08.22.12.17.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 12:17:12 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 21:17:11 +0200
+From:   =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
+To:     Xiu Jianfeng <xiujianfeng@huawei.com>
+Cc:     mic@digikod.net, paul@paul-moore.com, jmorris@namei.org,
+        serge@hallyn.com, shuah@kernel.org, corbet@lwn.net,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH -next 0/5] landlock: add chmod and chown support
+Message-ID: <YwPWN/d15S24PuLS@nuc>
+References: <20220822114701.26975-1-xiujianfeng@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <20220822114701.26975-1-xiujianfeng@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since System/SDRAM address translation interface is now available we can
-use it to determine the system address causing the ECC faults. In order to
-do so first we need to add the System->Application->HIF->SDRAM address
-translation procedures based on the DW uMCTL2 DDRC DQ-bus config and
-HIF/SDRAM mapping table retrieved on the device probe stage. Secondly for
-the sake of simplification we need to convert the snps_ecc_error_info
-structure to contain the snps_sdram_addr structure instance, since the
-erroneous SDRAM address will now participate in the address translation
-chain. Finally we need to perform the SDRAM->System address translation
-before passing the later to the edac_mc_handle_error() method.
+Hi!
 
-Note the ECC address rank needs to be retrieved now too in order to
-determine a correct system address. But the rank won't be passed to the
-MCI core for now since the MCI device is registered with a single ranked
-layer 0.
+Very exciting to see! Thank you for sending this! :)
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/edac/synopsys_edac.c | 142 +++++++++++++++++++++++++++++------
- 1 file changed, 118 insertions(+), 24 deletions(-)
+I'm just throwing in some comments based on the very similar truncate
+patch set, in the hope that it helps. (But obviously, Mickaël Salaün
+has the last word on this code.)
 
-diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index 0ac02775aaf9..506c0fee14f0 100644
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -12,6 +12,7 @@
- #include <linux/fs.h>
- #include <linux/log2.h>
- #include <linux/module.h>
-+#include <linux/pfn.h>
- #include <linux/platform_device.h>
- #include <linux/seq_file.h>
- #include <linux/spinlock.h>
-@@ -344,19 +345,13 @@ struct snps_sdram_addr {
- 
- /**
-  * struct snps_ecc_error_info - ECC error log information.
-- * @row:	Row number.
-- * @col:	Column number.
-- * @bank:	Bank number.
-- * @bankgrp:	Bank group number.
-+ * @sdram:	SDRAM address.
-  * @bitpos:	Bit position.
-  * @data:	Data causing the error.
-  * @syndrome:	Erroneous data syndrome.
-  */
- struct snps_ecc_error_info {
--	u32 row;
--	u32 col;
--	u32 bank;
--	u32 bankgrp;
-+	struct snps_sdram_addr sdram;
- 	u32 bitpos;
- 	u64 data;
- 	u32 syndrome;
-@@ -416,6 +411,21 @@ static void snps_map_app_to_hif(struct snps_edac_priv *priv,
- 	*hif = app >> priv->info.dq_width;
- }
- 
-+/**
-+ * snps_map_hif_to_app - Map HIF address to Application address.
-+ * @priv:	DDR memory controller private instance data.
-+ * @hif:	HIF address (source).
-+ * @app:	Application address (destination).
-+ *
-+ * Backward HIF-to-App translation is just the opposite DQ-width-based
-+ * shift operation.
-+ */
-+static void snps_map_hif_to_app(struct snps_edac_priv *priv,
-+				u64 hif, u64 *app)
-+{
-+	*app = hif << priv->info.dq_width;
-+}
-+
- /**
-  * snps_map_hif_to_sdram - Map HIF address to SDRAM address.
-  * @priv:	DDR memory controller private instance data.
-@@ -467,6 +477,58 @@ static void snps_map_hif_to_sdram(struct snps_edac_priv *priv,
- 	}
- }
- 
-+/**
-+ * snps_map_sdram_to_hif - Map SDRAM address to HIF address.
-+ * @priv:	DDR memory controller private instance data.
-+ * @sdram:	SDRAM address (source).
-+ * @hif:	HIF address (destination).
-+ *
-+ * SDRAM-HIF address mapping is similar to the HIF-SDRAM mapping procedure, but
-+ * we'll traverse each SDRAM rank/bank/column/row bit.
-+ *
-+ * Note the unmapped bits of the SDRAM address components will be just
-+ * ignored. So make sure the source address is valid.
-+ */
-+static void snps_map_sdram_to_hif(struct snps_edac_priv *priv,
-+				  struct snps_sdram_addr *sdram, u64 *hif)
-+{
-+	struct snps_hif_sdram_map *map = &priv->hif_sdram_map;
-+	unsigned long addr;
-+	int i;
-+
-+	*hif = 0;
-+
-+	addr = sdram->row;
-+	for_each_set_bit(i, &addr, DDR_MAX_ROW_WIDTH) {
-+		if (map->row[i] != DDR_ADDRMAP_UNUSED)
-+			*hif |= BIT_ULL(map->row[i]);
-+	}
-+
-+	addr = sdram->col;
-+	for_each_set_bit(i, &addr, DDR_MAX_COL_WIDTH) {
-+		if (map->col[i] != DDR_ADDRMAP_UNUSED)
-+			*hif |= BIT_ULL(map->col[i]);
-+	}
-+
-+	addr = sdram->bank;
-+	for_each_set_bit(i, &addr, DDR_MAX_BANK_WIDTH) {
-+		if (map->bank[i] != DDR_ADDRMAP_UNUSED)
-+			*hif |= BIT_ULL(map->bank[i]);
-+	}
-+
-+	addr = sdram->bankgrp;
-+	for_each_set_bit(i, &addr, DDR_MAX_BANKGRP_WIDTH) {
-+		if (map->bankgrp[i] != DDR_ADDRMAP_UNUSED)
-+			*hif |= BIT_ULL(map->bankgrp[i]);
-+	}
-+
-+	addr = sdram->rank;
-+	for_each_set_bit(i, &addr, DDR_MAX_RANK_WIDTH) {
-+		if (map->rank[i] != DDR_ADDRMAP_UNUSED)
-+			*hif |= BIT_ULL(map->rank[i]);
-+	}
-+}
-+
- /**
-  * snps_map_sys_to_sdram - Map System address to SDRAM address.
-  * @priv:	DDR memory controller private instance data.
-@@ -488,6 +550,27 @@ static void snps_map_sys_to_sdram(struct snps_edac_priv *priv,
- 	snps_map_hif_to_sdram(priv, hif, sdram);
- }
- 
-+/**
-+ * snps_map_sdram_to_sys - Map SDRAM address to SDRAM address.
-+ * @priv:	DDR memory controller private instance data.
-+ * @sys:	System address (source).
-+ * @sdram:	SDRAM address (destination).
-+ *
-+ * Perform a full mapping of the SDRAM address (row/column/bank/etc) to
-+ * the system address specific to the controller system bus ports.
-+ */
-+static void snps_map_sdram_to_sys(struct snps_edac_priv *priv,
-+				  struct snps_sdram_addr *sdram, dma_addr_t *sys)
-+{
-+	u64 app, hif;
-+
-+	snps_map_sdram_to_hif(priv, sdram, &hif);
-+
-+	snps_map_hif_to_app(priv, hif, &app);
-+
-+	*sys = app;
-+}
-+
- /**
-  * snps_get_bitpos - Get DQ-bus corrected bit position.
-  * @bitnum:	Bit number retrieved from the ECCSTAT.corrected_bit_num field.
-@@ -540,12 +623,13 @@ static int snps_get_error_info(struct snps_edac_priv *priv)
- 	p->ceinfo.bitpos = snps_get_bitpos(p->ceinfo.bitpos, priv->info.dq_width);
- 
- 	regval = readl(base + ECC_CEADDR0_OFST);
--	p->ceinfo.row = FIELD_GET(ECC_CEADDR0_ROW_MASK, regval);
-+	p->ceinfo.sdram.rank = FIELD_GET(ECC_CEADDR0_RANK_MASK, regval);
-+	p->ceinfo.sdram.row = FIELD_GET(ECC_CEADDR0_ROW_MASK, regval);
- 
- 	regval = readl(base + ECC_CEADDR1_OFST);
--	p->ceinfo.bank = FIELD_GET(ECC_CEADDR1_BANK_MASK, regval);
--	p->ceinfo.bankgrp = FIELD_GET(ECC_CEADDR1_BANKGRP_MASK, regval);
--	p->ceinfo.col = FIELD_GET(ECC_CEADDR1_COL_MASK, regval);
-+	p->ceinfo.sdram.bankgrp = FIELD_GET(ECC_CEADDR1_BANKGRP_MASK, regval);
-+	p->ceinfo.sdram.bank = FIELD_GET(ECC_CEADDR1_BANK_MASK, regval);
-+	p->ceinfo.sdram.col = FIELD_GET(ECC_CEADDR1_COL_MASK, regval);
- 
- 	p->ceinfo.data = readl(base + ECC_CSYND0_OFST);
- 	if (priv->info.dq_width == SNPS_DQ_64)
-@@ -558,12 +642,13 @@ static int snps_get_error_info(struct snps_edac_priv *priv)
- 		goto out;
- 
- 	regval = readl(base + ECC_UEADDR0_OFST);
--	p->ueinfo.row = FIELD_GET(ECC_CEADDR0_ROW_MASK, regval);
-+	p->ueinfo.sdram.rank = FIELD_GET(ECC_CEADDR0_RANK_MASK, regval);
-+	p->ueinfo.sdram.row = FIELD_GET(ECC_CEADDR0_ROW_MASK, regval);
- 
- 	regval = readl(base + ECC_UEADDR1_OFST);
--	p->ueinfo.bankgrp = FIELD_GET(ECC_CEADDR1_BANKGRP_MASK, regval);
--	p->ueinfo.bank = FIELD_GET(ECC_CEADDR1_BANK_MASK, regval);
--	p->ueinfo.col = FIELD_GET(ECC_CEADDR1_COL_MASK, regval);
-+	p->ueinfo.sdram.bankgrp = FIELD_GET(ECC_CEADDR1_BANKGRP_MASK, regval);
-+	p->ueinfo.sdram.bank = FIELD_GET(ECC_CEADDR1_BANK_MASK, regval);
-+	p->ueinfo.sdram.col = FIELD_GET(ECC_CEADDR1_COL_MASK, regval);
- 
- 	p->ueinfo.data = readl(base + ECC_UESYND0_OFST);
- 	if (priv->info.dq_width == SNPS_DQ_64)
-@@ -595,17 +680,22 @@ static void snps_handle_error(struct mem_ctl_info *mci, struct snps_ecc_status *
- {
- 	struct snps_edac_priv *priv = mci->pvt_info;
- 	struct snps_ecc_error_info *pinf;
-+	dma_addr_t sys;
- 
- 	if (p->ce_cnt) {
- 		pinf = &p->ceinfo;
- 
- 		snprintf(priv->message, SNPS_EDAC_MSG_SIZE,
--			 "Row %d Col %d Bank %d Bank Group %d Bit %d Data 0x%08llx",
--			 pinf->row, pinf->col, pinf->bank, pinf->bankgrp,
-+			 "Row %hu Col %hu Bank %hhu Bank Group %hhu Rank %hhu Bit %d Data 0x%08llx",
-+			 pinf->sdram.row, pinf->sdram.col, pinf->sdram.bank,
-+			 pinf->sdram.bankgrp, pinf->sdram.rank,
- 			 pinf->bitpos, pinf->data);
- 
--		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci,
--				     p->ce_cnt, 0, 0, pinf->syndrome, 0, 0, -1,
-+		snps_map_sdram_to_sys(priv, &pinf->sdram, &sys);
-+
-+		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, p->ce_cnt,
-+				     PHYS_PFN(sys), offset_in_page(sys),
-+				     pinf->syndrome, 0, 0, -1,
- 				     priv->message, "");
- 	}
- 
-@@ -613,12 +703,16 @@ static void snps_handle_error(struct mem_ctl_info *mci, struct snps_ecc_status *
- 		pinf = &p->ueinfo;
- 
- 		snprintf(priv->message, SNPS_EDAC_MSG_SIZE,
--			 "Row %d Col %d Bank %d Bank Group %d Data 0x%08llx",
--			 pinf->row, pinf->col, pinf->bank, pinf->bankgrp,
-+			 "Row %hu Col %hu Bank %hhu Bank Group %hhu Rank %hhu Data 0x%08llx",
-+			 pinf->sdram.row, pinf->sdram.col, pinf->sdram.bank,
-+			 pinf->sdram.bankgrp, pinf->sdram.rank,
- 			 pinf->data);
- 
--		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci,
--				     p->ue_cnt, 0, 0, pinf->syndrome, 0, 0, -1,
-+		snps_map_sdram_to_sys(priv, &pinf->sdram, &sys);
-+
-+		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, p->ue_cnt,
-+				     PHYS_PFN(sys), offset_in_page(sys),
-+				     pinf->syndrome, 0, 0, -1,
- 				     priv->message, "");
- 	}
- 
--- 
-2.35.1
+Slightly higher level question: Should we start to group the
+functionality of multiple LSM hooks under one Landlock flag? (Will it
+be harder to change the LSM hook interface in the future if we
+continue to add one flag per hook? Or is this structure already
+exposed to userspace by other LSMs?)
 
+For example, some of the "missing" operations listed on the Landlock
+documentation could also be grouped roughly as:
+
+Modifying files:
+ - truncate
+
+Modifying file metadata:
+ - chmod
+ - chown
+ - setxattr
+ - utime
+
+Observing files (check presence and file metadata):
+ - access
+ - stat
+ - readlink, following links (can observe symlink presence)
+ - chdir (can observe dir presence and 'x' attribute)
+
+Ungrouped:
+ - flock
+ - ioctl
+ - fcntl
+
+Do you have opinions on this?
+
+—Günther
+
+On Mon, Aug 22, 2022 at 07:46:56PM +0800, Xiu Jianfeng wrote:
+> hi,
+>   this patchset adds chmod and chown support for landlock
+>
+> Xiu Jianfeng (5):
+>   landlock: expand access_mask_t to u32 type
+>   landlock: add chmod and chown support
+>   landlock/selftests: add selftests for chmod and chown
+>   landlock/samples: add chmod and chown support
+>   landlock: update chmod and chown support in document
+>
+>  Documentation/userspace-api/landlock.rst     |   8 +-
+>  include/uapi/linux/landlock.h                |   8 +-
+>  samples/landlock/sandboxer.c                 |  12 +-
+>  security/landlock/fs.c                       |  16 +-
+>  security/landlock/limits.h                   |   2 +-
+>  security/landlock/ruleset.h                  |   2 +-
+>  security/landlock/syscalls.c                 |   2 +-
+>  tools/testing/selftests/landlock/base_test.c |   2 +-
+>  tools/testing/selftests/landlock/fs_test.c   | 234 ++++++++++++++++++-
+>  9 files changed, 274 insertions(+), 12 deletions(-)
+>
+> --
+> 2.17.1
+>
+
+--
