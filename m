@@ -2,97 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D742C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08882C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236582AbiHVPXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
+        id S236454AbiHVPXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236482AbiHVPV7 (ORCPT
+        with ESMTP id S236488AbiHVPV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 11:21:59 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86863E767;
-        Mon, 22 Aug 2022 08:15:10 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3348E419AF;
+        Mon, 22 Aug 2022 08:15:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 9F132202FF;
-        Mon, 22 Aug 2022 15:15:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661181308; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ko/ZbbYlRZVDcCBDACh47r5MpCi7V/QJtzGfx/uTT4o=;
-        b=AXWrARvl88HySuV2IvKZojEAAxu+6WFr21jizwVhd03l87uhLlzEhtWF1q5t+tYCKFoU1r
-        zhU9Xf5P/O2u82zIGY3fhc2PPA5D+bx5XJNxv1WYALMnAhhLQVdq10YN3QdYT/wpkS5CBR
-        HnhzLzMG9IccwSBFROGrZYIj9DWOx1g=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6F85F1332D;
-        Mon, 22 Aug 2022 15:15:08 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id U/SfGHydA2PFEwAAMHmgww
-        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 15:15:08 +0000
-Date:   Mon, 22 Aug 2022 17:15:07 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter
- fields
-Message-ID: <YwOde3qFvne7Umld@dhcp22.suse.cz>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-3-shakeelb@google.com>
- <YwNZD4YlRkvQCWFi@dhcp22.suse.cz>
- <CALvZod5pw_7hnH44hdC3rDGQxQB2XATrViNNGosG3FnUoWo-4A@mail.gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88AD7B8124B;
+        Mon, 22 Aug 2022 15:15:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B43C433D7;
+        Mon, 22 Aug 2022 15:15:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661181312;
+        bh=oOBpV+kQLcdiRCH072jVwXy/v1KyShAjHL22oLdvKHA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HsrBkCQWygotKWt7en6snLQp4SqotmjCROvU3SBDUbETbDylHfFwl7Hr+k0FWJepv
+         7ENSIdVG19jlULLzwf5i0Etae9QAT5rAxG2B0Iz0wdJgDr+hRZdGhSkwFLIr7yD33R
+         /1FtusFInldvFnVWqwhmOn4UZG/Tjpn9CNnN4GfzefpbV0xbjH+b/gyQf25j4/ci0i
+         D+5M9JAlNqGtaRwdKHK4qOdAHwbzGq9M5pTIFKlJipuOiGN4H0vWzHjqZVsqQpZDd8
+         8+kGq07VcgqPha0SfwBRngp6u9yccyiN7rUUSTTKMLikE5spiTWoTMK26Lp1eOD5w1
+         4oOXWUEPmqLSw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oQ98w-00074f-7o; Mon, 22 Aug 2022 17:15:10 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sean Young <sean@mess.org>, linux-media@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH RESEND 0/3] media: flexcop-usb: probe cleanups
+Date:   Mon, 22 Aug 2022 17:14:53 +0200
+Message-Id: <20220822151456.27178-1-johan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALvZod5pw_7hnH44hdC3rDGQxQB2XATrViNNGosG3FnUoWo-4A@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 08:06:14, Shakeel Butt wrote:
-[...]
-> > >  struct page_counter {
-> > > +     /*
-> > > +      * Make sure 'usage' does not share cacheline with any other field. The
-> > > +      * memcg->memory.usage is a hot member of struct mem_cgroup.
-> > > +      */
-> > > +     PC_PADDING(_pad1_);
-> >
-> > Why don't you simply require alignment for the structure?
-> 
-> I don't just want the alignment of the structure. I want different
-> fields of this structure to not share the cache line. More
-> specifically the 'high' and 'usage' fields. With this change the usage
-> will be its own cache line, the read-most fields will be on separate
-> cache line and the fields which sometimes get updated on charge path
-> based on some condition will be a different cache line from the
-> previous two.
+This series cleans up the probe helper functions a bit to make the code
+more readable.
 
-I do not follow. If you make an explicit requirement for the structure
-alignement then the first field in the structure will be guarantied to
-have that alignement and you achieve the rest to be in the other cache
-line by adding padding behind that.
+It has been two months and two completely ignored reminders since this
+was first posted so resending.
+
+Can someone please pick this up and let me know when that has been done?
+
+Note that these apply on top of the fix resent here:
+
+	https://lore.kernel.org/r/20220822151027.27026-1-johan@kernel.org
+
+Johan
+
+
+Johan Hovold (3):
+  media: flexcop-usb: clean up endpoint sanity checks
+  media: flexcop-usb: clean up URB initialisation
+  media: flexcop-usb: use usb_endpoint_maxp()
+
+ drivers/media/usb/b2c2/flexcop-usb.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
 -- 
-Michal Hocko
-SUSE Labs
+2.35.1
+
