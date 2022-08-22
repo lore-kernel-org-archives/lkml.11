@@ -2,69 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF66AC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F0BC32792
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237935AbiHVSuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
+        id S237874AbiHVSy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237471AbiHVSsn (ORCPT
+        with ESMTP id S237869AbiHVSyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:48:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209713D58B;
-        Mon, 22 Aug 2022 11:48:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9943360B0C;
-        Mon, 22 Aug 2022 18:48:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0263EC43470;
-        Mon, 22 Aug 2022 18:48:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661194081;
-        bh=+snvdBmnUr2cHSH6c5aSpV+2FEbzaetQvkRujdnGZik=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=J/BHtot+B9GBWV/+yhMue97NQnuX31eGrcA/VqcPWN+OV2nXlQ82/44MzM0dEcAg5
-         Xx8lSNFuWAOx8PgvmKKCRdFBoh8FMO50vE+jRBh+D7cZ7r6KSRf+9lbEnUBHy89wST
-         7FZCdyKwmiRTgT3I0yqmkeg2v4yiSevp6NE22TzMpnR1s8ier/kOlCyhBOa2wcEIHz
-         XM/wBuiYaooJRLJSFTrLYP6UDpI4cVqJ/CWG7KKYMa20v2IgSUPA7UwQ+40sLUqEZf
-         f+ZxQmw10twAA1FgxSr5cNYbvq/cNYkdEaO3U2nKniHo384fdBCXMPwW1f09OkHgL2
-         vKxNVn6eJczlQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1DFEC4166E;
-        Mon, 22 Aug 2022 18:48:00 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull NFS client bugfixes for Linux 6.0
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <b3717e756e8360d0f8ccb70a9b13b4cd9d503a8d.camel@hammerspace.com>
-References: <b3717e756e8360d0f8ccb70a9b13b4cd9d503a8d.camel@hammerspace.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <b3717e756e8360d0f8ccb70a9b13b4cd9d503a8d.camel@hammerspace.com>
-X-PR-Tracked-Remote: git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.20-2
-X-PR-Tracked-Commit-Id: ed06fce0b034b2e25bd93430f5c4cbb28036cc1a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 072e51356cd5a4a1c12c1020bc054c99b98333df
-Message-Id: <166119408091.19448.9475822319416740010.pr-tracker-bot@kernel.org>
-Date:   Mon, 22 Aug 2022 18:48:00 +0000
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        Mon, 22 Aug 2022 14:54:09 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189D310F8
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:53:17 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id v23so5461284plo.9
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:53:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=DI8SqYRuhD4dfW8aoV8U0vpm1zmv7loV77zhZIVRKgs=;
+        b=BSUYK+hPwFo2UUcXcug7bFeBJpcLeuhIBk8GkyZ32AiN0J0T9kt6Q53Zs4ptCr4E6y
+         bz6H+1Gc+O5mv45FGya+vh5/XOEI5u7wF35jDy2PLPheh15w/zEdmbDP3Ii2FfzE+Aqh
+         GmDqGBJX+jF/Bp2i2I0MpkmGRnQQwPD7fWQ6U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=DI8SqYRuhD4dfW8aoV8U0vpm1zmv7loV77zhZIVRKgs=;
+        b=tTG45l8gIz3fYT4G5sv/RlbCjaovoJwi6DZjQ3cRm7GJBAPUaGI/kbpMAuRl+Xc4eF
+         las4A/wwKs0EhwGHz3AnJhaDQBNmiXXvBdzNSutcx3iGWWZB0IUUzF28qZesNIohGYUb
+         AcLD0CFvQvW8DH9tSqM4IfYLQMtBCmaoAtlr0dvgIcJLG7O6nbfwl4D5nD9e/vdXtI4g
+         Q0mvwsPJ2T6DnRwmmP3rmagsmHAEsmu9d3eDbXxpU8/kcW8IUKmU1z+K0+SVqXNWij2N
+         XNB5DmL28TMnulBqeBSgTIGeB87u4xPPYpEzuZqzJK+8jNe8JQiP2YotqjX8iYjtL6o7
+         YZDQ==
+X-Gm-Message-State: ACgBeo2rjjeluheh0vj8DR1FsB1GNjYXbtp5ejNzUXlFNvOmBi2qPpMd
+        QpTgz3CsyzzDXlegqIuEeH4YW6d8RSGfYQ==
+X-Google-Smtp-Source: AA6agR63og+ynhTTJk+v2XpcgBYdrLznSAlhS1NHVaZUDxVTOTd5+Acqdc2MwzSAVasoolC9Vrq6hg==
+X-Received: by 2002:a17:902:f68f:b0:172:ff8a:90d4 with SMTP id l15-20020a170902f68f00b00172ff8a90d4mr207162plg.2.1661194396612;
+        Mon, 22 Aug 2022 11:53:16 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:1969:d650:d765:53ef])
+        by smtp.gmail.com with UTF8SMTPSA id 127-20020a621685000000b0052d6ad246a4sm9275058pfw.144.2022.08.22.11.53.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 11:53:16 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 1/2] clk: qcom: gcc-sc7180: Keep USB GDSC power domain on when USB wakeup is enabled
+Date:   Mon, 22 Aug 2022 11:53:10 -0700
+Message-Id: <20220822115246.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 22 Aug 2022 17:40:18 +0000:
+Set GENPD_FLAG_ACTIVE_WAKEUP for the USB GDSC power domain of SC7180.
 
-> git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.20-2
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/072e51356cd5a4a1c12c1020bc054c99b98333df
+ drivers/clk/qcom/gcc-sc7180.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thank you!
-
+diff --git a/drivers/clk/qcom/gcc-sc7180.c b/drivers/clk/qcom/gcc-sc7180.c
+index c2ea09945c47..2b6b66d01833 100644
+--- a/drivers/clk/qcom/gcc-sc7180.c
++++ b/drivers/clk/qcom/gcc-sc7180.c
+@@ -2223,6 +2223,7 @@ static struct gdsc usb30_prim_gdsc = {
+ 	.gdscr = 0x0f004,
+ 	.pd = {
+ 		.name = "usb30_prim_gdsc",
++		.flags = GENPD_FLAG_ACTIVE_WAKEUP,
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
+ };
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.37.1.595.g718a3a8f04-goog
+
