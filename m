@@ -2,129 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A66C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C9CC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbiHVIYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
+        id S234026AbiHVIYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233936AbiHVIXp (ORCPT
+        with ESMTP id S233912AbiHVIXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 22 Aug 2022 04:23:45 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD27A1B7;
-        Mon, 22 Aug 2022 01:23:34 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27M7uEhY026376;
-        Mon, 22 Aug 2022 08:22:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=XD8p0yeIP6FHp1zRXk2g6v1Fja3jOBHVk/L7ZMjGmI8=;
- b=QyNu8Da5aDSkBoajm5HOLzFcrUSw3mCvNG6jcONUDGrzlDL1Oz7/LWrCuMjgFC9J8jzj
- boWkVIAMWf/YVY81s3iQn5JHjp8eSGyBLykmh4HliGAY04vhUkN3VIEdkrXhhmkGSGGQ
- ly2ntitPkCnWYTgx2ixlGow3PYSQWHKXhm/T0ySWZCEoG5zrZ+dxF4Ad2AaekkZW1DVJ
- ZgqCWYUVfOxwCChJoRVoQ2+6frnIRZ1GT1s4L8Hca+67kL9wpPgrTgbVGeMT+fqykLZc
- gHMsfkIJQuE1nLuLX9D2Ul3bRc4Ihei14YsDXfGXAin0bMtxTyMoAxZQwD2tSxA7a4ax oA== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j2vwrbmb2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 08:22:55 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27M8MshM030057
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 08:22:54 GMT
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 22 Aug 2022 01:22:49 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [RESEND v5 5/7] remoteproc: qcom: Add efuse evb selection control
-Date:   Mon, 22 Aug 2022 13:52:01 +0530
-Message-ID: <1661156523-22611-6-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352E9B488;
+        Mon, 22 Aug 2022 01:23:35 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MB4zR2LXtz1N7HW;
+        Mon, 22 Aug 2022 16:20:03 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 22 Aug 2022 16:23:30 +0800
+From:   Yicong Yang <yangyicong@huawei.com>
+To:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>, <x86@kernel.org>,
+        <catalin.marinas@arm.com>, <will@kernel.org>,
+        <linux-doc@vger.kernel.org>
+CC:     <corbet@lwn.net>, <peterz@infradead.org>, <arnd@arndb.de>,
+        <linux-kernel@vger.kernel.org>, <darren@os.amperecomputing.com>,
+        <yangyicong@hisilicon.com>, <huzhanyuan@oppo.com>,
+        <lipeifeng@oppo.com>, <zhangshiming@oppo.com>, <guojian@oppo.com>,
+        <realmz6@gmail.com>, <linux-mips@vger.kernel.org>,
+        <openrisc@lists.librecores.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-riscv@lists.infradead.org>, <linux-s390@vger.kernel.org>,
+        Barry Song <21cnbao@gmail.com>, <wangkefeng.wang@huawei.com>,
+        <xhao@linux.alibaba.com>, <prime.zeng@hisilicon.com>,
+        <anshuman.khandual@arm.com>, Barry Song <v-songbaohua@oppo.com>
+Subject: [PATCH v3 1/4] Revert "Documentation/features: mark BATCHED_UNMAP_TLB_FLUSH doesn't apply to ARM64"
+Date:   Mon, 22 Aug 2022 16:21:17 +0800
+Message-ID: <20220822082120.8347-2-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220822082120.8347-1-yangyicong@huawei.com>
+References: <20220822082120.8347-1-yangyicong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 3Tuopd4S9JEuMmiEjuW_CP4BN3Nw9EfC
-X-Proofpoint-ORIG-GUID: 3Tuopd4S9JEuMmiEjuW_CP4BN3Nw9EfC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_04,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- malwarescore=0 clxscore=1015 mlxscore=0 bulkscore=0 adultscore=0
- phishscore=0 lowpriorityscore=0 priorityscore=1501 suspectscore=0
- mlxlogscore=909 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208220035
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add efuse evb selection control and enable it for starting ADSP.
+From: Barry Song <v-songbaohua@oppo.com>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+This reverts commit 6bfef171d0d74cb050112e0e49feb20bfddf7f42.
+
+I was wrong. Though ARM64 has hardware TLB flush, but it is not free
+and it is still expensive.
+We still have a good chance to enable batched and deferred TLB flush
+on ARM64 for memory reclamation. A possible way is that we only queue
+tlbi instructions in hardware's queue. When we have to broadcast TLB,
+we broadcast it by dsb. We just need to get adapted the existing
+BATCHED_UNMAP_TLB_FLUSH.
+
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Signed-off-by: Barry Song <v-songbaohua@oppo.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
- drivers/remoteproc/qcom_q6v5_adsp.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ Documentation/features/arch-support.txt        | 1 -
+ Documentation/features/vm/TLB/arch-support.txt | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
-index 701a615..b0a63a0 100644
---- a/drivers/remoteproc/qcom_q6v5_adsp.c
-+++ b/drivers/remoteproc/qcom_q6v5_adsp.c
-@@ -56,6 +56,7 @@
+diff --git a/Documentation/features/arch-support.txt b/Documentation/features/arch-support.txt
+index 118ae031840b..d22a1095e661 100644
+--- a/Documentation/features/arch-support.txt
++++ b/Documentation/features/arch-support.txt
+@@ -8,5 +8,4 @@ The meaning of entries in the tables is:
+     | ok |  # feature supported by the architecture
+     |TODO|  # feature not yet supported by the architecture
+     | .. |  # feature cannot be supported by the hardware
+-    | N/A|  # feature doesn't apply to the architecture
  
- #define LPASS_BOOT_CORE_START	BIT(0)
- #define LPASS_BOOT_CMD_START	BIT(0)
-+#define LPASS_EFUSE_Q6SS_EVB_SEL 0x0
- 
- struct adsp_pil_data {
- 	int crash_reason_smem;
-@@ -86,6 +87,7 @@ struct qcom_adsp {
- 	struct clk_bulk_data *clks;
- 
- 	void __iomem *qdsp6ss_base;
-+	void __iomem *lpass_efuse;
- 
- 	struct reset_control *pdc_sync_reset;
- 	struct reset_control *restart;
-@@ -368,6 +370,9 @@ static int adsp_start(struct rproc *rproc)
- 	/* Program boot address */
- 	writel(adsp->mem_phys >> 4, adsp->qdsp6ss_base + RST_EVB_REG);
- 
-+	if (adsp->lpass_efuse)
-+		writel(LPASS_EFUSE_Q6SS_EVB_SEL, adsp->lpass_efuse);
-+
- 	/* De-assert QDSP6 stop core. QDSP6 will execute after out of reset */
- 	writel(LPASS_BOOT_CORE_START, adsp->qdsp6ss_base + CORE_START_REG);
- 
-@@ -522,6 +527,11 @@ static int adsp_init_mmio(struct qcom_adsp *adsp,
- 		return PTR_ERR(adsp->qdsp6ss_base);
- 	}
- 
-+	adsp->lpass_efuse =  devm_platform_ioremap_resource_byname(pdev, "lpass_efuse");
-+	if (IS_ERR(adsp->lpass_efuse)) {
-+		adsp->lpass_efuse = NULL;
-+		dev_dbg(adsp->dev, "failed to map LPASS efuse registers\n");
-+	}
- 	syscon = of_parse_phandle(pdev->dev.of_node, "qcom,halt-regs", 0);
- 	if (!syscon) {
- 		dev_err(&pdev->dev, "failed to parse qcom,halt-regs\n");
+diff --git a/Documentation/features/vm/TLB/arch-support.txt b/Documentation/features/vm/TLB/arch-support.txt
+index 039e4e91ada3..1c009312b9c1 100644
+--- a/Documentation/features/vm/TLB/arch-support.txt
++++ b/Documentation/features/vm/TLB/arch-support.txt
+@@ -9,7 +9,7 @@
+     |       alpha: | TODO |
+     |         arc: | TODO |
+     |         arm: | TODO |
+-    |       arm64: | N/A  |
++    |       arm64: | TODO |
+     |        csky: | TODO |
+     |     hexagon: | TODO |
+     |        ia64: | TODO |
 -- 
-2.7.4
+2.24.0
 
