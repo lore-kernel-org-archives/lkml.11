@@ -2,185 +2,450 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0324FC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D714AC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236697AbiHVPhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
+        id S236813AbiHVPfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234854AbiHVPg5 (ORCPT
+        with ESMTP id S234980AbiHVPfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:36:57 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC831B783
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:36:55 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MEpgmw016424;
-        Mon, 22 Aug 2022 15:06:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=YFPt9xDGa1fVfHszqDEoe5Ni++lDRd3bZiKc0xfhDk4=;
- b=r0Cjh0hJyrJygab7BZyF95ipedWsTT6xAC+PN0jrF7oE/O0isl+4Y/krxFmnr67Gb4Mu
- S5xOdWuj4xozrMb4SmzRq0VCvPUurdge7tq1D5dmR6QZrEr8vbFccTP2iXQsAvb5oRgS
- QmaUGncCCTHgDsVr20nwDkIc1PUE4/zUcCsVNU/R0fWrfJVLUM4bNREmj6PShBBH5leu
- 4zIS5hkyn/0sP/hU9RqKd1uHMVxIVnyVkCKOcNdeuk9vLH6TG7UfpiauSD9GB1/GIl8u
- dRZihWk2hSQ96vULAr88TRhEu1DWplnJpeKyn/EPuUK17qNmiuU39bSwkAnwfkVPDbGs tQ== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j4bx681jk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Aug 2022 15:06:32 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27ME4Nae031868;
-        Mon, 22 Aug 2022 15:06:31 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2168.outbound.protection.outlook.com [104.47.55.168])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j3mjd3986-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Aug 2022 15:06:31 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZUIunt5HIpBjH4tZYanFuqukMUfwSuIdk2yhx1A5w76k0rCst7Iz31b3zym7IkhkWL4gebVBUQ9E93NQvfaSBLDqBkoQkJpfilZOYut5fHulJiSnpq/nrbOrVHlE2Z9Y+XCmIbizef8GJJ4+PiM/MZoolScYCAkMNL7bhMMsMaSrHYYLsDMxc0Oivg+5zgfd/9O2KGHnKX77PdMCKTpQNaplZVa6/davZVqcP2icue5cauzn0rcgFkq0NAcX16GSqMekmx/wtjVi+wtKP0uetiR28wLmcZCF6v0PVICiGn7jAArb0EiTojA0I2UClCUegXnTlbZnvqSjqkFNoDRsYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YFPt9xDGa1fVfHszqDEoe5Ni++lDRd3bZiKc0xfhDk4=;
- b=CV/ylY1/ZURtdJ06URgjoPfBxCoRjtY6MQ9LulTAyVW+Ywi7QPEBSPmGHvYn+Af/jYAjfFcnWTP2GQKKN5OOXqfl6eoraE8kfSnvdkqJhWAROnC2BYTHVYlx1pjDVq2zvtuSMFj3e+Yg3FrcVsSjPrNRy1wBHbtKTHy4BvLI/wHIBaeVSZvV9F1/NGbmR477HU/9IczqkxsgGBJzykLQsvAELlTLkPQwtaBMCacg7SehcXTCiYr+5mJ2Wry/YQgvilSMHvrvfSDXB1+xtrw/2voy8HUl98SK/WsIgVuAGYqM7EXDAww+PNhgTXxWQCVE503RX8ulKTfWFpJwnkjqfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YFPt9xDGa1fVfHszqDEoe5Ni++lDRd3bZiKc0xfhDk4=;
- b=iVo/TCmSCxinftdMB2gwXeWWs1hetqUFtDH7lXs40YxR/qXjACFiXUzpd2EKOXcdFjUtf5C5FYXms2jBuasOOxvlv6wrtn0/P4l/myaJcE5rjkFWvO99l+5cZxyt+i56Wme0Lx1ifjsRcTe6zgsOVceFnJCrjtmkw+9/zTEw45M=
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
- by DM5PR10MB1433.namprd10.prod.outlook.com (2603:10b6:3:e::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.21; Mon, 22 Aug 2022 15:06:28 +0000
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::3d34:ebb5:d9df:98b3]) by SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::3d34:ebb5:d9df:98b3%5]) with mapi id 15.20.5546.023; Mon, 22 Aug 2022
- 15:06:28 +0000
-From:   Liam Howlett <liam.howlett@oracle.com>
-To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH v13 46/70] acct: use VMA iterator instead of linked list
-Thread-Topic: [PATCH v13 46/70] acct: use VMA iterator instead of linked list
-Thread-Index: AQHYtjjAjWySsyrSK06scBybB6Zi8w==
-Date:   Mon, 22 Aug 2022 15:06:26 +0000
-Message-ID: <20220822150128.1562046-47-Liam.Howlett@oracle.com>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
-In-Reply-To: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.35.1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fe533d6c-05af-4aed-f724-08da844fe3f0
-x-ms-traffictypediagnostic: DM5PR10MB1433:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6Al+z79qVjChOfIP44Y3IcdpwPs2+SHns0pjjsFK+CQ2vYWd50wW99WVzuI+l+X6XmU+vPEOXkBCB7GpG17GDi8437inITO7wDaQ0LlqQuw7Xtq+zDghtPErZn5tOGifypDJAa02cJzONzf+6ZB/ZEe/+sMTyFytjX4hkvDH+4VlxeQIku/d7qAck6oEL1IV0aO7kIPoNCuo8hz34nZuuP1nrSUA+fUVz/KRONP7MSWbN64Ob3mtZGHKtGCNZmBEG8HsBY3HM1afiZUJpEL721sK0b2aAtz4uHuMDvhbQq8gVR66dYubtEgagoui+KHesT8Eft3BRswaJZEg3HV/KimhRUnCZPAeYhvBdPszhJveCTGZm9oMrp9kYlBazq9chw6V6oYINfyBJws/I+rYDVm8cBp+fPhhODLNOagqOzICA0Z+WRMSl470obGJC2CjVZk1QzWLhVdqI05GuUwbhGfVeEtR918gR0PPk8pqD//BICPat5d7UgWZpQ/77dePYcGeGm80QNfUjzkJJtu4S3nmpCqDYja1Go5mI0entIRwPo2wgXVnHWKIpsA2alc1vj37qoCtP0JknjYEVxa2IBHSX0uAcntc8omWzAH8DRGF0/mbFVntHLhBxMU9QE/n1W0wjLmxC8yoWkgSDX41L/2cEeEry7T0S164nhizViPE19OOFLJYEVYzM6SJG0F9UDf0J6gtFEdjT3YwPzi2YOwRpaMyblhBzzAtXK9PwCyH0t+m453zhaJpr0Cp3BoaOpjiJyEaTxG37XZKmSV2WA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(396003)(136003)(39860400002)(366004)(5660300002)(4744005)(8936002)(38100700002)(122000001)(36756003)(41300700001)(44832011)(6486002)(316002)(71200400001)(76116006)(91956017)(110136005)(8676002)(4326008)(64756008)(66446008)(66476007)(66556008)(66946007)(54906003)(478600001)(186003)(1076003)(6512007)(26005)(83380400001)(2616005)(6506007)(2906002)(38070700005)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?B/kGGdvRvcHdUpBZnFUHD1Ym5pS0SKAsp0QJMhhKkIOSFosMGC1vxPLDg+?=
- =?iso-8859-1?Q?cM3Gyck798RF7AldZvLj4HxsZQljYrCkvSt6qWg0chsKMWj4ZBi9KjizH2?=
- =?iso-8859-1?Q?y11M4O04b1pSWxbuTVv+aKN9VEZdy4N+u88WbiXA28jwGd02Ho3152NkFH?=
- =?iso-8859-1?Q?kLRCLQiO06yAx8y9YK1zRleb546uyg3IZu21oQkVyij6mDZspeye0Z3UTN?=
- =?iso-8859-1?Q?qk86dHus0FpLYlQYqVQyQZ09ocnB4x7tYqc3a9+dH7csFO8EVBMTJo7dw0?=
- =?iso-8859-1?Q?krZCVn3lj6TlwLqsej1DOv62T4cR9C1nyZWD78Utwi15RvL6I4wgHPHlwR?=
- =?iso-8859-1?Q?p6HEUJo+UBVMg+jMHkIjbiLMsG5Y877B5FIcRV+78WT8uS5hBvC+AMHop9?=
- =?iso-8859-1?Q?g98dCb0RKU6VNu0ZOGEFnuLoR9rsJz6f5eP7Kk6mqwcyIvSLihgmBvQ9tR?=
- =?iso-8859-1?Q?DhRnJtES55IfmxQ3fe4VDJ/yraDallPx4A3sBm7mOyQmV7sfwFE81a2pta?=
- =?iso-8859-1?Q?KFXBR0vPvQPq+ylu7Zj8OwoPs48zXeOCHXKRpqfAK3ZPDtyl8T71Zs2mbP?=
- =?iso-8859-1?Q?PeK6JXCFExuEinPIl0IyICkSKhLZCjB3cJBxaPMi5jtLUFeTqOKVWsEa7Z?=
- =?iso-8859-1?Q?II5e2mEA5hbihtX3ZuFlzmESJ4L6o11Luyt8UTZWMPu8xm967V2sNmkIsZ?=
- =?iso-8859-1?Q?YBLSkyGr5x+VyK0pPq08ufzGOsslAXrFLW3k+s406xlyRsevxPw8nj2Bid?=
- =?iso-8859-1?Q?3NV7L42JquT90kGSo6hGnG/vMFHou2rwOifEjHkzzZpuWJs56qHN1HtMFs?=
- =?iso-8859-1?Q?b46qAVtRh1wfJKaq6cTBp6U8U6N8tl1o2MC/jWHW3p7Q1i5j+IFFz8aMHy?=
- =?iso-8859-1?Q?3+VhMWkONDESCMRe4O8ua5pcf0S3kKjyKa6vzr+zgTivYuvqrNQ90ri4VA?=
- =?iso-8859-1?Q?y5V+c1sjmCusKIdMDmJN3FaX0LLHAmDx3yDQ0dfycl++bVGp4tQXlznDyj?=
- =?iso-8859-1?Q?pKyIU6JF/p2CsS2BS6pT37956SE4YOLx13TVVQJU9S5ACFapWMm0/3UeDu?=
- =?iso-8859-1?Q?9kw1u23UBUayCHccCzthiOmZpGR+WGrRE40sQrC1x1Nw/ixJ/sQy47VmOu?=
- =?iso-8859-1?Q?nJCCeOlcSiA4J6dk6tA4mhQexB+hLiTnycFue8oX3UB+uiwZah1T08xJHD?=
- =?iso-8859-1?Q?AG0OvGnErafsKDb+n6+Pku5uEKy8mUC+sCBOkmHaMhr+watitKNuWU/Rr1?=
- =?iso-8859-1?Q?Vbk/FhS19xY2LkfGsNxJb/bkIQWJKdugKAHSL8r5begskrzvXX9byB/SDv?=
- =?iso-8859-1?Q?/rLrPY7bRn0PFgkADVyf2e7rv5tarWCWSlIM5K6o/lskKWgGGiplz/UBy7?=
- =?iso-8859-1?Q?X/7FFEqGywAIn4V2TJh/xZCjPLzcVemfSU6fZwD6kJjQKj+x4XssAg9BfV?=
- =?iso-8859-1?Q?4Ok05amXgy6116MvpyXukDHWASQxQxReKxOoIs4MHOza1cya32xPXCJqBZ?=
- =?iso-8859-1?Q?qRbJF8LUVP6Nn6HDago45uGU2rj4OCl+svIKEjK9IrybTOpVV3a01uVbT7?=
- =?iso-8859-1?Q?ZXmJuvKP8SRglU/HLzFfD/IS6vCgwphZSKs3aTvpnyvxXidj+p+lEHhM6+?=
- =?iso-8859-1?Q?uFDkBUAdHHqvi7Rmm70w5HBKIABKs/SSNCp2KcjhhyBcsX9S8UOlEyQQ?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 22 Aug 2022 11:35:17 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069C2193D8;
+        Mon, 22 Aug 2022 08:35:15 -0700 (PDT)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MEgMA7019503;
+        Mon, 22 Aug 2022 15:35:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=qcppdkim1;
+ bh=1T0zjuUta9L4qIdn0EcgU1uX2pA3Mnjvz1QHmKooIAA=;
+ b=a6HI6jC3MLNKGyWBHWuHOChSFPm2pnXWxet0unr0r8OpJqIiQGpVEwJFg2HH32MEH9Sk
+ qnuHrRAw4ByYfr+INlm66/fQ+h6XqvFBVJjB/yQrHOAUzvlZkOonT+1AxS4Dztb/5pYY
+ svr14sE3O6ZXqz5zrGOTom8xZ8UBmOgYCoot63eL7QH5suaHaNKJ/O2drksCHPxvLEZN
+ zjKH1xWf94mbcF08pQQ3nLXlANxliGYqhtvQ+f/HNN98FMKZqafbHpLnCNWUfcA/KGPK
+ LTe0C35piYZZ1JCrwLcJBIts0rVYssSAhNeLLZpa+vvmw7cpXaAFhvc9g1xjIe5kuNe9 Eg== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j2vwnvwtu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 15:35:07 +0000
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27MFZ655027277
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 15:35:06 GMT
+Received: from quicinc.com (10.49.16.6) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 22 Aug
+ 2022 08:35:06 -0700
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Jeff Johnson" <quic_jjohnson@quicinc.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2] soc: qcom: qmi: use const for struct qmi_elem_info
+Date:   Mon, 22 Aug 2022 08:34:35 -0700
+Message-ID: <20220822153435.7856-1-quic_jjohnson@quicinc.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe533d6c-05af-4aed-f724-08da844fe3f0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2022 15:06:26.8787
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fdEjIwhIpNPL4KaRrWlJCQKFcAVvF0xIFQed+ytsMh9DmLdwZd71h+JjmNSWUCYLcwJVGSwX1cSLECpFVQelPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1433
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: LYnBoD5W3dIOyY_XJAFd3LkWf5PNl7Vy
+X-Proofpoint-ORIG-GUID: LYnBoD5W3dIOyY_XJAFd3LkWf5PNl7Vy
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_09,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
- spamscore=0 phishscore=0 malwarescore=0 bulkscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208220065
-X-Proofpoint-ORIG-GUID: aDmKd0lirHXsKO0q_eDsFKY-_U0-PpGS
-X-Proofpoint-GUID: aDmKd0lirHXsKO0q_eDsFKY-_U0-PpGS
+ definitions=2022-08-22_10,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 impostorscore=0
+ mlxlogscore=881 spamscore=0 suspectscore=0 lowpriorityscore=0
+ clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208220067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Currently all usage of struct qmi_elem_info, which is used to define
+the QMI message encoding/decoding rules, does not use const. This
+prevents clients from registering const arrays. Since these arrays are
+always pre-defined, they should be const, so add the const qualifier
+to all places in the QMI interface where struct qmi_elem_info is used.
 
-The VMA iterator is faster than the linked list.
+Once this patch is in place, clients can independently update their
+pre-defined arrays to be const, as demonstrated in the QMI sample
+code.
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
 ---
- kernel/acct.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/acct.c b/kernel/acct.c
-index 13706356ec54..62200d799b9b 100644
---- a/kernel/acct.c
-+++ b/kernel/acct.c
-@@ -555,15 +555,14 @@ void acct_collect(long exitcode, int group_dead)
- 	unsigned long vsize =3D 0;
-=20
- 	if (group_dead && current->mm) {
-+		struct mm_struct *mm =3D current->mm;
-+		VMA_ITERATOR(vmi, mm, 0);
- 		struct vm_area_struct *vma;
-=20
--		mmap_read_lock(current->mm);
--		vma =3D current->mm->mmap;
--		while (vma) {
-+		mmap_read_lock(mm);
-+		for_each_vma(vmi, vma)
- 			vsize +=3D vma->vm_end - vma->vm_start;
--			vma =3D vma->vm_next;
--		}
--		mmap_read_unlock(current->mm);
-+		mmap_read_unlock(mm);
- 	}
-=20
- 	spin_lock_irq(&current->sighand->siglock);
---=20
-2.35.1
+v2:
+Added missing const to skip_to_next_elem() return type
+Reported-by: kernel test robot <lkp@intel.com>
+
+ drivers/soc/qcom/qmi_encdec.c    | 50 ++++++++++++++++----------------
+ drivers/soc/qcom/qmi_interface.c | 12 ++++----
+ include/linux/soc/qcom/qmi.h     | 20 ++++++-------
+ samples/qmi/qmi_sample_client.c  | 10 +++----
+ 4 files changed, 47 insertions(+), 45 deletions(-)
+
+diff --git a/drivers/soc/qcom/qmi_encdec.c b/drivers/soc/qcom/qmi_encdec.c
+index 328cc8237191..b7158e3c3a0b 100644
+--- a/drivers/soc/qcom/qmi_encdec.c
++++ b/drivers/soc/qcom/qmi_encdec.c
+@@ -57,11 +57,11 @@ do { \
+ #define TLV_TYPE_SIZE sizeof(u8)
+ #define OPTIONAL_TLV_TYPE_START 0x10
+ 
+-static int qmi_encode(struct qmi_elem_info *ei_array, void *out_buf,
++static int qmi_encode(const struct qmi_elem_info *ei_array, void *out_buf,
+ 		      const void *in_c_struct, u32 out_buf_len,
+ 		      int enc_level);
+ 
+-static int qmi_decode(struct qmi_elem_info *ei_array, void *out_c_struct,
++static int qmi_decode(const struct qmi_elem_info *ei_array, void *out_c_struct,
+ 		      const void *in_buf, u32 in_buf_len, int dec_level);
+ 
+ /**
+@@ -76,10 +76,10 @@ static int qmi_decode(struct qmi_elem_info *ei_array, void *out_c_struct,
+  *
+  * Return: struct info of the next element that can be encoded.
+  */
+-static struct qmi_elem_info *skip_to_next_elem(struct qmi_elem_info *ei_array,
+-					       int level)
++static const struct qmi_elem_info *
++skip_to_next_elem(const struct qmi_elem_info *ei_array, int level)
+ {
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 	u8 tlv_type;
+ 
+ 	if (level > 1) {
+@@ -101,11 +101,11 @@ static struct qmi_elem_info *skip_to_next_elem(struct qmi_elem_info *ei_array,
+  *
+  * Return: Expected minimum length of the QMI message or 0 on error.
+  */
+-static int qmi_calc_min_msg_len(struct qmi_elem_info *ei_array,
++static int qmi_calc_min_msg_len(const struct qmi_elem_info *ei_array,
+ 				int level)
+ {
+ 	int min_msg_len = 0;
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 
+ 	if (!ei_array)
+ 		return min_msg_len;
+@@ -194,13 +194,13 @@ static int qmi_encode_basic_elem(void *buf_dst, const void *buf_src,
+  * Return: The number of bytes of encoded information on success or negative
+  * errno on error.
+  */
+-static int qmi_encode_struct_elem(struct qmi_elem_info *ei_array,
++static int qmi_encode_struct_elem(const struct qmi_elem_info *ei_array,
+ 				  void *buf_dst, const void *buf_src,
+ 				  u32 elem_len, u32 out_buf_len,
+ 				  int enc_level)
+ {
+ 	int i, rc, encoded_bytes = 0;
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 
+ 	for (i = 0; i < elem_len; i++) {
+ 		rc = qmi_encode(temp_ei->ei_array, buf_dst, buf_src,
+@@ -233,13 +233,13 @@ static int qmi_encode_struct_elem(struct qmi_elem_info *ei_array,
+  * Return: The number of bytes of encoded information on success or negative
+  * errno on error.
+  */
+-static int qmi_encode_string_elem(struct qmi_elem_info *ei_array,
++static int qmi_encode_string_elem(const struct qmi_elem_info *ei_array,
+ 				  void *buf_dst, const void *buf_src,
+ 				  u32 out_buf_len, int enc_level)
+ {
+ 	int rc;
+ 	int encoded_bytes = 0;
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 	u32 string_len = 0;
+ 	u32 string_len_sz = 0;
+ 
+@@ -289,11 +289,11 @@ static int qmi_encode_string_elem(struct qmi_elem_info *ei_array,
+  * Return: The number of bytes of encoded information on success or negative
+  * errno on error.
+  */
+-static int qmi_encode(struct qmi_elem_info *ei_array, void *out_buf,
++static int qmi_encode(const struct qmi_elem_info *ei_array, void *out_buf,
+ 		      const void *in_c_struct, u32 out_buf_len,
+ 		      int enc_level)
+ {
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 	u8 opt_flag_value = 0;
+ 	u32 data_len_value = 0, data_len_sz;
+ 	u8 *buf_dst = (u8 *)out_buf;
+@@ -468,13 +468,13 @@ static int qmi_decode_basic_elem(void *buf_dst, const void *buf_src,
+  * Return: The total size of the decoded data elements on success, negative
+  * errno on error.
+  */
+-static int qmi_decode_struct_elem(struct qmi_elem_info *ei_array,
++static int qmi_decode_struct_elem(const struct qmi_elem_info *ei_array,
+ 				  void *buf_dst, const void *buf_src,
+ 				  u32 elem_len, u32 tlv_len,
+ 				  int dec_level)
+ {
+ 	int i, rc, decoded_bytes = 0;
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 
+ 	for (i = 0; i < elem_len && decoded_bytes < tlv_len; i++) {
+ 		rc = qmi_decode(temp_ei->ei_array, buf_dst, buf_src,
+@@ -514,7 +514,7 @@ static int qmi_decode_struct_elem(struct qmi_elem_info *ei_array,
+  * Return: The total size of the decoded data elements on success, negative
+  * errno on error.
+  */
+-static int qmi_decode_string_elem(struct qmi_elem_info *ei_array,
++static int qmi_decode_string_elem(const struct qmi_elem_info *ei_array,
+ 				  void *buf_dst, const void *buf_src,
+ 				  u32 tlv_len, int dec_level)
+ {
+@@ -522,7 +522,7 @@ static int qmi_decode_string_elem(struct qmi_elem_info *ei_array,
+ 	int decoded_bytes = 0;
+ 	u32 string_len = 0;
+ 	u32 string_len_sz = 0;
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 
+ 	if (dec_level == 1) {
+ 		string_len = tlv_len;
+@@ -564,10 +564,10 @@ static int qmi_decode_string_elem(struct qmi_elem_info *ei_array,
+  *
+  * Return: Pointer to struct info, if found
+  */
+-static struct qmi_elem_info *find_ei(struct qmi_elem_info *ei_array,
+-				     u32 type)
++static const struct qmi_elem_info *find_ei(const struct qmi_elem_info *ei_array,
++					   u32 type)
+ {
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 
+ 	while (temp_ei->data_type != QMI_EOTI) {
+ 		if (temp_ei->tlv_type == (u8)type)
+@@ -590,11 +590,11 @@ static struct qmi_elem_info *find_ei(struct qmi_elem_info *ei_array,
+  * Return: The number of bytes of decoded information on success, negative
+  * errno on error.
+  */
+-static int qmi_decode(struct qmi_elem_info *ei_array, void *out_c_struct,
++static int qmi_decode(const struct qmi_elem_info *ei_array, void *out_c_struct,
+ 		      const void *in_buf, u32 in_buf_len,
+ 		      int dec_level)
+ {
+-	struct qmi_elem_info *temp_ei = ei_array;
++	const struct qmi_elem_info *temp_ei = ei_array;
+ 	u8 opt_flag_value = 1;
+ 	u32 data_len_value = 0, data_len_sz = 0;
+ 	u8 *buf_dst = out_c_struct;
+@@ -713,7 +713,7 @@ static int qmi_decode(struct qmi_elem_info *ei_array, void *out_c_struct,
+  * Return: Buffer with encoded message, or negative ERR_PTR() on error
+  */
+ void *qmi_encode_message(int type, unsigned int msg_id, size_t *len,
+-			 unsigned int txn_id, struct qmi_elem_info *ei,
++			 unsigned int txn_id, const struct qmi_elem_info *ei,
+ 			 const void *c_struct)
+ {
+ 	struct qmi_header *hdr;
+@@ -767,7 +767,7 @@ EXPORT_SYMBOL(qmi_encode_message);
+  * errno on error.
+  */
+ int qmi_decode_message(const void *buf, size_t len,
+-		       struct qmi_elem_info *ei, void *c_struct)
++		       const struct qmi_elem_info *ei, void *c_struct)
+ {
+ 	if (!ei)
+ 		return -EINVAL;
+@@ -781,7 +781,7 @@ int qmi_decode_message(const void *buf, size_t len,
+ EXPORT_SYMBOL(qmi_decode_message);
+ 
+ /* Common header in all QMI responses */
+-struct qmi_elem_info qmi_response_type_v01_ei[] = {
++const struct qmi_elem_info qmi_response_type_v01_ei[] = {
+ 	{
+ 		.data_type	= QMI_SIGNED_2_BYTE_ENUM,
+ 		.elem_len	= 1,
+diff --git a/drivers/soc/qcom/qmi_interface.c b/drivers/soc/qcom/qmi_interface.c
+index c8c4c730b135..57052726299d 100644
+--- a/drivers/soc/qcom/qmi_interface.c
++++ b/drivers/soc/qcom/qmi_interface.c
+@@ -305,7 +305,7 @@ EXPORT_SYMBOL(qmi_add_server);
+  * Return: Transaction id on success, negative errno on failure.
+  */
+ int qmi_txn_init(struct qmi_handle *qmi, struct qmi_txn *txn,
+-		 struct qmi_elem_info *ei, void *c_struct)
++		 const struct qmi_elem_info *ei, void *c_struct)
+ {
+ 	int ret;
+ 
+@@ -736,7 +736,8 @@ EXPORT_SYMBOL(qmi_handle_release);
+ static ssize_t qmi_send_message(struct qmi_handle *qmi,
+ 				struct sockaddr_qrtr *sq, struct qmi_txn *txn,
+ 				int type, int msg_id, size_t len,
+-				struct qmi_elem_info *ei, const void *c_struct)
++				const struct qmi_elem_info *ei,
++				const void *c_struct)
+ {
+ 	struct msghdr msghdr = {};
+ 	struct kvec iv;
+@@ -787,7 +788,7 @@ static ssize_t qmi_send_message(struct qmi_handle *qmi,
+  */
+ ssize_t qmi_send_request(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+ 			 struct qmi_txn *txn, int msg_id, size_t len,
+-			 struct qmi_elem_info *ei, const void *c_struct)
++			 const struct qmi_elem_info *ei, const void *c_struct)
+ {
+ 	return qmi_send_message(qmi, sq, txn, QMI_REQUEST, msg_id, len, ei,
+ 				c_struct);
+@@ -808,7 +809,7 @@ EXPORT_SYMBOL(qmi_send_request);
+  */
+ ssize_t qmi_send_response(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+ 			  struct qmi_txn *txn, int msg_id, size_t len,
+-			  struct qmi_elem_info *ei, const void *c_struct)
++			  const struct qmi_elem_info *ei, const void *c_struct)
+ {
+ 	return qmi_send_message(qmi, sq, txn, QMI_RESPONSE, msg_id, len, ei,
+ 				c_struct);
+@@ -827,7 +828,8 @@ EXPORT_SYMBOL(qmi_send_response);
+  * Return: 0 on success, negative errno on failure.
+  */
+ ssize_t qmi_send_indication(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+-			    int msg_id, size_t len, struct qmi_elem_info *ei,
++			    int msg_id, size_t len,
++			    const struct qmi_elem_info *ei,
+ 			    const void *c_struct)
+ {
+ 	struct qmi_txn txn;
+diff --git a/include/linux/soc/qcom/qmi.h b/include/linux/soc/qcom/qmi.h
+index b1f80e756d2a..469e02d2aa0d 100644
+--- a/include/linux/soc/qcom/qmi.h
++++ b/include/linux/soc/qcom/qmi.h
+@@ -75,7 +75,7 @@ struct qmi_elem_info {
+ 	enum qmi_array_type array_type;
+ 	u8 tlv_type;
+ 	u32 offset;
+-	struct qmi_elem_info *ei_array;
++	const struct qmi_elem_info *ei_array;
+ };
+ 
+ #define QMI_RESULT_SUCCESS_V01			0
+@@ -102,7 +102,7 @@ struct qmi_response_type_v01 {
+ 	u16 error;
+ };
+ 
+-extern struct qmi_elem_info qmi_response_type_v01_ei[];
++extern const struct qmi_elem_info qmi_response_type_v01_ei[];
+ 
+ /**
+  * struct qmi_service - context to track lookup-results
+@@ -173,7 +173,7 @@ struct qmi_txn {
+ 	struct completion completion;
+ 	int result;
+ 
+-	struct qmi_elem_info *ei;
++	const struct qmi_elem_info *ei;
+ 	void *dest;
+ };
+ 
+@@ -189,7 +189,7 @@ struct qmi_msg_handler {
+ 	unsigned int type;
+ 	unsigned int msg_id;
+ 
+-	struct qmi_elem_info *ei;
++	const struct qmi_elem_info *ei;
+ 
+ 	size_t decoded_size;
+ 	void (*fn)(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+@@ -249,23 +249,23 @@ void qmi_handle_release(struct qmi_handle *qmi);
+ 
+ ssize_t qmi_send_request(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+ 			 struct qmi_txn *txn, int msg_id, size_t len,
+-			 struct qmi_elem_info *ei, const void *c_struct);
++			 const struct qmi_elem_info *ei, const void *c_struct);
+ ssize_t qmi_send_response(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+ 			  struct qmi_txn *txn, int msg_id, size_t len,
+-			  struct qmi_elem_info *ei, const void *c_struct);
++			  const struct qmi_elem_info *ei, const void *c_struct);
+ ssize_t qmi_send_indication(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
+-			    int msg_id, size_t len, struct qmi_elem_info *ei,
++			    int msg_id, size_t len, const struct qmi_elem_info *ei,
+ 			    const void *c_struct);
+ 
+ void *qmi_encode_message(int type, unsigned int msg_id, size_t *len,
+-			 unsigned int txn_id, struct qmi_elem_info *ei,
++			 unsigned int txn_id, const struct qmi_elem_info *ei,
+ 			 const void *c_struct);
+ 
+ int qmi_decode_message(const void *buf, size_t len,
+-		       struct qmi_elem_info *ei, void *c_struct);
++		       const struct qmi_elem_info *ei, void *c_struct);
+ 
+ int qmi_txn_init(struct qmi_handle *qmi, struct qmi_txn *txn,
+-		 struct qmi_elem_info *ei, void *c_struct);
++		 const struct qmi_elem_info *ei, void *c_struct);
+ int qmi_txn_wait(struct qmi_txn *txn, unsigned long timeout);
+ void qmi_txn_cancel(struct qmi_txn *txn);
+ 
+diff --git a/samples/qmi/qmi_sample_client.c b/samples/qmi/qmi_sample_client.c
+index 78fcedbd25e2..c045e3d24326 100644
+--- a/samples/qmi/qmi_sample_client.c
++++ b/samples/qmi/qmi_sample_client.c
+@@ -42,7 +42,7 @@ struct test_name_type_v01 {
+ 	char name[TEST_MAX_NAME_SIZE_V01];
+ };
+ 
+-static struct qmi_elem_info test_name_type_v01_ei[] = {
++static const struct qmi_elem_info test_name_type_v01_ei[] = {
+ 	{
+ 		.data_type	= QMI_DATA_LEN,
+ 		.elem_len	= 1,
+@@ -71,7 +71,7 @@ struct test_ping_req_msg_v01 {
+ 	struct test_name_type_v01 client_name;
+ };
+ 
+-static struct qmi_elem_info test_ping_req_msg_v01_ei[] = {
++static const struct qmi_elem_info test_ping_req_msg_v01_ei[] = {
+ 	{
+ 		.data_type	= QMI_UNSIGNED_1_BYTE,
+ 		.elem_len	= 4,
+@@ -113,7 +113,7 @@ struct test_ping_resp_msg_v01 {
+ 	struct test_name_type_v01 service_name;
+ };
+ 
+-static struct qmi_elem_info test_ping_resp_msg_v01_ei[] = {
++static const struct qmi_elem_info test_ping_resp_msg_v01_ei[] = {
+ 	{
+ 		.data_type	= QMI_STRUCT,
+ 		.elem_len	= 1,
+@@ -172,7 +172,7 @@ struct test_data_req_msg_v01 {
+ 	struct test_name_type_v01 client_name;
+ };
+ 
+-static struct qmi_elem_info test_data_req_msg_v01_ei[] = {
++static const struct qmi_elem_info test_data_req_msg_v01_ei[] = {
+ 	{
+ 		.data_type	= QMI_DATA_LEN,
+ 		.elem_len	= 1,
+@@ -224,7 +224,7 @@ struct test_data_resp_msg_v01 {
+ 	struct test_name_type_v01 service_name;
+ };
+ 
+-static struct qmi_elem_info test_data_resp_msg_v01_ei[] = {
++static const struct qmi_elem_info test_data_resp_msg_v01_ei[] = {
+ 	{
+ 		.data_type	= QMI_STRUCT,
+ 		.elem_len	= 1,
+-- 
+2.37.0
+
