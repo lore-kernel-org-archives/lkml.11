@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 145B7C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563E8C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233739AbiHVJBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44644 "EHLO
+        id S234090AbiHVJA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233790AbiHVJAz (ORCPT
+        with ESMTP id S230225AbiHVJAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:00:55 -0400
+        Mon, 22 Aug 2022 05:00:53 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE642E9CC;
-        Mon, 22 Aug 2022 02:00:54 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 09:00:51 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763832A71C;
+        Mon, 22 Aug 2022 02:00:52 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 09:00:49 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661158852;
+        s=2020; t=1661158851;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ReOXIpSfOPpncnKDF2n09CmwdD8oZwTAkLarVmVMwBM=;
-        b=eo4OYCOhtnrOupq56/if2MTuMjfnzwxBy+TBDqGurxUhp+Us7k0H0DxpH0b3dUATUgbpSM
-        6GaptnM3zuO0ZN8nuQX+drff9LcQjL6It0Z2KUsV+WXNX4DVU/apYRIZ/V4xgD255oIb4H
-        c33b8hl6yTwa4Qq1RHSyPeIsVZQUkKTDWVEz9oOBXTpM8ymyKoyPJEFH7Yeu170mWuinDo
-        aylsr588HqIVzWOp00d0aV87PhxieaIap7kMaWPUv0gQTz45FcggZfrrZuADF25cJ6+qBD
-        7I5T+j3sg3+DFuzQHJXBkkY69mXNUZRAtK9VlWA4ZWnVkp3SUWk5eCSe7Je5TQ==
+        bh=ZouUrPOncH1yw5J1KAjxZC5rf+rfNbJaQtGZIx1R+vw=;
+        b=cnik6+fE0eNnwUhMVGUouvaVHXC9kw8wNDg/KHpKVbeR812De0CnwxnVrKeXNV85hsSP/R
+        cFUDeNCNOOJ75pJQVJHZCpwlTiVVNP27SWLXRJmAJCmW/bpu6BkzsvbjjcWpjqHI+9VidZ
+        plf5zkzi0KnwoHpG4Tt/m84TfMXNTcQzX+nDxU9Vck5jqocQXlphvFHPjwa/UiwdzrpYdP
+        sGZe1HTz116t6OZV4083r2+qsjaCB0snc6RV8aONhKCNq9+Ky/wsrP9oANICsj3lo0GFa7
+        H4ahyGrl6g3YFWcZn4hfbTASFxbSVPx7kC8qmFYsESxQUDAQqXkej6oYCLmvEw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661158852;
+        s=2020e; t=1661158851;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ReOXIpSfOPpncnKDF2n09CmwdD8oZwTAkLarVmVMwBM=;
-        b=vZ5hW3kOo/tO3PMjJa3rTb34KiaKceR0HnIPRIKpvuXq014ukhw5GwGxF2wRdq88NIUuhZ
-        Is0pZbxPnt4i5iBQ==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=ZouUrPOncH1yw5J1KAjxZC5rf+rfNbJaQtGZIx1R+vw=;
+        b=+8fioaatoVON5hNpnFDOMlKwrvC3LxjDYuQqBbyJCpn3NFTtYeiav6ddVGS4JuBqCThBII
+        3onjIinXSDU/pWAw==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/x86/core: Set pebs_capable and
- PMU_FL_PEBS_ALL for the Baseline
-Cc:     Like Xu <likexu@tencent.com>,
+Subject: [tip: perf/urgent] perf/x86/intel: Fix pebs event constraints for ADL
+Cc:     Ammy Yi <ammy.yi@intel.com>, Kan Liang <kan.liang@linux.intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Kan Liang <kan.liang@linux.intel.com>, x86@kernel.org,
+        stable@vger.kernel.org, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220816114057.51307-1-likexu@tencent.com>
-References: <20220816114057.51307-1-likexu@tencent.com>
+In-Reply-To: <20220818184429.2355857-1-kan.liang@linux.intel.com>
+References: <20220818184429.2355857-1-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Message-ID: <166115885174.401.8267835272671684126.tip-bot2@tip-bot2>
+Message-ID: <166115884946.401.5531726230002276797.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,67 +62,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/urgent branch of tip:
 
-Commit-ID:     7d3598868aaee05eb738d1c3115616b867e7530a
-Gitweb:        https://git.kernel.org/tip/7d3598868aaee05eb738d1c3115616b867e7530a
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 16 Aug 2022 19:40:57 +08:00
+Commit-ID:     cde643ff75bc20c538dfae787ca3b587bab16b50
+Gitweb:        https://git.kernel.org/tip/cde643ff75bc20c538dfae787ca3b587bab16b50
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Thu, 18 Aug 2022 11:44:29 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
 CommitterDate: Fri, 19 Aug 2022 19:47:31 +02:00
 
-perf/x86/core: Set pebs_capable and PMU_FL_PEBS_ALL for the Baseline
+perf/x86/intel: Fix pebs event constraints for ADL
 
-The SDM explicitly states that PEBS Baseline implies Extended PEBS.
-For cpu model forward compatibility (e.g. on ICX, SPR, ADL), it's
-safe to stop doing FMS table thing such as setting pebs_capable and
-PMU_FL_PEBS_ALL since it's already set in the intel_ds_init().
+According to the latest event list, the LOAD_LATENCY PEBS event only
+works on the GP counter 0 and 1 for ADL and RPL.
 
-The Goldmont Plus is the only platform which supports extended PEBS
-but doesn't have Baseline. Keep the status quo.
+Update the pebs event constraints table.
 
-Reported-by: Like Xu <likexu@tencent.com>
+Fixes: f83d2f91d259 ("perf/x86/intel: Add Alder Lake Hybrid support")
+Reported-by: Ammy Yi <ammy.yi@intel.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220816114057.51307-1-likexu@tencent.com
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220818184429.2355857-1-kan.liang@linux.intel.com
 ---
- arch/x86/events/intel/core.c | 4 ----
- arch/x86/events/intel/ds.c   | 1 +
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ arch/x86/events/intel/ds.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index 2db9349..cb98a05 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -6291,10 +6291,8 @@ __init int intel_pmu_init(void)
- 		x86_pmu.pebs_aliases = NULL;
- 		x86_pmu.pebs_prec_dist = true;
- 		x86_pmu.pebs_block = true;
--		x86_pmu.pebs_capable = ~0ULL;
- 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
- 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
--		x86_pmu.flags |= PMU_FL_PEBS_ALL;
- 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
- 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
- 
-@@ -6337,10 +6335,8 @@ __init int intel_pmu_init(void)
- 		x86_pmu.pebs_aliases = NULL;
- 		x86_pmu.pebs_prec_dist = true;
- 		x86_pmu.pebs_block = true;
--		x86_pmu.pebs_capable = ~0ULL;
- 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
- 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
--		x86_pmu.flags |= PMU_FL_PEBS_ALL;
- 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
- 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
- 		x86_pmu.lbr_pt_coexist = true;
 diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-index ba60427..ac6dd4c 100644
+index e5b5874..de1f55d 100644
 --- a/arch/x86/events/intel/ds.c
 +++ b/arch/x86/events/intel/ds.c
-@@ -2262,6 +2262,7 @@ void __init intel_ds_init(void)
- 					PERF_SAMPLE_BRANCH_STACK |
- 					PERF_SAMPLE_TIME;
- 				x86_pmu.flags |= PMU_FL_PEBS_ALL;
-+				x86_pmu.pebs_capable = ~0ULL;
- 				pebs_qual = "-baseline";
- 				x86_get_pmu(smp_processor_id())->capabilities |= PERF_PMU_CAP_EXTENDED_REGS;
- 			} else {
+@@ -830,7 +830,7 @@ struct event_constraint intel_glm_pebs_event_constraints[] = {
+ 
+ struct event_constraint intel_grt_pebs_event_constraints[] = {
+ 	/* Allow all events as PEBS with no flags */
+-	INTEL_HYBRID_LAT_CONSTRAINT(0x5d0, 0xf),
++	INTEL_HYBRID_LAT_CONSTRAINT(0x5d0, 0x3),
+ 	INTEL_HYBRID_LAT_CONSTRAINT(0x6d0, 0xf),
+ 	EVENT_CONSTRAINT_END
+ };
