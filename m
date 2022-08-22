@@ -2,79 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09443C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F9EC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 09:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234146AbiHVJWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        id S234440AbiHVJWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 05:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234189AbiHVJWC (ORCPT
+        with ESMTP id S234395AbiHVJWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 05:22:02 -0400
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2A231375
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:21:23 -0700 (PDT)
-Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server id 15.1.2507.6; Mon, 22 Aug 2022
- 17:21:20 +0800
-From:   Liang Yang <liang.yang@amlogic.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-mtd@lists.infradead.org>
-CC:     Liang Yang <liang.yang@amlogic.com>,
-        kernel test robot <lkp@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v8 5/5] mtd: rawnand: meson: not support legacy clock
-Date:   Mon, 22 Aug 2022 17:18:37 +0800
-Message-ID: <20220822091838.18528-6-liang.yang@amlogic.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220822091838.18528-1-liang.yang@amlogic.com>
-References: <20220822091838.18528-1-liang.yang@amlogic.com>
+        Mon, 22 Aug 2022 05:22:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED1131EF7
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:21:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661160101;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ixrzf48o81ZG4Mo8flPV032r4wlVh+vKK+0eiWqJd9A=;
+        b=U4BOBx2lsABi5vsn8R70AaQ0rqLByxOnxLdaXFf2fWIGT1RPgEQ8nNOc2jkhelG7pqSprq
+        hEMRSL9cDZKFaWjcKl8xYvy6GTeiNeGq+jaOX8rfZer3Hc4Oz2DOXqV296MmbjZf97pwpu
+        qRJX4l+N3nDPJnhf7yJ0QvzsNUGWMhU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-378-X6vpEYv1Mlq9hFQ5ng612w-1; Mon, 22 Aug 2022 05:21:36 -0400
+X-MC-Unique: X6vpEYv1Mlq9hFQ5ng612w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B6DF5299E746;
+        Mon, 22 Aug 2022 09:21:35 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D640DC15BBD;
+        Mon, 22 Aug 2022 09:21:33 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <924818.1661158094@warthog.procyon.org.uk>
+References: <924818.1661158094@warthog.procyon.org.uk> <20220821125751.4185-1-yin31149@gmail.com> <000000000000ce327f05d537ebf7@google.com>
+To:     Hawkins Jiawei <yin31149@gmail.com>
+Cc:     dhowells@redhat.com,
+        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        paskripkin@gmail.com, skhan@linuxfoundation.org,
+        18801353760@163.com
+Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.21]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <992102.1661160093.1@warthog.procyon.org.uk>
+Date:   Mon, 22 Aug 2022 10:21:33 +0100
+Message-ID: <992103.1661160093@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-meson NFC driver use common clock interfaces. so the test robot report
-some errors once using the legacy clock with HAVE_LEGACY_CLK on.
+Actually, there's another bug here too: if rxrpc_wait_for_tx_window() drops
+the call mutex then it needs to reload the pending packet state in
+rxrpc_send_data() as it may have raced with another sendmsg().
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Liang Yang <liang.yang@amlogic.com>
----
- drivers/mtd/nand/raw/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
-index 67b7cb67c030..c309cfeb74cd 100644
---- a/drivers/mtd/nand/raw/Kconfig
-+++ b/drivers/mtd/nand/raw/Kconfig
-@@ -395,7 +395,7 @@ config MTD_NAND_STM32_FMC2
- 
- config MTD_NAND_MESON
- 	tristate "Support for NAND controller on Amlogic's Meson SoCs"
--	depends on ARCH_MESON || COMPILE_TEST
-+	depends on COMMON_CLK && (ARCH_MESON || COMPILE_TEST)
- 	select MFD_SYSCON
- 	help
- 	  Enables support for NAND controller on Amlogic's Meson SoCs.
--- 
-2.34.1
+David
 
