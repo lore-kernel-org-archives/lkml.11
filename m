@@ -2,84 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BD9C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 869B9C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbiHVHKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
+        id S233050AbiHVHOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233333AbiHVHKq (ORCPT
+        with ESMTP id S230289AbiHVHOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:10:46 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77D62983C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:10:45 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id w10so496360edc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:10:45 -0700 (PDT)
+        Mon, 22 Aug 2022 03:14:51 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB441F2E0
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:14:50 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id w10so507724edc.3
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=OXJSHC3u10OP+HTbMpSxeKMRN8oREsLJAZ1clqoMmSE=;
-        b=RA4HZQCDGyC/SIDeLGpy5vj438ALKhnGrTPthx9WF5F5HpgPWbDULm3ZlExFGAc+XU
-         9TsJVTaLDSbjyoumB0uaFuxID66Xi0UX+lP/uzTBbVBLCqQfOQBFVLTsNaa1Nu1gFVPM
-         yeD6KyTOSzgfNeF+ICDsLrL4weCG72go6GbDCuVATFaQLL1ywpBnEq0oz5qGr/kfWznP
-         HPQ43J8OvsDDKcrL7nl4kCWc1P9UBD8HnAqD/6Ukgwy98732aajgzuqiLeH2wptvoSh0
-         cKvsSp87AAINTffTiuu/6mUev0LmUwqTYB3ivP+ugQlsh02tsfcavwdvLsx6Mp6hSRbf
-         tEJA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=L4C9jxDEHQJxeNb6tSjoDWUpW5OXjQBjDyyOgdCfm1c=;
+        b=HDpf9UEUkLM+5q7kzurPq7l8YVBs2Gwncdlt1GECYz1eWZorNMAeFaFnahENaZwyFY
+         18QtbkG2hpVzGZqil0J/u4IDUrBttXvTS+/GqOPCUsats9mqRRteaUrJWoPIjIjIv7aX
+         Q8JnYhEUPii5uclxswYUCtlv2KGWXtnfPH5Rm5qPiKSeJQBiZ1no0bMudmDO6W8RMAuz
+         E4hrIacq5HCEIw+9o/HrdNxJM5HkM8jr8BVXUrn7FmMLYDOGQoeZGwQUxfEvXIU6LrAi
+         x3DDMuFpfH56yBR8kkRMv5PS2rdu2xqG1le13VIig9oVjs9dKho40gBpQfMA1MMVpvmE
+         x3/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=OXJSHC3u10OP+HTbMpSxeKMRN8oREsLJAZ1clqoMmSE=;
-        b=t8sU0OqBqb0uv54nWL6Mrr2lKb7T7fucoQlmWqf7vZgmnyGoukTCHboddMfbPuflYC
-         wSGzpaWa5ZIIkxbecmRa7kwOGIHUm26Ckd/jAjHEe7ZrSC5ROoPckcCd9gOja/dRrKFP
-         U7N3b/Kt+2OMRdTZHVYfzY87w7QRGXM6soY2JAa4EtH89bZnVBCvYfPeRTl92BpVW0RB
-         hP9UcpNacO6ZCg1yDAZh12mZc8FswStWBjUu0KB946OQezVlHqNrAZ/Q42I79FNVhS3R
-         lgiGTIRsiNj6SZWr9mKJxWceVVsjy9HCKrcfggtl68TlAigJ8vlNesGNBTYWLnpd00JI
-         5/Yg==
-X-Gm-Message-State: ACgBeo0189KqPDoat4IF6I1oIVcxtWy664FWjyxNclrw84b+avcJrlzz
-        WMxw6Z71uiSiplIgTDEDqqmDuECvg5qAfgA3sNqpbav3hdE=
-X-Google-Smtp-Source: AA6agR6GlsGATx8E1XQpTn7CSZWm+8KDw8Qzr9k38Vth1pGheZzAb26A/rhtk2zLUbTv2V3eAdYhXR2P8sP7f+aMfWg=
-X-Received: by 2002:a05:6402:5106:b0:440:3693:e67b with SMTP id
- m6-20020a056402510600b004403693e67bmr15167256edd.226.1661152244210; Mon, 22
- Aug 2022 00:10:44 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=L4C9jxDEHQJxeNb6tSjoDWUpW5OXjQBjDyyOgdCfm1c=;
+        b=dl4Lk0A7ZYkOY0QNwe4XRE7zlvbfy0xiWxbHFdAaSxrOTxXLrpSY7W7S4ENaulSDmu
+         uEpam7nwvtHn/p4dN4tkgXSCZPaEdfmHri8DxoN8rY3GtnqyoiucVq6S3OTQY5KnBz2X
+         2wMuiRh0HAwTWleb7VO5iK8FHieY12FlkWgcqc0wAz6TQGFuUH8f5emVv9gX8Ula8yj2
+         T8mKjnUcHEjpCXXDx12INk3BUmSJNyg37dU4x3xDPtDxQReqwkdksmptu+f0UauuJWQm
+         eq7lXitwwOiZLTIvKm1gDj3v5jM7QJ+dd20sw7k+uD+zjXX5bVDHeSuV6OVK83wUtfMi
+         3U/Q==
+X-Gm-Message-State: ACgBeo3PVRMGuB8f5HexLvviFbG/5UFDACIY58aUMuvXIru1OFFIC2ui
+        ZmSEPTX0dfMsoNZ7xcG32EDy6BefTCCpCS/JhlHRCw==
+X-Google-Smtp-Source: AA6agR6uP2gNGTFa2fluxSVgHP2Yn6gtVn9sUtgJUHExaMImKcS0hip/QX/7i0dab1r6zmm25gurJY8lIHclJj9VIs4=
+X-Received: by 2002:a05:6402:4312:b0:43d:b9c0:65ee with SMTP id
+ m18-20020a056402431200b0043db9c065eemr15253416edc.205.1661152489457; Mon, 22
+ Aug 2022 00:14:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220819060801.10443-1-jinpu.wang@ionos.com> <20220819060801.10443-15-jinpu.wang@ionos.com>
- <20220821055745.GA26064@lst.de> <CAMGffEkhQd6oGgg+m9AUkquYnkufyrt1ptEkg5LG_HE_7s-Vsw@mail.gmail.com>
- <20220822062537.GA21455@lst.de>
-In-Reply-To: <20220822062537.GA21455@lst.de>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Mon, 22 Aug 2022 09:10:33 +0200
-Message-ID: <CAMGffEk1CJAkaZi5GHrKdW-y1HQRUuo0YfRuGR8hFpNe1dZyoA@mail.gmail.com>
-Subject: Re: [PATCH v1 14/19] nvme-rdma: Fix error check for ib_dma_map_sg
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
-        linux-nvme@lists.infradead.org
+References: <20220728091712.13395-1-m.zatovic1@gmail.com>
+In-Reply-To: <20220728091712.13395-1-m.zatovic1@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 22 Aug 2022 09:14:38 +0200
+Message-ID: <CACRpkdbD1qzJujhq-U0UN0tWam9CaoLvVuAQfafq4XNaEdZ2QA@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 1/2] bus: add Wiegand write-only GPIO driver
+To:     =?UTF-8?B?TWFydGluIFphxaVvdmnEjQ==?= <m.zatovic1@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        mani@kernel.org, hemantk@codeaurora.org, elder@linaro.org,
+        f.fainelli@gmail.com, Michael.Srba@seznam.cz,
+        jeffrey.l.hugo@gmail.com, gregkh@linuxfoundation.org,
+        bjorn.andersson@linaro.org, saravanak@google.com,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 8:25 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Mon, Aug 22, 2022 at 07:12:23AM +0200, Jinpu Wang wrote:
-> > On Sun, Aug 21, 2022 at 7:57 AM Christoph Hellwig <hch@lst.de> wrote:
-> > >
-> > > Please don't send me just two random patches out of a series, as I
-> > > have no way to review them.  If the patches are independent, send them
-> > > independently and if they depend on common prep work send the entire
-> > > series to everyone.
-> > Hi Christoph,
-> >
-> > As mentioned in the cover letter, the bugfixes are all independent,
-> > for each of the drivers.
->
-> I still haven't seen the cover letter as it was never sent to me.
-> But if patches are independent please send a series per subsystem
-> as that makes that very clear.
-Thanks for the hint, this definitely helps the subsystem maintainer to
-get a clear background.
-I'll do it in the future.
+Hi Martin!
+
+Thanks for your patch!
+
+On Thu, Jul 28, 2022 at 11:17 AM Martin Za=C5=A5ovi=C4=8D <m.zatovic1@gmail=
+.com> wrote:
+
+> Wiegand is a communication protocol that is still widely used
+> especially for access control applications. It utilizes two wires to
+> transmit data - D0 and D1, the generic names of which are data-lo and
+> data-hi.
+
+So the driver provides Wiegand GPIO, if you want to provide
+generic Wiegand infrastructure (for other things than GPIO
+as well) then that should indeed be in drivers/bus.
+
+However then you should provide an API for random WIegand
+drivers, such as the now baked-in GPIO driver, so I think
+what you want to achieve is:
+
+1. A wiegand bus transport driver in drives/bus
+2. A wiegand abstract API in include/linux/wiegand.h
+3. A GPIO driver on top of the wiegand bus in
+   drivers/gpio/wiegand-gpio.c that uses <linux/wiegand.h>
+
+How does this sound?
+
+I don't know how a wiegand device driver API would look
+but there are several examples in other subsystems and
+buses then the wiegand specifics need to be accounted for.
+
+Yours,
+Linus Walleij
