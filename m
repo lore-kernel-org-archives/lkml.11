@@ -2,147 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DEC1C32792
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 253CDC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbiHVUCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
+        id S231623AbiHVUEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235144AbiHVUCP (ORCPT
+        with ESMTP id S230465AbiHVUEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:02:15 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C501D54642
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:02:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661198528; x=1692734528;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0HPJzTZJCyzz51oJb40DfeTcEqv2C1B8j5nBtpWnNS8=;
-  b=XvvAcjj2TIoyqbazZfVRbaXZuexSwFbzQO3JtpULs1C/gN3grmvtooIe
-   HbLEtDSF5x/1qDmD75VFFJSQUondc418h1JSJqAHH3K+C68Maa4ADZJKc
-   9E7e9WEdkYc7P7BFJ1FgG1JOBAeCEmuZDaW1OMXCiywaatmbyDsKpTp23
-   MRkGTn1865B5fqFVvn3RB1Q9EJBXZEjX8sNu1S95ABktuxqjp7VCUrydz
-   vm0sxbD12utwwXG6LvcYaw90mc/seL5euvvnVTgv+cM0N4UXhibqbU8eE
-   KufXvGm0KunwoTDmXv7UoQtpryaX3QUJOzesWt7WntSZ5Aa7Um+VvTygO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273896406"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="273896406"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 13:02:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="698412564"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2022 13:02:06 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQDcb-0000gC-38;
-        Mon, 22 Aug 2022 20:02:05 +0000
-Date:   Tue, 23 Aug 2022 04:01:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [peterz-queue:perf/wip.rewrite 5/5] kernel/events/core.c:846:3:
- error: 'continue' statement not in loop statement
-Message-ID: <202208230329.okV9Yjck-lkp@intel.com>
+        Mon, 22 Aug 2022 16:04:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F783DF3A
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:04:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661198678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3MGzdqS7zqufQ3nM6oMD7RGCJ/sN7ainzK/gxogNSs8=;
+        b=PzSHEufysK2X6erBLac4sZ9ThFd8/h3CRQIyI2dkMb1mcVlbNXsvcNJLY+fhtKkeGVyQ83
+        h+HariboMtG66KbKgH1Jeu1fnoIbDiAE1ynmT2LcqsGXvpCLRI+7gVK8E2BPssUiYDZfxK
+        O5bw5qqXuvwB59DYKxJRQ87t3IdYwnA=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-663-kOY0OIitM8Ctfu7lYcgGfg-1; Mon, 22 Aug 2022 16:04:37 -0400
+X-MC-Unique: kOY0OIitM8Ctfu7lYcgGfg-1
+Received: by mail-qt1-f199.google.com with SMTP id e30-20020ac8011e000000b00342f61e67aeso9029081qtg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:04:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=3MGzdqS7zqufQ3nM6oMD7RGCJ/sN7ainzK/gxogNSs8=;
+        b=EMe0yNIRQcNDFGnXo0Y5WP0NB1UJjDbP4u/UpZ+I8DpSTv552KJ+BputUspQ6s+XWa
+         76C70EXx6UXto7RWg5RcXTWB8BRpRxRjD6NUm9d8N1mmmLfyMGXhlxR1YihGWihp0aEn
+         BmSvuoNw6RwXsVj2Doxg1vwrfYR8MSR8kiNXj7LL8pw7lyQMyWrzpehTzcp91NZzr9fA
+         hbPwaKuJ74D5bzk7S+rOqi191GC0mOlhZJNb8He0I7N2enjQCcHFjMFbNWwVNZrH999v
+         7UzIn+wLZDp4CJJUki1k0YlVvsqeX6ZSjoTk2UZBCAJh3mJuSFuAoJQzh1sBhhaNhSqo
+         TNqw==
+X-Gm-Message-State: ACgBeo3UExbkD1tCLZKFkVk9Roict59fPEjVezuEAKLjlpIUaK/YVbMY
+        AigVal2cz8xESwq5t/jtpzk+W/BUK5wTWzwEoLSpKuE/qY3OVjp5XC9so3Q9+bMbCuLClxTSZJ1
+        6UiU/kMhm94c/71c4ZVvIMMI5
+X-Received: by 2002:a05:620a:21c1:b0:6bb:7ccf:6833 with SMTP id h1-20020a05620a21c100b006bb7ccf6833mr13721737qka.541.1661198676678;
+        Mon, 22 Aug 2022 13:04:36 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5LOeB5P1xEn5p0J+Wjs5Cb7HpGTmF29MjR498dW9ZMxZSFoMvhbKVMxYbiaVxLyhNE3g4aWA==
+X-Received: by 2002:a05:620a:21c1:b0:6bb:7ccf:6833 with SMTP id h1-20020a05620a21c100b006bb7ccf6833mr13721722qka.541.1661198676436;
+        Mon, 22 Aug 2022 13:04:36 -0700 (PDT)
+Received: from halaneylaptop ([2600:1700:1ff0:d0e0::48])
+        by smtp.gmail.com with ESMTPSA id u21-20020a05620a455500b006b615cd8c13sm11817223qkp.106.2022.08.22.13.04.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 13:04:35 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 15:04:33 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Mark Brown <broonie@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] regulator: qcom-rpmh: Implement get_optimum_mode(), not
+ set_load()
+Message-ID: <20220822200433.k5ximhpufcxom2kv@halaneylaptop>
+References: <20220726102024.1.Icc838fe7bf0ef54a014ab2fee8af311654f5342a@changeid>
+ <20220822193153.zn2oxljmd76awqot@halaneylaptop>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220822193153.zn2oxljmd76awqot@halaneylaptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.rewrite
-head:   596b8cc92a97fa8defbff896dc9baedef441b983
-commit: 596b8cc92a97fa8defbff896dc9baedef441b983 [5/5] Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-config: x86_64-randconfig-a004-20220822 (https://download.01.org/0day-ci/archive/20220823/202208230329.okV9Yjck-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=596b8cc92a97fa8defbff896dc9baedef441b983
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue perf/wip.rewrite
-        git checkout 596b8cc92a97fa8defbff896dc9baedef441b983
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Mon, Aug 22, 2022 at 02:31:53PM -0500, Andrew Halaney wrote:
+> Hey Douglas,
+> 
+> On Tue, Jul 26, 2022 at 10:20:29AM -0700, Douglas Anderson wrote:
+> > Since we don't actually pass the load to the firmware, switch to using
+> > get_optimum_mode() instead of open-coding it.
+> > 
+> > This is intended to have no effect other than cleanup.
+> 
+> I hate to post something without looking into it very deeply, but with
+> this statement about no effect I figured I'd report what I'm noticing
+> before diving deeper.
+> 
+> I'm currently playing with the dts patches in [0], and without this
+> patch (and a hack patch applied that is unrelated to this) the board boots
+> fine. With this patch applied I get the messages reported in [1] (which I
+> think is still a clean up that should be applied) and the board fails to
+> boot due to regulator_enable() failing at the first invocation I see.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Sorry for more spam, but just to be clear, in the above I'm saying that
+if I revert this patch the error message below goes away and the
+regulator_enable() call succeeds allowing the board to boot. Re-reading
+what I wrote it sounds like a jumbled mess.
 
-All errors (new ones prefixed by >>):
+> 
+> Is that something you expect?
+> 
+> Here's the ultimate failure message for regulator_enable():
+> 
+>     [    1.213419] ufshcd-qcom 1d84000.ufs: Adding to iommu group 0
+>     [    1.219492] ufshcd-qcom 1d84000.ufs: ufshcd_populate_vreg: Unable to find vdd-hba-supply regulator, assuming enabled
+>     [    1.230287] ufshcd-qcom 1d84000.ufs: ufshcd_populate_vreg: Unable to find vccq2-supply regulator, assuming enabled
+>     [    1.241079] vreg_l17c: invalid input voltage found
+>     [    1.246002] ufshcd-qcom 1d84000.ufs: ufshcd_enable_vreg: vcc enable failed, err=-22
+>     [    1.253952] ufshcd-qcom 1d84000.ufs: Initialization failed
+>     [    1.259622] ufshcd-qcom 1d84000.ufs: ufshcd_pltfrm_init() failed -22
+>     [    1.266151] ufshcd-qcom: probe of 1d84000.ufs failed with error -22
+> 
+> [0] https://lore.kernel.org/all/20220722143711.17563-1-quic_ppareek@quicinc.com/
+> [1] https://lore.kernel.org/all/166118500944.215002.10320899094541954077.b4-ty@kernel.org/
+> 
+> Thanks,
+> Andrew
+> 
+> > 
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> > 
+> >  drivers/regulator/qcom-rpmh-regulator.c | 17 ++++++++---------
+> >  1 file changed, 8 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/regulator/qcom-rpmh-regulator.c b/drivers/regulator/qcom-rpmh-regulator.c
+> > index 561de6b2e6e3..b2debde79361 100644
+> > --- a/drivers/regulator/qcom-rpmh-regulator.c
+> > +++ b/drivers/regulator/qcom-rpmh-regulator.c
+> > @@ -306,9 +306,10 @@ static unsigned int rpmh_regulator_vrm_get_mode(struct regulator_dev *rdev)
+> >  }
+> >  
+> >  /**
+> > - * rpmh_regulator_vrm_set_load() - set the regulator mode based upon the load
+> > - *		current requested
+> > + * rpmh_regulator_vrm_get_optimum_mode() - get the mode based on the  load
+> >   * @rdev:		Regulator device pointer for the rpmh-regulator
+> > + * @input_uV:		Input voltage
+> > + * @output_uV:		Output voltage
+> >   * @load_uA:		Aggregated load current in microamps
+> >   *
+> >   * This function is used in the regulator_ops for VRM type RPMh regulator
+> > @@ -316,17 +317,15 @@ static unsigned int rpmh_regulator_vrm_get_mode(struct regulator_dev *rdev)
+> >   *
+> >   * Return: 0 on success, errno on failure
+> >   */
+> > -static int rpmh_regulator_vrm_set_load(struct regulator_dev *rdev, int load_uA)
+> > +static unsigned int rpmh_regulator_vrm_get_optimum_mode(
+> > +	struct regulator_dev *rdev, int input_uV, int output_uV, int load_uA)
+> >  {
+> >  	struct rpmh_vreg *vreg = rdev_get_drvdata(rdev);
+> > -	unsigned int mode;
+> >  
+> >  	if (load_uA >= vreg->hw_data->hpm_min_load_uA)
+> > -		mode = REGULATOR_MODE_NORMAL;
+> > +		return REGULATOR_MODE_NORMAL;
+> >  	else
+> > -		mode = REGULATOR_MODE_IDLE;
+> > -
+> > -	return rpmh_regulator_vrm_set_mode(rdev, mode);
+> > +		return REGULATOR_MODE_IDLE;
+> >  }
+> >  
+> >  static int rpmh_regulator_vrm_set_bypass(struct regulator_dev *rdev,
+> > @@ -375,7 +374,7 @@ static const struct regulator_ops rpmh_regulator_vrm_drms_ops = {
+> >  	.list_voltage		= regulator_list_voltage_linear_range,
+> >  	.set_mode		= rpmh_regulator_vrm_set_mode,
+> >  	.get_mode		= rpmh_regulator_vrm_get_mode,
+> > -	.set_load		= rpmh_regulator_vrm_set_load,
+> > +	.get_optimum_mode	= rpmh_regulator_vrm_get_optimum_mode,
+> >  };
+> >  
+> >  static const struct regulator_ops rpmh_regulator_vrm_bypass_ops = {
+> > -- 
+> > 2.37.1.359.gd136c6c3e2-goog
+> > 
 
->> kernel/events/core.c:846:3: error: 'continue' statement not in loop statement
-                   continue;
-                   ^
-   kernel/events/core.c:4220:29: warning: variable 'task_ctx' set but not used [-Wunused-but-set-variable]
-           struct perf_event_context *task_ctx = NULL;
-                                      ^
-   kernel/events/core.c:4790:1: warning: no previous prototype for function 'find_get_pmu_context' [-Wmissing-prototypes]
-   find_get_pmu_context(struct pmu *pmu, struct perf_event_context *ctx,
-   ^
-   kernel/events/core.c:4789:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   struct perf_event_pmu_context *
-   ^
-   static 
-   kernel/events/core.c:12029:2: error: call to undeclared function 'mutex_lock_double'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           mutex_lock_double(&event->mmap_mutex, &output_event->mmap_mutex);
-           ^
-   2 warnings and 2 errors generated.
-
-
-vim +/continue +846 kernel/events/core.c
-
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  831  
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  832  /*
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  833   * reschedule events based on the cgroup constraint of task.
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  834   */
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  835  static void perf_cgroup_switch(struct task_struct *task)
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  836  {
-596b8cc92a97fa kernel/events/core.c Peter Zijlstra          2022-06-15  837  	struct perf_cpu_context *cpuctx = this_cpu_ptr(&cpu_context);
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  838  	struct perf_cgroup *cgrp;
-058fe1c0440e68 kernel/events/core.c David Carrillo-Cisneros 2017-01-18  839  	struct list_head *list;
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  840  	unsigned long flags;
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  841  
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  842  	cgrp = perf_cgroup_from_task(task, NULL);
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  843  
-058fe1c0440e68 kernel/events/core.c David Carrillo-Cisneros 2017-01-18  844  	WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  845  	if (READ_ONCE(cpuctx->cgrp) == cgrp)
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29 @846  		continue;
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  847  
-facc43071cc0d4 kernel/events/core.c Peter Zijlstra          2011-04-09  848  	perf_ctx_lock(cpuctx, cpuctx->task_ctx);
-6a606214738273 kernel/events/core.c Peter Zijlstra          2022-01-13  849  	perf_ctx_disable(&cpuctx->ctx);
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  850  
-6a606214738273 kernel/events/core.c Peter Zijlstra          2022-01-13  851  	ctx_sched_out(&cpuctx->ctx, EVENT_ALL);
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  852  	/*
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  853  	 * must not be done before ctxswout due
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  854  	 * to update_cgrp_time_from_cpuctx() in
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  855  	 * ctx_sched_out()
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  856  	 */
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  857  	cpuctx->cgrp = cgrp;
-95cf59ea72331d kernel/events/core.c Peter Zijlstra          2012-10-02  858  	/*
-95cf59ea72331d kernel/events/core.c Peter Zijlstra          2012-10-02  859  	 * set cgrp before ctxsw in to allow
-a0827713e298d0 kernel/events/core.c Chengming Zhou          2022-03-29  860  	 * perf_cgroup_set_timestamp() in ctx_sched_in()
-a0827713e298d0 kernel/events/core.c Chengming Zhou          2022-03-29  861  	 * to not have to pass task around
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  862  	 */
-6a606214738273 kernel/events/core.c Peter Zijlstra          2022-01-13  863  	ctx_sched_in(&cpuctx->ctx, EVENT_ALL);
-96492a6c558acb kernel/events/core.c Chengming Zhou          2022-03-29  864  
-6a606214738273 kernel/events/core.c Peter Zijlstra          2022-01-13  865  	perf_ctx_enable(&cpuctx->ctx);
-facc43071cc0d4 kernel/events/core.c Peter Zijlstra          2011-04-09  866  	perf_ctx_unlock(cpuctx, cpuctx->task_ctx);
-facc43071cc0d4 kernel/events/core.c Peter Zijlstra          2011-04-09  867  }
-e5d1367f17ba6a kernel/perf_event.c  Stephane Eranian        2011-02-14  868  
-
-:::::: The code at line 846 was first introduced by commit
-:::::: 96492a6c558acb56124844d1409d9ef8624a0322 perf/core: Fix perf_cgroup_switch()
-
-:::::: TO: Chengming Zhou <zhouchengming@bytedance.com>
-:::::: CC: Peter Zijlstra <peterz@infradead.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
