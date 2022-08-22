@@ -2,90 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD6EC38145
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF68C32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234931AbiHVNBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        id S234446AbiHVNDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234729AbiHVNAV (ORCPT
+        with ESMTP id S230020AbiHVNC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:00:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7436633E29;
-        Mon, 22 Aug 2022 06:00:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0931561160;
-        Mon, 22 Aug 2022 13:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 587AAC43142;
-        Mon, 22 Aug 2022 13:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661173218;
-        bh=ZQf+RtRzflIsW4ByUNtjm6Aenxs0mbiyzzAYeGeMBzM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=j0icUhz1vSvexEOqJL06kF5UwY1i6l8AbDdIl1zwwX+8mTc3w0rxgL+bNDpQnTYyu
-         VZUFY6KRWwW/BOaGx3Mb/V69aum+uBO6cTFAzh+JrLcD9sfrF0JbeiObTmNX3ua517
-         U+Ku+IPk134LO78QwRlI19P8s8vW+l50/y2lRNZdJgiWSTBoEJO51CHWSJ79nwxy4z
-         086Jbq6dy9SDmko47Px9EJPr9TLlH4LtgfXILYpa1urD1iLnBPd8/oVcmgmTTH5Dl9
-         uZ0gwM1LXY3C8JMwxw/5IA9YzQV3AQ+uTA+hUEijXhphVgQ1hjwWdzp9TaP6AXQ7+N
-         kALZzLHP4kXww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 33D18E2A040;
-        Mon, 22 Aug 2022 13:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 22 Aug 2022 09:02:59 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FAA356D1;
+        Mon, 22 Aug 2022 06:02:59 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 40B082B3;
+        Mon, 22 Aug 2022 15:02:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1661173377;
+        bh=3KUAM+O8TZK6k0R26rf5Rv/fs3CP6Usaeb49tMIg+sk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Td0g3pwLBnD4ckmy1hbXDW04i7ernfNgHGZCUdSMCtSjlY3Pn1sNUuAGLtBC48rgG
+         FTTZrBGWXPZp5syugBjLfT+n7fp8i1q1BeoXTtDvEUdtHXhb0aXT+mUzYbtYJ7Nhwu
+         /f9Qm6RMTvMXBTYpXVx1XaeYw5BwFMnZT+C6TWvs=
+Date:   Mon, 22 Aug 2022 16:02:53 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Ricardo Ribalda <ribalda@chromium.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: uvcvideo: Fix InterfaceProtocol for Quanta camera
+Message-ID: <YwN+fU5ez0L5pi1j@pendragon.ideasonboard.com>
+References: <20220808134106.70100-1-ribalda@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next RESEND v4 0/4] net: Introduce QUSGMII phy mode
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166117321820.20649.2102719943200043855.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Aug 2022 13:00:18 +0000
-References: <20220817123255.111130-1-maxime.chevallier@bootlin.com>
-In-Reply-To: <20220817123255.111130-1-maxime.chevallier@bootlin.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, robh+dt@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, richardcochran@gmail.com,
-        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
-        UNGLinuxDriver@microchip.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220808134106.70100-1-ribalda@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Ricardo,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Thank you for the patch.
 
-On Wed, 17 Aug 2022 14:32:51 +0200 you wrote:
-> Hello everyone,
+On Mon, Aug 08, 2022 at 03:41:06PM +0200, Ricardo Ribalda wrote:
+> The device is using a different InterfaceProtocol than the one set in
+> the original quirk.
 > 
-> Re-sending, since the previous v4 was sent while net-next was closed.
+> Fixes: 95f03d973478 ("media: uvcvideo: Limit power line control for Quanta cameras")
+> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> ---
 > 
-> This is a resend of the V4 of a previous series [1] initially aimed at
-> introducing inband extensions, with modes like QUSGMII. This mode allows
-> passing info in the ethernet preamble between the MAC and the PHY, such as
-> timestamps.
+> This was fixed on the last version of the patchset. Unfortunately I did
+> checked that it was the version merged :(.
+
+Oops :-(
+
+> It is too late to land it in this version?
+
+I think it can be considered as a v6.0 fix, yes.
+
+>  drivers/media/usb/uvc/uvc_driver.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> [...]
+> diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+> index 9c05776f11d1..6556158a8888 100644
+> --- a/drivers/media/usb/uvc/uvc_driver.c
+> +++ b/drivers/media/usb/uvc/uvc_driver.c
+> @@ -2740,7 +2740,7 @@ static const struct usb_device_id uvc_ids[] = {
+>  	  .idProduct		= 0x4034,
+>  	  .bInterfaceClass	= USB_CLASS_VIDEO,
+>  	  .bInterfaceSubClass	= 1,
+> -	  .bInterfaceProtocol	= 0,
+> +	  .bInterfaceProtocol	= 1,
 
-Here is the summary with links:
-  - [net-next,RESEND,v4,1/4] net: phy: Introduce QUSGMII PHY mode
-    https://git.kernel.org/netdev/net-next/c/5e61fe157a27
-  - [net-next,RESEND,v4,2/4] dt-bindings: net: ethernet-controller: add QUSGMII mode
-    https://git.kernel.org/netdev/net-next/c/0932b12a7496
-  - [net-next,RESEND,v4,3/4] net: phy: Add helper to derive the number of ports from a phy mode
-    https://git.kernel.org/netdev/net-next/c/c04ade27cb7b
-  - [net-next,RESEND,v4,4/4] net: lan966x: Add QUSGMII support for lan966x
-    https://git.kernel.org/netdev/net-next/c/ac0167fb9961
+Should we use UVC_PC_PROTOCOL_15 here ?
 
-You are awesome, thank you!
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+>  	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
+>  	/* LogiLink Wireless Webcam */
+>  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards,
 
-
+Laurent Pinchart
