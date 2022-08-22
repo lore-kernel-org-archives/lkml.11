@@ -2,207 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00DFC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CD1C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237451AbiHVTFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
+        id S237544AbiHVTFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233350AbiHVTFH (ORCPT
+        with ESMTP id S234921AbiHVTFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:05:07 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021FF13F7C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:05:06 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id a16-20020a17090abe1000b001fad8c29b0bso7298087pjs.2
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:mime-version
-         :message-id:date:from:to:cc;
-        bh=KkQKvejedeuo1Qp9kShkIqWMvh08M6V/RalDBTDRBcY=;
-        b=Ny+6SLA0NQXEGHhDaKlRKIuTH8NDSIRQ/HotaFqw5r+iKHN4BhqHJOsZZToZ8Bu4PM
-         2RgS5OzblEo2TI0DZA2h8RnfAJ8gGLSvjI3m46JCc2Fk5Vm6qhOLuiJxBNZPQK2e8Oc5
-         YpSLvenUgIRNXucS8RVY8o1kvAWbSB3Xb5d9bhUjzsrnd3iWmnma4++gRNpyJzPWvKyq
-         8Mikfy2SGUAmqU7V5dLbU/VxVkXOiWR/ZiumKj925SR1zLMa5aUopTXWfpvGNFDMK+mt
-         z8B17hxJczYAx0sO3Rk9mr1MitKyxp2yr4BttIc7jVSQLBZevEC2xZVBIYAS54wwk+l3
-         2t5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:mime-version
-         :message-id:date:x-gm-message-state:from:to:cc;
-        bh=KkQKvejedeuo1Qp9kShkIqWMvh08M6V/RalDBTDRBcY=;
-        b=fsONB0RpJVrW+FnEb/9LRddbbTaDfBsroHj8L89y6FCrRtvJ0SSe2ngZiBIDhkrvvE
-         mzS+QP+DzukAFrUQiK/g9HrV+C+2nWBuZBL2QJm6iWJV4tOs8/Xa7dmBKp4ecnWbvNV+
-         gggmXRZ1qqBDsTVwN3gxUXGood0yKAsz5rOFQv7MAviZzj8LbcPMwlYawZBSCkAd1hea
-         0Ec2w6E8UBCNciWGPfLHqgGRI/PECm9CmnjyfiAph9LxTg5ewIoNEHpP5glgXHXv4Ahr
-         ha6iZd+hsa8fCk4orH6foP7KyA2ol5FnLbzYThXVeGTcmeBTHSnqtKQwqpy9FLEUbxQk
-         x4aA==
-X-Gm-Message-State: ACgBeo3Ypr9SnJVJCg61s5JvNLsDZzNcqpHSeQXLyquZ/FCmaouC/MP1
-        6mMHHN/53yFzpWk4iNhAuQj3UR0jKM0/uJ2Hvxr6FinAEHJK1148Q99VuuVqqFCwJg2Vr9eD/bK
-        rvTjTVqUyJGosZ1JK4hHznBsOvR2l/ij7bCNVcHUL9/TNKc9PDSRvsQ4wkfJMQ/cyNEMvSi0=
-X-Google-Smtp-Source: AA6agR4rP7fUU9Iojr6WmJyqTMEI1+0W5ZHOoXLHxPK/g5t8JxvJKjExwE+mQiYEQnWiUzqBvU7dIglOE9Or
-X-Received: from jstultz-noogler2.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:600])
- (user=jstultz job=sendgmr) by 2002:a05:6a00:b82:b0:52f:518f:fe6c with SMTP id
- g2-20020a056a000b8200b0052f518ffe6cmr22089260pfj.80.1661195105223; Mon, 22
- Aug 2022 12:05:05 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 19:04:59 +0000
-Message-Id: <20220822190501.2171100-1-jstultz@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [RFC][PATCH v2 0/2] Softirq -rt Optimizations
-From:   John Stultz <jstultz@google.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     John Stultz <jstultz@google.com>, John Dias <joaodias@google.com>,
-        "Connor O'Brien" <connoro@google.com>,
-        Rick Yiu <rickyiu@google.com>, John Kacur <jkacur@redhat.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Chris Redpath <chris.redpath@arm.com>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 22 Aug 2022 15:05:08 -0400
+Received: from na01-obe.outbound.protection.outlook.com (unknown [52.101.56.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FECFDF84;
+        Mon, 22 Aug 2022 12:05:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mJs9ksO9wGu02ElyCvDL8dqQO1AQvmqoD4IJvWP8NHlno1vMiGcjf8TVjnWNuH02WNgIntoswK2mVeBqUbWjfAV1VvVk6vu5lzsjrZ4SK/hkNeeA/y0I1mjDbSMy2L0Zclpsbcn0UOW8/nr7fLQ+95FcphziIB1vrjTzfQAtDgW6AEZt6vVFj2x9TGQxhaysT/EtjU1B43bBixLrN8sRsgEfi5sJ/xvDAripjoH2QspPE00FYzrQeRI4gO/CgEEaxgZ8v51C0TcAvbO2wLkA2xBYXKjdTH97uT/gyAkuxaacxap5oby08bZEsECm21iZokaAS/2gshtka3AVhMuijA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mlggUH8e4VUcNt3Uv8qKFbeGCOPM86CBn/fRhuHNO+4=;
+ b=S8Lei1dhRNkEaUqWytUGmOz62u4w0udn1ihf5eG8JXmC6PekZee+uf2ch/9Oc54CaP5J7IOkP10MoitcvHUgFAADdSkc55BJosHpbKTC0M9BqCNm4JBXTnIvfkmIntPlUGd937drk/dm1RVzr+O+FDMaFxO5Bo26/cqCFObs+9AL5vnM3DNjchju9kLFD2idJ9Hrm8RhmXKgrfmPbemhBpAb87K1m7C4qhKfG4D7t1weNBj6+qT/Q14GEC1n706mc2KvHMFDt+M0xQ66jcncG+cFow+oASJzzSd/99uLR1nvfun9anE330ZmEm2u+XhgHddDAYe+mvDDtflBoLtjxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mlggUH8e4VUcNt3Uv8qKFbeGCOPM86CBn/fRhuHNO+4=;
+ b=QI5EPliq+N5oOiA30fpydVqL35WVlap2TTYRc6+QDki+ziTEQCQ7fHvh5jy6vwNY0kVYAjPOZuImNx5khLQ0ZKVY35T2LVy/2YSN3NdWMgpcmeRRt4Fp/yYnZRlTThi4lPzvRGHctJUkKMp8k5vqcaXXmQNLPcZpX51N4U0gEbA=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by DM4PR21MB3584.namprd21.prod.outlook.com (2603:10b6:8:a4::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.2; Mon, 22 Aug
+ 2022 19:05:04 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::e848:505e:d1e3:97a0]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::e848:505e:d1e3:97a0%7]) with mapi id 15.20.5588.002; Mon, 22 Aug 2022
+ 19:05:04 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     vkuznets <vkuznets@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>
+Subject: RE: [PATCH v1 2/4] drm/hyperv: Don't forget to put PCI device when
+ removing conflicting FB fails
+Thread-Topic: [PATCH v1 2/4] drm/hyperv: Don't forget to put PCI device when
+ removing conflicting FB fails
+Thread-Index: AQHYsw5aa23T2mmDX0y2csq62S0MI627TK9g
+Date:   Mon, 22 Aug 2022 19:05:03 +0000
+Message-ID: <PH0PR21MB3025F3C8768EB3ADE16E8B9AD7719@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <20220818142508.402273-1-vkuznets@redhat.com>
+ <20220818142508.402273-3-vkuznets@redhat.com>
+In-Reply-To: <20220818142508.402273-3-vkuznets@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=724c5d43-efa5-4af9-80bd-8f6d2dfd3d4f;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-08-22T19:00:09Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 87457473-9ea3-4ea9-5a31-08da8471386f
+x-ms-traffictypediagnostic: DM4PR21MB3584:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: U3YVAimfxGC4CVHGHpI7IIWDDslSlfmgevcoxCPhoX+COEBQ6H3+nFFMVZbqfUgE3alueMHsGONWU/aw1UNCf1x5NPWhOkFaox2YUsDQA1reOj5p2CTMReKRGqgEXn7CcbxKnr96BbiZrus23hjIh1oxX0zciwB1EEfZoH0g0kuuyZ9Zt0WmrZyjOj/HeITQh/am1eI1tt90ZKPQncAirprocbr5KW/qyGAVQyKMAo1vm76K3MZkzzrclZEoynV0Wyyb+/7k0tMFOoKgNDoI6dXQE9tc6ctj70ffihsMm/7apIo6+5wgNLn40PV1siR3SfRb/rPiwEfCayY6XDtpSF4hqmxbVW3nJa8WTZzsOqVKUBz/lBPawpD2465y9eAyhpVzyc63JgL2rUR+fOEmdwjNW2MmNPUUftqsuSjXwRTlslhrokaXpPiqFvTaf6r9iIO2OgQDRIw6lRldQMOVep5lPD9VFXsqx/lIOvQoYg+H3n5hndWtyhk+t+jQdfmOiW1Rmi9uaDJzrHit3DjcgDMogzuhIEMSFOwcunWi0cUu8A8sfrjT4z4p+bPsEK1La50Q7W/j4YkIsPvGVe3wJOCRcZwnhOiT/gwCIAcVkzLAdWi2n8EpXRvNMPEBD2mLhV4xoLFBz9TS8H7DrwvwyRPMGVLIeDIm1F12pPCBX3MR0i50mVGnWzPCX4K+EmRaU6tsOr+H7RVUbhzFRJtvNWn+j0pzkgdbIqOlNsj/pTiwSwLArR2uv+BkqOYWNDck6s0U84E2qEIq2cDDOF6G8PUvddKnVrJj5fTq4JwT7O9ougUTt/QGkABSd/x4DJZM
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(346002)(39860400002)(376002)(451199009)(52536014)(64756008)(38100700002)(55016003)(66556008)(33656002)(66446008)(8676002)(76116006)(66476007)(4326008)(66946007)(5660300002)(2906002)(7696005)(41300700001)(478600001)(6506007)(8936002)(86362001)(9686003)(26005)(83380400001)(38070700005)(82950400001)(82960400001)(107886003)(8990500004)(186003)(10290500003)(316002)(54906003)(110136005)(71200400001)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HZLYUiDGX5X5iDNmAHb+TXO1B4WlGNr8RBaE4yiI98b4bTSMzqeyJcn8rFMs?=
+ =?us-ascii?Q?cqJ5b8o2bYaCCIhLrgR/xX8cZNvTwkVWq+UJbT+96kppx3nb+hPbtErOs8MU?=
+ =?us-ascii?Q?jrKjrO0iSUU531Z1FEn6GZrO42cMfGS/5lyAM1afHI8IVeBz8bLQCZwRXZeN?=
+ =?us-ascii?Q?fz5jZYat1CmKpE/dxdTA0o6cpv3H6hHTyXnID4V6UiJDdN0Xq4qIi2WRYh9u?=
+ =?us-ascii?Q?qfqof3BeGSG9u5RGwqRr5RhW+OW+IVwkJh+c21GtUXEorip5l4HTb/fOvUv9?=
+ =?us-ascii?Q?uxqihbFRkDGXXll/OQYcb7j1f1HfsRsuwF1JVrrU3fDJ8LpO2oeIVGMzhZ/Z?=
+ =?us-ascii?Q?yD+/9/MuMfOzwpUO4XPLrW+Zx8kseni0Z0qXgACs5dNt+z+nUOvrbOTQkHyh?=
+ =?us-ascii?Q?vs2gdAPhj7nUlPZWJuWkxMDHinS/m1tr4ajh/eaGP3kDAOSPfYIL0ROAsQW1?=
+ =?us-ascii?Q?kCY5tVQFiEj8JzSGmTNFE9oHehbPFu4CrL3wPuuT14yjzBoT0bZeX7Cnj0Kj?=
+ =?us-ascii?Q?dJp57hLohV2q2XwKfyjnjogajJrLo5hM7b/NMQoi4qYpcFkgzcX0X2TbhcVC?=
+ =?us-ascii?Q?WlkiwUvFcL9bCmYJXeHv6P6P2PZQ+uWPoF6JXoodJ82IlMvaRsT+MGx1aJue?=
+ =?us-ascii?Q?jeFjgvhFPc4P/23iQuT1zKsfmu02zoOOUVCRPhbCkV+jfK6bn3yE0PofBW5Y?=
+ =?us-ascii?Q?s8XSIFG1ZFhBFIPZUqJ8M/g38VRi1/vVFEHZh3ZjbN4ChXuIBpJ5NBHASaaA?=
+ =?us-ascii?Q?vv0xivdxLAJonr+9XxNboaolNW4pIJeyaRLqbFWcPI1Lw8OzbvjaoufB958l?=
+ =?us-ascii?Q?S52SBU66gOu79ErgaFWftTFbZNf9pu/ajl3ZJDERBGOdsylmd/qq1Bk3ra4S?=
+ =?us-ascii?Q?WvPi4CllS94aTzv8HgjQYqAascy3RydRNalGnPBZ8y9i5SRm0kpG5mXSPF+G?=
+ =?us-ascii?Q?+0lOysryvNsKOjkfb7sLCWnbNkay8VluPAvGnDmYpTQQ3BHjpK9LBU2UoPbc?=
+ =?us-ascii?Q?yaB8ukiVfObpeRkfmoHN3oxyz4wP35veyTObhwk2KfKnr29GrvejJao/T27u?=
+ =?us-ascii?Q?tuUxBTVjtKeflbnQuL6uXFs4rSLc/QR6d91D3ES0dr1H4CcL2XEJ0UgoT/Vw?=
+ =?us-ascii?Q?IDE91oCKyP/m5qWCKWt/6ONRKh+XFo9M0XAaa2xWxivynLrevCQMQkk1d1XU?=
+ =?us-ascii?Q?krrhTv0ntbO1/r0q5qtaE/NNjy7K8NZmz0ORNGSCySkzeimd/PthFoFjJNSa?=
+ =?us-ascii?Q?Y1lmUjUJ6ihsPtxHaaxHwhdaAyWFqsFNkVY43pPF0C0LoJPK4LeW/yOiOeDF?=
+ =?us-ascii?Q?Y9GspbaAAX023ewn2xPSqkMHnPMA2S1BKgYNJ6kknaXJdPozpYT4mCMnriwH?=
+ =?us-ascii?Q?MJgNdE+B9IsjCKgtzCDi6tMu61rU17QVanUGEy4Z/943qndrj0Z0iYZTHCge?=
+ =?us-ascii?Q?MdrO/PBBmADxu2os7pukfwoLjYHKvh3COFExq8Tf3Y6d87VpC5U5/bUHkrT1?=
+ =?us-ascii?Q?keoeMuCZrdQ/ilLJbym5lUdSBh2tsuEOA4BtN5qysk5lhsrAsmV0YzwL3wYa?=
+ =?us-ascii?Q?uWA9ReuniDcafWHshejq6XsH6hhpow/TYyK0jyri05d8k5Z+ivscVrjvOef5?=
+ =?us-ascii?Q?4A=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR21MB3584
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey all,
+From: Vitaly Kuznetsov <vkuznets@redhat.com> Sent: Thursday, August 18, 202=
+2 7:25 AM
+>=20
+> When drm_aperture_remove_conflicting_pci_framebuffers() fails, 'pdev'
+> needs to be released with pci_dev_put().
+>=20
+> Fixes: 76c56a5affeb ("drm/hyperv: Add DRM driver for hyperv synthetic vid=
+eo device")
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  drivers/gpu/drm/hyperv/hyperv_drm_drv.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+> b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+> index 46f6c454b820..ca4e517b95ca 100644
+> --- a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+> +++ b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+> @@ -82,7 +82,7 @@ static int hyperv_setup_gen1(struct hyperv_drm_device *=
+hv)
+>  	ret =3D drm_aperture_remove_conflicting_pci_framebuffers(pdev,
+> &hyperv_driver);
+>  	if (ret) {
+>  		drm_err(dev, "Not able to remove boot fb\n");
+> -		return ret;
+> +		goto error;
+>  	}
+>=20
+>  	if (pci_request_region(pdev, 0, DRIVER_NAME) !=3D 0)
+> --
+> 2.37.1
 
-This series is a set of patches that optimize scheduler decisions around
-realtime tasks and softirqs.  This series is a rebased and reworked set
-of changes that have been shipping on Android devices for a number of
-years, originally created to resolve audio glitches seen on devices
-caused by network or storage driver softirqs.
-
-Long running softirqs cause issues because they aren=E2=80=99t currently ta=
-ken
-into account when a realtime task is woken up, but they will delay
-realtime tasks from running if the realtime tasks are placed on a cpu
-currently running a softirq.
-
-This can easily be seen on some devices by running cyclictest* along
-with some heavy background filesystems noise:
-
-Without the patches:
-T: 0 ( 7596) P:99 I:1000 C:  59980 Min:      7 Act:   13 Avg:   29 Max: 410=
-7
-T: 1 ( 7597) P:99 I:1500 C:  39990 Min:     14 Act:   26 Avg:   36 Max: 899=
-4
-T: 2 ( 7598) P:99 I:2000 C:  29995 Min:      7 Act:   22 Avg:   35 Max: 361=
-6
-T: 3 ( 7599) P:99 I:2500 C:  23915 Min:      7 Act:   25 Avg:   49 Max: 402=
-73
-T: 4 ( 7600) P:99 I:3000 C:  19995 Min:      8 Act:   22 Avg:   38 Max: 105=
-10
-T: 5 ( 7601) P:99 I:3500 C:  17135 Min:      7 Act:   26 Avg:   39 Max: 131=
-94
-T: 6 ( 7602) P:99 I:4000 C:  14990 Min:      7 Act:   26 Avg:   40 Max: 947=
-0
-T: 7 ( 7603) P:99 I:4500 C:  13318 Min:      8 Act:   29 Avg:   44 Max: 201=
-01
-
-Which you can visually see in the image here:
- https://github.com/johnstultz-work/misc/raw/main/images/2022-08-09-softirq=
--rt-big-latency.png
-
-Which is from the perfetto trace captured here:
- https://ui.perfetto.dev/#!/?s=3D33661aec8ec82c2da0a59263f36f7d72b4a2f4e7a9=
-9b28b222bd12ad872f
-
-The first patch in the series adds logic to account for when softirqs
-are running, and then conditionally based on
-CONFIG_RT_SOFTIRQ_OPTIMIZATION allows rt-task placement to be done in a
-way that=E2=80=99s aware if a current softirq might be a long-running one, =
-to
-potentially place the rt task on another free core.
-
-The second patch in the series adds logic in __do_softirq(), also under
-CONFIG_RT_SOFTIRQ_OPTIMIZATION, to defer some of the potentially long
-running softirqs to ksoftirqd if a -rt task is currently running on the
-cpu. This patch also includes a folded down fix that stubbs out
-ksoftirqd_running() based on CONFIG_RT_SOFTIRQ_OPTIMIZATION, since in
-changing to more frequently defer long running softirqs, the logic using
-ksoftirqd_running will end up being too conservative and needlessly
-delay shorter-running softirqs.
-
-With these patches we see dramatic improvements in the worst case
-latencies in the cyclictest* + filesystem noise test above:
-
-With the patches
-T: 0 ( 7527) P:99 I:1000 C:  59998 Min:      6 Act:   29 Avg:   35 Max: 173=
-4
-T: 1 ( 7528) P:99 I:1500 C:  40000 Min:      7 Act:   39 Avg:   35 Max: 118=
-1
-T: 2 ( 7529) P:99 I:2000 C:  30000 Min:      7 Act:   25 Avg:   25 Max: 444
-T: 3 ( 7530) P:99 I:2500 C:  24000 Min:      7 Act:   34 Avg:   36 Max: 172=
-9
-T: 4 ( 7531) P:99 I:3000 C:  20000 Min:      7 Act:   36 Avg:   25 Max: 406
-T: 5 ( 7532) P:99 I:3500 C:  17143 Min:      7 Act:   38 Avg:   34 Max: 126=
-4
-T: 6 ( 7533) P:99 I:4000 C:  15000 Min:      7 Act:   27 Avg:   33 Max: 235=
-1
-T: 7 ( 7534) P:99 I:4500 C:  13334 Min:      7 Act:   41 Avg:   29 Max: 228=
-5
-
-Since these patches have been carried along for years, and have at times
-badly collided with upstream, I wanted to submit them for some initial
-review, discussion and feedback so we could hopefully eventually find a
-reasonable solution that might land upstream.
-
-* Unfortunately cyclictest had a bug that causes it to always affine
-threads to cpus preventing them from being migrated. So you=E2=80=99ll need
-to update to the latest version (which includes a fix) to reproduce.
-
-Let me know what you think!
-
-thanks
--john
-
-Changes in v2:
-* Reformatted Kconfig entry to match coding style
-  (Reported-by: Randy Dunlap <rdunlap@infradead.org>)
-* Made rt_task_fits_capacity_and_may_preempt static to avoid
-  warnings (Reported-by: kernel test robot <lkp@intel.com>)
-* Rework to use preempt_count and drop kconfig dependency on ARM64
-
-Cc: John Dias <joaodias@google.com>
-Cc: Connor O'Brien <connoro@google.com>
-Cc: Rick Yiu <rickyiu@google.com>
-Cc: John Kacur <jkacur@redhat.com>
-Cc: Qais Yousef <qais.yousef@arm.com>
-Cc: Chris Redpath <chris.redpath@arm.com>
-Cc: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: kernel-team@android.com
+This patch appears to be obsoleted by commit a0ab5abced55
+that was merged into 6.0-rc1.  Of course, it does beg the question of
+why the original function hyperv_setup_gen2(), which is now renamed
+to hyperv_setup_vram(), doesn't check the return value from
+drm_aperture_remove_conflicting_framebuffers().
 
 
-Connor O'Brien (1):
-  sched: Avoid placing RT threads on cores handling long softirqs
-
-Pavankumar Kondeti (1):
-  softirq: defer softirq processing to ksoftirqd if CPU is busy with RT
-
- include/linux/interrupt.h |  7 +++++
- include/linux/sched.h     | 10 ++++++
- init/Kconfig              | 10 ++++++
- kernel/sched/cpupri.c     | 13 ++++++++
- kernel/sched/rt.c         | 65 +++++++++++++++++++++++++++++++++------
- kernel/softirq.c          | 34 ++++++++++++++++++--
- 6 files changed, 128 insertions(+), 11 deletions(-)
-
---=20
-2.37.1.595.g718a3a8f04-goog
+Michael
 
