@@ -2,91 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85497C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E499CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235192AbiHVN27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        id S235165AbiHVN3d convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbiHVN2r (ORCPT
+        with ESMTP id S235153AbiHVN3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:28:47 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8050EBE08
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:28:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661174914; x=1692710914;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bJv3Rix0qca35VvL9gbE9j/pE1ygxguoqVCxFvNhtp4=;
-  b=T2n2XLqyWkZGFybC5ov9yOCI0SIl+0y0DU8DuIU8ma2iSV5OPhseh0tl
-   R4B7Txm/CFbxs1TUTh8ChlvVFXptbcWTDU7UfZs+J127N8G99KJcw8VK1
-   O60GLFvPDoqfKve/QCOxpi2Ev80dmsmQrwgJMxvcSYUOMVZe5pbWsZa5g
-   Zq9F596rDB4W+bWgJsjrf1wbRZg04JwELbeO+gZIt3kJr2MUWUhnmppMK
-   ZHpHTQ1/tQXpF6WAsNdRrCJQmLuMzQp0p07mINoHbkmsnCelj8CkZIoR/
-   6ru1T2FCsBHuwJBP/HvFeBAKacV5+pq8y265lQsnbuPeathl7BavB3C39
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280383078"
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="280383078"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 06:28:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="698285546"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2022 06:28:33 -0700
-Received: from [10.252.212.31] (kliang2-mobl1.ccr.corp.intel.com [10.252.212.31])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Mon, 22 Aug 2022 09:29:09 -0400
+Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6555140EF
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:29:01 -0700 (PDT)
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 94E625806C8;
-        Mon, 22 Aug 2022 06:28:32 -0700 (PDT)
-Message-ID: <80eea4f7-bb1e-ebb9-37db-9317b8d9c28f@linux.intel.com>
-Date:   Mon, 22 Aug 2022 09:28:31 -0400
+        by mx1.emlix.com (Postfix) with ESMTPS id 47F045FD66;
+        Mon, 22 Aug 2022 15:04:37 +0200 (CEST)
+From:   Rolf Eike Beer <eb@emlix.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 4/6] mm: pagewalk: add api documentation for walk_page_range_novma()
+Date:   Mon, 22 Aug 2022 15:02:36 +0200
+Message-ID: <8991525.CDJkKcVGEf@devpool047>
+Organization: emlix GmbH
+In-Reply-To: <3200642.44csPzL39Z@devpool047>
+References: <3200642.44csPzL39Z@devpool047>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RESEND PATCH] perf/x86/intel: Fix unchecked MSR access error for
- Alder Lake N
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     acme@redhat.com, linux-kernel@vger.kernel.org,
-        alexander.shishkin@linux.intel.com, ak@linux.intel.com,
-        Jianfeng Gao <jianfeng.gao@intel.com>
-References: <20220818181530.2355034-1-kan.liang@linux.intel.com>
- <Yv+ggf6PRjL8Eio1@worktop.programming.kicks-ass.net>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <Yv+ggf6PRjL8Eio1@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+---
+ mm/pagewalk.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/mm/pagewalk.c b/mm/pagewalk.c
+index a06eb100fe4e..dc3c850cd148 100644
+--- a/mm/pagewalk.c
++++ b/mm/pagewalk.c
+@@ -493,7 +493,15 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
+ 	return 0;
+ }
+ 
+-/*
++/**
++ * walk_page_range_novma - walk a range of pagetables not backed by a vma
++ * @mm:		mm_struct representing the target process of page table walk
++ * @start:	start address of the virtual address range
++ * @end:	end address of the virtual address range
++ * @ops:	operation to call during the walk
++ * @pgd:	pgd to walk if different from mm->pgd
++ * @private:	private data for callbacks' usage
++ *
+  * Similar to walk_page_range() but can walk any page tables even if they are
+  * not backed by VMAs. Because 'unusual' entries may be walked this function
+  * will also not lock the PTEs for the pte_entry() callback. This is useful for
+-- 
+2.37.2
+
+-- 
+Rolf Eike Beer, emlix GmbH, http://www.emlix.com
+Fon +49 551 30664-0, Fax +49 551 30664-11
+Gothaer Platz 3, 37083 Göttingen, Germany
+Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
+Geschäftsführung: Heike Jordan, Dr. Uwe Kracke – Ust-IdNr.: DE 205 198 055
+
+emlix - smart embedded open source
 
 
-On 2022-08-19 10:38 a.m., Peter Zijlstra wrote:
-> On Thu, Aug 18, 2022 at 11:15:30AM -0700, kan.liang@linux.intel.com wrote:
->> From: Kan Liang <kan.liang@linux.intel.com>
->>
->> For some Alder Lake N machine, the below unchecked MSR access error may be
->> triggered.
->>
->> [ 0.088017] rcu: Hierarchical SRCU implementation.
->> [ 0.088017] unchecked MSR access error: WRMSR to 0x38f (tried to write
->> 0x0001000f0000003f) at rIP: 0xffffffffb5684de8 (native_write_msr+0x8/0x30)
->> [ 0.088017] Call Trace:
->> [ 0.088017] <TASK>
->> [ 0.088017] __intel_pmu_enable_all.constprop.46+0x4a/0xa0
-> 
-> FWIW, I seem to get the same error when booting KVM on my ADL. I'm
-> fairly sure the whole CPUID vs vCPU thing is a trainwreck.
 
-We will enhance the CPUID to address the issues. Hopefully, we can have
-them supported in the next generation.
-
-
-Thanks,
-Kan
