@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67850C32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99E50C38145
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237950AbiHVTHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
+        id S237990AbiHVTHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237405AbiHVTHl (ORCPT
+        with ESMTP id S237405AbiHVTHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:07:41 -0400
+        Mon, 22 Aug 2022 15:07:45 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F96B140D9;
-        Mon, 22 Aug 2022 12:07:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C690113F7C;
+        Mon, 22 Aug 2022 12:07:44 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 9C133DA4;
-        Mon, 22 Aug 2022 22:10:47 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9C133DA4
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 15D72DA6;
+        Mon, 22 Aug 2022 22:10:49 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 15D72DA6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195447;
-        bh=U/Og/epJCU9HiY8k0X470O4ZspZ9jVIn5RwZ2z1a2AQ=;
+        d=baikalelectronics.ru; s=mail; t=1661195449;
+        bh=I2l6bQvgGWPiNfEvIK7VrzpTqHL2aXIlAJHwZsCt3nQ=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=AHmrNwKAgwNSO2C9xPPbFN7a1bZqNebf/6nrRmz7VFnyETUqUI2zQFoy6hsFHkdHu
-         3JXKne8dIIC+Hmyau8o2t3a/7Dav6/3BLWIQ5DZIho1T/Kwl0zzNML1ICRm0twwQid
-         q9L8na8h+t8MbKcp1gA9DFhQ+J0VFQJp9PgwfU1I=
+        b=IASB/8E9s5hVoErkyb0+K+UynJuH8GnzafxRP1sX2ndnYg1ouKz5zi7y6VA3Y9YLq
+         7jaz/oLiVtuzAXlV1hYh+UCOYVGWdi3AL0DQKUmkJwNSoomgCZf3C4Wg4Jxa7S/C4/
+         WIDYorCKlH9PEt/XLfpyETs6E4Jw5KFYwl5ZiXL4=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:33 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:34 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh@kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
@@ -51,139 +51,48 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Borislav Petkov <bp@suse.de>
-Subject: [PATCH 02/20] EDAC/synopsys: Fix generic device type detection procedure
-Date:   Mon, 22 Aug 2022 22:07:12 +0300
-Message-ID: <20220822190730.27277-3-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 04/20] EDAC/synopsys: Drop erroneous ADDRMAP4.addrmap_col_b10 parse
+Date:   Mon, 22 Aug 2022 22:07:14 +0300
+Message-ID: <20220822190730.27277-5-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-First of all the enum dev_type constants define the Memory devices, i.e.
-DRAM chips, DQ-bus width (see the enumberation kdoc for details). So what
-is returned from the zynqmp_get_dtype() procedure is definitely wrong.
-Secondly the DRAM chips type has nothing to do with the data bus width
-specified in the MSTR.data_bus_width CSR field. The later one just
-determines the part of the whole DQ-bus used to access the data from the
-all DRAM chips. So it doesn't indicate the individual chips type. Thirdly
-the DRAM chips type can be determined only in case of the DDR4 protocol by
-means of the MSTR.device_config field state (it is supposed to be set by
-the system firmware). Finally the DW uMCTL2 DDRC ECC capability doesn't
-depend on the memory chips type. Moreover it doesn't depend on the data
-bus width in runtime either. The IP-core reference manual says in [1,2]
-that the ECC support can't be enabled during the IP-core synthesizes for
-the DRAM data bus widths other than 16, 32 or 64. At the same time the
-bus width mode (MSTR.data_bus_width) doesn't change the ECC feature
-availability. Thus it was wrong to determine the ECC state with respect to
-the DQ-bus width mode.
+Currently the ADDRMAP4.addrmap_col_b10 field gets to be parsed in case of
+the LPDDR3 memory and Quarter DQ bus width mode. It's wrong since that
+field is marked as unused for that mode in all the available DW uMCTL2
+DDRC releases (up to IP-core v3.91a). Most likely the field parsing has
+been added by mistake as a result of the copy-paste from the Half DW bus
+width mode part of the same function. Drop it from the driver for good
+then.
 
-Let's fix all of the mistakes above in the zynqmp_get_dtype() and
-zynqmp_get_ecc_state() methods. In accordance with the DW uMCTL2 DDRC
-nature the DRAM chips type in most of the cases will be unknown except
-when DDR4 protocol is utilized. ECC availability will be determined by the
-ECCCFG0.ecc_mode field state only.
-
-[1] DesignWare® Cores Enhanced Universal DDR Memory Controller (uMCTL2)
-Databook, Version 3.91a, October 2020, p. 421.
-[2] DesignWare® Cores Enhanced Universal DDR Memory Controller (uMCTL2)
-Databook, Version 3.91a, October 2020, p. 633.
-
-Fixes: b500b4a029d5 ("EDAC, synopsys: Add ECC support for ZynqMP DDR controller")
+Fixes: 1a81361f75d8 ("EDAC, synopsys: Add Error Injection support for ZynqMP DDR controller")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/edac/synopsys_edac.c | 56 +++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 30 deletions(-)
+ drivers/edac/synopsys_edac.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index c78fb5781ff9..39c63dd1b9be 100644
+index b9b68f3ecf52..873dbc684fe6 100644
 --- a/drivers/edac/synopsys_edac.c
 +++ b/drivers/edac/synopsys_edac.c
-@@ -142,7 +142,12 @@
- #define ECC_CTRL_EN_CE_IRQ		BIT(8)
- #define ECC_CTRL_EN_UE_IRQ		BIT(9)
- 
--/* DDR Control Register width definitions  */
-+/* DDR Master Register 0 definitions */
-+#define DDR_MSTR_DEV_CFG_MASK		GENMASK(31, 30)
-+#define DDR_MSTR_DEV_X4			0x0
-+#define DDR_MSTR_DEV_X8			0x1
-+#define DDR_MSTR_DEV_X16		0x2
-+#define DDR_MSTR_DEV_X32		0x3
- #define DDRCTL_EWDTH_16			2
- #define DDRCTL_EWDTH_32			1
- #define DDRCTL_EWDTH_64			0
-@@ -671,26 +676,25 @@ static enum dev_type zynq_get_dtype(const void __iomem *base)
-  */
- static enum dev_type zynqmp_get_dtype(const void __iomem *base)
- {
--	enum dev_type dt;
--	u32 width;
--
--	width = readl(base + CTRL_OFST);
--	width = (width & ECC_CTRL_BUSWIDTH_MASK) >> ECC_CTRL_BUSWIDTH_SHIFT;
--	switch (width) {
--	case DDRCTL_EWDTH_16:
--		dt = DEV_X2;
--		break;
--	case DDRCTL_EWDTH_32:
--		dt = DEV_X4;
--		break;
--	case DDRCTL_EWDTH_64:
--		dt = DEV_X8;
--		break;
--	default:
--		dt = DEV_UNKNOWN;
-+	u32 regval;
-+
-+	regval = readl(base + DDR_MSTR_OFST);
-+	if (!(regval & MEM_TYPE_DDR4))
-+		return DEV_UNKNOWN;
-+
-+	regval = FIELD_GET(DDR_MSTR_DEV_CFG_MASK, regval);
-+	switch (regval) {
-+	case DDR_MSTR_DEV_X4:
-+		return DEV_X4;
-+	case DDR_MSTR_DEV_X8:
-+		return DEV_X8;
-+	case DDR_MSTR_DEV_X16:
-+		return DEV_X16;
-+	case DDR_MSTR_DEV_X32:
-+		return DEV_X32;
- 	}
- 
--	return dt;
-+	return DEV_UNKNOWN;
- }
- 
- /**
-@@ -727,19 +731,11 @@ static bool zynq_get_ecc_state(void __iomem *base)
-  */
- static bool zynqmp_get_ecc_state(void __iomem *base)
- {
--	enum dev_type dt;
--	u32 ecctype;
-+	u32 regval;
- 
--	dt = zynqmp_get_dtype(base);
--	if (dt == DEV_UNKNOWN)
--		return false;
-+	regval = readl(base + ECC_CFG0_OFST) & SCRUB_MODE_MASK;
- 
--	ecctype = readl(base + ECC_CFG0_OFST) & SCRUB_MODE_MASK;
--	if ((ecctype == SCRUB_MODE_SECDED) &&
--	    ((dt == DEV_X2) || (dt == DEV_X4) || (dt == DEV_X8)))
--		return true;
--
--	return false;
-+	return (regval == SCRUB_MODE_SECDED);
- }
- 
- /**
+@@ -1238,10 +1238,6 @@ static void setup_column_address_map(struct synps_edac_priv *priv, u32 *addrmap)
+ 				COL_MAX_VAL_MASK) == COL_MAX_VAL_MASK) ? 0 :
+ 				(((addrmap[3] >> 24) & COL_MAX_VAL_MASK) +
+ 				 COL_B9_BASE);
+-			priv->col_shift[13] = ((addrmap[4] &
+-				COL_MAX_VAL_MASK) == COL_MAX_VAL_MASK) ? 0 :
+-				((addrmap[4] & COL_MAX_VAL_MASK) +
+-				 COL_B10_BASE);
+ 		} else {
+ 			priv->col_shift[11] = (((addrmap[3] >> 16) &
+ 				COL_MAX_VAL_MASK) == COL_MAX_VAL_MASK) ? 0 :
 -- 
 2.35.1
 
