@@ -2,95 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1A8C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BD7C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233544AbiHVLCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S234391AbiHVLEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234284AbiHVLCo (ORCPT
+        with ESMTP id S230297AbiHVLEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:02:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3439332071;
-        Mon, 22 Aug 2022 04:02:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1FFB60FF9;
-        Mon, 22 Aug 2022 11:02:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5A4FC433C1;
-        Mon, 22 Aug 2022 11:02:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661166163;
-        bh=m+ZMpxsNeNvW9siwBQLP54G38rMpvfF7BKiiR4KlvbY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qPcTJ25n6UY55oo5evrEd5jcIFPrxseEuuweRZxznTg1KY/zRYW+B1+u2W2Z+zxmR
-         nW6weTaGAqXI43lsLnPXxTmuiZN/tKd/dE4EL+ovoKSthU2nUznxnbsHTKdHCIWPJl
-         HlAivGwMDubsfClGlZZWJzoS8gi/xa/9CVqzMgozQeZ6LpXkrYMKnmSlhGD0mR3KXf
-         kHD/DMgcrPJXAMVKDIAKMrQJQY+0ccRED/YS3x/b5XJuPDIMdfVIEVumWhBguo7lpj
-         Og8fNgioPqZ59jI7Ik9Hp8uPBNL8Uf9vgjwhqPywR2fGHG/Pdo2ht1MFtU5QCevzrg
-         FDB09qIXOhFKg==
-Date:   Mon, 22 Aug 2022 13:02:40 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Jan =?utf-8?B?RMSFYnJvxZs=?= <jsd@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-        mika.westerberg@linux.intel.com, rrangel@chromium.org,
-        mw@semihalf.com, upstream@semihalf.com
-Subject: Re: [PATCH v2] i2c: designware: Introduce semaphore reservation
- timer to AMDPSP driver
-Message-ID: <YwNiUILH+mou1Ao5@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Jan =?utf-8?B?RMSFYnJvxZs=?= <jsd@semihalf.com>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-        mika.westerberg@linux.intel.com, rrangel@chromium.org,
-        mw@semihalf.com, upstream@semihalf.com
-References: <20220812071526.414285-1-jsd@semihalf.com>
- <YwB/aWRxyemPay58@shikoro>
- <CAOtMz3Ptx-xoGUUtAbssJsggmKrD+rX3nv6KMo3LJOE3ip0RYw@mail.gmail.com>
+        Mon, 22 Aug 2022 07:04:21 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06FE27B11
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:04:19 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQ5Dx-0005Qj-4p; Mon, 22 Aug 2022 13:04:05 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQ5Dw-001HmQ-5b; Mon, 22 Aug 2022 13:04:04 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQ5Ds-009gzH-EK; Mon, 22 Aug 2022 13:04:00 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 08/17] net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register
+Date:   Mon, 22 Aug 2022 13:03:49 +0200
+Message-Id: <20220822110358.2310055-9-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220822110358.2310055-1-o.rempel@pengutronix.de>
+References: <20220822110358.2310055-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="MfQrOj6WdXou/nPB"
-Content-Disposition: inline
-In-Reply-To: <CAOtMz3Ptx-xoGUUtAbssJsggmKrD+rX3nv6KMo3LJOE3ip0RYw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This issue was detected after adding regmap register access validation.
+KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
+So, avoid writing to it.
 
---MfQrOj6WdXou/nPB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz9477.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 13c4ded84b1db..62a03b3b918df 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -193,6 +193,11 @@ int ksz9477_reset_switch(struct ksz_device *dev)
+ 	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
+ 	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
+ 
++	/* KSZ9893 compatible chips do not support refclk configuration */
++	if (dev->chip_id == KSZ9893_CHIP_ID ||
++	    dev->chip_id == KSZ8563_CHIP_ID)
++		return 0;
++
+ 	data8 = SW_ENABLE_REFCLKO;
+ 	if (dev->synclko_disable)
+ 		data8 = 0;
+-- 
+2.30.2
 
-> Are you using the default checkpatch.pl script available on the top of
-> tree kernel baseline?
-
-Well, the one from what I base my branches on. Currently, this is
-v6.0-rc1.
-
-
---MfQrOj6WdXou/nPB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMDYkwACgkQFA3kzBSg
-KbbkwQ/+KE+NGIVWHo4erKISEA/TuOhY5xkrPhmBCx7ZCpg1UxpyP3MZh9jHYmLO
-K0SfsFk8MQJIzr6d2V7PUnzTZmTTbPES/1W+p+mxg9OpYNjIFklXiC8jxNFzDv2d
-MXMaQbB3o8VN0Er/yShyAtLOrLun6ZTBq2V1mLV1djcShyXs7ZyiLP7vP+7wFRmv
-aA90p0NIhKI0+tJJT5GHpMqSAe6tbPSJh9MS3J3mMaQQrtYT32enf4P7kIVbnEZa
-l09Ffp+5cfL7MvGm3wGh8zBp8FWdFL6t8xI/F8p9aBfveRURMUiqIdJxc7OayDS6
-abCqTzvXYEXFUwkn5V+3kmuq2Gv19gRtUSgWAM2rITby5oOlyGzZ635CVhgDsenn
-SPTlNb0G1+H1wXmHObFDjVcjjFi0jqiRB2Ytxw2i4j99sgizCPju3XS54aLLL9we
-S9AJVRyZtAa89NXYMfMOXLCk/kvd1Z9HWFVW5yT359qmXeLyIFttvEznhDXxK59V
-nm4A6eTR1SJqf5XSJEI5U+cp7W7DPuTN7KpOrdWGjqq2IO2SlCv3FcXpA4DZrBgv
-0SfUsLr1/AsJcduguhwHu7wZ+wElsC/tZjNKJF+gEPNVfJ/wUMM5Vk/gkuLAzBEf
-2lsY8uMEelc9xu+4cSBodWvIMBP9Q3qNzdBBOYS4a05DII1BZD0=
-=aT4r
------END PGP SIGNATURE-----
-
---MfQrOj6WdXou/nPB--
