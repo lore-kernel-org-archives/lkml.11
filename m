@@ -2,188 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA61AC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F93C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235169AbiHVMkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        id S234246AbiHVMnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233674AbiHVMkB (ORCPT
+        with ESMTP id S229882AbiHVMnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:40:01 -0400
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736E933343;
-        Mon, 22 Aug 2022 05:40:00 -0700 (PDT)
-Received: by mail-ot1-f46.google.com with SMTP id d18-20020a9d72d2000000b0063934f06268so833766otk.0;
-        Mon, 22 Aug 2022 05:40:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=PhEPEud72j5kQVxW8NO2vqL1FVdaHjnTMbrh083xpV0=;
-        b=jrz9kdF7p21Lt8PU3ZNe+cpNELdxDnXQDshiwQTw+X7bKhKTLAk/YsEs+rKBKfY2VL
-         ZP3Z/5pWIqIkta1hEarQvAUb8ICgb78yjxpLubIaSx6VmCSMioYkb+/XQb+5rjaemb/2
-         TF6YjGjscHW4GT+wbukauvovDAy3Hg/GtQSrKj4Y6vN5ofHwdrdPPo2qL47eVYaQaO29
-         GiErwHy8QnSSUpQ57Jvaq/s3XqeXyyzebZlCp6nQZGquo6OsCz3Dt1k5+g/bphiqqeC+
-         zDO+rhTnbRGR7sz2jfsO8Ag+vfGqRw3xQ+1kfSE+s6wKNcEz072hC4v/3InnMg6xUUmQ
-         o4JA==
-X-Gm-Message-State: ACgBeo1SjvyOduC+B0S/jNAiRPfuMt0KXdacpFxrpByh6049YswSKxv9
-        yMUULxhF/ZOb4cHlqA1sMx+ovJ5mIg==
-X-Google-Smtp-Source: AA6agR5g64WBRUlwSWnDCd9sVKwnExbQiowIvsS13bvXxfGDvcK7A+9xBDQH0t3l/Jgnraq3we4Kzw==
-X-Received: by 2002:a05:6830:6188:b0:61c:568b:1001 with SMTP id cb8-20020a056830618800b0061c568b1001mr7614005otb.98.1661171999453;
-        Mon, 22 Aug 2022 05:39:59 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a13-20020a4ad5cd000000b00435954f91ddsm2497869oot.28.2022.08.22.05.39.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 05:39:58 -0700 (PDT)
-Received: (nullmailer pid 3640781 invoked by uid 1000);
-        Mon, 22 Aug 2022 12:39:57 -0000
-Date:   Mon, 22 Aug 2022 07:39:57 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: soc: qcom: Introduce PMIC GLINK binding
-Message-ID: <20220822123957.GA3628946-robh@kernel.org>
-References: <20220818031512.319310-1-bjorn.andersson@linaro.org>
- <20220818031512.319310-2-bjorn.andersson@linaro.org>
+        Mon, 22 Aug 2022 08:43:08 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2150932EFE;
+        Mon, 22 Aug 2022 05:43:04 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1661172171tqmdel8e
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 22 Aug 2022 20:42:50 +0800 (CST)
+X-QQ-SSF: 01000000002000C0D000B00A0000000
+X-QQ-FEAT: ElntjVByhgV5Ei9BmafEicp7RVbJm7ahRQPG/HG+Fm1GMRLI9bUePGYjWp1As
+        xMU5YDdkwIBP4PQ5pvMUT3iwL3RiVyer6EdasXkyJMDgfxS1RHo8VVz/DEDEYG2sLPCJciZ
+        Dc3wkPw1Hw/mv58HQRS/2uHknyICzidbVENCLsiWLN8qInt7fjxOGqKqxKR2GRGASdDpMvY
+        RTfLLRoJUSiuEHITO7v4bW7B+yv/genf76jIm0TkhMC82txp2F+uCRqu8r2XzBPU3YMccxG
+        Mrb8BFohGtAM16JcjWeBnFP8NXgmTroUpU+xvJ/J3qH9TcSlwN6qAeSPwLM2bcIO35FoARs
+        mS7wywGcR1s9tL7SkagzsetXuBK1+InfDzJY/5xonGeWTCs0bv8Q5asvmwwhUuLG/QPEnGs
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        peterz@infradead.org, mingo@redhat.com
+Cc:     linux-arm-kernel@lists.infradead.org, coresight@lists.linaro.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] perf/util: fix repeated words in comments
+Date:   Mon, 22 Aug 2022 20:42:43 +0800
+Message-Id: <20220822124243.34053-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818031512.319310-2-bjorn.andersson@linaro.org>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 08:15:09PM -0700, Bjorn Andersson wrote:
-> The PMIC GLINK service, running on a coprocessor on some modern Qualcomm
-> platforms and implement USB Type-C handling and battery management.
-> This binding describes the component in the OS used to communicate with
-> the firmware and connect it's resources to those described in the
-> Devicetree, particularly the USB Type-C controllers relationship with
-> USB and DisplayPort components.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  .../bindings/soc/qcom/qcom,pmic-glink.yaml    | 98 +++++++++++++++++++
->  1 file changed, 98 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
-> new file mode 100644
-> index 000000000000..3261f9d27a47
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
-> @@ -0,0 +1,98 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/soc/qcom/qcom,pmic-glink.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm PMIC GLINK firmware interface for battery management, USB
-> +  Type-C and other things.
-> +
-> +maintainers:
-> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
-> +
-> +description:
-> +  The PMIC GLINK service, running on a coprocessor on some modern Qualcomm
-> +  platforms and implement USB Type-C handling and battery management. This
-> +  binding describes the component in the OS used to communicate with the
-> +  firmware and connect it's resources to those described in the Devicetree,
-> +  particularly the USB Type-C controllers relationship with USB and DisplayPort
-> +  components.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - qcom,sc8180x-pmic-glink
-> +          - qcom,sc8280xp-pmic-glink
-> +          - qcom,sm8350-pmic-glink
-> +      - const: qcom,pmic-glink
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +patternProperties:
-> +  '^connector@\d$':
-> +    $ref: /schemas/connector/usb-connector.yaml#
-> +    unevaluatedProperties: false
-> +
-> +required:
-> +  - compatible
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |+
-> +    pmic-glink {
-> +        compatible = "qcom,sc8280xp-pmic-glink", "qcom,pmic-glink";
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        connector@0 {
-> +            compatible = "usb-c-connector";
-> +            reg = <0>;
+ Delete the redundant word 'the'.
 
-'reg' causes a warning:
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ tools/perf/util/cs-etm.c      | 2 +-
+ tools/perf/util/probe-event.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.example.dtb: pmic-glink: connector@0: Unevaluated properties are not allowed ('reg' was unexpected)
+diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
+index 8b95fb3c4d7b..16db965ac995 100644
+--- a/tools/perf/util/cs-etm.c
++++ b/tools/perf/util/cs-etm.c
+@@ -1451,7 +1451,7 @@ static int cs_etm__sample(struct cs_etm_queue *etmq,
+ 		 * tidq->packet->instr_count represents the number of
+ 		 * instructions in the current etm packet.
+ 		 *
+-		 * Period instructions (Pi) contains the the number of
++		 * Period instructions (Pi) contains the number of
+ 		 * instructions executed after the sample point(n) from the
+ 		 * previous etm packet.  This will always be less than
+ 		 * etm->instructions_sample_period.
+diff --git a/tools/perf/util/probe-event.c b/tools/perf/util/probe-event.c
+index 062b5cbe67af..67c12d5303e7 100644
+--- a/tools/perf/util/probe-event.c
++++ b/tools/perf/util/probe-event.c
+@@ -1349,7 +1349,7 @@ int parse_line_range_desc(const char *arg, struct line_range *lr)
+ 				/*
+ 				 * Adjust the number of lines here.
+ 				 * If the number of lines == 1, the
+-				 * the end of line should be equal to
++				 * end of line should be equal to
+ 				 * the start of line.
+ 				 */
+ 				lr->end--;
+-- 
+2.36.1
 
-> +            power-role = "dual";
-> +            data-role = "dual";
-> +
-> +            ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                port@0 {
-> +                    reg = <0>;
-> +                    endpoint {
-> +                        remote-endpoint = <&usb_role>;
-> +                    };
-> +                };
-> +
-> +                port@1 {
-> +                    reg = <1>;
-> +
-> +                    #address-cells = <1>;
-> +                    #size-cells = <0>;
-> +
-> +                    endpoint@0 {
-> +                        reg = <0>;
-> +                        remote-endpoint = <&qmp_out>;
-> +                    };
-> +
-> +                    endpoint@1 {
-> +                        reg = <1>;
-> +                        remote-endpoint = <&displayport_hpd>;
-> +                    };
-> +                };
-> +
-> +                port@2 {
-> +                    reg = <2>;
-> +                    endpoint {
-> +                        remote-endpoint = <&sbu_mux>;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> +...
-> +
-> -- 
-> 2.35.1
-> 
-> 
