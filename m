@@ -2,126 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 858C7C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206FCC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233085AbiHVG0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44920 "EHLO
+        id S233000AbiHVG1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233051AbiHVG0J (ORCPT
+        with ESMTP id S233090AbiHVG0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:26:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D26F13CDD
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:26:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661149567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NwSti8yn5JhvKkSnURac/0DzJgMzOZTPalZfFbDV6e8=;
-        b=afA5AzhsZ72lgRrifVahz7eXXEF/gzAbq7JZcKDeQx5zE6UTbqvbiVzbEcxeh+OXWjj2Qy
-        F47IwEEMPyIb2M+c60/iuWBN/4lxJRmt7QZImi4ZyHRMsEohEB8UdJMgBM5ww3Z5NIed0y
-        pwXCz7SJ4ezEziQCAAFVAKIT99OcTDg=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-534-HmjJGUQfMCSObNaLUznJXw-1; Mon, 22 Aug 2022 02:26:05 -0400
-X-MC-Unique: HmjJGUQfMCSObNaLUznJXw-1
-Received: by mail-pg1-f198.google.com with SMTP id a186-20020a6390c3000000b00422cc29268eso4280886pge.16
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:26:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=NwSti8yn5JhvKkSnURac/0DzJgMzOZTPalZfFbDV6e8=;
-        b=wOU+RnRXhLPf+95X7T6anzA3TkA9N3Pe5yJ1u6oBrT/DRThwduOoG3jf1ySU46Z+2J
-         IqHB0EhbBVMbz/C+9I8xerechZEEWOW0K7vUosKQ6hTkoLa9wGw2Qaawthb980hYuLeP
-         Xzd96lt6RYKPgkpFDBP6JxWrdbDph0e8e9IR0yoBVLO9DE5mX+BBG79YiGB3XB9v11yd
-         EG36I6vQCSh0Ze1IjZYexyRVjpBkF3OyfRn47ze8UPd7nDH0DHuJ/vBlows/S5IgeyLl
-         Hv9ApMAvYYKS/VQf4yWIUOfZbt4ca+gXorst/KfnilS+/g9zZfZ8IE4ryBoK6rhvC//7
-         VNBQ==
-X-Gm-Message-State: ACgBeo365fjHtvwylMAqTxcmtDD8nuV2b6Br+fc+jW7DHzyETsi0EMGh
-        CKCCA8vp5ivPD9MTBctq0G4ZNYp9NU2CRIx9Ctt3o1LrnEDCqo+Coz6bI3vzk/guF5Fuh2t158J
-        14kRNOvAN3TiCczJxXvWFc1ePwHS5MPI6t6DV61b/
-X-Received: by 2002:a17:902:b58a:b0:16e:f91a:486b with SMTP id a10-20020a170902b58a00b0016ef91a486bmr19622457pls.119.1661149563479;
-        Sun, 21 Aug 2022 23:26:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6R3ckquzQqzKIhkeh4cNBZ6LWcA4oFdZ894XbI43YF4aLUPLFX40NMVo5P6+4eDnHLRRpHPuREANNSuNunTDk=
-X-Received: by 2002:a17:902:b58a:b0:16e:f91a:486b with SMTP id
- a10-20020a170902b58a00b0016ef91a486bmr19622434pls.119.1661149563143; Sun, 21
- Aug 2022 23:26:03 -0700 (PDT)
+        Mon, 22 Aug 2022 02:26:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A3D27CE0;
+        Sun, 21 Aug 2022 23:26:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7FB560F97;
+        Mon, 22 Aug 2022 06:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB095C433D6;
+        Mon, 22 Aug 2022 06:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661149597;
+        bh=IlPx+jz4ID9t9OdRB8Sb3eBpSneT7unIyNSPi+15Vyw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PvAiCHZTd17wA9ZgT+uYIkzA5PC5pyMgMjZ3tjHdHq+A5RcBegLCdHJHZc1/gHIeY
+         KpZbdjAUP0Ze5AYLs4gBzSoHUAEcgWwg8U13sC0ZLu66xh9A1WWER1w6znSPWIndKy
+         CQ4JhMSucNK2WUGpPipvXiOweRwvrwK1nCtfBnKw=
+Date:   Mon, 22 Aug 2022 08:26:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guoqing Jiang <guoqing.jiang@linux.dev>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Subject: Re: [PATCH 5.10 055/545] md-raid: destroy the bitmap after
+ destroying the thread
+Message-ID: <YwMhmoVlq9Dc8uAk@kroah.com>
+References: <20220819153829.135562864@linuxfoundation.org>
+ <20220819153831.691474713@linuxfoundation.org>
+ <0075cc2c-c48d-c7b7-5f08-f1c4322ef2bc@linux.dev>
 MIME-Version: 1.0
-References: <9e16d503-2203-57ed-d6af-61fea0c3e10b@gmail.com>
- <nycvar.YFH.7.76.2207231339500.19850@cbobk.fhfr.pm> <20220724114849.GA32182@elementary>
- <20220725224841.GA75640@elementary> <3f2e0a49-38a8-417e-1bb0-9a9f28371240@gmail.com>
- <20220804182445.GA16569@elementary> <CAO-hwJ+hBipNJpeYaHRr2-rKXA5d79XT7zE2fo2oEKUKJtKJ0g@mail.gmail.com>
- <20220813110922.GA47526@elementary> <d8b91029-4a6e-1508-1512-faea768ae580@redhat.com>
- <97ec87e6-b0c3-f2c9-4412-41a5884b6a24@gmail.com>
-In-Reply-To: <97ec87e6-b0c3-f2c9-4412-41a5884b6a24@gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 22 Aug 2022 08:25:52 +0200
-Message-ID: <CAO-hwJ+MtU5w9M5rqbOPYjUUZtJ609Q0GwPJpy-9egDEjo9m7g@mail.gmail.com>
-Subject: Re: PROBLEM: Regression likely in hid_uclogic driver breaks Huion
- Inspiroy H640 drawing tablet
-To:     Stefan Hansson <newbie13xd@gmail.com>
-Cc:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0075cc2c-c48d-c7b7-5f08-f1c4322ef2bc@linux.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 1:45 AM Stefan Hansson <newbie13xd@gmail.com> wrote:
->
-> > FWIW, I found the issue: the hid-uclogic driver is emitting input data
-> > behind hid-input, and the state between the 2 is desynchronized.
-> >
-> > The following patch seems to be working (with the Huion v1 protocol I
-> > have here that I have tweaked to resemble a v2):
+On Mon, Aug 22, 2022 at 01:33:47PM +0800, Guoqing Jiang wrote:
+> 
+> 
+> On 8/19/22 11:37 PM, Greg Kroah-Hartman wrote:
+> > From: Mikulas Patocka <mpatocka@redhat.com>
+> > 
+> > commit e151db8ecfb019b7da31d076130a794574c89f6f upstream.
+> > 
+> > When we ran the lvm test "shell/integrity-blocksize-3.sh" on a kernel with
+> > kasan, we got failure in write_page.
+> > 
+> > The reason for the failure is that md_bitmap_destroy is called before
+> > destroying the thread and the thread may be waiting in the function
+> > write_page for the bio to complete. When the thread finishes waiting, it
+> > executes "if (test_bit(BITMAP_WRITE_ERROR, &bitmap->flags))", which
+> > triggers the kasan warning.
+> > 
+> > Note that the commit 48df498daf62 that caused this bug claims that it is
+> > neede for md-cluster, you should check md-cluster and possibly find
+> > another bugfix for it.
+> > 
+> > BUG: KASAN: use-after-free in write_page+0x18d/0x680 [md_mod]
+> > Read of size 8 at addr ffff889162030c78 by task mdX_raid1/5539
+> > 
+> > CPU: 10 PID: 5539 Comm: mdX_raid1 Not tainted 5.19.0-rc2 #1
+> > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+> > Call Trace:
+> >   <TASK>
+> >   dump_stack_lvl+0x34/0x44
+> >   print_report.cold+0x45/0x57a
+> >   ? __lock_text_start+0x18/0x18
+> >   ? write_page+0x18d/0x680 [md_mod]
+> >   kasan_report+0xa8/0xe0
+> >   ? write_page+0x18d/0x680 [md_mod]
+> >   kasan_check_range+0x13f/0x180
+> >   write_page+0x18d/0x680 [md_mod]
+> >   ? super_sync+0x4d5/0x560 [dm_raid]
+> >   ? md_bitmap_file_kick+0xa0/0xa0 [md_mod]
+> >   ? rs_set_dev_and_array_sectors+0x2e0/0x2e0 [dm_raid]
+> >   ? mutex_trylock+0x120/0x120
+> >   ? preempt_count_add+0x6b/0xc0
+> >   ? preempt_count_sub+0xf/0xc0
+> >   md_update_sb+0x707/0xe40 [md_mod]
+> >   md_reap_sync_thread+0x1b2/0x4a0 [md_mod]
+> >   md_check_recovery+0x533/0x960 [md_mod]
+> >   raid1d+0xc8/0x2a20 [raid1]
+> >   ? var_wake_function+0xe0/0xe0
+> >   ? psi_group_change+0x411/0x500
+> >   ? preempt_count_sub+0xf/0xc0
+> >   ? _raw_spin_lock_irqsave+0x78/0xc0
+> >   ? __lock_text_start+0x18/0x18
+> >   ? raid1_end_read_request+0x2a0/0x2a0 [raid1]
+> >   ? preempt_count_sub+0xf/0xc0
+> >   ? _raw_spin_unlock_irqrestore+0x19/0x40
+> >   ? del_timer_sync+0xa9/0x100
+> >   ? try_to_del_timer_sync+0xc0/0xc0
+> >   ? _raw_spin_lock_irqsave+0x78/0xc0
+> >   ? __lock_text_start+0x18/0x18
+> >   ? __list_del_entry_valid+0x68/0xa0
+> >   ? finish_wait+0xa3/0x100
+> >   md_thread+0x161/0x260 [md_mod]
+> >   ? unregister_md_personality+0xa0/0xa0 [md_mod]
+> >   ? _raw_spin_lock_irqsave+0x78/0xc0
+> >   ? prepare_to_wait_event+0x2c0/0x2c0
+> >   ? unregister_md_personality+0xa0/0xa0 [md_mod]
+> >   kthread+0x148/0x180
+> >   ? kthread_complete_and_exit+0x20/0x20
+> >   ret_from_fork+0x1f/0x30
+> >   </TASK>
+> > 
+> > Allocated by task 5522:
+> >   kasan_save_stack+0x1e/0x40
+> >   __kasan_kmalloc+0x80/0xa0
+> >   md_bitmap_create+0xa8/0xe80 [md_mod]
+> >   md_run+0x777/0x1300 [md_mod]
+> >   raid_ctr+0x249c/0x4a30 [dm_raid]
+> >   dm_table_add_target+0x2b0/0x620 [dm_mod]
+> >   table_load+0x1c8/0x400 [dm_mod]
+> >   ctl_ioctl+0x29e/0x560 [dm_mod]
+> >   dm_compat_ctl_ioctl+0x7/0x20 [dm_mod]
+> >   __do_compat_sys_ioctl+0xfa/0x160
+> >   do_syscall_64+0x90/0xc0
+> >   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > 
+> > Freed by task 5680:
+> >   kasan_save_stack+0x1e/0x40
+> >   kasan_set_track+0x21/0x40
+> >   kasan_set_free_info+0x20/0x40
+> >   __kasan_slab_free+0xf7/0x140
+> >   kfree+0x80/0x240
+> >   md_bitmap_free+0x1c3/0x280 [md_mod]
+> >   __md_stop+0x21/0x120 [md_mod]
+> >   md_stop+0x9/0x40 [md_mod]
+> >   raid_dtr+0x1b/0x40 [dm_raid]
+> >   dm_table_destroy+0x98/0x1e0 [dm_mod]
+> >   __dm_destroy+0x199/0x360 [dm_mod]
+> >   dev_remove+0x10c/0x160 [dm_mod]
+> >   ctl_ioctl+0x29e/0x560 [dm_mod]
+> >   dm_compat_ctl_ioctl+0x7/0x20 [dm_mod]
+> >   __do_compat_sys_ioctl+0xfa/0x160
+> >   do_syscall_64+0x90/0xc0
+> >   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > 
+> > Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+> > Cc: stable@vger.kernel.org
+> > Fixes: 48df498daf62 ("md: move bitmap_destroy to the beginning of __md_stop")
+> > Signed-off-by: Song Liu <song@kernel.org>
+> > Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > > ---
-> >  From aeedd318e6cb4dbee551f67616302cc7c4308c58 Mon Sep 17 00:00:00 2001
-> > From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> > Date: Thu, 18 Aug 2022 15:09:25 +0200
-> > Subject: [PATCH] Fix uclogic
-> >
-> > ---
-> >   drivers/hid/hid-input.c | 5 ++++-
-> >   1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-> > index c6b27aab9041..a3e2397bb3a7 100644
-> > --- a/drivers/hid/hid-input.c
-> > +++ b/drivers/hid/hid-input.c
-> > @@ -1530,7 +1530,10 @@ void hidinput_hid_event(struct hid_device *hid,
-> > struct hid_field *field, struct
-> >                * assume ours
-> >                */
-> >               if (!report->tool)
-> > -                hid_report_set_tool(report, input, usage->code);
-> > +                report->tool = usage->code;
-> > +
-> > +            /* drivers may have changed the value behind our back,
-> > resend it */
-> > +            hid_report_set_tool(report, input, report->tool);
-> >           } else {
-> >               hid_report_release_tool(report, input, usage->code);
-> >           }
->
-> What branch should this be applied on top of?
->
+> >   drivers/md/md.c |    2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > --- a/drivers/md/md.c
+> > +++ b/drivers/md/md.c
+> > @@ -6278,11 +6278,11 @@ static void mddev_detach(struct mddev *m
+> >   static void __md_stop(struct mddev *mddev)
+> >   {
+> >   	struct md_personality *pers = mddev->pers;
+> > -	md_bitmap_destroy(mddev);
+> >   	mddev_detach(mddev);
+> >   	/* Ensure ->event_work is done */
+> >   	if (mddev->event_work.func)
+> >   		flush_workqueue(md_misc_wq);
+> > +	md_bitmap_destroy(mddev);
+> >   	spin_lock(&mddev->lock);
+> >   	mddev->pers = NULL;
+> >   	spin_unlock(&mddev->lock);
+> 
+> Pls consider drop this one from stable per the link given it cause issue for
+> md-cluster.
+> 
+> https://lore.kernel.org/linux-raid/a6657e08-b6a7-358b-2d2a-0ac37d49d23a@linux.dev/T/#m95ac225cab7409f66c295772483d091084a6d470
 
-Sorry for that. I had some local commits in my tree that made the
-patch unusable. I just formally sent the patch [0] based on the
-hid.git/for-next branch which is actually applying on top of v5.19 or
-even v5.18.
+I will just take the fixup patch when it hits Linus's tree as this
+commit is already in the following releases:
+	5.10.137 5.15.61 5.18.18 5.19.2
 
-Cheers,
-Benjamin
+thanks,
 
-[0] https://lore.kernel.org/linux-input/20220822062247.1146141-1-benjamin.tissoires@redhat.com/T/#u
-
+greg k-h
