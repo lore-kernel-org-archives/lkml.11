@@ -2,262 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5349CC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA44C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 11:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbiHVLGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 07:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
+        id S233270AbiHVLJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 07:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233790AbiHVLE2 (ORCPT
+        with ESMTP id S234040AbiHVLJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 07:04:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1789A27CEA
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 04:04:27 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Dw-0005PM-1M; Mon, 22 Aug 2022 13:04:04 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Du-001Hlq-NG; Mon, 22 Aug 2022 13:04:02 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Ds-009gyh-By; Mon, 22 Aug 2022 13:04:00 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 04/17] net: dsa: microchip: allow to pass return values for PHY read/write accesses
-Date:   Mon, 22 Aug 2022 13:03:45 +0200
-Message-Id: <20220822110358.2310055-5-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220822110358.2310055-1-o.rempel@pengutronix.de>
-References: <20220822110358.2310055-1-o.rempel@pengutronix.de>
+        Mon, 22 Aug 2022 07:09:08 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE21A33E28;
+        Mon, 22 Aug 2022 04:07:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1661166445;
+        bh=EuJxpwGW0kCugTdVp6i68Y2ET4g43DToAA8wC2D/R9I=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
+        b=d0BpwRlHZBoGxfuGd+9gR2HxSGzpf7d3gkxIKLPvwMhMef8WNjPEiGRRRlk61PI9O
+         OC8t6qoDDR5kP+9eY7Uu7/Xb+6ZUvPPR74/MGmJqhv0eCL/BPe6m3cMOF8wmZwNae6
+         LSvjxL52OrIZ9Ga0SfVBJYII5/BjUcjveR673dZE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx104
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1MD9XF-1oYZaP0Vhx-0097DU; Mon, 22
+ Aug 2022 13:07:24 +0200
+Message-ID: <9aa83875-0a05-6b28-b4df-4071ba8ee343@gmx.com>
+Date:   Mon, 22 Aug 2022 19:07:19 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-x86_64@vger.kernel.org
+References: <2d6012e8-805d-4225-80ed-d317c28f1899@gmx.com>
+ <YwMhXX6OhROLZ/LR@kroah.com> <1ed5a33a-b667-0e8e-e010-b4365f3713d6@gmx.com>
+ <YwMxRAfrrsPE6sNI@kroah.com> <8aff5c17-d414-2412-7269-c9d15f574037@gmx.com>
+ <20220822080456.GB17080@1wt.eu>
+ <4c42af33-dc05-315a-87d9-be0747a74df4@gmx.com>
+ <20220822083044.GC17080@1wt.eu>
+From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
+Subject: Re: LTS kernel Linux 4.14.290 unable to boot with edk2-ovmf (x86_64
+ UEFI runtime)
+In-Reply-To: <20220822083044.GC17080@1wt.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:jWPvej0a40zHz8DlCmHr7AlmcK/R5vwa89aDPsLwwWdX22f54+P
+ Af4xer/hyzXOaWtJwtX3zI1DOVMDap9dP+o+8PItJr5VZmrVhKq39HQfZKedzM0Dc+8Wl9E
+ CO7/PdBHX9XDQua3A9IiBypYqGfyrePLUPxwBwQC4sSMIR8wB9sg46CY+eivCaLzUVadFe6
+ jYL4a96hnK/dIhsDir4CA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fhXrvUu250M=:X/DS/ITfEIdrL8bPByhVlR
+ m9yhoSSJoUImyHOStY74la41aAD/APodgWvCCPIpbitayHAcpg6SxKAw/TZ37UlEmHkOHuwNo
+ 36bLP1aEmj1fFHCbRvSck65ARA51qW7eK37EXcSrKFmlRQxPK86dkHiG/GlmAUmQs8ynvQVFE
+ mpIQ97ynJgxk7G26m+QpbGp6XnAcysT34HKF7jonOACpVz+QliVzmujkKsEuPqaDAnaHkNp7Q
+ T4LXpsvAYvMfJHlqbskTeFBcncFmhW+1t3/bXHatT0g1PgYPHfZKlemsZlLV1A8A64wxT2961
+ R2ulyfK8cFdjTx35iCWRedcZhN3oo+nSRMAuv9x/2do+PdHCTADL+9oG+t1urMwwUaPTAwQ6u
+ aJDcCzKnh4vGRF7KuNJRu4WEZ3vrmOF26lNGP+v24g/f93sswP4+sQPBiPv4UNtRQ6EEGA4vY
+ pQyMh6tSRKSzKlQ473uyw0UjcTkesIdhggkTFpMpKjU6kmZOgh3MwUv5zTPhDi83vn1zg7LYj
+ mXRJhh3rINH2CI59fa86T8NRdcdktQz7B4Xco8rgo1dotnuQxsRyq7OGxSo2cavVgKJW0zUSR
+ 0bsp8SlzVCcKf8m3xf2ucRhnswTHaYrZNgP4eS1Y9TTbhhIFYbTB+7aV8lzj3VDdffDpmrjrt
+ ZWYhJV/DmrNrfbj9So0qJwACTT/xsNvhdR4I8D709ivBQBBEBQ1+Gm0RtAvh8KMzOais+FiSy
+ 7f36Z1j+cTHNpySzc4flo1Hqp1A4+cTVcw4dNs//2qreIvrbFVoe4bY1fiD6fYMKt5UflRaFM
+ NPSYdmaJqFYkVTooqGI1j2bIc5IKOYGfNhIil/ydnszf5SDN6w7EGPRSTOw8gk2RIIlqbAEEm
+ dsk9dG84zB29Yu8VFdx5WM5XedKaf8h4We9K0AI13JcYtotlGOvxjn9Ef+bzVp7J9zyrD5IvU
+ 2hHonGYoyQtNjZnKvOdDHZWoCwYL2XqEFekuek/tXD+XtjRlXDXs/V+Xl0s+VIPwL0soYlnQW
+ oDIpFmU7ce4Bt5AUbJD1npvm6tLsVCJmUVbaIvmjgs5Z8kulSXKOWovS36gZ1IYAyU190+ok/
+ 1TNeQXRwJL5wa6TIPdFmWa+jqXRgrC/uvoTf4EJwblixzlBNf/+FgFH4g==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PHY access may end with errors on different levels. So, allow to forward
-return values where possible.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz8.h         |  4 ++--
- drivers/net/dsa/microchip/ksz8795.c      |  8 ++++++--
- drivers/net/dsa/microchip/ksz9477.c      | 12 ++++++++----
- drivers/net/dsa/microchip/ksz9477.h      |  4 ++--
- drivers/net/dsa/microchip/ksz_common.c   | 10 ++++++++--
- drivers/net/dsa/microchip/ksz_common.h   |  4 ++--
- drivers/net/dsa/microchip/lan937x.h      |  4 ++--
- drivers/net/dsa/microchip/lan937x_main.c |  8 ++++----
- 8 files changed, 34 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
-index 42c50cc4d8536..8582b4b67d989 100644
---- a/drivers/net/dsa/microchip/ksz8.h
-+++ b/drivers/net/dsa/microchip/ksz8.h
-@@ -17,8 +17,8 @@ u32 ksz8_get_port_addr(int port, int offset);
- void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member);
- void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port);
- void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port);
--void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
--void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
-+int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
-+int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
- int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 			 u8 *fid, u8 *src_port, u8 *timestamp, u16 *entries);
- int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index c79a5128235f9..f2dd75ee0e075 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -552,7 +552,7 @@ static void ksz8_w_vlan_table(struct ksz_device *dev, u16 vid, u16 vlan)
- 	ksz8_w_table(dev, TABLE_VLAN, addr, buf);
- }
- 
--void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
-+int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- {
- 	u8 restart, speed, ctrl, link;
- 	int processed = true;
-@@ -674,9 +674,11 @@ void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 	}
- 	if (processed)
- 		*val = data;
-+
-+	return 0;
- }
- 
--void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
-+int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- {
- 	u8 restart, speed, ctrl, data;
- 	const u16 *regs;
-@@ -787,6 +789,8 @@ void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 	default:
- 		break;
- 	}
-+
-+	return 0;
- }
- 
- void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index e1702ff04b858..d986be78183c4 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -275,7 +275,7 @@ static void ksz9477_r_phy_quirks(struct ksz_device *dev, u16 addr, u16 reg,
- 		*data &= ~(BMSR_ESTATEN | BMSR_ERCAP);
- }
- 
--void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
-+int ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
- {
- 	u16 val = 0xffff;
- 
-@@ -323,19 +323,23 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
- 	}
- 
- 	*data = val;
-+
-+	return 0;
- }
- 
--void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
-+int ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
- {
- 	/* No real PHY after this. */
- 	if (addr >= dev->phy_port_cnt)
--		return;
-+		return 0;
- 
- 	/* No gigabit support.  Do not write to this register. */
- 	if (!(dev->features & GBIT_SUPPORT) && reg == MII_CTRL1000)
--		return;
-+		return 0;
- 
- 	ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
-+
-+	return 0;
- }
- 
- void ksz9477_cfg_port_member(struct ksz_device *dev, int port, u8 member)
-diff --git a/drivers/net/dsa/microchip/ksz9477.h b/drivers/net/dsa/microchip/ksz9477.h
-index cd278b307b3c7..ce87e4e09ada8 100644
---- a/drivers/net/dsa/microchip/ksz9477.h
-+++ b/drivers/net/dsa/microchip/ksz9477.h
-@@ -16,8 +16,8 @@ u32 ksz9477_get_port_addr(int port, int offset);
- void ksz9477_cfg_port_member(struct ksz_device *dev, int port, u8 member);
- void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port);
- void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port);
--void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);
--void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);
-+int ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);
-+int ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);
- void ksz9477_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt);
- void ksz9477_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
- 		       u64 *dropped, u64 *cnt);
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 816438d2ed640..089570e18fb7c 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -1117,8 +1117,11 @@ static int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg)
- {
- 	struct ksz_device *dev = ds->priv;
- 	u16 val = 0xffff;
-+	int ret;
- 
--	dev->dev_ops->r_phy(dev, addr, reg, &val);
-+	ret = dev->dev_ops->r_phy(dev, addr, reg, &val);
-+	if (ret)
-+		return ret;
- 
- 	return val;
- }
-@@ -1126,8 +1129,11 @@ static int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg)
- static int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val)
- {
- 	struct ksz_device *dev = ds->priv;
-+	int ret;
- 
--	dev->dev_ops->w_phy(dev, addr, reg, val);
-+	ret = dev->dev_ops->w_phy(dev, addr, reg, val);
-+	if (ret)
-+		return ret;
- 
- 	return 0;
- }
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index aaa6a910d0819..baaeb60533faf 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -261,8 +261,8 @@ struct ksz_dev_ops {
- 	void (*flush_dyn_mac_table)(struct ksz_device *dev, int port);
- 	void (*port_cleanup)(struct ksz_device *dev, int port);
- 	void (*port_setup)(struct ksz_device *dev, int port, bool cpu_port);
--	void (*r_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
--	void (*w_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
-+	int (*r_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
-+	int (*w_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
- 	void (*r_mib_cnt)(struct ksz_device *dev, int port, u16 addr,
- 			  u64 *cnt);
- 	void (*r_mib_pkt)(struct ksz_device *dev, int port, u16 addr,
-diff --git a/drivers/net/dsa/microchip/lan937x.h b/drivers/net/dsa/microchip/lan937x.h
-index 4e0b1dccec270..5d78d034a62f1 100644
---- a/drivers/net/dsa/microchip/lan937x.h
-+++ b/drivers/net/dsa/microchip/lan937x.h
-@@ -12,8 +12,8 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port);
- void lan937x_config_cpu_port(struct dsa_switch *ds);
- int lan937x_switch_init(struct ksz_device *dev);
- void lan937x_switch_exit(struct ksz_device *dev);
--void lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);
--void lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);
-+int lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);
-+int lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);
- int lan937x_change_mtu(struct ksz_device *dev, int port, int new_mtu);
- void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
- 			      struct phylink_config *config);
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index daedd2bf20c1b..7b464f1fb5d88 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -128,14 +128,14 @@ static int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
- 	return ksz_read16(dev, REG_VPHY_IND_DATA__2, val);
- }
- 
--void lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
-+int lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
- {
--	lan937x_internal_phy_read(dev, addr, reg, data);
-+	return lan937x_internal_phy_read(dev, addr, reg, data);
- }
- 
--void lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
-+int lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
- {
--	lan937x_internal_phy_write(dev, addr, reg, val);
-+	return lan937x_internal_phy_write(dev, addr, reg, val);
- }
- 
- static int lan937x_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
--- 
-2.30.2
+On 2022/8/22 16:30, Willy Tarreau wrote:
+> On Mon, Aug 22, 2022 at 04:19:49PM +0800, Qu Wenruo wrote:
+>>> Regardless, if you need an older compiler, just use these ones:
+>>>
+>>>      https://mirrors.edge.kernel.org/pub/tools/crosstool/
+>>>
+>>> They go back to 4.9.4 for x86, you'll surely find the right one for yo=
+ur
+>>> usage. I've long used 4.7.4 for kernels up to 4.9 and 6.5 for 4.19 and
+>>> above, so something within that area will surely match your needs.
+>>
+>> BTW, it would be way more awesome if the page can provide some hint on
+>> the initial release date of the compilers.
+>>
+>> It would help a lot of choose the toolchain then.
+>
+> It wouldn't help, if you look closely, you'll notice that in the "other
+> releases" section you have the most recent version of each of them. That
+> does not preclude the existence of the branch earlier. For example gcc-9
+> was released in 2019 and 9.5 was emitted 3 years later. That's quite an
+> amplitude that doesn't help.
 
+Maybe I'm totally wrong, but if GCC10.1 is released May 2020, and even
+10.4 is released 2022, then shouldn't we expect the kernel releases
+around 2020 can be compiled for all GCC 10.x releases?
+
+Thus the initial release date should be a good enough hint for most cases.
+
+If go this method, for v4.14 I guess I should go gcc 7.x, as gcc 7.1 is
+released May 2017, even the latest 7.5 is released 2019.
+
+Or is my uneducated guess completely wrong?
+
+Thanks,
+Qu
+
+>
+> Willy
