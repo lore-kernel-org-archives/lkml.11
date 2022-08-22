@@ -2,112 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF81CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8B7C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 23:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238727AbiHVXoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 19:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+        id S238744AbiHVXoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 19:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235448AbiHVXoD (ORCPT
+        with ESMTP id S237365AbiHVXow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 19:44:03 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95249E012;
-        Mon, 22 Aug 2022 16:44:00 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oQH5A-00013b-GV; Tue, 23 Aug 2022 01:43:48 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Quentin Schulz <foss+kernel@0leil.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Subject: Re: [RFC PATCH 0/1] Making Rockchip IO domains dependency from other devices explicit
-Date:   Tue, 23 Aug 2022 01:43:46 +0200
-Message-ID: <2696616.PYKUYFuaPT@diego>
-In-Reply-To: <CACRpkdZXTtar73-HP8_wcAsCYw7JOgPwkXZt-_3s0GdoggBABw@mail.gmail.com>
-References: <20220802095252.2486591-1-foss+kernel@0leil.net> <CACRpkdZXTtar73-HP8_wcAsCYw7JOgPwkXZt-_3s0GdoggBABw@mail.gmail.com>
+        Mon, 22 Aug 2022 19:44:52 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D915B3ECFA;
+        Mon, 22 Aug 2022 16:44:51 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 23:44:47 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661211889;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WV9QZiLIcQCEPcsHDa1Hku7ALUOPpRGLHJuLTkGtF1g=;
+        b=dzotY1cGYg7VXaX7XNZNIeAnSzFqR4+7z6TMoLLu+a991v63iMLWCSJiZkF051dq4mgUfF
+        chaCdAAElLzyLHiboJas+GS7nfTd2D+pBNjt/O1xTYFEBJb3nQJ6GJwwJvnHRLBFbEFnY7
+        rZVEKsilBgSUHq1R8EgwW4zz5xyvNVGWR+QiE45StxTh43rYAt+Ch5z5BkckC2l2yAe+4k
+        czxCCYtOzolDudackg+8nfqi/q2BVoASsaSpp4CKD7CNdT4ibi/5zknAqDLKqdhAKZzq6x
+        PMwnHnLFoQpEPu/4lz4fZZuuhoJIcMrH5QIy+SrMYJ6CEZe7GbfqaXFGTv6AWw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661211889;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WV9QZiLIcQCEPcsHDa1Hku7ALUOPpRGLHJuLTkGtF1g=;
+        b=sDNXFOe7f9z7PopRQ/cj9+NFNySSAJHER8aDMjL7oQ7sRjIxd2X+qSzXj/LflvSK8jies4
+        XKPTBfX+WMHFTbAQ==
+From:   "tip-bot2 for Tony Luck" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cpu] x86/cpu: Add new Raptor Lake CPU model number
+Cc:     Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <YwO49TDHnLcOyE+F@agluck-desk3.sc.intel.com>
+References: <YwO49TDHnLcOyE+F@agluck-desk3.sc.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Message-ID: <166121188787.401.17379235294060223774.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+The following commit has been merged into the x86/cpu branch of tip:
 
-Am Montag, 22. August 2022, 10:38:11 CEST schrieb Linus Walleij:
-> On Tue, Aug 2, 2022 at 11:53 AM Quentin Schulz <foss+kernel@0leil.net> wrote:
-> 
-> > Some background on IO domains on Rockchip:
-> >
-> > On some Rockchip SoCs, some SoC pins are split in what are called IO
-> > domains.
-> >
-> > An IO domain is supplied power externally, by regulators from a PMIC for
-> > example. This external power supply is then used by the IO domain as
-> > "supply" for the IO pins if they are outputs.
-> >
-> > Each IO domain can configure which voltage the IO pins will be operating
-> > on (1.8V or 3.3V).
-> >
-> > There already exists an IO domain driver for Rockchip SoCs[1]. This
-> > driver allows to explicit the relationship between the external power
-> > supplies and IO domains[2]. This makes sure the regulators are enabled
-> > by the Linux kernel so the IO domains are supplied with power and
-> > correctly configured as per the supplied voltage.
-> > This driver is a regulator consumer and does not offer any other
-> > interface for device dependency.
-> 
-> What makes me confused about the patch is the relationship, if any,
-> between this "IO domain" and generic power domains (genpd) that has
-> been worked on for ~10 years.
-> 
-> I am worried that we are reinventing the world.
+Commit-ID:     81779270304dd556e1bb9e62561115714c15fa6a
+Gitweb:        https://git.kernel.org/tip/81779270304dd556e1bb9e62561115714c15fa6a
+Author:        Tony Luck <tony.luck@intel.com>
+AuthorDate:    Mon, 22 Aug 2022 10:12:21 -07:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Mon, 22 Aug 2022 16:35:53 -07:00
 
-In a nutshell, the Rockchip io-domains handle the voltages of specific
-pin-groups. I.e. mostly it is just switching between 1.8V and 3.3V .
+x86/cpu: Add new Raptor Lake CPU model number
 
-The voltage itself is always set in a (i2c-)regulator but there is a
-separate step necessary to tell the soc this information.
+Note1: Model 0xB7 already claimed the "no suffix" #define for a regular
+client part, so add (yet another) suffix "S" to distinguish this new
+part from the earlier one.
 
-3.3 -> 1.8: set regulator to 1.8, tell io-domain "we're at 1.8 now"
-1.8 -> 3.3: tell io-domain "3.3", set regulator to 3.3.
+Note2: the RAPTORLAKE* and ALDERLAKE* processors are very similar from a
+software enabling point of view.  There are no known features that have
+model-specific enabling and also differ between the two.  In other words,
+every single place that list *one* or more RAPTORLAKE* or ALDERLAKE*
+processors should eventually list all of them.
 
-There is supposedly a soc-health-issue if you set the regulator to 3.3
-while the io-domain thinks it's at 1.8 .
+Note3: This is being merged before there is an in-tree user.  Merging
+this provides an "anchor" so that the different folks can update their
+subsystems (like perf) in parallel to use this define and test it.
 
+[ dhansen: add a note about why this has no in-tree users yet ]
 
-So the io-domain driver right now, just attaches to the regulator, catches
-the voltage-change events and sets the io-domain setting accordingly.
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/YwO49TDHnLcOyE+F@agluck-desk3.sc.intel.com
+---
+ arch/x86/include/asm/intel-family.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-
-What Quentin is trying to solve is a probe-dependency issue that can
-happen when stuff is built into the kernel, the regulator has probed
-the regulator using driver has probed, but the io.domain driver hasn't,
-as that also only attached to the regulator as described above.
-
-Heiko
-
-
-> While my intuitive feeling is that genpd power domains are only on-chip
-> and not considering off-chip pins, I am not so sure that it warrants
-> its own abstraction and want to know whether this can be retrofit into
-> genpd rather than inventing this?
-> 
-> Documentation/devicetree/bindings/power/power-domain.yaml
-> include/linux/pm_domain.h
-> 
-> Yours,
-> Linus Walleij
-> 
-
-
-
-
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index def6ca1..aeb3802 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -27,6 +27,7 @@
+  *		_X	- regular server parts
+  *		_D	- micro server parts
+  *		_N,_P	- other mobile parts
++ *		_S	- other client parts
+  *
+  *		Historical OPTDIFFs:
+  *
+@@ -112,6 +113,7 @@
+ 
+ #define INTEL_FAM6_RAPTORLAKE		0xB7
+ #define INTEL_FAM6_RAPTORLAKE_P		0xBA
++#define INTEL_FAM6_RAPTORLAKE_S		0xBF
+ 
+ /* "Small Core" Processors (Atom) */
+ 
