@@ -2,136 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F9FC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C739C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234879AbiHVOmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
+        id S231927AbiHVOmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbiHVOmE (ORCPT
+        with ESMTP id S234896AbiHVOmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:42:04 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26791371B1;
-        Mon, 22 Aug 2022 07:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1661179323;
-  x=1692715323;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=04o6Y1/zm/uWq+8SGUpQ6bwGKSFtfqsQrh2n+bOwVX0=;
-  b=nGx2ioXrdF1+nKuo2aCFRuLw92OpA1tAMvHd7hQobCS5jHDzQAGkHKIT
-   tclt0fMM8xwz9sU7/pk7m/GvRa0jv4Lyq1xJobolwH01DuoqOVU9F5/W0
-   arJ3LgV5ws1crwqQxVhLEGfUjwj1yZjCYTsBsHc6xeI9LvyK1vcgtTTok
-   LF22mhz/WJ4G3WTL7yfawNkj96SFORs3rECj4wthDcEOA1DQjKjU8lub7
-   YEwYdoK3y6mO4zaWuYswchPnhLxoCQxL2QZdjyqkxt0b76XWIylEAn1yL
-   lvzOcjurv4+ATkpvsS+vsIiKU9fvQGXrIy0suptaC9qK0HDYrVeKhE5fq
-   w==;
-From:   Marcus Carlberg <marcus.carlberg@axis.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Mon, 22 Aug 2022 10:42:13 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C216F371B1;
+        Mon, 22 Aug 2022 07:42:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661179332; x=1692715332;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M+vT8QnLNMo6qMrgIuZIijfJ1dcMOL8NnZ+wIrdoKs8=;
+  b=KOF1lzIXGyI5m8XUrvL3Bhl/HnkoFz3+84m6P1JgqBFP1p1pa2ZNSZRB
+   76L2oLDuJ0rhqKD7twkIF+CBuZNb+TxBZ7o9/rcI/3VH+IN/M9Vxq8lLe
+   fKneQfP62cu1CImAKguTKxtQ5sxCYm8cnDDDpTcGpzOPXT94zAjh8AUwm
+   IybKoSrMS8dxNuolMlC0wf4VidXk3p1H7s/OiU/KVof12Dzu5ptF7jElX
+   aelbQx2Sf6WrQMxvcTR9q+8BTdYKdlR1LeftsEfnWlAbQn314DMRW174O
+   s8Ua15HSXMB3JyL+Xpo9fnUmsC2QrWNzsUiPMBeI3ziC9LWgzxdBmVXNl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379721069"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="379721069"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 07:42:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="608981332"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 22 Aug 2022 07:42:06 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27MEg4HA003194;
+        Mon, 22 Aug 2022 15:42:04 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        "Anil S Keshavamurthy" <anil.s.keshavamurthy@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     <kernel@axis.com>, Marcus Carlberg <marcus.carlberg@axis.com>,
-        Pavana Sharma <pavana.sharma@digi.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Ashkan Boldaji <ashkan.boldaji@digi.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3] net: dsa: mv88e6xxx: support RGMII cmode
-Date:   Mon, 22 Aug 2022 16:41:36 +0200
-Message-ID: <20220822144136.16627-1-marcus.carlberg@axis.com>
-X-Mailer: git-send-email 2.20.1
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
+        lkp@intel.com,
+        =?UTF-8?q?F=C4=81ng-ru=C3=AC=20S=C3=B2ng?= <maskray@google.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Kees Cook <keescook@chromium.org>,
+        Marios Pomonis <pomonis@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        llvm@lists.linux.dev, Jessica Yu <jeyu@kernel.org>
+Subject: Re: [RFC PATCH 0/3] kallsyms: add option to include relative filepaths into kallsyms
+Date:   Mon, 22 Aug 2022 16:40:22 +0200
+Message-Id: <20220822144022.7127-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220818115306.1109642-1-alexandr.lobakin@intel.com>
+References: <20220818115306.1109642-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the probe defaults all interfaces to the highest speed possible
-(10GBASE-X in mv88e6393x) before the phy mode configuration from the
-devicetree is considered it is currently impossible to use port 0 in
-RGMII mode.
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Date: Thu, 18 Aug 2022 13:53:03 +0200
 
-This change will allow RGMII modes to be configurable for port 0
-enabling port 0 to be configured as RGMII as well as serial depending
-on configuration.
+> This is an early RFC to not rewrite stuff one more time later on if
+> the implementation is not acceptable or any major design changes are
+> required. For the TODO list, please scroll to the end.
+> 
+> Make kallsyms independent of symbols positions in vmlinux (or module)
+> by including relative filepath in each symbol's kallsyms value. I.e.
+> 
+> dev_gro_receive -> net/core/gro.c:dev_gro_receive
 
-Fixes: de776d0d316f ("net: dsa: mv88e6xxx: add support for mv88e6393x family")
-Signed-off-by: Marcus Carlberg <marcus.carlberg@axis.com>
----
+Oops, forgot to Cc some more folks I was talking to regarding the
+previous implementation <O> Fixed, pls let me know if you prefer to
+get a resend.
 
-Notes:
-    v2: add phy mode input validation for SERDES only ports
-    
-    v3: add RGMII phy interface types to supported phy modes list.
-        add fixes tag.
+> -- 
+> 2.37.2
 
- drivers/net/dsa/mv88e6xxx/chip.c |  8 ++++++++
- drivers/net/dsa/mv88e6xxx/port.c | 19 +++++++++++++++++++
- 2 files changed, 27 insertions(+)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 07e9a4da924c..6403f1f8bdbb 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -816,6 +816,14 @@ static void mv88e6393x_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
- 				MAC_10000FD;
- 		}
- 	}
-+
-+	if (port == 0) {
-+		__set_bit(PHY_INTERFACE_MODE_RMII, supported);
-+		__set_bit(PHY_INTERFACE_MODE_RGMII, supported);
-+		__set_bit(PHY_INTERFACE_MODE_RGMII_ID, supported);
-+		__set_bit(PHY_INTERFACE_MODE_RGMII_RXID, supported);
-+		__set_bit(PHY_INTERFACE_MODE_RGMII_TXID, supported);
-+	}
- }
- 
- static void mv88e6xxx_get_caps(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 90c55f23b7c9..5c4195c635b0 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -517,6 +517,12 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 	case PHY_INTERFACE_MODE_RMII:
- 		cmode = MV88E6XXX_PORT_STS_CMODE_RMII;
- 		break;
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		cmode = MV88E6XXX_PORT_STS_CMODE_RGMII;
-+		break;
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 		cmode = MV88E6XXX_PORT_STS_CMODE_1000BASEX;
- 		break;
-@@ -634,6 +640,19 @@ int mv88e6393x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 	if (port != 0 && port != 9 && port != 10)
- 		return -EOPNOTSUPP;
- 
-+	if (port == 9 || port == 10) {
-+		switch (mode) {
-+		case PHY_INTERFACE_MODE_RMII:
-+		case PHY_INTERFACE_MODE_RGMII:
-+		case PHY_INTERFACE_MODE_RGMII_ID:
-+		case PHY_INTERFACE_MODE_RGMII_RXID:
-+		case PHY_INTERFACE_MODE_RGMII_TXID:
-+			return -EINVAL;
-+		default:
-+			break;
-+		}
-+	}
-+
- 	/* mv88e6393x errata 4.5: EEE should be disabled on SERDES ports */
- 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_MAC_CTL, &reg);
- 	if (err)
--- 
-2.20.1
-
+Thanks,
+Olek
