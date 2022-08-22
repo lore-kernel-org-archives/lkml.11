@@ -2,90 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B76C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B4A2C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiHVNYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
+        id S234696AbiHVNYK convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbiHVNX6 (ORCPT
+        with ESMTP id S232195AbiHVNYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:23:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0996AE65
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:23:57 -0700 (PDT)
-Received: from notapiano (unknown [70.107.189.129])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 22 Aug 2022 09:24:03 -0400
+X-Greylist: delayed 1163 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 06:24:01 PDT
+Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B72627CED
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:24:01 -0700 (PDT)
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5AC056600015;
-        Mon, 22 Aug 2022 14:23:54 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661174635;
-        bh=UWbfv/xp8Lk8ZUHhil0GHBm6jDjKPoDOB/7CHnZRRRU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Sq83uFV+QSihfQTDt7FEavpyBX/VxM6/UOHzdLT8d6pkw7k5Y2lHtZJmun5vXOwls
-         L3LRRTqee/6f1tWjvVI7UUSu1splKLhhoejOsFAvIndDyZ1WrYubEbP7Hpmx2xrINd
-         nqocg17Nrpzgrg/ZoDiyNX16AbWNikAqsOXyV7ckD9b+8oj0r+51yqH5mUieAiPJH0
-         P3RPQ2PHGtGMdEu+q1AGGzCQ2gdgsGKiPJr+m8QHCyeOO5CJsNyr9b81gv45N35w1H
-         TnNiHYinvQypJjoUoEEz4MjVX8ZF1Hhfle14tDNi8QhWIYUxgFlnvgDa4fuPiltG1m
-         56oOwr547m/rg==
-Date:   Mon, 22 Aug 2022 09:23:50 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     "xinlei.lee" <xinlei.lee@mediatek.com>
-Cc:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, matthias.bgg@gmail.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [PATCH v2,1/2] soc: mediatek: Add mmsys func to adapt to dpi
- output for MT8186
-Message-ID: <20220822132350.tw73ph6nnvti6h5i@notapiano>
-References: <1659693461-27057-1-git-send-email-xinlei.lee@mediatek.com>
- <1659693461-27057-2-git-send-email-xinlei.lee@mediatek.com>
- <20220819185400.aokd53xln6rmc3xk@notapiano>
- <49fcb1b354199b56279ecf1ccb90d48361de796d.camel@mediatek.com>
+        by mx1.emlix.com (Postfix) with ESMTPS id 3BB495FB1D;
+        Mon, 22 Aug 2022 15:04:37 +0200 (CEST)
+From:   Rolf Eike Beer <eb@emlix.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 6/6] mm: pagewalk: move variables to more local scope, tweak loops
+Date:   Mon, 22 Aug 2022 15:04:12 +0200
+Message-ID: <8155217.NyiUUSuA9g@devpool047>
+Organization: emlix GmbH
+In-Reply-To: <3200642.44csPzL39Z@devpool047>
+References: <3200642.44csPzL39Z@devpool047>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <49fcb1b354199b56279ecf1ccb90d48361de796d.camel@mediatek.com>
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 08:50:45PM +0800, xinlei.lee wrote:
-[..]
-> Hi N�colas:
-> 
-> Thanks for your careful review.
-> I will correct it in the next version:
-> 1. Modify key nouns in the description;
-> 2. Modify the label of jitao to Co-developed-by;
+Move some variables to more local scopes to make it obvious that they don't
+carry state. Put the end additions into the for loop instructions to make
+them easier to read.
 
-To be clear, you shouldn't change jitao's signed-off-by to a co-developed-by,
-but add a co-developed-by. If you check the link I sent earlier [1], it should
-be clear that you should have something like
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+---
+ mm/pagewalk.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-Co-developed-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+diff --git a/mm/pagewalk.c b/mm/pagewalk.c
+index f816f86588be..d8be8a30b272 100644
+--- a/mm/pagewalk.c
++++ b/mm/pagewalk.c
+@@ -25,14 +25,12 @@ static int walk_pte_range_inner(pte_t *pte, unsigned long addr,
+ {
+ 	const struct mm_walk_ops *ops = walk->ops;
+ 
+-	for (;;) {
++	for (;; addr += PAGE_SIZE, pte++) {
+ 		int err = ops->pte_entry(pte, addr, addr + PAGE_SIZE, walk);
+ 		if (err)
+ 			return err;
+ 		if (addr >= end - PAGE_SIZE)
+ 			break;
+-		addr += PAGE_SIZE;
+-		pte++;
+ 	}
+ 	return 0;
+ }
+@@ -42,13 +40,14 @@ static int walk_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
+ {
+ 	pte_t *pte;
+ 	int err;
+-	spinlock_t *ptl;
+ 
+ 	if (walk->no_vma) {
+ 		pte = pte_offset_map(pmd, addr);
+ 		err = walk_pte_range_inner(pte, addr, end, walk);
+ 		pte_unmap(pte);
+ 	} else {
++		spinlock_t *ptl;
++
+ 		pte = pte_offset_map_lock(walk->mm, pmd, addr, &ptl);
+ 		err = walk_pte_range_inner(pte, addr, end, walk);
+ 		pte_unmap_unlock(pte, ptl);
+@@ -71,7 +70,7 @@ static int walk_hugepd_range(hugepd_t *phpd, unsigned long addr,
+ 	if (addr & (page_size - 1))
+ 		return 0;
+ 
+-	for (;;) {
++	for (;; addr += page_size) {
+ 		pte_t *pte;
+ 		int err;
+ 
+@@ -84,7 +83,6 @@ static int walk_hugepd_range(hugepd_t *phpd, unsigned long addr,
+ 			return err;
+ 		if (addr >= end - page_size)
+ 			break;
+-		addr += page_size;
+ 	}
+ 	return 0;
+ }
+@@ -307,14 +305,13 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
+ 	unsigned long next;
+ 	unsigned long hmask = huge_page_mask(h);
+ 	unsigned long sz = huge_page_size(h);
+-	pte_t *pte;
+ 	const struct mm_walk_ops *ops = walk->ops;
+ 
+-	do {
++	for (; addr < end; addr = next) {
+ 		int err;
++		pte_t *pte = huge_pte_offset(walk->mm, addr & hmask, sz);
+ 
+ 		next = hugetlb_entry_end(h, addr, end);
+-		pte = huge_pte_offset(walk->mm, addr & hmask, sz);
+ 
+ 		if (pte)
+ 			err = ops->hugetlb_entry(pte, hmask, addr, next, walk);
+@@ -323,7 +320,7 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
+ 
+ 		if (err)
+ 			return err;
+-	} while (addr = next, addr != end);
++	}
+ 
+ 	return 0;
+ }
+@@ -461,14 +458,13 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
+ 	do {
+ 		int err;
+ 
++		walk.vma = vma;
+ 		if (!vma) { /* after the last vma */
+-			walk.vma = NULL;
+ 			next = end;
+ 		} else if (start < vma->vm_start) { /* outside vma */
+ 			walk.vma = NULL;
+ 			next = min(end, vma->vm_start);
+ 		} else { /* inside vma */
+-			walk.vma = vma;
+ 			next = min(end, vma->vm_end);
+ 			vma = vma->vm_next;
+ 
+@@ -595,11 +591,11 @@ int walk_page_mapping(struct address_space *mapping, pgoff_t first_index,
+ 	};
+ 	struct vm_area_struct *vma;
+ 	pgoff_t vba, vea, cba, cea;
+-	unsigned long start_addr, end_addr;
+ 
+ 	lockdep_assert_held(&mapping->i_mmap_rwsem);
+ 	vma_interval_tree_foreach(vma, &mapping->i_mmap, first_index,
+ 				  first_index + nr - 1) {
++		unsigned long start_addr, end_addr;
+ 		int err;
+ 
+ 		/* Clip to the vma */
+-- 
+2.37.2
 
-[1] https://www.kernel.org/doc/html/latest/process/submitting-patches.html#when-to-use-acked-by-cc-and-co-developed-by
+-- 
+Rolf Eike Beer, emlix GmbH, http://www.emlix.com
+Fon +49 551 30664-0, Fax +49 551 30664-11
+Gothaer Platz 3, 37083 Göttingen, Germany
+Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
+Geschäftsführung: Heike Jordan, Dr. Uwe Kracke – Ust-IdNr.: DE 205 198 055
 
-Thanks,
-N�colas
+emlix - smart embedded open source
 
-> 3. Macro definition address lowercase problem and function naming.
-> 
-> If there are no other questions, I will send out the second edition in
-> the near future.
-> 
-> Best Regards!
-> xinlei
-> 
+
+
