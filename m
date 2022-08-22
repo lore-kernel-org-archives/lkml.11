@@ -2,139 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9307AC32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2284BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238452AbiHVTSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
+        id S238442AbiHVTS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238496AbiHVTSP (ORCPT
+        with ESMTP id S238434AbiHVTSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:18:15 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB874DB7A;
-        Mon, 22 Aug 2022 12:17:17 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id gt3so10757409ejb.12;
-        Mon, 22 Aug 2022 12:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=Ww/zLVja8aGocviQTazyplD8WiIYTW+lQEN/JOcoOp0=;
-        b=eSIXWq3zBlZ5kRMrRBBhgnmPJWSwhwcolElJUXH3iiGx2gcK8xoKHZAuL6ll5nXc/r
-         vF3y4kQ+Fik0eYXxR1dWkOJAtDytOn7JlYDZ/knhqgKi++Q1T26q9ud0edqY2LkVoQoF
-         en6JrFaydF6c3gvy8u2RLYbyLaHnndUYLwv0R5d4shdPm4+Uhult19HUJH31gkRF8VAK
-         JrfgOedDtM55nkjmbnhPvWq2H2yA/mzbHH1gQN0Hpgm7MfkqaAlNGa1KiyKRBE0QtXeO
-         Nk5Xn9TtGxSCtWR4QoyGYSH4O22DcGowNF99CsAw/T3JFlaKgikr1hGqU6d2asSjDJpY
-         z/Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=Ww/zLVja8aGocviQTazyplD8WiIYTW+lQEN/JOcoOp0=;
-        b=3b4AC2Pi0zaWcbOC4X702GoIMZj3n+CqjXu6+PFNgWF/t5M4/XTGT60QdEREBjd1U6
-         pk+fWayG2SKv8i5fS36cvzLpdaucOPnGXxocbIzY5IRc+1FtNIIVqHVOMiBkHLOziDz7
-         Kttdio0aznG7XcwFXg1pJOp1yxTf9rXrvxLokIE4azA5ObdY5Sh/B07OfUJCmmgYN1ly
-         dtc041eXvGZ+7+3XIr0NI8gLKuCnzeggVAyIv7onRAPt2qO5RBoKv3oKRM9Eq2s3hSvq
-         xWZOTUjjxD7i48iHBkS/1hSfhpRa0zW3ysrcWTSXu2gU73RPomjnr4erOve27b0yESct
-         mudA==
-X-Gm-Message-State: ACgBeo3jt581mB3a+66u/hFBUvrarELbxh+B5bbmvCGMM61aBg+rIhIo
-        e8QPcvBg3YbLvZ9cQoQK4qM=
-X-Google-Smtp-Source: AA6agR74OXBMyMhgrrICVycGtQDBtWfFv0yng7NSivL2HvsIdp9lfatgEQrDaKYmO5dMRCVWay3U5Q==
-X-Received: by 2002:a17:907:c15:b0:73d:8337:3aa8 with SMTP id ga21-20020a1709070c1500b0073d83373aa8mr3788064ejc.254.1661195833128;
-        Mon, 22 Aug 2022 12:17:13 -0700 (PDT)
-Received: from nuc ([2a02:168:633b:1:1e69:7aff:fe05:97e6])
-        by smtp.gmail.com with ESMTPSA id bt2-20020a0564020a4200b0043d7b19abd0sm168795edb.39.2022.08.22.12.17.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 12:17:12 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 21:17:11 +0200
-From:   =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
-To:     Xiu Jianfeng <xiujianfeng@huawei.com>
-Cc:     mic@digikod.net, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org, corbet@lwn.net,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH -next 0/5] landlock: add chmod and chown support
-Message-ID: <YwPWN/d15S24PuLS@nuc>
-References: <20220822114701.26975-1-xiujianfeng@huawei.com>
+        Mon, 22 Aug 2022 15:18:33 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E00E52DD7
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:17:32 -0700 (PDT)
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 27MJGoj4021387
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:16:50 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 27MJGoj4021387
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1661195810;
+        bh=T4uH5LE9rwdE2mxLY8gFgbberK4lQnmO5E4/BP1T0DA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=oOMkIlmfBMaDjJW4dvHHfRky0Hgs+xJ12QL9glru0xfZetX/NmPVnLyxJ9eee3raJ
+         jWYxpgiDRn7zAflZrBAGzd2vIKv6i0tb1ZdnDGM9Czrdvk9iTSLyxEqMxN5lMEnRGc
+         WIzxoR4fs955Z/4xo1qG+hqLoz2dflGX9+nIUHtj0ENaGxRiiWpAf7wboorDHlFj1s
+         dUXEqaODyexu60xQ4cF1hiYis36SfHuuHFLEjlyHJQJvxFlaj9PlX57cu4EMStudjY
+         0ZDK6X7Exlldc19ZSMLJIKqLKPP1ZNRwTTXBd+twesrNrUxOEvSRlY3AnGKGIouBiu
+         kAiyr1Av8WkUw==
+X-Nifty-SrcIP: [209.85.167.174]
+Received: by mail-oi1-f174.google.com with SMTP id n124so2423918oih.7
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:16:50 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2kzVl6GCc5bSgenYunfeHzL8gLEh8FVA1CCXcpXm604wYBUSkN
+        TEFvhZFMwuYktpqFickg8ar6C7J3uYUMSKdARjY=
+X-Google-Smtp-Source: AA6agR717mpG90ugWMLiyVx+ynWHTylQ648Aa5m8evGr6iogFZUQOyFf7ESfDVv/rlQgqHWZEFafl+rzw0r/vsoWNjQ=
+X-Received: by 2002:a05:6808:2099:b0:343:49f5:5300 with SMTP id
+ s25-20020a056808209900b0034349f55300mr9252301oiw.287.1661195809494; Mon, 22
+ Aug 2022 12:16:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220822114701.26975-1-xiujianfeng@huawei.com>
+References: <202208210645.72NkUj0g-lkp@intel.com> <CAKwvOd=VD-Oxtko-tq=GjcLZg5tNj_cMZwMhw7NqBbOYLxuidA@mail.gmail.com>
+ <YwPPMK3ouRi0wJBT@dev-arch.thelio-3990X>
+In-Reply-To: <YwPPMK3ouRi0wJBT@dev-arch.thelio-3990X>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 23 Aug 2022 04:16:13 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASfDnUxuTEwiiN4FjGf3PdkDVJOidAON-CD4vyiatQx9g@mail.gmail.com>
+Message-ID: <CAK7LNASfDnUxuTEwiiN4FjGf3PdkDVJOidAON-CD4vyiatQx9g@mail.gmail.com>
+Subject: Re: [linux-stable-rc:queue/4.14 13/175] Makefile:877: *** Recursive
+ variable 'LDFLAGS' references itself (eventually). Stop.
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel test robot <lkp@intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-
-Very exciting to see! Thank you for sending this! :)
-
-I'm just throwing in some comments based on the very similar truncate
-patch set, in the hope that it helps. (But obviously, Mickaël Salaün
-has the last word on this code.)
-
-Slightly higher level question: Should we start to group the
-functionality of multiple LSM hooks under one Landlock flag? (Will it
-be harder to change the LSM hook interface in the future if we
-continue to add one flag per hook? Or is this structure already
-exposed to userspace by other LSMs?)
-
-For example, some of the "missing" operations listed on the Landlock
-documentation could also be grouped roughly as:
-
-Modifying files:
- - truncate
-
-Modifying file metadata:
- - chmod
- - chown
- - setxattr
- - utime
-
-Observing files (check presence and file metadata):
- - access
- - stat
- - readlink, following links (can observe symlink presence)
- - chdir (can observe dir presence and 'x' attribute)
-
-Ungrouped:
- - flock
- - ioctl
- - fcntl
-
-Do you have opinions on this?
-
-—Günther
-
-On Mon, Aug 22, 2022 at 07:46:56PM +0800, Xiu Jianfeng wrote:
-> hi,
->   this patchset adds chmod and chown support for landlock
+On Tue, Aug 23, 2022 at 3:47 AM Nathan Chancellor <nathan@kernel.org> wrote:
 >
-> Xiu Jianfeng (5):
->   landlock: expand access_mask_t to u32 type
->   landlock: add chmod and chown support
->   landlock/selftests: add selftests for chmod and chown
->   landlock/samples: add chmod and chown support
->   landlock: update chmod and chown support in document
+> On Mon, Aug 22, 2022 at 10:05:50AM -0700, Nick Desaulniers wrote:
+> > On Sat, Aug 20, 2022 at 3:51 PM kernel test robot <lkp@intel.com> wrote:
+> > >
+> > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.14
+> > > head:   ed8a2f4d20af62ebd64e4092d988d4ae6b54657c
+> > > commit: 17c47886b521ae64a733f41364def799797e45ef [13/175] Makefile: link with -z noexecstack --no-warn-rwx-segments
+> > > config: arc-randconfig-r043-20220821 (https://download.01.org/0day-ci/archive/20220821/202208210645.72NkUj0g-lkp@intel.com/config)
+> > > compiler: arc-elf-gcc (GCC) 7.5.0
+> > > reproduce (this is a W=1 build):
+> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >         chmod +x ~/bin/make.cross
+> > >         # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=17c47886b521ae64a733f41364def799797e45ef
+> > >         git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+> > >         git fetch --no-tags linux-stable-rc queue/4.14
+> > >         git checkout 17c47886b521ae64a733f41364def799797e45ef
+> > >         # save the config file
+> > >         mkdir build_dir && cp config build_dir/.config
+> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+> > >
+> > > If you fix the issue, kindly add following tag where applicable
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > >
+> > > All errors (new ones prefixed by >>):
+> > >
+> > > >> Makefile:877: *** Recursive variable 'LDFLAGS' references itself (eventually).  Stop.
+> >
+> > Thanks for the report!
+> >
+> > That's not something that I've seen before...
+> >
+> > Masahiro, does ARCH=arc do something special to LDFLAGS?
+> >
+> > This report is a randconfig against a branch of stable for arc, so
+> > guessing this might be more obscure than usual.
 >
->  Documentation/userspace-api/landlock.rst     |   8 +-
->  include/uapi/linux/landlock.h                |   8 +-
->  samples/landlock/sandboxer.c                 |  12 +-
->  security/landlock/fs.c                       |  16 +-
->  security/landlock/limits.h                   |   2 +-
->  security/landlock/ruleset.h                  |   2 +-
->  security/landlock/syscalls.c                 |   2 +-
->  tools/testing/selftests/landlock/base_test.c |   2 +-
->  tools/testing/selftests/landlock/fs_test.c   | 234 ++++++++++++++++++-
->  9 files changed, 274 insertions(+), 12 deletions(-)
+> I suspect this would be fixed with commit ce99d0bf312d ("kbuild: clear
+> LDFLAGS in the top Makefile"), which backports cleanly to 4.14.
 >
-> --
-> 2.17.1
->
+> Cheers,
+> Nathan
 
---
+Ah, yes.
+Please back-port that commit. Thanks!
+
+
+-- 
+Best Regards
+Masahiro Yamada
