@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D2AC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F56C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235869AbiHVSqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
+        id S236313AbiHVSqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237141AbiHVSoy (ORCPT
+        with ESMTP id S235750AbiHVSox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:44:54 -0400
+        Mon, 22 Aug 2022 14:44:53 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC02F6249
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:43:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4B528C
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 11:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661193798; x=1692729798;
+  t=1661193794; x=1692729794;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ka7WextPfjZOGGLuRueSjo/vpJj3kZ8OnGhm3O3GFNo=;
-  b=VfjQv0iBv4cK0M+NHgcbz8YlEh5EHwqoBPcOt2bL0PHYd4M1B+0Kbzg0
-   L5y4fqAX63age9Ug7rYsXpOq8KDO4jidZYYK1gSkaeMxmtV91UkPsFMmL
-   OAg8lC2+GkJfnySU6ntC54VKtLON3b441ebHBlLfjtSp3KOjekHMzbcIi
-   rERyVLLdhErNCtc1BXGtrSx/zIGXH/Q66STSQ87Wy1cHwyHNQVMXhEbgl
-   KcgVd8CNzwl+CSu0HH26AGLuJWTqiyuSK5k7lZMX62GXAajm36Aiy12QY
-   Nhr/WirtnLby/Jn8njsXb6Tdn5JSCmER6Fl6klhePa8m5mQM/kfjjSA3n
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280464714"
+  bh=n8LryROOr9/Rmu/wIyOOGB0YSEQdyNpliRqkID42vQM=;
+  b=e5T383gH14k9lNfpcTH4fJeJQQEPGT6ErfFb1NfHeoc1dLo6wMEVFBJA
+   6D96xa0wigf88LmUNKM2Fiz/6eVQCVigjQnBZY65sEKXAvcvesi+ipti+
+   hM4fnO/omyXpAEZWMCr5FRwkI/Hw63KRg6L013F5hD/CTBhmkRZluCEi4
+   n9TRmUnppIr5FvktXRJpusRVAfF1D/f/ls9tpySke2Qyur8B+COlnOWr5
+   xLGw9fm22z4EpvVkwVqsZW12ugHR/rDNcJcmtrIKIyr3+XwcytmCGTlW/
+   bsjrrp/J5dlBwW/S1PQc4wXYtIAd6jDOdVb+y+LU3pflo93rmG7LyTZTv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280464704"
 X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="280464714"
+   d="scan'208";a="280464704"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:43:18 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:43:13 -0700
 X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="669671108"
+   d="scan'208";a="669671100"
 Received: from apascali-mobl2.ger.corp.intel.com (HELO pbossart-mobl3.home) ([10.252.42.21])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:43:14 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 11:43:10 -0700
 From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 To:     alsa-devel@alsa-project.org
 Cc:     tiwai@suse.de, broonie@kernel.org,
@@ -44,18 +44,15 @@ Cc:     tiwai@suse.de, broonie@kernel.org,
         Bard Liao <yung-chuan.liao@linux.intel.com>,
         Kai Vehmanen <kai.vehmanen@linux.intel.com>,
         Chao Song <chao.song@intel.com>,
-        Shengjiu Wang <shengjiu.wang@gmail.com>,
-        Xiubo Li <Xiubo.Lee@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Nicolin Chen <nicoleotsuka@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Banajit Goswami <bgoswami@quicinc.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
-        linuxppc-dev@lists.ozlabs.org (open list:FREESCALE SOC SOUND DRIVERS),
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 4/5] ASoC: fsl: fsl-utils: remove useless assignment
-Date:   Mon, 22 Aug 2022 20:42:38 +0200
-Message-Id: <20220822184239.169757-5-pierre-louis.bossart@linux.intel.com>
+Subject: [PATCH 3/5] ASoC: wcd9335: remove always-true condition
+Date:   Mon, 22 Aug 2022 20:42:37 +0200
+Message-Id: <20220822184239.169757-4-pierre-louis.bossart@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220822184239.169757-1-pierre-louis.bossart@linux.intel.com>
 References: <20220822184239.169757-1-pierre-louis.bossart@linux.intel.com>
@@ -67,32 +64,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 cppcheck warning:
 
-sound/soc/fsl/fsl_utils.c:127:10: style: Variable 'ret' is assigned a
-value that is never used. [unreadVariable]
- int ret = 0;
-         ^
+sound/soc/codecs/wcd9335.c:1824:22: style: Condition 'tx_port==13' is
+always true [knownConditionTrueFalse]
+  } else if (tx_port == 13) {
+                     ^
+sound/soc/codecs/wcd9335.c:1802:16: note: Assuming that condition
+'tx_port==12' is not redundant
+  if ((tx_port == 12) || (tx_port >= 14)) {
+               ^
+sound/soc/codecs/wcd9335.c:1802:35: note: Assuming that condition
+'tx_port>=14' is not redundant
+  if ((tx_port == 12) || (tx_port >= 14)) {
+                                  ^
+sound/soc/codecs/wcd9335.c:1824:22: note: Condition 'tx_port==13' is
+always true
+  } else if (tx_port == 13) {
+                     ^
+sound/soc/codecs/wcd9335.c:1845:22: style: Condition 'tx_port==13' is
+always true [knownConditionTrueFalse]
+  } else if (tx_port == 13) {
+                     ^
+sound/soc/codecs/wcd9335.c:1802:16: note: Assuming that condition
+'tx_port==12' is not redundant
+  if ((tx_port == 12) || (tx_port >= 14)) {
+               ^
+sound/soc/codecs/wcd9335.c:1802:35: note: Assuming that condition
+'tx_port>=14' is not redundant
+  if ((tx_port == 12) || (tx_port >= 14)) {
+                                  ^
+sound/soc/codecs/wcd9335.c:1845:22: note: Condition 'tx_port==13' is
+always true
+  } else if (tx_port == 13) {
+                     ^
 
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Reviewed-by: Chao Song <chao.song@intel.com>
 ---
- sound/soc/fsl/fsl_utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/wcd9335.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_utils.c b/sound/soc/fsl/fsl_utils.c
-index d0fc430f7033d..a5ab27c2f711c 100644
---- a/sound/soc/fsl/fsl_utils.c
-+++ b/sound/soc/fsl/fsl_utils.c
-@@ -124,7 +124,7 @@ void fsl_asoc_reparent_pll_clocks(struct device *dev, struct clk *clk,
- {
- 	struct clk *p, *pll = NULL, *npll = NULL;
- 	bool reparent = false;
--	int ret = 0;
-+	int ret;
+diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
+index beeeb35e80321..5b4d3c5973532 100644
+--- a/sound/soc/codecs/wcd9335.c
++++ b/sound/soc/codecs/wcd9335.c
+@@ -1821,12 +1821,10 @@ static int wcd9335_set_decimator_rate(struct snd_soc_dai *dai,
+ 			tx_port_reg = WCD9335_CDC_IF_ROUTER_TX_MUX_CFG3;
+ 			shift = 0;
+ 			shift_val = 0x0F;
+-		} else if (tx_port == 13) {
++		} else /* (tx_port == 13) */ {
+ 			tx_port_reg = WCD9335_CDC_IF_ROUTER_TX_MUX_CFG3;
+ 			shift = 4;
+ 			shift_val = 0x03;
+-		} else {
+-			return -EINVAL;
+ 		}
  
- 	if (!clk || !pll8k_clk || !pll11k_clk)
- 		return;
+ 		tx_mux_sel = snd_soc_component_read(comp, tx_port_reg) &
 -- 
 2.34.1
 
