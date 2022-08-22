@@ -2,239 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8BBC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0D6C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236405AbiHVPmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
+        id S236843AbiHVPmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236750AbiHVPls (ORCPT
+        with ESMTP id S236755AbiHVPlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:41:48 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CA971EEF3;
-        Mon, 22 Aug 2022 08:41:45 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1E823ED1;
+        Mon, 22 Aug 2022 11:41:52 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170821CFC3;
         Mon, 22 Aug 2022 08:41:48 -0700 (PDT)
-Received: from entos-ampere-02.shanghai.arm.com (entos-ampere-02.shanghai.arm.com [10.169.212.212])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6049E3F70D;
-        Mon, 22 Aug 2022 08:41:36 -0700 (PDT)
-From:   Jia He <justin.he@arm.com>
-To:     Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Robert Moore <robert.moore@intel.com>,
-        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jan Luebbe <jlu@pengutronix.de>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Kani Toshi <toshi.kani@hpe.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        devel@acpica.org, "Rafael J . Wysocki" <rafael@kernel.org>,
-        Shuai Xue <xueshuai@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>, linux-efi@vger.kernel.org,
-        nd@arm.com, "Paul E. McKenney" <paulmck@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        linux-doc@vger.kernel.org, Jia He <justin.he@arm.com>
-Subject: [RESEND PATCH v3 4/9] EDAC/ghes: Move ghes_edac.force_load to setup parameter
-Date:   Mon, 22 Aug 2022 15:40:43 +0000
-Message-Id: <20220822154048.188253-5-justin.he@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220822154048.188253-1-justin.he@arm.com>
-References: <20220822154048.188253-1-justin.he@arm.com>
+Received: by mail-qv1-xf30.google.com with SMTP id e4so8395598qvr.2;
+        Mon, 22 Aug 2022 08:41:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc;
+        bh=cRvGK+nfZIMwtiejaDileiwHPvBs7s1NtuCURg1xkOE=;
+        b=jrIMSLP1O0YpmecScYkEyzJrB11luBCBk7dY8gXgO+9dVe6uTS9YjcXSs+Ta5OH1sV
+         dXHvi7zstA8c4+yeoSq6Ynqtg3+Pt1rYjxvkNcbx5rOihOE/RiUAWJp5bdf7H+4uz8tk
+         KywVzWly9gjOTSr8FzpDKLVQUOBlSeikDyiCQGM5ouYLMl1N7a5sOj8e6Dn3mZIlfqrg
+         doR5BHOHDXum4QOY+Kpf43/7h9SwVIYRj9yIktK86uPksWD11jIlT93UN5hUZFtKRE9W
+         Qoh6Pa7XE+GeU5tV50GZL695dNnS9HEKr2xWG2d7cAMi/OeM/Hp8umiCVKxSfLsjeu2Z
+         e5lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=cRvGK+nfZIMwtiejaDileiwHPvBs7s1NtuCURg1xkOE=;
+        b=WUyZEdc/J6SpJtYaKgDRdtw6FuwNaOq3ETd9z2ZGufhdR8WAVxxxPU+VCJYHZ1Z7hi
+         x0R8w2vdMJW0qj19W5emAqodw2I4/SSZ+jRKTZD4j3HzB3xeeuM/+aiBzzXRIulFgTfo
+         iZYjuoHfe4udyUUHIWONBqIv/EA1eS8/RJc8XpPCX3WLVNiBx09jf94Z5XbnDAuy1FaT
+         HCbDkQFUHhSLt5JeuKfEot4049oP8CnigUCCUcVjDDjl8yTyzHdgTud2XBGoxbOdtW3c
+         3JXMng9LdPczVvBia4IZ1vzCrLSDdVw89qeFyaQydCHtiqqQtf0rXSXGqyKyyqyRyoLW
+         9Hfg==
+X-Gm-Message-State: ACgBeo3c+ZmQ5zzjJDWst72S5VnYgWadziJplfCu06+nEFMiB6PpvJ1K
+        YTgEDUUWwh2PAA5osbN8uwY=
+X-Google-Smtp-Source: AA6agR76hATzF/fDLbd6N41mySAOy78wgkBSUZiZKFl8do1rkquH1626SX3sseMpeZ7SIVjZHhCKWA==
+X-Received: by 2002:a05:6214:e68:b0:474:89bf:ca1b with SMTP id jz8-20020a0562140e6800b0047489bfca1bmr16197681qvb.107.1661182907114;
+        Mon, 22 Aug 2022 08:41:47 -0700 (PDT)
+Received: from valhalla (2603-7081-5203-61c3-0000-0000-0000-1449.res6.spectrum.com. [2603:7081:5203:61c3::1449])
+        by smtp.gmail.com with ESMTPSA id u5-20020a05620a0c4500b006b5e296452csm10854329qki.54.2022.08.22.08.41.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 08:41:45 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 11:41:43 -0400
+From:   Christopher Carbone <chris.m.carbone@gmail.com>
+To:     sudipm.mukherjee@gmail.com, teddy.wang@siliconmotion.com,
+        gregkh@linuxfoundation.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] Split multiple assignments to individual lines.
+Message-ID: <YwOjt+ZrQkKFGRH9@valhalla>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ghes_edac_init() is too late to set this module flag ghes_edac.force_load.
-Also, other edac drivers should not be able to control this flag.
+Adhere to Linux kernel coding style.
 
-Move this flag to setup parameter in ghes.
+Reported by checkpatch:
 
-Suggested-by: Toshi Kani <toshi.kani@hpe.com>
-Signed-off-by: Jia He <justin.he@arm.com>
+CHECK: multiple assignments should be avoided
+
+Signed-off-by: Christopher Carbone <chris.m.carbone@gmail.com>
 ---
- .../admin-guide/kernel-parameters.txt         |  5 +++
- drivers/acpi/apei/ghes.c                      | 24 +++++++++++-
- drivers/edac/ghes_edac.c                      | 38 +++++++------------
- include/acpi/ghes.h                           |  7 +++-
- 4 files changed, 46 insertions(+), 28 deletions(-)
+ drivers/staging/sm750fb/sm750.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d7f30902fda0..a5f0ee0d7727 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1593,6 +1593,11 @@
- 			When zero, profiling data is discarded and associated
- 			debugfs files are removed at module unload time.
+diff --git a/drivers/staging/sm750fb/sm750.c b/drivers/staging/sm750fb/sm750.c
+index dbd1159a2ef0..a0f8ae359248 100644
+--- a/drivers/staging/sm750fb/sm750.c
++++ b/drivers/staging/sm750fb/sm750.c
+@@ -386,7 +386,8 @@ static int lynxfb_ops_set_par(struct fb_info *info)
  
-+	ghes_edac_force= [X86] Skip the platform check and forcibly load the
-+			ghes_edac modules.
-+			Format: <bool>
-+			default: false (0)
-+
- 	goldfish	[X86] Enable the goldfish android emulator platform.
- 			Don't use this when you are not running on the
- 			android emulator
-diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-index 9c52183e3ad9..e17e0ee8f842 100644
---- a/drivers/acpi/apei/ghes.c
-+++ b/drivers/acpi/apei/ghes.c
-@@ -94,6 +94,26 @@
- #define FIX_APEI_GHES_SDEI_CRITICAL	__end_of_fixed_addresses
- #endif
+ 	ret = lynxfb_set_color_offsets(info);
  
-+/*
-+ * "ghes_edac_force=1" forcibly loads ghes_edac and skips the platform
-+ * check.
-+ */
-+bool __read_mostly ghes_edac_force;
-+EXPORT_SYMBOL(ghes_edac_force);
-+
-+static int __init setup_ghes_edac_load(char *str)
-+{
-+	if (str)
-+		if (!strcmp("true", str) || !strcmp("1", str))
-+			ghes_edac_force = true;
-+
-+	if (!IS_ENABLED(CONFIG_X86))
-+		ghes_edac_force = true;
-+
-+	return 1;
-+}
-+__setup("ghes_edac_force=", setup_ghes_edac_load);
-+
- static ATOMIC_NOTIFIER_HEAD(ghes_report_chain);
+-	var->height = var->width = -1;
++	var->width = -1;
++	var->height = var->width;
+ 	var->accel_flags = 0;/*FB_ACCELF_TEXT;*/
  
- static inline bool is_hest_type_generic_v2(struct ghes *ghes)
-@@ -1517,13 +1537,13 @@ static struct acpi_platform_list plat_list[] = {
- 	{ } /* End */
- };
- 
--struct list_head *ghes_get_devices(bool force)
-+struct list_head *ghes_get_devices(void)
- {
- 	int idx = -1;
- 
- 	if (IS_ENABLED(CONFIG_X86)) {
- 		idx = acpi_match_platform_list(plat_list);
--		if (idx < 0 && !force)
-+		if (idx < 0 && !ghes_edac_force)
- 			return NULL;
+ 	if (ret) {
+@@ -498,7 +499,8 @@ static int lynxfb_ops_check_var(struct fb_var_screeninfo *var,
+ 		return ret;
  	}
  
-diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
-index bb3ea42ba70b..6a2b54cc7240 100644
---- a/drivers/edac/ghes_edac.c
-+++ b/drivers/edac/ghes_edac.c
-@@ -54,10 +54,6 @@ static DEFINE_MUTEX(ghes_reg_mutex);
-  */
- static DEFINE_SPINLOCK(ghes_lock);
+-	var->height = var->width = -1;
++	var->width = -1;
++	var->height = var->width;
+ 	var->accel_flags = 0;/* FB_ACCELF_TEXT; */
  
--/* "ghes_edac.force_load=1" skips the platform check */
--static bool __read_mostly force_load;
--module_param(force_load, bool, 0);
--
- static bool system_scanned;
+ 	/* check if current fb's video memory big enough to hold the onscreen*/
+@@ -723,7 +725,8 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
+ 		0x800f0 + (int)crtc->channel * 0x140;
  
- static struct list_head *ghes_devs;
-@@ -437,23 +433,12 @@ static int ghes_edac_register(struct device *dev)
- 	mci->ctl_name = "ghes_edac";
- 	mci->dev_name = "ghes";
+ 	pr_info("crtc->cursor.mmio = %p\n", crtc->cursor.mmio);
+-	crtc->cursor.max_h = crtc->cursor.max_w = 64;
++	crtc->cursor.max_w = 64;
++	crtc->cursor.max_h = crtc->cursor.max_w;
+ 	crtc->cursor.size = crtc->cursor.max_h * crtc->cursor.max_w * 2 / 8;
+ 	crtc->cursor.vstart = sm750_dev->pvMem + crtc->cursor.offset;
  
--	if (fake) {
--		pr_info("This system has a very crappy BIOS: It doesn't even list the DIMMS.\n");
--		pr_info("Its SMBIOS info is wrong. It is doubtful that the error report would\n");
--		pr_info("work on such system. Use this driver with caution\n");
--	} else if (force_load) {
--		pr_info("This EDAC driver relies on BIOS to enumerate memory and get error reports.\n");
--		pr_info("Unfortunately, not all BIOSes reflect the memory layout correctly.\n");
--		pr_info("So, the end result of using this driver varies from vendor to vendor.\n");
--		pr_info("If you find incorrect reports, please contact your hardware vendor\n");
--		pr_info("to correct its BIOS.\n");
--		pr_info("This system has %d DIMM sockets.\n", ghes_hw.num_dimms);
--	}
--
- 	if (!fake) {
- 		struct dimm_info *src, *dst;
- 		int i = 0;
+@@ -1027,7 +1030,8 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
+ 	if (!sm750_dev)
+ 		return err;
  
-+		pr_info("This system has %d DIMM sockets.\n", ghes_hw.num_dimms);
-+
- 		mci_for_each_dimm(mci, dst) {
- 			src = &ghes_hw.dimms[i];
- 
-@@ -478,6 +463,17 @@ static int ghes_edac_register(struct device *dev)
- 	} else {
- 		struct dimm_info *dimm = edac_get_dimm(mci, 0, 0, 0);
- 
-+		pr_info("This system has a very crappy BIOS: It doesn't even list the DIMMS.\n");
-+		pr_info("Its SMBIOS info is wrong. It is doubtful that the error report would\n");
-+		pr_info("work on such system. Use this driver with caution\n");
-+
-+		if (ghes_edac_force) {
-+			pr_info("This EDAC driver relies on BIOS to enumerate memory and get\n");
-+			pr_info("error reports. Unfortunately, not all BIOSes reflect the\n");
-+			pr_info("memory layout correctly. If you find incorrect reports, please\n");
-+			pr_info("contact your hardware vendor for its in correct BIOS.\n");
-+		}
-+
- 		dimm->nr_pages = 1;
- 		dimm->grain = 128;
- 		dimm->mtype = MEM_UNKNOWN;
-@@ -518,9 +514,6 @@ static void ghes_edac_unregister(struct ghes *ghes)
- 	struct mem_ctl_info *mci;
- 	unsigned long flags;
- 
--	if (!force_load)
--		return;
--
- 	mutex_lock(&ghes_reg_mutex);
- 
- 	system_scanned = false;
-@@ -554,10 +547,7 @@ static int __init ghes_edac_init(void)
- {
- 	struct ghes *g, *g_tmp;
- 
--	if (!IS_ENABLED(CONFIG_X86))
--		force_load = true;
--
--	ghes_devs = ghes_get_devices(force_load);
-+	ghes_devs = ghes_get_devices();
- 	if (!ghes_devs)
- 		return -ENODEV;
- 
-diff --git a/include/acpi/ghes.h b/include/acpi/ghes.h
-index 150c0b9500d6..e29327ee0b83 100644
---- a/include/acpi/ghes.h
-+++ b/include/acpi/ghes.h
-@@ -71,9 +71,12 @@ int ghes_register_vendor_record_notifier(struct notifier_block *nb);
-  * @nb: pointer to the notifier_block structure of the vendor record handler.
-  */
- void ghes_unregister_vendor_record_notifier(struct notifier_block *nb);
--struct list_head *ghes_get_devices(bool force);
-+
-+struct list_head *ghes_get_devices(void);
-+extern bool ghes_edac_force;
- #else
--static inline struct list_head *ghes_get_devices(bool force) { return NULL; }
-+static inline struct list_head *ghes_get_devices(void) { return NULL; }
-+static bool ghes_edac_force;
- #endif
- 
- int ghes_estatus_pool_init(int num_ghes);
+-	sm750_dev->fbinfo[0] = sm750_dev->fbinfo[1] = NULL;
++	sm750_dev->fbinfo[1] = NULL;
++	sm750_dev->fbinfo[0] = sm750_dev->fbinfo[1];
+ 	sm750_dev->devid = pdev->device;
+ 	sm750_dev->revid = pdev->revision;
+ 	sm750_dev->pdev = pdev;
 -- 
-2.25.1
+2.37.2
 
