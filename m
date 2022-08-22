@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2B2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 984F0C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238280AbiHVTIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
+        id S238286AbiHVTI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238152AbiHVTIL (ORCPT
+        with ESMTP id S238188AbiHVTIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:08:11 -0400
+        Mon, 22 Aug 2022 15:08:16 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE524165BC;
-        Mon, 22 Aug 2022 12:08:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E51621A;
+        Mon, 22 Aug 2022 12:08:13 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 17E6BDA3;
-        Mon, 22 Aug 2022 22:10:58 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 17E6BDA3
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 2A585DB3;
+        Mon, 22 Aug 2022 22:11:00 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 2A585DB3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195458;
-        bh=11AHl69seteWDrDYFgf5Uz1P7YvQncvD55F7tkowl1Y=;
+        d=baikalelectronics.ru; s=mail; t=1661195460;
+        bh=ZcQ3XBqEEpa5Cr3nLA0LgC2QC4fMFtsgZe8G2xxFXxE=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=l3JgXpJB/2Yb8ur4z5M0Hav8koGwOJWtI5/rAtdp3liAAEfpkTT1A6+FB3SYeIAVe
-         4pZ2rdrF8xvm1w5W0w0GUGyIpF3kg8ISDAR3FK/oSyj52xN376k9Bvwup30azfFsGV
-         8GZ7esdRHojYT8iwymCnwqQFiUBa+xvSj0/HfLbI=
+        b=QgVXChYRTQoyZGwDQ9zdd5gvm8b6R1M0M9lLMF38VQ37b4cHf5mumEHFtxWE+KSuf
+         aXPc5bvGae+K1NufHSSftmyjKSj1Imj+gyhPO3FYE4OuqA6IpehnDK2E7bstZEuk7r
+         W73ciDHyQD8gN+THymcJGIh5j2vIZyoxfFJrUqk8=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:43 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:45 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh@kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
         Borislav Petkov <bp@alien8.de>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Tony Luck <tony.luck@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manish Narani <manish.narani@xilinx.com>
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
@@ -44,17 +43,16 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Punnaiah Choudary Kalluri 
         <punnaiah.choudary.kalluri@xilinx.com>,
+        Manish Narani <manish.narani@xilinx.com>,
         Dinh Nguyen <dinguyen@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC controller support
-Date:   Mon, 22 Aug 2022 22:07:26 +0300
-Message-ID: <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 18/20] EDAC/synopsys: Drop unused platform-specific setup API
+Date:   Mon, 22 Aug 2022 22:07:28 +0300
+Message-ID: <20220822190730.27277-19-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -65,224 +63,392 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
-the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
-uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
-no any reason to have these controllers described by the same bindings.
-Thus let's split them up.
-
-While at it rename the original Synopsys uMCTL2 DT-schema file to a more
-descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
-description of the device bindings.
+The driver now works with the Synopys DW uMCTL2 DDR IP-core only (Xilinx
+Zynq A05 DDRc support has been moved to the dedicated driver). Pretty much
+all the currently available IP-core revisions have got the same ECC and
+main DDR-config CSRs map. Thus there is no point in supporting the no
+longer used platform-specific API like the callbacks responsible for
+getting the ECC errors info, memory and device types, ECC state. All of
+that data can be retrieved in the same way on all the Synopys DW uMCTL2
+DDR controller versions. Similarly there is no longer need in the
+DDR_ECC_INTR_SUPPORT and DDR_ECC_DATA_POISON_SUPPORT quirk flags since DW
+uMCTL2 always supports IRQs and data poisoning. Let's drop that
+infrastructure for good then.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
- .../memory-controllers/synopsys,ddrc-ecc.yaml | 76 -------------------
- .../xlnx,zynq-ddrc-a05.yaml                   | 38 ++++++++++
- MAINTAINERS                                   |  2 +
- 4 files changed, 91 insertions(+), 76 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
- delete mode 100644 Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
+ drivers/edac/synopsys_edac.c | 194 +++++++++--------------------------
+ 1 file changed, 51 insertions(+), 143 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
-new file mode 100644
-index 000000000000..787d91d64eee
---- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/memory-controllers/snps,dw-umctl2-ddrc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
+index 0cb84f183aed..e171c8d96274 100644
+--- a/drivers/edac/synopsys_edac.c
++++ b/drivers/edac/synopsys_edac.c
+@@ -31,9 +31,7 @@
+ #define SYNPS_EDAC_MOD_VER		"1"
+ 
+ /* DDR ECC Quirks */
+-#define DDR_ECC_INTR_SUPPORT		BIT(0)
+-#define DDR_ECC_DATA_POISON_SUPPORT	BIT(1)
+-#define SYNPS_ZYNQMP_IRQ_REGS		BIT(2)
++#define SYNPS_ZYNQMP_IRQ_REGS		BIT(0)
+ 
+ /* Synopsys DDR memory controller registers that are relevant to ECC */
+ 
+@@ -278,28 +276,20 @@ struct synps_edac_priv {
+ };
+ 
+ /**
+- * struct synps_platform_data -  synps platform data structure.
+- * @get_error_info:	Get EDAC error info.
+- * @get_mtype:		Get mtype.
+- * @get_dtype:		Get dtype.
+- * @get_ecc_state:	Get ECC state.
+- * @quirks:		To differentiate IPs.
++ * struct synps_platform_data - Synopsys uMCTL2 DDRC platform data.
++ * @quirks:	IP-core specific quirks.
+  */
+ struct synps_platform_data {
+-	int (*get_error_info)(struct synps_edac_priv *priv);
+-	enum mem_type (*get_mtype)(const void __iomem *base);
+-	enum dev_type (*get_dtype)(const void __iomem *base);
+-	bool (*get_ecc_state)(void __iomem *base);
+-	int quirks;
++	u32 quirks;
+ };
+ 
+ /**
+- * zynqmp_get_error_info - Get the current ECC error info.
++ * synps_get_error_info - Get the current ECC error info.
+  * @priv:	DDR memory controller private instance data.
+  *
+  * Return: one if there is no error otherwise returns zero.
+  */
+-static int zynqmp_get_error_info(struct synps_edac_priv *priv)
++static int synps_get_error_info(struct synps_edac_priv *priv)
+ {
+ 	struct synps_ecc_status *p;
+ 	u32 regval, clearval;
+@@ -374,17 +364,11 @@ static void handle_error(struct mem_ctl_info *mci, struct synps_ecc_status *p)
+ 
+ 	if (p->ce_cnt) {
+ 		pinf = &p->ceinfo;
+-		if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT) {
+-			snprintf(priv->message, SYNPS_EDAC_MSG_SIZE,
+-				 "Row %d Col %d Bank %d Bank Group %d Bit %d Data 0x%08x",
+-				 pinf->row, pinf->col, pinf->bank, pinf->bankgrp,
+-				 pinf->bitpos, pinf->data);
+-		} else {
+-			snprintf(priv->message, SYNPS_EDAC_MSG_SIZE,
+-				 "Row %d Bank %d Col %d Bit: %d Data: 0x%08x",
+-				 pinf->row, pinf->bank, pinf->col,
+-				 pinf->bitpos, pinf->data);
+-		}
 +
-+title: Synopsys DesignWare Universal Multi-Protocol Memory Controller
++		snprintf(priv->message, SYNPS_EDAC_MSG_SIZE,
++			 "Row %d Col %d Bank %d Bank Group %d Bit %d Data 0x%08x",
++			 pinf->row, pinf->col, pinf->bank, pinf->bankgrp,
++			 pinf->bitpos, pinf->data);
+ 
+ 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci,
+ 				     p->ce_cnt, 0, 0, 0, 0, 0, -1,
+@@ -393,15 +377,10 @@ static void handle_error(struct mem_ctl_info *mci, struct synps_ecc_status *p)
+ 
+ 	if (p->ue_cnt) {
+ 		pinf = &p->ueinfo;
+-		if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT) {
+-			snprintf(priv->message, SYNPS_EDAC_MSG_SIZE,
+-				 "Row %d Col %d Bank %d Bank Group %d",
+-				 pinf->row, pinf->col, pinf->bank, pinf->bankgrp);
+-		} else {
+-			snprintf(priv->message, SYNPS_EDAC_MSG_SIZE,
+-				 "Row %d Bank %d Col %d",
+-				 pinf->row, pinf->bank, pinf->col);
+-		}
 +
-+maintainers:
-+  - Krzysztof Kozlowski <krzk@kernel.org>
-+  - Manish Narani <manish.narani@xilinx.com>
-+  - Michal Simek <michal.simek@xilinx.com>
-+
-+description: |
-+  Synopsys DesignWare Enhanced uMCTL2 DDR Memory Controller is cappable of
-+  working with DDR devices up to (LP)DDR4 protocol. It can be equipped
-+  with SEC/DEC ECC feature if DRAM data bus width is either 16-bits or
-+  32-bits or 64-bits wide.
-+
-+  The ZynqMP DDR controller is based on the DW uMCTL2 v2.40a controller.
-+  It has an optional SEC/DEC ECC support in 64-bit and 32-bit bus width
-+  configurations.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - snps,ddrc-3.80a
-+      - xlnx,zynqmp-ddrc-2.40a
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    memory-controller@fd070000 {
-+      compatible = "xlnx,zynqmp-ddrc-2.40a";
-+      reg = <0xfd070000 0x30000>;
-+      interrupt-parent = <&gic>;
-+      interrupts = <0 112 4>;
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml b/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
-deleted file mode 100644
-index f46e95704f53..000000000000
---- a/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
-+++ /dev/null
-@@ -1,76 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--%YAML 1.2
-----
--$id: http://devicetree.org/schemas/memory-controllers/synopsys,ddrc-ecc.yaml#
--$schema: http://devicetree.org/meta-schemas/core.yaml#
++		snprintf(priv->message, SYNPS_EDAC_MSG_SIZE,
++			 "Row %d Col %d Bank %d Bank Group %d",
++			 pinf->row, pinf->col, pinf->bank, pinf->bankgrp);
+ 
+ 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci,
+ 				     p->ue_cnt, 0, 0, 0, 0, 0, -1,
+@@ -460,13 +439,11 @@ static void disable_intr(struct synps_edac_priv *priv)
+  */
+ static irqreturn_t intr_handler(int irq, void *dev_id)
+ {
+-	const struct synps_platform_data *p_data;
+ 	struct mem_ctl_info *mci = dev_id;
+ 	struct synps_edac_priv *priv;
+ 	int status, regval;
+ 
+ 	priv = mci->pvt_info;
+-	p_data = priv->p_data;
+ 
+ 	if (priv->p_data->quirks & SYNPS_ZYNQMP_IRQ_REGS) {
+ 		regval = readl(priv->baseaddr + DDR_QOS_IRQ_STAT_OFST);
+@@ -475,7 +452,7 @@ static irqreturn_t intr_handler(int irq, void *dev_id)
+ 			return IRQ_NONE;
+ 	}
+ 
+-	status = p_data->get_error_info(priv);
++	status = synps_get_error_info(priv);
+ 	if (status)
+ 		return IRQ_NONE;
+ 
+@@ -489,34 +466,7 @@ static irqreturn_t intr_handler(int irq, void *dev_id)
+ }
+ 
+ /**
+- * check_errors - Check controller for ECC errors.
+- * @mci:	EDAC memory controller instance.
+- *
+- * Check and post ECC errors. Called by the polling thread.
+- */
+-static void check_errors(struct mem_ctl_info *mci)
+-{
+-	const struct synps_platform_data *p_data;
+-	struct synps_edac_priv *priv;
+-	int status;
 -
--title: Synopsys IntelliDDR Multi Protocol memory controller
+-	priv = mci->pvt_info;
+-	p_data = priv->p_data;
 -
--maintainers:
--  - Krzysztof Kozlowski <krzk@kernel.org>
--  - Manish Narani <manish.narani@xilinx.com>
--  - Michal Simek <michal.simek@xilinx.com>
+-	status = p_data->get_error_info(priv);
+-	if (status)
+-		return;
 -
--description: |
--  The ZynqMP DDR ECC controller has an optional ECC support in 64-bit and
--  32-bit bus width configurations.
+-	priv->ce_cnt += priv->stat.ce_cnt;
+-	priv->ue_cnt += priv->stat.ue_cnt;
+-	handle_error(mci, &priv->stat);
 -
--  The Zynq DDR ECC controller has an optional ECC support in half-bus width
--  (16-bit) configuration.
+-	edac_dbg(3, "Total error count CE %d UE %d\n",
+-		 priv->ce_cnt, priv->ue_cnt);
+-}
 -
--  These both ECC controllers correct single bit ECC errors and detect double bit
--  ECC errors.
+-/**
+- * zynqmp_get_dtype - Return the controller memory width.
++ * synps_get_dtype - Return the controller memory width.
+  * @base:	DDR memory controller base address.
+  *
+  * Get the EDAC device type width appropriate for the current controller
+@@ -524,7 +474,7 @@ static void check_errors(struct mem_ctl_info *mci)
+  *
+  * Return: a device type width enumeration.
+  */
+-static enum dev_type zynqmp_get_dtype(const void __iomem *base)
++static enum dev_type synps_get_dtype(const void __iomem *base)
+ {
+ 	u32 regval;
+ 
+@@ -548,14 +498,14 @@ static enum dev_type zynqmp_get_dtype(const void __iomem *base)
+ }
+ 
+ /**
+- * zynqmp_get_ecc_state - Return the controller ECC enable/disable status.
++ * synps_get_ecc_state - Return the controller ECC enable/disable status.
+  * @base:	DDR memory controller base address.
+  *
+  * Get the ECC enable/disable status for the controller.
+  *
+  * Return: a ECC status boolean i.e true/false - enabled/disabled.
+  */
+-static bool zynqmp_get_ecc_state(void __iomem *base)
++static bool synps_get_ecc_state(void __iomem *base)
+ {
+ 	u32 regval;
+ 
+@@ -579,7 +529,7 @@ static u32 get_memsize(void)
+ }
+ 
+ /**
+- * zynqmp_get_mtype - Returns controller memory type.
++ * synps_get_mtype - Returns controller memory type.
+  * @base:	Synopsys ECC status structure.
+  *
+  * Get the EDAC memory type appropriate for the current controller
+@@ -587,7 +537,7 @@ static u32 get_memsize(void)
+  *
+  * Return: a memory type enumeration.
+  */
+-static enum mem_type zynqmp_get_mtype(const void __iomem *base)
++static enum mem_type synps_get_mtype(const void __iomem *base)
+ {
+ 	enum mem_type mt;
+ 	u32 memtype;
+@@ -616,14 +566,11 @@ static enum mem_type zynqmp_get_mtype(const void __iomem *base)
+ static void init_csrows(struct mem_ctl_info *mci)
+ {
+ 	struct synps_edac_priv *priv = mci->pvt_info;
+-	const struct synps_platform_data *p_data;
+ 	struct csrow_info *csi;
+ 	struct dimm_info *dimm;
+ 	u32 size, row;
+ 	int j;
+ 
+-	p_data = priv->p_data;
 -
--properties:
--  compatible:
--    enum:
--      - snps,ddrc-3.80a
--      - xlnx,zynq-ddrc-a05
--      - xlnx,zynqmp-ddrc-2.40a
+ 	for (row = 0; row < mci->nr_csrows; row++) {
+ 		csi = mci->csrows[row];
+ 		size = get_memsize();
+@@ -631,10 +578,10 @@ static void init_csrows(struct mem_ctl_info *mci)
+ 		for (j = 0; j < csi->nr_channels; j++) {
+ 			dimm		= csi->channels[j]->dimm;
+ 			dimm->edac_mode	= EDAC_SECDED;
+-			dimm->mtype	= p_data->get_mtype(priv->baseaddr);
++			dimm->mtype	= synps_get_mtype(priv->baseaddr);
+ 			dimm->nr_pages	= (size >> PAGE_SHIFT) / csi->nr_channels;
+ 			dimm->grain	= SYNPS_EDAC_ERR_GRAIN;
+-			dimm->dtype	= p_data->get_dtype(priv->baseaddr);
++			dimm->dtype	= synps_get_dtype(priv->baseaddr);
+ 		}
+ 	}
+ }
+@@ -667,12 +614,7 @@ static void mc_init(struct mem_ctl_info *mci, struct platform_device *pdev)
+ 	mci->dev_name = SYNPS_EDAC_MOD_STRING;
+ 	mci->mod_name = SYNPS_EDAC_MOD_VER;
+ 
+-	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT) {
+-		edac_op_state = EDAC_OPSTATE_INT;
+-	} else {
+-		edac_op_state = EDAC_OPSTATE_POLL;
+-		mci->edac_check = check_errors;
+-	}
++	edac_op_state = EDAC_OPSTATE_INT;
+ 
+ 	mci->ctl_page_to_phys = NULL;
+ 
+@@ -704,47 +646,6 @@ static int setup_irq(struct mem_ctl_info *mci,
+ 	return 0;
+ }
+ 
+-static const struct synps_platform_data zynqmp_edac_def = {
+-	.get_error_info	= zynqmp_get_error_info,
+-	.get_mtype	= zynqmp_get_mtype,
+-	.get_dtype	= zynqmp_get_dtype,
+-	.get_ecc_state	= zynqmp_get_ecc_state,
+-	.quirks         = (DDR_ECC_INTR_SUPPORT | SYNPS_ZYNQMP_IRQ_REGS
+-#ifdef CONFIG_EDAC_DEBUG
+-			  | DDR_ECC_DATA_POISON_SUPPORT
+-#endif
+-			  ),
+-};
 -
--  interrupts:
--    maxItems: 1
+-static const struct synps_platform_data synopsys_edac_def = {
+-	.get_error_info	= zynqmp_get_error_info,
+-	.get_mtype	= zynqmp_get_mtype,
+-	.get_dtype	= zynqmp_get_dtype,
+-	.get_ecc_state	= zynqmp_get_ecc_state,
+-	.quirks         = (DDR_ECC_INTR_SUPPORT
+-#ifdef CONFIG_EDAC_DEBUG
+-			  | DDR_ECC_DATA_POISON_SUPPORT
+-#endif
+-			  ),
+-};
 -
--  reg:
--    maxItems: 1
 -
--required:
--  - compatible
--  - reg
+-static const struct of_device_id synps_edac_match[] = {
+-	{
+-		.compatible = "xlnx,zynqmp-ddrc-2.40a",
+-		.data = (void *)&zynqmp_edac_def
+-	},
+-	{
+-		.compatible = "snps,ddrc-3.80a",
+-		.data = (void *)&synopsys_edac_def
+-	},
+-	{
+-		/* end of table */
+-	}
+-};
 -
--allOf:
--  - if:
--      properties:
--        compatible:
--          contains:
--            enum:
--              - snps,ddrc-3.80a
--              - xlnx,zynqmp-ddrc-2.40a
--    then:
--      required:
--        - interrupts
--    else:
--      properties:
--        interrupts: false
+-MODULE_DEVICE_TABLE(of, synps_edac_match);
 -
--additionalProperties: false
--
--examples:
--  - |
--    memory-controller@f8006000 {
--        compatible = "xlnx,zynq-ddrc-a05";
--        reg = <0xf8006000 0x1000>;
--    };
--
--  - |
--    axi {
--        #address-cells = <2>;
--        #size-cells = <2>;
--
--        memory-controller@fd070000 {
--            compatible = "xlnx,zynqmp-ddrc-2.40a";
--            reg = <0x0 0xfd070000 0x0 0x30000>;
--            interrupt-parent = <&gic>;
--            interrupts = <0 112 4>;
--        };
--    };
-diff --git a/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml b/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
-new file mode 100644
-index 000000000000..8f72e2f8588a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/memory-controllers/xlnx,zynq-ddrc-a05.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+ #ifdef CONFIG_EDAC_DEBUG
+ 
+ /**
+@@ -1135,7 +1036,7 @@ static int mc_probe(struct platform_device *pdev)
+ 	if (!p_data)
+ 		return -ENODEV;
+ 
+-	if (!p_data->get_ecc_state(baseaddr)) {
++	if (!synps_get_ecc_state(baseaddr)) {
+ 		edac_printk(KERN_INFO, EDAC_MC, "ECC not enabled\n");
+ 		return -ENXIO;
+ 	}
+@@ -1162,11 +1063,9 @@ static int mc_probe(struct platform_device *pdev)
+ 
+ 	mc_init(mci, pdev);
+ 
+-	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT) {
+-		rc = setup_irq(mci, pdev);
+-		if (rc)
+-			goto free_edac_mc;
+-	}
++	rc = setup_irq(mci, pdev);
++	if (rc)
++		goto free_edac_mc;
+ 
+ 	rc = edac_mc_add_mc(mci);
+ 	if (rc) {
+@@ -1176,17 +1075,13 @@ static int mc_probe(struct platform_device *pdev)
+ 	}
+ 
+ #ifdef CONFIG_EDAC_DEBUG
+-	if (priv->p_data->quirks & DDR_ECC_DATA_POISON_SUPPORT) {
+-		rc = edac_create_sysfs_attributes(mci);
+-		if (rc) {
+-			edac_printk(KERN_ERR, EDAC_MC,
+-					"Failed to create sysfs entries\n");
+-			goto free_edac_mc;
+-		}
++	rc = edac_create_sysfs_attributes(mci);
++	if (rc) {
++		edac_printk(KERN_ERR, EDAC_MC, "Failed to create sysfs entries\n");
++		goto free_edac_mc;
+ 	}
+ 
+-	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT)
+-		setup_address_map(priv);
++	setup_address_map(priv);
+ #endif
+ 
+ 	return rc;
+@@ -1208,12 +1103,10 @@ static int mc_remove(struct platform_device *pdev)
+ 	struct mem_ctl_info *mci = platform_get_drvdata(pdev);
+ 	struct synps_edac_priv *priv = mci->pvt_info;
+ 
+-	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT)
+-		disable_intr(priv);
++	disable_intr(priv);
+ 
+ #ifdef CONFIG_EDAC_DEBUG
+-	if (priv->p_data->quirks & DDR_ECC_DATA_POISON_SUPPORT)
+-		edac_remove_sysfs_attributes(mci);
++	edac_remove_sysfs_attributes(mci);
+ #endif
+ 
+ 	edac_mc_del_mc(&pdev->dev);
+@@ -1222,6 +1115,21 @@ static int mc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct synps_platform_data zynqmp_edac_def = {
++	.quirks = SYNPS_ZYNQMP_IRQ_REGS,
++};
 +
-+title: Zynq A05 DDR Memory Controller
++static const struct synps_platform_data synopsys_edac_def = {
++	.quirks = 0,
++};
 +
-+maintainers:
-+  - Krzysztof Kozlowski <krzk@kernel.org>
-+  - Manish Narani <manish.narani@xilinx.com>
-+  - Michal Simek <michal.simek@xilinx.com>
++static const struct of_device_id synps_edac_match[] = {
++	{ .compatible = "xlnx,zynqmp-ddrc-2.40a", .data = &zynqmp_edac_def },
++	{ .compatible = "snps,ddrc-3.80a", .data = &synopsys_edac_def },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, synps_edac_match);
 +
-+description:
-+  The Zynq DDR ECC controller has an optional ECC support in half-bus width
-+  (16-bit) configuration. It is cappable of correcting single bit ECC errors
-+  and detecting double bit ECC errors.
-+
-+properties:
-+  compatible:
-+    const: xlnx,zynq-ddrc-a05
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    memory-controller@f8006000 {
-+      compatible = "xlnx,zynq-ddrc-a05";
-+      reg = <0xf8006000 0x1000>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9d7f64dc0efe..17f23f810ee4 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3086,7 +3086,9 @@ S:	Supported
- W:	http://wiki.xilinx.com
- T:	git https://github.com/Xilinx/linux-xlnx.git
- F:	Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml
-+F:	Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
- F:	Documentation/devicetree/bindings/i2c/xlnx,xps-iic-2.00.a.yaml
-+F:	Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
- F:	Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml
- F:	arch/arm/mach-zynq/
- F:	drivers/clocksource/timer-cadence-ttc.c
+ static struct platform_driver synps_edac_mc_driver = {
+ 	.driver = {
+ 		   .name = "synopsys-edac",
 -- 
 2.35.1
 
