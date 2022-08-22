@@ -2,191 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCEEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D9DC38142
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 03:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232323AbiHVDNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 21 Aug 2022 23:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33702 "EHLO
+        id S232338AbiHVDZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 21 Aug 2022 23:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiHVDNt (ORCPT
+        with ESMTP id S229453AbiHVDZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 21 Aug 2022 23:13:49 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A40FA18C
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 20:13:41 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M9y6F00yGzlVhr;
-        Mon, 22 Aug 2022 11:10:28 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 11:13:39 +0800
-Subject: Re: [bug report] mm/hugetlb: various bugs with avoid_reserve case in
- alloc_huge_page()
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <d449c6d1-314f-5b90-6d68-3773e2722d7f@huawei.com>
- <Yv7AlZyNaAgpB4Qg@monkey> <5b1b60d6-e699-2330-0b6f-14c8dd5d78d4@huawei.com>
- <Yv/gUCt+ayp/KSoO@monkey>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <ded23976-5caf-62f2-a587-7cb8a8e0edef@huawei.com>
-Date:   Mon, 22 Aug 2022 11:13:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Sun, 21 Aug 2022 23:25:17 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823691AD98;
+        Sun, 21 Aug 2022 20:25:13 -0700 (PDT)
+X-UUID: 4ef18bf7dd8845d8bb2f76829c08203c-20220822
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=zJrUE1n5Ovan/JyovJcsx14Og32K8gUsuio6OznGSm8=;
+        b=RFozXobzRFshGXapwDyajIPIVPhPayDVoBZvRimFr9qPqwrCmuQ9AtKpi+FbGBuOnMXBP52qbvEBRFMsInx+GGxeAuJoh4zUh0eD/62ZTyg4GQvGnkELAdxNAjAWmSMdf0twv3kOsyeg+wH+3GTdr8NCR0eyt1eTxeHMywDpZ34=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:501e4586-9595-45aa-83d5-02a5d303db6c,OB:0,L
+        OB:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release
+        _Ham,ACTION:release,TS:25
+X-CID-META: VersionHash:84eae18,CLOUDID:43912dcf-20bd-4e5e-ace8-00692b7ab380,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
+        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 4ef18bf7dd8845d8bb2f76829c08203c-20220822
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1726710357; Mon, 22 Aug 2022 11:25:03 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 22 Aug 2022 11:25:02 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Mon, 22 Aug 2022 11:25:02 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <cellopoint.kai@gmail.com>, Moudy Ho <moudy.ho@mediatek.com>
+Subject: [PATCH v27 2/4] dt-binding: mediatek: add bindings for MediaTek CCORR and WDMA
+Date:   Mon, 22 Aug 2022 11:24:59 +0800
+Message-ID: <20220822032501.15418-3-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220822032501.15418-1-moudy.ho@mediatek.com>
+References: <20220822032501.15418-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <Yv/gUCt+ayp/KSoO@monkey>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/20 3:11, Mike Kravetz wrote:
-> On 08/19/22 15:20, Miaohe Lin wrote:
->> On 2022/8/19 6:43, Mike Kravetz wrote:
->>> On 08/17/22 16:31, Miaohe Lin wrote:
->>>> Hi all:
->>>>     When I investigate the mm/hugetlb.c code again, I found there are a few possible issues
->>>> with avoid_reserve case. (It's really hard to follow the relevant code for me.) Please take
->>>> a look at the below analysis:
->>>
->>> Thank you for taking a close look at this code!
->>>
->>> I agree that the code is hard to follow.  I have spent many hours/days/weeks
->>> chasing down the cause of incorrect reservation counts.  I imagine there could
->>> be more issues, especially when you add the uncommon avoid_reserve and
->>> MAP_NORESERVE processing.
->>
->> Many thanks for your time and reply, Mike!
-> 
-> Well, hugetlb reservations interrupted my sleep again :)  See below.
+This patch adds DT binding documentation for MediaTek's CCORR and
+WDMA components.
+These components exist in both MediaTek's Media Data Path 3(MDP3) and DRM,
+and the bindings are placed under the folder "./soc/mediatek" to prevent
+duplicate builds.
 
-Another day scratching my hair for hugetlb reservations. :)
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../bindings/soc/mediatek/mediatek,ccorr.yaml | 68 ++++++++++++++++
+ .../bindings/soc/mediatek/mediatek,wdma.yaml  | 81 +++++++++++++++++++
+ 2 files changed, 149 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
 
-> 
->>>
->>>> 1.avoid_reserve issue with h->resv_huge_pages in alloc_huge_page.
->>>
->>> Did you actually see this issue, or is it just based on code inspection?
->>
->> No, it's based on code inspection. ;)
->>
->>> I tried to recreate, but could not.  When looking closer, this may not
->>> even be possible.
->>>
->>>>     Assume:
->>>> 	h->free_huge_pages 60
->>>> 	h->resv_huge_pages 30
->>>> 	spool->rsv_hpages  30
->>>
->>> OK.
->>>
->>>>
->>>>     When avoid_reserve is true, after alloc_huge_page(), we will have:
->>>
->>> Take a close look at the calling paths for alloc_huge_page when avoid_reserve
->>> is true.  There are only two such call paths.
->>> 1) copy_hugetlb_page_range - We allocate pages in the 'early COW' processing.
->>>    In such cases, the pages are private and not associated with a file, or
->>>    filesystem or subpool (spool).  Therefore, there should be no spool
->>>    modifications.
->>
->> Agree.
->>
->>> 2) hugetlb_wp (formerly called hugetlb_cow) - Again, we are allocating a
->>>    private page and should not be modifying spool.
->>
->> Agree.
->>
->>>
->>> If the above is correct, then we will not modify spool->rsv_hpages which
->>> leads to the inconsistent results.
->>
->> I missed to verify whether spool will be modified in avoid_reserve case. Sorry about that.
->>
-> 
-> That is how it SHOULD work.  However, there is a problem with a MAP_PRIVATE
-> mapping of a hugetlb file.  In this case, subpool_vma will return the
-> subpool associated with the file, and we will end up with a leaked reservation
-> as in your example.  I have verified with test code.
-
-Thanks for your time and verification.
-
-> 
-> The first thought I had is that something like the following should be added.
-> 
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 474bfbe9929e..5aa19574e890 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -254,7 +258,9 @@ static inline struct hugepage_subpool *subpool_inode(struct inode *inode)
->  
->  static inline struct hugepage_subpool *subpool_vma(struct vm_area_struct *vma)
->  {
-> -	return subpool_inode(file_inode(vma->vm_file));
-> +	if (vma->vm_flags & (VM_MAYSHARE | VM_SHARED))
-
-Maybe checking for VM_MAYSHARE is enough? It seems VM_SHARED can't be set while VM_MAYSHARE isn't set.
-But this change looks good for me to fix the discussed issue.
-
-> +		return subpool_inode(file_inode(vma->vm_file));
-> +	return NULL;		/* no subpool for private mappings */
->  }
->  
->  /* Helper that removes a struct file_region from the resv_map cache and returns
-> 
-> 
-> That certainly addresses the MAP_PRIVATE mapping of a hugetlb file issue.
-> I will collect up patches for issues we discover and submit together.
-
-Thanks for doing this.
-BTW: IIUC, If MAP_PRIVATE mapping never consumes reservation, issue 2 and 3 shouldn't be possible.
-
-> 
->>> It is confusing that MAP_NORESERVE does not imply avoid_reserve will be
->>> passed to alloc_huge_page.
->>
->> It's introduced to guarantee that COW faults for a process that called mmap(MAP_PRIVATE) will succeed via commit
->> 04f2cbe35699 ("hugetlb: guarantee that COW faults for a process that called mmap(MAP_PRIVATE) on hugetlbfs will succeed").
->> It seems it has nothing to do with MAP_NORESERVE.
->>
->>>
->>>> 	spool->rsv_hpages  29 /* hugepage_subpool_get_pages decreases it. */
->>>> 	h->free_huge_pages 59
->>>> 	h->resv_huge_pages 30 /* rsv_hpages is used, but *h->resv_huge_pages is not modified accordingly*. */
->>>>
->>>>     If the hugetlb page is freed later, we will have:
->>>> 	spool->rsv_hpages  30 /* hugepage_subpool_put_pages increases it. */
->>>> 	h->free_huge_pages 60
->>>> 	h->resv_huge_pages 31 /* *increased wrongly* due to hugepage_subpool_put_pages(spool, 1) == 0. */
->>>> 			   ^^
->>>>
->>>
->>> I'll take a closer look at 2 and 3 when we determine if 1 is a possible
->>> issue or not.
->>
->> I want to propose removing the avoid_reserve code. When called from above case 1) or 2), vma_needs_reservation()
->> will always return 1 as there's no reservation for it. Also hugepage_subpool_get_pages() will always return 1 as
->> it's not associated with a spool. So when avoid_reserve == true, map_chg and gbl_chg must be 1 and vma_has_reserves()
->> will always return "false". As a result, passing in avoid_reserve == true will do nothing in fact. So it can be simply
->> removed. Or am I miss something again?
-> 
-> I will take a closer look.  But, at a high level if avoid_reserve == true and
-> all pages are reserved we must fail the allocation or attempt dynamic
-> allocation if overcommit is allowed.  So, it seems we at least need the
-> flag to make this decision.
-
-Yes, you're right.
-
-Thanks,
-Miaohe Lin
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+new file mode 100644
+index 000000000000..10786d769750
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,ccorr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek color correction
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  MediaTek color correction with 3X3 matrix.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-ccorr
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  mediatek,gce-events:
++    description:
++      The event id which is mapping to the specific hardware event signal
++      to gce. The event id is defined in the gce header
++      include/dt-bindings/gce/<chip>-gce.h of each chips.
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++
++  clocks:
++    minItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - mediatek,gce-events
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++
++    mdp3_ccorr: mdp3-ccorr@1401c000 {
++      compatible = "mediatek,mt8183-mdp3-ccorr";
++      reg = <0x1401c000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++      mediatek,gce-events = <CMDQ_EVENT_MDP_CCORR_SOF>,
++                            <CMDQ_EVENT_MDP_CCORR_EOF>;
++      clocks = <&mmsys CLK_MM_MDP_CCORR>;
++    };
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+new file mode 100644
+index 000000000000..95ec19543945
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+@@ -0,0 +1,81 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,wdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek Write Direct Memory Access
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  MediaTek Write Direct Memory Access(WDMA) component used to write
++  the data into DMA.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-wdma
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  mediatek,gce-events:
++    description:
++      The event id which is mapping to the specific hardware event signal
++      to gce. The event id is defined in the gce header
++      include/dt-bindings/gce/<chip>-gce.h of each chips.
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++
++  iommus:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - mediatek,gce-events
++  - power-domains
++  - clocks
++  - iommus
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_wdma: mdp3-wdma@14006000 {
++      compatible = "mediatek,mt8183-mdp3-wdma";
++      reg = <0x14006000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++      mediatek,gce-events = <CMDQ_EVENT_MDP_WDMA0_SOF>,
++                            <CMDQ_EVENT_MDP_WDMA0_EOF>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++      iommus = <&iommu>;
++    };
+-- 
+2.18.0
 
