@@ -2,105 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C798C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 04:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F99C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 04:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232480AbiHVEzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 00:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
+        id S231956AbiHVE6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 00:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiHVEzl (ORCPT
+        with ESMTP id S231694AbiHVE6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 00:55:41 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC6421E00
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 21:55:40 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id u12so1338716pgb.6
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 21:55:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=UQyYzuIqErSYNpXSPcyyYCDze0E5q1hH3djW+ifHVA0=;
-        b=sQogaDyt/YhpygyRGgMyaHCv0VOamZixo/4B/ibABXtfYnQfnh2zY0PJ9hcXiuWrwc
-         V7pZWCjvjMAhQ491/pnuGeBUUob3BVAPIMq/UWvptHivoFEinydielWpJZ6z/8ZBRi4g
-         XXqzXmysjNpz0hcoAzui5KmdedanBMXjjxZ7VLG4hKRRlp60VXFFTApNlYaepatOociJ
-         XNaou/BWfXRcEG4pA915J3VIvSGIScoB8vTFABeGU7U4lEaKyPexlf7eHNiEhLoudZ15
-         SUaQU0pEZcUyPg6f1y9pvpdNqao8WSeAfTRz1HCkEfaaxvAvmd0AvlTziqGVJDO9P90X
-         S+7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=UQyYzuIqErSYNpXSPcyyYCDze0E5q1hH3djW+ifHVA0=;
-        b=mKxBdI4V6YYOS6KOlCp4/z5yCuOBi+HWlVworZXZZj3YPvq7lGfYqM7nxYR7ejIRjw
-         9Rhds1JTmGI+614vu5NFSz0ULmvaY3QuvpoB15chjhJtUydInfO5NsdC23IuSgry+VFs
-         igL+OO4PQZUKkX516E5znRci7Ui5UHmr0oHZaiW9A1wnoEYoAjbAGrRQCtn2AtgbxIB0
-         eE5ayYJBiuIxGdOZtJ/rbjrsSkic3YdOnuVxjdsz8OWAPiTEQlpVpcGCMkyShKxr42cG
-         OhL3j/wQ0SsRtqfCsxu7/ZvKasYf0i8Cv2/q1Er79ZxCD25fzJH+ZdoDmQDu8HV4+lzq
-         rHXw==
-X-Gm-Message-State: ACgBeo3/uUWZGIAyRPssvkci0/gFQVZWTENINyERL2D3LJ59V/WrdJf7
-        OmtAgrdmXGP48HPJ3UPnnl4+WAOScMRLnzmbsPiWsA==
-X-Google-Smtp-Source: AA6agR5y0tHusAMEHXfmy5LutVbqZrCG18Mro9TnGQ195voKdkgYlo42c49TFtOr5o6zXt1Sl6Y3GwbzsCZTNj+dQGc=
-X-Received: by 2002:a62:6497:0:b0:52e:e0cd:1963 with SMTP id
- y145-20020a626497000000b0052ee0cd1963mr19184795pfb.58.1661144139828; Sun, 21
- Aug 2022 21:55:39 -0700 (PDT)
+        Mon, 22 Aug 2022 00:58:32 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FDBE0E1;
+        Sun, 21 Aug 2022 21:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661144311; x=1692680311;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/rA08EkKshgmbDIpcT1/pWksM4Su7kRxSiCqNoDLNEs=;
+  b=nW4fMCJmW5ex5URirrhpeR8yvubYEuroknsNG6SijULXApGXGHqZsjom
+   frMR/6ugGcoFdeukhj7lm+mKbvktquo7HeqVmXETrzZQdk3IZrQMNxb9U
+   +xKzbcDf1fbu4P8FgSdUaL1IYXhpNUPeqR1oGaprDACW7p8YyPVxiNpXJ
+   9D4Ehv1DEmk6nW0orFGaR/V2WZymrsEmcZJmT9QFDw8LomXvwnbTFLKQC
+   8kmffL8mB7ZK+T139OksXa6496m4i+b8waukKcIcivKc7L2EdKDPhqsPE
+   IytooClf+RXogoBAV6Yzd8av0Y7ZR/bcES7nLTydjlt3fpLn9slYkOHn/
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="280289702"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="280289702"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 21:58:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="936880202"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga005.fm.intel.com with ESMTP; 21 Aug 2022 21:58:27 -0700
+Date:   Mon, 22 Aug 2022 12:49:16 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Russ Weight <russell.h.weight@intel.com>
+Cc:     Peter Colberg <peter.colberg@intel.com>, Wu Hao <hao.wu@intel.com>,
+        Tom Rix <trix@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        marpagan@redhat.com, lgoncalv@redhat.com
+Subject: Re: [PATCH v1] uio: dfl: add IOPLL user-clock feature id
+Message-ID: <YwMKzC6HwjYqDxIs@yilunxu-OptiPlex-7050>
+References: <20220817213746.4986-1-peter.colberg@intel.com>
+ <Yv29ev8OKyEYcaf/@yilunxu-OptiPlex-7050>
+ <acdf9c04-0816-5995-da90-c53153ffac59@intel.com>
 MIME-Version: 1.0
-References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-3-shakeelb@google.com>
- <CACSApvYU5gfbDv9dyaypu1oOPB58eT1inX9EX6gV5b2q3+qr6Q@mail.gmail.com>
-In-Reply-To: <CACSApvYU5gfbDv9dyaypu1oOPB58eT1inX9EX6gV5b2q3+qr6Q@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Sun, 21 Aug 2022 21:55:28 -0700
-Message-ID: <CALvZod4r5_vcL4ZcSpR_DdLc_2sppnPTv1DXmFchCULWLu3Riw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
-To:     Soheil Hassas Yeganeh <soheil@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <acdf9c04-0816-5995-da90-c53153ffac59@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 5:24 PM Soheil Hassas Yeganeh <soheil@google.com> wrote:
->
-> On Sun, Aug 21, 2022 at 8:18 PM Shakeel Butt <shakeelb@google.com> wrote:
-> >
-> > With memcg v2 enabled, memcg->memory.usage is a very hot member for
-> > the workloads doing memcg charging on multiple CPUs concurrently.
-> > Particularly the network intensive workloads. In addition, there is a
-> > false cache sharing between memory.usage and memory.high on the charge
-> > path. This patch moves the usage into a separate cacheline and move all
-> > the read most fields into separate cacheline.
-> >
-> > To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> > ran the following workload in a three level of cgroup hierarchy with top
-> > level having min and low setup appropriately. More specifically
-> > memory.min equal to size of netperf binary and memory.low double of
-> > that.
-> >
-> >  $ netserver -6
-> >  # 36 instances of netperf with following params
-> >  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> >
-> > Results (average throughput of netperf):
-> > Without (6.0-rc1)       10482.7 Mbps
-> > With patch              12413.7 Mbps (18.4% improvement)
-> >
-> > With the patch, the throughput improved by 18.4%.
->
-> Shakeel, for my understanding: is this on top of the gains from the
-> previous patch?
->
+On 2022-08-18 at 17:38:35 -0600, Russ Weight wrote:
+> 
+> 
+> On 8/17/22 21:18, Xu Yilun wrote:
+> > On 2022-08-17 at 17:37:46 -0400, Peter Colberg wrote:
+> >> Add a Device Feature List (DFL) feature id for the configurable
+> >> IOPLL user clock source, which can be used to configure the clock
+> >> speeds that are used for RTL logic that is programmed into the
+> >> Partial Reconfiguration (PR) region of an FPGA.
+> > Why not use linux clock framework for this IOPLL? And let the PR
+> > driver set it togeter with the RTL logic reporgramming?
+> 
+> Hi Yilun,
+> 
+> We previously explored the possibility of plugging into the linux
+> clock framework. For this device, setting a desired frequency is
+> heavily dependent on a table of values that must be programmed in
+> order to achieve the desired clock speeds.
+> 
+> Here is an example table, indexed by frequency. The first element
+> in each entry is the frequency in kHz:
+> 
+> https://github.com/OPAE/opae-sdk/blob/master/libraries/plugins/xfpga/usrclk/fpga_user_clk_freq.h
+> 
+> We previously experimented with a kernel-space driver. The
+> implementation exported a sysfs node into which the table values for
+> the desired frequency would be written in order to set the desired
+> frequency. The function of the driver was to execute the logic
+> required to program the device. We did not think this implementation
+> should be up-streamed.
+> 
+> It isn't practical to upstream the frequency tables as they are
+> subject to change for future devices. For example, if the reference
+> frequency changed in a future device, a whole new table of values would
+> have to be added for the new device. In a recent transition to a new
+> device, the range of frequencies was increased which required an
+> extension to an existing table.
 
-No, this is independent of the previous patch. The cover letter has
-the numbers for all three optimizations applied together.
+Making a table for the inputs & outputs is always a easier way to get
+things done, but the trade off is, as you said, extension to the table
+every time for new outputs.
+
+So do we really need all parameters to be in a table, or these are
+actually the outcome of some calculation? Is it possible just
+Implementing the calculation.
+
+If I remember correctly, linux clk framework enables a generic clk
+caculation mechanism. It encourages people to model the internal
+refclk, plls (and deviders?) separately and construct the clk tree.
+Then the specified calculation could be simpler for each clk driver.
+
+I'm not sure the clk framework fits all your need, but please
+investigate it firstly.
+
+> 
+> A previous implementation of the user clock was also implemented in
+> user-space. The kernel driver exported each of the registers, but
+> all of the logic was implemented in user-space. The kernel portion
+> can be viewed here:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/fpga/dfl-afu-main.c#n380
+> 
+> This is our reasoning in choosing to implement this driver in
+> user-space. Would you consider a uio based user-space driver to
+> be acceptable for in this case?
+
+As usual, we firstly make clear why existing framework cannot fit the
+case and should be implemented in userspace, then everything would be
+OK.
+
+Thanks,
+Yilun
+
+> 
+> - Russ
+> 
+> 
+> >
+> > Thanks,
+> > Yilun
+> >
+> >> The DFL feature id table can be found at:
+> >> https://github.com/OPAE/dfl-feature-id
+> >>
+> >> Signed-off-by: Peter Colberg <peter.colberg@intel.com>
+> >> ---
+> >>  drivers/uio/uio_dfl.c | 2 ++
+> >>  1 file changed, 2 insertions(+)
+> >>
+> >> diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
+> >> index 8f39cc8bb034..69e93f3e7faf 100644
+> >> --- a/drivers/uio/uio_dfl.c
+> >> +++ b/drivers/uio/uio_dfl.c
+> >> @@ -46,10 +46,12 @@ static int uio_dfl_probe(struct dfl_device *ddev)
+> >>  
+> >>  #define FME_FEATURE_ID_ETH_GROUP	0x10
+> >>  #define FME_FEATURE_ID_HSSI_SUBSYS	0x15
+> >> +#define PORT_FEATURE_ID_IOPLL_USRCLK	0x14
+> >>  
+> >>  static const struct dfl_device_id uio_dfl_ids[] = {
+> >>  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
+> >>  	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
+> >> +	{ PORT_ID, PORT_FEATURE_ID_IOPLL_USRCLK },
+> >>  	{ }
+> >>  };
+> >>  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
+> >> -- 
+> >> 2.28.0
+> >>
+> 
