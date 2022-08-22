@@ -2,85 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A610AC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 048B9C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233597AbiHVICY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        id S233634AbiHVICc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233536AbiHVICA (ORCPT
+        with ESMTP id S233574AbiHVICN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:02:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCC02B19D
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:01:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661155318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Fy/d/XAb6vTN4trgjkzV7eMaGE/wqYSvDDnSrzB5bmU=;
-        b=YGWt3q6YkPiVMsXOEqGJGtvwO19XKI4qhNgmrP57i76ujq3lknkw0v1DvSJqvr7XKmWKWJ
-        brv5H2q2NekC9QDPLyDM4Joh6iOQtis1FDhSwTVosJKeQEGjNg217TfuhHlp/47BEqqWDM
-        zNg3xO1Sy0Y8/GG/R3iyxPcK/3x0WoM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-163-Kl5qBtN1OLq5FGkeuJ_I-A-1; Mon, 22 Aug 2022 04:01:55 -0400
-X-MC-Unique: Kl5qBtN1OLq5FGkeuJ_I-A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CE4D685A585;
-        Mon, 22 Aug 2022 08:01:53 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (unknown [10.39.192.199])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 62394141511A;
-        Mon, 22 Aug 2022 08:01:48 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Segher Boessenkool <segher@kernel.crashing.org>,
-        Nick Desaulniers <ndesaulniers@google.com>, kuba@kernel.org,
-        miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        asml.silence@gmail.com, imagedong@tencent.com,
-        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
-        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH net-next v4] net: skb: prevent the split of
- kfree_skb_reason() by gcc
-References: <20220816032846.2579217-1-imagedong@tencent.com>
-        <CAKwvOd=accNK7t_SOmybo3e4UcBKoZ6TBPjCHT3eSSpSUouzEA@mail.gmail.com>
-        <CADxym3Yxq0k_W43kVjrofjNoUUag3qwmpRGLLAQL1Emot3irPQ@mail.gmail.com>
-        <20220818165838.GM25951@gate.crashing.org>
-        <CADxym3YEfSASDg9ppRKtZ16NLh_NhH253frd5LXZLGTObsVQ9g@mail.gmail.com>
-        <20220819152157.GO25951@gate.crashing.org>
-        <CADxym3Y-=6pRP=CunxRomfwXf58k0LyLm510WGtzsBnzjqdD4g@mail.gmail.com>
-Date:   Mon, 22 Aug 2022 10:01:46 +0200
-In-Reply-To: <CADxym3Y-=6pRP=CunxRomfwXf58k0LyLm510WGtzsBnzjqdD4g@mail.gmail.com>
-        (Menglong Dong's message of "Sat, 20 Aug 2022 19:00:41 +0800")
-Message-ID: <871qt86711.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Mon, 22 Aug 2022 04:02:13 -0400
+Received: from mail.fris.de (mail.fris.de [116.203.77.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDB92B246;
+        Mon, 22 Aug 2022 01:02:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 97312BFB01;
+        Mon, 22 Aug 2022 10:02:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
+        t=1661155321; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding:in-reply-to:references;
+        bh=iWm6cbXgNgOMu08msuouo2YkcT7OoKQnsuMv8gfoWnY=;
+        b=kBlJNkF2rUWcnsp353JKgd8ucW5QMw5AO1MgXpEYKZgdP6LE0ZtTo+ptt47ufWZAD9iQlY
+        IdAY9i0viLMQN1YOBFAb7alDPf5QSwFwzgk6Q8bK+DCewp2g7/ONbWTJTRk9jQIdvQpCOt
+        5XN7jqxM8qw19wFoOUvwmFGOHu+Xb4+vzCr8/yr29fqXw3ieoKDiK0va1OMtzLehb/SWEt
+        QwgMOlsdslB++5rwvGz3ugMj9ec4oa1SvV1pUyufWIXN4i4Z1tRcFq7ZFhj7qsv5GdY/+x
+        7f5jpuo6Fmpn4TLyM+LFQdH6zmS1K5Cmh2rz3ZUxyYhaiqoLbaji+06nxAt4aQ==
+From:   Frieder Schrempf <frieder@fris.de>
+To:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: [PATCH v3 7/8] arm64: dts: imx8mm-kontron: Add SPI NOR partition layout
+Date:   Mon, 22 Aug 2022 10:01:00 +0200
+Message-Id: <20220822080103.24016-8-frieder@fris.de>
+In-Reply-To: <20220822080103.24016-1-frieder@fris.de>
+References: <20220822080103.24016-1-frieder@fris.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Menglong Dong:
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-> /*
->  * Used by functions that use '__builtin_return_address'. These function
->  * don't want to be splited or made inline, which can make
->  * the '__builtin_return_address' got unexpected address.
->  */
-> #define __fix_address noinline __noclone
+This is the layout used by the bootloader. Add it to the kernel
+devicetree to make the same layout available in Linux and have
+the devicetrees synced.
 
-You need something on the function *declaration* as well, to inhibit
-sibcalls.
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+---
+Changes in v3:
+* rebase on v6.0-rc1
 
-Thanks,
-Florian
+Changes in v2:
+* new patch
+---
+ .../boot/dts/freescale/imx8mm-kontron-sl.dtsi | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+index ce9c27619e26..c227ca813d9e 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+@@ -66,6 +66,27 @@ flash@0 {
+ 		compatible = "mxicy,mx25r1635f", "jedec,spi-nor";
+ 		spi-max-frequency = <80000000>;
+ 		reg = <0>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "u-boot";
++				reg = <0x0 0x1E0000>;
++			};
++
++			partition@1 {
++				label = "env";
++				reg = <0x1E0000 0x10000>;
++			};
++
++			partition@2 {
++				label = "env_redundant";
++				reg = <0x1F0000 0x10000>;
++			};
++		};
+ 	};
+ };
+ 
+-- 
+2.37.1
 
