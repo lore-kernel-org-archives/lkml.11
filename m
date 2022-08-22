@@ -2,126 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C75F7C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFEAC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236589AbiHVQVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 12:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        id S236596AbiHVQV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 12:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236448AbiHVQVn (ORCPT
+        with ESMTP id S235896AbiHVQV4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 12:21:43 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A2F3F315;
-        Mon, 22 Aug 2022 09:21:41 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MC5uep010996;
-        Mon, 22 Aug 2022 18:21:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=GhxUbNh5RCiYPiqmL1j1FpxzGmHGClyYuT8hQo3nCHY=;
- b=QVzmyqS/8QByMpz0zLd1pYktHZfBhpuda4O5DGivCNBj+rcdLme5sLy7WeBmAc/+0Is+
- cBEAQ1w+mi37EUDuMYK3yZ6nGeuUNS2TEySvzKS1N7AKjhgDzGP2vAw1+gHgmq/aD0yE
- ZE0WeZ8V5zdUbrNwiGNjNbJr4gv9vBeZbPG6ALvwPUgZ0vhItEcg5V2pOsORNqC1vPEQ
- BesAb0oQgkoNhlL0WfW8e9lWbQT3ZVivElMjvtZST1XpGZzlAxWtMgDlOn5ERk0CIEA1
- wU3U53SNvxkAO97NKMjB/LF5nVIVjT/ZE/fhR1oXyoVRjPejOB0RPwYO9mCY0AKo9ZOQ Gw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j2x2yryc7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Aug 2022 18:21:19 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 74E6B100034;
-        Mon, 22 Aug 2022 18:21:17 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DCC1224553B;
-        Mon, 22 Aug 2022 18:21:17 +0200 (CEST)
-Received: from [10.201.21.72] (10.75.127.116) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 22 Aug
- 2022 18:21:17 +0200
-Message-ID: <319927f9-5265-81fd-2c6b-7c5146d90687@foss.st.com>
-Date:   Mon, 22 Aug 2022 18:21:16 +0200
+        Mon, 22 Aug 2022 12:21:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB7A3F313
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661185314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bj0u0rbGbus5Dq/FJao2yGhu5YXJhcLCBMsadHoSqdo=;
+        b=FSi65sizTpV7Lr056g0sRhUug+GFxj11LWv4/JuJGT69C3+e69tXwJdapDLfqYLve1L1pS
+        VBSK3VX/RXvcYx//tyzvw4uZAVVzFck2nQKw7sploKm3EBulobbHXlAhjjfq4AK9r9LBpN
+        pjAYJCrMG+/OkoatwZ1w9gyFt3OqxQ4=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-114-RXN8aUEOOVCQ6cKnwWJktA-1; Mon, 22 Aug 2022 12:21:53 -0400
+X-MC-Unique: RXN8aUEOOVCQ6cKnwWJktA-1
+Received: by mail-wr1-f70.google.com with SMTP id l25-20020adfa399000000b002252058bad2so1852096wrb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:21:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=bj0u0rbGbus5Dq/FJao2yGhu5YXJhcLCBMsadHoSqdo=;
+        b=UisqL7LQ0P/X8+2t0Yz8Or27Brb0QkNhd1BRH8wP0u/bxE2z3qUOmmJKzz+sWFk2/I
+         b8+jy9blixpXOj8oryAvZ9jdjAqodhjeBF/k3y6h8aT6+rBfOrEirDPZNGDKDJ8DVj6l
+         T89uHsjCMEQYjiAZs4xbhM1Y/8OuXlclnOlOzcAXlTC6q2MoCf/VhP0Ck9eD9lF6SFP7
+         W9hfctfjRu3kR33+tfwvOupOigF5q9dw0s2q5hXLL/Ush4vL/a6x1tDDPSuSiaFGL6Y4
+         PPeGbxdk5PeXEBhTQnQ9Vs/rTZqqaUHmxdPsddD4hp9VvcftshnULzLvi9mDzl8f48Am
+         idig==
+X-Gm-Message-State: ACgBeo39FIw7yVxvGKqqZ2ZnKD/almTF9OxKKlrtZfBAJUR4lPGXZt37
+        12ckZLDAt3sxJa2rBdvrhFDroc61/vQ59aPvsRH0IhgW8a/nZC/GgJcOlY/Ige/bux1JAokN8Gh
+        NvWJSXGWXRQzy5AmfMrFeNwWl8htfIqTtu+/8VS5t6uzdpkAkY7I48ZbReYkIVX7sYMAmIQ48Sx
+        3P
+X-Received: by 2002:a05:600c:3c9b:b0:3a6:58b2:b80 with SMTP id bg27-20020a05600c3c9b00b003a658b20b80mr5223071wmb.132.1661185312255;
+        Mon, 22 Aug 2022 09:21:52 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7Kn2mEJXNUBEvtI+h/P2RDMUSo7Laz1MIfn2LUJ5bhNZYgLeYAwA6bjpOc6ng8CeUauHnPPw==
+X-Received: by 2002:a05:600c:3c9b:b0:3a6:58b2:b80 with SMTP id bg27-20020a05600c3c9b00b003a658b20b80mr5223047wmb.132.1661185311985;
+        Mon, 22 Aug 2022 09:21:51 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id g17-20020a5d46d1000000b0020fff0ea0a3sm11988449wrs.116.2022.08.22.09.21.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 09:21:51 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 03/26] x86/hyperv: Update 'struct
+ hv_enlightened_vmcs' definition
+In-Reply-To: <YwOm7Ph54vIYAllm@google.com>
+References: <20220802160756.339464-1-vkuznets@redhat.com>
+ <20220802160756.339464-4-vkuznets@redhat.com>
+ <Yv5ZFgztDHzzIQJ+@google.com> <875yiptvsc.fsf@redhat.com>
+ <Yv59dZwP6rNUtsrn@google.com> <87czcsskkj.fsf@redhat.com>
+ <YwOm7Ph54vIYAllm@google.com>
+Date:   Mon, 22 Aug 2022 18:21:50 +0200
+Message-ID: <87edx8xn8h.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: (subset) [PATCH v3 0/2] spi: stm32_qspi: use QSPI bus as 8 lines
- communication channel
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <christophe.kerello@foss.st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <20220816161344.2599908-1-patrice.chotard@foss.st.com>
- <166118433897.209120.16190099503428270567.b4-ty@kernel.org>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <166118433897.209120.16190099503428270567.b4-ty@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.116]
-X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_10,2022-08-22_02,2022-06-22_01
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark
+Sean Christopherson <seanjc@google.com> writes:
 
-I just noticed that the cleanup() callback is useless as the gpiod is 
-automatically freed by devm.
+> On Mon, Aug 22, 2022, Vitaly Kuznetsov wrote:
+>> Sean Christopherson <seanjc@google.com> writes:
+>> 
+>> > On Thu, Aug 18, 2022, Vitaly Kuznetsov wrote:
+>> >> Sean Christopherson <seanjc@google.com> writes:
+>> >> 
+>> >> > On Tue, Aug 02, 2022, Vitaly Kuznetsov wrote:
+>> >> >> + * Note: HV_X64_NESTED_EVMCS1_2022_UPDATE is not currently documented in any
+>> >> >> + * published TLFS version. When the bit is set, nested hypervisor can use
+>> >> >> + * 'updated' eVMCSv1 specification (perf_global_ctrl, s_cet, ssp, lbr_ctl,
+>> >> >> + * encls_exiting_bitmap, tsc_multiplier fields which were missing in 2016
+>> >> >> + * specification).
+>> >> >> + */
+>> >> >> +#define HV_X64_NESTED_EVMCS1_2022_UPDATE		BIT(0)
+>> >> >
+>> >> > This bit is now defined[*], but the docs says it's only for perf_global_ctrl.  Are
+>> >> > we expecting an update to the TLFS?
+>> >> >
+>> >> > 	Indicates support for the GuestPerfGlobalCtrl and HostPerfGlobalCtrl fields
+>> >> > 	in the enlightened VMCS.
+>> >> >
+>> >> > [*] https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/feature-discovery#hypervisor-nested-virtualization-features---0x4000000a
+>> >> >
+>> >> 
+>> >> Oh well, better this than nothing. I'll ping the people who told me
+>> >> about this bit that their description is incomplete.
+>> >
+>> > Not that it changes anything, but I'd rather have no documentation.  I'd much rather
+>> > KVM say "this is the undocumented behavior" than "the document behavior is wrong".
+>> >
+>> 
+>> So I reached out to Microsoft and their answer was that for all these new
+>> eVMCS fields (including *PerfGlobalCtrl) observing architectural VMX
+>> MSRs should be enough. *PerfGlobalCtrl case is special because of Win11
+>> bug (if we expose the feature in VMX feature MSRs but don't set
+>> CPUID.0x4000000A.EBX BIT(0) it just doesn't boot).
+>
+> I.e. TSC_SCALING shouldn't be gated on the flag?  If so, then the 2-D array approach
+> is overkill since (a) the CPUID flag only controls PERF_GLOBAL_CTRL and (b) we aren't
+> expecting any more flags in the future.
+>
 
-As you haven't send your pull request, do you accept a fixup patch you will squash 
-with patch [2/2] "spi: stm32_qspi: Add transfer_one_message() spi callback"
-or standalone patch ?
+Unfortunately, we have to gate the presence of these new features on
+something, otherwise VMM has no way to specify which particular eVMCS
+"revision" it wants (TL;DR: we will break migration).
 
-Thanks
-Patrice
+My initial implementation was inventing 'eVMCS revision' concept:
+https://lore.kernel.org/kvm/20220629150625.238286-7-vkuznets@redhat.com/
 
+which is needed if we don't gate all these new fields on CPUID.0x4000000A.EBX BIT(0).
 
-On 8/22/22 18:05, Mark Brown wrote:
-> On Tue, 16 Aug 2022 18:13:42 +0200, patrice.chotard@foss.st.com wrote:
->> From: Patrice Chotard <patrice.chotard@foss.st.com>
->>
->> The goal of this series is to allow to use QSPI bus as a 8 lines communication
->> channel for specific purpose.
->>
->> The QSPI block offers the possibility to communicate with 2 flashes in
->> parrallel using the dual flash mode, 8 data lines are then used.
->> Usage of cs-gpios populated and spi-tx-bus-width / spi-rx-bus-width both set to 8,
->> is needed to enable dual flash mode.
->>
->> [...]
-> 
-> Applied to
-> 
->    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
-> 
-> Thanks!
-> 
-> [2/2] spi: stm32_qspi: Add transfer_one_message() spi callback
->       commit: b051161f44d414e736fa2b011245441bae9babd7
-> 
-> All being well this means that it will be integrated into the linux-next
-> tree (usually sometime in the next 24 hours) and sent to Linus during
-> the next merge window (or sooner if it is a bug fix), however if
-> problems are discovered then the patch may be dropped or reverted.
-> 
-> You may get further e-mails resulting from automated or manual testing
-> and review of the tree, please engage with people reporting problems and
-> send followup patches addressing any issues that are reported if needed.
-> 
-> If any updates are required or you are submitting further changes they
-> should be sent as incremental updates against current git, existing
-> patches will not be replaced.
-> 
-> Please add any relevant lists and maintainers to the CCs when replying
-> to this mail.
-> 
-> Thanks,
-> Mark
+Going forward, we will still (likely) need something when new fields show up.
+
+> What about this for an implementation?
+>
+> static bool evmcs_has_perf_global_ctrl(struct kvm_vcpu *vcpu)
+> {
+> 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+>
+> 	/*
+> 	 * Filtering VMX controls for eVMCS compatibility should only be done
+> 	 * for guest accesses, and all such accesses should be gated on Hyper-V
+> 	 * being enabled and initialized.
+> 	 */
+> 	if (WARN_ON_ONCE(!hv_vcpu))
+> 		return false;
+>
+> 	return hv_vcpu->cpuid_cache.nested_ebx & HV_X64_NESTED_EVMCS1_PERF_GLOBAL_CTRL;
+> }
+>
+> static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu, u32 msr_index)
+> {
+> 	u32 unsupported_ctrls;
+>
+> 	switch (msr_index) {
+> 	case MSR_IA32_VMX_EXIT_CTLS:
+> 	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
+> 		unsupported_ctrls = EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
+> 		if (!evmcs_has_perf_global_ctrl(vcpu))
+> 			unsupported_ctrls |= VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
+> 		return unsupported_ctrls;
+> 	case MSR_IA32_VMX_ENTRY_CTLS:
+> 	case MSR_IA32_VMX_TRUE_ENTRY_CTLS:
+> 		unsupported_ctrls = EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
+> 		if (!evmcs_has_perf_global_ctrl(vcpu))
+> 			unsupported_ctrls |= VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
+> 		return unsupported_ctrls;
+> 	case MSR_IA32_VMX_PROCBASED_CTLS2:
+> 		return EVMCS1_UNSUPPORTED_2NDEXEC;
+> 	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
+> 	case MSR_IA32_VMX_PINBASED_CTLS:
+> 		return EVMCS1_UNSUPPORTED_PINCTRL;
+> 	case MSR_IA32_VMX_VMFUNC:
+> 		return EVMCS1_UNSUPPORTED_VMFUNC;
+> 	default:
+> 		KVM_BUG_ON(1, vcpu->kvm);
+> 		return 0;
+> 	}
+> }
+>
+> void nested_evmcs_filter_control_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 *pdata)
+> {
+> 	u64 unsupported_ctrls = evmcs_get_unsupported_ctls(vcpu, msr_index);
+>
+> 	if (msr_index == MSR_IA32_VMX_VMFUNC)
+> 		*pdata &= ~unsupported_ctrls;
+> 	else
+> 		*pdata &= ~(unsupported_ctrls << 32);
+> }
+>
+
+It's smaller and I like it but it would only work in conjunction with
+KVM_CAP_HYPERV_ENLIGHTENED_VMCS2...
+
+>
+>> What I'm still concerned about is future proofing KVM for new
+>> features. When something is getting added to KVM for which no eVMCS
+>> field is currently defined, both Hyper-V-on-KVM and KVM-on-Hyper-V cases
+>> should be taken care of. It would probably be better to reverse our
+>> filtering, explicitly listing features supported in eVMCS. The lists are
+>> going to be fairly long but at least we won't have to take care of any
+>> new architectural feature added to KVM.
+>
+> Having the filtering be opt-in crossed my mind as well.  Reversing the filtering
+> can be done after this series though, correct?
+>
+
+Yes, that's my plan, Get this in to fix the immediate issue with 2022
+features and probably reverse the filtering before Microsoft releases
+something else :-)
+
+-- 
+Vitaly
+
