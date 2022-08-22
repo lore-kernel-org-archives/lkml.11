@@ -2,205 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B431C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E14C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbiHVHse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S233283AbiHVHtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233427AbiHVHsK (ORCPT
+        with ESMTP id S231865AbiHVHsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:48:10 -0400
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C762AE1A
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:48:07 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A0A70580281;
-        Mon, 22 Aug 2022 03:48:04 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 22 Aug 2022 03:48:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661154484; x=
-        1661161684; bh=kU6Wak9ut3j71FNKf2BBeHdpI0gagJvWCf5yFVBoM/c=; b=H
-        bUPksQAhrtg9+tEqN67qHrIjYx3E3y97nKNFMOxfK9lHY4b0HrFeFzwozV1/UuEk
-        jnqKKcP3stC2iPQhWubYR88DpkpCQ+uuMuFjx16zDOnclzYiNDLuggYk0ma1ecqH
-        iWU9QgfapN+nXI9i8uiDnSxjt5JQ0TdqPQkalfV8y5CjJrDw5vLmAbP+jVpj8DnB
-        e00fXNBJmCfyaUsLab5atJYRR19hsiMzWrcUAp6mAmXg8R0hLFxe8qLanowPSM73
-        qxRm1ZhHc0NbjkRMgacLggOo41+6BKIXohNNiHiZRJHUJsgkzYdriS7mbp+x3UKS
-        nsizcFAvC+Ux46VqmhIlQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661154484; x=
-        1661161684; bh=kU6Wak9ut3j71FNKf2BBeHdpI0gagJvWCf5yFVBoM/c=; b=u
-        w8EINgU0Xp5GQ1lo0oDnlD4M/3g7NrEmQW26OlQO6syTa+PG3Mg9ydwcYBiOHF46
-        /FIvYYYKzJ1H7bRCJZE6ylyiqNjP54dWpgjBgYyd1OO83wKp0MpsFbUGnqfm8j8u
-        QzFH+F9F0je0NoE2TbLidJmmTOfr7n4Djzrpo0CXy00gS8AdWsGHvBD0Tbz9YOw4
-        h/9V+JwELqdfASTX2ADBR+PMZmtCcIkiM30mB3CPlg6uo9qJIFaGUyrO+fa6CeDz
-        6oraXWrl7eAXPVXj96Vqqi0vmkritmpm6oNtSE4T2trpYRb6JVf4kIXT1Vbq5Krm
-        WKHp8GO5PibBRxF51f3YQ==
-X-ME-Sender: <xms:szQDY32-2c5mWR1G6LxeX0Vg7R3v1CLjTsw2XvN3mxrjkZXBQxpRXQ>
-    <xme:szQDY2GFDP3KlWF34_cFVKizKKs3AWrYs9Q6vZenN070CU510oF2QPdSKmgrHCNfL
-    NcroseR0DtwkaxouIo>
-X-ME-Received: <xmr:szQDY35I9gju5RuUA5mCnt-8ZEN5A8t_TQMzhO7xKy8Bf_-ZrT77_cSEAek>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeiiedguddvjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtugfgjgesthhqredttddtudenucfhrhhomhepofgr
-    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
-    frrghtthgvrhhnpeelleefieelleetteefvdeikeeffeffvefhtdevgfehveduveehjedv
-    vdeiledtieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:szQDY819CXMEtZQrV0_neGd6rhjyRqdXcgvkSrSflAOfQMUjguxR9Q>
-    <xmx:szQDY6GCUH1QFarSCmhw55TTNlA9OuQjfAtYBXUkE-DiVJOwqpOjgA>
-    <xmx:szQDY9_g9jurhG8LSKWZHyrOCyfYXnKQN_sPCEwC2Nq6ucBlxHumIA>
-    <xmx:tDQDYz3bSMaJOuQoZ4cxJb4caJ73u13HBUwmHbOAwYXx3L6nBBs47A>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 22 Aug 2022 03:48:02 -0400 (EDT)
-Date:   Mon, 22 Aug 2022 09:48:00 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>
-Subject: Re: [PATCH v1 00/35] drm: Analog TV Improvements
-Message-ID: <20220822074800.qzyctchqn5usr55g@houat>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <987d6114-5fcb-d668-3b0d-ad6d8723dfdb@tronnes.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        Mon, 22 Aug 2022 03:48:54 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD60063CF;
+        Mon, 22 Aug 2022 00:48:52 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27M7lxG8028645;
+        Mon, 22 Aug 2022 07:48:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2022-7-12; bh=036IaCcxUTHfNNGpoEt/UhRQy444HEjstOLo7pwfESc=;
+ b=wDrIWBdEVWuF5x1ChxBMkijfj30JcXnlqIUWscA4N0z4TzznuSqh1UJT+bsLMwq9r36t
+ gP1taFhvTIFBiThUXKJRdohINfWJPR+VmKN8I//JxawkRogw1YjtO4EXpPRfLeqvWv1u
+ FcL8GyBXdVtdIvP0aFHqhpd4VUBP+SWSL1dX2l5BWU4I3tRh9gokBZcHfpajdSGPuXx+
+ oGN3zeUHUPN+ylHBWpGyZOgHitukBxxbLaNJPEn18XcwZwJGYA1ub4Ub6R23hd0VfeP9
+ 7hBUxtGGsCqnu3rABqw373jrLOrpw6I5fsCLgQAEP43h0x/WILkdXhra7xoIC10oMUZ3 uQ== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j45qk0013-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 07:48:23 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27M7egOw013438;
+        Mon, 22 Aug 2022 07:40:46 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j3mjcqdjv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 07:40:46 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jHpTGqL1Rl6cuLw0t2YtapaM4o3CblFmIhkwsF1QGwEK5zXlDlI6X4b1KaV9gf3vk7wR4IE4tUO1A0k5a7MoQ20D750bku2bzOXKmnLUlm02A/Fv+I4MPylsOERsVfTSntygpF6kTA065Rsf9c5P1LAiT3oxqBMvO5QieaygIguri+npq4I50mcc0A0UZKZ1CRQPoBtMV5VhMtgx5lv0/nKxD+PbzGYakngselybSAJWgOEaRKENmHD2b9wgjEyfiNVZdEJ2aL9s862/6MUzN88n5xb6cv5vdw63NdA9bHk4QWABv882ynCSJmQERbme7DduClfjrQbd78S/DWgo5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=036IaCcxUTHfNNGpoEt/UhRQy444HEjstOLo7pwfESc=;
+ b=HqAEPXvZ2WrdVSIGd+PjZYv4uLiVflxk7/CwoOOO1vOXfoqMndGYWEa4dyoPuE4dYcCoCu7F468tVpoRxAUlood0U1p2OJ77H5LL2uplpys8cSoaJw//mceZjpkz/BLsNp7S1nylz3J6VJe8Y01DO6Ne8aMcp5AsgluftfGXD5RQoGEKsXVIpfH2/Dy0BCzubZWYqptV3l0oJGj3ERMVg7rmhpxmWD4t6vm+bE59p70Bh4GyA/hN+xQXp8Js4k3Vr7Yo3TrIzSdYoVY4EwKXO8cz2eUpocRTSbNWdIILaQd+nl0K8iBFHCoZEvGTLcknc+rTVE/UQkq0YcEE9KOQVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=036IaCcxUTHfNNGpoEt/UhRQy444HEjstOLo7pwfESc=;
+ b=AT+DHDqP/EEntxtswVxLQxCe6yVnusM7ZgpEwAVi+uGo78MbFnsZIjZ1l1z620HXvbPqDHhVMvSyMp9ZbiVlGAgv8gqfMxcO3NglRcpXmWzdr/Y3EDoObhzwEpqgp0rJPQeJG3gMvp77IDY+fRBH8/TYq+9PpD+AC5nVUcP6+/w=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by DM5PR10MB2011.namprd10.prod.outlook.com
+ (2603:10b6:3:111::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Mon, 22 Aug
+ 2022 07:40:43 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 07:40:43 +0000
+Date:   Mon, 22 Aug 2022 10:40:25 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Gireesh.Hiremath@in.bosch.com,
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        bcousson@baylibre.com, tony@atomide.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, dmitry.torokhov@gmail.com,
+        mkorpershoek@baylibre.com, davidgow@google.com,
+        m.felsch@pengutronix.de, swboyd@chromium.org,
+        fengping.yu@mediatek.com, y.oudjana@protonmail.com,
+        rdunlap@infradead.org, colin.king@intel.com
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        sjoerd.simons@collabora.co.uk, VinayKumar.Shettar@in.bosch.com,
+        Govindaraji.Sivanantham@in.bosch.com, anaclaudia.dias@de.bosch.com
+Subject: Re: [PATCH v3 2/3] driver: input: matric-keypad: add reduced matrix
+ support
+Message-ID: <202208200111.6wvFtbES-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <987d6114-5fcb-d668-3b0d-ad6d8723dfdb@tronnes.org>
+In-Reply-To: <20220819065946.9572-2-Gireesh.Hiremath@in.bosch.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MR2P264CA0177.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501::16)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6f583c09-3d3d-462e-8ed7-08da84119e0f
+X-MS-TrafficTypeDiagnostic: DM5PR10MB2011:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QhyaGuMmJlKApmuQlKOIA9WObpjDpVZ3UvR15gOgvaKwGzYFUW7Mun6/9p7r2+kpiOKFQlLpuSJbwSZzxxjKyxBTEzfaTWlRnQgSvKWH354io5FYk0k69QzFQOHEDH90dqI+DmFomxAoKde3AlsuQXor5RjyzLhDOjsSS3IqU41HOZf8lsPYPNGxt7oMz7vDhxcDTHNbM+bW1/zMlOASQ9I7qv5M0x5KQcpDVIiF6Mwoz3n9KI1gR6pgT0Q+P8bjrcvItng84LpaTZ0fLIIylcQFKAa6Pk4QfoiEC56lEjhNMFLfVeenm6NSSwkQWW/8yHx9EfQj8Xyd5qqvVKJkbpZGwewiEsDJ5QyXOJjg1PsEx2Oq2yODvT9kz4f2FzyKa7XVuuI1UxFV1D8jqOnR8DeR09JQeMFulGj11JaZYJAJNILi6VVtPA0QzFuS5BSvwVtPJ62xLbNA3BRgyV2HMsMSoGRDLR9mO52v4791KBE4L7BIeCpA2eye3nb1F0qNEsobR1UgQSjDOjy2egMsmHBTQQoSEjKdTfxQ8RPqU3nsMn5uLZWpkNq2WZKT3CMyI91zgchrdun9kLySvZfi/U/6y1f+8V3UsFy4Du07iucKU2PsIrNxWFfU5GFDaMoVA1GJAjuUSsLoUTneMA6SJvMCiwPwhu19Hv3NTcj/S/OZtHE0uydnpFzV7q0pRCPr/oATNqh9KcnmmVi0aUv8YMc4lIxkrcct2jxBhxGwYWGAHnAJn6DSfVp8fdVfgH3EcoJSdit/K/uZN3MIiNdlS0G9tZfVkuDrbdMyRXa0Xd8Twyqz0uW8UYIiZjjq3yMlEUtwzVjSaBuZ7fZkhBY5NHMGEamDedptb1CosiWDjhc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(346002)(136003)(39860400002)(376002)(66946007)(66476007)(8676002)(66556008)(4326008)(86362001)(921005)(38350700002)(36756003)(38100700002)(1076003)(186003)(8936002)(6512007)(26005)(52116002)(9686003)(6666004)(41300700001)(6486002)(478600001)(966005)(6506007)(7416002)(316002)(4001150100001)(2906002)(83380400001)(44832011)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Cb8d88iK8Vw6rP/w+KjZMAS0xd0+vaotCP2ewcgCFdwLV5oWJBWQBRtCwrBx?=
+ =?us-ascii?Q?OFCTh3wEfu6Bne2f2uhiO9hoPyADA69gOGhVvVB0RSCaDX6H+JeH1t798w2f?=
+ =?us-ascii?Q?ZAVGyN4E5WCvnLcipsNJPm6e2TtrP14ZUwkuifPvzSoXof0vIYCcQXI17/ca?=
+ =?us-ascii?Q?pbVtQjPayDNnNA1MnCxqiaFcihHqKqOd9TDiVQwhUIIquyRvEVE3bhIcHYSm?=
+ =?us-ascii?Q?0T25ehsVbmmYW2NkiVUQatkZDk9+29nG7PLed2vjRhw+He+bsIcPM81VuQ6O?=
+ =?us-ascii?Q?DQ8FF2XXym9hMTyaqvQkJDHuUoydPsaymFhtBxat4myxd4CFOR82ilk5KNSm?=
+ =?us-ascii?Q?Z3DteCK1Ic+IGoaA+nZSQhlngqmP540t/c3Z/ghQHcZMlu1/POzlUNPhYn2z?=
+ =?us-ascii?Q?pgf5GIvhMzBj83vCn6X4Xb49kRwdISIGzsAwpSSHPPlew7gTT2nJTM4PKmP5?=
+ =?us-ascii?Q?AeL0NNNnz/lKMY1rC9YAh/tRrOmbcCC4ZkTdv6kEXr83n+a67O7Dox70Zllv?=
+ =?us-ascii?Q?3udIWScC7LSctg75Sw3TOXVPMy22kdVnFeySKbCAHtclc6PsaWe7QIwsbg+g?=
+ =?us-ascii?Q?pcdB8xhjduhGY0/FEoVqyFzJNMnfvksxRJHSAY3PYxiebhLo+rpxvhSBsT8j?=
+ =?us-ascii?Q?BHFRfJvlyzTbZpxH312578qI5fGO3+ubT0f0Mxc2Ybx054hZR+gSopeXi0Gm?=
+ =?us-ascii?Q?PF7/w+q8UE+bRhN7mYmSg8EiBJ+XoY2XUATj/xwqZRt/QmjO55g2WN07hlEb?=
+ =?us-ascii?Q?+ld42YrPiHciB2Mmg85l30GYHcf4u34BXc8/265NDY+P3tIeRxOn6AJyZPco?=
+ =?us-ascii?Q?VCLC+OnW2jhrZH0KeN5WN5c7JYWYxoyMemXMa8JXiyXZa2CMlA302xe8DlK9?=
+ =?us-ascii?Q?DKOSKDV51cKRFatJRKVLhQh+dFMIWqRvdvG9O/ixecEjNTOfmFLMGpOLG9xm?=
+ =?us-ascii?Q?XWvzcT3SXSul7PJL78MsusMeyjI5Pnhx5T43Peta3OsNtX12qUaR+rWqSaQO?=
+ =?us-ascii?Q?c0GRwuiIv6p9KM9SkVjyki5FN9fu3VVfYPpWWmXrdTUom/MPlVR9GRTP5Ebf?=
+ =?us-ascii?Q?/K0QtMitPiOF8jPRwTyrqtKijIF2WdmZLGJBLDFPGMgn16O17AMHHwsQ3vaZ?=
+ =?us-ascii?Q?gZuS34NBRymwZ10/6WSQpb/NLYiH2vdDySE10nvUCj8ziixYCpYDFNjr6QQX?=
+ =?us-ascii?Q?Utj/4kB0sMyS37WjVpWRe5ePl+NUqCHP7632j2R9zpS9BssBGGD90Ah4O4/Z?=
+ =?us-ascii?Q?GftKxjkwLMNzqixBtSIX9qb9SZtweqlvSQRX1DQlhLyxz1/k1x6TIhnnC11Q?=
+ =?us-ascii?Q?KLOj7+sVCtA7LA0VcUcHr+DrtNiq1vHGtrAbLDXG2s2tGiUpdvXDqZFjGdEW?=
+ =?us-ascii?Q?/+ZYDtFY73/miZ0UXWzwHXSxpoSKiYKcqLWHZSmLxNV1WWB7afUVmkeSqJsi?=
+ =?us-ascii?Q?pQXpDGBEeenwBQaL+smlHzNzkyr4TrydrHVUTLopOY5BrCxiYocH/D8Pw6oB?=
+ =?us-ascii?Q?Dv5MfefL0iO5QIXF+rt8XR6RcBtjLgSUB/o6vC272pZ3dnu23SyYnU0Gigk2?=
+ =?us-ascii?Q?9tPGc/LxOGKkcPRtCVNGIz+qwe1ddPOmztktN6x0lx5MY/HA+NAnyxQYWhSt?=
+ =?us-ascii?Q?+A=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f583c09-3d3d-462e-8ed7-08da84119e0f
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 07:40:43.2632
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sg5TqVdUIXtRYgjC2DFzYsSMJcQpwxlQNfaUtjjZGOgGimWbOpuIA8ORrYZiMyJ8015bFlu5whOa68bHDrhsSvzFlyMEZb7AYAZGHNqbS1g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB2011
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_04,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
+ spamscore=0 phishscore=0 malwarescore=0 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208220032
+X-Proofpoint-ORIG-GUID: sIzmsiX-tydalzwcDQJFmmrQwmgsALfb
+X-Proofpoint-GUID: sIzmsiX-tydalzwcDQJFmmrQwmgsALfb
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Sun, Aug 21, 2022 at 06:33:12PM +0200, Noralf Tr=F8nnes wrote:
-> Den 29.07.2022 18.34, skrev Maxime Ripard:
-> > Hi,
-> >=20
-> > Here's a series aiming at improving the command line named modes suppor=
-t,
-> > and more importantly how we deal with all the analog TV variants.
-> >=20
-> > The named modes support were initially introduced to allow to specify t=
-he
-> > analog TV mode to be used.
-> >=20
-> > However, this was causing multiple issues:
-> >=20
-> >   * The mode name parsed on the command line was passed directly to the
-> >     driver, which had to figure out which mode it was suppose to match;
-> >=20
-> >   * Figuring that out wasn't really easy, since the video=3D argument o=
-r what
-> >     the userspace might not even have a name in the first place, but
-> >     instead could have passed a mode with the same timings;
-> >=20
-> >   * The fallback to matching on the timings was mostly working as long =
-as
-> >     we were supporting one 525 lines (most likely NSTC) and one 625 lin=
-es
-> >     (PAL), but couldn't differentiate between two modes with the same
-> >     timings (NTSC vs PAL-M vs NSTC-J for example);=20
-> >=20
-> >   * There was also some overlap with the tv mode property registered by=
-=20
-> >     drm_mode_create_tv_properties(), but named modes weren't interacting
-> >     with that property at all.
-> >=20
-> >   * Even though that property was generic, its possible values were
-> >     specific to each drivers, which made some generic support difficult.
-> >=20
-> > Thus, I chose to tackle in multiple steps:
-> >=20
-> >   * A new TV norm property was introduced, with generic values, each dr=
-iver
-> >     reporting through a bitmask what standard it supports to the usersp=
-ace;
-> >=20
-> >   * This option was added to the command line parsing code to be able to
-> >     specify it on the kernel command line, and new atomic_check and res=
-et
-> >     helpers were created to integrate properly into atomic KMS;
-> >=20
-> >   * The named mode parsing code is now creating a proper display mode f=
-or
-> >     the given named mode, and the TV standard will thus be part of the
-> >     connector state;
-> >=20
-> >   * Two drivers were converted and tested for now (vc4 and sun4i), with
-> >     some backward compatibility code to translate the old TV mode to the
-> >     new TV mode;
-> >=20
-> > Unit tests were created along the way. Nouveau, ch7006 and gud are
-> > currently broken for now since I expect that work to be reworked fairly
-> > significantly. I'm also not entirely sure about how to migrate GUD to t=
-he
-> > new property.
-> >=20
-> > Let me know what you think,
-> > Maxime
-> >=20
->=20
-> I don't know if it's related to this patchset or not, but I do get this:
->=20
-> pi@pi4t:~ $ sudo dmesg -C && sudo modprobe -r vc4 && sudo modprobe vc4
-> && dmesg
-> [  430.066211] Console: switching to colour dummy device 80x30
-> [  431.294788] vc4-drm gpu: bound fe400000.hvs (ops vc4_hvs_ops [vc4])
-> [  431.295115] vc4-drm gpu: bound fec13000.vec (ops vc4_vec_ops [vc4])
-> [  431.295467] vc4-drm gpu: bound fe004000.txp (ops vc4_txp_ops [vc4])
-> [  431.295804] vc4-drm gpu: bound fec12000.pixelvalve (ops vc4_crtc_ops
-> [vc4])
-> [  431.298895] [drm] Initialized vc4 0.0.0 20140616 for gpu on minor 0
-> [  441.444250] vc4-drm gpu: [drm] *ERROR* [CRTC:68:crtc-1] flip_done
-> timed out
-> [  441.446529] Console: switching to colour frame buffer device 90x30
-> [  451.684321] vc4-drm gpu: [drm] *ERROR* flip_done timed out
-> [  451.684347] vc4-drm gpu: [drm] *ERROR* [CRTC:68:crtc-1] commit wait
-> timed out
-> [  461.924255] vc4-drm gpu: [drm] *ERROR* flip_done timed out
-> [  461.924281] vc4-drm gpu: [drm] *ERROR* [CONNECTOR:45:Composite-1]
-> commit wait timed out
-> [  472.164006] vc4-drm gpu: [drm] *ERROR* flip_done timed out
-> [  472.164031] vc4-drm gpu: [drm] *ERROR* [PLANE:61:plane-1] commit wait
-> timed out
-> [  482.403877] vc4-drm gpu: [drm] *ERROR* flip_done timed out
-> [  482.403903] vc4-drm gpu: [drm] *ERROR* Timed out waiting for commit
-> [  492.643799] vc4-drm gpu: [drm] *ERROR* [CRTC:68:crtc-1] flip_done
-> timed out
-> [  492.647073] vc4-drm gpu: [drm] fb0: vc4drmfb frame buffer device
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Module unloading/reloading has been janky for a while.
+url:    https://github.com/intel-lab-lkp/linux/commits/Gireesh-Hiremath-in-bosch-com/driver-input-matric-keypad-switch-to-gpiod/20220819-151155
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
+config: s390-randconfig-m041-20220819 (https://download.01.org/0day-ci/archive/20220820/202208200111.6wvFtbES-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
 
-I've fixed it up recently but it doesn't surprise me that there's still
-some situation that won't work. Is it on a Pi3?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Maxime
+smatch warnings:
+drivers/input/keyboard/matrix_keypad.c:932 matrix_keypad_probe() error: uninitialized symbol 'err'.
+
+vim +/err +932 drivers/input/keyboard/matrix_keypad.c
+
+5298cc4cc753bb Bill Pemberton   2012-11-23  823  static int matrix_keypad_probe(struct platform_device *pdev)
+bab7614d6d1b1f Eric Miao        2009-06-29  824  {
+bab7614d6d1b1f Eric Miao        2009-06-29  825  	const struct matrix_keypad_platform_data *pdata;
+bab7614d6d1b1f Eric Miao        2009-06-29  826  	struct matrix_keypad *keypad;
+bab7614d6d1b1f Eric Miao        2009-06-29  827  	struct input_dev *input_dev;
+bab7614d6d1b1f Eric Miao        2009-06-29  828  	int err;
+bab7614d6d1b1f Eric Miao        2009-06-29  829  
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  830  	pdata = dev_get_platdata(&pdev->dev);
+bab7614d6d1b1f Eric Miao        2009-06-29  831  	if (!pdata) {
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  832  		pdata = matrix_keypad_parse_dt(&pdev->dev);
+d55bda1b3e7c5a Christian Hoff   2018-11-12  833  		if (IS_ERR(pdata))
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  834  			return PTR_ERR(pdata);
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  835  	} else if (!pdata->keymap_data) {
+bab7614d6d1b1f Eric Miao        2009-06-29  836  		dev_err(&pdev->dev, "no keymap data defined\n");
+bab7614d6d1b1f Eric Miao        2009-06-29  837  		return -EINVAL;
+bab7614d6d1b1f Eric Miao        2009-06-29  838  	}
+bab7614d6d1b1f Eric Miao        2009-06-29  839  
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  840  	keypad = kzalloc(sizeof(struct matrix_keypad), GFP_KERNEL);
+bab7614d6d1b1f Eric Miao        2009-06-29  841  	input_dev = input_allocate_device();
+01111fcd42b050 Dmitry Torokhov  2012-04-20  842  	if (!keypad || !input_dev) {
+bab7614d6d1b1f Eric Miao        2009-06-29  843  		err = -ENOMEM;
+bab7614d6d1b1f Eric Miao        2009-06-29  844  		goto err_free_mem;
+bab7614d6d1b1f Eric Miao        2009-06-29  845  	}
+bab7614d6d1b1f Eric Miao        2009-06-29  846  
+bab7614d6d1b1f Eric Miao        2009-06-29  847  	keypad->input_dev = input_dev;
+bab7614d6d1b1f Eric Miao        2009-06-29  848  	keypad->pdata = pdata;
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  849  	keypad->row_shift = get_count_order(pdata->num_col_gpios);
+bab7614d6d1b1f Eric Miao        2009-06-29  850  	keypad->stopped = true;
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  851  
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  852  	if (pdata->mode == REDUCED) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  853  		keypad->button_array = devm_kzalloc(
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  854  			&pdev->dev,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  855  			sizeof(struct button) * (pdata->num_of_buttons),
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  856  			GFP_KERNEL);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  857  		if (!keypad->button_array) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  858  			dev_err(&pdev->dev,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  859  				"could not allocate memory for button array\n");
+
+err = -ENOMEM;
+
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  860  			goto err_free_mem;
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  861  			;
+
+Why the extra ;?
+
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  862  		}
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  863  
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  864  		poll_prepare(keypad);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  865  
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  866  		err = input_setup_polling(input_dev, matrix_keypad_poll);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  867  		if (err) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  868  			dev_err(&pdev->dev,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  869  				"unable to set up polling, err=%d\n", err);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  870  			return err;
+
+Memory leaks.  Needs to goto err_free_mem;
+
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  871  		}
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  872  
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  873  		input_set_poll_interval(input_dev, pdata->poll_interval_ms);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  874  	} else {
+bab7614d6d1b1f Eric Miao        2009-06-29  875  		INIT_DELAYED_WORK(&keypad->work, matrix_keypad_scan);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  876  	}
+bab7614d6d1b1f Eric Miao        2009-06-29  877  	spin_lock_init(&keypad->lock);
+bab7614d6d1b1f Eric Miao        2009-06-29  878  
+bab7614d6d1b1f Eric Miao        2009-06-29  879  	input_dev->name = pdev->name;
+bab7614d6d1b1f Eric Miao        2009-06-29  880  	input_dev->id.bustype = BUS_HOST;
+bab7614d6d1b1f Eric Miao        2009-06-29  881  	input_dev->dev.parent = &pdev->dev;
+bab7614d6d1b1f Eric Miao        2009-06-29  882  	input_dev->open = matrix_keypad_start;
+bab7614d6d1b1f Eric Miao        2009-06-29  883  	input_dev->close = matrix_keypad_stop;
+bab7614d6d1b1f Eric Miao        2009-06-29  884  
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  885  	if (pdata->mode == REDUCED) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  886  		err = matrix_keypad_build_keymap(pdata->keymap_data, NULL,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  887  						 pdata->num_line_gpios,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  888  						 pdata->num_line_gpios, NULL,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  889  						 input_dev);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  890  		if (err) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  891  			dev_err(&pdev->dev, "failed to build keymap for reduced mode\n");
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  892  			goto err_free_mem;
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  893  		}
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  894  	} else {
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  895  		err = matrix_keypad_build_keymap(pdata->keymap_data, NULL,
+1932811f426fee Dmitry Torokhov  2012-05-10  896  						 pdata->num_row_gpios,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  897  						 pdata->num_col_gpios, NULL,
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  898  						 input_dev);
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  899  		if (err) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  900  			dev_err(&pdev->dev, "failed to build keymap for generic mode\n");
+1932811f426fee Dmitry Torokhov  2012-05-10  901  			goto err_free_mem;
+4a83eecff65bd3 AnilKumar Ch     2012-11-20  902  		}
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  903  	}
+bab7614d6d1b1f Eric Miao        2009-06-29  904  
+1932811f426fee Dmitry Torokhov  2012-05-10  905  	if (!pdata->no_autorepeat)
+1932811f426fee Dmitry Torokhov  2012-05-10  906  		__set_bit(EV_REP, input_dev->evbit);
+bab7614d6d1b1f Eric Miao        2009-06-29  907  	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
+bab7614d6d1b1f Eric Miao        2009-06-29  908  	input_set_drvdata(input_dev, keypad);
+bab7614d6d1b1f Eric Miao        2009-06-29  909  
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  910  	if (pdata->mode == REDUCED) {
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  911  		button_hdl_init(keypad);
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  912  	} else {
+b83643ebf22423 Dmitry Torokhov  2012-04-20  913  		err = matrix_keypad_init_gpio(pdev, keypad);
+bab7614d6d1b1f Eric Miao        2009-06-29  914  		if (err)
+bab7614d6d1b1f Eric Miao        2009-06-29  915  			goto err_free_mem;
+a0b420e08e3b87 Gireesh Hiremath 2022-08-19  916  	}
+bab7614d6d1b1f Eric Miao        2009-06-29  917  
+bab7614d6d1b1f Eric Miao        2009-06-29  918  	err = input_register_device(keypad->input_dev);
+bab7614d6d1b1f Eric Miao        2009-06-29  919  	if (err)
+b83643ebf22423 Dmitry Torokhov  2012-04-20  920  		goto err_free_gpio;
+bab7614d6d1b1f Eric Miao        2009-06-29  921  
+bab7614d6d1b1f Eric Miao        2009-06-29  922  	device_init_wakeup(&pdev->dev, pdata->wakeup);
+bab7614d6d1b1f Eric Miao        2009-06-29  923  	platform_set_drvdata(pdev, keypad);
+bab7614d6d1b1f Eric Miao        2009-06-29  924  
+bab7614d6d1b1f Eric Miao        2009-06-29  925  	return 0;
+bab7614d6d1b1f Eric Miao        2009-06-29  926  
+b83643ebf22423 Dmitry Torokhov  2012-04-20  927  err_free_gpio:
+b83643ebf22423 Dmitry Torokhov  2012-04-20  928  	matrix_keypad_free_gpio(keypad);
+bab7614d6d1b1f Eric Miao        2009-06-29  929  err_free_mem:
+bab7614d6d1b1f Eric Miao        2009-06-29  930  	input_free_device(input_dev);
+bab7614d6d1b1f Eric Miao        2009-06-29  931  	kfree(keypad);
+bab7614d6d1b1f Eric Miao        2009-06-29 @932  	return err;
+bab7614d6d1b1f Eric Miao        2009-06-29  933  }
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
+
