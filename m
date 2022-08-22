@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E9BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80849C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233756AbiHVIF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        id S233717AbiHVIGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233664AbiHVIE5 (ORCPT
+        with ESMTP id S233608AbiHVIEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:04:57 -0400
+        Mon, 22 Aug 2022 04:04:53 -0400
 Received: from mail.fris.de (mail.fris.de [116.203.77.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2133BB4;
-        Mon, 22 Aug 2022 01:04:29 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id D894AC018B;
-        Mon, 22 Aug 2022 10:04:26 +0200 (CEST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B004D2CCB9;
+        Mon, 22 Aug 2022 01:04:15 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9A03EBFAFA;
+        Mon, 22 Aug 2022 10:04:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1661155467; h=from:subject:date:message-id:to:cc:mime-version:
+        t=1661155453; h=from:subject:date:message-id:to:cc:mime-version:
          content-transfer-encoding:in-reply-to:references;
-        bh=8tF1ygjYz0Mj0Sv3ghGHrjhZ0YZlM1e1wOX0lj+uXKY=;
-        b=hGot6CdOXjqC0PG0c/Cd5wxzhZ8LoojoDOIp8ayJmQZUz9nSMkuuBwsRJZg1/afBFZLBki
-        FCn3iJDNDsQdt6aMgT94gC85buey/y8kEwEUjga1iI+Ykj/+i5Hw6FfdvFXKH45JzPri5k
-        0Qwv34ocrOWy6HKk/3adhPJW8fih+UszV1qJEzjj2HeX9uN7AmsGin1EXNOeu0/4rmJrTd
-        kfbRy4Uv/JCKACDBSq2kNDYm4G2PSMiLZQm1plTWdBk0M/FVzaba5W2OJTRGigLgftuWJL
-        HHGJ0BIluSKS8Ma2O5efB1xP+uv9qKnJ0YG5iVWhXmTF4K7zfuVJgcQAY3zL9Q==
+        bh=A5cN8sVeOmemL/mvNZDaLcTSVhdh8ns7Cj6c2uU/rzg=;
+        b=XloQo+Fkvjh/WwPiwyptxP64MJCz3d3DVA5ckt4XT9qlbyJpsMVRR7GKml3fD3LJ8zsaID
+        MMsCCxidDfehBPXfBYLboTbFCxdROIs9aqIDRl7RSPNb0D+p5owr6FP+IviTSsiqMlS0Q6
+        6UvPn7sMXtqUrCz4kHNWrLQ3TTQ9N2SKWV2eJyej/7RnrDmJZdRwQ5IvgjHV/X3kTCvmmC
+        IfmZYdcx5f8xBwXzD9SyrMpAFB5cfXX4A7+lDnsVj7MMN/GUk6CT96Y2tSxuoBIYC47/PK
+        HQlqZuoTWUb4tEssZYRg/J5r6ZtENWRj+96hZZCdKtHCRfsPJuZJ8INsc4eQkQ==
 From:   Frieder Schrempf <frieder@fris.de>
 To:     devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -35,13 +35,22 @@ To:     devicetree@vger.kernel.org,
         Shawn Guo <shawnguo@kernel.org>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
         Fabio Estevam <festevam@gmail.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Marek Vasut <marex@denx.de>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: [PATCH v4 6/8] arm64: dts: imx8mm-kontron: Use voltage rail names from schematic for PMIC regulator-names
-Date:   Mon, 22 Aug 2022 10:03:52 +0200
-Message-Id: <20220822080357.24478-7-frieder@fris.de>
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Reinhold Mueller <reinhold.mueller@emtrion.com>,
+        Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH v4 3/8] arm64: dts: imx8mm-kontron: Adjust compatibles, file names and model strings
+Date:   Mon, 22 Aug 2022 10:03:49 +0200
+Message-Id: <20220822080357.24478-4-frieder@fris.de>
 In-Reply-To: <20220822080357.24478-1-frieder@fris.de>
 References: <20220822080357.24478-1-frieder@fris.de>
 MIME-Version: 1.0
@@ -53,127 +62,83 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Improve the naming of the regulators to contain the voltage rail
-names from the schematic.
+The official naming includes "SL" (SoM-Line) or "BL" (Board-Line).
+By updating we make sure, that we can maintain this more easily in
+future and make sure that the proper devicetree can be selected for
+the hardware.
 
-Suggested-by: Heiko Thiery <heiko.thiery@gmail.com>
 Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
 ---
 Changes in v4:
-* none
+* fix SoM dtsi includes
 
 Changes in v3:
+* also rename compatibles and file names
 * rebase on v6.0-rc1
 
 Changes in v2:
-* new patch
+* none
 ---
- .../boot/dts/freescale/imx8mm-kontron-sl.dtsi | 22 +++++++++----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ arch/arm64/boot/dts/freescale/Makefile                      | 2 +-
+ .../{imx8mm-kontron-n801x-s.dts => imx8mm-kontron-bl.dts}   | 6 +++---
+ ...imx8mm-kontron-n801x-som.dtsi => imx8mm-kontron-sl.dtsi} | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+ rename arch/arm64/boot/dts/freescale/{imx8mm-kontron-n801x-s.dts => imx8mm-kontron-bl.dts} (97%)
+ rename arch/arm64/boot/dts/freescale/{imx8mm-kontron-n801x-som.dtsi => imx8mm-kontron-sl.dtsi} (98%)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-index 96ecdce67059..ce9c27619e26 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index 8bf7f7ecebaa..d014f7c4c888 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -55,7 +55,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-emcon-avari.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-evk.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-icore-mx8mm-ctouch2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-icore-mx8mm-edimm2.2.dtb
+-dtb-$(CONFIG_ARCH_MXC) += imx8mm-kontron-n801x-s.dtb
++dtb-$(CONFIG_ARCH_MXC) += imx8mm-kontron-bl.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-mx8menlo.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-nitrogen-r2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-phyboard-polis-rdk.dtb
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts b/arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts
+similarity index 97%
+rename from arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
+rename to arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts
+index 23be1ec538ba..ca533baedcd2 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-bl.dts
+@@ -5,11 +5,11 @@
+ 
+ /dts-v1/;
+ 
+-#include "imx8mm-kontron-n801x-som.dtsi"
++#include "imx8mm-kontron-sl.dtsi"
+ 
+ / {
+-	model = "Kontron i.MX8MM N801X S";
+-	compatible = "kontron,imx8mm-n801x-s", "kontron,imx8mm-n801x-som", "fsl,imx8mm";
++	model = "Kontron BL i.MX8MM (N801X S)";
++	compatible = "kontron,imx8mm-bl", "kontron,imx8mm-sl", "fsl,imx8mm";
+ 
+ 	aliases {
+ 		ethernet1 = &usbnet;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+similarity index 98%
+rename from arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+rename to arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
+index 8f90eb02550d..30299c2a98ea 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
 +++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-@@ -85,7 +85,7 @@ pca9450: pmic@25 {
+@@ -6,8 +6,8 @@
+ #include "imx8mm.dtsi"
  
- 		regulators {
- 			reg_vdd_soc: BUCK1 {
--				regulator-name = "buck1";
-+				regulator-name = "+0V8_VDD_SOC (BUCK1)";
- 				regulator-min-microvolt = <800000>;
- 				regulator-max-microvolt = <850000>;
- 				regulator-boot-on;
-@@ -96,7 +96,7 @@ reg_vdd_soc: BUCK1 {
- 			};
+ / {
+-	model = "Kontron i.MX8MM N801X SoM";
+-	compatible = "kontron,imx8mm-n801x-som", "fsl,imx8mm";
++	model = "Kontron SL i.MX8MM (N801X SOM)";
++	compatible = "kontron,imx8mm-sl", "fsl,imx8mm";
  
- 			reg_vdd_arm: BUCK2 {
--				regulator-name = "buck2";
-+				regulator-name = "+0V9_VDD_ARM (BUCK2)";
- 				regulator-min-microvolt = <850000>;
- 				regulator-max-microvolt = <950000>;
- 				regulator-boot-on;
-@@ -107,7 +107,7 @@ reg_vdd_arm: BUCK2 {
- 			};
- 
- 			reg_vdd_dram: BUCK3 {
--				regulator-name = "buck3";
-+				regulator-name = "+0V9_VDD_DRAM&PU (BUCK3)";
- 				regulator-min-microvolt = <850000>;
- 				regulator-max-microvolt = <950000>;
- 				regulator-boot-on;
-@@ -115,7 +115,7 @@ reg_vdd_dram: BUCK3 {
- 			};
- 
- 			reg_vdd_3v3: BUCK4 {
--				regulator-name = "buck4";
-+				regulator-name = "+3V3 (BUCK4)";
- 				regulator-min-microvolt = <3300000>;
- 				regulator-max-microvolt = <3300000>;
- 				regulator-boot-on;
-@@ -123,7 +123,7 @@ reg_vdd_3v3: BUCK4 {
- 			};
- 
- 			reg_vdd_1v8: BUCK5 {
--				regulator-name = "buck5";
-+				regulator-name = "+1V8 (BUCK5)";
- 				regulator-min-microvolt = <1800000>;
- 				regulator-max-microvolt = <1800000>;
- 				regulator-boot-on;
-@@ -131,7 +131,7 @@ reg_vdd_1v8: BUCK5 {
- 			};
- 
- 			reg_nvcc_dram: BUCK6 {
--				regulator-name = "buck6";
-+				regulator-name = "+1V1_NVCC_DRAM (BUCK6)";
- 				regulator-min-microvolt = <1100000>;
- 				regulator-max-microvolt = <1100000>;
- 				regulator-boot-on;
-@@ -139,7 +139,7 @@ reg_nvcc_dram: BUCK6 {
- 			};
- 
- 			reg_nvcc_snvs: LDO1 {
--				regulator-name = "ldo1";
-+				regulator-name = "+1V8_NVCC_SNVS (LDO1)";
- 				regulator-min-microvolt = <1800000>;
- 				regulator-max-microvolt = <1800000>;
- 				regulator-boot-on;
-@@ -147,7 +147,7 @@ reg_nvcc_snvs: LDO1 {
- 			};
- 
- 			reg_vdd_snvs: LDO2 {
--				regulator-name = "ldo2";
-+				regulator-name = "+0V8_VDD_SNVS (LDO2)";
- 				regulator-min-microvolt = <800000>;
- 				regulator-max-microvolt = <900000>;
- 				regulator-boot-on;
-@@ -155,7 +155,7 @@ reg_vdd_snvs: LDO2 {
- 			};
- 
- 			reg_vdda: LDO3 {
--				regulator-name = "ldo3";
-+				regulator-name = "+1V8_VDDA (LDO3)";
- 				regulator-min-microvolt = <1800000>;
- 				regulator-max-microvolt = <1800000>;
- 				regulator-boot-on;
-@@ -163,7 +163,7 @@ reg_vdda: LDO3 {
- 			};
- 
- 			reg_vdd_phy: LDO4 {
--				regulator-name = "ldo4";
-+				regulator-name = "+0V9_VDD_PHY (LDO4)";
- 				regulator-min-microvolt = <900000>;
- 				regulator-max-microvolt = <900000>;
- 				regulator-boot-on;
-@@ -171,7 +171,7 @@ reg_vdd_phy: LDO4 {
- 			};
- 
- 			reg_nvcc_sd: LDO5 {
--				regulator-name = "ldo5";
-+				regulator-name = "NVCC_SD (LDO5)";
- 				regulator-min-microvolt = <1800000>;
- 				regulator-max-microvolt = <3300000>;
- 			};
+ 	memory@40000000 {
+ 		device_type = "memory";
 -- 
 2.37.2
 
