@@ -2,98 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87EFAC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27070C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232698AbiHVUMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S232720AbiHVUMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiHVUMU (ORCPT
+        with ESMTP id S232688AbiHVUMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:12:20 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D75953031;
-        Mon, 22 Aug 2022 13:12:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1661199123;
-        bh=Yr61DvE6j42KsMElufQGNSb79h22pZ+ZKTYiKvo0h3E=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=ZOXSbnMYN4szxajuG1iqeEVq1Okl5avFp794xqc9o1qMoThXRYsmgHG7Oq2A9b2Nx
-         2d0p3epqapdTgDLt3lFtb2OUGx/Yjo9ioUIgIky+8ApIhoEayXXKYLd1Qn5JChxaH4
-         BeTYLHA/++pQWLLwZ/AuCX3HYD2PbpEllTmJ3WLA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.190.222]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N17UQ-1pREZF0zjG-012avd; Mon, 22
- Aug 2022 22:12:03 +0200
-Message-ID: <b3c19a63-d9f8-028b-e59a-e428be1ed8be@gmx.de>
-Date:   Mon, 22 Aug 2022 22:11:58 +0200
+        Mon, 22 Aug 2022 16:12:35 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF39543CB
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:12:32 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id f17so5262729pfk.11
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:12:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=EnKbvX9xMcUF8bvw923k4bLQbt044bTDeeYvXJD7Czs=;
+        b=ZRBjLD5DfpCjiGPnLVcp8T95oJyFpcwl/FshmKOsc5f+ipkEpmrxPMkPmtNGASxBXZ
+         t3eX8tLsBzZOra5EHFU340BNRI7sV3qioe6iMcHKeW4bNdir3ZUqQgW9oBK5xwc1tPDl
+         t+obqjrxd4v8QHRJ6GR08bTFPAwtZz789dhwI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=EnKbvX9xMcUF8bvw923k4bLQbt044bTDeeYvXJD7Czs=;
+        b=JHi/U2LRzSkv6qaVYikbQdSrKie27gg6UfpHVxdnaMbGJzp8QYqdsDP1m9f5PZthKU
+         nkiyQ7r1l2evU8d47VXX48wfZ8yFLdPtQ4OE6Y+YVbV/SpK0W/F1OUxQwLBqx2+hYpPY
+         R8jCt36bsDcQhvS3wFXyXkS26GLDa9OOm01zodOegIlfObAcEJSG27RaZOcJ4kSV9Uz6
+         9LXLH9wTWz1Wz4XSKEhAgnhPc2qtnkk2ZmQdGc3gk4oU8jdQtCAE0T+YSh606vntSHjz
+         p9ORn54M/8tDSGIIST2/phK1Or1WJYrTNNFUOvKotn3DWJoX4qB8J0o39iv8nEyrdKa5
+         cK6Q==
+X-Gm-Message-State: ACgBeo3vS9qLJZ5hDmCYCZZzBE2QZNsY+9gs5Sukbj1gdIe7o9amHKUg
+        6THrA5g3LmlF5Kon0zOeWxUQcw==
+X-Google-Smtp-Source: AA6agR5G+bqfudvWxfo80uSnqhz04LgJNbj8hzZj4TJPUbvcxTt36OI0WWl0Nwrzjkz/NDeeRDq2IQ==
+X-Received: by 2002:a63:5252:0:b0:42a:9680:bd9c with SMTP id s18-20020a635252000000b0042a9680bd9cmr7772626pgl.469.1661199152102;
+        Mon, 22 Aug 2022 13:12:32 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id n14-20020a170903110e00b0016d6963cb12sm8773868plh.304.2022.08.22.13.12.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 13:12:31 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 13:12:30 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        thomas.hellstrom@linux.intel.com, jani.nikula@intel.com,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, chris@chris-wilson.co.uk,
+        airlied@linux.ie, linux-hardening@vger.kernel.org,
+        matthew.auld@intel.com, mchehab@kernel.org, nirmoy.das@intel.com,
+        Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
+Subject: Re: [PATCH v7 1/8] overflow: Move and add few utility macros into
+ overflow
+Message-ID: <202208221301.366A33DACA@keescook>
+References: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
+ <20220816093525.184940-2-gwan-gyeong.mun@intel.com>
+ <Yv10sQADwdZrIV42@alfio.lan>
+ <202208171657.63AE7AC@keescook>
+ <f3370fb1-5318-c662-294b-2c7fe693efd6@intel.com>
+ <52c09fde-f788-4c2b-efdc-d1783dbc0f6c@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH -next] video: fbdev: chipsfb: add missing
- pci_disable_device() in chipsfb_pci_init()
-Content-Language: en-US
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org
-Cc:     mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
-        benh@kernel.crashing.org
-References: <20220819085752.1909541-1-yangyingliang@huawei.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220819085752.1909541-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:iaJIJz9NwvfVUJgq3SuvteaGHMXdzmZFQ9lfmtKPDYvfREYcfas
- /M0rcTAP77PhKqc8UzkQyUQIwI+6i23y2lfeOK8n7iPfFdzrhIyAspwjm4AbwNKcGYLahC/
- CZhzRxdCNueumKvqKSYGXUPdyOE5kPzdg1oNdRXiM78urVk1r7/xVU2vetAEyRzSJSJ44zl
- 0nkI60gpC5IjTSsJXdrEA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:x6bOX75q4ds=:JnQwJlHAqjEpfC6l5T7/lD
- +aN2YBGR1An0UL1f/A10sJbh1ssBOZlFNc++tdxaJir4SjDOzoZMg0ay7FrkrbJfDiFFqqx4R
- q+Jyy/uAkdfdKCwQDHM4jgaCM8Tm5ivnRKG04KYPc5e41sKaka46j27QY6NFqor2jKfR3xHn4
- ebksuNkV9QBZfPGk/GrsmxqkdAhnT09Xyr0naowISC61sx0Ui8V2+9Xh5sZrZFpLqAYsbZCQ7
- Ds+N3Ac+lpIPpvs5J7qu3x+hfgTrc85nViqQ+qZ+wlC0SZ5LKbMdFbMIaSZzO0i2RNBtQQabq
- TvyyCezDgR0IL4Wc16Pi7BiDqhwpsXo/FCZ0bDVC8zvLOFDJCtxBPBkmktD6wYIHK0t+hcack
- hVE7ztN/Xt/22hoa8i2g7oHAeeoLnfRkBG3b2PGm85tHicRutTG/Sr3S5lBI6I0cTqsXK8idI
- z/0YICkVVzDkLyeRzNZRtwYrHY2OMNKydjZF1oW2Q0IAO+XANI9pBI82J1ovLziY4rk+U7R2M
- Z5zKagGbc0Ua4fVCBr9v6tEPA/J7kyoZcgVSTPuiyrRj0T+nxOkXAqIbwjrxX+lTV6lWs4KSL
- DM60CTiomIOApJD8KwRWkeuIPKBg15XrqUsPbZ5B0bdUFtg/DudJj9J/1J9N1wyYGJjRQfhIf
- d+Y4Ks9ymG7TSMRkJ85v4py0hbXKIQ+ujuAIqRpZL9eXKHcn2NAfrgDHZUNwUll+UeAGE70pQ
- 0ughzFXEJLc0zpv5dqfew52+NDdu2BPKUmEszaXNaWvqPN3TKkuS15bUhbDSL0b1UvDHNciKi
- 6rd3VzvREdvxvSauj9aWqvXWCbHeLl6ZXR9xxuV8rCpzQ1FSUsE/BfHt/dnnWlSNQXMAu+OaA
- wtbTUYPU9Th2XxmPJLyp/LI6HVWUNOnVCJm2EIfNP2RNXOkUJXp6h0JJOazXCSi3ueEVg+vk1
- 28yrFxPL4Dhh2Piw7+lRDjqDBIxyjWu0tv/f6tpC5dQ0V03FPLYJBbwhsnwkrc95gvqC4aU8w
- xUd/nn/snTXaKznoudO+uthB/mn2RvAt0Kk4iVDPfiLgPu6BdJV6rbM5NRh0xIuHF8wifa4w6
- 5J30C7iAiCGZjvgZrJbftLQoFYIR1k/+rRoEshTC76u5yfVlOtM1xsjYw==
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <52c09fde-f788-4c2b-efdc-d1783dbc0f6c@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/19/22 10:57, Yang Yingliang wrote:
-> Add missing pci_disable_device() in error path in chipsfb_pci_init().
->
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+On Tue, Aug 23, 2022 at 04:32:10AM +0900, Gwan-gyeong Mun wrote:
+> On 8/22/22 11:05 PM, Andrzej Hajda wrote:
+> > On 18.08.2022 02:12, Kees Cook wrote:
+> > > On Thu, Aug 18, 2022 at 01:07:29AM +0200, Andi Shyti wrote:
+> > > > [...]
+> > > > > +#define safe_conversion(ptr, value) ({ \
+> > > > > +    typeof(value) __v = (value); \
+> > > > > +    typeof(ptr) __ptr = (ptr); \
+> > > > > +    overflows_type(__v, *__ptr) ? 0 : ((*__ptr =
+> > > > > (typeof(*__ptr))__v), 1); \
+> > > > > +})
+> > > 
+> > > I try to avoid "safe" as an adjective for interface names, since it
+> > > doesn't really answer "safe from what?" This looks more like "assign, but
+> > > zero when out of bounds". And it can be built from existing macros here:
+> > > 
+> > >     if (check_add_overflow(0, value, ptr))
+> > >         *ptr = 0;
+> > > 
+> > > I actually want to push back on this a bit, because there can still be
+> > > logic bugs built around this kind of primitive. Shouldn't out-of-bounds
+> > > assignments be seen as a direct failure? I would think this would be
+> > > sufficient:
+> > > 
+> > > #define check_assign(value, ptr)    check_add_overflow(0, value, ptr)
+> > > 
+> > > And callers would do:
+> > > 
+> > >     if (check_assign(value, &var))
+> > >         return -EINVAL;
+> > > 
+> Yes, I also like check_assign() you suggested more than safe_conversion.
+> As shown below, it would be more readable to return true when assign
+> succeeds and false when it fails. What do you think?
 
-applied.
-Thanks!
-Helge
+No, this inverts the style of all the other check_*() functions, so it
+should remain "non-zero is failure".
 
-> ---
->  drivers/video/fbdev/chipsfb.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/video/fbdev/chipsfb.c b/drivers/video/fbdev/chipsfb=
-.c
-> index 393894af26f8..2b00a9d554fc 100644
-> --- a/drivers/video/fbdev/chipsfb.c
-> +++ b/drivers/video/fbdev/chipsfb.c
-> @@ -430,6 +430,7 @@ static int chipsfb_pci_init(struct pci_dev *dp, cons=
-t struct pci_device_id *ent)
->   err_release_fb:
->  	framebuffer_release(p);
->   err_disable:
-> +	pci_disable_device(dp);
->   err_out:
->  	return rc;
->  }
+> /**
+>  * check_assign - perform a type conversion (cast) of an source value into
+>  * a new variable, checking that the destination is large enough to hold the
+>  * source value.
+>  *
+>  * @value: Source value
+>  * @ptr: Destination pointer address, If the pointer type is not used, a
+> warning message is output during build.
+>  *
+>  * Returns:
+>  * If the value would overflow the destination, it returns false. If not
+> return true.
+>  */
+> #define check_assign(value, ptr) __must_check_overflow(({	\
+> 	typecheck_pointer(ptr); 		\
+> 	!__builtin_add_overflow(0, value, ptr);	\
+> }))
 
+Please don't use the __builtin*s, instead stick to the check_* family,
+as they correctly wrap the builtins and perform type checking, etc. As
+mentioned, check_assign() should just be:
+
+#define check_assign(value, ptr)    check_add_overflow(0, value, ptr)
+
+I don't think any of the other code is needed? What's the use-case for
+the other stuff? i.e. Why does anything need overflows_type()?
+
+-Kees
+
+-- 
+Kees Cook
