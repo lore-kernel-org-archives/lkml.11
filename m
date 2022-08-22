@@ -2,132 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E079DC32772
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA00C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 16:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236308AbiHVQUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 12:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
+        id S236500AbiHVQVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 12:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234147AbiHVQUJ (ORCPT
+        with ESMTP id S236326AbiHVQV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 12:20:09 -0400
-Received: from mx0b-00364e01.pphosted.com (mx0b-00364e01.pphosted.com [148.163.139.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A463F1E9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:20:05 -0700 (PDT)
-Received: from pps.filterd (m0167075.ppops.net [127.0.0.1])
-        by mx0b-00364e01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MGJXLW013205
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:20:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=columbia.edu; h=mime-version :
- references : in-reply-to : from : date : message-id : subject : to : cc :
- content-type; s=pps01; bh=lL+jIgSBvIyxjoVVxdSt+mBrExHYO8gEXwp3Ap6tqQo=;
- b=UqBpfOENWlJJ0MexN1mHDsEnXyGak24lZVN6ZwkcAJbbObwDSklL8O7xsxeaMCkejEjn
- NxRrBzB+Ck9YOmH0dwXk1eevCO5Y8Q7zTe8qHFzA3Ab04IWpq1k/RlKvPpEhcrlFZOSB
- rKiYMVODiJ0HmN3thjL+QDRsjwViB2FSNN34LClpkJRE2ml8qfX6cqH3iyypRUWvC8p2
- WmBaOU0GiwDr81py9Kzph+Xi3UOoU0HlrXoaTZ+S2Kpqcp4J1lAMuoL0sivm3OhY/SUP
- 46lmEF5Z4SZYlw0sXej0CMlKzRTFXBlv93BVhR2sS8pmHM96pVh9tsvbb0ofB8jSrXqO bw== 
-Received: from sendprdmail22.cc.columbia.edu (sendprdmail22.cc.columbia.edu [128.59.72.24])
-        by mx0b-00364e01.pphosted.com (PPS) with ESMTPS id 3j2wj6bm5a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:20:04 -0400
-Received: from mail-vk1-f199.google.com (mail-vk1-f199.google.com [209.85.221.199])
-        by sendprdmail22.cc.columbia.edu (8.14.7/8.14.4) with ESMTP id 27MGK2nd026682
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 12:20:02 -0400
-Received: by mail-vk1-f199.google.com with SMTP id b19-20020a1fb213000000b0037d0dfd4db1so1811354vkf.12
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 09:20:02 -0700 (PDT)
+        Mon, 22 Aug 2022 12:21:27 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42663F313;
+        Mon, 22 Aug 2022 09:21:26 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id f17so4662915pfk.11;
+        Mon, 22 Aug 2022 09:21:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=UO2tpDseOUxSc2DoPMk1lJXbq9Ou2Xvd17vKqQ346TI=;
+        b=NqoE5HM5tKCXP2Vk/Ulo+aX+pzqYFxcHdyfmJZ+IP0QSDf03mG4DTq3N/39NoWTGJg
+         FbwoVOfAUMFbpEEGlXvx/UMEp7sbWV2o9UL+312ZVrBBO2vN9NmbniiGAZQaIJrcCJyg
+         xfXi3KqTBmlGsDnplAZt/FN2eVAA23EtbNtTm4CKZG2xd+i2zYORImbV+l9MGmqJAkNX
+         RR9iFJEqFJ/c1zFzcJavtjiRD9LN9GTYA/MId++OMO03GTucoDssLk12bBLFQmyeL1uS
+         KI/l5nmhGuOURs67RBxve2JOVSKZuXWC80PaSuzUdS3JcDsxAvXmJZCMXenddHhlNExD
+         2tWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=lL+jIgSBvIyxjoVVxdSt+mBrExHYO8gEXwp3Ap6tqQo=;
-        b=wdFyvcMRrc4SctGn1DhOZKh705IqvwqLkOT50PJUcJj3HokAtoIPdeS1IXTfMgHWYE
-         1Jpjby5fZlWqftpWhOT7x68wVQldFGGgD/kHqGWDm2lvwqlFv0JViJowpyCpXrZuk5HN
-         C15mxiTdaf0oNX/7xoo7QzNKhdhzraTaKmT3/UOi947KwKvPmI1jqxjVrJ0SGw6z/R9E
-         KdBOPaKulUteAme6mSM+1leEzvTwOBi8BTOgWoB0Gy5HcIsnekO5PjJPXqeJpPbCi5ol
-         HCXF6INeFtQo726d0rnHcbQuly2ZVBKN8ObpRrHNV+X9EkEXdrUqGJMOdClFFicPuoqY
-         qMwg==
-X-Gm-Message-State: ACgBeo1Du7wcIL7p+2TRa8oMjCm+dd+b+oCahMTizJMN3hmcmvj4NG0Z
-        RnpXpXbn+I/iJfM21xskUjJz4KMtm13vxAHvyRLfJrTbVSOzVuzFPzsaRr+tvf3BXxH4yn4y10W
-        LR+8C2E+xn6qIKVxjsjAWAabk8zwSSBGKm6niA2KeCexD0QKT
-X-Received: by 2002:a05:6130:64c:b0:390:f639:5ac4 with SMTP id bh12-20020a056130064c00b00390f6395ac4mr7692150uab.98.1661185201989;
-        Mon, 22 Aug 2022 09:20:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4aDBstx+gZ0tfQtYI/tazQw44//p/soUNDTq7MSnhgREgUkhWqjWhJO8bkdWbFSdUzkD9ocmCnPa8xyVA9HvA=
-X-Received: by 2002:a05:6130:64c:b0:390:f639:5ac4 with SMTP id
- bh12-20020a056130064c00b00390f6395ac4mr7692137uab.98.1661185201773; Mon, 22
- Aug 2022 09:20:01 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=UO2tpDseOUxSc2DoPMk1lJXbq9Ou2Xvd17vKqQ346TI=;
+        b=tpZyvIvDe3WTPPBX7p865qyNdB5wt1Tl42yRutUSz408WT5dAKmyPAV4xKQWoetoq+
+         qrtTr/rkjFDs9F6l7ZfBzDvuc4kcoJHjW3tUtUYtIWAs5gZLFLNKLuSZID7/4Vu3zkVg
+         LaO+sHRa9BwQG6sRP4ChKGCKti/CTEGfrYXKCsHUGExRCkiKFa9Ju7GrFJ+sKIyuhl3p
+         2x+ulP1EmxfK3G9AVPpjuuV3rMCRqh3BHkh2EROXkYdgDJIwW7hyaPuatRqD3O4cpIOc
+         9SNRIe0nduCIT6AbsLDW91Gi/Km/jOQA1GlE5qSSozY6iUfNE//kB2dXo8jdmd4g7Usf
+         I+TQ==
+X-Gm-Message-State: ACgBeo1LZ6gbJlUkjz2iPdzG5P7kvTor0Dx9W2GeQFLfydd2O0V2POex
+        vxAL3/mum5JnsAUBg3Z2iKg=
+X-Google-Smtp-Source: AA6agR6hhRMJidekydr5ggwv0mneoGAsDNB5VGKTBZn71OieWRN04J8C+eMHmtns2YdEzwWx6THi5Q==
+X-Received: by 2002:a63:4f4f:0:b0:429:f656:69a6 with SMTP id p15-20020a634f4f000000b00429f65669a6mr17515021pgl.287.1661185286112;
+        Mon, 22 Aug 2022 09:21:26 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id w18-20020aa79552000000b00536e2ae5938sm618855pfq.213.2022.08.22.09.21.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 09:21:25 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 22 Aug 2022 09:21:24 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Armin Wolf <W_Armin@gmx.de>
+Cc:     pali@kernel.org, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] hwmon: (dell-smm) Improve warning messages
+Message-ID: <20220822162124.GB4098765@roeck-us.net>
+References: <20220821151713.11198-1-W_Armin@gmx.de>
+ <20220821151713.11198-4-W_Armin@gmx.de>
 MIME-Version: 1.0
-References: <CAEHB24-9hXY+TgQKxJB4bE9a9dFD9C+Lan+ShBwpvwaHVAGMFg@mail.gmail.com>
- <YtoWqEkKzvimzWS5@gondor.apana.org.au> <CAEHB249ygptvp9wpynMF7zZ2Kcet0+bwLVuVg5UReZHOU1+8HA@mail.gmail.com>
- <YuNGR/5U5pSo6YM3@gondor.apana.org.au> <YuuZgsdmJK8roKLD@gondor.apana.org.au>
-In-Reply-To: <YuuZgsdmJK8roKLD@gondor.apana.org.au>
-From:   Gabriel Ryan <gabe@cs.columbia.edu>
-Date:   Mon, 22 Aug 2022 12:19:54 -0400
-Message-ID: <CALbthtcfPn5qc0HecmK9iN-o+ZWDVid4bwzZJmO2sthw3fKFBQ@mail.gmail.com>
-Subject: Re: [PATCH] af_key: Do not call xfrm_probe_algs in parallel
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Abhishek Shah <abhishek.shah@columbia.edu>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, steffen.klassert@secunet.com,
-        linux-kernel@vger.kernel.org, Fan Du <fan.du@windriver.com>,
-        Steffen Klassert <klassert@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Proofpoint-GUID: kVkg5wvMRzMcSeBmF6pNyka3-AoshHSU
-X-Proofpoint-ORIG-GUID: kVkg5wvMRzMcSeBmF6pNyka3-AoshHSU
-X-CU-OB: Yes
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_10,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=10 mlxscore=0 clxscore=1015 impostorscore=10 bulkscore=10
- suspectscore=0 mlxlogscore=999 phishscore=0 spamscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208220070
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220821151713.11198-4-W_Armin@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can confirm we tested this patch and it prevents the race we
-detected in xfrm_ealg_get_byname / xfrm_probe_algs.
+On Sun, Aug 21, 2022 at 05:17:13PM +0200, Armin Wolf wrote:
+> When dell-smm-hwmon is loaded on a machine with a buggy BIOS
+> with the option "force" being enabled, it wrongly prints
+> what the buggy features where disabled. This may cause
+> users to wrongly assume that the driver still protects them
+> from these BIOS bugs even with "force" being enabled.
+> Change the warning message to avoid such a misunderstanding.
+> 
+> Tested on a Dell Inspiron 3505.
+> 
+> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+> ---
+>  drivers/hwmon/dell-smm-hwmon.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
+> index f7bab1a91b93..bf13852afe48 100644
+> --- a/drivers/hwmon/dell-smm-hwmon.c
+> +++ b/drivers/hwmon/dell-smm-hwmon.c
+> @@ -1354,13 +1354,13 @@ static int __init dell_smm_probe(struct platform_device *pdev)
+>  	platform_set_drvdata(pdev, data);
+> 
+>  	if (dmi_check_system(i8k_blacklist_fan_support_dmi_table)) {
+> -		dev_warn(&pdev->dev, "broken Dell BIOS detected, disallow fan support\n");
+> +		dev_warn(&pdev->dev, "BIOS has broken fan support\n");
 
-Best,
+I don't see that as improvement. It no longer mentions that fan support
+is disabled if it is disabled.
 
-Gabe
+>  		if (!force)
+>  			data->disallow_fan_support = true;
+>  	}
+> 
+>  	if (dmi_check_system(i8k_blacklist_fan_type_dmi_table)) {
+> -		dev_warn(&pdev->dev, "broken Dell BIOS detected, disallow fan type call\n");
+> +		dev_warn(&pdev->dev, "BIOS has broken fan type call\n");
 
+Same as above.
 
-On Thu, Aug 4, 2022 at 6:03 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> When namespace support was added to xfrm/afkey, it caused the
-> previously single-threaded call to xfrm_probe_algs to become
-> multi-threaded.  This is buggy and needs to be fixed with a mutex.
->
-> Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-> Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
->
-> diff --git a/net/key/af_key.c b/net/key/af_key.c
-> index fb16d7c4e1b8..20e73643b9c8 100644
-> --- a/net/key/af_key.c
-> +++ b/net/key/af_key.c
-> @@ -1697,9 +1697,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
->                 pfk->registered |= (1<<hdr->sadb_msg_satype);
->         }
->
-> +       mutex_lock(&pfkey_mutex);
->         xfrm_probe_algs();
->
->         supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
-> +       mutex_unlock(&pfkey_mutex);
-> +
->         if (!supp_skb) {
->                 if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
->                         pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+>  		if (!force)
+>  			data->disallow_fan_type_call = true;
+>  	}
 > --
-> Email: Herbert Xu <herbert@gondor.apana.org.au>
-> Home Page: http://gondor.apana.org.au/~herbert/
-> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
-
--- 
-Gabriel Ryan
-PhD Candidate at Columbia University
-cs.columbia.edu/~gabe
+> 2.30.2
+> 
