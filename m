@@ -2,151 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E66C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C9CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238457AbiHVWfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 18:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
+        id S238479AbiHVWfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 18:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238460AbiHVWfX (ORCPT
+        with ESMTP id S238460AbiHVWfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 18:35:23 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BC4481E0
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:35:19 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id v10so11933854ljh.9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:35:19 -0700 (PDT)
+        Mon, 22 Aug 2022 18:35:36 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CE748C90
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:35:34 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id jm11so11186429plb.13
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:35:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=/3Qz2I07qNsEqmUXX8sV18RiE73NXZbJtJL/a6pTzOM=;
-        b=oWPtAluKai50SM+qKue2D41Qzws4/k+V5RWd5eefNxz1X9aicH59ZvpfnjRJXMaLQs
-         oqxP/yJYA/pA0XUC3IAQ2pMsUZC5KWJCBsJB87xXEHpXJYh3UsodLH0bSrdVTyW8PqVU
-         fl7bU/ZoUTjyKr6lYqkht34lemnsdk4xtG++3RabmhF1f8ccW1cPhtNqTlSyiEEcsLzu
-         YmlkZJbQ8uLeYszYrnjAf1BiPDqMYPF7w2OYYQuBY8Qlu0DW1tannUkwgTEalQVTDxVO
-         5e5PuucVBSjpt4Fd7T9Y4gljaVUNRJApsbm1Vq6Mzh8cdPFYHKbekz+4ISdZpBbhyJKO
-         Yejw==
+        d=flatmax-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=jEuLhzJLSTk5CufgkvPiCkW+mlDKBcKSUTF8OkYisvc=;
+        b=SYIxBE2rosAR/GAp4nMjnyKF81I+qBEKUZpzJsIxsQl9fpWAmPl88aJNxE7DM3qAkb
+         t49LfzyqsMsORWG6DSp7IzGyY7azYsmh2kySlQC8hS1zwi71Yber9qS8oujA1jG0Gqik
+         mhtYCdbM/T348ZrTyknqpMu00DxO4LZ5yXDLCiJ45G1EVOSmflSUlofu0oqOYL4x95KZ
+         rccl+jGR/5/7fb8yxOONYXM2PeBHZy/brtBPj23wuc8hCwKqf2SFpBI3/AxnX5SH9X0c
+         C9Nlo6Q5Y+o5EM6VwbYLImvJhaRXmx1em4qW3k+039Mb3jTr6qRiIQ80/N6FSaL5eCr3
+         HxtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=/3Qz2I07qNsEqmUXX8sV18RiE73NXZbJtJL/a6pTzOM=;
-        b=HfDssGrkmGjLFplDYdOqNFzUsq0XFrbypPmKRPJMp75eb1cfYL5ecVpir3e/utQ6jl
-         1D1xTlGVIJbw4gAMMCcNZ4EPm42Pn3drZLls+qhiei8iE61puvCqcs3u8SrPLaD8S1gX
-         PwYsP8PIIXtdfeEj0AW7W8UR0agadhUUqkekxIeU7mzPafKIp4im1+mNdO6Ez5I+EroA
-         LbvImBLamkqu23tWayej0wVztaOtZetbNPnapkwu8nEooGie1myd+2FeG/34GVA3a5zC
-         ZwD3F4ryfdHGkbkmNjgxnJl7vgW+6ayVsqupmwVRAY8Q6arjYufq3Sppx6fdOyWvF54v
-         pqvA==
-X-Gm-Message-State: ACgBeo2dChqrk+qq4iTp2CO3B4s0ZDJHlEYmYTpAYtTFk5u1f9hvL50l
-        7RKC9X4XKWGEzMubnwhA/I0wDGNvuv1hnK/ka28XCg==
-X-Google-Smtp-Source: AA6agR7Tldikzvhh2Bk23FXDw9lViwJukpyd5ZjJCRNzpjlVddMHxOB5z715HFFouGcVhLUk2TreqJEweh3FvxQ/Ygg=
-X-Received: by 2002:a2e:9dc5:0:b0:25e:6fa0:1243 with SMTP id
- x5-20020a2e9dc5000000b0025e6fa01243mr6684227ljj.513.1661207718102; Mon, 22
- Aug 2022 15:35:18 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=jEuLhzJLSTk5CufgkvPiCkW+mlDKBcKSUTF8OkYisvc=;
+        b=x+GYn4HQyR+77gd2weN0Bx2KMSjZe2k7JcIKpMpYOQQhU239YmgSTTZjyjjum3XgCd
+         D8vNL8A4eBYUUcNqBTNRRg0XaslLiYqlnN4n5tz8bq0cQzjHbYvrkjdYO4IuQHC1GrhF
+         aVFEHVpu2TfbTs0XWpToJK97u4yPU5UF9jMgY9aHtiRgQUnAcNf4B3+xkxuUgZaFckCH
+         db4wruzN04ua1Yeny18dHN9CmruFZSUZGV9Yvc1gavO+390iUCBitHUVErkLW0udOcIS
+         /BNpj6x/NqRmBWWiPSbCdrRngooPlrpx7OzMfrfmMGlzoBLoI1gkrMVdmIirhXEEqgU/
+         uokA==
+X-Gm-Message-State: ACgBeo1w6TRpqVl/mGzMCPh3G6xSGbICgX2vfqdCxJueTB6Z+SWBi9rI
+        dGLuPk+/uYrchruTth0TniFIrg==
+X-Google-Smtp-Source: AA6agR6YtxMR78C4m5EhtbfUJBy+PKaZepoTxqsQ+ro2j2FBPWOeEUsFy2BpbS4rJUKi1UTFOA1Wmw==
+X-Received: by 2002:a17:90b:1e4e:b0:1fa:bab4:d24f with SMTP id pi14-20020a17090b1e4e00b001fabab4d24fmr428445pjb.185.1661207733771;
+        Mon, 22 Aug 2022 15:35:33 -0700 (PDT)
+Received: from ?IPV6:2406:3400:213:70c0:73b4:2cc5:1ada:53cd? ([2406:3400:213:70c0:73b4:2cc5:1ada:53cd])
+        by smtp.gmail.com with ESMTPSA id q4-20020a170902eb8400b0016c9e5f291bsm8812572plg.111.2022.08.22.15.35.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 15:35:32 -0700 (PDT)
+Message-ID: <99a54f9c-519e-1ccb-8ceb-391a0aeb359d@flatmax.com>
+Date:   Tue, 23 Aug 2022 08:35:26 +1000
 MIME-Version: 1.0
-References: <20220805154231.31257-1-ojeda@kernel.org> <20220805154231.31257-24-ojeda@kernel.org>
-In-Reply-To: <20220805154231.31257-24-ojeda@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 22 Aug 2022 15:35:05 -0700
-Message-ID: <CAKwvOd=y5T9bh4398K+5=82q=vVbkjQQ76KyXLy-qoM2Tph08A@mail.gmail.com>
-Subject: Re: [PATCH v9 23/27] Kbuild: add Rust support
-To:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Finn Behrens <me@kloenk.de>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Gary Guo <gary@garyguo.net>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Douglas Su <d0u9.su@outlook.com>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Daniel Xu <dxu@dxuuu.xyz>,
-        =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
-        Martin Rodriguez Reboredo <yakoyoku@gmail.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kbuild@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] ASoC: codes: src4xxx: Avoid clang
+ -Wsometimes-uninitialized in src4xxx_hw_params()
+Content-Language: en-AU
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        patches@lists.linux.dev, kernel test robot <lkp@intel.com>,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+References: <20220822183101.1115095-1-nathan@kernel.org>
+ <72de09df-5dee-8bd0-5c91-359e4bc36ca8@flatmax.com>
+ <YwQEDyk17Q06mIVR@dev-arch.thelio-3990X>
+From:   Matt Flax <flatmax@flatmax.com>
+In-Reply-To: <YwQEDyk17Q06mIVR@dev-arch.thelio-3990X>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- On Fri, Aug 5, 2022 at 8:44 AM Miguel Ojeda <ojeda@kernel.org> wrote:
+That solution looks good.
+
+Matt
+
+On 23/8/22 08:32, Nathan Chancellor wrote:
+> Hi Matt,
 >
-> Having most of the new files in place, we now enable Rust support
-> in the build system, including `Kconfig` entries related to Rust,
-> the Rust configuration printer and a few other bits.
-
-Cool, I'm finally happy with this patch.
-
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Tested-by: Nick Desaulniers <ndesaulniers@google.com>
-
-I built and boot tested with CONFIG_RUST enabled, played with
-CLIPPY=3D1, and built all of the new make targets for rust.
-
-Thanks for all of the work that went into these series from all of the
-authors and Miguel for your determination. Keep it up!
-
-I've left comments on other patches (and I will leave one on
-rust/compiler_builtins.rs because I still don't like that approach)
-and there may be small cleanups we can do here or there, but I think
-we're in good shape to land something and start iterating on it
-upstream.  I'll file bugs in your issue tracker for small nits I come
-across, but so far, it's been more-so questions.
-
----
-
-LWN recently demonstrated that most fixes are in relatively younger
-code: https://lwn.net/Articles/902854/
-
-An analysis of 0day exploits found in the wild in 2021 showed that for
-Android, researchers are attacking drivers:
-https://googleprojectzero.blogspot.com/2022/04/the-more-you-know-more-you-k=
-now-you.html
-
-Multiple independent reports cite high numbers (70% or more) of memory
-safety issues in native code:
-https://www.memorysafety.org/docs/memory-safety/
-
-I have colleagues that are developing a microkernel (they then use a
-memory unsafe language for their kernel as well :^P ) to move as much
-functionality as possible into lower levels of privilege.  It's
-interesting and I wish them well, but I also prefer more incremental
-approaches to existing solutions, and suspect the way of the monolith
-to still give us the best performance.
-
-I learned an interesting word the other day: Corten Steel
-from the YouTube channel Practical Engineering (it's a great channel
-on Civil Engineering):
-https://www.youtube.com/watch?v=3D2RbiCOFffRs&t=3D523s
-transcript:
-
->> I should also note that there are even steel alloys whose rust is protec=
-tive! Weathering steel (sometimes known by its trade name of Corten Steel) =
-is a group of alloys that are naturally resilient against rust because of p=
-assivation. A special blend of elements, including manganese, nickel, silic=
-on, and chromium don=E2=80=99t keep the steel from rusting, but they allow =
-the layer of rust to stay attached, forming a protective layer that signifi=
-cantly slows corrosion.
-
-My hope is that Rust may provide a layer of Corten Steel to the Linux
-kernel to help us protect newly written driver code from memory safety
-related issues, so that Linux remains the best option for developing
-products for the next 30 years. I also suspect it may bring in a whole
-new generation of hackers to the kernel ecosystem.  That is my
-blessing for Rust in the Linux kernel.
---
-Thanks,
-~Nick Desaulniers
+> On Tue, Aug 23, 2022 at 08:00:07AM +1000, Matt Flax wrote:
+>> Hi Nathan,
+>>
+>> On 23/8/22 04:31, Nathan Chancellor wrote:
+>>> Clang warns:
+>>>
+>>>     sound/soc/codecs/src4xxx.c:280:3: error: variable 'd' is used uninitialized whenever switch default is taken [-Werror,-Wsometimes-uninitialized]
+>>>                     default:
+>>>                     ^~~~~~~
+>>>     sound/soc/codecs/src4xxx.c:298:59: note: uninitialized use occurs here
+>>>                     ret = regmap_write(src4xxx->regmap, SRC4XXX_RCV_PLL_11, d);
+>>>                                                                             ^
+>>>     sound/soc/codecs/src4xxx.c:223:20: note: initialize the variable 'd' to silence this warning
+>>>             int val, pj, jd, d;
+>>>                               ^
+>>>                               = 0
+>>
+>> If you really want to get rid of these warnings, you can use this default
+>> for the variables :
+>>
+>> pj = 0x0;
+>> jd=0xff;
+>>
+>> d = 0xff;
+>>
+>> It doesn't really make sense why we would choose to initialise these
+>> variables, but if you want to silence the preprocessor, then perhaps those
+>> values. Put a message that defaults are not known nor specified in the data
+>> sheet and these values are chosen to be unlikely matches of real world
+>> values - which ensures regmap updates later from an initial unknown chip
+>> state after refresh.
+> Okay, I could do something like this?
+>
+> diff --git a/sound/soc/codecs/src4xxx.c b/sound/soc/codecs/src4xxx.c
+> index a8f143057b41..db4e280dd055 100644
+> --- a/sound/soc/codecs/src4xxx.c
+> +++ b/sound/soc/codecs/src4xxx.c
+> @@ -280,9 +280,14 @@ static int src4xxx_hw_params(struct snd_pcm_substream *substream,
+>   		default:
+>   			/* don't error out here,
+>   			 * other parts of the chip are still functional
+> +			 * Dummy initialize variables to avoid
+> +			 * -Wsometimes-uninitialized from clang.
+>   			 */
+>   			dev_info(component->dev,
+> -				"Couldn't set the RCV PLL as this master clock rate is unknown\n");
+> +				"Couldn't set the RCV PLL as this master clock rate is unknown. Chosen regmap values may not match real world values.\n");
+> +			pj = 0x0;
+> +			jd = 0xff;
+> +			d = 0xff;
+>   			break;
+>   		}
+>   		ret = regmap_write(src4xxx->regmap, SRC4XXX_RCV_PLL_0F, pj);
+>
+> These warnings need to be eliminated because Linus requires a clean
+> build as much as possible [1] [2], which has been codified by
+> CONFIG_WERROR, which is enabled by default with allmodconfig. As a
+> result, clang allmodconfig builds are broken [3], which you might have
+> already seen. If there is another way this could be written without
+> potentially uninitialized variables, I am open to it.
+>
+> [1]: https://lore.kernel.org/CAHk-=wg-mH-_GYpkhz_psjBWG6ZcjKnPo83fg7YMj_by+-LRTQ@mail.gmail.com/
+> [2]: https://lore.kernel.org/CAHk-=wi4wyvuXs0SUq-2x=XHxWmJ6jVKRD-WpE0kWgWiqVJNbg@mail.gmail.com/
+> [3]: https://lore.kernel.org/YwNMUlAmu%2FqCjuva@debian/
+>
+>> All a bit messy really.
+> Indeed :/
+>
+>>> According to the comment in the default case, other parts of the chip
+>>> are still functional without these values so just return 0 in the
+>>> default case to avoid using these variables uninitialized.
+>>>
+>>> Link: https://github.com/ClangBuiltLinux/linux/issues/1691
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Reported-by: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+>>> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+>>> ---
+>>>    sound/soc/codecs/src4xxx.c | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/sound/soc/codecs/src4xxx.c b/sound/soc/codecs/src4xxx.c
+>>> index a8f143057b41..cf45caa4bf7f 100644
+>>> --- a/sound/soc/codecs/src4xxx.c
+>>> +++ b/sound/soc/codecs/src4xxx.c
+>>> @@ -283,7 +283,7 @@ static int src4xxx_hw_params(struct snd_pcm_substream *substream,
+>>>    			 */
+>>>    			dev_info(component->dev,
+>>>    				"Couldn't set the RCV PLL as this master clock rate is unknown\n");
+>>> -			break;
+>>> +			return 0;
+>>
+>> Don't return here, the rest of the chip is still functional and probably in
+>> use. Print the dev_info and continue.
+> I'll send a v2 tomorrow morning (for me at least) if there are no other
+> comments.
+>
+> Cheers,
+> Nathan
