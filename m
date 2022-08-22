@@ -2,79 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 574FBC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D137C32792
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 06:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232873AbiHVGUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 02:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        id S232951AbiHVGW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 02:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbiHVGUF (ORCPT
+        with ESMTP id S232947AbiHVGW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 02:20:05 -0400
-Received: from atl4mhfb03.myregisteredsite.com (atl4mhfb03.myregisteredsite.com [209.17.115.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A996C252AA
-        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:20:03 -0700 (PDT)
-Received: from atl4mhob11.registeredsite.com (atl4mhob11.registeredsite.com [209.17.115.49])
-        by atl4mhfb03.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id 27M6Ikqi003353
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:18:46 -0400
-Received: from mailpod.hostingplatform.com ([10.30.71.204])
-        by atl4mhob11.registeredsite.com (8.14.4/8.14.4) with ESMTP id 27M6IhKE009607
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 02:18:43 -0400
-Received: (qmail 3384 invoked by uid 0); 22 Aug 2022 06:18:43 -0000
-X-TCPREMOTEIP: 81.173.50.109
-X-Authenticated-UID: mike@milosoftware.com
-Received: from unknown (HELO phenom.domain?not?set.invalid) (mike@milosoftware.com@81.173.50.109)
-  by 0 with ESMTPA; 22 Aug 2022 06:18:42 -0000
-From:   Mike Looijmans <mike.looijmans@topic.nl>
-To:     linux-leds@vger.kernel.org
-Cc:     Mike Looijmans <mike.looijmans@topic.nl>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        p.meerwald@bct-electronic.com
-Subject: [PATCH 2/2] dt-bindings: leds: pca963x: Add support for PCA962x chips
-Date:   Mon, 22 Aug 2022 08:18:38 +0200
-Message-Id: <20220822061838.8212-2-mike.looijmans@topic.nl>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220822061838.8212-1-mike.looijmans@topic.nl>
-References: <20220822061838.8212-1-mike.looijmans@topic.nl>
+        Mon, 22 Aug 2022 02:22:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15282275C2
+        for <linux-kernel@vger.kernel.org>; Sun, 21 Aug 2022 23:22:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661149375;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nn4jF27DFlQd4RWn0PQw34qeK9JpgLOLE2krBPtSffM=;
+        b=fslQWwpRylkvCj+/Vvrw/mPfA4jq4fCn8ZSMv6ynoEZ17HvOGy6Di/Wo9iNasemIfhihrF
+        wXec1+El+x5gurmb1e3uYUb3ZLmOO5C8Pfal1xKgFJFz9c4BE0SrTUsaFBc8HzL9hXrO0i
+        amUNCwkM+KDQXVxStx9sezXh7uLekiA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-208-oWilpA_WMdKNbxA-Luhz_w-1; Mon, 22 Aug 2022 02:22:50 -0400
+X-MC-Unique: oWilpA_WMdKNbxA-Luhz_w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 566F43C0CD4A;
+        Mon, 22 Aug 2022 06:22:50 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.192.211])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E8911121314;
+        Mon, 22 Aug 2022 06:22:49 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Stefan Hansson <newbie13xd@gmail.com>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH] HID: input: fix uclogic tablets
+Date:   Mon, 22 Aug 2022 08:22:47 +0200
+Message-Id: <20220822062247.1146141-1-benjamin.tissoires@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PCA962x family shares the same I2C register layout and functionality.
-This adds support for the following chips:
-PCA9623 4-channel
-PCA9624 8-channel
-PCA9622 16-channel
-PCA9626 24-channel
+commit 87562fcd1342 ("HID: input: remove the need for HID_QUIRK_INVERT")
+made the assumption that it was the only one handling tablets and thus
+kept an internal state regarding the tool.
 
-Tested only the PCA9624. Other devices based on datasheet information.
+Turns out that the uclogic driver has a timer to release the in range
+bit, effectively making hid-input ignoring all in range information
+after the very first one.
 
-Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+Fix that by having a more rationale approach which consists in forwarding
+every event and let the input stack filter out the duplicates.
 
+Reported-by: Stefan Hansson <newbie13xd@gmail.com>
+Fixes: 87562fcd1342 ("HID: input: remove the need for HID_QUIRK_INVERT")
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 ---
+ drivers/hid/hid-input.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
- Documentation/devicetree/bindings/leds/leds-pca9532.txt | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/leds/leds-pca9532.txt b/Documentation/devicetree/bindings/leds/leds-pca9532.txt
-index f769c52e3643..50a340cbbb49 100644
---- a/Documentation/devicetree/bindings/leds/leds-pca9532.txt
-+++ b/Documentation/devicetree/bindings/leds/leds-pca9532.txt
-@@ -5,6 +5,10 @@ The PWM support 256 steps.
- 
- Required properties:
- 	- compatible:
-+		"nxp,pca9522"
-+		"nxp,pca9523"
-+		"nxp,pca9524"
-+		"nxp,pca9526"
- 		"nxp,pca9530"
- 		"nxp,pca9531"
- 		"nxp,pca9532"
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index 48c1c02c69f4..871a185a0f1f 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1532,7 +1532,10 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
+ 			 * assume ours
+ 			 */
+ 			if (!report->tool)
+-				hid_report_set_tool(report, input, usage->code);
++				report->tool = usage->code;
++
++			/* drivers may have changed the value behind our back, resend it */
++			hid_report_set_tool(report, input, report->tool);
+ 		} else {
+ 			hid_report_release_tool(report, input, usage->code);
+ 		}
 -- 
-2.17.1
+2.37.1
 
