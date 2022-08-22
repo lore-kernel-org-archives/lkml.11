@@ -2,134 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922CDC32792
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2289EC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 22:08:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbiHVWBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 18:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        id S234720AbiHVWIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 18:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235796AbiHVWBm (ORCPT
+        with ESMTP id S234666AbiHVWIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 18:01:42 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD85F474F3;
-        Mon, 22 Aug 2022 15:01:41 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id bt10so4177941lfb.1;
-        Mon, 22 Aug 2022 15:01:41 -0700 (PDT)
+        Mon, 22 Aug 2022 18:08:34 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC82215FE9
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:08:33 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id r141so9514905iod.4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:08:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=dMleDmi8cDYPwG7g31q+GzjMNp7DXdwyOoOOOvnIB08=;
-        b=XGklBEdd/czPgqVcfcb9DAU7otzBxODv2bDKtHK4dQmFsh6xqLvxkCiqvTOj9Re57w
-         hUoAzID8mex5S9dEECpF2ZAof8FcHFuNRn6n7k8sWpnOhQGKlAAMOyUPREz0nfEDzik/
-         Sn3RkOuW9ndxaHXmgwuhP5Kk3+N4+WWC+dW36cnJCzv2ADbgZDpFnsozQLtluK5jmK39
-         j6fqQw479xME9+gIV2CxVhUjVzli/7Oik4kJPjmOXGcW/QxnGvIQUUcV4EC58QquFv44
-         MnmRoq5hEHeu6gXe2C+8X6OxR+/Cb41dTPfpNoFFznkitBIfcO03goyTqVUh6kGqsq6B
-         G7ig==
+        d=linuxfoundation.org; s=google;
+        h=content-language:mime-version:user-agent:date:message-id:subject
+         :from:cc:to:from:to:cc;
+        bh=PO/x/lcGxwJuGHeoVdebBw0jfaxk4xanIPuLnTroQB8=;
+        b=UE5morJYl8WKwxtRgQBozd/4eWed/1OLiDZS7ZAmPKt6wne8S0zSAY9a/pYk+SH1rF
+         nN+evzFaSnpvy5ytnX40b+y8B4SEj/TLtUru5L+Kms6PMjkJ2aBuWvgOebNpyCWxyJ9V
+         I4eHLvnYLZRoebAUvFi1J3diWyHq9kGpSQTfY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=dMleDmi8cDYPwG7g31q+GzjMNp7DXdwyOoOOOvnIB08=;
-        b=fqnOxfsJB7A3pdCrcmHqOwK9wzPwg1wv93tO+lfTTxcMfayRCsUDGO/ormgAQXkTwX
-         4z3uJc/SpdgudSXCjDWLchp4rr+z/WwsrMgTDJhKoRQoH9nE31eWJf+BY/6OA3K2MOoa
-         yyCF2nVpX1Se+xb/SiPUlPs0SG41Pq34oqidyastnHEi8/XtzDSV+PYVHm20VNdgq/7A
-         MCIX4gMj/lBHP+tA83+I9NbD3Dsvof/wlRRJVRz70Am7kYbYeAsfYaTm+1+RdnxaYZdh
-         PWEv+ldy8mgYZdBUBphYXTS+39/xHneY0qWm0xCw/eqMxVC7E2IFul9HmIo6Hz1vNHWY
-         9C2Q==
-X-Gm-Message-State: ACgBeo3I2TwrSe4p2eSDTV1YtRY/9EX6eh7xPoMEzKw+IbP62HqANjt+
-        vlZFzjN+2mG+4c2NwlrOTMw=
-X-Google-Smtp-Source: AA6agR5Q1DzxSxNGtMOUzvZv7yoHJpavYP8O075VngcOlmJIJX468efk6mDoqnTZz4jFHoKEVRXddg==
-X-Received: by 2002:a19:6554:0:b0:492:e7d2:645c with SMTP id c20-20020a196554000000b00492e7d2645cmr1777073lfj.586.1661205699954;
-        Mon, 22 Aug 2022 15:01:39 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id c20-20020a056512325400b00492e570e036sm651362lfr.54.2022.08.22.15.01.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 15:01:39 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 01:01:37 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Mark Brown <broonie@kernel.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] spi: dw: Add deferred controller registration support
-Message-ID: <20220822220137.nko7kznjae2ynm4p@mobilestation>
-References: <20220822181853.23063-1-Sergey.Semin@baikalelectronics.ru>
- <CAHp75VefTEy7jFAFnZe5A+d+2+984RMRDqxtPDJnd+E+dbZw=w@mail.gmail.com>
+        h=content-language:mime-version:user-agent:date:message-id:subject
+         :from:cc:to:x-gm-message-state:from:to:cc;
+        bh=PO/x/lcGxwJuGHeoVdebBw0jfaxk4xanIPuLnTroQB8=;
+        b=0RJH5S9V7om3Z/44avBId+rwhmY+GZEGzSbE7B3SjsT0TcjnxMlHviUK379IUCoG0p
+         RUqkSYSrUqObtSUXqwOHGDvGQJWtQhT9jtwcx6jjCYpzGEczxzyBe5OsBrIFn7hlbU3k
+         5xArO4r7N0RMI0vFYz98X/285pTKB4D4ZqaTGztJ34doc7weU+2t3Xw/6AEx0jsc0zEL
+         F4KSKV8Sjw0zv69KYCbKZfKJ/oK2mS/N5w6TOlU76UPKMR7z8Gs0vik6pbjglJh5JEmU
+         oA1aDBd10dyVZkZA/vSyXRp5jGzCDAB2lJNnGRqQg+rbWPvM0hfeiaA42rbpCfMmX9VM
+         xzTA==
+X-Gm-Message-State: ACgBeo1GBL5Az3LrVpXeLwoAHasOFTm7EHmz/BgvdZmwjlJlARGFx3gl
+        s67XjMn84oOw0GtCTcEphPX39yYwRwjaqw==
+X-Google-Smtp-Source: AA6agR6nRT7b99pV0tfx6ExxJGTOZeine4C8N+sdZHFkmkeWW/t5r3gdGMTY7FrZj9i6iGSiHb69lg==
+X-Received: by 2002:a05:6638:470d:b0:349:c2f7:59c4 with SMTP id cs13-20020a056638470d00b00349c2f759c4mr5674015jab.223.1661206112922;
+        Mon, 22 Aug 2022 15:08:32 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id d37-20020a023f25000000b0033197f42be0sm5518637jaa.157.2022.08.22.15.08.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 15:08:32 -0700 (PDT)
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Subject: [GIT PULL] KUnit fixes update for Linux 6.0-rc3
+Message-ID: <83371a8c-9f40-3947-51d0-07efc15bdae2@linuxfoundation.org>
+Date:   Mon, 22 Aug 2022 16:08:31 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VefTEy7jFAFnZe5A+d+2+984RMRDqxtPDJnd+E+dbZw=w@mail.gmail.com>
+Content-Type: multipart/mixed;
+ boundary="------------A398DC0BE7E221BC49E8E404"
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 12:38:45AM +0300, Andy Shevchenko wrote:
-> On Mon, Aug 22, 2022 at 9:19 PM Serge Semin
-> <Sergey.Semin@baikalelectronics.ru> wrote:
-> >
-> > It's pretty possible to have the spi_register_controller() method
-> > returning -EPROBE_DEFER status in case, for instance, if the GPIOs used
-> > for the CS implementation aren't ready to be requested due to the
-> > corresponding platform devices still pending to be probed. Let's make sure
-> > the DW SSI driver won't print error message in that case by calling the
-> > dev_err_probe() function if the SPI-registration procedure exited with
-> > a non-zero status.
-> 
+This is a multi-part message in MIME format.
+--------------A398DC0BE7E221BC49E8E404
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> Shouldn't there be a Fixes tag?
-> 
+Hi Linus,
 
-The dev_err-line has been there since the driver was born in commit
-e24c74527207 ("spi: controller driver for Designware SPI core") ,
-which had happened for several years before the deferred probe was
-added d1c3414c2a9d ("drivercore: Add driver probe deferral
-mechanism"). Moreover I didn't think it was that much critical to have
-the patch backported since the discovered problem just caused a false
-error message logged. So IMO the fixes tag wasn't that much required
-in this case.
+Please pull the following KUnit fixes update for Linux 6.0-rc3.
 
-Anyway if Mark decides, that it still would be good to have the patch
-backported, here is the fixes tag which could be added during the
-patch merging in:
-Fixes: e24c74527207 ("spi: controller driver for Designware SPI core")
+This KUnit fixes update for Linux 6.0-rc3 consists of fixes to mmc
+test and fix to load .kunit_test_suites section when CONFIG_KUNIT=m,
+and not just when KUnit is built-in.
 
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Please note that this KUnit update touches mmc driver Kconfig and
+kernel/module/main.c.
 
-Thanks.
+diff is attached.
 
--Sergey
+thanks,
+-- Shuah
 
-> 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  drivers/spi/spi-dw-core.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/spi/spi-dw-core.c b/drivers/spi/spi-dw-core.c
-> > index f87d97ccd2d6..99edddf9958b 100644
-> > --- a/drivers/spi/spi-dw-core.c
-> > +++ b/drivers/spi/spi-dw-core.c
-> > @@ -955,7 +955,7 @@ int dw_spi_add_host(struct device *dev, struct dw_spi *dws)
-> >
-> >         ret = spi_register_controller(master);
-> >         if (ret) {
-> > -               dev_err(&master->dev, "problem registering spi master\n");
-> > +               dev_err_probe(dev, ret, "problem registering spi master\n");
-> >                 goto err_dma_exit;
-> >         }
-> >
-> > --
-> > 2.35.1
-> >
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+----------------------------------------------------------------
+The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
+
+   Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
+
+are available in the Git repository at:
+
+   git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-kunit-fixes-6.0-rc3
+
+for you to fetch changes up to 41a55567b9e31cb852670684404654ec4fd0d8d6:
+
+   module: kunit: Load .kunit_test_suites section when CONFIG_KUNIT=m (2022-08-15 13:51:07 -0600)
+
+----------------------------------------------------------------
+linux-kselftest-kunit-fixes-6.0-rc3
+
+This KUnit fixes update for Linux 6.0-rc3 consists of fixes to mmc
+test and fix to load .kunit_test_suites section when CONFIG_KUNIT=m,
+and not just when KUnit is built-in.
+
+----------------------------------------------------------------
+David Gow (2):
+       mmc: sdhci-of-aspeed: test: Fix dependencies when KUNIT=m
+       module: kunit: Load .kunit_test_suites section when CONFIG_KUNIT=m
+
+  drivers/mmc/host/Kconfig | 1 +
+  kernel/module/main.c     | 2 +-
+  2 files changed, 2 insertions(+), 1 deletion(-)
+----------------------------------------------------------------
+
+--------------A398DC0BE7E221BC49E8E404
+Content-Type: text/x-patch; charset=UTF-8;
+ name="linux-kselftest-kunit-fixes-6.0-rc3.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="linux-kselftest-kunit-fixes-6.0-rc3.diff"
+
+diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+index 10c563999d3d..e63608834411 100644
+--- a/drivers/mmc/host/Kconfig
++++ b/drivers/mmc/host/Kconfig
+@@ -171,6 +171,7 @@ config MMC_SDHCI_OF_ASPEED
+ config MMC_SDHCI_OF_ASPEED_TEST
+ 	bool "Tests for the ASPEED SDHCI driver" if !KUNIT_ALL_TESTS
+ 	depends on MMC_SDHCI_OF_ASPEED && KUNIT
++	depends on (MMC_SDHCI_OF_ASPEED=m || KUNIT=y)
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable KUnit tests for the ASPEED SDHCI driver. Select this
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 6a477c622544..a4e4d84b6f4e 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -2099,7 +2099,7 @@ static int find_module_sections(struct module *mod, struct load_info *info)
+ 					      sizeof(*mod->static_call_sites),
+ 					      &mod->num_static_call_sites);
+ #endif
+-#ifdef CONFIG_KUNIT
++#if IS_ENABLED(CONFIG_KUNIT)
+ 	mod->kunit_suites = section_objs(info, ".kunit_test_suites",
+ 					      sizeof(*mod->kunit_suites),
+ 					      &mod->num_kunit_suites);
+
+--------------A398DC0BE7E221BC49E8E404--
