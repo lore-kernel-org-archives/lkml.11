@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE9CC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5A7C32774
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 19:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238142AbiHVTII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
+        id S238040AbiHVTIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238040AbiHVTH4 (ORCPT
+        with ESMTP id S238061AbiHVTH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 15:07:56 -0400
+        Mon, 22 Aug 2022 15:07:58 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBC8315725;
-        Mon, 22 Aug 2022 12:07:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 750E9140DA;
+        Mon, 22 Aug 2022 12:07:47 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id D8FD7DAA;
-        Mon, 22 Aug 2022 22:10:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com D8FD7DAA
+        by mail.baikalelectronics.com (Postfix) with ESMTP id D11C3DA7;
+        Mon, 22 Aug 2022 22:10:49 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com D11C3DA7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661195451;
-        bh=KqgX1I5itcj9ylgq+A5rGVh0GU6++N5XRIwVSDAC6Vg=;
+        d=baikalelectronics.ru; s=mail; t=1661195449;
+        bh=lHezRdyu8CznbTal0UlOdDCCHEtJN3WwOIX4vnqwe4w=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=eE5l7IPOUkPAwu16KELxO+Bx7KBGWUKJd/DOdvJqc/LtEm21BBt4K0GK65u2C0XSt
-         oQJRoBDM7PkbZqlOsXgw+DjhkSlnst7jqaCUfOIg8YPOpt2G0JfCER87/5BYCl+lX8
-         Quv3TDoxfXAuyWZxQaDqoI+21OF4kMpnWVN3d56c=
+        b=dw8fcb6Wqyum8u/X0R5V17/ks6znp9nOdFJTRGSryN8YSJJ9Vbc72Qvjczli+Zblz
+         f4XiBSFurKs2Jjw+gLrkKc9gA2tL+FvQygJL0sEwKTumWjdFqiKKGnB0GYDi9H3vV4
+         XEOrG+iiEPRyIpkcshK8wDCgpzt7Ec+UrrGaQjnc=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:37 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 22:07:35 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh@kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
@@ -35,7 +35,8 @@ To:     Rob Herring <robh@kernel.org>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Tony Luck <tony.luck@intel.com>,
         James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>
+        Robert Richter <rric@kernel.org>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
@@ -49,10 +50,11 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 08/20] EDAC/synopsys: Drop local to_mci macro implementation
-Date:   Mon, 22 Aug 2022 22:07:18 +0300
-Message-ID: <20220822190730.27277-9-Sergey.Semin@baikalelectronics.ru>
+        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 05/20] EDAC/synopsys: Fix reading errors count before ECC status
+Date:   Mon, 22 Aug 2022 22:07:15 +0300
+Message-ID: <20220822190730.27277-6-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -63,31 +65,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The to_mci macro was added in commit 1a81361f75d8 ("EDAC, synopsys: Add
-Error Injection support for ZynqMP DDR controller") together with the
-errors injection debug feature. It turns our the macro with the same
-semantic and name has already been defined in the edac_mc.h (former
-edac_core.h) header file. No idea why it was needed to have a local
-version with the same semantic, but now there is no point in that. Drop
-the local implementation for good then.
+Aside with fixing the errors count CSR usage the commit e2932d1f6f05
+("EDAC/synopsys: Read the error count from the correct register") all of
+the sudden has also changed the order of the errors status check
+procedure. So now the errors handler method first reads the number of CE
+and UE and only then makes sure that any of these errors have actually
+happened. It doesn't make much sense. Let's fix that by getting back the
+procedures order: first check the ECC status, then read the number of
+errors.
 
+Fixes: e2932d1f6f05 ("EDAC/synopsys: Read the error count from the correct register")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/edac/synopsys_edac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/edac/synopsys_edac.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index 956de6fb3125..c51a25a28835 100644
+index 873dbc684fe6..14653b799901 100644
 --- a/drivers/edac/synopsys_edac.c
 +++ b/drivers/edac/synopsys_edac.c
-@@ -948,7 +948,6 @@ static const struct of_device_id synps_edac_match[] = {
- MODULE_DEVICE_TABLE(of, synps_edac_match);
+@@ -422,18 +422,18 @@ static int zynqmp_get_error_info(struct synps_edac_priv *priv)
+ 	base = priv->baseaddr;
+ 	p = &priv->stat;
  
- #ifdef CONFIG_EDAC_DEBUG
--#define to_mci(k) container_of(k, struct mem_ctl_info, dev)
+-	regval = readl(base + ECC_ERRCNT_OFST);
+-	p->ce_cnt = regval & ECC_ERRCNT_CECNT_MASK;
+-	p->ue_cnt = (regval & ECC_ERRCNT_UECNT_MASK) >> ECC_ERRCNT_UECNT_SHIFT;
+-	if (!p->ce_cnt)
+-		goto ue_err;
+-
+ 	regval = readl(base + ECC_STAT_OFST);
+ 	if (!regval)
+ 		return 1;
  
- /**
-  * ddr_poison_setup -	Update poison registers.
+ 	p->ceinfo.bitpos = (regval & ECC_STAT_BITNUM_MASK);
+ 
++	regval = readl(base + ECC_ERRCNT_OFST);
++	p->ce_cnt = regval & ECC_ERRCNT_CECNT_MASK;
++	p->ue_cnt = (regval & ECC_ERRCNT_UECNT_MASK) >> ECC_ERRCNT_UECNT_SHIFT;
++	if (!p->ce_cnt)
++		goto ue_err;
++
+ 	regval = readl(base + ECC_CEADDR0_OFST);
+ 	p->ceinfo.row = (regval & ECC_CEADDR0_RW_MASK);
+ 	regval = readl(base + ECC_CEADDR1_OFST);
 -- 
 2.35.1
 
