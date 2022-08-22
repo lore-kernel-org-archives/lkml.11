@@ -2,99 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E069C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1BEBC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235577AbiHVOAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S235494AbiHVOA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234860AbiHVOAU (ORCPT
+        with ESMTP id S235536AbiHVOAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:00:20 -0400
+        Mon, 22 Aug 2022 10:00:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A3139B93;
-        Mon, 22 Aug 2022 07:00:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D92B2DA9F
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 07:00:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51202B8123A;
-        Mon, 22 Aug 2022 14:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DF5ADC4314A;
-        Mon, 22 Aug 2022 14:00:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9297B81236
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 14:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77D7BC433C1;
+        Mon, 22 Aug 2022 14:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661176816;
-        bh=orT3QMvkSoHHqPhUrfOeoGgvMUqUg3YkbuOk1NRLzD0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AWbqZa3ljQPak3jKFSQ9qYXmSiFK4hkUob7qCQFNQAUGaf1kp6Spcd33go1QpR+uy
-         C4QENOLNHYb8BXD7FxbLFhq40cQZpByYuo34BmLObmzo0ORKUULTibjpwiak5uU1J9
-         /G+QNaQm1L6JePN9koM9Mz6rg3LH89BwWhUIfi9o2SlSCnJWsFwb1hjBLeUsF8WbFp
-         ikutXfke0k5TpTFeQaYJ+JSlGTx45Hxo7Xd6LaXx0Vuw7hgXqHFGhHG/M6FnjYiNeM
-         cyHi85/7+k/qLiXoV9UJD21wRjOIMM6oa888vL93CW3OCApUE/j9zmndxo+/GumxdH
-         ZOAVoif43f5HQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BDFF9E2A040;
-        Mon, 22 Aug 2022 14:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1661176842;
+        bh=HNnv4uj0w/+ANJJRVTyGp2wul4QzAaeRNJZWmg69y1E=;
+        h=Date:From:To:Cc:Subject:From;
+        b=E++nm/L7Bvcv+MpY4PbakFlZeljRwZaj1pXJVcrh8Iq0gKC7e4HSyBtu2q3NKfNYy
+         wB4k4FG8GYqquDhn6UB+E4Cg7PVEJwSRHK1Rw8yKmQxDec3JxnwSrQ4C0bXT2MHpGk
+         L6N3qMBsriVFcNHVWBtfqDMxvno8kaVYBoGO+HpFMRIDZ1ada9tB5LzuqJKb8dAHaX
+         Yi30nWGzfoaw73oVruvFzst0H3UneQ2cW93OjyD9Q9A2bf0Ffgh94hojYqCed7P9yP
+         vt3hcKy6kYgk5DPwmRSPuNAnBs+R0mkhIYp9Ln7C9j3HWxK4o6FUt2RvjbQdiAgKrB
+         xeA9Enq42P+Yg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 2D227404A1; Mon, 22 Aug 2022 11:00:40 -0300 (-03)
+Date:   Mon, 22 Aug 2022 11:00:40 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: [PATCH FYI 1/1] tools kvm headers arm64: Update KVM header from the
+ kernel sources
+Message-ID: <YwOMCCc4E79FuvDe@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] Remove DECnet support from kernel
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166117681677.22523.5504877991738164971.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Aug 2022 14:00:16 +0000
-References: <20220818004357.375695-1-stephen@networkplumber.org>
-In-Reply-To: <20220818004357.375695-1-stephen@networkplumber.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org, corbet@lwn.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, tsbogend@alpha.franken.de, mpe@ellerman.id.au,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        bp@suse.de, paulmck@kernel.org, akpm@linux-foundation.org,
-        quic_neeraju@quicinc.com, rdunlap@infradead.org,
-        damien.lemoal@opensource.wdc.com, songmuchun@bytedance.com,
-        hmukos@yandex-team.ru, atenart@kernel.org, lucien.xin@gmail.com,
-        jgross@suse.com, hdegoede@redhat.com, nathan.fontenot@amd.com,
-        martin.petersen@oracle.com, suma.hegde@amd.com,
-        yu.c.chen@intel.com, vilhelm.gray@gmail.com,
-        xieyongji@bytedance.com, pali@kernel.org, arnd@arndb.de,
-        alexandre.ghiti@canonical.com, chuck.lever@oracle.com,
-        jlayton@kernel.org, paul.gortmaker@windriver.com,
-        razor@blackwall.org, bigeasy@linutronix.de, imagedong@tencent.com,
-        petrm@nvidia.com, daniel@iogearbox.net, roopa@nvidia.com,
-        wangyuweihx@gmail.com, shakeelb@google.com, kuniyu@amazon.com,
-        keescook@chromium.org, sgarzare@redhat.com, f.fainelli@gmail.com,
-        wangqing@vivo.com, yuzhe@nfschina.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+tldr; Just FYI, I'm carrying this on the perf tools tree.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+- Arnaldo
 
-On Wed, 17 Aug 2022 17:43:21 -0700 you wrote:
-> DECnet is an obsolete network protocol that receives more attention
-> from kernel janitors than users. It belongs in computer protocol
-> history museum not in Linux kernel.
-> 
-> It has been "Orphaned" in kernel since 2010. The iproute2 support
-> for DECnet was dropped in 5.0 release. The documentation link on
-> Sourceforge says it is abandoned there as well.
-> 
-> [...]
+Full explanation:
 
-Here is the summary with links:
-  - [net-next] Remove DECnet support from kernel
-    https://git.kernel.org/netdev/net-next/c/1202cdd66531
+There used to be no copies, with tools/ code using kernel headers
+directly. From time to time tools/perf/ broke due to legitimate kernel
+hacking. At some point Linus complained about such direct usage. Then we
+adopted the current model.
 
-You are awesome, thank you!
+The way these headers are used in perf are not restricted to just
+including them to compile something.
+
+There are sometimes used in scripts that convert defines into string
+tables, etc, so some change may break one of these scripts, or new MSRs
+may use some different #define pattern, etc.
+
+E.g.:
+
+  $ ls -1 tools/perf/trace/beauty/*.sh | head -5
+  tools/perf/trace/beauty/arch_errno_names.sh
+  tools/perf/trace/beauty/drm_ioctl.sh
+  tools/perf/trace/beauty/fadvise.sh
+  tools/perf/trace/beauty/fsconfig.sh
+  tools/perf/trace/beauty/fsmount.sh
+  $
+  $ tools/perf/trace/beauty/fadvise.sh
+  static const char *fadvise_advices[] = {
+  	[0] = "NORMAL",
+  	[1] = "RANDOM",
+  	[2] = "SEQUENTIAL",
+  	[3] = "WILLNEED",
+  	[4] = "DONTNEED",
+  	[5] = "NOREUSE",
+  };
+  $
+
+The tools/perf/check-headers.sh script, part of the tools/ build
+process, points out changes in the original files.
+
+So its important not to touch the copies in tools/ when doing changes in
+the original kernel headers, that will be done later, when
+check-headers.sh inform about the change to the perf tools hackers.
+
+---
+
+To pick the changes from:
+
+  ae3b1da95413614f ("KVM: arm64: Fix compile error due to sign extension")
+
+That don't resung in any changes in tooling (when built on x86), only
+addresses this perf build warning:
+
+  Warning: Kernel ABI header at 'tools/arch/arm64/include/uapi/asm/kvm.h' differs from latest version at 'arch/arm64/include/uapi/asm/kvm.h'
+  diff -u tools/arch/arm64/include/uapi/asm/kvm.h arch/arm64/include/uapi/asm/kvm.h
+
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Link: https://lore.kernel.org/lkml/
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/arch/arm64/include/uapi/asm/kvm.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/tools/arch/arm64/include/uapi/asm/kvm.h b/tools/arch/arm64/include/uapi/asm/kvm.h
+index 3bb134355874c8bf..316917b9870704de 100644
+--- a/tools/arch/arm64/include/uapi/asm/kvm.h
++++ b/tools/arch/arm64/include/uapi/asm/kvm.h
+@@ -75,9 +75,11 @@ struct kvm_regs {
+ 
+ /* KVM_ARM_SET_DEVICE_ADDR ioctl id encoding */
+ #define KVM_ARM_DEVICE_TYPE_SHIFT	0
+-#define KVM_ARM_DEVICE_TYPE_MASK	(0xffff << KVM_ARM_DEVICE_TYPE_SHIFT)
++#define KVM_ARM_DEVICE_TYPE_MASK	GENMASK(KVM_ARM_DEVICE_TYPE_SHIFT + 15, \
++						KVM_ARM_DEVICE_TYPE_SHIFT)
+ #define KVM_ARM_DEVICE_ID_SHIFT		16
+-#define KVM_ARM_DEVICE_ID_MASK		(0xffff << KVM_ARM_DEVICE_ID_SHIFT)
++#define KVM_ARM_DEVICE_ID_MASK		GENMASK(KVM_ARM_DEVICE_ID_SHIFT + 15, \
++						KVM_ARM_DEVICE_ID_SHIFT)
+ 
+ /* Supported device IDs */
+ #define KVM_ARM_DEVICE_VGIC_V2		0
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.2
 
