@@ -2,93 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758B1C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F70C32789
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 07:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiHVHWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 03:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41958 "EHLO
+        id S231391AbiHVHYO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbiHVHV6 (ORCPT
+        with ESMTP id S230259AbiHVHYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 03:21:58 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3967A29C88
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:21:57 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 2so4641613edx.2
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:21:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=K9GqH8J2Rtwg9al68hkNDhdyAqH2iZ0okDuLSh58pgQ=;
-        b=lcomsdQYETH++8/O8lDI76zbdmo8u73NvmYlTumg800wRLlB85LnH8xGZR3hpnq2ng
-         YM2W5trM6h53BduUHjBwQU5/ATLm3SpfWgCKzjNs6OSd0XUlv/Kd3ywDUtBkITmkN68p
-         Ec1JBUOsQpTNRVcdVnbVT04cmjsQKxHMk09ymwk+FCwhX7Y7ZEdVEBiRWVcgPpRLtkai
-         HuqgsCXZYusUEMAe51bTP7zo7Z6RjFOgZ4v7iij8PEn5jrov1ZG5fH2voQNQWozsJuPw
-         UohDEWX/Iga/EJHAw6mBbg3Lqixv/zy8AlYNtBgEDSkqVC1a5dQ/yfrbVyi1gM64LVRz
-         PFJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=K9GqH8J2Rtwg9al68hkNDhdyAqH2iZ0okDuLSh58pgQ=;
-        b=Umx3Zs7/CyytPglQIPxPIN4nINUghRjCd8mwZBuK4444DlFbnXzB8fy5I92toFdLVg
-         ORvcTvx5RRs93M8cPy4csM1AWlruHVd+2IVB4dXVKhiltS558YSOy9HK+rYaI+Y6YuKW
-         b6EGuXjylaPS5NsFJohNnR65u1Dg/WYR0TXTUdgpiq+gzBhEb+MEH0ZjWqOP5yQx8sjf
-         GwmFB07oEYzqPbYJAOTo+jCausQy5B8pJnXSEmTr7lATa0ecZ3ss7iYMZPSnwFbhxfYV
-         M/xfLZ77iIXl7mIUy1f2pctdeDlLrP6aDkO2LY55N+7h9epKgFuOE3lZ2ZM2+Zs2AxbT
-         3wqQ==
-X-Gm-Message-State: ACgBeo0dI0huWtFYAc/cuiDX9weu+c7dT4biMBSPG5QH/Ugj6VAwPJDE
-        ILrbmY4V/rPPH3/NuVwDJvdo87JNhp1I1YulrSZQhw==
-X-Google-Smtp-Source: AA6agR5/dTruYi9JrVkQ29gedLbwsDM/e6eJkPzc08FKA8BZSy+t8ph/0TIYsU90d5dOm1Ah5JSQ4Eb2qgytDr4Pfk0=
-X-Received: by 2002:aa7:c84f:0:b0:446:2bfb:5a63 with SMTP id
- g15-20020aa7c84f000000b004462bfb5a63mr12780779edt.172.1661152915747; Mon, 22
- Aug 2022 00:21:55 -0700 (PDT)
+        Mon, 22 Aug 2022 03:24:12 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 00:24:07 PDT
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C4229C87
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 00:24:06 -0700 (PDT)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20220822072303c04129123f3a45bb8f
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 22 Aug 2022 09:23:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=gTZkKlqN+Thq2gMBr0iu+geENL6ZPXLfTMRZqHvYKpY=;
+ b=M0sTY0kN/yG/LxIfRwTeXgxT3mqc1UxP0eeVa/XiLIfOQhG9BSaim46BlBzPduTYl8KRDy
+ w55HV2rM59XpMeFZlXmaI+TlF7d7uiOG72kZvrufRKSbaQobEAKnqbVXeE5isC2j7HD4MVfH
+ wone+8xWP6+lRD7p/quzE34xRGzH8=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 3/6] tty: n_gsm: replace use of gsm_read_ea() with gsm_read_ea_val()
+Date:   Mon, 22 Aug 2022 09:21:35 +0200
+Message-Id: <20220822072138.3123-3-daniel.starke@siemens.com>
+In-Reply-To: <20220822072138.3123-1-daniel.starke@siemens.com>
+References: <20220822072138.3123-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-References: <20220728091712.13395-1-m.zatovic1@gmail.com> <20220728091712.13395-2-m.zatovic1@gmail.com>
-In-Reply-To: <20220728091712.13395-2-m.zatovic1@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 22 Aug 2022 09:21:44 +0200
-Message-ID: <CACRpkdZKAzsdhyky1bEax3Jra0+MLYbu+LNWuk2KGAfEkBvBLQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/2] devicetree: bindings: bus: add Wiegand driver documentation
-To:     =?UTF-8?B?TWFydGluIFphxaVvdmnEjQ==?= <m.zatovic1@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        mani@kernel.org, hemantk@codeaurora.org, elder@linaro.org,
-        f.fainelli@gmail.com, Michael.Srba@seznam.cz,
-        jeffrey.l.hugo@gmail.com, gregkh@linuxfoundation.org,
-        bjorn.andersson@linaro.org, saravanak@google.com,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 11:17 AM Martin Za=C5=A5ovi=C4=8D <m.zatovic1@gmail=
-.com> wrote:
+From: Daniel Starke <daniel.starke@siemens.com>
 
-> Wiegand write-only driver requires definitions of two GPIO lines
-> in the devicetree. This adds the documentation of their
-> definitions.
+Replace the use of gsm_read_ea() with gsm_read_ea_val() where applicable to
+improve code readability and avoid errors like in the past.
 
-On top of the other comments:
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 97 +++++++++++++++++++++++----------------------
+ 1 file changed, 50 insertions(+), 47 deletions(-)
 
-> +  Both data lines are initially pulled up.
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index ed399d57b197..c87525b70e81 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1418,18 +1418,13 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
+ 	unsigned int modem = 0;
+ 	struct gsm_dlci *dlci;
+ 	int len = clen;
+-	int slen;
++	int cl = clen;
+ 	const u8 *dp = data;
+ 	struct tty_struct *tty;
+ 
+-	while (gsm_read_ea(&addr, *dp++) == 0) {
+-		len--;
+-		if (len == 0)
+-			return;
+-	}
+-	/* Must be at least one byte following the EA */
+-	len--;
+-	if (len <= 0)
++	len = gsm_read_ea_val(&addr, data, cl);
++
++	if (len < 1)
+ 		return;
+ 
+ 	addr >>= 1;
+@@ -1438,15 +1433,21 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
+ 		return;
+ 	dlci = gsm->dlci[addr];
+ 
+-	slen = len;
+-	while (gsm_read_ea(&modem, *dp++) == 0) {
+-		len--;
+-		if (len == 0)
+-			return;
+-	}
+-	len--;
++	/* Must be at least one byte following the EA */
++	if ((cl - len) < 1)
++		return;
++
++	dp += len;
++	cl -= len;
++
++	/* get the modem status */
++	len = gsm_read_ea_val(&modem, dp, cl);
++
++	if (len < 1)
++		return;
++
+ 	tty = tty_port_tty_get(&dlci->port);
+-	gsm_process_modem(tty, dlci, modem, slen - len);
++	gsm_process_modem(tty, dlci, modem, cl);
+ 	if (tty) {
+ 		tty_wakeup(tty);
+ 		tty_kref_put(tty);
+@@ -1921,8 +1922,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	struct tty_port *port = &dlci->port;
+ 	struct tty_struct *tty;
+ 	unsigned int modem = 0;
+-	int len = clen;
+-	int slen = 0;
++	int len;
+ 
+ 	if (debug & 16)
+ 		pr_debug("%d bytes for tty\n", len);
+@@ -1933,24 +1933,22 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	case 3:		/* Packetised uininterruptible voice/data */
+ 		break;
+ 	case 2:		/* Asynchronous serial with line state in each frame */
+-		while (gsm_read_ea(&modem, *data++) == 0) {
+-			len--;
+-			slen++;
+-			if (len == 0)
+-				return;
+-		}
+-		len--;
+-		slen++;
++		len = gsm_read_ea_val(&modem, data, clen);
++		if (len < 1)
++			return;
+ 		tty = tty_port_tty_get(port);
+ 		if (tty) {
+-			gsm_process_modem(tty, dlci, modem, slen);
++			gsm_process_modem(tty, dlci, modem, len);
+ 			tty_wakeup(tty);
+ 			tty_kref_put(tty);
+ 		}
++		/* Skip processed modem data */
++		data += len;
++		clen -= len;
+ 		fallthrough;
+ 	case 1:		/* Line state will go via DLCI 0 controls only */
+ 	default:
+-		tty_insert_flip_string(port, data, len);
++		tty_insert_flip_string(port, data, clen);
+ 		tty_flip_buffer_push(port);
+ 	}
+ }
+@@ -1971,24 +1969,29 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ {
+ 	/* See what command is involved */
+ 	unsigned int command = 0;
+-	while (len-- > 0) {
+-		if (gsm_read_ea(&command, *data++) == 1) {
+-			int clen = *data++;
+-			len--;
+-			/* FIXME: this is properly an EA */
+-			clen >>= 1;
+-			/* Malformed command ? */
+-			if (clen > len)
+-				return;
+-			if (command & 1)
+-				gsm_control_message(dlci->gsm, command,
+-								data, clen);
+-			else
+-				gsm_control_response(dlci->gsm, command,
+-								data, clen);
+-			return;
+-		}
+-	}
++	const u8 *dp = data;
++	int clen = 0;
++	int dlen;
++
++	/* read the command */
++	dlen = gsm_read_ea_val(&command, dp, len);
++	len -= dlen;
++	dp += dlen;
++
++	/* read any control data */
++	dlen = gsm_read_ea_val(&clen, dp, len);
++	len -= dlen;
++	dp += dlen;
++
++	/* Malformed command? */
++	if (clen > len)
++		return;
++
++	if (command & 1)
++		gsm_control_message(dlci->gsm, command, dp, clen);
++	else
++		gsm_control_response(dlci->gsm, command, dp, clen);
++	return;
+ }
+ 
+ /**
+-- 
+2.34.1
 
-That makes it sound like they are both open drain, right? Just like I2C.
-
-> +  wiegand-data-hi-gpios:
-> +  wiegand-data-lo-gpios:
-
-So these should be tagged with (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)
-See the I2C bindings in
-Documentation/devicetree/bindings/i2c/i2c-gpio.yaml
-
-> +        wiegand-data-hi-gpios =3D <&gpio2 1 GPIO_ACTIVE_HIGH>;
-> +        wiegand-data-lo-gpios =3D <&gpio2 2 GPIO_ACTIVE_HIGH>;
-
- (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN) on both then!
-
-Yours,
-Linus Walleij
