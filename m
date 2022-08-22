@@ -2,95 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2D2C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 021A5C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 13:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234868AbiHVNMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
+        id S235039AbiHVNMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 09:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234803AbiHVNMT (ORCPT
+        with ESMTP id S234521AbiHVNMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:12:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B69B533E2E
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 06:12:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 518B1B811FE
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0BF4C433B5;
-        Mon, 22 Aug 2022 13:12:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661173935;
-        bh=SiAIv6X2Q3SDevkUGpEJlAHs0fbikeFuvz77rYEBmLM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZseYsuPxJl4C7J1GlHJnJxCSeS+0xOQmdr/wWirhal2oC8PyOsr5z0KAdTH//V2vY
-         MsXvMob8jBLkpE5DnzZi8wquZ7PvsB9qgvURrCg+QKbNcVsbY3CYD7/JIhWHMq9Y1C
-         5U/q9dTg6og8NuPUJNtqZ59e1A0xqz82LcdQOvaW/lgmw/G7Msq9gdehWGRxvz4tiM
-         sk8AiT3q2fR7Oi3SGZ4aPADfYi7FlZb7sjAXLJeIcDttzT72WakfjBED5vKVSgwt/H
-         2vqxMuyxzbFIVFLwSp/qcjs8RFIxlFVp4dHxCMVREpFU9KZ2mA4TwrwdQqfM+CVt1E
-         EhEExxIJe2GVQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id B2077404A1; Mon, 22 Aug 2022 10:12:12 -0300 (-03)
-Date:   Mon, 22 Aug 2022 10:12:12 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Borislav Petkov <bp@suse.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [tools/ breakage] asm goto: eradicate CC_HAS_ASM_GOTO
-Message-ID: <YwOArA3ZdI8WtVSU@kernel.org>
+        Mon, 22 Aug 2022 09:12:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE4533E3A;
+        Mon, 22 Aug 2022 06:12:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Pmaf/7Gcj7yUXj9lfFijn0lHnAtMyFGBEGv7jKC4glY=; b=VnJFQ/GqGILH+2rdH6itFRAGSC
+        t+CAGFHwsZHEpc2+rLLnHKJO8AcBu7Bkz/zVbbedoZW3xnc0JQgkfY7cdeXGJhmvPKZpcXj9v4iaE
+        iaKe79K8QNuEtyf8+C2amwgJJ87YGAQK6OJ5ftv0P4RacuXG2iz9ecXxyz6v1a7zIaqc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQ7EM-00EDzw-L8; Mon, 22 Aug 2022 15:12:38 +0200
+Date:   Mon, 22 Aug 2022 15:12:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [RFC Patch net-next v2] net: dsa: microchip: lan937x: enable
+ interrupt for internal phy link detection
+Message-ID: <YwOAxh7Bc12OornD@lunn.ch>
+References: <20220822092017.5671-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220822092017.5671-1-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey,
+On Mon, Aug 22, 2022 at 02:50:17PM +0530, Arun Ramadoss wrote:
+> This patch enables the interrupts for internal phy link detection for
+> LAN937x. The interrupt enable bits are active low. It first enables port
+> interrupt and then port phy interrupt. Also patch register the irq
+> thread and in the ISR routine it clears the POR_READY_STS bit.
+> POR_READY_STS bit is write one clear bit and all other bit in the
+> register are read only. Since phy interrupts are handled by the lan937x
+> phy layer, switch interrupt routine does not read the phy layer
+> interrupts.
 
-	The cset below broke tools/perf/, please either not update
-tools/ headers (tools developers will notice the difference when
-building tools by means of tools/perf/check-headers.sh and see what
-is needed to keep it in sync) or do a 'make tools/all'.
+> +static irqreturn_t lan937x_switch_irq_thread(int irq, void *dev_id)
+> +{
+> +	struct ksz_device *dev = dev_id;
+> +	irqreturn_t result = IRQ_NONE;
+> +	u32 data;
+> +	int ret;
+> +
+> +	/* Read global interrupt status register */
+> +	ret = ksz_read32(dev, REG_SW_INT_STATUS__4, &data);
+> +	if (ret)
+> +		return result;
+> +
+> +	if (data & POR_READY_INT) {
+> +		ret = ksz_write32(dev, REG_SW_INT_STATUS__4, POR_READY_INT);
+> +		if (ret)
+> +			return result;
+> +	}
+> +
+> +	return result;
+> +}
 
-	Someone seems to have sent a fix, I'll take a look.
+I don't understand how this all fits together. How do you get from
+this interrupt handler into the PHY interrupt handler?
 
-- Arnaldo
+The hardware looks similar to the mv88e6xxx driver. You have a top
+level interrupt controller which indicates a port has some sort of
+interrupt handler. This is the mv88e6xxx_g1_irq_thread_work(). It
+finds which port triggered the interrupt and then hands the interrupt
+off to the nested interrupt handler.
 
-    asm goto: eradicate CC_HAS_ASM_GOTO
+mv88e6xxx_g2_irq_thread_fn() is the nested per port interrupt
+handler. It reads the per port interrupt status register, find the
+interrupt handler and calls the nested interrupt handler.
 
-    GCC has supported asm goto since 4.5, and Clang has since version 9.0.0.
-    The minimum supported versions of these tools for the build according to
-    Documentation/process/changes.rst are 5.1 and 11.0.0 respectively.
+This all glues together because phylib does a request_threaded_irq()
+for the PHY interrupt, so this last nested interrupt handler is in
+phylib.
 
-    Remove the feature detection script, Kconfig option, and clean up some
-    fallback code that is no longer supported.
-
-    The removed script was also testing for a GCC specific bug that was
-    fixed in the 4.7 release.
-
-    Also remove workarounds for bpftrace using clang older than 9.0.0, since
-    other BPF backend fixes are required at this point.
-
-    Link: https://lore.kernel.org/lkml/CAK7LNATSr=BXKfkdW8f-H5VT_w=xBpT2ZQcZ7rm6JfkdE+QnmA@mail.gmail.com/
-    Link: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48637
-    Acked-by: Borislav Petkov <bp@suse.de>
-    Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
-    Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-    Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-    Reviewed-by: Ingo Molnar <mingo@kernel.org>
-    Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-    Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-
+	Andrew
