@@ -2,103 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A021C32793
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1082CC32792
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 20:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232444AbiHVUJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 16:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
+        id S232498AbiHVUJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 16:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232278AbiHVUJQ (ORCPT
+        with ESMTP id S232242AbiHVUJT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 16:09:16 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C4E52DF8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:09:14 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id l23so613935lji.1
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:09:14 -0700 (PDT)
+        Mon, 22 Aug 2022 16:09:19 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAEA52460
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:09:18 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id s11so15341265edd.13
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 13:09:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=rNzR9QGqS5j6oh3cxSooKBs5Da2aEIBjVibuQ7PJyY4=;
-        b=G/6rnW2WngFu3z8GJAnZAfCOkh68V/JUVcL67bXj8QU16wKXhMja1mBmCXbTmoik81
-         fdRO9yziSI1qyn3ZnU+Tk/b2sF7XsdQ1NnwKRVBovYFK8jKlmTE25Tnqpl1OShRVgFuO
-         55GLEFueyqTzyirsTbo9dhWM7XcEyTrXvQVeN7iSuin+N1GEYFmw/DH+NkSO6W3GV6HO
-         R/542Kyg5z5z+fF28YqBPucnTKR8rFd39QVkbJ7+94RLIRv3/IdPNOPUYxR2rtFLJJo/
-         akYDrVLMQ3gXaiXiwyvOoGY3I0ZKHhZmxqg1es9/wRFbkicvNSHP3X7Q6cUSaREYuQyd
-         HxqA==
+        bh=YrWKYX54XcRB+7IefpmY6sNaaz9UJEYvmrEmm7qSZ0w=;
+        b=YZscAe3hvQ0GokHKrJV2pgBBBdaOb19jklY1so7x0tSJ3zokBPhqGM4y0pGoaxaOuj
+         3dDRW4fLhxoFrKpfS1D/GZ26cm0qgE75QCuCSNxci8zCKLUmRutksku1sYJGYnLZX4fh
+         yjpr0K1vrN6Yer42eYdbtS7qCmk0UB/Zw0XQDaRsQ2i4xkFA9SOVZNZn06PVqj30Yvnl
+         dDqfIazJVFqjPjfi8EffFFrV8cBnbThGdolRAZaOfUV8zPsIEhRy143aOqj3nodEixdQ
+         aGs336eeTsPKaVrdF09pk4sY7MtHPfT0pJW1inoesuoKBUitXXH+kWQlnWzbiAfwWsr8
+         D0lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=rNzR9QGqS5j6oh3cxSooKBs5Da2aEIBjVibuQ7PJyY4=;
-        b=qH307/arB0yXWddSp1h/TPrkVAaDGKkEvn1zCYV1Lz/nEYwksLIPgnb+FZnKy/B/qL
-         TkbXk4ArPptAv3pMlbSdLAkTtO+j3WQTvJN0I/V15ovjXhUR6EIo+hebAiXhasCzSESC
-         A1qutRH/L8DgSi1gVIdQoYdOz/Ntrz8xwtqi4tpL5yIQzArt9fJSNxj3VP6twYRgkB7l
-         3r7MynXcFSHfQO841MQ3SeaU9aExmXnLg0BNZTechxbKpi5zRf1K5rzFYi7qrSM2aVeI
-         cKRfN7OYzj0lKzUlTaMS1aYE8F3wpjTkBUdI7g97znJEY0kzt9IpSUAHnJaCKqbYaSNU
-         SsDA==
-X-Gm-Message-State: ACgBeo1NDblA1GoWvo4bLMvt+XjNwc9P36jbu8mdauj8+tC7KYupsuo7
-        a4XQIJPREr6StCeEtz46vuyssch1/NqIPKZr/iI2Dw==
-X-Google-Smtp-Source: AA6agR59okDv54Jbyi23A1nS9MzE8+afV+r+Jcam4JHKwd+90O+ezON9z+HSSTGcj+W/yIAHzcTIOm3wlGcNWGs75oc=
-X-Received: by 2002:a05:651c:4d4:b0:261:cbe7:e62f with SMTP id
- e20-20020a05651c04d400b00261cbe7e62fmr2347049lji.295.1661198952956; Mon, 22
- Aug 2022 13:09:12 -0700 (PDT)
+        bh=YrWKYX54XcRB+7IefpmY6sNaaz9UJEYvmrEmm7qSZ0w=;
+        b=jfoEyPU/sfEo8OkVKJ/VmUlr4UGn0PPtNFe4Fk/INpV3JoTW0jO3VqW1tuF7qzCXFA
+         qen1pTRkt77ZGKzD03SkIWP4OSkNjTSkV+EST+g5ubH5pAYofFIrEQza7xRGMQRJjcGl
+         wUy7TSqXniMDvtTncv+uViQcCL2MKZBgNW9leRsp0t2mSd8HH/HE2ZbC6//PM4d9bwx2
+         IKVZrjlzVNQtyVEpgmhLNDP21Qz/oms15HwYkNPBARkxs7bJOTCuABhSY9Ga5S8TC2D9
+         stMfH5P9TyirrTuu51U1vLKYezPf61EZOrFSzDPbspcQ+kKACX+eokR6qU97fgyM+r3F
+         PPtw==
+X-Gm-Message-State: ACgBeo3m7mwu5FmGyLlIJTdphzlkKpjJ/zvi+cAh94DiiBsCUdnPdZd9
+        mePEzkYBnTidgqeRDEpt9ALZnL2ECx5RIoGNEpkTaA==
+X-Google-Smtp-Source: AA6agR4s5hz9NH5pqWr3RTrYVcWyakcoE03sHmsj+SPDDimTow1sGJFpuYGQx6+0ltAYD4Y6ruT0BCn4teZ0Z6tMAiM=
+X-Received: by 2002:a05:6402:22b8:b0:445:fb3f:dc3d with SMTP id
+ cx24-20020a05640222b800b00445fb3fdc3dmr678328edb.378.1661198956693; Mon, 22
+ Aug 2022 13:09:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220805154231.31257-1-ojeda@kernel.org> <20220805154231.31257-21-ojeda@kernel.org>
-In-Reply-To: <20220805154231.31257-21-ojeda@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 22 Aug 2022 13:09:00 -0700
-Message-ID: <CAKwvOdndYxQ+KgVhC8F3vWnHDT8pD3px8cKjinu-khn25_FSYw@mail.gmail.com>
-Subject: Re: [PATCH v9 20/27] scripts: add `rust_is_available.sh`
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Finn Behrens <me@kloenk.de>, Miguel Cano <macanroj@gmail.com>,
-        Tiago Lam <tiagolam@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-        =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>
+References: <20220819053234.241501-1-tales.aparecida@gmail.com> <20220819053234.241501-8-tales.aparecida@gmail.com>
+In-Reply-To: <20220819053234.241501-8-tales.aparecida@gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Mon, 22 Aug 2022 13:09:05 -0700
+Message-ID: <CAGS_qxoVuRPF39kcVBWGuhnmaixfLAkPN6HaDRyuXmDHqmWPXg@mail.gmail.com>
+Subject: Re: [PATCH 7/8] lib: overflow: update reference to kunit-tool
+To:     Tales Aparecida <tales.aparecida@gmail.com>
+Cc:     Sadiya Kazi <sadiyakazi@google.com>, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        davidgow@google.com, corbet@lwn.net, brendan.higgins@linux.dev,
+        Trevor Woerner <twoerner@gmail.com>, siqueirajordao@riseup.net,
+        mwen@igalia.com, andrealmeid@riseup.net, mairacanal@riseup.net,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        linux-hardening@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 5, 2022 at 8:46 AM Miguel Ojeda <ojeda@kernel.org> wrote:
+On Thu, Aug 18, 2022 at 10:33 PM Tales Aparecida
+<tales.aparecida@gmail.com> wrote:
 >
-> This script tests whether the Rust toolchain requirements are in place
-> to enable Rust support.
+> Replace URL with an updated path to the full Documentation page
+>
+> Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
+> ---
+>  lib/overflow_kunit.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/lib/overflow_kunit.c b/lib/overflow_kunit.c
+> index 7e3e43679b73..78075106c0df 100644
+> --- a/lib/overflow_kunit.c
+> +++ b/lib/overflow_kunit.c
+> @@ -1,7 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0 OR MIT
+>  /*
+>   * Test cases for arithmetic overflow checks. See:
+> - * https://www.kernel.org/doc/html/latest/dev-tools/kunit/kunit-tool.html#configuring-building-and-running-tests
+> + * "Running tests with kunit_tool" at Documentation/dev-tools/kunit/start.rst
 
-With this, I get:
+Oh, I thought I had sent a patch out for this.
+The rewritten version of the patch is
+https://www.kernel.org/doc/html/latest/dev-tools/kunit/run_wrapper.html
+That's what I was intending to rewrite this line to point to.
 
-$ make LLVM=1 rustavailable
-***
-*** libclang (used by the Rust bindings generator 'bindgen')
-*** version does not match Clang's. This may be a problem.
-***   libclang version: 15.0.0
-***   Clang version:    16.0.0
-***
-Rust is available!
+But if people like a Documentation/ path to start.rst instead, that also works.
 
-because I'm using clang built from source from ToT.  Is this supposed
-to mean that I can't use clang-16, clang-14, clang-13, clang-12, or
-clang-11 (in the kernel we support clang-11+) in order to use rust?
-I'm guessing that's going to hinder adoption.  Is there a way to
-specify which libclang version bindgen should be using?
-
-I have libclang built in my clang sources,
-llvm-project/llvm/build/lib/libclang.so.  I also tried:
-
-$ CLANG_PATH=/android0/llvm-project/llvm/build/lib/libclang.so.15 make
-LLVM=1 -j72 rustavailable
-$ CLANG_PATH=/android0/llvm-project/llvm/build/lib/libclang.so make
-LLVM=1 -j72 rustavailable
-
--- 
-Thanks,
-~Nick Desaulniers
+Daniel
