@@ -2,100 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C739C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0859C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 14:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231927AbiHVOmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58682 "EHLO
+        id S235402AbiHVOnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234896AbiHVOmN (ORCPT
+        with ESMTP id S234896AbiHVOnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:42:13 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C216F371B1;
-        Mon, 22 Aug 2022 07:42:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661179332; x=1692715332;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=M+vT8QnLNMo6qMrgIuZIijfJ1dcMOL8NnZ+wIrdoKs8=;
-  b=KOF1lzIXGyI5m8XUrvL3Bhl/HnkoFz3+84m6P1JgqBFP1p1pa2ZNSZRB
-   76L2oLDuJ0rhqKD7twkIF+CBuZNb+TxBZ7o9/rcI/3VH+IN/M9Vxq8lLe
-   fKneQfP62cu1CImAKguTKxtQ5sxCYm8cnDDDpTcGpzOPXT94zAjh8AUwm
-   IybKoSrMS8dxNuolMlC0wf4VidXk3p1H7s/OiU/KVof12Dzu5ptF7jElX
-   aelbQx2Sf6WrQMxvcTR9q+8BTdYKdlR1LeftsEfnWlAbQn314DMRW174O
-   s8Ua15HSXMB3JyL+Xpo9fnUmsC2QrWNzsUiPMBeI3ziC9LWgzxdBmVXNl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379721069"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="379721069"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 07:42:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="608981332"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 22 Aug 2022 07:42:06 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27MEg4HA003194;
-        Mon, 22 Aug 2022 15:42:04 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        "Anil S Keshavamurthy" <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
-        lkp@intel.com,
-        =?UTF-8?q?F=C4=81ng-ru=C3=AC=20S=C3=B2ng?= <maskray@google.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Kees Cook <keescook@chromium.org>,
-        Marios Pomonis <pomonis@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        llvm@lists.linux.dev, Jessica Yu <jeyu@kernel.org>
-Subject: Re: [RFC PATCH 0/3] kallsyms: add option to include relative filepaths into kallsyms
-Date:   Mon, 22 Aug 2022 16:40:22 +0200
-Message-Id: <20220822144022.7127-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220818115306.1109642-1-alexandr.lobakin@intel.com>
-References: <20220818115306.1109642-1-alexandr.lobakin@intel.com>
+        Mon, 22 Aug 2022 10:43:17 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D422EB;
+        Mon, 22 Aug 2022 07:43:14 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBFPs0hByzlWW5;
+        Mon, 22 Aug 2022 22:40:01 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 22 Aug 2022 22:43:12 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
+ 2022 22:43:12 +0800
+Message-ID: <a271d041-08fa-c2db-f2ac-d64d9b119797@huawei.com>
+Date:   Mon, 22 Aug 2022 22:43:09 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [RESEND PATCH] ARM: Recover kretprobes return address for EABI
+ stack unwinder
+To:     Linus Walleij <linus.walleij@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
+        <linux@armlinux.org.uk>, <arnd@arndb.de>, <ardb@kernel.org>,
+        <rmk+kernel@armlinux.org.uk>, <rostedt@goodmis.org>,
+        <nick.hawkins@hpe.com>, <john@phrozen.org>, <mhiramat@kernel.org>
+References: <20220815110240.18293-1-chenzhongjin@huawei.com>
+ <CACRpkdZsdggUptPkPhzzu8vv9moSO+rjvZxZRb1VqJ2xWjY=HQ@mail.gmail.com>
+Content-Language: en-US
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <CACRpkdZsdggUptPkPhzzu8vv9moSO+rjvZxZRb1VqJ2xWjY=HQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Thu, 18 Aug 2022 13:53:03 +0200
+On 2022/8/22 19:20, Linus Walleij wrote:
+> On Mon, Aug 15, 2022 at 1:06 PM Chen Zhongjin <chenzhongjin@huawei.com> wrote:
+>
+>> 'fed240d9c974 ("ARM: Recover kretprobe modified return address in stacktrace")'
+>> has implemented kretprobes return address recovery for FP
+>> unwinder, this patch makes it works for EABI unwinder.
+>>
+>> It saves __kretprobe_trampoline address in LR on stack to identify
+>> and recover the correct return address in EABI unwinder.
+>>
+>> Since EABI doesn't use r11 as frame pointer, we need to use SP to
+>> identify different kretprobes addresses. Here the value of SP has fixed
+>> distance to conventional FP position so it's fine to use it.
+>>
+>> Passed kunit kprobes_test on QEMU.
+>>
+>> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+> This looks correct to me FWIW I understand the assembly
+> but I'm vaguely unfamiliar with the kprobe API, but anyway:
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> Would you please drop it into Russell's patch tracker?
 
-> This is an early RFC to not rewrite stuff one more time later on if
-> the implementation is not acceptable or any major design changes are
-> required. For the TODO list, please scroll to the end.
-> 
-> Make kallsyms independent of symbols positions in vmlinux (or module)
-> by including relative filepath in each symbol's kallsyms value. I.e.
-> 
-> dev_gro_receive -> net/core/gro.c:dev_gro_receive
+Done for it.
 
-Oops, forgot to Cc some more folks I was talking to regarding the
-previous implementation <O> Fixed, pls let me know if you prefer to
-get a resend.
+Thanks for review!
 
-> -- 
-> 2.37.2
 
-Thanks,
-Olek
+Best,
+
+Chen
+
+> Yours,
+> Linus Walleij
+
