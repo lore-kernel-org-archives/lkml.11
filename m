@@ -2,92 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDD8C32774
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C1CC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 15:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236470AbiHVPbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 11:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
+        id S236542AbiHVPdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 11:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbiHVPbo (ORCPT
+        with ESMTP id S235301AbiHVPdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 11:31:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56EA1572C;
-        Mon, 22 Aug 2022 08:31:43 -0700 (PDT)
+        Mon, 22 Aug 2022 11:33:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79EEF587
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 08:33:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 401C961143;
-        Mon, 22 Aug 2022 15:31:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCE8BC433D6;
-        Mon, 22 Aug 2022 15:31:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF2A461158
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 15:33:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA02EC43470;
+        Mon, 22 Aug 2022 15:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661182302;
-        bh=gsEqIb6Pxtq0JpCj/B3Gh7Z7N4KJZxCB1RnKmicB4J0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=PJ7KOq9Wne/JqmHebqtz7Y8zX4jhVxSCR3NJOfI+Am1kPI0wM1pTrYJkpozJbldMg
-         EOLlGx+mNAfaIczeMlOvoj/jwyv57IZsXwn34Eg2mz9C8P1FV7dYw6EtFk9kAeD7U/
-         SRGoeD4btRfiV45mdxG4TU1XKNKBlOR/SWA5UCc7ScCDRri6Wp4oZMB0pCkBQ72wqq
-         ukhvymcdWVqiPvhBSMEj9akH1qu2GPH1MXTzcAXfqMdHEzn0eogH/OHttiknR0j3HI
-         mGcMMhYwMGk9kBVXHH1K30yceWcV2MbQ8nUBX0OT1zjcEOPG2MyWDr/K3D7qA7UK54
-         zLR3Dxg4YoHRA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        niravkumar.l.rabara@intel.com
-Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
-In-Reply-To: <20220813042616.1372110-1-niravkumar.l.rabara@intel.com>
-References: <20220813042616.1372110-1-niravkumar.l.rabara@intel.com>
-Subject: Re: [PATCH v2] spi: cadence-quadspi: Disable irqs during indirect reads
-Message-Id: <166118230149.175565.15964533101791462074.b4-ty@kernel.org>
-Date:   Mon, 22 Aug 2022 16:31:41 +0100
+        s=k20201202; t=1661182419;
+        bh=L+xylg2Ga9OgepjcsWkpAAwkZaOwU0VdxyIlnOTzoP0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ouIW1BYa0TIGv3Bm6vn3QC9pMFbE1oMr/c9uk71Rv5zPHKUnr1YQfDzYxH1Ln79ez
+         GxNdHDxBheoFb+j/l0QdnN/SjDf6p+fIiQIwTCIXF1U4Q0g6LEx2BcxFbfHmG4dWnt
+         kw+xF9MDswN2XT1xew9ctStO5YzlCUnmzMzpYX/m5serD0eBCVHOuxb8urUr3VmZZe
+         v0/QPB6TixrIGyeNZZdAOx4dAban0IQdEQzDpBtEm/97Wp8VKJ5o5+RqwrnKkkL8So
+         TZ+94BoGITKV28Pq7V4IofHuV2a3un2vt3b6HiA2aV2MIKIZmFYTsn+lHBWIxJRPtf
+         73A2gZAQ3hx0g==
+Received: by pali.im (Postfix)
+        id 1590597B; Mon, 22 Aug 2022 17:33:36 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 17:33:35 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Nick Child <nick.child@ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] powerpc: Add support for early debugging via Serial
+ 16550 console
+Message-ID: <20220822153335.v5gc26jfbbqyj3et@pali>
+References: <20220819211254.22192-1-pali@kernel.org>
+ <b23ecdd1-fe34-f0f7-be7f-da8624096447@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-fe10a
+In-Reply-To: <b23ecdd1-fe34-f0f7-be7f-da8624096447@csgroup.eu>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 13 Aug 2022 12:26:16 +0800, niravkumar.l.rabara@intel.com wrote:
-> From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+On Monday 22 August 2022 14:25:57 Christophe Leroy wrote:
+> Le 19/08/2022 à 23:12, Pali Rohár a écrit :
+> > Currently powerpc early debugging contains lot of platform specific
+> > options, but does not support standard UART / serial 16550 console.
+> > 
+> > Later legacy_serial.c code supports registering UART as early debug console
+> > from device tree but it is not early during booting, but rather later after
+> > machine description code finishes.
+> > 
+> > So for real early debugging via UART is current code unsuitable.
+> > 
+> > Add support for new early debugging option CONFIG_PPC_EARLY_DEBUG_16550
+> > which enable Serial 16550 console on address defined by new option
+> > CONFIG_PPC_EARLY_DEBUG_16550_PHYSADDR and by stride by option
+> > CONFIG_PPC_EARLY_DEBUG_16550_STRIDE.
+> > 
+> > With this change it is possible to debug powerpc machine descriptor code.
+> > For example this early debugging code can print on serial console also
+> > "No suitable machine description found" error which is done before
+> > legacy_serial.c code.
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > ---
+> > Tested on P2020 board. It allowed me do debug and implement this patch series:
+> > https://lore.kernel.org/linuxppc-dev/20220819191557.28116-1-pali@kernel.org/
 > 
-> On architecture where reading the SRAM is slower than the pace at
-> controller fills it, with interrupt enabled while reading from
-> SRAM FIFO causes unwanted interrupt storm to CPU.
+> Build failure if I select it on mpc885_ads_defconfig :
 > 
-> The inner "bytes to read" loop never exits and waits for the completion
-> so it is enough to only enable the watermark interrupt when we
-> are out of bytes to read, which only happens when we start the
-> transfer (waiting for the FIFO to fill up initially) if the SRAM
-> is slow.
+>    LD      vmlinux.o
+>    MODPOST vmlinux.symvers
+>    MODINFO modules.builtin.modinfo
+>    GEN     modules.builtin
+>    CC      .vmlinux.export.o
+>    LD      .tmp_vmlinux.kallsyms1
+> powerpc64-linux-ld: arch/powerpc/kernel/udbg.o: in function 
+> `udbg_early_init':
+> /home/chleroy/linux-powerpc/arch/powerpc/kernel/udbg.c:71: undefined 
+> reference to `udbg_init_debug_16550'
 > 
-> [...]
+> 
+> 
+> > ---
+> >   arch/powerpc/Kconfig.debug       | 14 ++++++++++++++
+> >   arch/powerpc/include/asm/udbg.h  |  1 +
+> >   arch/powerpc/kernel/udbg.c       |  2 ++
+> >   arch/powerpc/kernel/udbg_16550.c | 33 ++++++++++++++++++++++++++++++++
+> >   4 files changed, 50 insertions(+)
+> > 
+> > diff --git a/arch/powerpc/Kconfig.debug b/arch/powerpc/Kconfig.debug
+> > index 9f363c143d86..a4e7d90a45d2 100644
+> > --- a/arch/powerpc/Kconfig.debug
+> > +++ b/arch/powerpc/Kconfig.debug
+> > @@ -276,6 +276,11 @@ config PPC_EARLY_DEBUG_OPAL_HVSI
+> >   	  Select this to enable early debugging for the PowerNV platform
+> >   	  using an "hvsi" console
+> >   
+> > +config PPC_EARLY_DEBUG_16550
+> > +	bool "Serial 16550"
+> > +	help
+> > +	  Select this to enable early debugging via Serial 16550 console
+> > +
+> 
+> Putting it before EARLY_DEBUG_MEMCONS means that configs that were 
+> previously selectiong EARLY_DEBUG_MEMCONS will now select 
+> EARLY_DEBUG_16550 instead.
+> 
+> Add a dependency to PPC_UDBG_16550 to avoid the build failure I mentionned ?
 
-Applied to
+Yea, there is really missing dependency. I will fix it.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+> >   config PPC_EARLY_DEBUG_MEMCONS
+> >   	bool "In memory console"
+> >   	help
+> > @@ -355,6 +360,15 @@ config PPC_EARLY_DEBUG_CPM_ADDR
+> >   	  platform probing is done, all platforms selected must
+> >   	  share the same address.
+> >   
+> > +config PPC_EARLY_DEBUG_16550_PHYSADDR
+> > +	hex "Early debug Serial 16550 physical address"
+> > +	depends on PPC_EARLY_DEBUG_16550
+> 
+> A default value is necessary here to avoid prompts during defconfig builds.
+> 
+> > +
+> > +config PPC_EARLY_DEBUG_16550_STRIDE
+> > +	int "Early debug Serial 16550 stride"
+> > +	depends on PPC_EARLY_DEBUG_16550
+> > +	default 1
+> > +
+> >   config FAIL_IOMMU
+> >   	bool "Fault-injection capability for IOMMU"
+> >   	depends on FAULT_INJECTION
+> > diff --git a/arch/powerpc/include/asm/udbg.h b/arch/powerpc/include/asm/udbg.h
+> > index b4aa0d88ce2c..20b5a37ab772 100644
+> > --- a/arch/powerpc/include/asm/udbg.h
+> > +++ b/arch/powerpc/include/asm/udbg.h
+> > @@ -53,6 +53,7 @@ extern void __init udbg_init_ehv_bc(void);
+> >   extern void __init udbg_init_ps3gelic(void);
+> >   extern void __init udbg_init_debug_opal_raw(void);
+> >   extern void __init udbg_init_debug_opal_hvsi(void);
+> > +extern void __init udbg_init_debug_16550(void);
+> 
+> 'extern' keywork is pointless and deprecated for function prototypes, 
+> please don't add new ones.
 
-Thanks!
+I used extern keyword to follow existing coding style.
 
-[1/1] spi: cadence-quadspi: Disable irqs during indirect reads
-      commit: 9ee5b6d53b8c99d13a47227e3b7052a1365556c9
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+> Checkpatch reports:
+> 
+> CHECK: extern prototypes should be avoided in .h files
+> #77: FILE: arch/powerpc/include/asm/udbg.h:56:
+> +extern void __init udbg_init_debug_16550(void);
+> 
+> 
+> >   
+> >   #endif /* __KERNEL__ */
+> >   #endif /* _ASM_POWERPC_UDBG_H */
+> > diff --git a/arch/powerpc/kernel/udbg.c b/arch/powerpc/kernel/udbg.c
+> > index b1544b2f6321..92b3fc258d11 100644
+> > --- a/arch/powerpc/kernel/udbg.c
+> > +++ b/arch/powerpc/kernel/udbg.c
+> > @@ -67,6 +67,8 @@ void __init udbg_early_init(void)
+> >   	udbg_init_debug_opal_raw();
+> >   #elif defined(CONFIG_PPC_EARLY_DEBUG_OPAL_HVSI)
+> >   	udbg_init_debug_opal_hvsi();
+> > +#elif defined(CONFIG_PPC_EARLY_DEBUG_16550)
+> > +	udbg_init_debug_16550();
+> >   #endif
+> >   
+> >   #ifdef CONFIG_PPC_EARLY_DEBUG
+> > diff --git a/arch/powerpc/kernel/udbg_16550.c b/arch/powerpc/kernel/udbg_16550.c
+> > index d3942de254c6..46f2d831d7c9 100644
+> > --- a/arch/powerpc/kernel/udbg_16550.c
+> > +++ b/arch/powerpc/kernel/udbg_16550.c
+> > @@ -8,6 +8,7 @@
+> >   #include <asm/udbg.h>
+> >   #include <asm/io.h>
+> >   #include <asm/reg_a2.h>
+> > +#include <asm/early_ioremap.h>
+> >   
+> >   extern u8 real_readb(volatile u8 __iomem  *addr);
+> >   extern void real_writeb(u8 data, volatile u8 __iomem *addr);
+> > @@ -335,3 +336,35 @@ void __init udbg_init_debug_microwatt(void)
+> >   }
+> >   
+> >   #endif /* CONFIG_PPC_EARLY_DEBUG_MICROWATT */
+> > +
+> > +#ifdef CONFIG_PPC_EARLY_DEBUG_16550
+> > +
+> > +static void __iomem *udbg_uart_early_addr;
+> > +
+> > +void __init udbg_init_debug_16550(void)
+> > +{
+> > +	udbg_uart_early_addr = early_ioremap(CONFIG_PPC_EARLY_DEBUG_16550_PHYSADDR, 0x1000);
+> > +	udbg_uart_init_mmio(udbg_uart_early_addr, CONFIG_PPC_EARLY_DEBUG_16550_STRIDE);
+> > +}
+> > +
+> > +static int __init udbg_init_debug_16550_ioremap(void)
+> > +{
+> > +	void __iomem *addr;
+> > +
+> > +	if (!udbg_uart_early_addr)
+> > +		return 0;
+> > +
+> > +	addr = ioremap(CONFIG_PPC_EARLY_DEBUG_16550_PHYSADDR, 0x1000);
+> > +	if (WARN_ON(!addr))
+> > +		return -ENOMEM;
+> > +
+> > +	udbg_uart_init_mmio(addr, CONFIG_PPC_EARLY_DEBUG_16550_STRIDE);
+> > +	early_iounmap(udbg_uart_early_addr, 0x1000);
+> > +	udbg_uart_early_addr = NULL;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +early_initcall(udbg_init_debug_16550_ioremap);
+> > +
+> > +#endif /* CONFIG_PPC_EARLY_DEBUG_16550 */
