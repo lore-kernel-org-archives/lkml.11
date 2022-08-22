@@ -2,167 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23090C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2108DC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233709AbiHVIsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
+        id S234122AbiHVItB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233764AbiHVIr5 (ORCPT
+        with ESMTP id S233841AbiHVIso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:47:57 -0400
+        Mon, 22 Aug 2022 04:48:44 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679202DAA4
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:47:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067439FCE
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:48:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661158075;
+        s=mimecast20190719; t=1661158101;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=I4W0/Q6CKI1C/6ZS/LzkoVtWSqfZ4woltBoAnosrqTA=;
-        b=HqI3cwzhStDRcw2FlujAT3ochJ7alLih1VzM9MtzxgzzfYCe8LeDgdqyC4Pt7PV312bA+D
-        g5LGWdejxBQdGv6VsItb1BBzJ/BBxwiN17nsYQVtDIcTa3gCNIIV2AnJk9EzNxpc/OHbdm
-        P+SUvhvPrpwXxJRFpgfJNbkFsgdWoOA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-628-mCrLOnh1M-WfM6qmcLOcOQ-1; Mon, 22 Aug 2022 04:47:53 -0400
-X-MC-Unique: mCrLOnh1M-WfM6qmcLOcOQ-1
-Received: by mail-wr1-f69.google.com with SMTP id h21-20020adfaa95000000b002252a5b0917so1516772wrc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 01:47:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=I4W0/Q6CKI1C/6ZS/LzkoVtWSqfZ4woltBoAnosrqTA=;
-        b=zCIGzySAoGzxVOMvB45NatSe/S1K6X9c3HyoqFfZvqmtascR4V+UNldmyxZEDmcYAw
-         8qr7NNql6nT/v/T6njs29T7Zq++ZWXC6MtkYfhz8jzCTSkCRXdgBgXpnIkK5DIMHrEyi
-         Fn+yWcn+OkVgrjzd3ZNfPo+fo9UeDazcP1Shl4zP0Yso1qJajNM3A4f9qeWJPjJd0EPB
-         QC6fLRKM1E0/EZzV0k2P80KRfa6IWgj26jTzBqkEe7p0Y0eDM3XkPq486M3RloBlBQxH
-         K6u40fKmgf7Eb99bLktLQMVdIc36YO121J+FxA9jPxseVn7rid860CNGV1wkr519fke/
-         sG8w==
-X-Gm-Message-State: ACgBeo2aNfzDmOb/ofReJw58RflALcsRwqUYRplk2EzEykjglMO1EHch
-        viOeZ8HjZQiMEV9s/ZDBfOyy4/p09SzmpwMNitThbyIj1ah7n+WEraq79jWKvQhcndQ0YsmkwA7
-        b/77WNPVv3awnyLJRl3MrHUMFrM9zJutJl8YZgEMBQSVUZfan+HLg8K8uDJohs2I3bqh84cNrF7
-        GK
-X-Received: by 2002:adf:f9ce:0:b0:225:24ce:3c0b with SMTP id w14-20020adff9ce000000b0022524ce3c0bmr10172148wrr.416.1661158072630;
-        Mon, 22 Aug 2022 01:47:52 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4xWItbRuSv43/5fBPSAEiNY9RrXBEgy0ZH/39Um/aohh773XKd+0EHJH9wl9xuKs4FJSlEAg==
-X-Received: by 2002:adf:f9ce:0:b0:225:24ce:3c0b with SMTP id w14-20020adff9ce000000b0022524ce3c0bmr10172123wrr.416.1661158072261;
-        Mon, 22 Aug 2022 01:47:52 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id h5-20020a05600c350500b003a6125562e1sm13961172wmq.46.2022.08.22.01.47.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 01:47:51 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 09/26] KVM: VMX: nVMX: Support TSC scaling and
- PERF_GLOBAL_CTRL with enlightened VMCS
-In-Reply-To: <Yv/CME8B1ueOMY5M@google.com>
-References: <20220802160756.339464-1-vkuznets@redhat.com>
- <20220802160756.339464-10-vkuznets@redhat.com>
- <Yv5zn4qTl0aiaQvh@google.com> <87sflssllu.fsf@redhat.com>
- <Yv/CME8B1ueOMY5M@google.com>
-Date:   Mon, 22 Aug 2022 10:47:50 +0200
-Message-ID: <87ilmkslzd.fsf@redhat.com>
+        bh=hf0005VbFoqadMHqE2/k8IMSgs4M7ELH98Ps6ciAPSE=;
+        b=G0Bsx/PeugOuSsWTIYWimTgroy7E9RtIsr8ARDadyY0hEEJcVk3XlBvZYmAL07PT6hLH+q
+        Cl8eKlnIeMvUyWgu4+NNzlyIFMN64SpnZ5IoYG12UC6XopYGXTUBIiuZSjXgVnTDYpuABE
+        cjpdPscmb8Wr6A1m4eAV2TBGn3o/6XY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-548-Yeqpuf_3Ngep_gSMOePBeA-1; Mon, 22 Aug 2022 04:48:17 -0400
+X-MC-Unique: Yeqpuf_3Ngep_gSMOePBeA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 46FF28037AF;
+        Mon, 22 Aug 2022 08:48:17 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 530E74010D2A;
+        Mon, 22 Aug 2022 08:48:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220821125751.4185-1-yin31149@gmail.com>
+References: <20220821125751.4185-1-yin31149@gmail.com> <000000000000ce327f05d537ebf7@google.com>
+To:     Hawkins Jiawei <yin31149@gmail.com>
+Cc:     dhowells@redhat.com,
+        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        paskripkin@gmail.com, skhan@linuxfoundation.org,
+        18801353760@163.com
+Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <924817.1661158094.1@warthog.procyon.org.uk>
+Date:   Mon, 22 Aug 2022 09:48:14 +0100
+Message-ID: <924818.1661158094@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+Hawkins Jiawei <yin31149@gmail.com> wrote:
 
-> On Fri, Aug 19, 2022, Vitaly Kuznetsov wrote:
->> Sean Christopherson <seanjc@google.com> writes:
->> 
->> > On Tue, Aug 02, 2022, Vitaly Kuznetsov wrote:
->> >> +static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu,
->> >> +				      enum evmcs_unsupported_ctrl_type ctrl_type)
->> >> +{
->> >> +	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
->> >> +	enum evmcs_revision evmcs_rev = EVMCSv1_2016;
->> >> +
->> >> +	if (!hv_vcpu)
->> >
->> > This is a functiontal change, and I don't think it's correct either.  Previously,
->> > KVM would apply the EVMCSv1_2016 filter irrespective of whether or not
->> > vcpu->arch.hyperv is non-NULL.  nested_enable_evmcs() doesn't require a Hyper-V
->> > vCPU, and AFAICT nothing requires a Hyper-V vCPU to use eVMCS.
->> 
->> Indeed, this *is* correct after PATCH11 when we get rid of VMX feature
->> MSR filtering for KVM-on-Hyper-V as the remaining use for
->> evmcs_get_unsupported_ctls() is Hyper-V on KVM and hv_vcpu is not NULL
->> there.
->
-> Hmm, nested_vmx_handle_enlightened_vmptrld() will fail without a Hyper-V vCPU, so
-> filtering eVMCS control iff there's a Hyper-V vCPU makes sense.  But that's a guest
-> visible change and should be a separate patch.
->
+> -		if (mutex_lock_interruptible(&call->user_mutex) < 0)
+> +		if (mutex_lock_interruptible(&call->user_mutex) < 0) {
+> +			mutex_lock(&call->user_mutex);
 
-Yes, the change you suggested:
+Yeah, as Khalid points out that kind of makes the interruptible lock
+pointless.  Either rxrpc_send_data() needs to return a separate indication
+that we returned without the lock held or it needs to always drop the lock on
+error (at least for ERESTARTSYS/EINTR) which can be checked for higher up.
 
-          if (hv_vcpu &&
-              hv_vcpu->cpuid_cache.nested_eb & HV_X64_NESTED_EVMCS1_2022_UPDATE) 
-			evmcs_rev = EVMCSv1_2022;
-
-seems to keep the status quo so we can discuss dropping filtering when
-!hv_vcpu separately.
-
-> But that also raises the question of whether or not KVM should honor hyperv_enabled
-> when filtering MSRs.  Same question for nested VM-Enter.  nested_enlightened_vmentry()
-> will "fail" without an assist page, and the guest can't set the assist page without
-> hyperv_enabled==true, but nothing prevents the host from stuffing the assist page.
-
-The case sounds more like a misbehaving VMM to me. It would probably be
-better to fail nested_enlightened_vmentry() immediately on !hyperv_enabled.
-
->
-> And on a very related topic, the handling of kvm_hv_vcpu_init() in kvm_hv_set_cpuid()
-> is buggy.  KVM will not report an error to userspace for KVM_SET_CPUID2 if allocation
-> fails.  If a later operation successfully create a Hyper-V vCPU, KVM will chug along
-> with Hyper-V enabled but without having cached the relevant Hyper-V
-> CPUID info.
-
-Indeed, that's probably because kvm_vcpu_after_set_cpuid() itself is
-never supposed to fail and thus returns 'void'. I'm not up-to-date on
-the discussion whether small allocations can actually fail (and whether
-2832 bytes for 'struct kvm_vcpu_hv' is 'small') but propagating -ENOMEM
-all the way up to VMM is likely the right way to go.
-
->
-> Less important is that kvm_hv_set_cpuid() should also zero out the CPUID cache if
-> Hyper-V is disabled.  I'm pretty sure sure all paths check hyperv_enabled before
-> consuming cpuid_cache, but it's unnecessarily risky.
-
-+1
-
->
-> If we fix the kvm_hv_set_cpuid() allocation failure, then we can also guarantee
-> that vcpu->arch.hyperv is non-NULL if vcpu->arch.hyperv_enabled==true.  And then
-> we can add gate guest eVMCS flow on hyperv_enabled, and evmcs_get_unsupported_ctls()
-> can then WARN if hv_vcpu is NULL.
->
-
-Alternatively, we can just KVM_BUG_ON() in kvm_hv_set_cpuid() when
-allocation fails, at least for the time being as the VM is likely
-useless anyway.
-
-> Assuming I'm not overlooking something, I'll fold in yet more patches.
->
-
-Thanks for the thorough review here and don't hesitate to speak up when
-you think it's too much of a change to do upon queueing)
-
--- 
-Vitaly
+David
 
