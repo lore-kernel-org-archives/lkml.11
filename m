@@ -2,100 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B39BC28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C68BC28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 17:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236661AbiHVRbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
+        id S236425AbiHVReA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 13:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236508AbiHVRbQ (ORCPT
+        with ESMTP id S235078AbiHVRd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:31:16 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F7A3ED68
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:31:15 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id v10so11271116ljh.9
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:31:15 -0700 (PDT)
+        Mon, 22 Aug 2022 13:33:59 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3162B1F2C4
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:33:57 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id d21so3330332eje.3
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:33:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=UIBQLdznziJppE7OJpXEV1+Wn96b8SDqR1x+484CyS0=;
-        b=UslXPosZJEVEMBCrm+Bq270dy0ernwsV/tH5hBf9F+jDyKMTpzjX3vU/ntechaMWyC
-         f2V3lmnsowQFtbJYqlZmhLSahLY7uz2a0pPFVDC2HmynRQ2B7G+ATb+r4N3n88ZP7G2R
-         EeHBM+SvXIFsu1/YOUyWD5KpYo4Rlcpj4PAZ4d5x2eM4zfJL7NglVUKbHZCJFzwcRNMc
-         F3O6sb/JJlHq1MPi3jxXDKS76D9EeT1dg3mp6StAa4jljGjpf03dN2k3bA1CmpOa+ZXl
-         U9FhuBipFIKX/9HTcg491Edkwuujswxqn6C6ZREzh8u5+4ISq8Np0HuqW7p635Z6ptw/
-         Lceg==
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=i/ov1Fd0UK/G3QEuwXc0gcm83RKp3BYtJaImDo4MAf4=;
+        b=hzycMOPSp8UyNEagfTDlZw2qlyUREyCmxKqD2S30ANxSwRUEghi32rK6rpJbv+PzA4
+         2+O7uODbHg/27AKfr0gVEamTvKk75ZkAs5aG9j+6bRnvDvUWMeozTOEdKvuFBve7arJg
+         j5WKWOtoAxGmRpRN7WmCQJ9720ExQK98nTUCI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=UIBQLdznziJppE7OJpXEV1+Wn96b8SDqR1x+484CyS0=;
-        b=h4EN+KgpyjAi25pido/S8Lvq8GaI2Htg4+6c+HFqkgh8QUKdBpLEB3C9jNuUmUTEcB
-         sXhPV3b56FpR6zskxfli0GZqqZjlx8RzL9bk2ao+1MDaj3WIbyDuaSEgrLNcTRbPg9YO
-         c51i8M2ovKq+SCmrlradTNBqWaj1ZHrQIV9d977M9SxrMGEvoqtlm558wvOamqUQDdms
-         PjZNUbirD2kWB59JoZZvQUVpWjcQTWva0B5DJSORvooVOn0xuCdPmejchGFHOVXfKgTq
-         oDGrl5+iPAM4XpJt1ihAI1PoB8NOwXIUBFYwbEJ03qN6+PWmmvWod4pIdRpyLBH4l/QW
-         7YGA==
-X-Gm-Message-State: ACgBeo35ZadWk7rYfpPzR3IM/sZ6A6RXAzrsVzW0htlz5R5/eTSeamta
-        9GOseDIcUWAAiZUm1sALhYJC6w==
-X-Google-Smtp-Source: AA6agR6VFNpgt+MgZFrbKH8HTyfO7Yf/rgWPBwBmR3CL0NGx4uLKRhwHLYhAMoTx3/06p4INGZihLw==
-X-Received: by 2002:a2e:9604:0:b0:25e:4ed7:ef45 with SMTP id v4-20020a2e9604000000b0025e4ed7ef45mr5835729ljh.389.1661189473507;
-        Mon, 22 Aug 2022 10:31:13 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id t10-20020a056512208a00b0048aeff37812sm2010642lfr.308.2022.08.22.10.31.12
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=i/ov1Fd0UK/G3QEuwXc0gcm83RKp3BYtJaImDo4MAf4=;
+        b=nBOJHs5C3+YXVY2sh8hdyt3e7yZPjphupnwUgLQN9E8l6FYNd8RqlTNeQis0JK1Lx8
+         gECfEmWZbezXubsFzInFfMMawtf1uFcnx3F17BrtvKIEViJf7KnP5F1mdhqIa6GfkOTV
+         NG/NPr0olR50xXMBhxvqrA6KrwNTZKNKB91nu3ZU7n+rifb0S5ad3p4cWjsYHB1Numyx
+         kZplVyBLX86Gdcw3h6wxq94ApHzE6WTwwzV9Dvh57VaHQWzF7fm5rXCZ2zpoULBpf+8t
+         gt/FrYg2VpE1DcQq6ewhdg2VDYz34DbJjEh266wMArwlEhCdxMiY5D3W/LhKyDFgD+4J
+         Pv4Q==
+X-Gm-Message-State: ACgBeo2u+UgIYCbdQmmtjq1dj4H9CrgylWWvQNU8UXS39LEC6DEUKKeE
+        fcO/6Zkj/BaNrCON/1ZlXlBA1M6H14jTLrmc
+X-Google-Smtp-Source: AA6agR5InuxQRs/QqPhoiX4mark0KyN9U9p3+DIgq/mOG/qKUlRtO3l4bTwZthqR8zEZEmVW+VXIhg==
+X-Received: by 2002:a17:906:99c1:b0:6fe:b01d:134 with SMTP id s1-20020a17090699c100b006feb01d0134mr13125411ejn.598.1661189635561;
+        Mon, 22 Aug 2022 10:33:55 -0700 (PDT)
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
+        by smtp.gmail.com with ESMTPSA id i8-20020a056402054800b0043bbb3535d6sm30269edx.66.2022.08.22.10.33.53
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 10:31:12 -0700 (PDT)
-Message-ID: <3815ce73-b021-4643-6bbb-ad0d35178b94@linaro.org>
-Date:   Mon, 22 Aug 2022 20:31:12 +0300
+        Mon, 22 Aug 2022 10:33:53 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id ay12so5962260wmb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 10:33:53 -0700 (PDT)
+X-Received: by 2002:a05:600c:5008:b0:3a6:1cd8:570d with SMTP id
+ n8-20020a05600c500800b003a61cd8570dmr12921599wmr.57.1661189633154; Mon, 22
+ Aug 2022 10:33:53 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v4 1/4] dt-bindings: clock: mediatek: add bindings for
- MT8365 SoC
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Fabien Parent <parent.f@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Fabien Parent <fparent@baylibre.com>
-References: <20220822152652.3499972-1-msp@baylibre.com>
- <20220822152652.3499972-2-msp@baylibre.com>
- <0de7f878-1471-4916-9384-9d966e840d74@linaro.org>
-In-Reply-To: <0de7f878-1471-4916-9384-9d966e840d74@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220711075202.21775-1-johan+linaro@kernel.org>
+ <YtpyeCHojFovBKxv@hovoldconsulting.com> <YwOGCPFTx0+MNfN2@hovoldconsulting.com>
+In-Reply-To: <YwOGCPFTx0+MNfN2@hovoldconsulting.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 22 Aug 2022 10:33:40 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XRjpbeMnh_dtLh1hb-zfWOk6UJwqFBr+otk=sq9vjm3A@mail.gmail.com>
+Message-ID: <CAD=FV=XRjpbeMnh_dtLh1hb-zfWOk6UJwqFBr+otk=sq9vjm3A@mail.gmail.com>
+Subject: Re: [PATCH] drm/panel-edp: add AUO B133UAN02.1 panel entry
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/08/2022 20:29, Krzysztof Kozlowski wrote:
-> On 22/08/2022 18:26, Markus Schneider-Pargmann wrote:
->> From: Fabien Parent <fparent@baylibre.com>
->>
->> Add the clock bindings for the MediaTek MT8365 SoC.
->>
->> Signed-off-by: Fabien Parent <fparent@baylibre.com>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> Hm, when did I review it?
+Hi,
 
-Ah, I reviewed v2 and still had comments in v3.
+On Mon, Aug 22, 2022 at 6:35 AM Johan Hovold <johan@kernel.org> wrote:
+>
+> On Fri, Jul 22, 2022 at 11:48:40AM +0200, Johan Hovold wrote:
+> > On Mon, Jul 11, 2022 at 09:52:02AM +0200, Johan Hovold wrote:
+> > > Add an eDP panel entry for AUO B133UAN02.1.
+> > >
+> > > Due to lack of documentation, use the delay_200_500_e50 timings like
+> > > some other AUO entries for now.
+> > >
+> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> >
+> > Any comments to this one?
+> >
+> > It looks like it hasn't shown up in the dri-devel patchwork and just
+> > want to make sure it isn't lost.
+> >
+> > Rob Clark mentioned something about a spam filter on IRC.
+>
+> This one still hasn't been picked up.
+>
+> Is this something you can do, Doug? I noticed you applied a couple of
+> patches to this driver recently.
+>
+> Or who is really responsible for this driver?
 
-I see these fixed, so everything looks fine!
+Officially it falls within this section of maintainers:
 
-Best regards,
-Krzysztof
+DRM PANEL DRIVERS
+M:      Thierry Reding <thierry.reding@gmail.com>
+R:      Sam Ravnborg <sam@ravnborg.org>
+L:      dri-devel@lists.freedesktop.org
+S:      Maintained
+T:      git git://anongit.freedesktop.org/drm/drm-misc
+F:      Documentation/devicetree/bindings/display/panel/
+F:      drivers/gpu/drm/drm_panel.c
+F:      drivers/gpu/drm/panel/
+F:      include/drm/drm_panel.h
+
+...and then you just have to know that if the "tree" is drm-misc that
+it falls under drm-misc rules. That means that anyone who is a
+drm-misc-next committer can commit it.
+
+I've been trying to keep an eye on panel-edp ever since I split it out
+from panel-simple, though. I'll post up a MAINTAINERS entry to try to
+make that more official.
+
+In any case, I've landed this on drm-misc-next:
+
+ee50b0024408 drm/panel-edp: add AUO B133UAN02.1 panel entry
+
+-Doug
