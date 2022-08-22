@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F93C28D13
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B941C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 12:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234246AbiHVMnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        id S235114AbiHVMqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiHVMnI (ORCPT
+        with ESMTP id S233652AbiHVMp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:43:08 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2150932EFE;
-        Mon, 22 Aug 2022 05:43:04 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1661172171tqmdel8e
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 22 Aug 2022 20:42:50 +0800 (CST)
-X-QQ-SSF: 01000000002000C0D000B00A0000000
-X-QQ-FEAT: ElntjVByhgV5Ei9BmafEicp7RVbJm7ahRQPG/HG+Fm1GMRLI9bUePGYjWp1As
-        xMU5YDdkwIBP4PQ5pvMUT3iwL3RiVyer6EdasXkyJMDgfxS1RHo8VVz/DEDEYG2sLPCJciZ
-        Dc3wkPw1Hw/mv58HQRS/2uHknyICzidbVENCLsiWLN8qInt7fjxOGqKqxKR2GRGASdDpMvY
-        RTfLLRoJUSiuEHITO7v4bW7B+yv/genf76jIm0TkhMC82txp2F+uCRqu8r2XzBPU3YMccxG
-        Mrb8BFohGtAM16JcjWeBnFP8NXgmTroUpU+xvJ/J3qH9TcSlwN6qAeSPwLM2bcIO35FoARs
-        mS7wywGcR1s9tL7SkagzsetXuBK1+InfDzJY/5xonGeWTCs0bv8Q5asvmwwhUuLG/QPEnGs
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
-        peterz@infradead.org, mingo@redhat.com
-Cc:     linux-arm-kernel@lists.infradead.org, coresight@lists.linaro.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] perf/util: fix repeated words in comments
-Date:   Mon, 22 Aug 2022 20:42:43 +0800
-Message-Id: <20220822124243.34053-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 22 Aug 2022 08:45:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1893341B;
+        Mon, 22 Aug 2022 05:45:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C9FB1CE1284;
+        Mon, 22 Aug 2022 12:45:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0170FC433D6;
+        Mon, 22 Aug 2022 12:45:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661172354;
+        bh=ZuieiRPC9CArVV1OmJfFIGJRDuSJ/3o0U41DRi5sjzw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VyTdz2y9jkLcaoPI+W0iipfxB7MXxlXcqRUyJZgw6Uw22bty4Qtu0DsSRZ+dUv9Jp
+         YJbdqXq0LrNxG7ax3OUcofawTlUJ11gxMuEUnOv2IovZYYHKcsk+UVe3itqHQegJU1
+         aYNADCYblwqFo90YWta3ilHTs/ef+++PlmPBfdMEw+zG+TqQv2UC6GhOYQNqmlUpnN
+         eU6cwH3i8QiDCvGoyoOco+egYFA2GQ9tFSzXLllsFQDBq+Lj6klcpE/IMH0FdCLr8F
+         1DZb3TdPPUAuTTysn1UFzfm587koMS4kV1/WNEuzgeEDoOYUKiE1cBmj+1CbkbLhFO
+         utuGUZCzs61Uw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oQ6oR-0001kf-4V; Mon, 22 Aug 2022 14:45:51 +0200
+Date:   Mon, 22 Aug 2022 14:45:51 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc:     Andrew Halaney <ahalaney@redhat.com>,
+        Brian Masney <bmasney@redhat.com>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 8/8] PCI: qcom: Sort device-id table
+Message-ID: <YwN6f+xOJIW0liGu@hovoldconsulting.com>
+References: <20220714071348.6792-1-johan+linaro@kernel.org>
+ <20220714071348.6792-9-johan+linaro@kernel.org>
+ <YtAny03L/RLk9nv6@xps13>
+ <YtEaqHT7NdXPhK+y@hovoldconsulting.com>
+ <YvvAfQJChCVX4cPH@lpieralisi>
+ <20220818200530.lab2zlcaetekcclq@halaneylaptop>
+ <Yv8/6x7pgrBhzdbQ@lpieralisi>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yv8/6x7pgrBhzdbQ@lpieralisi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
+On Fri, Aug 19, 2022 at 09:46:51AM +0200, Lorenzo Pieralisi wrote:
+> On Thu, Aug 18, 2022 at 03:05:30PM -0500, Andrew Halaney wrote:
+> > Hi Lorenzo,
+> > 
+> > On Tue, Aug 16, 2022 at 06:06:21PM +0200, Lorenzo Pieralisi wrote:
+> > > On Fri, Jul 15, 2022 at 09:43:36AM +0200, Johan Hovold wrote:
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- tools/perf/util/cs-etm.c      | 2 +-
- tools/perf/util/probe-event.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> > > > Perhaps Bjorn H can fix that up when applying unless I'll be sending a
+> > > > v3 for some other reason. This series still depends on the MSI rework to
+> > > > be applied first.
+> > > 
+> > > I can do it while applying. A link to the lore archive for the MSI
+> > > rework please (I don't think it was merged for v6.0) ? I was away for
+> > > two months, catching up with threads.
+> > 
+> > I don't see a reply to this, so here I am following up out of interest
+> > for getting this in mainline for my x13s laptop to use.
+> > 
+> > It appears the MSI rework[0] (which is in the cover letter here so I
+> > know I grabbed the right thing) was applied in 6.0:
+> > 
+> >     ahalaney@halaneylaptop ~/git/linux (git)-[remotes/upstream/HEAD] % git log --oneline --abbrev=12 --grep=2436629 v6.0-rc1 -- drivers/pci/controller/dwc/ 
+> >     cd761378e62c PCI: dwc: Handle MSIs routed to multiple GIC interrupts
+> >     db388348acff PCI: dwc: Convert struct pcie_port.msi_irq to an array
+> >     226ec087497a PCI: dwc: Split MSI IRQ parsing/allocation to a separate function
+> >     3c62f878a969 PCI: dwc: Correct msi_irq condition in dw_pcie_free_msi()
+> >     ahalaney@halaneylaptop ~/git/linux (git)-[remotes/upstream/HEAD] %
+> > 
+> > Just a friendly FYI, hope that helps!
+> 
+> Thanks for the heads-up, I will merge this series then.
 
-diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
-index 8b95fb3c4d7b..16db965ac995 100644
---- a/tools/perf/util/cs-etm.c
-+++ b/tools/perf/util/cs-etm.c
-@@ -1451,7 +1451,7 @@ static int cs_etm__sample(struct cs_etm_queue *etmq,
- 		 * tidq->packet->instr_count represents the number of
- 		 * instructions in the current etm packet.
- 		 *
--		 * Period instructions (Pi) contains the the number of
-+		 * Period instructions (Pi) contains the number of
- 		 * instructions executed after the sample point(n) from the
- 		 * previous etm packet.  This will always be less than
- 		 * etm->instructions_sample_period.
-diff --git a/tools/perf/util/probe-event.c b/tools/perf/util/probe-event.c
-index 062b5cbe67af..67c12d5303e7 100644
---- a/tools/perf/util/probe-event.c
-+++ b/tools/perf/util/probe-event.c
-@@ -1349,7 +1349,7 @@ int parse_line_range_desc(const char *arg, struct line_range *lr)
- 				/*
- 				 * Adjust the number of lines here.
- 				 * If the number of lines == 1, the
--				 * the end of line should be equal to
-+				 * end of line should be equal to
- 				 * the start of line.
- 				 */
- 				lr->end--;
--- 
-2.36.1
+I was out-of-office last week so thanks for digging out that link,
+Andrew.
 
+Johan
