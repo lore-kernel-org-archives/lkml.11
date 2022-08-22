@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE5BC32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9A7C28D13
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 08:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233567AbiHVIFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 04:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
+        id S233582AbiHVIFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 04:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233071AbiHVIEr (ORCPT
+        with ESMTP id S233688AbiHVIEs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 04:04:47 -0400
-Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AED2CC94;
-        Mon, 22 Aug 2022 01:04:04 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 6C326C018B;
-        Mon, 22 Aug 2022 10:04:01 +0200 (CEST)
+        Mon, 22 Aug 2022 04:04:48 -0400
+Received: from mail.fris.de (mail.fris.de [116.203.77.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C3C2B1B9;
+        Mon, 22 Aug 2022 01:04:06 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 7474AC01BC;
+        Mon, 22 Aug 2022 10:04:03 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1661155442; h=from:subject:date:message-id:to:cc:mime-version:
+        t=1661155444; h=from:subject:date:message-id:to:cc:mime-version:
          content-transfer-encoding:in-reply-to:references;
-        bh=9scX58l7KpCDoG6JpF5Bd9cCYTwYDbw0M5AWYs/zWZY=;
-        b=l18ewY72wwYHx+u/PQbbTIX1Wl2I9fkhWwHWzaT5cwmt4Kb0lx9BSWUiV2VQRME50XeqI4
-        N6fIVCbCrmabxWEcmP2htbu7buTYP6AaH58p+Dd6tuG41MDcqQPsb2MpzxVA2nkW1/+T/C
-        x33L7yruAcGiWyN0PoY/WhRoVgF7IZ/d7Yh3sJemAuwRwndhY1/6QwoKZnnCLFePfyLIqr
-        pjOGz3YdOyamnoGoV6JacZsUIqNEEHsoS2UxHANLzWkUONg+q2bULhZ1RJY/8C2CNJ1q9Q
-        C2risgvwfBOGKT7bDMVaW2VS/acNUlBGmzCJFeUX7vasgf4GlHNe5UESGiaM/Q==
+        bh=FZxRCHSXKqRPFEISTv4M6mKUoy/XipaFpY/4ooNcIpw=;
+        b=RLiM+7KqZBOZzIePPu2nICdNn5VY/36fEUOb0NYoN3E/mfg9tI3x7w74LHYx38wj7mo1Hl
+        bSnDuto+gTC+fWXhxd802qNVV91j5/lsfPHe2IGi/ONNP3W6+otagzQQT8/kD8XfhBOBw2
+        ZBh8Hs88FYe0Q2GhRs+5kxvGwuIDtbOFdljNaihlu/f56D2kcKtig7eXHmTgzOMtid2kji
+        y/qxzpLmXWyVunYO4N6hxUSn02WMys0wl/vnO6mW6INQVtSd86BTigbc5VJBrxy9q4Jzx9
+        QLg6zyJkEndgyi5YLygsIWCONuAKxxbXgEbYZW+1rKOIsrhnk+Idu6RCZFhAZw==
 From:   Frieder Schrempf <frieder@fris.de>
 To:     devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,10 +42,10 @@ Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Marek Vasut <marex@denx.de>,
         Matthias Schiffer <matthias.schiffer@tq-group.com>,
         Max Krummenacher <max.krummenacher@toradex.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 1/8] dt-bindings: arm: fsl: Rename compatibles for Kontron i.MX8MM SoM/board
-Date:   Mon, 22 Aug 2022 10:03:47 +0200
-Message-Id: <20220822080357.24478-2-frieder@fris.de>
+        Peng Fan <peng.fan@nxp.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 2/8] dt-bindings: arm: fsl: Add Kontron BL i.MX8MM OSM-S board
+Date:   Mon, 22 Aug 2022 10:03:48 +0200
+Message-Id: <20220822080357.24478-3-frieder@fris.de>
 In-Reply-To: <20220822080357.24478-1-frieder@fris.de>
 References: <20220822080357.24478-1-frieder@fris.de>
 MIME-Version: 1.0
@@ -57,48 +57,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-This updates the bindings in order to use names for the boards that
-follow the latest convention used by Kontron marketing.
-
-By updating we make sure, that we can maintain this more easily in
-future and make sure that the proper devicetree can be selected for
-the hardware.
+Add bindings for the Kontron BL i.MX8MM OSM-S board.
 
 Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
 Changes in v4:
 * none
 
 Changes in v3:
-* new patch
+* rename compatibles
+* rebase on v6.0-rc1
+
+Changes in v2:
+* add A-b tag from Krzysztof (Thanks!)
 ---
- Documentation/devicetree/bindings/arm/fsl.yaml | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 7431579ab0e8..4dcfa27044f0 100644
+index 4dcfa27044f0..2b5a4d293e25 100644
 --- a/Documentation/devicetree/bindings/arm/fsl.yaml
 +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -831,7 +831,7 @@ properties:
-               - gw,imx8mm-gw7901          # i.MX8MM Gateworks Board
+@@ -832,6 +832,7 @@ properties:
                - gw,imx8mm-gw7902          # i.MX8MM Gateworks Board
                - gw,imx8mm-gw7903          # i.MX8MM Gateworks Board
--              - kontron,imx8mm-n801x-som  # i.MX8MM Kontron SL (N801X) SOM
-+              - kontron,imx8mm-sl         # i.MX8MM Kontron SL (N801X) SOM
+               - kontron,imx8mm-sl         # i.MX8MM Kontron SL (N801X) SOM
++              - kontron,imx8mm-osm-s      # i.MX8MM Kontron OSM-S (N802X) SOM
                - menlo,mx8menlo            # i.MX8MM Menlo board with Verdin SoM
                - toradex,verdin-imx8mm     # Verdin iMX8M Mini Modules
                - toradex,verdin-imx8mm-nonwifi  # Verdin iMX8M Mini Modules without Wi-Fi / BT
-@@ -850,8 +850,8 @@ properties:
- 
-       - description: Kontron BL i.MX8MM (N801X S) Board
-         items:
--          - const: kontron,imx8mm-n801x-s
--          - const: kontron,imx8mm-n801x-som
-+          - const: kontron,imx8mm-bl
-+          - const: kontron,imx8mm-sl
+@@ -854,6 +855,12 @@ properties:
+           - const: kontron,imx8mm-sl
            - const: fsl,imx8mm
  
++      - description: Kontron BL i.MX8MM OSM-S (N802X S) Board
++        items:
++          - const: kontron,imx8mm-bl-osm-s
++          - const: kontron,imx8mm-osm-s
++          - const: fsl,imx8mm
++
        - description: Toradex Boards with Verdin iMX8M Mini Modules
+         items:
+           - enum:
 -- 
 2.37.2
 
