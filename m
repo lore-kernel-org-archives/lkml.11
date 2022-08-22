@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE66BC32789
-	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2503C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 22 Aug 2022 18:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237459AbiHVSaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 14:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
+        id S237470AbiHVSaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 14:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237496AbiHVS3x (ORCPT
+        with ESMTP id S237449AbiHVS37 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 14:29:53 -0400
+        Mon, 22 Aug 2022 14:29:59 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01B88491F4;
-        Mon, 22 Aug 2022 11:29:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 402704A113;
+        Mon, 22 Aug 2022 11:29:45 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 65849BC2;
-        Mon, 22 Aug 2022 21:32:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 65849BC2
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 9A626BC9;
+        Mon, 22 Aug 2022 21:32:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9A626BC9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1661193171;
-        bh=3CwkXuGdeaekQknXVsyKQfInjlMHmHvNJb7YGZdJWx0=;
-        h=From:To:CC:Subject:Date:From;
-        b=QcQiVXBo6rHDB2QKLpt9iEW4pWu3PZ2fVDzHHtlLpsENqjnQ3fhDvXGv1w/K4LUp+
-         f6yDSVSfxXJD2RiSDMxgW1fVHbsJ8+T+N7LVwQYkHp5JYuhxfKmYzexdaK2Ql22FsQ
-         /ksPxitEnijQjLC4AYuY1s5qrCa8XUrAm0rGdPEA=
+        d=baikalelectronics.ru; s=mail; t=1661193172;
+        bh=Xn98MR7V1F/LIQ3Yu3hI7bvvVoawgSacfNBPSyIHRWs=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=Xxr2ZlAxltnM49Mnt7uc78C4OopCTXCiIdaBEuAYQgNB8eau6vNl9IG7qztdV8Rnz
+         bUQ5knN9K9w3Hp+gKcx+ZtlinwWxhK9wCHwkrLfEhDmZCLB4Vrr5VTjToR7tOiSPPB
+         ix0Pdt39zBMl3yoLPKvwS/U5NwwiDwojKLwOvCxU=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 21:29:36 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 22 Aug 2022 21:29:38 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>
@@ -39,9 +39,11 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v10 0/7] clk/resets: baikal-t1: Add DDR/PCIe resets and xGMAC/SATA fixes
-Date:   Mon, 22 Aug 2022 21:29:26 +0300
-Message-ID: <20220822182934.23734-1-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH RESEND v10 2/7] clk: baikal-t1: Fix invalid xGMAC PTP clock divider
+Date:   Mon, 22 Aug 2022 21:29:28 +0300
+Message-ID: <20220822182934.23734-3-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220822182934.23734-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220822182934.23734-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -50,123 +52,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-@Stephen, @Michael
+Most likely due to copy-paste mistake the divider has been set to 10 while
+according to the SoC reference manual it's supposed to be 8 thus having
+PTP clock frequency of 156.25 MHz.
 
-It has been over seven months since the first series submission for
-review. Moreover the reset-part has already got @Philipp's ab tag.
-Please merge it in.
-
-Short summary regarding this patchset. The series starts from fixing of
-the clocks glitching cause by the Renesas 5P49V6901 chip in some
-circumstances. Afterwards a few more modifications are introduced to
-finally finish the Baikal-T1 CCU unit support up and prepare the code
-before adding the Baikal-T1 PCIe/xGMAC support. First of all it turned out
-I specified wrong DW xGMAC PTP reference clock divider in my initial
-patches. It must be 8, not 10. Secondly I was wrong to add a joint xGMAC
-Ref and PTP clock instead of having them separately defined.  The SoC
-manual describes these clocks as separate fixed clock wrappers. Finally
-in order to close the SoC clock/reset support up we need to add the DDR
-and PCIe interfaces reset controls support. It's done in two steps. First
-I've moved the reset-controls-related code into a dedicated module. Then
-the DDR/PCIe reset-control functionality is added. As the series
-finalization we've decided to convert the Baikal-T1 clock/reset source
-drivers to mainly being the platform device driver and pre-initialize the
-basic clocks only at the early kernel boot stages.
-
-Link: https://lore.kernel.org/linux-pci/20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v2:
-- Resubmit the series with adding @Philipp to the list of the recipients.
-
-Link: https://lore.kernel.org/linux-pci/20220330144320.27039-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v3:
-- No comments. Just resend the series.
-- Rebased from v5.17 onto v5.18-rc3.
-
-Link: https://lore.kernel.org/linux-clk/20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v4:
-- Completely split the CCU Dividers and Resets functionality up. (@Stephen)
-- Add a new fixes patch: "clk: baikal-t1: Actually enable SATA internal
-  ref clock".
-- Add a new fixes patch: "reset: Fix devm bulk optional exclusive control
-  getter".
-- Add a new fixes patch: "clk: vc5: Fix 5P49V6901 outputs disabling when
-  enabling FOD".
-- Add a new feagure patch: "clk: baikal-t1: Convert to platform device
-  driver".
-- Change the internal clock ID to the XGMAC-referred name.
-- Rebase onto the kernel v5.18.
-
-Link: https://lore.kernel.org/lkml/20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v5:
-- Just resend.
-- Rebase onto the kernel v5.19-rcX.
-
-Link: https://lore.kernel.org/linux-clk/20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v6:
-- Drop the patch
-  [PATCH RESEND v5 1/8] reset: Fix devm bulk optional exclusive control getter
-  since it has already been accepted by @Philipp.
-- Refactor the reset-control code to support the linear reset IDs only.
-  (@Philipp)
-- Combine the reset-related code into a single file. (@Philipp)
-- Drop CCU_DIV_RST_MAP() macro. It's no longer used.
-
-Link: https://lore.kernel.org/linux-clk/20220708192725.9501-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v7:
-- Fix "Alignment should match open parenthesis" warning for the
-  pr_err() method invocations. (@Philipp)
-- Drop empty line from the sys_rst_info structure initialization block.
-  (@Philipp)
-
-Link: https://lore.kernel.org/linux-clk/20220711154433.15415-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v8:
-- Fix "sef-deasserted" spelling in the CLK_BT1_CCU_RST config help
-  text. (@Randy)
-
-Link: https://lore.kernel.org/linux-clk/20220712121505.5671-1-Sergey.Semin@baikalelectronics.ru
-Changelog v9:
-- Just resend.
-
-Link: https://lore.kernel.org/linux-clk/20220728105736.8266-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v10:
-- Just resend.
-- Rebase onto the kernel 6.0-rc2.
-- Drop the already merged in patch:
-  [PATCH RESEND v5 1/8] reset: Fix devm bulk optional exclusive control getter
-
+Fixes: 353afa3a8d2e ("clk: Add Baikal-T1 CCU Dividers driver")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-clk@vger.kernel.org
-Cc: linux-mips@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+---
+ drivers/clk/baikal-t1/clk-ccu-div.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Serge Semin (7):
-  clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
-  clk: baikal-t1: Fix invalid xGMAC PTP clock divider
-  clk: baikal-t1: Add shared xGMAC ref/ptp clocks internal parent
-  clk: baikal-t1: Add SATA internal ref clock buffer
-  clk: baikal-t1: Move reset-controls code into a dedicated module
-  clk: baikal-t1: Add DDR/PCIe directly controlled resets support
-  clk: baikal-t1: Convert to platform device driver
-
- drivers/clk/baikal-t1/Kconfig       |  12 +-
- drivers/clk/baikal-t1/Makefile      |   1 +
- drivers/clk/baikal-t1/ccu-div.c     |  84 +++++++--
- drivers/clk/baikal-t1/ccu-div.h     |  17 +-
- drivers/clk/baikal-t1/ccu-pll.h     |   8 +
- drivers/clk/baikal-t1/ccu-rst.c     | 217 +++++++++++++++++++++++
- drivers/clk/baikal-t1/ccu-rst.h     |  67 +++++++
- drivers/clk/baikal-t1/clk-ccu-div.c | 264 ++++++++++++++++------------
- drivers/clk/baikal-t1/clk-ccu-pll.c | 129 +++++++++++---
- drivers/clk/clk-versaclock5.c       |   2 +-
- include/dt-bindings/reset/bt1-ccu.h |   9 +
- 11 files changed, 649 insertions(+), 161 deletions(-)
- create mode 100644 drivers/clk/baikal-t1/ccu-rst.c
- create mode 100644 drivers/clk/baikal-t1/ccu-rst.h
-
+diff --git a/drivers/clk/baikal-t1/clk-ccu-div.c b/drivers/clk/baikal-t1/clk-ccu-div.c
+index f141fda12b09..ea77eec40ddd 100644
+--- a/drivers/clk/baikal-t1/clk-ccu-div.c
++++ b/drivers/clk/baikal-t1/clk-ccu-div.c
+@@ -207,7 +207,7 @@ static const struct ccu_div_info sys_info[] = {
+ 	CCU_DIV_GATE_INFO(CCU_SYS_XGMAC_REF_CLK, "sys_xgmac_ref_clk",
+ 			  "eth_clk", CCU_SYS_XGMAC_BASE, 8),
+ 	CCU_DIV_FIXED_INFO(CCU_SYS_XGMAC_PTP_CLK, "sys_xgmac_ptp_clk",
+-			   "eth_clk", 10),
++			   "eth_clk", 8),
+ 	CCU_DIV_GATE_INFO(CCU_SYS_USB_CLK, "sys_usb_clk",
+ 			  "eth_clk", CCU_SYS_USB_BASE, 10),
+ 	CCU_DIV_VAR_INFO(CCU_SYS_PVT_CLK, "sys_pvt_clk",
 -- 
 2.35.1
 
