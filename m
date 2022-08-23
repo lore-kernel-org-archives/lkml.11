@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36003C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CE2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354810AbiHWK30 (ORCPT
+        id S1354836AbiHWK3c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        Tue, 23 Aug 2022 06:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353257AbiHWKNP (ORCPT
+        with ESMTP id S1353297AbiHWKNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:13:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED2C71BFD;
-        Tue, 23 Aug 2022 01:59:16 -0700 (PDT)
+        Tue, 23 Aug 2022 06:13:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC1379A69;
+        Tue, 23 Aug 2022 01:59:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FDF6B81C3A;
-        Tue, 23 Aug 2022 08:59:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8639AC433C1;
-        Tue, 23 Aug 2022 08:59:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D23B86150F;
+        Tue, 23 Aug 2022 08:59:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C19E6C433D6;
+        Tue, 23 Aug 2022 08:59:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245153;
-        bh=7fWuYtg1B+J9a2WfNzdv9rvcTUNgHSU4aummuoGeZCw=;
+        s=korg; t=1661245160;
+        bh=vSnIrq1986sz3UNgOR5G90aHMhrk+yu+kQpcWOG0tsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PQvtq5HkKpp4h1SW0KxL/j3g84T8VJ1mU5FWa5532eM5vt2MJ/msJRoueznAa33oi
-         i6MOxDRQ7Ql+uLe9rfdb3IZwy/WY3QM8w4GSSe+rIfmfcL7RRXG7ddiCeOYvw5PVuC
-         1cdqTlbZ4f7H1i4inFT0yvhaCQ3gXR3TtdkwIazU=
+        b=K14HfQVuULUhoH6FOXHjjIp7fpRRDeFjVhsssYPuB7/Cu78AXEEnk6MJE88mmJ24k
+         MJUHCpA4Ao2t/e/2Pl5Uc3k7H2K2MmAsxA9t5OPG77m6Y8uGV0qws++Ccj9f/BMxVK
+         Fk4p0ciZCEYZHwnoiicDHNj61HY+JdpLkQVfaqw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 233/244] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
-Date:   Tue, 23 Aug 2022 10:26:32 +0200
-Message-Id: <20220823080107.338166314@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Ren Zhijie <renzhijie2@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 235/244] scsi: ufs: ufs-mediatek: Fix build error and type mismatch
+Date:   Tue, 23 Aug 2022 10:26:34 +0200
+Message-Id: <20220823080107.412466756@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,70 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Ren Zhijie <renzhijie2@huawei.com>
 
-[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
+commit f54912b228a8df6c0133e31bc75628677bb8c6e5 upstream.
 
-When CONFIG_XPA is enabled, Clang warns:
+If CONFIG_PM_SLEEP is not set.
 
-  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-                              ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-                                ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  2 errors generated.
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-, will fail:
 
-_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
-build and runtime configuration, which is what the negation operators
-are trying to convey. To silence the warning, explicitly compare against
-0 so the result of the '<<' operator is not implicitly converted to a
-boolean.
+drivers/ufs/host/ufs-mediatek.c: In function ‘ufs_mtk_vreg_fix_vcc’:
+drivers/ufs/host/ufs-mediatek.c:688:46: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 4 has type ‘long unsigned int’ [-Wformat=]
+    snprintf(vcc_name, MAX_VCC_NAME, "vcc-opt%u", res.a1);
+                                             ~^   ~~~~~~
+                                             %lu
+drivers/ufs/host/ufs-mediatek.c: In function ‘ufs_mtk_system_suspend’:
+drivers/ufs/host/ufs-mediatek.c:1371:8: error: implicit declaration of function ‘ufshcd_system_suspend’; did you mean ‘ufs_mtk_system_suspend’? [-Werror=implicit-function-declaration]
+  ret = ufshcd_system_suspend(dev);
+        ^~~~~~~~~~~~~~~~~~~~~
+        ufs_mtk_system_suspend
+drivers/ufs/host/ufs-mediatek.c: In function ‘ufs_mtk_system_resume’:
+drivers/ufs/host/ufs-mediatek.c:1386:9: error: implicit declaration of function ‘ufshcd_system_resume’; did you mean ‘ufs_mtk_system_resume’? [-Werror=implicit-function-declaration]
+  return ufshcd_system_resume(dev);
+         ^~~~~~~~~~~~~~~~~~~~
+         ufs_mtk_system_resume
+cc1: some warnings being treated as errors
 
-According to its documentation, GCC enables -Wint-in-bool-context with
--Wall but this warning is not visible when building the same
-configuration with GCC. It appears GCC only warns when compiling C++,
-not C, although the documentation makes no note of this:
-https://godbolt.org/z/x39q3brxf
+The declaration of func "ufshcd_system_suspend()" depends on
+CONFIG_PM_SLEEP, so the function wrapper ufs_mtk_system_suspend() should
+wrapped by CONFIG_PM_SLEEP too.
 
-Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220619115432.205504-1-renzhijie2@huawei.com
+Fixes: 3fd23b8dfb54 ("scsi: ufs: ufs-mediatek: Fix the timing of configuring device regulators")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[only take the suspend/resume portion of the commit - gregkh]
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/mm/tlbex.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/ufs/ufs-mediatek.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
-index 046d51a454af..3471a089bc05 100644
---- a/arch/mips/mm/tlbex.c
-+++ b/arch/mips/mm/tlbex.c
-@@ -634,7 +634,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
- 		return;
- 	}
+--- a/drivers/scsi/ufs/ufs-mediatek.c
++++ b/drivers/scsi/ufs/ufs-mediatek.c
+@@ -1139,6 +1139,7 @@ static int ufs_mtk_remove(struct platfor
+ 	return 0;
+ }
  
--	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-+	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
- 		if (fill_includes_sw_bits) {
- 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
- 		} else {
-@@ -2573,7 +2573,7 @@ static void check_pabits(void)
- 	unsigned long entry;
- 	unsigned pabits, fillbits;
++#ifdef CONFIG_PM_SLEEP
+ int ufs_mtk_system_suspend(struct device *dev)
+ {
+ 	struct ufs_hba *hba = dev_get_drvdata(dev);
+@@ -1161,6 +1162,7 @@ int ufs_mtk_system_resume(struct device
  
--	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-+	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
- 		/*
- 		 * We'll only be making use of the fact that we can rotate bits
- 		 * into the fill if the CPU supports RIXI, so don't bother
--- 
-2.35.1
-
+ 	return ufshcd_system_resume(dev);
+ }
++#endif
+ 
+ int ufs_mtk_runtime_suspend(struct device *dev)
+ {
 
 
