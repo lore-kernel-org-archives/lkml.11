@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DF5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEB7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346910AbiHWImz (ORCPT
+        id S1346943AbiHWIm6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48354 "EHLO
+        Tue, 23 Aug 2022 04:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347783AbiHWIlF (ORCPT
+        with ESMTP id S1347040AbiHWIkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:41:05 -0400
+        Tue, 23 Aug 2022 04:40:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD6B792E6;
-        Tue, 23 Aug 2022 01:19:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6818778235;
+        Tue, 23 Aug 2022 01:19:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40619B81C4D;
-        Tue, 23 Aug 2022 08:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE52C433C1;
-        Tue, 23 Aug 2022 08:18:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26051B81C3D;
+        Tue, 23 Aug 2022 08:18:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 658F3C433D7;
+        Tue, 23 Aug 2022 08:18:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242707;
-        bh=xd9pSX2o4PEovPzwScjsz4aIA2Eq9p7JoyzIc20i9rQ=;
+        s=korg; t=1661242685;
+        bh=/carbxVV3VvTz4u1LFowtEwvPwCtkus8sQIzpgS3zJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qF4ZO91nB18E9CbYLnipxMoJ3hSZzVMJwT+HjqIVrHiD3D6IKq2mHEQwrY9loB0Xe
-         xOAHGVd1c0yiHeR2EwmXM4LiGvLZJ/Y5QNXhZNbQ24UqbBrXAPFTXO4gy17hRS92ST
-         BKPrd/IjmeK65XWsLKgsDaA2j3qEffop3CHyGcIo=
+        b=doDimdvGBft8EOv7hceLZuzNlDEPajNzr2uEwvc9O2xm5mAre/gAmOFBPNnfNWpoX
+         fsRGHT5Fx8L5s5FblfOq+iCOIGvtpjHSNqjgUx73zhstyBY7NahIaYBiO0mCI6D4Yy
+         fJ0BZDIUjTgKaPq84Jh6qSTtiRJ8R6BB67VgILn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.19 175/365] iavf: Fix deadlock in initialization
-Date:   Tue, 23 Aug 2022 10:01:16 +0200
-Message-Id: <20220823080125.533399037@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Michal Simek <michal.simek@amd.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.19 133/365] spi: dt-bindings: cadence: add missing required
+Date:   Tue, 23 Aug 2022 10:00:34 +0200
+Message-Id: <20220823080123.753330405@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,71 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit cbe9e51126305832cf407ee6bb556ce831488ffe upstream.
+commit 6eee27c598fde65988723b785a9c9192d5ffb93a upstream.
 
-Fix deadlock that occurs when iavf interface is a part of failover
-configuration.
+During the conversion the bindings lost list of required properties.
 
-1. Mutex crit_lock is taken at the beginning of iavf_watchdog_task()
-2. Function iavf_init_config_adapter() is called when adapter
-   state is __IAVF_INIT_CONFIG_ADAPTER
-3. iavf_init_config_adapter() calls register_netdevice() that emits
-   NETDEV_REGISTER event
-4. Notifier function failover_event() then calls
-   net_failover_slave_register() that calls dev_open()
-5. dev_open() calls iavf_open() that tries to take crit_lock in
-   end-less loop
-
-Stack trace:
-...
-[  790.251876]  usleep_range_state+0x5b/0x80
-[  790.252547]  iavf_open+0x37/0x1d0 [iavf]
-[  790.253139]  __dev_open+0xcd/0x160
-[  790.253699]  dev_open+0x47/0x90
-[  790.254323]  net_failover_slave_register+0x122/0x220 [net_failover]
-[  790.255213]  failover_slave_register.part.7+0xd2/0x180 [failover]
-[  790.256050]  failover_event+0x122/0x1ab [failover]
-[  790.256821]  notifier_call_chain+0x47/0x70
-[  790.257510]  register_netdevice+0x20f/0x550
-[  790.258263]  iavf_watchdog_task+0x7c8/0xea0 [iavf]
-[  790.259009]  process_one_work+0x1a7/0x360
-[  790.259705]  worker_thread+0x30/0x390
-
-To fix the situation we should check the current adapter state after
-first unsuccessful mutex_trylock() and return with -EBUSY if it is
-__IAVF_INIT_CONFIG_ADAPTER.
-
-Fixes: 226d528512cf ("iavf: fix locking of critical sections")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: aa7968682a2b ("spi: convert Cadence SPI bindings to YAML")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Michal Simek <michal.simek@amd.com>
+Link: https://lore.kernel.org/r/20220704130618.199231-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/spi/spi-cadence.yaml |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3989,8 +3989,17 @@ static int iavf_open(struct net_device *
- 		return -EIO;
- 	}
+--- a/Documentation/devicetree/bindings/spi/spi-cadence.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+@@ -49,6 +49,13 @@ properties:
+     enum: [ 0, 1 ]
+     default: 0
  
--	while (!mutex_trylock(&adapter->crit_lock))
-+	while (!mutex_trylock(&adapter->crit_lock)) {
-+		/* If we are in __IAVF_INIT_CONFIG_ADAPTER state the crit_lock
-+		 * is already taken and iavf_open is called from an upper
-+		 * device's notifier reacting on NETDEV_REGISTER event.
-+		 * We have to leave here to avoid dead lock.
-+		 */
-+		if (adapter->state == __IAVF_INIT_CONFIG_ADAPTER)
-+			return -EBUSY;
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
 +
- 		usleep_range(500, 1000);
-+	}
+ unevaluatedProperties: false
  
- 	if (adapter->state != __IAVF_DOWN) {
- 		err = -EBUSY;
+ examples:
 
 
