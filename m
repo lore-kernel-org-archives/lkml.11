@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 181FDC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAA5C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240496AbiHWL2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
+        id S238945AbiHWL2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347313AbiHWLVw (ORCPT
+        with ESMTP id S1349217AbiHWLVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:21:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945B32DA9E;
-        Tue, 23 Aug 2022 02:23:26 -0700 (PDT)
+        Tue, 23 Aug 2022 07:21:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F408313F35;
+        Tue, 23 Aug 2022 02:23:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E618461174;
-        Tue, 23 Aug 2022 09:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2418C433D6;
-        Tue, 23 Aug 2022 09:23:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB1226098A;
+        Tue, 23 Aug 2022 09:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8917C433D7;
+        Tue, 23 Aug 2022 09:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246605;
-        bh=LK9FEJt2DMx/tCwauwzG4AoLVuPurOBOmC2rc6Ar3CA=;
+        s=korg; t=1661246602;
+        bh=yvVhweyN6JrAzA1zbQPZB2dG1BZ53GFIrONbDq3SudI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h1RmEbBmUWypxnBEmUE2aFR2x1Rduppy+6DDzb+YTd5Qc40wKAwQmGgZ9ZG7zGW1h
-         2Z0B/NUliFib5qS4HJQtvZsRdYwmJvF/D2q4QVyJrrz78Q6sTuvnnlOHBWKkjuoVHs
-         USMjF77Kv8bSoSU+0Yy0WyC77A+XDQ0a9IXeOSvo=
+        b=teMbwuHo2Xp4YZQjXAUssUc1wFYfjn4uL2NwXKMnrC4XaKW8ByDEjM0NiWLkI0EDL
+         Bwx8U3OSg/OKfSuSdsaxhXvhweIdbtDm3UkAFk6ll99ixtl8DOR+gWIXGF4WTZxN3Z
+         Ec8WW/eZJ7UPoAI4z/OsvUEDTLDPeP5Ehm+lmgDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 132/389] can: rcar_can: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:23:30 +0200
-Message-Id: <20220823080121.137636456@linuxfoundation.org>
+Subject: [PATCH 5.4 160/389] mtd: st_spi_fsm: Add a clk_disable_unprepare() in .probe()s error path
+Date:   Tue, 23 Aug 2022 10:23:58 +0200
+Message-Id: <20220823080122.285256017@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,49 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit a37b7245e831a641df360ca41db6a71c023d3746 ]
+[ Upstream commit 28607b426c3d050714f250d0faeb99d2e9106e90 ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+For all but one error path clk_disable_unprepare() is already there. Add
+it to the one location where it's missing.
 
-Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
-Link: https://lore.kernel.org/all/20220719143550.3681-3-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 481815a6193b ("mtd: st_spi_fsm: Handle clk_prepare_enable/clk_disable_unprepare.")
+Fixes: 69d5af8d016c ("mtd: st_spi_fsm: Obtain and use EMI clock")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220607152458.232847-2-u.kleine-koenig@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/rcar/rcar_can.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/mtd/devices/st_spi_fsm.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
-index ac52288fa3bf..b99b1b235348 100644
---- a/drivers/net/can/rcar/rcar_can.c
-+++ b/drivers/net/can/rcar/rcar_can.c
-@@ -235,11 +235,8 @@ static void rcar_can_error(struct net_device *ndev)
- 	if (eifr & (RCAR_CAN_EIFR_EWIF | RCAR_CAN_EIFR_EPIF)) {
- 		txerr = readb(&priv->regs->tecr);
- 		rxerr = readb(&priv->regs->recr);
--		if (skb) {
-+		if (skb)
- 			cf->can_id |= CAN_ERR_CRTL;
--			cf->data[6] = txerr;
--			cf->data[7] = rxerr;
--		}
- 	}
- 	if (eifr & RCAR_CAN_EIFR_BEIF) {
- 		int rx_errors = 0, tx_errors = 0;
-@@ -339,6 +336,9 @@ static void rcar_can_error(struct net_device *ndev)
- 		can_bus_off(ndev);
- 		if (skb)
- 			cf->can_id |= CAN_ERR_BUSOFF;
-+	} else if (skb) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
- 	}
- 	if (eifr & RCAR_CAN_EIFR_ORIF) {
- 		netdev_dbg(priv->ndev, "Receive overrun error interrupt\n");
+diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
+index f4d1667daaf9..41b5a236276b 100644
+--- a/drivers/mtd/devices/st_spi_fsm.c
++++ b/drivers/mtd/devices/st_spi_fsm.c
+@@ -2116,10 +2116,12 @@ static int stfsm_probe(struct platform_device *pdev)
+ 		(long long)fsm->mtd.size, (long long)(fsm->mtd.size >> 20),
+ 		fsm->mtd.erasesize, (fsm->mtd.erasesize >> 10));
+ 
+-	return mtd_device_register(&fsm->mtd, NULL, 0);
+-
++	ret = mtd_device_register(&fsm->mtd, NULL, 0);
++	if (ret) {
+ err_clk_unprepare:
+-	clk_disable_unprepare(fsm->clk);
++		clk_disable_unprepare(fsm->clk);
++	}
++
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
