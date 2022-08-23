@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9047C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90757C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348968AbiHWJNs (ORCPT
+        id S1349011AbiHWJNx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        Tue, 23 Aug 2022 05:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348829AbiHWJKy (ORCPT
+        with ESMTP id S1348822AbiHWJKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:10:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF866CF45;
-        Tue, 23 Aug 2022 01:30:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0F574E18;
+        Tue, 23 Aug 2022 01:31:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80324B81C55;
-        Tue, 23 Aug 2022 08:30:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF467C433C1;
-        Tue, 23 Aug 2022 08:30:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30FB4B81C20;
+        Tue, 23 Aug 2022 08:30:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C7CC433C1;
+        Tue, 23 Aug 2022 08:30:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243401;
-        bh=igjXdeTIh2J1dyo+c5h+Sq4//E/O3Py4lY+Fsmj/teA=;
+        s=korg; t=1661243425;
+        bh=9yq06iy7wO79sD8w+W4l8pQHAI+xo3r+nkuC6o1BkqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uEuoz5sb+YLAn/z+hb3hz5ed75twLpXXuRJQh8vcWNtMBHdxmpTaN2tv+QrR2SC5c
-         ihT37oPkdynPjj7NQ0V3z11XwMEobR/OfRYjLjRKDH/NhVCrxkQpIba/eNhXSh67mw
-         Ag35KfCo3sY2qJZWBiUwK1PHJ3J5he1Cp8D7dUgM=
+        b=QtFRCMhxHx/B8OCV10ZeAN4vQ7Kz1JBg+816tXQGTs/nF0Dhaqv9Uif44AY6damim
+         w3cQfAwXUFlq4qG0a1OXKry2pgU+kUP6A1bh+pATnYGyp8suFzsbte9uYtNepUiUSm
+         evLGsLgDJjNO5J6Y8u33pyMq9pJmPQqSS4e6PRIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 235/365] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
-Date:   Tue, 23 Aug 2022 10:02:16 +0200
-Message-Id: <20220823080128.069830194@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 274/365] usb: typec: mux: Add CONFIG guards for functions
+Date:   Tue, 23 Aug 2022 10:02:55 +0200
+Message-Id: <20220823080129.624882306@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,36 +55,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Csókás Bence <csokas.bence@prolan.hu>
+From: Prashant Malani <pmalani@chromium.org>
 
-commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
+[ Upstream commit a37599ebfb656c2af4ca119de556eba29b6926d6 ]
 
-Code reimplements functionality already in `fec_ptp_read()`,
-but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
+There are some drivers that can use the Type C mux API, but don't have
+to. Introduce CONFIG guards for the mux functions so that drivers can
+include the header file and not run into compilation errors on systems
+which don't have CONFIG_TYPEC enabled. When CONFIG_TYPEC is not enabled,
+the Type C mux functions will be stub versions of the original calls.
 
-Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
-Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Link: https://lore.kernel.org/r/20220615172129.1314056-3-pmalani@chromium.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ include/linux/usb/typec_mux.h | 44 ++++++++++++++++++++++++++++++-----
+ 1 file changed, 38 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -135,11 +135,7 @@ static int fec_ptp_enable_pps(struct fec
- 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
- 		 * to current timer would be next second.
- 		 */
--		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
--		tempval |= FEC_T_CTRL_CAPTURE;
--		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
+diff --git a/include/linux/usb/typec_mux.h b/include/linux/usb/typec_mux.h
+index ee57781dcf28..9292f0e07846 100644
+--- a/include/linux/usb/typec_mux.h
++++ b/include/linux/usb/typec_mux.h
+@@ -58,17 +58,13 @@ struct typec_mux_desc {
+ 	void *drvdata;
+ };
+ 
++#if IS_ENABLED(CONFIG_TYPEC)
++
+ struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
+ 				       const struct typec_altmode_desc *desc);
+ void typec_mux_put(struct typec_mux *mux);
+ int typec_mux_set(struct typec_mux *mux, struct typec_mux_state *state);
+ 
+-static inline struct typec_mux *
+-typec_mux_get(struct device *dev, const struct typec_altmode_desc *desc)
+-{
+-	return fwnode_typec_mux_get(dev_fwnode(dev), desc);
+-}
 -
--		tempval = readl(fep->hwp + FEC_ATIME);
-+		tempval = fep->cc.read(&fep->cc);
- 		/* Convert the ptp local counter to 1588 timestamp */
- 		ns = timecounter_cyc2time(&fep->tc, tempval);
- 		ts = ns_to_timespec64(ns);
+ struct typec_mux_dev *
+ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc);
+ void typec_mux_unregister(struct typec_mux_dev *mux);
+@@ -76,4 +72,40 @@ void typec_mux_unregister(struct typec_mux_dev *mux);
+ void typec_mux_set_drvdata(struct typec_mux_dev *mux, void *data);
+ void *typec_mux_get_drvdata(struct typec_mux_dev *mux);
+ 
++#else
++
++static inline struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
++				       const struct typec_altmode_desc *desc)
++{
++	return NULL;
++}
++
++static inline void typec_mux_put(struct typec_mux *mux) {}
++
++static inline int typec_mux_set(struct typec_mux *mux, struct typec_mux_state *state)
++{
++	return 0;
++}
++
++static inline struct typec_mux_dev *
++typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++static inline void typec_mux_unregister(struct typec_mux_dev *mux) {}
++
++static inline void typec_mux_set_drvdata(struct typec_mux_dev *mux, void *data) {}
++static inline void *typec_mux_get_drvdata(struct typec_mux_dev *mux)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++
++#endif /* CONFIG_TYPEC */
++
++static inline struct typec_mux *
++typec_mux_get(struct device *dev, const struct typec_altmode_desc *desc)
++{
++	return fwnode_typec_mux_get(dev_fwnode(dev), desc);
++}
++
+ #endif /* __USB_TYPEC_MUX */
+-- 
+2.35.1
+
 
 
