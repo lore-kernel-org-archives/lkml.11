@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F64C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF19C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350744AbiHWJcp (ORCPT
+        id S1350817AbiHWJcs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        Tue, 23 Aug 2022 05:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351019AbiHWJbK (ORCPT
+        with ESMTP id S1351056AbiHWJbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:31:10 -0400
+        Tue, 23 Aug 2022 05:31:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A37B9351B;
-        Tue, 23 Aug 2022 01:38:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B993862C5;
+        Tue, 23 Aug 2022 01:38:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0621061538;
-        Tue, 23 Aug 2022 08:36:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03FCDC43140;
-        Tue, 23 Aug 2022 08:36:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E70A861540;
+        Tue, 23 Aug 2022 08:37:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2BCC433D6;
+        Tue, 23 Aug 2022 08:37:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243816;
-        bh=MSkgAf1zIqW/oIhnY3v5vqHnCfp7wiwThy3eGepHuUI=;
+        s=korg; t=1661243822;
+        bh=Ko2KFsJXefQC6uhU20nFUKfN9T0HQZh3ccGCRZW+100=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F6+9y8Np4FzyzxkmC5PO2s4kEeJcSjJrs831dzxQ/LLjObXweHxV+q2ZtqHemvwsB
-         v1WtbaWPNugrZKrlet1guTPmJbKrS5Gmew1cVV8TJNmyN2IfOgDiAx5Rrw/XGJXPt5
-         dHDSpYp76omHIpg+b/eomWry6I49Awl6Zaax+EEg=
+        b=h2bV2RwNPOWxMUgYuD0TWHvShDz3kE7hpH4u5auRO+4hQRDAYdDuqBGIvCFndtPMG
+         YJkAgncBQxa/yud5oa7Nz7TruNg3sazZIc6mNUtF9WwwY3iUPJRjtZWaf5PNnqpqFi
+         sULqjmKYThmykm7WxTZEew07ph1ujDZwbmqPMQWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 4.14 030/229] fuse: limit nsec
-Date:   Tue, 23 Aug 2022 10:23:11 +0200
-Message-Id: <20220823080054.572703405@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com,
+        Ayushman Dutta <ayudutta@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 005/229] net: ping6: Fix memleak in ipv6_renew_options().
+Date:   Tue, 23 Aug 2022 10:22:46 +0200
+Message-Id: <20220823080053.481732597@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -48,34 +54,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 47912eaa061a6a81e4aa790591a1874c650733c0 upstream.
+commit e27326009a3d247b831eda38878c777f6f4eb3d1 upstream.
 
-Limit nanoseconds to 0..999999999.
+When we close ping6 sockets, some resources are left unfreed because
+pingv6_prot is missing sk->sk_prot->destroy().  As reported by
+syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
 
-Fixes: d8a5ba45457e ("[PATCH] FUSE - core")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+    struct ipv6_sr_hdr *hdr;
+    char data[24] = {0};
+    int fd;
+
+    hdr = (struct ipv6_sr_hdr *)data;
+    hdr->hdrlen = 2;
+    hdr->type = IPV6_SRCRT_TYPE_4;
+
+    fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
+    setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
+    close(fd);
+
+To fix memory leaks, let's add a destroy function.
+
+Note the socket() syscall checks if the GID is within the range of
+net.ipv4.ping_group_range.  The default value is [1, 0] so that no
+GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
+not succeed until we change the default value.  However, at least
+Ubuntu/Fedora/RHEL loosen it.
+
+    $ cat /usr/lib/sysctl.d/50-default.conf
+    ...
+    -net.ipv4.ping_group_range = 0 2147483647
+
+Also, there could be another path reported with these options, and
+some of them require CAP_NET_RAW.
+
+  setsockopt
+      IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
+      IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
+      IPV6_HOPOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDR (inet6_sk(sk)->opt)
+      IPV6_DSTOPTS (inet6_sk(sk)->opt)
+      IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
+
+  getsockopt
+      IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
+
+For the record, I left a different splat with syzbot's one.
+
+  unreferenced object 0xffff888006270c60 (size 96):
+    comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
+    hex dump (first 32 bytes):
+      01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
+      [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
+      [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
+      [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
+      [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
+      [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+      [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+
+[0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
+
+Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
+Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+Reported-by: Ayushman Dutta <ayudutta@amazon.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220728012220.46918-1-kuniyu@amazon.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fuse/inode.c |    6 ++++++
+ net/ipv6/ping.c |    6 ++++++
  1 file changed, 6 insertions(+)
 
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -174,6 +174,12 @@ void fuse_change_attributes_common(struc
- 	inode->i_uid     = make_kuid(&init_user_ns, attr->uid);
- 	inode->i_gid     = make_kgid(&init_user_ns, attr->gid);
- 	inode->i_blocks  = attr->blocks;
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -26,6 +26,11 @@
+ #include <net/transp_v6.h>
+ #include <net/ping.h>
+ 
++static void ping_v6_destroy(struct sock *sk)
++{
++	inet6_destroy_sock(sk);
++}
 +
-+	/* Sanitize nsecs */
-+	attr->atimensec = min_t(u32, attr->atimensec, NSEC_PER_SEC - 1);
-+	attr->mtimensec = min_t(u32, attr->mtimensec, NSEC_PER_SEC - 1);
-+	attr->ctimensec = min_t(u32, attr->ctimensec, NSEC_PER_SEC - 1);
-+
- 	inode->i_atime.tv_sec   = attr->atime;
- 	inode->i_atime.tv_nsec  = attr->atimensec;
- 	/* mtime from server may be stale due to local buffered write */
+ /* Compatibility glue so we can support IPv6 when it's compiled as a module */
+ static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+ 				 int *addr_len)
+@@ -173,6 +178,7 @@ struct proto pingv6_prot = {
+ 	.owner =	THIS_MODULE,
+ 	.init =		ping_init_sock,
+ 	.close =	ping_close,
++	.destroy =	ping_v6_destroy,
+ 	.connect =	ip6_datagram_connect_v6_only,
+ 	.disconnect =	__udp_disconnect,
+ 	.setsockopt =	ipv6_setsockopt,
 
 
