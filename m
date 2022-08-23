@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED48DC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2161BC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355787AbiHWKsD (ORCPT
+        id S1355850AbiHWKsH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
+        Tue, 23 Aug 2022 06:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356307AbiHWKlu (ORCPT
+        with ESMTP id S1356316AbiHWKlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:41:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96D486709;
-        Tue, 23 Aug 2022 02:09:24 -0700 (PDT)
+        Tue, 23 Aug 2022 06:41:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1CC84ECB;
+        Tue, 23 Aug 2022 02:09:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 003F1615AB;
-        Tue, 23 Aug 2022 09:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E19E2C433C1;
-        Tue, 23 Aug 2022 09:09:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B4626010E;
+        Tue, 23 Aug 2022 09:09:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B256C433D7;
+        Tue, 23 Aug 2022 09:09:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245750;
-        bh=/RaeS7m5dAmIU2S1dxom5JWgLdGUIw6c/w0E9WlM5zo=;
+        s=korg; t=1661245759;
+        bh=dS14W8ecUphTKxvCQBorbBcTsP8koOnv//b1T3gJMZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gGu24JnU/bRQHwPm6m+mGiyqZyHYSz+apHX34yVSDK6B8RJvSrb43uErH8ihjafEe
-         5WiLBpP0bJBaxeRCdtk7fZo9NZYQIcqbDYNrmgGcZQ+mxSRHwcHsj4/lihgScW652g
-         kdI3s0wEGmmF1JMfNwVnh5aW5TF3Fv64w6Fp/kPo=
+        b=QGpf8RkcXZTNoNYH17f7mjDEelzmBqQxtklWyZufjOqyOoeNNcqi+eimD/4aqcRW3
+         koc03lrgxJKhPj+k0ClLvPvq9/ZEWBjL9/EMrxKO3l6I4zo/Q1j+vZIa+7vOIs0SHU
+         U+NUYJaH3AkWaZ9lgq03Mh3SKyXTPe40fIGpB29Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 137/287] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:25:06 +0200
-Message-Id: <20220823080105.081402755@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 181/287] video: fbdev: vt8623fb: Check the size of screen before memset_io()
+Date:   Tue, 23 Aug 2022 10:25:50 +0200
+Message-Id: <20220823080106.880864909@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,40 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
+[ Upstream commit ec0754c60217248fa77cc9005d66b2b55200ac06 ]
 
-In thunder_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+In the function vt8623fb_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause the following bug:
 
-Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+[  583.339036] BUG: unable to handle page fault for address: ffffc90005000000
+[  583.339049] #PF: supervisor write access in kernel mode
+[  583.339052] #PF: error_code(0x0002) - not-present page
+[  583.339074] RIP: 0010:memset_orig+0x33/0xb0
+[  583.339110] Call Trace:
+[  583.339118]  vt8623fb_set_par+0x11cd/0x21e0
+[  583.339146]  fb_set_var+0x604/0xeb0
+[  583.339181]  do_fb_ioctl+0x234/0x670
+[  583.339209]  fb_ioctl+0xdd/0x130
+
+Fix the this by checking the value of 'screen_size' before memset_io().
+
+Fixes: 558b7bd86c32 ("vt8623fb: new framebuffer driver for VIA VT8623")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-thunderx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/vt8623fb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
-index eee08d81b242..f79806e31e7e 100644
---- a/drivers/mmc/host/cavium-thunderx.c
-+++ b/drivers/mmc/host/cavium-thunderx.c
-@@ -138,8 +138,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
- 				continue;
+diff --git a/drivers/video/fbdev/vt8623fb.c b/drivers/video/fbdev/vt8623fb.c
+index 5cac871db3ee..cbae9c510092 100644
+--- a/drivers/video/fbdev/vt8623fb.c
++++ b/drivers/video/fbdev/vt8623fb.c
+@@ -504,6 +504,8 @@ static int vt8623fb_set_par(struct fb_info *info)
+ 			 (info->var.vmode & FB_VMODE_DOUBLE) ? 2 : 1, 1,
+ 			 1, info->node);
  
- 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
--			if (ret)
-+			if (ret) {
-+				of_node_put(child_node);
- 				goto error;
-+			}
- 		}
- 		i++;
- 	}
++	if (screen_size > info->screen_size)
++		screen_size = info->screen_size;
+ 	memset_io(info->screen_base, 0x00, screen_size);
+ 
+ 	/* Device and screen back on */
 -- 
 2.35.1
 
