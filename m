@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E93C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5D2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352307AbiHWKJD (ORCPT
+        id S1352826AbiHWKJK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
+        Tue, 23 Aug 2022 06:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352614AbiHWKCM (ORCPT
+        with ESMTP id S1352637AbiHWKCP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:12 -0400
+        Tue, 23 Aug 2022 06:02:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81061A2615;
-        Tue, 23 Aug 2022 01:50:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF62A223C;
+        Tue, 23 Aug 2022 01:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 858A661499;
-        Tue, 23 Aug 2022 08:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 908C3C433D6;
-        Tue, 23 Aug 2022 08:50:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 901E66122F;
+        Tue, 23 Aug 2022 08:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8174CC433D6;
+        Tue, 23 Aug 2022 08:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244613;
-        bh=Sx7YHlC+iMKeMwWYo50W0TgzSYAvSksJ9vsSXpoXKBc=;
+        s=korg; t=1661244620;
+        bh=PHEOO4VX3NtboMTjBW2N8IPFgmpRi7rwB6g2Y1tQN/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghHvpV5gkn4qrhyl9Y1cgwNxWrw2H/H/w2GiTfJHF3pXU1/5ELcQ6euhh9tdlplEu
-         nOeg7ajiMZlLWKhKbNyA/ecWkILoam8zd3EyJxpvLorGhsWsC60mu0ZWoCve6YPhuL
-         cg4c2pzCL+NZkUTTPp92L7fOWA7ga9hrEK531ksQ=
+        b=E5mbqSfXh9uTl8Eem5S7VdahUEp2u4B0KSnSP5s94qCaX1UkPXlZmUy1trEDBc9cx
+         YR/uz2DssCaf/QZdeAVVhv6mpUTxSc9q3TVr5oXSi1Im5IHvXF5d7RKfjmlP5r+XYp
+         dvp0uL20WVQqjq+xHTbxsRRDyltG08zZveRoclY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 123/244] netfilter: nf_tables: use READ_ONCE and WRITE_ONCE for shared generation id access
-Date:   Tue, 23 Aug 2022 10:24:42 +0200
-Message-Id: <20220823080103.171945337@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 124/244] fs/ntfs3: uninitialized variable in ntfs_set_acl_ex()
+Date:   Tue, 23 Aug 2022 10:24:43 +0200
+Message-Id: <20220823080103.212067936@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -48,109 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 3400278328285a8c2f121904496aff5e7b610a01 upstream.
+commit d4073595d0c61463ec3a87411b19e2a90f76d3f8 upstream.
 
-The generation ID is bumped from the commit path while holding the
-mutex, however, netlink dump operations rely on RCU.
+The goto out calls kfree(value) on an uninitialized pointer.  Just
+return directly as the other error paths do.
 
-This patch also adds missing cb->base_eq initialization in
-nf_tables_dump_set().
-
-Fixes: 38e029f14a97 ("netfilter: nf_tables: set NLM_F_DUMP_INTR if netlink dumping is stale")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 460bbf2990b3 ("fs/ntfs3: Do not change mode if ntfs_set_ea failed")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ fs/ntfs3/xattr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -837,7 +837,7 @@ static int nf_tables_dump_tables(struct
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -1626,7 +1626,7 @@ static int nf_tables_dump_chains(struct
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -3054,7 +3054,7 @@ static int nf_tables_dump_rules(struct s
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -4036,7 +4036,7 @@ static int nf_tables_dump_sets(struct sk
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (ctx->family != NFPROTO_UNSPEC &&
-@@ -4964,6 +4964,8 @@ static int nf_tables_dump_set(struct sk_
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
-+	cb->seq = READ_ONCE(nft_net->base_seq);
-+
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (dump_ctx->ctx.family != NFPROTO_UNSPEC &&
- 		    dump_ctx->ctx.family != table->family)
-@@ -6796,7 +6798,7 @@ static int nf_tables_dump_obj(struct sk_
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -7728,7 +7730,7 @@ static int nf_tables_dump_flowtable(stru
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -8612,6 +8614,7 @@ static int nf_tables_commit(struct net *
- 	struct nft_trans_elem *te;
- 	struct nft_chain *chain;
- 	struct nft_table *table;
-+	unsigned int base_seq;
- 	LIST_HEAD(adl);
- 	int err;
- 
-@@ -8661,9 +8664,12 @@ static int nf_tables_commit(struct net *
- 	 * Bump generation counter, invalidate any dump in progress.
- 	 * Cannot fail after this point.
- 	 */
--	while (++nft_net->base_seq == 0)
-+	base_seq = READ_ONCE(nft_net->base_seq);
-+	while (++base_seq == 0)
- 		;
- 
-+	WRITE_ONCE(nft_net->base_seq, base_seq);
-+
- 	/* step 3. Start new generation, rules_gen_X now in use. */
- 	net->nft.gencursor = nft_gencursor_next(net);
- 
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -561,7 +561,7 @@ static noinline int ntfs_set_acl_ex(stru
+ 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
+ 						    &acl);
+ 			if (err)
+-				goto out;
++				return err;
+ 		}
+ 		name = XATTR_NAME_POSIX_ACL_ACCESS;
+ 		name_len = sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1;
 
 
