@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB31CC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1832CC3814E
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356673AbiHWKzd (ORCPT
+        id S1356837AbiHWKzr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
+        Tue, 23 Aug 2022 06:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356045AbiHWKs6 (ORCPT
+        with ESMTP id S1356082AbiHWKtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:48:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9520AAB074;
-        Tue, 23 Aug 2022 02:12:19 -0700 (PDT)
+        Tue, 23 Aug 2022 06:49:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E7B74E32;
+        Tue, 23 Aug 2022 02:12:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D6ED60F4B;
-        Tue, 23 Aug 2022 09:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2479CC433D7;
-        Tue, 23 Aug 2022 09:12:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25635B81C4E;
+        Tue, 23 Aug 2022 09:12:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D71DC433C1;
+        Tue, 23 Aug 2022 09:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245938;
-        bh=HOXCiQRCue+WqyhD977c9T+bU9sdz6fgKX43vY6tDYk=;
+        s=korg; t=1661245944;
+        bh=4GLTEUjqLgkUnAmMiX/K4Iy8gbFUlHNor6u5MDbLmPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NAtISwrFtRGJ7MpaVEaPAILIeIqqgwvh7y/v3S8sYGRcehwQVhJkGTEo+wtMBb1E9
-         EnzgQbthrtLEYN6op6XCdMXVZ/KDgMvps19lOnW5LT5J6MEjXegNzhrCa+F+XdmkpA
-         QShiMlvqXZJaZZXGhc9v/jLGpMIxX7ZraUGvNs9A=
+        b=Ut+qRKdtrD45PADv4zoXGY+/OCUorjqDUZk0Vi3G5w7hDxX2ZgLw88b8s8AFGbZUX
+         u2gtxddVxxD7P5Gti8jtIggLnxm32COU+Ow8AdkqDJEKJi1OB1R0sQsqyHDT7IJr1Y
+         YjuZjT33ihd2SSfqkDUISCOtHAv0HdKnUyBrCDZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.19 236/287] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
-Date:   Tue, 23 Aug 2022 10:26:45 +0200
-Message-Id: <20220823080108.993459598@linuxfoundation.org>
+        stable@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
+        Jose Alonso <joalonsof@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 208/287] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
+Date:   Tue, 23 Aug 2022 10:26:17 +0200
+Message-Id: <20220823080107.925645984@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,38 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Jose Alonso <joalonsof@gmail.com>
 
-commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
+commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
 
-The value acpi_add_nondev_subnodes() returns is bool so change the return
-type of the function to match that.
+This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
 
-Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
+versions that have no issues.
+
+The FLAG_SEND_ZLP is not safe to use in this context.
+See:
+https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
+The original problem needs another way to solve.
+
+Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
+Cc: stable@vger.kernel.org
+Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
+Link: https://bugs.archlinux.org/task/75491
+Signed-off-by: Jose Alonso <joalonsof@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/property.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/usb/ax88179_178a.c |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -132,10 +132,10 @@ static bool acpi_nondev_subnode_ok(acpi_
- 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
- }
- 
--static int acpi_add_nondev_subnodes(acpi_handle scope,
--				    const union acpi_object *links,
--				    struct list_head *list,
--				    struct fwnode_handle *parent)
-+static bool acpi_add_nondev_subnodes(acpi_handle scope,
-+				     const union acpi_object *links,
-+				     struct list_head *list,
-+				     struct fwnode_handle *parent)
- {
- 	bool ret = false;
- 	int i;
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1706,7 +1706,7 @@ static const struct driver_info ax88179_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1719,7 +1719,7 @@ static const struct driver_info ax88178a
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1732,7 +1732,7 @@ static const struct driver_info cypress_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1745,7 +1745,7 @@ static const struct driver_info dlink_du
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1758,7 +1758,7 @@ static const struct driver_info sitecom_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1771,7 +1771,7 @@ static const struct driver_info samsung_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1784,7 +1784,7 @@ static const struct driver_info lenovo_i
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1797,7 +1797,7 @@ static const struct driver_info belkin_i
+ 	.link_reset = ax88179_link_reset,
+ 	.reset	= ax88179_reset,
+ 	.stop	= ax88179_stop,
+-	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
 
 
