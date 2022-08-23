@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86440C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC8DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348223AbiHWJIf (ORCPT
+        id S1348254AbiHWJIo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
+        Tue, 23 Aug 2022 05:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347959AbiHWJHX (ORCPT
+        with ESMTP id S240955AbiHWJHZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:07:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB0C861F7;
-        Tue, 23 Aug 2022 01:30:14 -0700 (PDT)
+        Tue, 23 Aug 2022 05:07:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04E0861CF;
+        Tue, 23 Aug 2022 01:30:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 77D0FCE1B40;
-        Tue, 23 Aug 2022 08:29:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C977C433C1;
-        Tue, 23 Aug 2022 08:29:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8113B81C57;
+        Tue, 23 Aug 2022 08:28:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2347DC433B5;
+        Tue, 23 Aug 2022 08:28:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243363;
-        bh=HrtdRP3M5t5rCJ+EvLj3UpIdzU7gplhRQ6l4rCEq1CY=;
+        s=korg; t=1661243335;
+        bh=HoReviJIiaDBHeMOZIQuLCNx7ec42U1K2fgXMEpQAJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=va2m+Eunn9FkS3VQzir4BRXcuPt8ObVGOEylbbF8Y1Bj3tSh2N/t9kRTGoXjcZXQh
-         Nl/qdjz6Nr3hxeYgnrsRWYqmTgRcIQIl67M5pjUkLYQwxMzoUFbIO27gh71tgam1qJ
-         9rw0KE3IwFvotWJop3Pn5jLOhh2/G/mQTG3cF2vo=
+        b=U2DlweHaW+6laPOoM5SRVZ4xH8IjS2KR4jVjN/UbHgk/6sez4XrxCeO5S8Y7DaVD+
+         78tDeGJKbwQVJTRyaVQcTtbSFN7RWxHRPfmo19kl+f6IFnL+neZsMXFafF45FDNdmO
+         dT0A7yQDX+tqYNI5smt2bwNDjGXNSbbXZS9cqa5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 253/365] net: mscc: ocelot: make struct ocelot_stat_layout array indexable
-Date:   Tue, 23 Aug 2022 10:02:34 +0200
-Message-Id: <20220823080128.778682232@linuxfoundation.org>
+Subject: [PATCH 5.19 245/365] drm/amdgpu: Avoid another list of reset devices
+Date:   Tue, 23 Aug 2022 10:02:26 +0200
+Message-Id: <20220823080128.470688262@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,1715 +51,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Lijo Lazar <lijo.lazar@amd.com>
 
-[ Upstream commit 9190460084ddd0e9235f55eab0fdd5456b5f2fd5 ]
+[ Upstream commit 0a83bb35d8a6ff3d18c2772afe616780c23293a6 ]
 
-The ocelot counters are 32-bit and require periodic reading, every 2
-seconds, by ocelot_port_update_stats(), so that wraparounds are
-detected.
+A list of devices to be reset is already created in
+amdgpu_device_gpu_recover function. Creating another list with the
+same nodes is incorrect and not supported in list_head. Instead, pass
+the device list as part of reset context.
 
-Currently, the counters reported by ocelot_get_stats64() come from the
-32-bit hardware counters directly, rather than from the 64-bit
-accumulated ocelot->stats, and this is a problem for their integrity.
-
-The strategy is to make ocelot_get_stats64() able to cherry-pick
-individual stats from ocelot->stats the way in which it currently reads
-them out from SYS_COUNT_* registers. But currently it can't, because
-ocelot->stats is an opaque u64 array that's used only to feed data into
-ethtool -S.
-
-To solve that problem, we need to make ocelot->stats indexable, and
-associate each element with an element of struct ocelot_stat_layout used
-by ethtool -S.
-
-This makes ocelot_stat_layout a fat (and possibly sparse) array, so we
-need to change the way in which we access it. We no longer need
-OCELOT_STAT_END as a sentinel, because we know the array's size
-(OCELOT_NUM_STATS). We just need to skip the array elements that were
-left unpopulated for the switch revision (ocelot, felix, seville).
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9e08564727fc (drm/amdgpu: Refactor mode2 reset logic for v13.0.2)
+Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
+Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 468 ++++++++++++++++-----
- drivers/net/dsa/ocelot/seville_vsc9953.c   | 468 ++++++++++++++++-----
- drivers/net/ethernet/mscc/ocelot.c         |  40 +-
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 468 ++++++++++++++++-----
- include/soc/mscc/ocelot.h                  | 105 ++++-
- 5 files changed, 1243 insertions(+), 306 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/aldebaran.c     | 45 +++++++---------------
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |  2 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu_reset.h  |  1 +
+ 3 files changed, 17 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 601fae886b26..6439b56f381f 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -550,101 +550,379 @@ static const struct reg_field vsc9959_regfields[REGFIELD_MAX] = {
- 	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 7, 4),
- };
- 
--static const struct ocelot_stat_layout vsc9959_stats_layout[] = {
--	{ .offset = 0x00,	.name = "rx_octets", },
--	{ .offset = 0x01,	.name = "rx_unicast", },
--	{ .offset = 0x02,	.name = "rx_multicast", },
--	{ .offset = 0x03,	.name = "rx_broadcast", },
--	{ .offset = 0x04,	.name = "rx_shorts", },
--	{ .offset = 0x05,	.name = "rx_fragments", },
--	{ .offset = 0x06,	.name = "rx_jabbers", },
--	{ .offset = 0x07,	.name = "rx_crc_align_errs", },
--	{ .offset = 0x08,	.name = "rx_sym_errs", },
--	{ .offset = 0x09,	.name = "rx_frames_below_65_octets", },
--	{ .offset = 0x0A,	.name = "rx_frames_65_to_127_octets", },
--	{ .offset = 0x0B,	.name = "rx_frames_128_to_255_octets", },
--	{ .offset = 0x0C,	.name = "rx_frames_256_to_511_octets", },
--	{ .offset = 0x0D,	.name = "rx_frames_512_to_1023_octets", },
--	{ .offset = 0x0E,	.name = "rx_frames_1024_to_1526_octets", },
--	{ .offset = 0x0F,	.name = "rx_frames_over_1526_octets", },
--	{ .offset = 0x10,	.name = "rx_pause", },
--	{ .offset = 0x11,	.name = "rx_control", },
--	{ .offset = 0x12,	.name = "rx_longs", },
--	{ .offset = 0x13,	.name = "rx_classified_drops", },
--	{ .offset = 0x14,	.name = "rx_red_prio_0", },
--	{ .offset = 0x15,	.name = "rx_red_prio_1", },
--	{ .offset = 0x16,	.name = "rx_red_prio_2", },
--	{ .offset = 0x17,	.name = "rx_red_prio_3", },
--	{ .offset = 0x18,	.name = "rx_red_prio_4", },
--	{ .offset = 0x19,	.name = "rx_red_prio_5", },
--	{ .offset = 0x1A,	.name = "rx_red_prio_6", },
--	{ .offset = 0x1B,	.name = "rx_red_prio_7", },
--	{ .offset = 0x1C,	.name = "rx_yellow_prio_0", },
--	{ .offset = 0x1D,	.name = "rx_yellow_prio_1", },
--	{ .offset = 0x1E,	.name = "rx_yellow_prio_2", },
--	{ .offset = 0x1F,	.name = "rx_yellow_prio_3", },
--	{ .offset = 0x20,	.name = "rx_yellow_prio_4", },
--	{ .offset = 0x21,	.name = "rx_yellow_prio_5", },
--	{ .offset = 0x22,	.name = "rx_yellow_prio_6", },
--	{ .offset = 0x23,	.name = "rx_yellow_prio_7", },
--	{ .offset = 0x24,	.name = "rx_green_prio_0", },
--	{ .offset = 0x25,	.name = "rx_green_prio_1", },
--	{ .offset = 0x26,	.name = "rx_green_prio_2", },
--	{ .offset = 0x27,	.name = "rx_green_prio_3", },
--	{ .offset = 0x28,	.name = "rx_green_prio_4", },
--	{ .offset = 0x29,	.name = "rx_green_prio_5", },
--	{ .offset = 0x2A,	.name = "rx_green_prio_6", },
--	{ .offset = 0x2B,	.name = "rx_green_prio_7", },
--	{ .offset = 0x80,	.name = "tx_octets", },
--	{ .offset = 0x81,	.name = "tx_unicast", },
--	{ .offset = 0x82,	.name = "tx_multicast", },
--	{ .offset = 0x83,	.name = "tx_broadcast", },
--	{ .offset = 0x84,	.name = "tx_collision", },
--	{ .offset = 0x85,	.name = "tx_drops", },
--	{ .offset = 0x86,	.name = "tx_pause", },
--	{ .offset = 0x87,	.name = "tx_frames_below_65_octets", },
--	{ .offset = 0x88,	.name = "tx_frames_65_to_127_octets", },
--	{ .offset = 0x89,	.name = "tx_frames_128_255_octets", },
--	{ .offset = 0x8A,	.name = "tx_frames_256_511_octets", },
--	{ .offset = 0x8B,	.name = "tx_frames_512_1023_octets", },
--	{ .offset = 0x8C,	.name = "tx_frames_1024_1526_octets", },
--	{ .offset = 0x8D,	.name = "tx_frames_over_1526_octets", },
--	{ .offset = 0x8E,	.name = "tx_yellow_prio_0", },
--	{ .offset = 0x8F,	.name = "tx_yellow_prio_1", },
--	{ .offset = 0x90,	.name = "tx_yellow_prio_2", },
--	{ .offset = 0x91,	.name = "tx_yellow_prio_3", },
--	{ .offset = 0x92,	.name = "tx_yellow_prio_4", },
--	{ .offset = 0x93,	.name = "tx_yellow_prio_5", },
--	{ .offset = 0x94,	.name = "tx_yellow_prio_6", },
--	{ .offset = 0x95,	.name = "tx_yellow_prio_7", },
--	{ .offset = 0x96,	.name = "tx_green_prio_0", },
--	{ .offset = 0x97,	.name = "tx_green_prio_1", },
--	{ .offset = 0x98,	.name = "tx_green_prio_2", },
--	{ .offset = 0x99,	.name = "tx_green_prio_3", },
--	{ .offset = 0x9A,	.name = "tx_green_prio_4", },
--	{ .offset = 0x9B,	.name = "tx_green_prio_5", },
--	{ .offset = 0x9C,	.name = "tx_green_prio_6", },
--	{ .offset = 0x9D,	.name = "tx_green_prio_7", },
--	{ .offset = 0x9E,	.name = "tx_aged", },
--	{ .offset = 0x100,	.name = "drop_local", },
--	{ .offset = 0x101,	.name = "drop_tail", },
--	{ .offset = 0x102,	.name = "drop_yellow_prio_0", },
--	{ .offset = 0x103,	.name = "drop_yellow_prio_1", },
--	{ .offset = 0x104,	.name = "drop_yellow_prio_2", },
--	{ .offset = 0x105,	.name = "drop_yellow_prio_3", },
--	{ .offset = 0x106,	.name = "drop_yellow_prio_4", },
--	{ .offset = 0x107,	.name = "drop_yellow_prio_5", },
--	{ .offset = 0x108,	.name = "drop_yellow_prio_6", },
--	{ .offset = 0x109,	.name = "drop_yellow_prio_7", },
--	{ .offset = 0x10A,	.name = "drop_green_prio_0", },
--	{ .offset = 0x10B,	.name = "drop_green_prio_1", },
--	{ .offset = 0x10C,	.name = "drop_green_prio_2", },
--	{ .offset = 0x10D,	.name = "drop_green_prio_3", },
--	{ .offset = 0x10E,	.name = "drop_green_prio_4", },
--	{ .offset = 0x10F,	.name = "drop_green_prio_5", },
--	{ .offset = 0x110,	.name = "drop_green_prio_6", },
--	{ .offset = 0x111,	.name = "drop_green_prio_7", },
--	OCELOT_STAT_END
-+static const struct ocelot_stat_layout vsc9959_stats_layout[OCELOT_NUM_STATS] = {
-+	[OCELOT_STAT_RX_OCTETS] = {
-+		.name = "rx_octets",
-+		.offset = 0x00,
-+	},
-+	[OCELOT_STAT_RX_UNICAST] = {
-+		.name = "rx_unicast",
-+		.offset = 0x01,
-+	},
-+	[OCELOT_STAT_RX_MULTICAST] = {
-+		.name = "rx_multicast",
-+		.offset = 0x02,
-+	},
-+	[OCELOT_STAT_RX_BROADCAST] = {
-+		.name = "rx_broadcast",
-+		.offset = 0x03,
-+	},
-+	[OCELOT_STAT_RX_SHORTS] = {
-+		.name = "rx_shorts",
-+		.offset = 0x04,
-+	},
-+	[OCELOT_STAT_RX_FRAGMENTS] = {
-+		.name = "rx_fragments",
-+		.offset = 0x05,
-+	},
-+	[OCELOT_STAT_RX_JABBERS] = {
-+		.name = "rx_jabbers",
-+		.offset = 0x06,
-+	},
-+	[OCELOT_STAT_RX_CRC_ALIGN_ERRS] = {
-+		.name = "rx_crc_align_errs",
-+		.offset = 0x07,
-+	},
-+	[OCELOT_STAT_RX_SYM_ERRS] = {
-+		.name = "rx_sym_errs",
-+		.offset = 0x08,
-+	},
-+	[OCELOT_STAT_RX_64] = {
-+		.name = "rx_frames_below_65_octets",
-+		.offset = 0x09,
-+	},
-+	[OCELOT_STAT_RX_65_127] = {
-+		.name = "rx_frames_65_to_127_octets",
-+		.offset = 0x0A,
-+	},
-+	[OCELOT_STAT_RX_128_255] = {
-+		.name = "rx_frames_128_to_255_octets",
-+		.offset = 0x0B,
-+	},
-+	[OCELOT_STAT_RX_256_511] = {
-+		.name = "rx_frames_256_to_511_octets",
-+		.offset = 0x0C,
-+	},
-+	[OCELOT_STAT_RX_512_1023] = {
-+		.name = "rx_frames_512_to_1023_octets",
-+		.offset = 0x0D,
-+	},
-+	[OCELOT_STAT_RX_1024_1526] = {
-+		.name = "rx_frames_1024_to_1526_octets",
-+		.offset = 0x0E,
-+	},
-+	[OCELOT_STAT_RX_1527_MAX] = {
-+		.name = "rx_frames_over_1526_octets",
-+		.offset = 0x0F,
-+	},
-+	[OCELOT_STAT_RX_PAUSE] = {
-+		.name = "rx_pause",
-+		.offset = 0x10,
-+	},
-+	[OCELOT_STAT_RX_CONTROL] = {
-+		.name = "rx_control",
-+		.offset = 0x11,
-+	},
-+	[OCELOT_STAT_RX_LONGS] = {
-+		.name = "rx_longs",
-+		.offset = 0x12,
-+	},
-+	[OCELOT_STAT_RX_CLASSIFIED_DROPS] = {
-+		.name = "rx_classified_drops",
-+		.offset = 0x13,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_0] = {
-+		.name = "rx_red_prio_0",
-+		.offset = 0x14,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_1] = {
-+		.name = "rx_red_prio_1",
-+		.offset = 0x15,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_2] = {
-+		.name = "rx_red_prio_2",
-+		.offset = 0x16,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_3] = {
-+		.name = "rx_red_prio_3",
-+		.offset = 0x17,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_4] = {
-+		.name = "rx_red_prio_4",
-+		.offset = 0x18,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_5] = {
-+		.name = "rx_red_prio_5",
-+		.offset = 0x19,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_6] = {
-+		.name = "rx_red_prio_6",
-+		.offset = 0x1A,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_7] = {
-+		.name = "rx_red_prio_7",
-+		.offset = 0x1B,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_0] = {
-+		.name = "rx_yellow_prio_0",
-+		.offset = 0x1C,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_1] = {
-+		.name = "rx_yellow_prio_1",
-+		.offset = 0x1D,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_2] = {
-+		.name = "rx_yellow_prio_2",
-+		.offset = 0x1E,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_3] = {
-+		.name = "rx_yellow_prio_3",
-+		.offset = 0x1F,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_4] = {
-+		.name = "rx_yellow_prio_4",
-+		.offset = 0x20,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_5] = {
-+		.name = "rx_yellow_prio_5",
-+		.offset = 0x21,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_6] = {
-+		.name = "rx_yellow_prio_6",
-+		.offset = 0x22,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_7] = {
-+		.name = "rx_yellow_prio_7",
-+		.offset = 0x23,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_0] = {
-+		.name = "rx_green_prio_0",
-+		.offset = 0x24,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_1] = {
-+		.name = "rx_green_prio_1",
-+		.offset = 0x25,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_2] = {
-+		.name = "rx_green_prio_2",
-+		.offset = 0x26,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_3] = {
-+		.name = "rx_green_prio_3",
-+		.offset = 0x27,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_4] = {
-+		.name = "rx_green_prio_4",
-+		.offset = 0x28,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_5] = {
-+		.name = "rx_green_prio_5",
-+		.offset = 0x29,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_6] = {
-+		.name = "rx_green_prio_6",
-+		.offset = 0x2A,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_7] = {
-+		.name = "rx_green_prio_7",
-+		.offset = 0x2B,
-+	},
-+	[OCELOT_STAT_TX_OCTETS] = {
-+		.name = "tx_octets",
-+		.offset = 0x80,
-+	},
-+	[OCELOT_STAT_TX_UNICAST] = {
-+		.name = "tx_unicast",
-+		.offset = 0x81,
-+	},
-+	[OCELOT_STAT_TX_MULTICAST] = {
-+		.name = "tx_multicast",
-+		.offset = 0x82,
-+	},
-+	[OCELOT_STAT_TX_BROADCAST] = {
-+		.name = "tx_broadcast",
-+		.offset = 0x83,
-+	},
-+	[OCELOT_STAT_TX_COLLISION] = {
-+		.name = "tx_collision",
-+		.offset = 0x84,
-+	},
-+	[OCELOT_STAT_TX_DROPS] = {
-+		.name = "tx_drops",
-+		.offset = 0x85,
-+	},
-+	[OCELOT_STAT_TX_PAUSE] = {
-+		.name = "tx_pause",
-+		.offset = 0x86,
-+	},
-+	[OCELOT_STAT_TX_64] = {
-+		.name = "tx_frames_below_65_octets",
-+		.offset = 0x87,
-+	},
-+	[OCELOT_STAT_TX_65_127] = {
-+		.name = "tx_frames_65_to_127_octets",
-+		.offset = 0x88,
-+	},
-+	[OCELOT_STAT_TX_128_255] = {
-+		.name = "tx_frames_128_255_octets",
-+		.offset = 0x89,
-+	},
-+	[OCELOT_STAT_TX_256_511] = {
-+		.name = "tx_frames_256_511_octets",
-+		.offset = 0x8A,
-+	},
-+	[OCELOT_STAT_TX_512_1023] = {
-+		.name = "tx_frames_512_1023_octets",
-+		.offset = 0x8B,
-+	},
-+	[OCELOT_STAT_TX_1024_1526] = {
-+		.name = "tx_frames_1024_1526_octets",
-+		.offset = 0x8C,
-+	},
-+	[OCELOT_STAT_TX_1527_MAX] = {
-+		.name = "tx_frames_over_1526_octets",
-+		.offset = 0x8D,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_0] = {
-+		.name = "tx_yellow_prio_0",
-+		.offset = 0x8E,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_1] = {
-+		.name = "tx_yellow_prio_1",
-+		.offset = 0x8F,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_2] = {
-+		.name = "tx_yellow_prio_2",
-+		.offset = 0x90,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_3] = {
-+		.name = "tx_yellow_prio_3",
-+		.offset = 0x91,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_4] = {
-+		.name = "tx_yellow_prio_4",
-+		.offset = 0x92,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_5] = {
-+		.name = "tx_yellow_prio_5",
-+		.offset = 0x93,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_6] = {
-+		.name = "tx_yellow_prio_6",
-+		.offset = 0x94,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_7] = {
-+		.name = "tx_yellow_prio_7",
-+		.offset = 0x95,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_0] = {
-+		.name = "tx_green_prio_0",
-+		.offset = 0x96,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_1] = {
-+		.name = "tx_green_prio_1",
-+		.offset = 0x97,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_2] = {
-+		.name = "tx_green_prio_2",
-+		.offset = 0x98,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_3] = {
-+		.name = "tx_green_prio_3",
-+		.offset = 0x99,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_4] = {
-+		.name = "tx_green_prio_4",
-+		.offset = 0x9A,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_5] = {
-+		.name = "tx_green_prio_5",
-+		.offset = 0x9B,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_6] = {
-+		.name = "tx_green_prio_6",
-+		.offset = 0x9C,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_7] = {
-+		.name = "tx_green_prio_7",
-+		.offset = 0x9D,
-+	},
-+	[OCELOT_STAT_TX_AGED] = {
-+		.name = "tx_aged",
-+		.offset = 0x9E,
-+	},
-+	[OCELOT_STAT_DROP_LOCAL] = {
-+		.name = "drop_local",
-+		.offset = 0x100,
-+	},
-+	[OCELOT_STAT_DROP_TAIL] = {
-+		.name = "drop_tail",
-+		.offset = 0x101,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_0] = {
-+		.name = "drop_yellow_prio_0",
-+		.offset = 0x102,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_1] = {
-+		.name = "drop_yellow_prio_1",
-+		.offset = 0x103,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_2] = {
-+		.name = "drop_yellow_prio_2",
-+		.offset = 0x104,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_3] = {
-+		.name = "drop_yellow_prio_3",
-+		.offset = 0x105,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_4] = {
-+		.name = "drop_yellow_prio_4",
-+		.offset = 0x106,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_5] = {
-+		.name = "drop_yellow_prio_5",
-+		.offset = 0x107,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_6] = {
-+		.name = "drop_yellow_prio_6",
-+		.offset = 0x108,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_7] = {
-+		.name = "drop_yellow_prio_7",
-+		.offset = 0x109,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_0] = {
-+		.name = "drop_green_prio_0",
-+		.offset = 0x10A,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_1] = {
-+		.name = "drop_green_prio_1",
-+		.offset = 0x10B,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_2] = {
-+		.name = "drop_green_prio_2",
-+		.offset = 0x10C,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_3] = {
-+		.name = "drop_green_prio_3",
-+		.offset = 0x10D,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_4] = {
-+		.name = "drop_green_prio_4",
-+		.offset = 0x10E,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_5] = {
-+		.name = "drop_green_prio_5",
-+		.offset = 0x10F,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_6] = {
-+		.name = "drop_green_prio_6",
-+		.offset = 0x110,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_7] = {
-+		.name = "drop_green_prio_7",
-+		.offset = 0x111,
-+	},
- };
- 
- static const struct vcap_field vsc9959_vcap_es0_keys[] = {
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index ebe9ddbbe2b7..fe5d4642d0bc 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -545,101 +545,379 @@ static const struct reg_field vsc9953_regfields[REGFIELD_MAX] = {
- 	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 11, 4),
- };
- 
--static const struct ocelot_stat_layout vsc9953_stats_layout[] = {
--	{ .offset = 0x00,	.name = "rx_octets", },
--	{ .offset = 0x01,	.name = "rx_unicast", },
--	{ .offset = 0x02,	.name = "rx_multicast", },
--	{ .offset = 0x03,	.name = "rx_broadcast", },
--	{ .offset = 0x04,	.name = "rx_shorts", },
--	{ .offset = 0x05,	.name = "rx_fragments", },
--	{ .offset = 0x06,	.name = "rx_jabbers", },
--	{ .offset = 0x07,	.name = "rx_crc_align_errs", },
--	{ .offset = 0x08,	.name = "rx_sym_errs", },
--	{ .offset = 0x09,	.name = "rx_frames_below_65_octets", },
--	{ .offset = 0x0A,	.name = "rx_frames_65_to_127_octets", },
--	{ .offset = 0x0B,	.name = "rx_frames_128_to_255_octets", },
--	{ .offset = 0x0C,	.name = "rx_frames_256_to_511_octets", },
--	{ .offset = 0x0D,	.name = "rx_frames_512_to_1023_octets", },
--	{ .offset = 0x0E,	.name = "rx_frames_1024_to_1526_octets", },
--	{ .offset = 0x0F,	.name = "rx_frames_over_1526_octets", },
--	{ .offset = 0x10,	.name = "rx_pause", },
--	{ .offset = 0x11,	.name = "rx_control", },
--	{ .offset = 0x12,	.name = "rx_longs", },
--	{ .offset = 0x13,	.name = "rx_classified_drops", },
--	{ .offset = 0x14,	.name = "rx_red_prio_0", },
--	{ .offset = 0x15,	.name = "rx_red_prio_1", },
--	{ .offset = 0x16,	.name = "rx_red_prio_2", },
--	{ .offset = 0x17,	.name = "rx_red_prio_3", },
--	{ .offset = 0x18,	.name = "rx_red_prio_4", },
--	{ .offset = 0x19,	.name = "rx_red_prio_5", },
--	{ .offset = 0x1A,	.name = "rx_red_prio_6", },
--	{ .offset = 0x1B,	.name = "rx_red_prio_7", },
--	{ .offset = 0x1C,	.name = "rx_yellow_prio_0", },
--	{ .offset = 0x1D,	.name = "rx_yellow_prio_1", },
--	{ .offset = 0x1E,	.name = "rx_yellow_prio_2", },
--	{ .offset = 0x1F,	.name = "rx_yellow_prio_3", },
--	{ .offset = 0x20,	.name = "rx_yellow_prio_4", },
--	{ .offset = 0x21,	.name = "rx_yellow_prio_5", },
--	{ .offset = 0x22,	.name = "rx_yellow_prio_6", },
--	{ .offset = 0x23,	.name = "rx_yellow_prio_7", },
--	{ .offset = 0x24,	.name = "rx_green_prio_0", },
--	{ .offset = 0x25,	.name = "rx_green_prio_1", },
--	{ .offset = 0x26,	.name = "rx_green_prio_2", },
--	{ .offset = 0x27,	.name = "rx_green_prio_3", },
--	{ .offset = 0x28,	.name = "rx_green_prio_4", },
--	{ .offset = 0x29,	.name = "rx_green_prio_5", },
--	{ .offset = 0x2A,	.name = "rx_green_prio_6", },
--	{ .offset = 0x2B,	.name = "rx_green_prio_7", },
--	{ .offset = 0x40,	.name = "tx_octets", },
--	{ .offset = 0x41,	.name = "tx_unicast", },
--	{ .offset = 0x42,	.name = "tx_multicast", },
--	{ .offset = 0x43,	.name = "tx_broadcast", },
--	{ .offset = 0x44,	.name = "tx_collision", },
--	{ .offset = 0x45,	.name = "tx_drops", },
--	{ .offset = 0x46,	.name = "tx_pause", },
--	{ .offset = 0x47,	.name = "tx_frames_below_65_octets", },
--	{ .offset = 0x48,	.name = "tx_frames_65_to_127_octets", },
--	{ .offset = 0x49,	.name = "tx_frames_128_255_octets", },
--	{ .offset = 0x4A,	.name = "tx_frames_256_511_octets", },
--	{ .offset = 0x4B,	.name = "tx_frames_512_1023_octets", },
--	{ .offset = 0x4C,	.name = "tx_frames_1024_1526_octets", },
--	{ .offset = 0x4D,	.name = "tx_frames_over_1526_octets", },
--	{ .offset = 0x4E,	.name = "tx_yellow_prio_0", },
--	{ .offset = 0x4F,	.name = "tx_yellow_prio_1", },
--	{ .offset = 0x50,	.name = "tx_yellow_prio_2", },
--	{ .offset = 0x51,	.name = "tx_yellow_prio_3", },
--	{ .offset = 0x52,	.name = "tx_yellow_prio_4", },
--	{ .offset = 0x53,	.name = "tx_yellow_prio_5", },
--	{ .offset = 0x54,	.name = "tx_yellow_prio_6", },
--	{ .offset = 0x55,	.name = "tx_yellow_prio_7", },
--	{ .offset = 0x56,	.name = "tx_green_prio_0", },
--	{ .offset = 0x57,	.name = "tx_green_prio_1", },
--	{ .offset = 0x58,	.name = "tx_green_prio_2", },
--	{ .offset = 0x59,	.name = "tx_green_prio_3", },
--	{ .offset = 0x5A,	.name = "tx_green_prio_4", },
--	{ .offset = 0x5B,	.name = "tx_green_prio_5", },
--	{ .offset = 0x5C,	.name = "tx_green_prio_6", },
--	{ .offset = 0x5D,	.name = "tx_green_prio_7", },
--	{ .offset = 0x5E,	.name = "tx_aged", },
--	{ .offset = 0x80,	.name = "drop_local", },
--	{ .offset = 0x81,	.name = "drop_tail", },
--	{ .offset = 0x82,	.name = "drop_yellow_prio_0", },
--	{ .offset = 0x83,	.name = "drop_yellow_prio_1", },
--	{ .offset = 0x84,	.name = "drop_yellow_prio_2", },
--	{ .offset = 0x85,	.name = "drop_yellow_prio_3", },
--	{ .offset = 0x86,	.name = "drop_yellow_prio_4", },
--	{ .offset = 0x87,	.name = "drop_yellow_prio_5", },
--	{ .offset = 0x88,	.name = "drop_yellow_prio_6", },
--	{ .offset = 0x89,	.name = "drop_yellow_prio_7", },
--	{ .offset = 0x8A,	.name = "drop_green_prio_0", },
--	{ .offset = 0x8B,	.name = "drop_green_prio_1", },
--	{ .offset = 0x8C,	.name = "drop_green_prio_2", },
--	{ .offset = 0x8D,	.name = "drop_green_prio_3", },
--	{ .offset = 0x8E,	.name = "drop_green_prio_4", },
--	{ .offset = 0x8F,	.name = "drop_green_prio_5", },
--	{ .offset = 0x90,	.name = "drop_green_prio_6", },
--	{ .offset = 0x91,	.name = "drop_green_prio_7", },
--	OCELOT_STAT_END
-+static const struct ocelot_stat_layout vsc9953_stats_layout[OCELOT_NUM_STATS] = {
-+	[OCELOT_STAT_RX_OCTETS] = {
-+		.name = "rx_octets",
-+		.offset = 0x00,
-+	},
-+	[OCELOT_STAT_RX_UNICAST] = {
-+		.name = "rx_unicast",
-+		.offset = 0x01,
-+	},
-+	[OCELOT_STAT_RX_MULTICAST] = {
-+		.name = "rx_multicast",
-+		.offset = 0x02,
-+	},
-+	[OCELOT_STAT_RX_BROADCAST] = {
-+		.name = "rx_broadcast",
-+		.offset = 0x03,
-+	},
-+	[OCELOT_STAT_RX_SHORTS] = {
-+		.name = "rx_shorts",
-+		.offset = 0x04,
-+	},
-+	[OCELOT_STAT_RX_FRAGMENTS] = {
-+		.name = "rx_fragments",
-+		.offset = 0x05,
-+	},
-+	[OCELOT_STAT_RX_JABBERS] = {
-+		.name = "rx_jabbers",
-+		.offset = 0x06,
-+	},
-+	[OCELOT_STAT_RX_CRC_ALIGN_ERRS] = {
-+		.name = "rx_crc_align_errs",
-+		.offset = 0x07,
-+	},
-+	[OCELOT_STAT_RX_SYM_ERRS] = {
-+		.name = "rx_sym_errs",
-+		.offset = 0x08,
-+	},
-+	[OCELOT_STAT_RX_64] = {
-+		.name = "rx_frames_below_65_octets",
-+		.offset = 0x09,
-+	},
-+	[OCELOT_STAT_RX_65_127] = {
-+		.name = "rx_frames_65_to_127_octets",
-+		.offset = 0x0A,
-+	},
-+	[OCELOT_STAT_RX_128_255] = {
-+		.name = "rx_frames_128_to_255_octets",
-+		.offset = 0x0B,
-+	},
-+	[OCELOT_STAT_RX_256_511] = {
-+		.name = "rx_frames_256_to_511_octets",
-+		.offset = 0x0C,
-+	},
-+	[OCELOT_STAT_RX_512_1023] = {
-+		.name = "rx_frames_512_to_1023_octets",
-+		.offset = 0x0D,
-+	},
-+	[OCELOT_STAT_RX_1024_1526] = {
-+		.name = "rx_frames_1024_to_1526_octets",
-+		.offset = 0x0E,
-+	},
-+	[OCELOT_STAT_RX_1527_MAX] = {
-+		.name = "rx_frames_over_1526_octets",
-+		.offset = 0x0F,
-+	},
-+	[OCELOT_STAT_RX_PAUSE] = {
-+		.name = "rx_pause",
-+		.offset = 0x10,
-+	},
-+	[OCELOT_STAT_RX_CONTROL] = {
-+		.name = "rx_control",
-+		.offset = 0x11,
-+	},
-+	[OCELOT_STAT_RX_LONGS] = {
-+		.name = "rx_longs",
-+		.offset = 0x12,
-+	},
-+	[OCELOT_STAT_RX_CLASSIFIED_DROPS] = {
-+		.name = "rx_classified_drops",
-+		.offset = 0x13,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_0] = {
-+		.name = "rx_red_prio_0",
-+		.offset = 0x14,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_1] = {
-+		.name = "rx_red_prio_1",
-+		.offset = 0x15,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_2] = {
-+		.name = "rx_red_prio_2",
-+		.offset = 0x16,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_3] = {
-+		.name = "rx_red_prio_3",
-+		.offset = 0x17,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_4] = {
-+		.name = "rx_red_prio_4",
-+		.offset = 0x18,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_5] = {
-+		.name = "rx_red_prio_5",
-+		.offset = 0x19,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_6] = {
-+		.name = "rx_red_prio_6",
-+		.offset = 0x1A,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_7] = {
-+		.name = "rx_red_prio_7",
-+		.offset = 0x1B,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_0] = {
-+		.name = "rx_yellow_prio_0",
-+		.offset = 0x1C,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_1] = {
-+		.name = "rx_yellow_prio_1",
-+		.offset = 0x1D,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_2] = {
-+		.name = "rx_yellow_prio_2",
-+		.offset = 0x1E,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_3] = {
-+		.name = "rx_yellow_prio_3",
-+		.offset = 0x1F,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_4] = {
-+		.name = "rx_yellow_prio_4",
-+		.offset = 0x20,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_5] = {
-+		.name = "rx_yellow_prio_5",
-+		.offset = 0x21,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_6] = {
-+		.name = "rx_yellow_prio_6",
-+		.offset = 0x22,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_7] = {
-+		.name = "rx_yellow_prio_7",
-+		.offset = 0x23,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_0] = {
-+		.name = "rx_green_prio_0",
-+		.offset = 0x24,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_1] = {
-+		.name = "rx_green_prio_1",
-+		.offset = 0x25,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_2] = {
-+		.name = "rx_green_prio_2",
-+		.offset = 0x26,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_3] = {
-+		.name = "rx_green_prio_3",
-+		.offset = 0x27,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_4] = {
-+		.name = "rx_green_prio_4",
-+		.offset = 0x28,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_5] = {
-+		.name = "rx_green_prio_5",
-+		.offset = 0x29,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_6] = {
-+		.name = "rx_green_prio_6",
-+		.offset = 0x2A,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_7] = {
-+		.name = "rx_green_prio_7",
-+		.offset = 0x2B,
-+	},
-+	[OCELOT_STAT_TX_OCTETS] = {
-+		.name = "tx_octets",
-+		.offset = 0x40,
-+	},
-+	[OCELOT_STAT_TX_UNICAST] = {
-+		.name = "tx_unicast",
-+		.offset = 0x41,
-+	},
-+	[OCELOT_STAT_TX_MULTICAST] = {
-+		.name = "tx_multicast",
-+		.offset = 0x42,
-+	},
-+	[OCELOT_STAT_TX_BROADCAST] = {
-+		.name = "tx_broadcast",
-+		.offset = 0x43,
-+	},
-+	[OCELOT_STAT_TX_COLLISION] = {
-+		.name = "tx_collision",
-+		.offset = 0x44,
-+	},
-+	[OCELOT_STAT_TX_DROPS] = {
-+		.name = "tx_drops",
-+		.offset = 0x45,
-+	},
-+	[OCELOT_STAT_TX_PAUSE] = {
-+		.name = "tx_pause",
-+		.offset = 0x46,
-+	},
-+	[OCELOT_STAT_TX_64] = {
-+		.name = "tx_frames_below_65_octets",
-+		.offset = 0x47,
-+	},
-+	[OCELOT_STAT_TX_65_127] = {
-+		.name = "tx_frames_65_to_127_octets",
-+		.offset = 0x48,
-+	},
-+	[OCELOT_STAT_TX_128_255] = {
-+		.name = "tx_frames_128_255_octets",
-+		.offset = 0x49,
-+	},
-+	[OCELOT_STAT_TX_256_511] = {
-+		.name = "tx_frames_256_511_octets",
-+		.offset = 0x4A,
-+	},
-+	[OCELOT_STAT_TX_512_1023] = {
-+		.name = "tx_frames_512_1023_octets",
-+		.offset = 0x4B,
-+	},
-+	[OCELOT_STAT_TX_1024_1526] = {
-+		.name = "tx_frames_1024_1526_octets",
-+		.offset = 0x4C,
-+	},
-+	[OCELOT_STAT_TX_1527_MAX] = {
-+		.name = "tx_frames_over_1526_octets",
-+		.offset = 0x4D,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_0] = {
-+		.name = "tx_yellow_prio_0",
-+		.offset = 0x4E,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_1] = {
-+		.name = "tx_yellow_prio_1",
-+		.offset = 0x4F,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_2] = {
-+		.name = "tx_yellow_prio_2",
-+		.offset = 0x50,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_3] = {
-+		.name = "tx_yellow_prio_3",
-+		.offset = 0x51,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_4] = {
-+		.name = "tx_yellow_prio_4",
-+		.offset = 0x52,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_5] = {
-+		.name = "tx_yellow_prio_5",
-+		.offset = 0x53,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_6] = {
-+		.name = "tx_yellow_prio_6",
-+		.offset = 0x54,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_7] = {
-+		.name = "tx_yellow_prio_7",
-+		.offset = 0x55,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_0] = {
-+		.name = "tx_green_prio_0",
-+		.offset = 0x56,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_1] = {
-+		.name = "tx_green_prio_1",
-+		.offset = 0x57,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_2] = {
-+		.name = "tx_green_prio_2",
-+		.offset = 0x58,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_3] = {
-+		.name = "tx_green_prio_3",
-+		.offset = 0x59,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_4] = {
-+		.name = "tx_green_prio_4",
-+		.offset = 0x5A,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_5] = {
-+		.name = "tx_green_prio_5",
-+		.offset = 0x5B,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_6] = {
-+		.name = "tx_green_prio_6",
-+		.offset = 0x5C,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_7] = {
-+		.name = "tx_green_prio_7",
-+		.offset = 0x5D,
-+	},
-+	[OCELOT_STAT_TX_AGED] = {
-+		.name = "tx_aged",
-+		.offset = 0x5E,
-+	},
-+	[OCELOT_STAT_DROP_LOCAL] = {
-+		.name = "drop_local",
-+		.offset = 0x80,
-+	},
-+	[OCELOT_STAT_DROP_TAIL] = {
-+		.name = "drop_tail",
-+		.offset = 0x81,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_0] = {
-+		.name = "drop_yellow_prio_0",
-+		.offset = 0x82,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_1] = {
-+		.name = "drop_yellow_prio_1",
-+		.offset = 0x83,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_2] = {
-+		.name = "drop_yellow_prio_2",
-+		.offset = 0x84,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_3] = {
-+		.name = "drop_yellow_prio_3",
-+		.offset = 0x85,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_4] = {
-+		.name = "drop_yellow_prio_4",
-+		.offset = 0x86,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_5] = {
-+		.name = "drop_yellow_prio_5",
-+		.offset = 0x87,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_6] = {
-+		.name = "drop_yellow_prio_6",
-+		.offset = 0x88,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_7] = {
-+		.name = "drop_yellow_prio_7",
-+		.offset = 0x89,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_0] = {
-+		.name = "drop_green_prio_0",
-+		.offset = 0x8A,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_1] = {
-+		.name = "drop_green_prio_1",
-+		.offset = 0x8B,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_2] = {
-+		.name = "drop_green_prio_2",
-+		.offset = 0x8C,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_3] = {
-+		.name = "drop_green_prio_3",
-+		.offset = 0x8D,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_4] = {
-+		.name = "drop_green_prio_4",
-+		.offset = 0x8E,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_5] = {
-+		.name = "drop_green_prio_5",
-+		.offset = 0x8F,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_6] = {
-+		.name = "drop_green_prio_6",
-+		.offset = 0x90,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_7] = {
-+		.name = "drop_green_prio_7",
-+		.offset = 0x91,
-+	},
- };
- 
- static const struct vcap_field vsc9953_vcap_es0_keys[] = {
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index c67f162f8ab5..68991b021c56 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1860,16 +1860,20 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
- 	if (sset != ETH_SS_STATS)
- 		return;
- 
--	for (i = 0; i < ocelot->num_stats; i++)
-+	for (i = 0; i < OCELOT_NUM_STATS; i++) {
-+		if (ocelot->stats_layout[i].name[0] == '\0')
-+			continue;
-+
- 		memcpy(data + i * ETH_GSTRING_LEN, ocelot->stats_layout[i].name,
- 		       ETH_GSTRING_LEN);
-+	}
- }
- EXPORT_SYMBOL(ocelot_get_strings);
- 
- /* Caller must hold &ocelot->stats_lock */
- static int ocelot_port_update_stats(struct ocelot *ocelot, int port)
+diff --git a/drivers/gpu/drm/amd/amdgpu/aldebaran.c b/drivers/gpu/drm/amd/amdgpu/aldebaran.c
+index c6cc493a5486..2b97b8a96fb4 100644
+--- a/drivers/gpu/drm/amd/amdgpu/aldebaran.c
++++ b/drivers/gpu/drm/amd/amdgpu/aldebaran.c
+@@ -148,30 +148,22 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
+ 			      struct amdgpu_reset_context *reset_context)
  {
--	unsigned int idx = port * ocelot->num_stats;
-+	unsigned int idx = port * OCELOT_NUM_STATS;
- 	struct ocelot_stats_region *region;
- 	int err, j;
+ 	struct amdgpu_device *adev = (struct amdgpu_device *)reset_ctl->handle;
++	struct list_head *reset_device_list = reset_context->reset_device_list;
+ 	struct amdgpu_device *tmp_adev = NULL;
+-	struct list_head reset_device_list;
+ 	int r = 0;
  
-@@ -1930,9 +1934,15 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
- 	/* check and update now */
- 	err = ocelot_port_update_stats(ocelot, port);
- 
--	/* Copy all counters */
--	for (i = 0; i < ocelot->num_stats; i++)
--		*data++ = ocelot->stats[port * ocelot->num_stats + i];
-+	/* Copy all supported counters */
-+	for (i = 0; i < OCELOT_NUM_STATS; i++) {
-+		int index = port * OCELOT_NUM_STATS + i;
+ 	dev_dbg(adev->dev, "aldebaran perform hw reset\n");
 +
-+		if (ocelot->stats_layout[i].name[0] == '\0')
-+			continue;
++	if (reset_device_list == NULL)
++		return -EINVAL;
 +
-+		*data++ = ocelot->stats[index];
-+	}
+ 	if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 2) &&
+ 	    reset_context->hive == NULL) {
+ 		/* Wrong context, return error */
+ 		return -EINVAL;
+ 	}
  
- 	spin_unlock(&ocelot->stats_lock);
+-	INIT_LIST_HEAD(&reset_device_list);
+-	if (reset_context->hive) {
+-		list_for_each_entry (tmp_adev,
+-				     &reset_context->hive->device_list,
+-				     gmc.xgmi.head)
+-			list_add_tail(&tmp_adev->reset_list,
+-				      &reset_device_list);
+-	} else {
+-		list_add_tail(&reset_context->reset_req_dev->reset_list,
+-			      &reset_device_list);
+-	}
+-
+-	list_for_each_entry (tmp_adev, &reset_device_list, reset_list) {
++	list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
+ 		mutex_lock(&tmp_adev->reset_cntl->reset_lock);
+ 		tmp_adev->reset_cntl->active_reset = AMD_RESET_METHOD_MODE2;
+ 	}
+@@ -179,7 +171,7 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
+ 	 * Mode2 reset doesn't need any sync between nodes in XGMI hive, instead launch
+ 	 * them together so that they can be completed asynchronously on multiple nodes
+ 	 */
+-	list_for_each_entry (tmp_adev, &reset_device_list, reset_list) {
++	list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
+ 		/* For XGMI run all resets in parallel to speed up the process */
+ 		if (tmp_adev->gmc.xgmi.num_physical_nodes > 1) {
+ 			if (!queue_work(system_unbound_wq,
+@@ -197,7 +189,7 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
  
-@@ -1943,10 +1953,16 @@ EXPORT_SYMBOL(ocelot_get_ethtool_stats);
- 
- int ocelot_get_sset_count(struct ocelot *ocelot, int port, int sset)
- {
-+	int i, num_stats = 0;
-+
- 	if (sset != ETH_SS_STATS)
- 		return -EOPNOTSUPP;
- 
--	return ocelot->num_stats;
-+	for (i = 0; i < OCELOT_NUM_STATS; i++)
-+		if (ocelot->stats_layout[i].name[0] != '\0')
-+			num_stats++;
-+
-+	return num_stats;
- }
- EXPORT_SYMBOL(ocelot_get_sset_count);
- 
-@@ -1958,7 +1974,10 @@ static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
- 
- 	INIT_LIST_HEAD(&ocelot->stats_regions);
- 
--	for (i = 0; i < ocelot->num_stats; i++) {
-+	for (i = 0; i < OCELOT_NUM_STATS; i++) {
-+		if (ocelot->stats_layout[i].name[0] == '\0')
-+			continue;
-+
- 		if (region && ocelot->stats_layout[i].offset == last + 1) {
- 			region->count++;
- 		} else {
-@@ -3340,7 +3359,6 @@ static void ocelot_detect_features(struct ocelot *ocelot)
- 
- int ocelot_init(struct ocelot *ocelot)
- {
--	const struct ocelot_stat_layout *stat;
- 	char queue_name[32];
- 	int i, ret;
- 	u32 port;
-@@ -3353,12 +3371,8 @@ int ocelot_init(struct ocelot *ocelot)
+ 	/* For XGMI wait for all resets to complete before proceed */
+ 	if (!r) {
+-		list_for_each_entry (tmp_adev, &reset_device_list, reset_list) {
++		list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
+ 			if (tmp_adev->gmc.xgmi.num_physical_nodes > 1) {
+ 				flush_work(&tmp_adev->reset_cntl->reset_work);
+ 				r = tmp_adev->asic_reset_res;
+@@ -207,7 +199,7 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
  		}
  	}
  
--	ocelot->num_stats = 0;
--	for_each_stat(ocelot, stat)
--		ocelot->num_stats++;
--
- 	ocelot->stats = devm_kcalloc(ocelot->dev,
--				     ocelot->num_phys_ports * ocelot->num_stats,
-+				     ocelot->num_phys_ports * OCELOT_NUM_STATS,
- 				     sizeof(u64), GFP_KERNEL);
- 	if (!ocelot->stats)
- 		return -ENOMEM;
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 961f803aca19..9ff910560043 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -96,101 +96,379 @@ static const struct reg_field ocelot_regfields[REGFIELD_MAX] = {
- 	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 12, 4),
- };
+-	list_for_each_entry (tmp_adev, &reset_device_list, reset_list) {
++	list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
+ 		mutex_unlock(&tmp_adev->reset_cntl->reset_lock);
+ 		tmp_adev->reset_cntl->active_reset = AMD_RESET_METHOD_NONE;
+ 	}
+@@ -339,10 +331,13 @@ static int
+ aldebaran_mode2_restore_hwcontext(struct amdgpu_reset_control *reset_ctl,
+ 				  struct amdgpu_reset_context *reset_context)
+ {
++	struct list_head *reset_device_list = reset_context->reset_device_list;
+ 	struct amdgpu_device *tmp_adev = NULL;
+-	struct list_head reset_device_list;
+ 	int r;
  
--static const struct ocelot_stat_layout ocelot_stats_layout[] = {
--	{ .name = "rx_octets", .offset = 0x00, },
--	{ .name = "rx_unicast", .offset = 0x01, },
--	{ .name = "rx_multicast", .offset = 0x02, },
--	{ .name = "rx_broadcast", .offset = 0x03, },
--	{ .name = "rx_shorts", .offset = 0x04, },
--	{ .name = "rx_fragments", .offset = 0x05, },
--	{ .name = "rx_jabbers", .offset = 0x06, },
--	{ .name = "rx_crc_align_errs", .offset = 0x07, },
--	{ .name = "rx_sym_errs", .offset = 0x08, },
--	{ .name = "rx_frames_below_65_octets", .offset = 0x09, },
--	{ .name = "rx_frames_65_to_127_octets", .offset = 0x0A, },
--	{ .name = "rx_frames_128_to_255_octets", .offset = 0x0B, },
--	{ .name = "rx_frames_256_to_511_octets", .offset = 0x0C, },
--	{ .name = "rx_frames_512_to_1023_octets", .offset = 0x0D, },
--	{ .name = "rx_frames_1024_to_1526_octets", .offset = 0x0E, },
--	{ .name = "rx_frames_over_1526_octets", .offset = 0x0F, },
--	{ .name = "rx_pause", .offset = 0x10, },
--	{ .name = "rx_control", .offset = 0x11, },
--	{ .name = "rx_longs", .offset = 0x12, },
--	{ .name = "rx_classified_drops", .offset = 0x13, },
--	{ .name = "rx_red_prio_0", .offset = 0x14, },
--	{ .name = "rx_red_prio_1", .offset = 0x15, },
--	{ .name = "rx_red_prio_2", .offset = 0x16, },
--	{ .name = "rx_red_prio_3", .offset = 0x17, },
--	{ .name = "rx_red_prio_4", .offset = 0x18, },
--	{ .name = "rx_red_prio_5", .offset = 0x19, },
--	{ .name = "rx_red_prio_6", .offset = 0x1A, },
--	{ .name = "rx_red_prio_7", .offset = 0x1B, },
--	{ .name = "rx_yellow_prio_0", .offset = 0x1C, },
--	{ .name = "rx_yellow_prio_1", .offset = 0x1D, },
--	{ .name = "rx_yellow_prio_2", .offset = 0x1E, },
--	{ .name = "rx_yellow_prio_3", .offset = 0x1F, },
--	{ .name = "rx_yellow_prio_4", .offset = 0x20, },
--	{ .name = "rx_yellow_prio_5", .offset = 0x21, },
--	{ .name = "rx_yellow_prio_6", .offset = 0x22, },
--	{ .name = "rx_yellow_prio_7", .offset = 0x23, },
--	{ .name = "rx_green_prio_0", .offset = 0x24, },
--	{ .name = "rx_green_prio_1", .offset = 0x25, },
--	{ .name = "rx_green_prio_2", .offset = 0x26, },
--	{ .name = "rx_green_prio_3", .offset = 0x27, },
--	{ .name = "rx_green_prio_4", .offset = 0x28, },
--	{ .name = "rx_green_prio_5", .offset = 0x29, },
--	{ .name = "rx_green_prio_6", .offset = 0x2A, },
--	{ .name = "rx_green_prio_7", .offset = 0x2B, },
--	{ .name = "tx_octets", .offset = 0x40, },
--	{ .name = "tx_unicast", .offset = 0x41, },
--	{ .name = "tx_multicast", .offset = 0x42, },
--	{ .name = "tx_broadcast", .offset = 0x43, },
--	{ .name = "tx_collision", .offset = 0x44, },
--	{ .name = "tx_drops", .offset = 0x45, },
--	{ .name = "tx_pause", .offset = 0x46, },
--	{ .name = "tx_frames_below_65_octets", .offset = 0x47, },
--	{ .name = "tx_frames_65_to_127_octets", .offset = 0x48, },
--	{ .name = "tx_frames_128_255_octets", .offset = 0x49, },
--	{ .name = "tx_frames_256_511_octets", .offset = 0x4A, },
--	{ .name = "tx_frames_512_1023_octets", .offset = 0x4B, },
--	{ .name = "tx_frames_1024_1526_octets", .offset = 0x4C, },
--	{ .name = "tx_frames_over_1526_octets", .offset = 0x4D, },
--	{ .name = "tx_yellow_prio_0", .offset = 0x4E, },
--	{ .name = "tx_yellow_prio_1", .offset = 0x4F, },
--	{ .name = "tx_yellow_prio_2", .offset = 0x50, },
--	{ .name = "tx_yellow_prio_3", .offset = 0x51, },
--	{ .name = "tx_yellow_prio_4", .offset = 0x52, },
--	{ .name = "tx_yellow_prio_5", .offset = 0x53, },
--	{ .name = "tx_yellow_prio_6", .offset = 0x54, },
--	{ .name = "tx_yellow_prio_7", .offset = 0x55, },
--	{ .name = "tx_green_prio_0", .offset = 0x56, },
--	{ .name = "tx_green_prio_1", .offset = 0x57, },
--	{ .name = "tx_green_prio_2", .offset = 0x58, },
--	{ .name = "tx_green_prio_3", .offset = 0x59, },
--	{ .name = "tx_green_prio_4", .offset = 0x5A, },
--	{ .name = "tx_green_prio_5", .offset = 0x5B, },
--	{ .name = "tx_green_prio_6", .offset = 0x5C, },
--	{ .name = "tx_green_prio_7", .offset = 0x5D, },
--	{ .name = "tx_aged", .offset = 0x5E, },
--	{ .name = "drop_local", .offset = 0x80, },
--	{ .name = "drop_tail", .offset = 0x81, },
--	{ .name = "drop_yellow_prio_0", .offset = 0x82, },
--	{ .name = "drop_yellow_prio_1", .offset = 0x83, },
--	{ .name = "drop_yellow_prio_2", .offset = 0x84, },
--	{ .name = "drop_yellow_prio_3", .offset = 0x85, },
--	{ .name = "drop_yellow_prio_4", .offset = 0x86, },
--	{ .name = "drop_yellow_prio_5", .offset = 0x87, },
--	{ .name = "drop_yellow_prio_6", .offset = 0x88, },
--	{ .name = "drop_yellow_prio_7", .offset = 0x89, },
--	{ .name = "drop_green_prio_0", .offset = 0x8A, },
--	{ .name = "drop_green_prio_1", .offset = 0x8B, },
--	{ .name = "drop_green_prio_2", .offset = 0x8C, },
--	{ .name = "drop_green_prio_3", .offset = 0x8D, },
--	{ .name = "drop_green_prio_4", .offset = 0x8E, },
--	{ .name = "drop_green_prio_5", .offset = 0x8F, },
--	{ .name = "drop_green_prio_6", .offset = 0x90, },
--	{ .name = "drop_green_prio_7", .offset = 0x91, },
--	OCELOT_STAT_END
-+static const struct ocelot_stat_layout ocelot_stats_layout[OCELOT_NUM_STATS] = {
-+	[OCELOT_STAT_RX_OCTETS] = {
-+		.name = "rx_octets",
-+		.offset = 0x00,
-+	},
-+	[OCELOT_STAT_RX_UNICAST] = {
-+		.name = "rx_unicast",
-+		.offset = 0x01,
-+	},
-+	[OCELOT_STAT_RX_MULTICAST] = {
-+		.name = "rx_multicast",
-+		.offset = 0x02,
-+	},
-+	[OCELOT_STAT_RX_BROADCAST] = {
-+		.name = "rx_broadcast",
-+		.offset = 0x03,
-+	},
-+	[OCELOT_STAT_RX_SHORTS] = {
-+		.name = "rx_shorts",
-+		.offset = 0x04,
-+	},
-+	[OCELOT_STAT_RX_FRAGMENTS] = {
-+		.name = "rx_fragments",
-+		.offset = 0x05,
-+	},
-+	[OCELOT_STAT_RX_JABBERS] = {
-+		.name = "rx_jabbers",
-+		.offset = 0x06,
-+	},
-+	[OCELOT_STAT_RX_CRC_ALIGN_ERRS] = {
-+		.name = "rx_crc_align_errs",
-+		.offset = 0x07,
-+	},
-+	[OCELOT_STAT_RX_SYM_ERRS] = {
-+		.name = "rx_sym_errs",
-+		.offset = 0x08,
-+	},
-+	[OCELOT_STAT_RX_64] = {
-+		.name = "rx_frames_below_65_octets",
-+		.offset = 0x09,
-+	},
-+	[OCELOT_STAT_RX_65_127] = {
-+		.name = "rx_frames_65_to_127_octets",
-+		.offset = 0x0A,
-+	},
-+	[OCELOT_STAT_RX_128_255] = {
-+		.name = "rx_frames_128_to_255_octets",
-+		.offset = 0x0B,
-+	},
-+	[OCELOT_STAT_RX_256_511] = {
-+		.name = "rx_frames_256_to_511_octets",
-+		.offset = 0x0C,
-+	},
-+	[OCELOT_STAT_RX_512_1023] = {
-+		.name = "rx_frames_512_to_1023_octets",
-+		.offset = 0x0D,
-+	},
-+	[OCELOT_STAT_RX_1024_1526] = {
-+		.name = "rx_frames_1024_to_1526_octets",
-+		.offset = 0x0E,
-+	},
-+	[OCELOT_STAT_RX_1527_MAX] = {
-+		.name = "rx_frames_over_1526_octets",
-+		.offset = 0x0F,
-+	},
-+	[OCELOT_STAT_RX_PAUSE] = {
-+		.name = "rx_pause",
-+		.offset = 0x10,
-+	},
-+	[OCELOT_STAT_RX_CONTROL] = {
-+		.name = "rx_control",
-+		.offset = 0x11,
-+	},
-+	[OCELOT_STAT_RX_LONGS] = {
-+		.name = "rx_longs",
-+		.offset = 0x12,
-+	},
-+	[OCELOT_STAT_RX_CLASSIFIED_DROPS] = {
-+		.name = "rx_classified_drops",
-+		.offset = 0x13,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_0] = {
-+		.name = "rx_red_prio_0",
-+		.offset = 0x14,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_1] = {
-+		.name = "rx_red_prio_1",
-+		.offset = 0x15,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_2] = {
-+		.name = "rx_red_prio_2",
-+		.offset = 0x16,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_3] = {
-+		.name = "rx_red_prio_3",
-+		.offset = 0x17,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_4] = {
-+		.name = "rx_red_prio_4",
-+		.offset = 0x18,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_5] = {
-+		.name = "rx_red_prio_5",
-+		.offset = 0x19,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_6] = {
-+		.name = "rx_red_prio_6",
-+		.offset = 0x1A,
-+	},
-+	[OCELOT_STAT_RX_RED_PRIO_7] = {
-+		.name = "rx_red_prio_7",
-+		.offset = 0x1B,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_0] = {
-+		.name = "rx_yellow_prio_0",
-+		.offset = 0x1C,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_1] = {
-+		.name = "rx_yellow_prio_1",
-+		.offset = 0x1D,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_2] = {
-+		.name = "rx_yellow_prio_2",
-+		.offset = 0x1E,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_3] = {
-+		.name = "rx_yellow_prio_3",
-+		.offset = 0x1F,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_4] = {
-+		.name = "rx_yellow_prio_4",
-+		.offset = 0x20,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_5] = {
-+		.name = "rx_yellow_prio_5",
-+		.offset = 0x21,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_6] = {
-+		.name = "rx_yellow_prio_6",
-+		.offset = 0x22,
-+	},
-+	[OCELOT_STAT_RX_YELLOW_PRIO_7] = {
-+		.name = "rx_yellow_prio_7",
-+		.offset = 0x23,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_0] = {
-+		.name = "rx_green_prio_0",
-+		.offset = 0x24,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_1] = {
-+		.name = "rx_green_prio_1",
-+		.offset = 0x25,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_2] = {
-+		.name = "rx_green_prio_2",
-+		.offset = 0x26,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_3] = {
-+		.name = "rx_green_prio_3",
-+		.offset = 0x27,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_4] = {
-+		.name = "rx_green_prio_4",
-+		.offset = 0x28,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_5] = {
-+		.name = "rx_green_prio_5",
-+		.offset = 0x29,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_6] = {
-+		.name = "rx_green_prio_6",
-+		.offset = 0x2A,
-+	},
-+	[OCELOT_STAT_RX_GREEN_PRIO_7] = {
-+		.name = "rx_green_prio_7",
-+		.offset = 0x2B,
-+	},
-+	[OCELOT_STAT_TX_OCTETS] = {
-+		.name = "tx_octets",
-+		.offset = 0x40,
-+	},
-+	[OCELOT_STAT_TX_UNICAST] = {
-+		.name = "tx_unicast",
-+		.offset = 0x41,
-+	},
-+	[OCELOT_STAT_TX_MULTICAST] = {
-+		.name = "tx_multicast",
-+		.offset = 0x42,
-+	},
-+	[OCELOT_STAT_TX_BROADCAST] = {
-+		.name = "tx_broadcast",
-+		.offset = 0x43,
-+	},
-+	[OCELOT_STAT_TX_COLLISION] = {
-+		.name = "tx_collision",
-+		.offset = 0x44,
-+	},
-+	[OCELOT_STAT_TX_DROPS] = {
-+		.name = "tx_drops",
-+		.offset = 0x45,
-+	},
-+	[OCELOT_STAT_TX_PAUSE] = {
-+		.name = "tx_pause",
-+		.offset = 0x46,
-+	},
-+	[OCELOT_STAT_TX_64] = {
-+		.name = "tx_frames_below_65_octets",
-+		.offset = 0x47,
-+	},
-+	[OCELOT_STAT_TX_65_127] = {
-+		.name = "tx_frames_65_to_127_octets",
-+		.offset = 0x48,
-+	},
-+	[OCELOT_STAT_TX_128_255] = {
-+		.name = "tx_frames_128_255_octets",
-+		.offset = 0x49,
-+	},
-+	[OCELOT_STAT_TX_256_511] = {
-+		.name = "tx_frames_256_511_octets",
-+		.offset = 0x4A,
-+	},
-+	[OCELOT_STAT_TX_512_1023] = {
-+		.name = "tx_frames_512_1023_octets",
-+		.offset = 0x4B,
-+	},
-+	[OCELOT_STAT_TX_1024_1526] = {
-+		.name = "tx_frames_1024_1526_octets",
-+		.offset = 0x4C,
-+	},
-+	[OCELOT_STAT_TX_1527_MAX] = {
-+		.name = "tx_frames_over_1526_octets",
-+		.offset = 0x4D,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_0] = {
-+		.name = "tx_yellow_prio_0",
-+		.offset = 0x4E,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_1] = {
-+		.name = "tx_yellow_prio_1",
-+		.offset = 0x4F,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_2] = {
-+		.name = "tx_yellow_prio_2",
-+		.offset = 0x50,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_3] = {
-+		.name = "tx_yellow_prio_3",
-+		.offset = 0x51,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_4] = {
-+		.name = "tx_yellow_prio_4",
-+		.offset = 0x52,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_5] = {
-+		.name = "tx_yellow_prio_5",
-+		.offset = 0x53,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_6] = {
-+		.name = "tx_yellow_prio_6",
-+		.offset = 0x54,
-+	},
-+	[OCELOT_STAT_TX_YELLOW_PRIO_7] = {
-+		.name = "tx_yellow_prio_7",
-+		.offset = 0x55,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_0] = {
-+		.name = "tx_green_prio_0",
-+		.offset = 0x56,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_1] = {
-+		.name = "tx_green_prio_1",
-+		.offset = 0x57,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_2] = {
-+		.name = "tx_green_prio_2",
-+		.offset = 0x58,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_3] = {
-+		.name = "tx_green_prio_3",
-+		.offset = 0x59,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_4] = {
-+		.name = "tx_green_prio_4",
-+		.offset = 0x5A,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_5] = {
-+		.name = "tx_green_prio_5",
-+		.offset = 0x5B,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_6] = {
-+		.name = "tx_green_prio_6",
-+		.offset = 0x5C,
-+	},
-+	[OCELOT_STAT_TX_GREEN_PRIO_7] = {
-+		.name = "tx_green_prio_7",
-+		.offset = 0x5D,
-+	},
-+	[OCELOT_STAT_TX_AGED] = {
-+		.name = "tx_aged",
-+		.offset = 0x5E,
-+	},
-+	[OCELOT_STAT_DROP_LOCAL] = {
-+		.name = "drop_local",
-+		.offset = 0x80,
-+	},
-+	[OCELOT_STAT_DROP_TAIL] = {
-+		.name = "drop_tail",
-+		.offset = 0x81,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_0] = {
-+		.name = "drop_yellow_prio_0",
-+		.offset = 0x82,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_1] = {
-+		.name = "drop_yellow_prio_1",
-+		.offset = 0x83,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_2] = {
-+		.name = "drop_yellow_prio_2",
-+		.offset = 0x84,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_3] = {
-+		.name = "drop_yellow_prio_3",
-+		.offset = 0x85,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_4] = {
-+		.name = "drop_yellow_prio_4",
-+		.offset = 0x86,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_5] = {
-+		.name = "drop_yellow_prio_5",
-+		.offset = 0x87,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_6] = {
-+		.name = "drop_yellow_prio_6",
-+		.offset = 0x88,
-+	},
-+	[OCELOT_STAT_DROP_YELLOW_PRIO_7] = {
-+		.name = "drop_yellow_prio_7",
-+		.offset = 0x89,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_0] = {
-+		.name = "drop_green_prio_0",
-+		.offset = 0x8A,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_1] = {
-+		.name = "drop_green_prio_1",
-+		.offset = 0x8B,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_2] = {
-+		.name = "drop_green_prio_2",
-+		.offset = 0x8C,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_3] = {
-+		.name = "drop_green_prio_3",
-+		.offset = 0x8D,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_4] = {
-+		.name = "drop_green_prio_4",
-+		.offset = 0x8E,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_5] = {
-+		.name = "drop_green_prio_5",
-+		.offset = 0x8F,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_6] = {
-+		.name = "drop_green_prio_6",
-+		.offset = 0x90,
-+	},
-+	[OCELOT_STAT_DROP_GREEN_PRIO_7] = {
-+		.name = "drop_green_prio_7",
-+		.offset = 0x91,
-+	},
- };
- 
- static void ocelot_pll5_init(struct ocelot *ocelot)
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 72b9474391da..2428bc64cb1d 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -105,11 +105,6 @@
- #define REG_RESERVED_ADDR		0xffffffff
- #define REG_RESERVED(reg)		REG(reg, REG_RESERVED_ADDR)
- 
--#define for_each_stat(ocelot, stat)				\
--	for ((stat) = (ocelot)->stats_layout;			\
--	     ((stat)->name[0] != '\0');				\
--	     (stat)++)
--
- enum ocelot_target {
- 	ANA = 1,
- 	QS,
-@@ -540,13 +535,108 @@ enum ocelot_ptp_pins {
- 	TOD_ACC_PIN
- };
- 
-+enum ocelot_stat {
-+	OCELOT_STAT_RX_OCTETS,
-+	OCELOT_STAT_RX_UNICAST,
-+	OCELOT_STAT_RX_MULTICAST,
-+	OCELOT_STAT_RX_BROADCAST,
-+	OCELOT_STAT_RX_SHORTS,
-+	OCELOT_STAT_RX_FRAGMENTS,
-+	OCELOT_STAT_RX_JABBERS,
-+	OCELOT_STAT_RX_CRC_ALIGN_ERRS,
-+	OCELOT_STAT_RX_SYM_ERRS,
-+	OCELOT_STAT_RX_64,
-+	OCELOT_STAT_RX_65_127,
-+	OCELOT_STAT_RX_128_255,
-+	OCELOT_STAT_RX_256_511,
-+	OCELOT_STAT_RX_512_1023,
-+	OCELOT_STAT_RX_1024_1526,
-+	OCELOT_STAT_RX_1527_MAX,
-+	OCELOT_STAT_RX_PAUSE,
-+	OCELOT_STAT_RX_CONTROL,
-+	OCELOT_STAT_RX_LONGS,
-+	OCELOT_STAT_RX_CLASSIFIED_DROPS,
-+	OCELOT_STAT_RX_RED_PRIO_0,
-+	OCELOT_STAT_RX_RED_PRIO_1,
-+	OCELOT_STAT_RX_RED_PRIO_2,
-+	OCELOT_STAT_RX_RED_PRIO_3,
-+	OCELOT_STAT_RX_RED_PRIO_4,
-+	OCELOT_STAT_RX_RED_PRIO_5,
-+	OCELOT_STAT_RX_RED_PRIO_6,
-+	OCELOT_STAT_RX_RED_PRIO_7,
-+	OCELOT_STAT_RX_YELLOW_PRIO_0,
-+	OCELOT_STAT_RX_YELLOW_PRIO_1,
-+	OCELOT_STAT_RX_YELLOW_PRIO_2,
-+	OCELOT_STAT_RX_YELLOW_PRIO_3,
-+	OCELOT_STAT_RX_YELLOW_PRIO_4,
-+	OCELOT_STAT_RX_YELLOW_PRIO_5,
-+	OCELOT_STAT_RX_YELLOW_PRIO_6,
-+	OCELOT_STAT_RX_YELLOW_PRIO_7,
-+	OCELOT_STAT_RX_GREEN_PRIO_0,
-+	OCELOT_STAT_RX_GREEN_PRIO_1,
-+	OCELOT_STAT_RX_GREEN_PRIO_2,
-+	OCELOT_STAT_RX_GREEN_PRIO_3,
-+	OCELOT_STAT_RX_GREEN_PRIO_4,
-+	OCELOT_STAT_RX_GREEN_PRIO_5,
-+	OCELOT_STAT_RX_GREEN_PRIO_6,
-+	OCELOT_STAT_RX_GREEN_PRIO_7,
-+	OCELOT_STAT_TX_OCTETS,
-+	OCELOT_STAT_TX_UNICAST,
-+	OCELOT_STAT_TX_MULTICAST,
-+	OCELOT_STAT_TX_BROADCAST,
-+	OCELOT_STAT_TX_COLLISION,
-+	OCELOT_STAT_TX_DROPS,
-+	OCELOT_STAT_TX_PAUSE,
-+	OCELOT_STAT_TX_64,
-+	OCELOT_STAT_TX_65_127,
-+	OCELOT_STAT_TX_128_255,
-+	OCELOT_STAT_TX_256_511,
-+	OCELOT_STAT_TX_512_1023,
-+	OCELOT_STAT_TX_1024_1526,
-+	OCELOT_STAT_TX_1527_MAX,
-+	OCELOT_STAT_TX_YELLOW_PRIO_0,
-+	OCELOT_STAT_TX_YELLOW_PRIO_1,
-+	OCELOT_STAT_TX_YELLOW_PRIO_2,
-+	OCELOT_STAT_TX_YELLOW_PRIO_3,
-+	OCELOT_STAT_TX_YELLOW_PRIO_4,
-+	OCELOT_STAT_TX_YELLOW_PRIO_5,
-+	OCELOT_STAT_TX_YELLOW_PRIO_6,
-+	OCELOT_STAT_TX_YELLOW_PRIO_7,
-+	OCELOT_STAT_TX_GREEN_PRIO_0,
-+	OCELOT_STAT_TX_GREEN_PRIO_1,
-+	OCELOT_STAT_TX_GREEN_PRIO_2,
-+	OCELOT_STAT_TX_GREEN_PRIO_3,
-+	OCELOT_STAT_TX_GREEN_PRIO_4,
-+	OCELOT_STAT_TX_GREEN_PRIO_5,
-+	OCELOT_STAT_TX_GREEN_PRIO_6,
-+	OCELOT_STAT_TX_GREEN_PRIO_7,
-+	OCELOT_STAT_TX_AGED,
-+	OCELOT_STAT_DROP_LOCAL,
-+	OCELOT_STAT_DROP_TAIL,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_0,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_1,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_2,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_3,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_4,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_5,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_6,
-+	OCELOT_STAT_DROP_YELLOW_PRIO_7,
-+	OCELOT_STAT_DROP_GREEN_PRIO_0,
-+	OCELOT_STAT_DROP_GREEN_PRIO_1,
-+	OCELOT_STAT_DROP_GREEN_PRIO_2,
-+	OCELOT_STAT_DROP_GREEN_PRIO_3,
-+	OCELOT_STAT_DROP_GREEN_PRIO_4,
-+	OCELOT_STAT_DROP_GREEN_PRIO_5,
-+	OCELOT_STAT_DROP_GREEN_PRIO_6,
-+	OCELOT_STAT_DROP_GREEN_PRIO_7,
-+	OCELOT_NUM_STATS,
-+};
++	if (reset_device_list == NULL)
++		return -EINVAL;
 +
- struct ocelot_stat_layout {
- 	u32 offset;
- 	char name[ETH_GSTRING_LEN];
+ 	if (reset_context->reset_req_dev->ip_versions[MP1_HWIP][0] ==
+ 		    IP_VERSION(13, 0, 2) &&
+ 	    reset_context->hive == NULL) {
+@@ -350,19 +345,7 @@ aldebaran_mode2_restore_hwcontext(struct amdgpu_reset_control *reset_ctl,
+ 		return -EINVAL;
+ 	}
+ 
+-	INIT_LIST_HEAD(&reset_device_list);
+-	if (reset_context->hive) {
+-		list_for_each_entry (tmp_adev,
+-				     &reset_context->hive->device_list,
+-				     gmc.xgmi.head)
+-			list_add_tail(&tmp_adev->reset_list,
+-				      &reset_device_list);
+-	} else {
+-		list_add_tail(&reset_context->reset_req_dev->reset_list,
+-			      &reset_device_list);
+-	}
+-
+-	list_for_each_entry (tmp_adev, &reset_device_list, reset_list) {
++	list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
+ 		dev_info(tmp_adev->dev,
+ 			 "GPU reset succeeded, trying to resume\n");
+ 		r = aldebaran_mode2_restore_ip(tmp_adev);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 58df107e3beb..3adebb63680e 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -4746,6 +4746,8 @@ int amdgpu_do_asic_reset(struct list_head *device_list_handle,
+ 	tmp_adev = list_first_entry(device_list_handle, struct amdgpu_device,
+ 				    reset_list);
+ 	amdgpu_reset_reg_dumps(tmp_adev);
++
++	reset_context->reset_device_list = device_list_handle;
+ 	r = amdgpu_reset_perform_reset(tmp_adev, reset_context);
+ 	/* If reset handler not implemented, continue; otherwise return */
+ 	if (r == -ENOSYS)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_reset.h b/drivers/gpu/drm/amd/amdgpu/amdgpu_reset.h
+index 1949dbe28a86..0c3ad85d84a4 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_reset.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_reset.h
+@@ -37,6 +37,7 @@ struct amdgpu_reset_context {
+ 	struct amdgpu_device *reset_req_dev;
+ 	struct amdgpu_job *job;
+ 	struct amdgpu_hive_info *hive;
++	struct list_head *reset_device_list;
+ 	unsigned long flags;
  };
  
--#define OCELOT_STAT_END { .name = "" }
--
- struct ocelot_stats_region {
- 	struct list_head node;
- 	u32 offset;
-@@ -709,7 +799,6 @@ struct ocelot {
- 	const u32 *const		*map;
- 	const struct ocelot_stat_layout	*stats_layout;
- 	struct list_head		stats_regions;
--	unsigned int			num_stats;
- 
- 	u32				pool_size[OCELOT_SB_NUM][OCELOT_SB_POOL_NUM];
- 	int				packet_buffer_size;
 -- 
 2.35.1
 
