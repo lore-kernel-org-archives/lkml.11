@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427D0C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B15C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242126AbiHWIMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S241993AbiHWIMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240165AbiHWIJs (ORCPT
+        with ESMTP id S241880AbiHWIJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:09:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00EA67CBA;
-        Tue, 23 Aug 2022 01:06:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E3067C8B;
+        Tue, 23 Aug 2022 01:06:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B43A8611A8;
-        Tue, 23 Aug 2022 08:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B950BC433D6;
-        Tue, 23 Aug 2022 08:06:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB710610AA;
+        Tue, 23 Aug 2022 08:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA1CC433C1;
+        Tue, 23 Aug 2022 08:06:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241991;
-        bh=iulYAl+pYZdrIyCxSiw/cLHIeTOyzhJvoonrV7c/uLI=;
+        s=korg; t=1661241988;
+        bh=+BJTvkYDRr0aE4L6o5TNcyJvj52o/Lx/16ryarOswAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZsptSfGiBpNTHL58WPGHGXLBiqiof8mfXEaQZwEm2ECopsyNsJzjSt4SFDSwx6G+M
-         4Xrii4wlfq0lDW77V6R3AjQGDKDsHZ0VqLYFKgiNSil55AqzQGzJh9zZ6S4iv4u9/o
-         H0Gt789eJ3Mw7vkhyIpWFjxKuHdZgdHe9E+ZnLok=
+        b=K4KEurRnMiI958y+rMC3CnOz2a4oacVPHKtDmjwrRCbGZWKYHvvCeJzMgru+gbU7v
+         DDrQStLGNw8+XZ1fEuCsiL7defpqElnj813iTj8beOMZDi6lc7bfZKeEuw6atj16Kb
+         QlFLtIzaL5/99+bRTN5pTAA3o4L6uEY5/tLQ5/hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Liang He <windhl@126.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.9 003/101] scsi: ufs: host: Hold reference returned by of_parse_phandle()
-Date:   Tue, 23 Aug 2022 10:02:36 +0200
-Message-Id: <20220823080034.726420269@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.19 041/365] apparmor: fix quiet_denied for file rules
+Date:   Tue, 23 Aug 2022 09:59:02 +0200
+Message-Id: <20220823080119.910765071@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,56 +47,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit a3435afba87dc6cd83f5595e7607f3c40f93ef01 upstream.
+commit 68ff8540cc9e4ab557065b3f635c1ff4c96e1f1c upstream.
 
-In ufshcd_populate_vreg(), we should hold the reference returned by
-of_parse_phandle() and then use it to call of_node_put() for refcount
-balance.
+Global quieting of denied AppArmor generated file events is not
+handled correctly. Unfortunately the is checking if quieting of all
+audit events is set instead of just denied events.
 
-Link: https://lore.kernel.org/r/20220719071529.1081166-1-windhl@126.com
-Fixes: aa4976130934 ("ufs: Add regulator enable support")
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 67012e8209df ("AppArmor: basic auditing infrastructure.")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd-pltfrm.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ security/apparmor/audit.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/ufs/ufshcd-pltfrm.c
-+++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
-@@ -126,9 +126,20 @@ out:
- 	return ret;
- }
- 
-+static bool phandle_exists(const struct device_node *np,
-+			   const char *phandle_name, int index)
-+{
-+	struct device_node *parse_np = of_parse_phandle(np, phandle_name, index);
-+
-+	if (parse_np)
-+		of_node_put(parse_np);
-+
-+	return parse_np != NULL;
-+}
-+
- #define MAX_PROP_SIZE 32
- static int ufshcd_populate_vreg(struct device *dev, const char *name,
--		struct ufs_vreg **out_vreg)
-+				struct ufs_vreg **out_vreg)
- {
- 	int ret = 0;
- 	char prop_name[MAX_PROP_SIZE];
-@@ -141,7 +152,7 @@ static int ufshcd_populate_vreg(struct d
+--- a/security/apparmor/audit.c
++++ b/security/apparmor/audit.c
+@@ -137,7 +137,7 @@ int aa_audit(int type, struct aa_profile
  	}
+ 	if (AUDIT_MODE(profile) == AUDIT_QUIET ||
+ 	    (type == AUDIT_APPARMOR_DENIED &&
+-	     AUDIT_MODE(profile) == AUDIT_QUIET))
++	     AUDIT_MODE(profile) == AUDIT_QUIET_DENIED))
+ 		return aad(sa)->error;
  
- 	snprintf(prop_name, MAX_PROP_SIZE, "%s-supply", name);
--	if (!of_parse_phandle(np, prop_name, 0)) {
-+	if (!phandle_exists(np, prop_name, 0)) {
- 		dev_info(dev, "%s: Unable to find %s regulator, assuming enabled\n",
- 				__func__, prop_name);
- 		goto out;
+ 	if (KILL_MODE(profile) && type == AUDIT_APPARMOR_DENIED)
 
 
