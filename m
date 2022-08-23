@@ -2,118 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 872F4C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D74CC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343560AbiHWRD2 (ORCPT
+        id S1343526AbiHWRDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
+        Tue, 23 Aug 2022 13:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344308AbiHWRBL (ORCPT
+        with ESMTP id S1343780AbiHWRBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:01:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8872E9E0D4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:12:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661263933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=kYvU0b08zm/V0xwR5oEjOP2aPgvABHjHuDzOrfSOpNM=;
-        b=W2nl2DCx8AZO9DepOOW2xzLTTK4eNjMaJjE4nX8SHMFFf7AXpZ6YB0hkEKl7jQf8admegt
-        Tsghc+vP2LD9CnqHwfiugQVlFE6dR9TOqYDGT/5zCtBZcnA3lHuwQgVPaNyIp+iYZ1BCZc
-        km9POfH6zvB4u7LAkLN5LcIIkXhFLOI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-453-IILv1f45PVWyhyOEee0mzQ-1; Tue, 23 Aug 2022 10:12:10 -0400
-X-MC-Unique: IILv1f45PVWyhyOEee0mzQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E47CC3C0D85A;
-        Tue, 23 Aug 2022 14:12:08 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C00AC40CF8E7;
-        Tue, 23 Aug 2022 14:12:07 +0000 (UTC)
-Subject: [PATCH 0/7] smb3: Add iter helpers and use iov_iters down to the
- network transport
-From:   David Howells <dhowells@redhat.com>
-To:     Steve French <smfrench@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-cifs@vger.kernel.org, Steve French <sfrench@samba.org>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        Shyam Prasad N <nspmangalore@gmail.com>, dhowells@redhat.com,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 23 Aug 2022 15:12:07 +0100
-Message-ID: <166126392703.708021.14465850073772688008.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
+        Tue, 23 Aug 2022 13:01:38 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A394D4D4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:08:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661263728; x=1692799728;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4lie7gCXObgs3m8jIr59zMMngmZ8Lu+4cTjSxyVLY4Q=;
+  b=eDyy4F3TCPpAIoPxiiRiphl8Or7CVkiPCJxXlvTSBkz1n6Ve7pNgyFhe
+   tXI12tKAocPX+WkFmrwSej9KEDgnsXZ8dxaVAQ3V7aoT7uW3xiKVDKmwx
+   5RHTGKD/K7V+wGKW+C9ftYYrhUBqnIctP0VUJjXSMSnoo+y4l2VIDh//5
+   K0G6ULGOtHlD+1DtwVojNc2bkE0i2NnCA/TIeSHTPkJVFi25t27qv1iRn
+   M83lux+ymElvoaLJSsSPubfOwgFMvwv9SYLXUJp4kqCkNhTv0Fq0Lh/6Y
+   49ZpnDrzT4YmuCJsgoF7Bl+zijmj0h7UK6jcCuFMBKFscRJ2fSXpRtszw
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="319742037"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="319742037"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 07:08:47 -0700
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="735491062"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 07:08:45 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oQUaA-002T4V-1A;
+        Tue, 23 Aug 2022 17:08:42 +0300
+Date:   Tue, 23 Aug 2022 17:08:42 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     Joerg Roedel <jroedel@suse.de>,
+        virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v1 1/1] iommu/virtio: Do not dereference fwnode in struct
+ device
+Message-ID: <YwTfam7KZKzgn8sq@smile.fi.intel.com>
+References: <20220801165142.20898-1-andriy.shevchenko@linux.intel.com>
+ <YvIK0KMi1yECL9vc@myrica>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvIK0KMi1yECL9vc@myrica>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 09, 2022 at 08:20:48AM +0100, Jean-Philippe Brucker wrote:
+> On Mon, Aug 01, 2022 at 07:51:42PM +0300, Andy Shevchenko wrote:
+> > In order to make the underneath API easier to change in the future,
+> > prevent users from dereferencing fwnode from struct device.
+> > Instead, use the specific device_match_fwnode() API for that.
 
-Hi Steve, Al,
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-Here's an updated version of a subset of my branch to make the cifs/smb3
-driver pass iov_iters down to the lowest layers where they can be passed to
-the network transport.
+Thanks!
 
-Al: Could you look at the first two patches, that add extract_iter_to_iter()
-to see about decanting iterators of various types (but that might have to be
-lost) into iterators that can be held on to (pinning pages in the process),
-and iov_iter_scan() which passes each partial page of an iterator to a scanner
-function to do something with (such as create an sglist element for).
+Can it be applied now?
 
-Possibly I should add an extract_iter_to_sglist() - I'm doing that in a number
-of places.
-
-Steve: assuming Al is okay with the iov_iter patches, can you look at taking
-this into your tree (or should it go through mine?)?
-
-I've pushed the patches here also:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=cifs-for-viro
-
-David
----
-David Howells (7):
-      iov_iter: Add a function to extract an iter's buffers to a bvec iter
-      iov_iter: Add a general purpose iteration function
-      cifs: Add some helper functions
-      cifs: Add a function to read into an iter from a socket
-      cifs: Change the I/O paths to use an iterator rather than a page list
-      cifs: Remove unused code
-      cifs: Add some RDMA send tracepoints
-
-
- fs/cifs/cifsencrypt.c |   40 +-
- fs/cifs/cifsfs.h      |    3 +
- fs/cifs/cifsglob.h    |   28 +-
- fs/cifs/cifsproto.h   |   11 +-
- fs/cifs/cifssmb.c     |   13 +-
- fs/cifs/connect.c     |   16 +
- fs/cifs/file.c        | 1653 ++++++++++++++++++-----------------------
- fs/cifs/fscache.c     |   22 +-
- fs/cifs/fscache.h     |   10 +-
- fs/cifs/misc.c        |  108 ---
- fs/cifs/smb2ops.c     |  369 +++++----
- fs/cifs/smb2pdu.c     |   44 +-
- fs/cifs/smbdirect.c   |  335 ++++-----
- fs/cifs/smbdirect.h   |    4 +-
- fs/cifs/trace.h       |   95 +++
- fs/cifs/transport.c   |   54 +-
- include/linux/uio.h   |    8 +
- lib/iov_iter.c        |  159 +++-
- 18 files changed, 1391 insertions(+), 1581 deletions(-)
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
