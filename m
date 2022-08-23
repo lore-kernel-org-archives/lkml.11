@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E0DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A6DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358256AbiHWLtN (ORCPT
+        id S1358306AbiHWLtT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
+        Tue, 23 Aug 2022 07:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358625AbiHWLq5 (ORCPT
+        with ESMTP id S1358179AbiHWLrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:46:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736EED275A;
+        Tue, 23 Aug 2022 07:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B9FD276B;
         Tue, 23 Aug 2022 02:30:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F1F0B81C8B;
-        Tue, 23 Aug 2022 09:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DD3C433D7;
-        Tue, 23 Aug 2022 09:30:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A4C0612B5;
+        Tue, 23 Aug 2022 09:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2416C433C1;
+        Tue, 23 Aug 2022 09:30:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247018;
-        bh=l1hHllYzgE1Bcw27PDIeyRbRqgXZ1yIg4OE0bNPY3QE=;
+        s=korg; t=1661247021;
+        bh=BHFna084pn5MOacG9nBUkhKjVk4MnmkKBvgPQsiETg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o6TX8OoHKwueCPj94ULImwyGUbfpYPwgW+3N3E53WjW+1gFdRwsEuop4FBcx5ymTV
-         BtCnEc+GtcxtVWXO3L2+6VFno1rdXv3QcQFCgKkXZ1P11Ka1GM8fs9XQlifhB44+ek
-         2MDAW3BjE0f5mH2BjUa0LQ1NOcFsDqghQD4fNH/o=
+        b=TY4o4D5v9f1MmHSSAAacLaSNJ8s9ZXcB2y0hbrl7mT/Mxd5SbZIjr0Ker+JCxXzU4
+         oJHK/uKeiq3y2DnqyCWCpX0a5rB1yHm3hKx3ntYopqLr8zTS5usUzbuxDkxduTJaF4
+         5Mvns+lKrfkOkNLNN6+0uWFhrVOy/JELNkuRki5s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 291/389] btrfs: fix lost error handling when looking up extended ref on log replay
-Date:   Tue, 23 Aug 2022 10:26:09 +0200
-Message-Id: <20220823080127.714479210@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 292/389] tracing: Have filter accept "common_cpu" to be consistent
+Date:   Tue, 23 Aug 2022 10:26:10 +0200
+Message-Id: <20220823080127.750902149@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,43 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
+commit b2380577d4fe1c0ef3fa50417f1e441c016e4cbe upstream.
 
-During log replay, when processing inode references, if we get an error
-when looking up for an extended reference at __add_inode_ref(), we ignore
-it and proceed, returning success (0) if no other error happens after the
-lookup. This is obviously wrong because in case an extended reference
-exists and it encodes some name not in the log, we need to unlink it,
-otherwise the filesystem state will not match the state it had after the
-last fsync.
+Make filtering consistent with histograms. As "cpu" can be a field of an
+event, allow for "common_cpu" to keep it from being confused with the
+"cpu" field of the event.
 
-So just make __add_inode_ref() return an error it gets from the extended
-reference lookup.
+Link: https://lkml.kernel.org/r/20220820134401.513062765@goodmis.org
+Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
 
-Fixes: f186373fef005c ("btrfs: extended inode refs")
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/trace/trace_events.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1100,7 +1100,9 @@ again:
- 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
- 					   inode_objectid, parent_objectid, 0,
- 					   0);
--	if (!IS_ERR_OR_NULL(extref)) {
-+	if (IS_ERR(extref)) {
-+		return PTR_ERR(extref);
-+	} else if (extref) {
- 		u32 item_size;
- 		u32 cur_offset = 0;
- 		unsigned long base;
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -166,6 +166,7 @@ static int trace_define_generic_fields(v
+ 
+ 	__generic_field(int, CPU, FILTER_CPU);
+ 	__generic_field(int, cpu, FILTER_CPU);
++	__generic_field(int, common_cpu, FILTER_CPU);
+ 	__generic_field(char *, COMM, FILTER_COMM);
+ 	__generic_field(char *, comm, FILTER_COMM);
+ 
 
 
