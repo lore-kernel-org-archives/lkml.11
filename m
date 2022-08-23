@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5536C54EF8
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3D0C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356924AbiHWKwo (ORCPT
+        id S1355364AbiHWKxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36166 "EHLO
+        Tue, 23 Aug 2022 06:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355645AbiHWKo7 (ORCPT
+        with ESMTP id S1355878AbiHWKpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:44:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC88E6CD2E;
-        Tue, 23 Aug 2022 02:10:48 -0700 (PDT)
+        Tue, 23 Aug 2022 06:45:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB6174DC1;
+        Tue, 23 Aug 2022 02:11:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2490B81C63;
-        Tue, 23 Aug 2022 09:10:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12B21C433C1;
-        Tue, 23 Aug 2022 09:10:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D6AE60DB4;
+        Tue, 23 Aug 2022 09:11:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 129F7C433C1;
+        Tue, 23 Aug 2022 09:11:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245846;
-        bh=DL8DDS1N7fZYVKITeuH0f7IEW0g5uIjiciMQzAzvZsQ=;
+        s=korg; t=1661245867;
+        bh=eQhmZHt5ptWLP7a417Uv9ecOnBX2k8sOFo408lcOWcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v/hFJSCFpK0IFP64+OF8lJ9qC0b1ErmG2RWKkGUKV2ItM+RsKFNnutZoW8UqWYnh7
-         tvAyGng2yp0AY8f20cEPBTbzSAMtD6TRsG+AZtoFNXVFtFoCMdCM8JsqFIVUxlWArk
-         k0+nx/GWhrljsq4nB2W0+c3pSzX/cvw8Ow8dWVMQ=
+        b=mbbvKrI5dwpITd0djBNiQ4Diyg0miTDvmcKTL4yrTRoxyserzRHcAN6ZknO3VDHa9
+         0YfWTCwhIyWc0Jk+XFK/fi9T5V5hi2k8+MhUZKIobRKovrIbCIJhShQXmMiDvhj8yg
+         t6duFnnSpj9caBYjgzjaLyCHaklVxCSIHcUq6XAs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Siddh Raman Pant <code@siddh.me>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 178/287] x86/numa: Use cpumask_available instead of hardcoded NULL check
-Date:   Tue, 23 Aug 2022 10:25:47 +0200
-Message-Id: <20220823080106.765499324@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 216/287] rds: add missing barrier to release_refill
+Date:   Tue, 23 Aug 2022 10:26:25 +0200
+Message-Id: <20220823080108.234392303@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,73 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddh Raman Pant <code@siddh.me>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 625395c4a0f4775e0fe00f616888d2e6c1ba49db ]
+commit 9f414eb409daf4f778f011cf8266d36896bb930b upstream.
 
-GCC-12 started triggering a new warning:
+The functions clear_bit and set_bit do not imply a memory barrier, thus it
+may be possible that the waitqueue_active function (which does not take
+any locks) is moved before clear_bit and it could miss a wakeup event.
 
-  arch/x86/mm/numa.c: In function ‘cpumask_of_node’:
-  arch/x86/mm/numa.c:916:39: warning: the comparison will always evaluate as ‘false’ for the address of ‘node_to_cpumask_map’ will never be NULL [-Waddress]
-    916 |         if (node_to_cpumask_map[node] == NULL) {
-        |                                       ^~
+Fix this bug by adding a memory barrier after clear_bit.
 
-node_to_cpumask_map is of type cpumask_var_t[].
-
-When CONFIG_CPUMASK_OFFSTACK is set, cpumask_var_t is typedef'd to a
-pointer for dynamic allocation, else to an array of one element. The
-"wicked game" can be checked on line 700 of include/linux/cpumask.h.
-
-The original code in debug_cpumask_set_cpu() and cpumask_of_node() were
-probably written by the original authors with CONFIG_CPUMASK_OFFSTACK=y
-(i.e. dynamic allocation) in mind, checking if the cpumask was available
-via a direct NULL check.
-
-When CONFIG_CPUMASK_OFFSTACK is not set, GCC gives the above warning
-while compiling the kernel.
-
-Fix that by using cpumask_available(), which does the NULL check when
-CONFIG_CPUMASK_OFFSTACK is set, otherwise returns true. Use it wherever
-such checks are made.
-
-Conditional definitions of cpumask_available() can be found along with
-the definition of cpumask_var_t. Check the cpumask.h reference mentioned
-above.
-
-Fixes: c032ef60d1aa ("cpumask: convert node_to_cpumask_map[] to cpumask_var_t")
-Fixes: de2d9445f162 ("x86: Unify node_to_cpumask_map handling between 32 and 64bit")
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/20220731160913.632092-1-code@siddh.me
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/mm/numa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/rds/ib_recv.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-index fa150855647c..b4ff063a4371 100644
---- a/arch/x86/mm/numa.c
-+++ b/arch/x86/mm/numa.c
-@@ -826,7 +826,7 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enable)
- 		return;
- 	}
- 	mask = node_to_cpumask_map[node];
--	if (!mask) {
-+	if (!cpumask_available(mask)) {
- 		pr_err("node_to_cpumask_map[%i] NULL\n", node);
- 		dump_stack();
- 		return;
-@@ -872,7 +872,7 @@ const struct cpumask *cpumask_of_node(int node)
- 		dump_stack();
- 		return cpu_none_mask;
- 	}
--	if (node_to_cpumask_map[node] == NULL) {
-+	if (!cpumask_available(node_to_cpumask_map[node])) {
- 		printk(KERN_WARNING
- 			"cpumask_of_node(%d): no node_to_cpumask_map!\n",
- 			node);
--- 
-2.35.1
-
+--- a/net/rds/ib_recv.c
++++ b/net/rds/ib_recv.c
+@@ -362,6 +362,7 @@ static int acquire_refill(struct rds_con
+ static void release_refill(struct rds_connection *conn)
+ {
+ 	clear_bit(RDS_RECV_REFILL, &conn->c_flags);
++	smp_mb__after_atomic();
+ 
+ 	/* We don't use wait_on_bit()/wake_up_bit() because our waking is in a
+ 	 * hot path and finding waiters is very rare.  We don't want to walk
 
 
