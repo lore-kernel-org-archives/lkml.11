@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F72FC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50969C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241905AbiHWNnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
+        id S240950AbiHWNp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241175AbiHWNmu (ORCPT
+        with ESMTP id S243063AbiHWNpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:42:50 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECA81F7E25
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:47:19 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bt10so6122400lfb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:47:18 -0700 (PDT)
+        Tue, 23 Aug 2022 09:45:38 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C415F202071
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:50:28 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id l19so9970553ljg.8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:50:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=RN/LOwAs0mnCfns8ZqSzFQO5l9T587JWTtmjgOoDJU0=;
-        b=Py0wMtQJoUAEqHG39bdO2l0BFyd5gIb/rukM60FnZ1hchbdZcz/+uZHBv+PwZYsYHD
-         KPwGaoEP4kJMY7TN5kh0S2PbU/GtEAZFI6/GWecCyniqreT6ulMrcaAexk8rNouQW+pC
-         r2mpDu584TwrHqn6lCYfsCPZwrvgPTkIImrUO6nDjdM3TUwkrCUnEZ4JeI+Y7RDYZR4L
-         9/nnSDO1kK59WzFrgxbHwSPItaD3vOteBcPpxjbHQlyhLUNEWJGEX904OANzDvl/GJx3
-         XZgFnoOeWES7ce7ypMcQRWjqXoYyvB83wxa1ANQHzbjoC8isWgnJ+MVhgQkN8od+6iNh
-         LUZw==
+        bh=tRYEKF+JKDUe+/4PWEAoIKSUJrQI9kSn3rwTj50a5SI=;
+        b=IDvQiUDTFC9ng1VOeMeft4QD0fVE013eX0K61+0kW9iWz3RrjcL9jCHyEL8sz8Xdx1
+         J01hMvc8yMKanFAuR2qOZbWLBmvFaNRuSEPzoL6qNUfCuQZfMXFrJlXHkn+4zkPUnXIK
+         I4/VUXdVyxDHp5VTGswiy9yRgjzmd3CXEyH+CX/F7yUKrAKk8y92IFZhLRzoXYCGJpEB
+         EieSmaRPNhS1brHHT+K+IWUr7AitagA6BJxTmnuwL9R1voPpwSJcZ6picYFHPuy/DWVZ
+         CigslD767IEBjaDns0EJYUUvgErGiiSZb7ttvw+SEAbSgKDmoJ8K5+LsJWhYx/auRdBo
+         qm8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=RN/LOwAs0mnCfns8ZqSzFQO5l9T587JWTtmjgOoDJU0=;
-        b=ygn46ksjUUGf/N/ZhG1STEAJc2G8WtnBCv7B5ljmm4Cp8TkEsb8dpOyzBC3OvmLFcC
-         AVw8/dY9gnojCYcaqAi0eWtHDcRfAGuwFetd6jb3cG3/oVkTfg26BshjTCMO6T61REsR
-         pCpgv3r9gY/v8AInWpqj4frDWVAX0sza6+Znx4N/I0hN99JynSA46IV6UuwySF6c/Jcz
-         fnvreUGa3QkneVlLS7+wf1qD6EAT6HBUMgXf22nBOK6g6ZYm07qjE6P0zyljhsjH2jCl
-         FPHjGJs0RbJEKmGLayE20vt75sp1vOVJczr858f8Xr+jPVxu3VTfgvEY4wgtBi9mjztZ
-         tfFw==
-X-Gm-Message-State: ACgBeo3fmOKU8pywWbZ1+OQ9zUofxEJ5hdwSGkOO+vLGzVuk8iT9O/I1
-        sghG11eCKXlQ49bh7b/Ks60TkA==
-X-Google-Smtp-Source: AA6agR7X5sSiNq/i+Hdcr45vvYQkfwChkiEwFRHa/+jS1NGRNkHqhXgoDdJQhIB3VWwSaYKrwvZ2Ew==
-X-Received: by 2002:a05:6512:22d5:b0:492:cf78:59b7 with SMTP id g21-20020a05651222d500b00492cf7859b7mr5862437lfu.504.1661251564314;
-        Tue, 23 Aug 2022 03:46:04 -0700 (PDT)
+        bh=tRYEKF+JKDUe+/4PWEAoIKSUJrQI9kSn3rwTj50a5SI=;
+        b=XrBzylQWbvjCU7IoWExfxYA8x6o5EaSTqaG4Y+W8c7I5UEFwCJATTz1dFumPi7UCuc
+         5fKsO9aU+aVFQbnRPNQbZSWGGuUZpzCNhZyG7mpM8hrAaMuaREGVz3St6CECx3uz7A+u
+         9CuxrrFNoVBSosuRXFXdxht6HUmht7S9qITBN7KVwmpOX+4UZZzZ/3G/TZP2KnpJNhrH
+         xRlmJXzJAaRkLCmGK4g9Wp5idkIuTMibhwOR8ftfaHaDVRq+uiPeOKAPhdz+aH4PtO4i
+         as5Akv3Ol0eZlNfMe7HPafwmNBP4isobmuxgX9Tl0ZuBr+DTgJ45AZ0Kc5bJdPg2KVNa
+         SKDA==
+X-Gm-Message-State: ACgBeo2dG4aMKdGI2MUA7r6wobHsoslvM3O9xgXBLJKFXaRF/eNYDenV
+        65E+tq1QkDvz2KmaFtJ/N1gepA==
+X-Google-Smtp-Source: AA6agR7ghepHiUVhQI6lvQs9qB/m0STf+QZAEU8jUCMP/jFawUcPMZeqMdrPF9kXmcLsoAQDZOhTXw==
+X-Received: by 2002:a05:651c:1208:b0:261:cc0e:7555 with SMTP id i8-20020a05651c120800b00261cc0e7555mr3006288lja.198.1661251747077;
+        Tue, 23 Aug 2022 03:49:07 -0700 (PDT)
 Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id t14-20020a2e8e6e000000b00261af4754bbsm2299173ljk.41.2022.08.23.03.46.02
+        by smtp.gmail.com with ESMTPSA id f7-20020a05651c03c700b00261cc46f4a1sm1053004ljp.0.2022.08.23.03.49.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 03:46:03 -0700 (PDT)
-Message-ID: <019d8f8a-cff1-4539-dc9f-8a0073b6ab32@linaro.org>
-Date:   Tue, 23 Aug 2022 13:46:02 +0300
+        Tue, 23 Aug 2022 03:49:06 -0700 (PDT)
+Message-ID: <5d5cf5e4-543b-ecdb-6719-0e6ca3c05640@linaro.org>
+Date:   Tue, 23 Aug 2022 13:49:05 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH v4 3/6] dt-bindings: net: dsa: mediatek,mt7530: update
- examples
+Subject: Re: [PATCH v4 6/6] dt-bindings: net: dsa: mediatek,mt7530: update
+ binding description
 Content-Language: en-US
 To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -83,9 +83,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20220820080758.9829-1-arinc.unal@arinc9.com>
- <20220820080758.9829-4-arinc.unal@arinc9.com>
+ <20220820080758.9829-7-arinc.unal@arinc9.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220820080758.9829-4-arinc.unal@arinc9.com>
+In-Reply-To: <20220820080758.9829-7-arinc.unal@arinc9.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -93,24 +93,17 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 20/08/2022 11:07, Arınç ÜNAL wrote:
-> Update the examples on the binding.
+> Update the description of the binding.
 > 
-> - Add examples which include a wide variation of configurations.
-> - Make example comments YAML comment instead of DT binding comment.
-> - Add interrupt controller to the examples. Include header file for
-> interrupt.
-> - Change reset line for MT7621 examples.
-> - Pretty formatting for the examples.
-> - Change switch reg to 0.
-> - Change port labels to fit the example, change port 4 label to wan.
+> - Describe the switches, which SoCs they are in, or if they are standalone.
+> - Explain the various ways of configuring MT7530's port 5.
+> - Remove phy-mode = "rgmii-txid" from description. Same code path is
+> followed for delayed rgmii and rgmii phy-mode on mtk_eth_soc.c.
 > 
 > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->  .../bindings/net/dsa/mediatek,mt7530.yaml     | 402 +++++++++++++++---
->  1 file changed, 347 insertions(+), 55 deletions(-)
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
