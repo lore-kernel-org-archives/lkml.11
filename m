@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02250C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42ADDC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356313AbiHWKuh (ORCPT
+        id S1356379AbiHWKux (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:50:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
+        Tue, 23 Aug 2022 06:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356597AbiHWKmk (ORCPT
+        with ESMTP id S1356646AbiHWKmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5C9AA3F2;
-        Tue, 23 Aug 2022 02:10:10 -0700 (PDT)
+        Tue, 23 Aug 2022 06:42:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFDBAA4D6;
+        Tue, 23 Aug 2022 02:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A19C560112;
-        Tue, 23 Aug 2022 09:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A22C433C1;
-        Tue, 23 Aug 2022 09:10:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2275EB81C86;
+        Tue, 23 Aug 2022 09:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DE81C433C1;
+        Tue, 23 Aug 2022 09:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245809;
-        bh=GL7FVCMLMUajBVsDTtBKya4wQvKsTuUXtyR7+Ono7rM=;
+        s=korg; t=1661245812;
+        bh=LbR6paUcR0gagXe0wUqIZ/vi+MQcUnZwf8SleQiJXr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DB5uAwoCXTfMnzpdNDywhY/jfuQT3NKLlL2Ek7oAG2L+/vmRqAneh+Gbu6yIScvIN
-         P4tijSyMj7BtlxNmYT4tnPU4ynNRbM3+Q/sP0o5y8k97XbU0rzoXaW5UqRpyLPXqp/
-         ohgK0LNVPBrxZPnIfKtkJovpZ/55l9fK5tV16Cd0=
+        b=tj0JvzIXRA7G+GbZbBnwSbM3WXZkdr5sx5hBGFkKOjYbeCeUs7GBlARW2tsdpSr5v
+         yxxxwwADSo0+ZVA+G3tw2IJMh/JdLLCGhhsYHdJ9WCcmBsurm2N7lbGFZf3iLlgBM2
+         EXlQaeZSltOAz5Q7to22LTlqsR/xIqU9oc0zK8Jw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        stable <stable@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Subject: [PATCH 4.19 196/287] intel_th: pci: Add Meteor Lake-P support
-Date:   Tue, 23 Aug 2022 10:26:05 +0200
-Message-Id: <20220823080107.439060196@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.19 197/287] dm raid: fix address sanitizer warning in raid_resume
+Date:   Tue, 23 Aug 2022 10:26:06 +0200
+Message-Id: <20220823080107.474284943@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,34 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 802a9a0b1d91274ef10d9fe429b4cc1e8c200aef upstream.
+commit 7dad24db59d2d2803576f2e3645728866a056dab upstream.
 
-Add support for the Trace Hub in Meteor Lake-P.
+There is a KASAN warning in raid_resume when running the lvm test
+lvconvert-raid.sh. The reason for the warning is that mddev->raid_disks
+is greater than rs->raid_disks, so the loop touches one entry beyond
+the allocated length.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-5-alexander.shishkin@linux.intel.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwtracing/intel_th/pci.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/md/dm-raid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -256,6 +256,11 @@ static const struct pci_device_id intel_
- 		.driver_data = (kernel_ulong_t)&intel_th_2x,
- 	},
- 	{
-+		/* Meteor Lake-P */
-+		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7e24),
-+		.driver_data = (kernel_ulong_t)&intel_th_2x,
-+	},
-+	{
- 		/* Rocket Lake CPU */
- 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4c19),
- 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3804,7 +3804,7 @@ static void attempt_restore_of_faulty_de
+ 
+ 	memset(cleared_failed_devices, 0, sizeof(cleared_failed_devices));
+ 
+-	for (i = 0; i < mddev->raid_disks; i++) {
++	for (i = 0; i < rs->raid_disks; i++) {
+ 		r = &rs->dev[i].rdev;
+ 		/* HM FIXME: enhance journal device recovery processing */
+ 		if (test_bit(Journal, &r->flags))
 
 
