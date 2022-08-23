@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 445C3C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EC6C54796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356440AbiHWKmS (ORCPT
+        id S1356314AbiHWKlv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
+        Tue, 23 Aug 2022 06:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354851AbiHWK3d (ORCPT
+        with ESMTP id S1354616AbiHWK22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:29:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDD2A4B37;
-        Tue, 23 Aug 2022 02:06:20 -0700 (PDT)
+        Tue, 23 Aug 2022 06:28:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC39D84EF5;
+        Tue, 23 Aug 2022 02:06:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F3BA61598;
-        Tue, 23 Aug 2022 09:06:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D5BC433D6;
-        Tue, 23 Aug 2022 09:06:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0AFAACE1B55;
+        Tue, 23 Aug 2022 09:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22568C433B5;
+        Tue, 23 Aug 2022 09:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245579;
-        bh=EMvzIdefN3lMaZ3idynwCzn/gclQRL0S2MQySKvo1z8=;
+        s=korg; t=1661245566;
+        bh=1HheMQ0rOndr83yFbEnl+ikT2KqMkrmBSB+eHXVVNvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y3dCPzURf2rNWxxM+dWBFxdGdkSqkS6lPhzQmhagVsv03a78JM3cyIAowuvXJSCg3
-         jA4Lj7czdXCm53nSWHv5xljTRF5pNKo3TrOqj/BJ7xwD7ZGwnvbWoksyCv6bFfzsmp
-         tjdqvRW1cQIbpt0LzcXm1hDuhQexvbDRqWbIPa20=
+        b=kjWsgpKbN3dv3t5SsAnMdd3KDN9u3R51r1Ou/oDZdKpuZCi8IotC0fPVdHfY6aFEE
+         9V1SB7c0P/ID8XhO+CZVMU9aIWeSNv16xyfWa9iD+MiJ3dlDC+VXUkM8JmnjfA9glk
+         eAX7wuW1/1YWOITrmSZmIaKaFRkvzCbRqPSSXt9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Xu Yilun <yilun.xu@intel.com>,
+        Marco Pagani <marpagan@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 122/287] misc: rtsx: Fix an error handling path in rtsx_pci_probe()
-Date:   Tue, 23 Aug 2022 10:24:51 +0200
-Message-Id: <20220823080104.499177350@linuxfoundation.org>
+Subject: [PATCH 4.19 119/287] fpga: altera-pr-ip: fix unsigned comparison with less than zero
+Date:   Tue, 23 Aug 2022 10:24:48 +0200
+Message-Id: <20220823080104.389848938@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,49 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Marco Pagani <marpagan@redhat.com>
 
-[ Upstream commit 44fd1917314e9d4f53dd95dd65df1c152f503d3a ]
+[ Upstream commit 2df84a757d87fd62869fc401119d429735377ec5 ]
 
-If an error occurs after a successful idr_alloc() call, the corresponding
-resource must be released with idr_remove() as already done in the .remove
-function.
+Fix the "comparison with less than zero" warning reported by
+cppcheck for the unsigned (size_t) parameter count of the
+alt_pr_fpga_write() function.
 
-Update the error handling path to add the missing idr_remove() call.
-
-Fixes: ada8a8a13b13 ("mfd: Add realtek pcie card reader driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/e8dc41716cbf52fb37a12e70d8972848e69df6d6.1655271216.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d201cc17a8a3 ("fpga pr ip: Core driver support for Altera Partial Reconfiguration IP")
+Reviewed-by: Tom Rix <trix@redhat.com>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+Signed-off-by: Marco Pagani <marpagan@redhat.com>
+Link: https://lore.kernel.org/r/20220609140520.42662-1-marpagan@redhat.com
+Signed-off-by: Xu Yilun <yilun.xu@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/rtsx_pcr.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/fpga/altera-pr-ip-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
-index 3eb3c237f339..80b9f36dbca4 100644
---- a/drivers/misc/cardreader/rtsx_pcr.c
-+++ b/drivers/misc/cardreader/rtsx_pcr.c
-@@ -1479,7 +1479,7 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
- 	pcr->remap_addr = ioremap_nocache(base, len);
- 	if (!pcr->remap_addr) {
- 		ret = -ENOMEM;
--		goto free_handle;
-+		goto free_idr;
- 	}
+diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+index 65e0b6a2c031..059ba27f3c29 100644
+--- a/drivers/fpga/altera-pr-ip-core.c
++++ b/drivers/fpga/altera-pr-ip-core.c
+@@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
+ 	u32 *buffer_32 = (u32 *)buf;
+ 	size_t i = 0;
  
- 	pcr->rtsx_resv_buf = dma_alloc_coherent(&(pcidev->dev),
-@@ -1541,6 +1541,10 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
- 			pcr->rtsx_resv_buf, pcr->rtsx_resv_buf_addr);
- unmap:
- 	iounmap(pcr->remap_addr);
-+free_idr:
-+	spin_lock(&rtsx_pci_lock);
-+	idr_remove(&rtsx_pci_idr, pcr->id);
-+	spin_unlock(&rtsx_pci_lock);
- free_handle:
- 	kfree(handle);
- free_pcr:
+-	if (count <= 0)
++	if (!count)
+ 		return -EINVAL;
+ 
+ 	/* Write out the complete 32-bit chunks */
 -- 
 2.35.1
 
