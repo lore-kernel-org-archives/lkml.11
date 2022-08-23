@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE97C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E52BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiHWIee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
+        id S245506AbiHWIel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346299AbiHWIby (ORCPT
+        with ESMTP id S1346347AbiHWIby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:31:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7996DAE5;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E776520BD1;
         Tue, 23 Aug 2022 01:16:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13007B81C39;
-        Tue, 23 Aug 2022 08:15:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59E86C433C1;
-        Tue, 23 Aug 2022 08:15:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5067761344;
+        Tue, 23 Aug 2022 08:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5A5C433C1;
+        Tue, 23 Aug 2022 08:15:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242529;
-        bh=MEyPEQu33UrEyYdLAvPi0L0i3N561Iev1cfZTRp8dhY=;
+        s=korg; t=1661242550;
+        bh=VF22Iro7UbCbbWGEW7D3ybbI3jXsNuduTGF1qQpb4YA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HM90hG2xMMQ/fqPDtaqxyEI8NSpW+RxMyWfT9duyuAJAChDkcoPFOQLDvb64mnnFT
-         b33e9M6wWm0n+XBBS1THGMoB+zBiGJUyc7AdGVQFvd5Q2WY9uxKzfzTzQMLuh3xeSm
-         bz2gqZ+TTUfWyiKXQPj0i3rSXsB6ULOkYzeenr4M=
+        b=wFMIRcBf2wjTw/DcPbLizjE6SJkiiQqZLn30QmShKED7V5Ae8WESJoLvkcCnIcCfr
+         N++0Mw1hGK5JQk3SG65ApdknbHCacVVpsaMTkM+LqeCN76tTzFmgJA9dNunar2Qe8W
+         NEepf8dnGubBy3Zpak5/JN/9Zh7X3S0fplL/H/pE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Kamal Mostafa <kamal@canonical.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 057/101] net_sched: cls_route: remove from list when handle is 0
-Date:   Tue, 23 Aug 2022 10:03:30 +0200
-Message-Id: <20220823080036.741699554@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Donnellan <ajd@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 090/101] cxl: Fix a memory leak in an error handling path
+Date:   Tue, 23 Aug 2022 10:04:03 +0200
+Message-Id: <20220823080037.992394869@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -51,45 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-When a route filter is replaced and the old filter has a 0 handle, the old
-one won't be removed from the hashtable, while it will still be freed.
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-The test was there since before commit 1109c00547fc ("net: sched: RCU
-cls_route"), when a new filter was not allocated when there was an old one.
-The old filter was reused and the reinserting would only be necessary if an
-old filter was replaced. That was still wrong for the same case where the
-old handle was 0.
-
-Remove the old filter from the list independently from its handle value.
-
-This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
-
-Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Reviewed-by: Kamal Mostafa <kamal@canonical.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_route.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/cxl/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -534,7 +534,7 @@ static int route4_change(struct net *net
- 	rcu_assign_pointer(f->next, f1);
- 	rcu_assign_pointer(*fp, f);
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index dec60f58a767..99e2bd65825f 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -302,6 +302,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
  
--	if (fold && fold->handle && f->handle != fold->handle) {
-+	if (fold) {
- 		th = to_hash(fold->handle);
- 		h = from_hash(fold->handle >> 16);
- 		b = rtnl_dereference(head->table[th]);
+ out:
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
+ }
+-- 
+2.35.1
+
 
 
