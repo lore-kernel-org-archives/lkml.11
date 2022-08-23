@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA3AC48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E444C49EC0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357689AbiHWLbu (ORCPT
+        id S1357803AbiHWLb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
+        Tue, 23 Aug 2022 07:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357957AbiHWL1A (ORCPT
+        with ESMTP id S1358020AbiHWL1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845DEC12F3;
-        Tue, 23 Aug 2022 02:24:30 -0700 (PDT)
+        Tue, 23 Aug 2022 07:27:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1871675CD2;
+        Tue, 23 Aug 2022 02:24:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EA88B81C65;
-        Tue, 23 Aug 2022 09:24:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94ACFC433D6;
-        Tue, 23 Aug 2022 09:24:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DA31B81C86;
+        Tue, 23 Aug 2022 09:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58645C433D6;
+        Tue, 23 Aug 2022 09:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246667;
-        bh=o4+svEQh+kCeH8x0IK+/Otv0tVlul1T6L2BE/rXdnyo=;
+        s=korg; t=1661246685;
+        bh=fW+dUmJadbsvSg9hFF3ls+FLAddlhUOjDX8Nlp9CDN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s/YmkLfcXdcS8Y/fuxCaJF/czSTegz5W08AAD3DM3UWUb6AdhqVLrtGrm2TIgtE5p
-         c69hohclig0drzRWxBRBlcLMsbiFXglMsNKACk+iE2cSVgnRpu+VgB8faUF/MAvfck
-         6O5TFHnQbp6iwwI3l6F/Tb8HBwbypztP/sRMylfs=
+        b=vDhEV5J0ub2deQqfar7OlusVV6BFSqoRmOw6kSBr1zOWPx0etmk2FqhHveeCk89X6
+         QD3eQhe42rLgxvtieLJcU7/eZhEWgA3ZE//6ao6qo3mlJr4nDzbNt7sPw+rQqc4YNW
+         rPf5mv7ge7fm8cwchlntAKejt3KQOR46SPOcPvQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Karl Olsen <karl@micro-technic.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 181/389] mmc: sdhci-of-at91: fix set_uhs_signaling rewriting of MC1R
-Date:   Tue, 23 Aug 2022 10:24:19 +0200
-Message-Id: <20220823080123.197119384@linuxfoundation.org>
+Subject: [PATCH 5.4 187/389] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
+Date:   Tue, 23 Aug 2022 10:24:25 +0200
+Message-Id: <20220823080123.450861297@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -53,45 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 5987e6ded29d52e42fc7b06aa575c60a25eee38e ]
+[ Upstream commit aa2a1df3a2c85f855af7d54466ac10bd48645d63 ]
 
-In set_uhs_signaling, the DDR bit is being set by fully writing the MC1R
-register.
-This can lead to accidental erase of certain bits in this register.
-Avoid this by doing a read-modify-write operation.
+setup_base_ctxt() allocates a memory chunk for uctxt->groups with
+hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
+is not released, which will lead to a memory leak.
 
-Fixes: d0918764c17b ("mmc: sdhci-of-at91: fix MMC_DDR_52 timing selection")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Tested-by: Karl Olsen <karl@micro-technic.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220630090926.15061-1-eugen.hristev@microchip.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
+when init_user_ctxt() fails.
+
+Fixes: e87473bc1b6c ("IB/hfi1: Only set fd pointer when base context is completely initialized")
+Link: https://lore.kernel.org/r/20220711070718.2318320-1-niejianglei2021@163.com
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-of-at91.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/sdhci-of-at91.c b/drivers/mmc/host/sdhci-of-at91.c
-index 881f8138e7de..03698d78a402 100644
---- a/drivers/mmc/host/sdhci-of-at91.c
-+++ b/drivers/mmc/host/sdhci-of-at91.c
-@@ -109,8 +109,13 @@ static void sdhci_at91_set_power(struct sdhci_host *host, unsigned char mode,
- static void sdhci_at91_set_uhs_signaling(struct sdhci_host *host,
- 					 unsigned int timing)
- {
--	if (timing == MMC_TIMING_MMC_DDR52)
--		sdhci_writeb(host, SDMMC_MC1R_DDR, SDMMC_MC1R);
-+	u8 mc1r;
-+
-+	if (timing == MMC_TIMING_MMC_DDR52) {
-+		mc1r = sdhci_readb(host, SDMMC_MC1R);
-+		mc1r |= SDMMC_MC1R_DDR;
-+		sdhci_writeb(host, mc1r, SDMMC_MC1R);
+diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
+index 8c7ba7bad42b..efd977f70f9e 100644
+--- a/drivers/infiniband/hw/hfi1/file_ops.c
++++ b/drivers/infiniband/hw/hfi1/file_ops.c
+@@ -1224,8 +1224,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
+ 		goto done;
+ 
+ 	ret = init_user_ctxt(fd, uctxt);
+-	if (ret)
++	if (ret) {
++		hfi1_free_ctxt_rcv_groups(uctxt);
+ 		goto done;
 +	}
- 	sdhci_set_uhs_signaling(host, timing);
- }
+ 
+ 	user_init(uctxt);
  
 -- 
 2.35.1
