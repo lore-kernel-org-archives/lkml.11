@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A8D2C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC823C32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238613AbiHWIYY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
+        id S243380AbiHWIYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242221AbiHWITB (ORCPT
+        with ESMTP id S243370AbiHWIVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:19:01 -0400
+        Tue, 23 Aug 2022 04:21:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5572E4057F;
-        Tue, 23 Aug 2022 01:11:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D016EF14;
+        Tue, 23 Aug 2022 01:12:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6E5DB81C25;
-        Tue, 23 Aug 2022 08:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DEEEC433D6;
-        Tue, 23 Aug 2022 08:11:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C94E9B81C25;
+        Tue, 23 Aug 2022 08:12:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342EAC433D6;
+        Tue, 23 Aug 2022 08:12:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242309;
-        bh=e6CbxlTdKoiBbHXhARdur1EgTYEw0P1/1u6sqts1RDk=;
+        s=korg; t=1661242330;
+        bh=Dk8WOCncWIQfD3LI7kIaw3Mjv8xoez6Dudme09wCtIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GKH1NOqKVYMosSPF4DR/kMwecoWq/L6SnhcKnU5JpRCBA7s9/c2BQPy0lRzjv0CP7
-         2wGVneJaM8CRMZsVbz8rWxUbLPjAfEMem0eJFf/Xv3zUkcGRHuJFXsgR3B+xNmAf7b
-         ahK0Dx3BgFRNIanvE6pbdD5O42OKmCBhTNAT7IXY=
+        b=rHPoG+k0n271BG4JRbg6Noj+V84CcxUZUVeJfbmqfm9qRYsdvHbNVYyh5Xun40C1S
+         6bNu/1cFh1q0KYvg1RqnhYe+vibHsxPJGoD1jLZ53XSS2poRwtD/G6C0YNhFvJLBvQ
+         BXC5YjMrZW2ywzG2utoc51RVAXw9uqzgbbkdJFnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable@kernel.org,
-        Lukas Czerner <lczerner@redhat.com>,
-        Andreas Dilger <adilger@dilger.ca>,
+        Ye Bin <yebin10@huawei.com>, Eric Whitney <enwlinux@gmail.com>,
         Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 051/101] ext4: make sure ext4_append() always allocates new block
-Date:   Tue, 23 Aug 2022 10:03:24 +0200
-Message-Id: <20220823080036.510604201@linuxfoundation.org>
+Subject: [PATCH 4.9 054/101] ext4: fix extent status tree race in writeback error recovery path
+Date:   Tue, 23 Aug 2022 10:03:27 +0200
+Message-Id: <20220823080036.617733993@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -50,58 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Czerner <lczerner@redhat.com>
+From: Eric Whitney <enwlinux@gmail.com>
 
-commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b upstream.
+commit 7f0d8e1d607c1a4fa9a27362a108921d82230874 upstream.
 
-ext4_append() must always allocate a new block, otherwise we run the
-risk of overwriting existing directory block corrupting the directory
-tree in the process resulting in all manner of problems later on.
+A race can occur in the unlikely event ext4 is unable to allocate a
+physical cluster for a delayed allocation in a bigalloc file system
+during writeback.  Failure to allocate a cluster forces error recovery
+that includes a call to mpage_release_unused_pages().  That function
+removes any corresponding delayed allocated blocks from the extent
+status tree.  If a new delayed write is in progress on the same cluster
+simultaneously, resulting in the addition of an new extent containing
+one or more blocks in that cluster to the extent status tree, delayed
+block accounting can be thrown off if that delayed write then encounters
+a similar cluster allocation failure during future writeback.
 
-Add a sanity check to see if the logical block is already allocated and
-error out if it is.
+Write lock the i_data_sem in mpage_release_unused_pages() to fix this
+problem.  Ext4's block/cluster accounting code for bigalloc relies on
+i_data_sem for mutual exclusion, as is found in the delayed write path,
+and the locking in mpage_release_unused_pages() is missing.
 
 Cc: stable@kernel.org
-Signed-off-by: Lukas Czerner <lczerner@redhat.com>
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
+Reported-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Eric Whitney <enwlinux@gmail.com>
+Link: https://lore.kernel.org/r/20220615160530.1928801-1-enwlinux@gmail.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/namei.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ fs/ext4/inode.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -51,6 +51,7 @@ static struct buffer_head *ext4_append(h
- 					struct inode *inode,
- 					ext4_lblk_t *block)
- {
-+	struct ext4_map_blocks map;
- 	struct buffer_head *bh;
- 	int err;
- 
-@@ -60,6 +61,21 @@ static struct buffer_head *ext4_append(h
- 		return ERR_PTR(-ENOSPC);
- 
- 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
-+	map.m_lblk = *block;
-+	map.m_len = 1;
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1659,7 +1659,14 @@ static void mpage_release_unused_pages(s
+ 		ext4_lblk_t start, last;
+ 		start = index << (PAGE_SHIFT - inode->i_blkbits);
+ 		last = end << (PAGE_SHIFT - inode->i_blkbits);
 +
-+	/*
-+	 * We're appending new directory block. Make sure the block is not
-+	 * allocated yet, otherwise we will end up corrupting the
-+	 * directory.
-+	 */
-+	err = ext4_map_blocks(NULL, inode, &map, 0);
-+	if (err < 0)
-+		return ERR_PTR(err);
-+	if (err) {
-+		EXT4_ERROR_INODE(inode, "Logical block already allocated");
-+		return ERR_PTR(-EFSCORRUPTED);
-+	}
++		/*
++		 * avoid racing with extent status tree scans made by
++		 * ext4_insert_delayed_block()
++		 */
++		down_write(&EXT4_I(inode)->i_data_sem);
+ 		ext4_es_remove_extent(inode, start, last - start + 1);
++		up_write(&EXT4_I(inode)->i_data_sem);
+ 	}
  
- 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
- 	if (IS_ERR(bh))
+ 	pagevec_init(&pvec, 0);
 
 
