@@ -2,67 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C3AC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28829C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245486AbiHWQrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
+        id S245504AbiHWQre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245703AbiHWQpv (ORCPT
+        with ESMTP id S1344105AbiHWQqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:45:51 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F47AA342;
-        Tue, 23 Aug 2022 07:30:48 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1661265042t62a3cxi
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:30:41 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: KvvwR/hcPA3abwpyHORIvU+GPKhg501QjpAUzHteP4ReqEort98uP1AcDLsAq
-        WrVaTVus6AHMZJEmoAujqBdTZJ0RFZ+bJ2Zt3MlpYFfKEESwyGI2aJ8x80REhyPsJF/MAWb
-        zJ+nCXQxKj51ESiPmZK1zaLAFq7duUvYB7yuqYNP25ZCj3srr0WxA9PSFbw0d6PIDrgYVjQ
-        E4NMkkhlwxegOvvAkGnza3o+PKceB9/RI0SYxIizqUFAC93Klrkogo0Ec9Ffq5cCBDOS45Q
-        H8lmogKb0vbhADXBrc3xEKIQsTHLv9M/vSXKY/PJCNEUDMrUUya7mqVobbRfyFoBOZd3iDr
-        z4zuufJ2wcOwOkZUJZzvAr3tDGTA/bXmdyL+ABlApIAvgvMpc8PGwG3aOafNgRMP17DGWnF
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     jh80.chung@samsung.com, ulf.hansson@linaro.org
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] mmc/host: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:30:34 +0800
-Message-Id: <20220823143034.20543-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
+        Tue, 23 Aug 2022 12:46:46 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D722DAB4DA
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:25:00 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id k16-20020a635a50000000b0042986056df6so6159627pgm.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=Ul98iQY/HuNJwvvDH45A7W6rxdc5WeO56lIkJhUkB2U=;
+        b=a9BqvzhJK02ElPHh15v40k1SLA6RzCr91KtZX7oGrY24F6PwR2YgW3mNMcvDjZ+0/R
+         9ir8JyR8mb/UfiTxrJDW64eUkGNMV0CzKdfTV+BC/GzN0jd/jDOmGZpIcPtWWV9dYa3t
+         39lpJDXM1zzcZEtvJw2ymAprkPGleI3WZI6yTWswgOES8uvoH2M0Y+D77euf7pttSPEa
+         INXjy57p3NOhd7N33W3WI4k0o0CYsYuqhQuo3oZg0uMq3VgC6sKNfmun7xVvKHLxEV7E
+         ABGB1hsaIhBTsaVfJGziwy6xhtPXwvS0vPjjA0ZSGQb42b1kmGxbtCYEh+57HgEhopjZ
+         YRPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=Ul98iQY/HuNJwvvDH45A7W6rxdc5WeO56lIkJhUkB2U=;
+        b=juMMwsGuSmQD0aQCWU5dRfthlwZw1u+J0I4KfTgMXXiGVj2/cd/bbtbVyFdR/R9P3y
+         S6haBPkHcYHGpXjXCxYsGOYqH4qFtiOhmIfNQvD0F+9lKxoM/3PYqJM4ETu3zANGjRh+
+         vNhGJmo8LlSru8MxUAoxVMI/F5nQp6hCdLCH3mSe1wYy2whVilPy/uQgOiA/yGmVrEzN
+         vDxNURFQUcxDR70FstmRsq5NTV0incEbWBZMzP4P8hMoib+aj9bMdiAHGaMKU0xUpTbf
+         FY8aYx8/CyR4D8sqTgVJHCowdWmk76HhRp0ueH7kIp3KU9yHo0xy4PBu8rVeG+JExnAf
+         rKcQ==
+X-Gm-Message-State: ACgBeo2AKThPnaZF3uTX91DdgTc05PnEqyHv8oH7GWG45nExl1YqhYBZ
+        DDONnvMY3+KEaOztXvDWyCjl1iaBCeLb0t0=
+X-Google-Smtp-Source: AA6agR5HxiRVCzqLZni3pfDUk6EswAHQO39et71SP+70ijtVXckiPZJmD3MVTPAQQMQsXCdHwiOniEjkD5QMg41C
+X-Received: from joefradley-custom-96.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:831])
+ (user=joefradley job=sendgmr) by 2002:a17:90a:55:b0:1f7:4513:8cac with SMTP
+ id 21-20020a17090a005500b001f745138cacmr3476051pjb.93.1661264700397; Tue, 23
+ Aug 2022 07:25:00 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 07:24:53 -0700
+Message-Id: <20220823142456.3977086-1-joefradley@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH v2 0/2] kunit: add boot time parameter to enable KUnit
+From:   Joe Fradley <joefradley@google.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Brendan Higgins <brendan.higgins@linux.dev>,
+        David Gow <davidgow@google.com>
+Cc:     Joe Fradley <joefradley@google.com>, kernel-team@android.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
+v2:
+ - Added enable check in executor.c to prevent wrong error output from
+   kunit_tool.py when run against a KUnit disabled kernel
+ - kunit_tool.py now passes kunit.enable=1
+ - Flipped around logic of new config to KUNIT_DEFAULT_ENABLED
+ - Now load modules containing tests but not executing them
+ - Various message/description text clean up
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
----
- drivers/mmc/host/dw_mmc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+There are some use cases where the kernel binary is desired to be the same
+for both production and testing. This poses a problem for users of KUnit
+as built-in tests will automatically run at startup and test modules
+can still be loaded leaving the kernel in an unsafe state. There is a
+"test" taint flag that gets set if a test runs but nothing to prevent
+the execution.
 
-diff --git a/drivers/mmc/host/dw_mmc.c b/drivers/mmc/host/dw_mmc.c
-index 581614196a84..7f00d7d7e35e 100644
---- a/drivers/mmc/host/dw_mmc.c
-+++ b/drivers/mmc/host/dw_mmc.c
-@@ -1363,7 +1363,7 @@ static void __dw_mci_start_request(struct dw_mci *host,
- 		 * is just about to roll over.
- 		 *
- 		 * We do this whole thing under spinlock and only if the
--		 * command hasn't already completed (indicating the the irq
-+		 * command hasn't already completed (indicating the irq
- 		 * already ran so we don't want the timeout).
- 		 */
- 		spin_lock_irqsave(&host->irq_lock, irqflags);
+This patch adds the kunit.enable module parameter that will need to be
+set to true in addition to KUNIT being enabled for KUnit tests to run.
+The default value is true giving backwards compatibility. However, for
+the production+testing use case the new config option KUNIT_DEFAULT_ENABLED
+can be set to N requiring the tester to opt-in by passing kunit.enable=1 to
+the kernel.
+
+Joe Fradley (2):
+  kunit: add kunit.enable to enable/disable KUnit test
+  kunit: no longer call module_info(test, "Y") for kunit modules
+
+ .../admin-guide/kernel-parameters.txt         |  6 +++++
+ include/kunit/test.h                          |  3 ++-
+ lib/kunit/Kconfig                             | 11 +++++++++
+ lib/kunit/executor.c                          |  4 ++++
+ lib/kunit/test.c                              | 24 +++++++++++++++++++
+ tools/testing/kunit/kunit_kernel.py           |  1 +
+ 6 files changed, 48 insertions(+), 1 deletion(-)
+
 -- 
-2.36.1
+2.37.1.595.g718a3a8f04-goog
 
