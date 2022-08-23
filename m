@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F077C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7416CC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237151AbiHWMPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
+        id S1350689AbiHWMP0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351991AbiHWMO2 (ORCPT
+        with ESMTP id S1350342AbiHWMOb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:14:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC75B78BD7;
-        Tue, 23 Aug 2022 02:40:34 -0700 (PDT)
+        Tue, 23 Aug 2022 08:14:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C111B77EA0;
+        Tue, 23 Aug 2022 02:40:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 152FCB81C9E;
-        Tue, 23 Aug 2022 09:38:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A7E6C433C1;
-        Tue, 23 Aug 2022 09:38:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BB2A60F50;
+        Tue, 23 Aug 2022 09:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39ED6C433B5;
+        Tue, 23 Aug 2022 09:39:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247484;
-        bh=QzuS+zibgBHIua63orsBTnoVD11S59/bNENzzt3DNMA=;
+        s=korg; t=1661247555;
+        bh=sZA4j3WfRODB02016YMFjVMHgF4nnVisj24HWC5yEA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I776AsuoL7F9vSKQd9NmnpTxRgQ9AImjoiL7KXaqxYQxUYJdk2Mr8u/zGGjj/XhpI
-         8qWOj2FBVXTCkTF3e7yV/N+5b1gaz39nuQHGQ5ZEuDjVK+s6JFf35FCqbSmw/fG0pQ
-         diEwE2uwD5FNJJXcFaevgkK4Jfu7iaUAVRiirZOw=
+        b=szF1d4q4LmOfE+OmVpwct/9yurrJaNG8QKO2oJKtdkQvQC+lcfEKdl/nTfb2hqxT1
+         Ml3zh/l9ooioF4RzFu6bO0PfnJ58WVpdxOLOTr/+baOV5kDCjtxevB/P6HS1GToKGg
+         G+czkKHk+X55ISajftTdsek70tRDFlFPjbOl47d4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.10 052/158] ceph: use correct index when encoding client supported features
-Date:   Tue, 23 Aug 2022 10:26:24 +0200
-Message-Id: <20220823080048.199431718@linuxfoundation.org>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 044/158] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
+Date:   Tue, 23 Aug 2022 10:26:16 +0200
+Message-Id: <20220823080047.854895541@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,71 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luís Henriques <lhenriques@suse.de>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit fea013e020e6ecc7be75bea0d61697b7e916b44d upstream.
+commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
 
-Feature bits have to be encoded into the correct locations.  This hasn't
-been an issue so far because the only hole in the feature bits was in bit
-10 (CEPHFS_FEATURE_RECLAIM_CLIENT), which is located in the 2nd byte.  When
-adding more bits that go beyond the this 2nd byte, the bug will show up.
+The value acpi_add_nondev_subnodes() returns is bool so change the return
+type of the function to match that.
 
-[xiubli: remove incorrect comment for CEPHFS_FEATURES_CLIENT_SUPPORTED]
-
-Fixes: 9ba1e224538a ("ceph: allocate the correct amount of extra bytes for the session features")
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/mds_client.c |    7 +++++--
- fs/ceph/mds_client.h |    6 ------
- 2 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/acpi/property.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -1184,14 +1184,17 @@ static int encode_supported_features(voi
- 	if (count > 0) {
- 		size_t i;
- 		size_t size = FEATURE_BYTES(count);
-+		unsigned long bit;
- 
- 		if (WARN_ON_ONCE(*p + 4 + size > end))
- 			return -ERANGE;
- 
- 		ceph_encode_32(p, size);
- 		memset(*p, 0, size);
--		for (i = 0; i < count; i++)
--			((unsigned char*)(*p))[i / 8] |= BIT(feature_bits[i] % 8);
-+		for (i = 0; i < count; i++) {
-+			bit = feature_bits[i];
-+			((unsigned char *)(*p))[bit / 8] |= BIT(bit % 8);
-+		}
- 		*p += size;
- 	} else {
- 		if (WARN_ON_ONCE(*p + 4 > end))
---- a/fs/ceph/mds_client.h
-+++ b/fs/ceph/mds_client.h
-@@ -33,10 +33,6 @@ enum ceph_feature_type {
- 	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
- };
- 
--/*
-- * This will always have the highest feature bit value
-- * as the last element of the array.
-- */
- #define CEPHFS_FEATURES_CLIENT_SUPPORTED {	\
- 	0, 1, 2, 3, 4, 5, 6, 7,			\
- 	CEPHFS_FEATURE_MIMIC,			\
-@@ -45,8 +41,6 @@ enum ceph_feature_type {
- 	CEPHFS_FEATURE_MULTI_RECONNECT,		\
- 	CEPHFS_FEATURE_DELEG_INO,		\
- 	CEPHFS_FEATURE_METRIC_COLLECT,		\
--						\
--	CEPHFS_FEATURE_MAX,			\
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -155,10 +155,10 @@ static bool acpi_nondev_subnode_ok(acpi_
+ 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
  }
- #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
  
+-static int acpi_add_nondev_subnodes(acpi_handle scope,
+-				    const union acpi_object *links,
+-				    struct list_head *list,
+-				    struct fwnode_handle *parent)
++static bool acpi_add_nondev_subnodes(acpi_handle scope,
++				     const union acpi_object *links,
++				     struct list_head *list,
++				     struct fwnode_handle *parent)
+ {
+ 	bool ret = false;
+ 	int i;
 
 
