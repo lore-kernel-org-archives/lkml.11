@@ -2,67 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22BFFC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657D2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238320AbiHWOEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
+        id S242491AbiHWOEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244606AbiHWOCQ (ORCPT
+        with ESMTP id S243561AbiHWOEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:02:16 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9443888DDC
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:10:33 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id l15-20020a0566022dcf00b00688e70a26deso7185197iow.12
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:10:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=Owuo97PjQ6IqN5nnDnXto1MWa8iee+gPMJsJz7pxwt0=;
-        b=aHF7NKe9BMXLkyuV0xPDWP0ScjFl2yFrPa3NymM17a5fPkWx8ijkwQZHdCzM0gHhd9
-         4W27+jeRpC6VKQ4Xsk7B2OiRkZ8Sik60/Cs8T3Ku+Ynl8Lye0pn6f13+DVKe4PDxUHJX
-         ql5AzBT8wubdjRljzQkDyjc3CU2fopGDg2JiLFeVS/qJmIri5a80RzUa9DKuMkI4AiM0
-         KXVh/gPSq5QakA81z0FJieoP6aE7MD7HcnhFMC3DqwXRSa3gX4OuUo3JfaRhzGA8wOtL
-         XvmPIsxwWfuMRXSeXjsLI6decNvfU40ZmsuSqF6O31tZhvToQD4rgWngpg1UXduTVtkO
-         fL8w==
-X-Gm-Message-State: ACgBeo26R3jITzbeiEHNFiveMCbcLVeNwyPOnqXK3P0tjBivkgUGzj8N
-        XvO7ysvYef3XIrtrBOZm7EJvStRM1YIf73bo4kEiIqCjq9jG
-X-Google-Smtp-Source: AA6agR6BIU5uMrxeIjQH7oWm38wwmSgKTj6Ale7fSOWFmiJGRFVmUv/DZ0Wv9c1lPolo+npOcd0H3iMGxs1m8xFBx9T8EadjPVZ+
+        Tue, 23 Aug 2022 10:04:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A22E24A8CD;
+        Tue, 23 Aug 2022 04:13:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7277615B0;
+        Tue, 23 Aug 2022 11:12:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988BDC433C1;
+        Tue, 23 Aug 2022 11:12:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661253163;
+        bh=6G6zq8I7nAi0kVG+KT4vj6LQ2QT6M4kSZqG+LDbqc/8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=u2Ia3oDu2UIgk86wMyHje6XBt89O/vMEp94XTWCt/KzcbD2Kuk78FIaJjZAg7+vNY
+         DV8tZT/8cGpa53+8LYy9ax7z+tDMJ2wi9nqQQTmOqnwDB/yVkqGJIWgZzC+k1NOgrr
+         AWEDUpP4LgMf1rC1p4k6O125EE8iXYOsjyFRW2hw=
+Date:   Tue, 23 Aug 2022 13:12:39 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: Re: [PATCH 4.19 026/287] selftests/bpf: Fix "dubious pointer
+ arithmetic" test
+Message-ID: <YwS2JxS4vmKuBy5r@kroah.com>
+References: <20220823080100.268827165@linuxfoundation.org>
+ <20220823080101.156298170@linuxfoundation.org>
+ <YwSksjAucU2zwo0y@myrica>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:45:b0:349:b71c:af7d with SMTP id
- a5-20020a056638004500b00349b71caf7dmr7073777jap.181.1661252953729; Tue, 23
- Aug 2022 04:09:13 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 04:09:13 -0700
-In-Reply-To: <20220823105218.2270-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000306f3905e6e69820@google.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in blocking_notifier_chain_unregister
-From:   syzbot <syzbot+2fd9312f3ff65d22d06f@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwSksjAucU2zwo0y@myrica>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, Aug 23, 2022 at 10:58:10AM +0100, Jean-Philippe Brucker wrote:
+> Hi,
+> 
+> On Tue, Aug 23, 2022 at 10:23:15AM +0200, Greg Kroah-Hartman wrote:
+> > From: Ovidiu Panait <ovidiu.panait@windriver.com>
+> > 
+> > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > 
+> > commit 3615bdf6d9b19db12b1589861609b4f1c6a8d303 upstream.
+> 
+> This shouldn't be backported to 4.19, because it adjusts the selftest due
+> to commit b02709587ea3 ("bpf: Fix propagation of 32-bit signed bounds from
+> 64-bit bounds."), which wasn't backported further than 5.9.
+> 
+> See [1] for the report about these BPF backports to v5.4, which we are
+> still trying to unravel. Given how painful building the BPF tests used to
+> be even on 5.4, I'd rather not do the same on 4.19!
+> 
+> [1] https://lore.kernel.org/lkml/CAPXMrf-C5XEUfOJd3GCtgtHOkc8DxDGbLxE5=GFmr+Py0zKxJA@mail.gmail.com/
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Thanks for letting me know, I've now dropped this from the 4.19-rc
+queue.
 
-Reported-and-tested-by: syzbot+2fd9312f3ff65d22d06f@syzkaller.appspotmail.com
+Ovidiu, please work on fixing this up in a way that everyone can agree
+on.
 
-Tested on:
+thanks,
 
-commit:         7ebfc85e Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=11aafb47080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
-dashboard link: https://syzkaller.appspot.com/bug?extid=2fd9312f3ff65d22d06f
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=10e11a3d080000
-
-Note: testing is done by a robot and is best-effort only.
+greg k-h
