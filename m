@@ -2,75 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D7BC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA3FC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239360AbiHWBjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 21:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
+        id S238913AbiHWBkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 21:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234840AbiHWBjr (ORCPT
+        with ESMTP id S234840AbiHWBka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 21:39:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4125A1BEBF;
-        Mon, 22 Aug 2022 18:39:47 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBWy83wrgzXdvm;
-        Tue, 23 Aug 2022 09:35:28 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
- (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
- 2022 09:39:45 +0800
-From:   Zeng Heng <zengheng4@huawei.com>
-To:     <djwong@kernel.org>
-CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] xfs: remove redundant else for clean code
-Date:   Tue, 23 Aug 2022 09:47:45 +0800
-Message-ID: <20220823014745.4156948-1-zengheng4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 22 Aug 2022 21:40:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68235A3FB
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 18:40:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48DC1B81A25
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:40:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1A34C433D6;
+        Tue, 23 Aug 2022 01:40:25 +0000 (UTC)
+Date:   Mon, 22 Aug 2022 21:40:24 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jiri Olsa <olsajiri@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [BUG v6.0-rc2] lockdep splat on ct_kernel_enter()
+Message-ID: <20220822214024.216fa85d@rorschach.local.home>
+In-Reply-To: <20220822204825.3e88b1a4@rorschach.local.home>
+References: <20220822164404.57952727@gandalf.local.home>
+        <20220822182850.32f91017@gandalf.local.home>
+        <20220822183836.6b80976f@gandalf.local.home>
+        <20220822204825.3e88b1a4@rorschach.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500022.china.huawei.com (7.185.36.162)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"else" is not generally useful after a return, so remove it for clean code.
+On Mon, 22 Aug 2022 20:48:25 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-There is no logical changes.
+> On Mon, 22 Aug 2022 18:38:36 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+> > > The warning happens with the commit, and does not for the commit just
+> > > before it is applied.
+> > >     
+> > 
+> > Nevermind, I tested the wrong kernel (the grub reboot failed to boot to the
+> > new kernel). But it did give me a different lockdep splat when I tested the
+> > right kernel :-/
+> > 
+> > I'll investigate some more.  
+> 
+> I was close. It was this commit:
+> 
+> ed4ae5eff4b3 ("rcu: Apply noinstr to rcu_idle_enter() and rcu_idle_exit()")
+> 
+> that causes the new error message.
+> 
 
-Signed-off-by: Zeng Heng <zengheng4@huawei.com>
----
- fs/xfs/xfs_log.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+And this patch (which is wrong, but will at least let my tests finish
+testing my code) makes the warning go away.
 
-diff --git a/fs/xfs/xfs_log.c b/fs/xfs/xfs_log.c
-index 386b0307aed8..f6e7e4fd72ae 100644
---- a/fs/xfs/xfs_log.c
-+++ b/fs/xfs/xfs_log.c
-@@ -226,12 +226,12 @@ xlog_ticket_reservation(
- 	if (head == &log->l_write_head) {
- 		ASSERT(tic->t_flags & XLOG_TIC_PERM_RESERV);
- 		return tic->t_unit_res;
--	} else {
--		if (tic->t_flags & XLOG_TIC_PERM_RESERV)
--			return tic->t_unit_res * tic->t_cnt;
--		else
--			return tic->t_unit_res;
- 	}
-+
-+	if (tic->t_flags & XLOG_TIC_PERM_RESERV)
-+		return tic->t_unit_res * tic->t_cnt;
-+
-+	return tic->t_unit_res;
- }
+-- Steve
+
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 9a5edab5558c..14147d31e651 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -896,13 +896,13 @@ static void noinstr rcu_eqs_exit(bool user)
+  * If you add or remove a call to rcu_idle_exit(), be sure to test with
+  * CONFIG_RCU_EQS_DEBUG=y.
+  */
+-void noinstr rcu_idle_exit(void)
++void rcu_idle_exit(void)
+ {
+ 	unsigned long flags;
  
- STATIC bool
--- 
-2.25.1
+-	raw_local_irq_save(flags);
++	local_irq_save(flags);
+ 	rcu_eqs_exit(false);
+-	raw_local_irq_restore(flags);
++	local_irq_restore(flags);
+ }
+ EXPORT_SYMBOL_GPL(rcu_idle_exit);
+ 
+
 
