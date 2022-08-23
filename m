@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5A0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA59C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232242AbiHWTMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        id S229795AbiHWTNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232246AbiHWTL4 (ORCPT
+        with ESMTP id S232411AbiHWTMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:11:56 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A11F11F76C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:49:48 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id gb36so28885222ejc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:49:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=L5vDksmX6kl63axC8fTX4W4UjA4ULlvaj4B5Lk9Uogw=;
-        b=L+f8XLyA+qC3dl1BiCC63A2xsLWVaxkUCI8S39DAVQxI//2aOX6pcoVv2ZPow3f3tC
-         cK4lPzuqIIdDHFHXKyO2KRbploN722Rcfnxi0O2cYIf2lTkK9Fw2w0sZDrK1Ee8IxrD+
-         yU8xkJbWfAL0qZkeN4oSBiGVPBJpQQw9qv15o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=L5vDksmX6kl63axC8fTX4W4UjA4ULlvaj4B5Lk9Uogw=;
-        b=Ho2dHF2fJULG83q8x5cUjP4Rv/wBLnK6pZYedWYy/mYiLxcgGFy1Vx5xdA+cW7u8MI
-         U4AdRjdBR9KsIvKcb9OHCTjCBE8Rs1EwyN4Gd2qEuMfxVDtfMIUC45ehrOT1vKzgOOed
-         GPZgrQ766ZrmaItenCg+ita4zSPAFkyIYtbaaDwLKv0g4DsCDERzjmZwTfSEpk3JbXJ5
-         qzbxZwRReOSV3s6sToxVdkJBKNGkeNMQtOFbaUS5m2ZYkYZUrO5LBe1aCCauXJw/yO8x
-         zJaM6AOF5pVOdY+uk+2P59IcMHOSTkyqUBGUyqgaQnANaYAIFDEXUd3tm9IujEJNtggu
-         72Eg==
-X-Gm-Message-State: ACgBeo1uhmrRrxHMvG1CLL8BDyvDkmTgwgwNRSk/SkWHTLWZWEoaOUq7
-        su1XR3bvTbRxN79gfUdkxr3p5Mpjj0GZ5ycUe0g=
-X-Google-Smtp-Source: AA6agR66jamEWZ+iX5s/Dw1SmmtBzgnAEUrEKoaF1rPj+ZDlc73iA9cClwcHGXBYN8gAkRUQFCfhoQ==
-X-Received: by 2002:a05:6402:350e:b0:447:3ca9:1162 with SMTP id b14-20020a056402350e00b004473ca91162mr1509511edd.170.1661276276087;
-        Tue, 23 Aug 2022 10:37:56 -0700 (PDT)
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906218a00b00731747c3107sm144394eju.73.2022.08.23.10.37.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 10:37:55 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id h1so7560040wmd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:37:55 -0700 (PDT)
-X-Received: by 2002:a05:600c:3556:b0:3a6:220e:6242 with SMTP id
- i22-20020a05600c355600b003a6220e6242mr2799346wmq.145.1661276274837; Tue, 23
- Aug 2022 10:37:54 -0700 (PDT)
+        Tue, 23 Aug 2022 15:12:45 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FCF89919
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:50:20 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9893329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9893:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BC37D1EC063A;
+        Tue, 23 Aug 2022 19:44:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661276643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=bJ92OKZPqF5z/8Ots4W3Sw8SoBp1QDbQQUg4ZfVRBcA=;
+        b=pUDxgrvJQC51177dBRmleFtC88cWc5cNTsL9lbwZWh0/c5mnyiEb5EYiicetPTBfnhG2nz
+        5EZHbtPV+0NYttToIlXVzmdCUvA8PNkF72GDT7ij3jZJitwUmHHsZuSxbpVNL/RBRxJldz
+        d8bcRxsjSBCCKg12oOaNY7DQHAVXspo=
+Date:   Tue, 23 Aug 2022 19:43:59 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
+        Jan Beulich <JBeulich@suse.com>,
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        Joe Perches <joe@perches.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: Re: [PATCH v5 2/2] x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to
+ evaluate constant expressions
+Message-ID: <YwUR35I7+5JbLvMM@zn.tnic>
+References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
+ <20220812114438.1574-1-mailhol.vincent@wanadoo.fr>
+ <20220812114438.1574-3-mailhol.vincent@wanadoo.fr>
+ <YwT+5GGCOKoTjfQZ@zn.tnic>
+ <CAKwvOdnc-Js8x4sv0j23crtYP73sRkNexom5ydm=r=8rYgc_5Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAH2r5mtDFpaAWeGCtrfm_WPM6j-Gkt_O80=nKfp6y39aXaBr6w@mail.gmail.com>
- <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com> <YwSWLH4Wp6yDMeKf@arm.com>
-In-Reply-To: <YwSWLH4Wp6yDMeKf@arm.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 23 Aug 2022 10:37:38 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
-Message-ID: <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
-Subject: Re: strlcpy() notes (was Re: [GIT PULL] smb3 client fixes)
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Steve French <smfrench@gmail.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdnc-Js8x4sv0j23crtYP73sRkNexom5ydm=r=8rYgc_5Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 1:56 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
->
-> With load_unaligned_zeropad(), the arm64 implementation disables tag
-> checking temporarily. We could do the same with read_word_at_a_time()
-> (there is a kasan_check_read() in this function but it wrongly uses a
-> size of 1).
+On Tue, Aug 23, 2022 at 10:12:17AM -0700, Nick Desaulniers wrote:
+> Callers of these need to guard against zero input, as the pre-existing
+> comment notes:
+> 
+> >> Undefined if no bit exists, so code should check against 0 first.
 
-The "size of 1" is not wrong, it's intentional, exactly because people
-do things like
+This is just silly.
 
-    strscpy(dst, "string", sizeof(dst));
+And then there's
 
-which is a bit unfortunate, but very understandable and intended to
-work. So that thing may over-read the string by up to a word. And
-KASAN ends up being unhappy.
+ * ffs(value) returns 0 if value is 0 or the position of the first
+ * set bit if value is nonzero. The first (least significant) bit
+ * is at position 1.
+ */
+static __always_inline int ffs(int x)
 
-            Linus
+Can we unify the two and move the guard against 0 inside the function
+or, like ffs() does, have it return 0 if value is 0?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
