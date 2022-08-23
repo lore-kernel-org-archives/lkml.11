@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9C8C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A17C38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355086AbiHWKWu (ORCPT
+        id S1355156AbiHWKXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35704 "EHLO
+        Tue, 23 Aug 2022 06:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353286AbiHWKLM (ORCPT
+        with ESMTP id S1353316AbiHWKLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADF87E83D;
-        Tue, 23 Aug 2022 01:56:23 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793A610A;
+        Tue, 23 Aug 2022 01:56:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B835B81C3E;
-        Tue, 23 Aug 2022 08:56:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C256BC433C1;
-        Tue, 23 Aug 2022 08:56:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16602614E7;
+        Tue, 23 Aug 2022 08:56:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D408C433D6;
+        Tue, 23 Aug 2022 08:56:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244981;
-        bh=EKvWYv2oRvwWVhIgF6Am3ZkEka/EGkblTHkR/o9hnYc=;
+        s=korg; t=1661244990;
+        bh=aYnBnfGUaEEa3RlKev2F+dQui8GePYWC7nN4kwgsqF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kLCJqtpsf9rymknU6mpEGEka4n/vvo5m5hRLXdoJweM7ojHO8hBvKXXdaZX8Z1Bst
-         RfrUvtnBhlnqiRKvATzGLSYGzEO4Q2ugw9PTatnZeAmH0YXsM8cd3YTQwsBlDgcMd+
-         3Ce2nrEXHeZQGyPJ93luzNLAQAn5fEv33wrd/HSA=
+        b=DrbMX9IYej7wZHvaSrZVjF1Vq/Y4N2jxdLrELV1YVD2xQ6OAdiReHpXNSpYf7cxa0
+         iPlvEEOAdd9x/Ztyxyg3NYdMi/2VKNUPLoK1rVgdus+1jYey/McE4q2OTVBLLXmzZr
+         K3J40xmBc9v3hcTCz3TJ1DnQcOU/edpOloE1XpMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleg Kiselev <okiselev@amazon.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 220/229] ext4: avoid resizing to a partial cluster size
-Date:   Tue, 23 Aug 2022 10:26:21 +0200
-Message-Id: <20220823080101.500040103@linuxfoundation.org>
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 226/229] smb3: check xattr value length earlier
+Date:   Tue, 23 Aug 2022 10:26:27 +0200
+Message-Id: <20220823080101.714839062@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,45 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiselev, Oleg <okiselev@amazon.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
+[ Upstream commit 5fa2cffba0b82336a2244d941322eb1627ff787b ]
 
-This patch avoids an attempt to resize the filesystem to an
-unaligned cluster boundary.  An online resize to a size that is not
-integral to cluster size results in the last iteration attempting to
-grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
-with a corrupted in-memory superblock.
+Coverity complains about assigning a pointer based on
+value length before checking that value length goes
+beyond the end of the SMB.  Although this is even more
+unlikely as value length is a single byte, and the
+pointer is not dereferenced until laterm, it is clearer
+to check the lengths first.
 
-Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
-Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Addresses-Coverity: 1467704 ("Speculative execution data leak")
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/resize.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/cifs/smb2ops.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index a50eabffa411..30b2798244fa 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1951,6 +1951,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
- 	}
- 	brelse(bh);
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 3280a801b1d7..069eb2533e7f 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -463,9 +463,7 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
+ 	size_t name_len, value_len, user_name_len;
  
-+	/*
-+	 * For bigalloc, trim the requested size to the nearest cluster
-+	 * boundary to avoid creating an unusable filesystem. We do this
-+	 * silently, instead of returning an error, to avoid breaking
-+	 * callers that blindly resize the filesystem to the full size of
-+	 * the underlying block device.
-+	 */
-+	if (ext4_has_feature_bigalloc(sb))
-+		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
+ 	while (src_size > 0) {
+-		name = &src->ea_data[0];
+ 		name_len = (size_t)src->ea_name_length;
+-		value = &src->ea_data[src->ea_name_length + 1];
+ 		value_len = (size_t)le16_to_cpu(src->ea_value_length);
+ 
+ 		if (name_len == 0) {
+@@ -478,6 +476,9 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
+ 			goto out;
+ 		}
+ 
++		name = &src->ea_data[0];
++		value = &src->ea_data[src->ea_name_length + 1];
 +
- retry:
- 	o_blocks_count = ext4_blocks_count(es);
- 
+ 		if (ea_name) {
+ 			if (ea_name_len == name_len &&
+ 			    memcmp(ea_name, name, name_len) == 0) {
 -- 
 2.35.1
 
