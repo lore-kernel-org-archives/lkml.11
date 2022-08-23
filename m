@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D92AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA28C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243995AbiHWIfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
+        id S1344237AbiHWIfS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346666AbiHWIcB (ORCPT
+        with ESMTP id S1346992AbiHWIcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871F06D9DF;
-        Tue, 23 Aug 2022 01:16:10 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337C374E23;
+        Tue, 23 Aug 2022 01:16:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 321F661242;
-        Tue, 23 Aug 2022 08:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24786C433C1;
-        Tue, 23 Aug 2022 08:16:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CA5661238;
+        Tue, 23 Aug 2022 08:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3950CC433D6;
+        Tue, 23 Aug 2022 08:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242569;
-        bh=YKgSrZytelvA7qH/EzilkzPS+8jp+NvQH+QwQtyN6Zk=;
+        s=korg; t=1661242581;
+        bh=2cnvJBgNQeP6YaccfYEAUaqtV2LiY3X/dI5JdqXJ8wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cVfvlp5StC1WZmwopAWQMI3XUFKcAR2zLwZWIOiEUGqezlWZFMCO1pFBqiwshSMlP
-         IP4QhN53PoUApJqvNOh7TpmtMCLMOazk2HaChm82XHNk9y8VbsHtyNThW0+xhzcPcC
-         t3XcCgEaGwxmpQtK61D90NzvOEGSH3F48hymrmFA=
+        b=zrNftSmdBrA1CMyT/AtlPjCXCt3aB9jixH8LfdZC8Qho5k3PCqJWuccGBAaho/p4D
+         KvbpghxthJWGfRMftJmY4spTP1dQGTyh8tfTL/8Usb2VxGsznRvF/tinwB4Rc2610Q
+         j2jccqHnxfX29fYu/TP6Q6qG7+UL5uuJqF6Mx378=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleg Kiselev <okiselev@amazon.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 093/101] ext4: avoid resizing to a partial cluster size
-Date:   Tue, 23 Aug 2022 10:04:06 +0200
-Message-Id: <20220823080038.112097785@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.19 140/365] ceph: dont leak snap_rwsem in handle_cap_grant
+Date:   Tue, 23 Aug 2022 10:00:41 +0200
+Message-Id: <20220823080124.073498675@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiselev, Oleg <okiselev@amazon.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
+commit 58dd4385577ed7969b80cdc9e2a31575aba6c712 upstream.
 
-This patch avoids an attempt to resize the filesystem to an
-unaligned cluster boundary.  An online resize to a size that is not
-integral to cluster size results in the last iteration attempting to
-grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
-with a corrupted in-memory superblock.
+When handle_cap_grant is called on an IMPORT op, then the snap_rwsem is
+held and the function is expected to release it before returning. It
+currently fails to do that in all cases which could lead to a deadlock.
 
-Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
-Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6f05b30ea063 ("ceph: reset i_requested_max_size if file write is not wanted")
+Link: https://tracker.ceph.com/issues/55857
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Luís Henriques <lhenriques@suse.de>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/resize.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/ceph/caps.c |   27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index 60984bc54d55..e4f02572f69d 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1941,6 +1941,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
+--- a/fs/ceph/caps.c
++++ b/fs/ceph/caps.c
+@@ -3578,24 +3578,23 @@ static void handle_cap_grant(struct inod
+ 			fill_inline = true;
  	}
- 	brelse(bh);
  
-+	/*
-+	 * For bigalloc, trim the requested size to the nearest cluster
-+	 * boundary to avoid creating an unusable filesystem. We do this
-+	 * silently, instead of returning an error, to avoid breaking
-+	 * callers that blindly resize the filesystem to the full size of
-+	 * the underlying block device.
-+	 */
-+	if (ext4_has_feature_bigalloc(sb))
-+		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
-+
- retry:
- 	o_blocks_count = ext4_blocks_count(es);
+-	if (ci->i_auth_cap == cap &&
+-	    le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
+-		if (newcaps & ~extra_info->issued)
+-			wake = true;
++	if (le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
++		if (ci->i_auth_cap == cap) {
++			if (newcaps & ~extra_info->issued)
++				wake = true;
  
--- 
-2.35.1
-
+-		if (ci->i_requested_max_size > max_size ||
+-		    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
+-			/* re-request max_size if necessary */
+-			ci->i_requested_max_size = 0;
+-			wake = true;
+-		}
++			if (ci->i_requested_max_size > max_size ||
++			    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
++				/* re-request max_size if necessary */
++				ci->i_requested_max_size = 0;
++				wake = true;
++			}
+ 
+-		ceph_kick_flushing_inode_caps(session, ci);
+-		spin_unlock(&ci->i_ceph_lock);
++			ceph_kick_flushing_inode_caps(session, ci);
++		}
+ 		up_read(&session->s_mdsc->snap_rwsem);
+-	} else {
+-		spin_unlock(&ci->i_ceph_lock);
+ 	}
++	spin_unlock(&ci->i_ceph_lock);
+ 
+ 	if (fill_inline)
+ 		ceph_fill_inline_data(inode, NULL, extra_info->inline_data,
 
 
