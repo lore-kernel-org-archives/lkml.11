@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A57C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E030C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243202AbiHWJwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
+        id S239820AbiHWJwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351690AbiHWJuv (ORCPT
+        with ESMTP id S1351767AbiHWJux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:51 -0400
+        Tue, 23 Aug 2022 05:50:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9AA6DF9A;
-        Tue, 23 Aug 2022 01:45:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330606E2D9;
+        Tue, 23 Aug 2022 01:45:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0720761338;
-        Tue, 23 Aug 2022 08:44:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B7FEC433D6;
-        Tue, 23 Aug 2022 08:44:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C21796150F;
+        Tue, 23 Aug 2022 08:45:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB4E5C433D6;
+        Tue, 23 Aug 2022 08:45:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244274;
-        bh=aolZgR12PUzxTi1PxC82EDK5N5Y8ZmpIPPwJr1pSbSA=;
+        s=korg; t=1661244323;
+        bh=Gw5twUXOvoHjEK0G5Er3C/B887fyZ4ZMAvf9n6M7dVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rkmck8acNBP9tHM7vZbYO8TDsrh/QBB/azb9mhtrCNM5nr674F9JOgMaCBmAwrwaX
-         PfWvQTytkWIcd399g2QucmN5k53MeGeycGvV5xhIKFt+ZRKRY8Ayj3vLLKeDiUtsCJ
-         X1peLc0aSqRe2r9voQvRkvQNoPZy7aX3N9Ml2/t4=
+        b=TrHjzJiOp3cZtALkR8wFf1/y8sdIK786jbtLvuhAIchgvUla5bxn0AGvWK7KIeged
+         Wx9I08omfe70GXHk78ZOhFkhm+v2x96J27jqVyciR+8Etuaj4tHNd8oeVLdF7LLR0+
+         /GXIIn/yP6418hQ1T9AU/7hro8pF0xr0hGOdyBmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 112/229] USB: serial: fix tty-port initialized comments
-Date:   Tue, 23 Aug 2022 10:24:33 +0200
-Message-Id: <20220823080057.677023084@linuxfoundation.org>
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 073/244] octeontx2-af: Fix mcam entry resource leak
+Date:   Tue, 23 Aug 2022 10:23:52 +0200
+Message-Id: <20220823080101.496529284@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,66 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-[ Upstream commit 688ee1d1785c1359f9040f615dd8e6054962bce2 ]
+commit 3f8fe40ab7730cf8eb6f8b8ff412012f7f6f8f48 upstream.
 
-Fix up the tty-port initialized comments which got truncated and
-obfuscated when replacing the old ASYNCB_INITIALIZED flag.
+The teardown sequence in FLR handler returns if no NIX LF
+is attached to PF/VF because it indicates that graceful
+shutdown of resources already happened. But there is a
+chance of all allocated MCAM entries not being freed by
+PF/VF. Hence free mcam entries even in case of detached LF.
 
-Fixes: d41861ca19c9 ("tty: Replace ASYNC_INITIALIZED bit and update atomically")
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c554f9c1574e ("octeontx2-af: Teardown NPA, NIX LF upon receiving FLR")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/sierra.c     | 3 ++-
- drivers/usb/serial/usb-serial.c | 2 +-
- drivers/usb/serial/usb_wwan.c   | 3 ++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |    6 ++++++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    6 ++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/usb/serial/sierra.c b/drivers/usb/serial/sierra.c
-index a9c5564b6b65..fcbe8a9d2650 100644
---- a/drivers/usb/serial/sierra.c
-+++ b/drivers/usb/serial/sierra.c
-@@ -759,7 +759,8 @@ static void sierra_close(struct usb_serial_port *port)
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -2504,6 +2504,12 @@ static void __rvu_flr_handler(struct rvu
+ 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NPA);
+ 	rvu_reset_lmt_map_tbl(rvu, pcifunc);
+ 	rvu_detach_rsrcs(rvu, NULL, pcifunc);
++	/* In scenarios where PF/VF drivers detach NIXLF without freeing MCAM
++	 * entries, check and free the MCAM entries explicitly to avoid leak.
++	 * Since LF is detached use LF number as -1.
++	 */
++	rvu_npc_free_mcam_entries(rvu, pcifunc, -1);
++
+ 	mutex_unlock(&rvu->flr_lock);
+ }
  
- 	/*
- 	 * Need to take susp_lock to make sure port is not already being
--	 * resumed, but no need to hold it due to initialized
-+	 * resumed, but no need to hold it due to the tty-port initialized
-+	 * flag.
- 	 */
- 	spin_lock_irq(&intfdata->susp_lock);
- 	if (--intfdata->open_ports == 0)
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 3dc3464626fb..731bae05d7e5 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -254,7 +254,7 @@ static int serial_open(struct tty_struct *tty, struct file *filp)
-  *
-  * Shut down a USB serial port. Serialized against activate by the
-  * tport mutex and kept to matching open/close pairs
-- * of calls by the initialized flag.
-+ * of calls by the tty-port initialized flag.
-  *
-  * Not called if tty is console.
-  */
-diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
-index 4fab7ec9cd3f..bb05c9ea9190 100644
---- a/drivers/usb/serial/usb_wwan.c
-+++ b/drivers/usb/serial/usb_wwan.c
-@@ -465,7 +465,8 @@ void usb_wwan_close(struct usb_serial_port *port)
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -1096,6 +1096,9 @@ static void npc_enadis_default_entries(s
  
- 	/*
- 	 * Need to take susp_lock to make sure port is not already being
--	 * resumed, but no need to hold it due to initialized
-+	 * resumed, but no need to hold it due to the tty-port initialized
-+	 * flag.
+ void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
+ {
++	if (nixlf < 0)
++		return;
++
+ 	npc_enadis_default_entries(rvu, pcifunc, nixlf, false);
+ 
+ 	/* Delete multicast and promisc MCAM entries */
+@@ -1107,6 +1110,9 @@ void rvu_npc_disable_default_entries(str
+ 
+ void rvu_npc_enable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
+ {
++	if (nixlf < 0)
++		return;
++
+ 	/* Enables only broadcast match entry. Promisc/Allmulti are enabled
+ 	 * in set_rx_mode mbox handler.
  	 */
- 	spin_lock_irq(&intfdata->susp_lock);
- 	if (--intfdata->open_ports == 0)
--- 
-2.35.1
-
 
 
