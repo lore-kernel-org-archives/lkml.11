@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937BAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFD6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242518AbiHWLaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
+        id S244419AbiHWLac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236564AbiHWLZE (ORCPT
+        with ESMTP id S1356311AbiHWLZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:25:04 -0400
+        Tue, 23 Aug 2022 07:25:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20BF8C459;
-        Tue, 23 Aug 2022 02:24:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E35B2846;
+        Tue, 23 Aug 2022 02:24:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBCF5612F4;
-        Tue, 23 Aug 2022 09:24:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA17BC433D6;
-        Tue, 23 Aug 2022 09:23:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D0CB612B5;
+        Tue, 23 Aug 2022 09:24:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C9BC433C1;
+        Tue, 23 Aug 2022 09:24:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246640;
-        bh=g138Vep1kosQ0akqfkLiqvL+yNeVRxLA3+W5eq/fcb0=;
+        s=korg; t=1661246646;
+        bh=bEUsYd6wc+ozBQ9Hz5f85QXJZqk+pUMxGOXwNgpWbN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zkiMt5mZmH3Q0v73uHUYIbwbir+Qq7szMptawMWhStMlQZBFJXZu1VJpmKnvZW5Tk
-         FoFYVSGP+MMsA+HwTDXJAPwiLVmnglW0MkgVt1VI55DREN2PDfXPvgKMvwrgjHVkb+
-         oWb7n/FKAbtxgK0gD3oT/2dILat5PfBbLbnq1t+E=
+        b=EJceEUwK3BPLgEQz9aZYDE7fwYK1WpgC6zjPQ7hjBtDMAKMEdm51kpn7FgrKDo8Yi
+         VgFcHzjCHrHpA1f6KQq516HY3HfdI4S9HuQu0CGN6ltVOlw+JnxV7jQXg90jMqD5LK
+         mCnpKOyjOlpBHG1oqdWvXWKmgA/lDInGduTRhwvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 174/389] intel_th: Fix a resource leak in an error handling path
-Date:   Tue, 23 Aug 2022 10:24:12 +0200
-Message-Id: <20220823080122.909881694@linuxfoundation.org>
+Subject: [PATCH 5.4 176/389] intel_th: msu: Fix vmalloced buffers
+Date:   Tue, 23 Aug 2022 10:24:14 +0200
+Message-Id: <20220823080122.990782804@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,53 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-[ Upstream commit 086c28ab7c5699256aced0049aae9c42f1410313 ]
+[ Upstream commit ac12ad3ccf6d386e64a9d6a890595a2509d24edd ]
 
-If an error occurs after calling 'pci_alloc_irq_vectors()',
-'pci_free_irq_vectors()' must be called as already done in the remove
-function.
+After commit f5ff79fddf0e ("dma-mapping: remove CONFIG_DMA_REMAP") there's
+a chance of DMA buffer getting allocated via vmalloc(), which messes up
+the mmapping code:
 
-Fixes: 7b7036d47c35 ("intel_th: pci: Use MSI interrupt signalling")
+> RIP: msc_mmap_fault [intel_th_msu]
+> Call Trace:
+>  <TASK>
+>  __do_fault
+>  do_fault
+...
+
+Fix this by accounting for vmalloc possibility.
+
+Fixes: ba39bd830605 ("intel_th: msu: Switch over to scatterlist")
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-2-alexander.shishkin@linux.intel.com
+Link: https://lore.kernel.org/r/20220705082637.59979-4-alexander.shishkin@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/pci.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/hwtracing/intel_th/msu.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
-index a723c8c33087..3910fafc4fc2 100644
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -100,8 +100,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 		}
+diff --git a/drivers/hwtracing/intel_th/msu.c b/drivers/hwtracing/intel_th/msu.c
+index 3cd2489d398c..640b0aae7eb4 100644
+--- a/drivers/hwtracing/intel_th/msu.c
++++ b/drivers/hwtracing/intel_th/msu.c
+@@ -1050,6 +1050,16 @@ msc_buffer_set_uc(struct msc_window *win, unsigned int nr_segs) {}
+ static inline void msc_buffer_set_wb(struct msc_window *win) {}
+ #endif /* CONFIG_X86 */
  
- 	th = intel_th_alloc(&pdev->dev, drvdata, resource, r);
--	if (IS_ERR(th))
--		return PTR_ERR(th);
-+	if (IS_ERR(th)) {
-+		err = PTR_ERR(th);
-+		goto err_free_irq;
-+	}
- 
- 	th->activate   = intel_th_pci_activate;
- 	th->deactivate = intel_th_pci_deactivate;
-@@ -109,6 +111,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 	pci_set_master(pdev);
- 
- 	return 0;
++static struct page *msc_sg_page(struct scatterlist *sg)
++{
++	void *addr = sg_virt(sg);
 +
-+err_free_irq:
-+	pci_free_irq_vectors(pdev);
-+	return err;
- }
++	if (is_vmalloc_addr(addr))
++		return vmalloc_to_page(addr);
++
++	return sg_page(sg);
++}
++
+ /**
+  * msc_buffer_win_alloc() - alloc a window for a multiblock mode
+  * @msc:	MSC device
+@@ -1122,7 +1132,7 @@ static void __msc_buffer_win_free(struct msc *msc, struct msc_window *win)
+ 	int i;
  
- static void intel_th_pci_remove(struct pci_dev *pdev)
+ 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, i) {
+-		struct page *page = sg_page(sg);
++		struct page *page = msc_sg_page(sg);
+ 
+ 		page->mapping = NULL;
+ 		dma_free_coherent(msc_dev(win->msc)->parent->parent, PAGE_SIZE,
+@@ -1384,7 +1394,7 @@ static struct page *msc_buffer_get_page(struct msc *msc, unsigned long pgoff)
+ 	pgoff -= win->pgoff;
+ 
+ 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, blk) {
+-		struct page *page = sg_page(sg);
++		struct page *page = msc_sg_page(sg);
+ 		size_t pgsz = PFN_DOWN(sg->length);
+ 
+ 		if (pgoff < pgsz)
 -- 
 2.35.1
 
