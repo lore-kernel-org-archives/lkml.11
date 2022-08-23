@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 877C8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF4CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242239AbiHWJtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53786 "EHLO
+        id S243366AbiHWJta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352361AbiHWJqS (ORCPT
+        with ESMTP id S1352571AbiHWJqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:46:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575F68D3FB;
-        Tue, 23 Aug 2022 01:43:55 -0700 (PDT)
+        Tue, 23 Aug 2022 05:46:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EB74DB27;
+        Tue, 23 Aug 2022 01:44:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DF6EB81C20;
-        Tue, 23 Aug 2022 08:42:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998FCC433C1;
-        Tue, 23 Aug 2022 08:42:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3345661540;
+        Tue, 23 Aug 2022 08:43:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F27C433B5;
+        Tue, 23 Aug 2022 08:43:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244168;
-        bh=v4KGrEVskcMrBDA4KqT7FNFEnwx3XEfxBHbjvZzK7pY=;
+        s=korg; t=1661244199;
+        bh=Ar0Ri1pXQ2u5TEvE1oM8+Sx9bnNlWLzCZzLjllN8NEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1dm//0fp6o1VYWHtV8BuLUEB1XZaXGkjwwWbxG/ncmFyKdtU0Ur5aRaRiXef3H/gh
-         orK4Qi+g0gqx2hE5Ep+nN4FOJLbo7PNSUAEjE7Rf1fciZ7IE5cZDcYhYlMgxvKYwm2
-         Xyg9wdGKhyn6P+rPPclTvgC8yLakwh4nR/oYtvDI=
+        b=t3QaiXGALtus5VP4P49vqbKBhf+exQtlOg9QIwkTArpm2m5NONVjNGVf7BH76/dOE
+         lp7pPGXpG4Gb+d9y1PPSkM5wttDE3/suWF1p0S2CF78DPIJLTbmGSSbsTH/wfpwbRX
+         06dCKaybAwLTXnQngyqhOWXCSSoCbStallyVeelk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 020/244] tracing/eprobes: Do not allow eprobes to use $stack, or % for regs
-Date:   Tue, 23 Aug 2022 10:22:59 +0200
-Message-Id: <20220823080059.741045306@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.15 055/244] SUNRPC: Reinitialise the backchannel request buffers before reuse
+Date:   Tue, 23 Aug 2022 10:23:34 +0200
+Message-Id: <20220823080100.903408710@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,123 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 2673c60ee67e71f2ebe34386e62d348f71edee47 upstream.
+commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
 
-While playing with event probes (eprobes), I tried to see what would
-happen if I attempted to retrieve the instruction pointer (%rip) knowing
-that event probes do not use pt_regs. The result was:
+When we're reusing the backchannel requests instead of freeing them,
+then we should reinitialise any values of the send/receive xdr_bufs so
+that they reflect the available space.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000024
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 1 PID: 1847 Comm: trace-cmd Not tainted 5.19.0-rc5-test+ #309
- Hardware name: Hewlett-Packard HP Compaq Pro 6300 SFF/339A, BIOS K01
-v03.03 07/14/2016
- RIP: 0010:get_event_field.isra.0+0x0/0x50
- Code: ff 48 c7 c7 c0 8f 74 a1 e8 3d 8b f5 ff e8 88 09 f6 ff 4c 89 e7 e8
-50 6a 13 00 48 89 ef 5b 5d 41 5c 41 5d e9 42 6a 13 00 66 90 <48> 63 47 24
-8b 57 2c 48 01 c6 8b 47 28 83 f8 02 74 0e 83 f8 04 74
- RSP: 0018:ffff916c394bbaf0 EFLAGS: 00010086
- RAX: ffff916c854041d8 RBX: ffff916c8d9fbf50 RCX: ffff916c255d2000
- RDX: 0000000000000000 RSI: ffff916c255d2008 RDI: 0000000000000000
- RBP: 0000000000000000 R08: ffff916c3a2a0c08 R09: ffff916c394bbda8
- R10: 0000000000000000 R11: 0000000000000000 R12: ffff916c854041d8
- R13: ffff916c854041b0 R14: 0000000000000000 R15: 0000000000000000
- FS:  0000000000000000(0000) GS:ffff916c9ea40000(0000)
-knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000024 CR3: 000000011b60a002 CR4: 00000000001706e0
- Call Trace:
-  <TASK>
-  get_eprobe_size+0xb4/0x640
-  ? __mod_node_page_state+0x72/0xc0
-  __eprobe_trace_func+0x59/0x1a0
-  ? __mod_lruvec_page_state+0xaa/0x1b0
-  ? page_remove_file_rmap+0x14/0x230
-  ? page_remove_rmap+0xda/0x170
-  event_triggers_call+0x52/0xe0
-  trace_event_buffer_commit+0x18f/0x240
-  trace_event_raw_event_sched_wakeup_template+0x7a/0xb0
-  try_to_wake_up+0x260/0x4c0
-  __wake_up_common+0x80/0x180
-  __wake_up_common_lock+0x7c/0xc0
-  do_notify_parent+0x1c9/0x2a0
-  exit_notify+0x1a9/0x220
-  do_exit+0x2ba/0x450
-  do_group_exit+0x2d/0x90
-  __x64_sys_exit_group+0x14/0x20
-  do_syscall_64+0x3b/0x90
-  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Obviously this is not the desired result.
-
-Move the testing for TPARG_FL_TPOINT which is only used for event probes
-to the top of the "$" variable check, as all the other variables are not
-used for event probes. Also add a check in the register parsing "%" to
-fail if an event probe is used.
-
-Link: https://lkml.kernel.org/r/20220820134400.564426983@goodmis.org
-
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_probe.c |   21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -279,7 +279,14 @@ static int parse_probe_vars(char *arg, c
- 	int ret = 0;
- 	int len;
+--- a/net/sunrpc/backchannel_rqst.c
++++ b/net/sunrpc/backchannel_rqst.c
+@@ -64,6 +64,17 @@ static void xprt_free_allocation(struct
+ 	kfree(req);
+ }
  
--	if (strcmp(arg, "retval") == 0) {
-+	if (flags & TPARG_FL_TPOINT) {
-+		if (code->data)
-+			return -EFAULT;
-+		code->data = kstrdup(arg, GFP_KERNEL);
-+		if (!code->data)
-+			return -ENOMEM;
-+		code->op = FETCH_OP_TP_ARG;
-+	} else if (strcmp(arg, "retval") == 0) {
- 		if (flags & TPARG_FL_RETURN) {
- 			code->op = FETCH_OP_RETVAL;
- 		} else {
-@@ -319,13 +326,6 @@ static int parse_probe_vars(char *arg, c
- 		code->op = FETCH_OP_ARG;
- 		code->param = (unsigned int)param - 1;
- #endif
--	} else if (flags & TPARG_FL_TPOINT) {
--		if (code->data)
--			return -EFAULT;
--		code->data = kstrdup(arg, GFP_KERNEL);
--		if (!code->data)
--			return -ENOMEM;
--		code->op = FETCH_OP_TP_ARG;
- 	} else
- 		goto inval_var;
- 
-@@ -380,6 +380,11 @@ parse_probe_arg(char *arg, const struct
- 		break;
- 
- 	case '%':	/* named register */
-+		if (flags & TPARG_FL_TPOINT) {
-+			/* eprobes do not handle registers */
-+			trace_probe_log_err(offs, BAD_VAR);
-+			break;
-+		}
- 		ret = regs_query_register_offset(arg + 1);
- 		if (ret >= 0) {
- 			code->op = FETCH_OP_REG;
++static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
++{
++	buf->head[0].iov_len = PAGE_SIZE;
++	buf->tail[0].iov_len = 0;
++	buf->pages = NULL;
++	buf->page_len = 0;
++	buf->flags = 0;
++	buf->len = 0;
++	buf->buflen = PAGE_SIZE;
++}
++
+ static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
+ {
+ 	struct page *page;
+@@ -292,6 +303,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
+ 	 */
+ 	spin_lock_bh(&xprt->bc_pa_lock);
+ 	if (xprt_need_to_requeue(xprt)) {
++		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
++		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
++		req->rq_rcv_buf.len = PAGE_SIZE;
+ 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
+ 		xprt->bc_alloc_count++;
+ 		atomic_inc(&xprt->bc_slot_count);
 
 
