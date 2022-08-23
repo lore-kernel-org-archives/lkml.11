@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44051C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E862C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242818AbiHWITH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
+        id S242827AbiHWITL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242371AbiHWIOX (ORCPT
+        with ESMTP id S242376AbiHWIOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:14:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE74275ED;
-        Tue, 23 Aug 2022 01:09:49 -0700 (PDT)
+        Tue, 23 Aug 2022 04:14:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F796CF41;
+        Tue, 23 Aug 2022 01:09:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7456FB81C23;
-        Tue, 23 Aug 2022 08:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876F5C433D7;
-        Tue, 23 Aug 2022 08:09:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1E716126A;
+        Tue, 23 Aug 2022 08:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5CADC433C1;
+        Tue, 23 Aug 2022 08:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242186;
-        bh=DaN9Va7Ic0V+aXbPJGXb1aaLtyi0S0ejmM7VpShT7R0=;
+        s=korg; t=1661242189;
+        bh=6U83wbLARbMC175D+M8iSXUKvFzWTq2N2fBB1jY3bHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f6tiBdwADb3EccjsYoYn7szA0DF+v9JR3KJTDIJmjt9vdk0hYYg7L8U5fTAzctDkn
-         e9qcKJJHyyAb1fvSj86dZiM0uJjAJ6/+LIK1P9+Sb0pyWWFTrDxGMIrbj1fMufuy6G
-         eD26ZvLvkWvv/O52SOoihVNjrNeKFo7uOLmaw+Co=
+        b=GSI32Wiu1I+I1dfF3UIqeb4vnbH+nYbn+9NZXksouwF2k2HqvxWVmQ/1FDKqmIWWy
+         r3ROVN0hqmbrgjxXKbJibeKoj3KnUUlxpCO1lNWP159k+ficS+p6RJ7ZJ2MdKvQ/2V
+         JDv7GKBniyP2emvJZ+TSHmE1loedETMLEUmUHSPY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 065/365] bpf: Acquire map uref in .init_seq_private for hash map iterator
-Date:   Tue, 23 Aug 2022 09:59:26 +0200
-Message-Id: <20220823080120.930953637@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Steve French <sfrench@samba.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.9 033/101] vfs: Check the truncate maximum size in inode_newsize_ok()
+Date:   Tue, 23 Aug 2022 10:03:06 +0200
+Message-Id: <20220823080035.847056784@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,46 +55,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: David Howells <dhowells@redhat.com>
 
-commit ef1e93d2eeb58a1f08c37b22a2314b94bc045f15 upstream.
+commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+If something manages to set the maximum file size to MAX_OFFSET+1, this
+can cause the xfs and ext4 filesystems at least to become corrupt.
 
-So acquiring an extra map uref in bpf_iter_init_hash_map() and
-releasing it in bpf_iter_fini_hash_map().
+Ordinarily, the kernel protects against userspace trying this by
+checking the value early in the truncate() and ftruncate() system calls
+calls - but there are at least two places that this check is bypassed:
 
-Fixes: d6c4503cc296 ("bpf: Implement bpf iterator for hash maps")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-3-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+ (1) Cachefiles will round up the EOF of the backing file to DIO block
+     size so as to allow DIO on the final block - but this might push
+     the offset negative. It then calls notify_change(), but this
+     inadvertently bypasses the checking. This can be triggered if
+     someone puts an 8EiB-1 file on a server for someone else to try and
+     access by, say, nfs.
+
+ (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
+     and then calls vfs_truncate() directly - which also bypasses the
+     check.
+
+In both cases, it is potentially possible for a network filesystem to
+cause a disk filesystem to be corrupted: cachefiles in the client's
+cache filesystem; ksmbd in the server's filesystem.
+
+nfsd is okay as it checks the value, but we can then remove this check
+too.
+
+Fix this by adding a check to inode_newsize_ok(), as called from
+setattr_prepare(), thereby catching the issue as filesystems set up to
+perform the truncate with minimal opportunity for bypassing the new
+check.
+
+Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
+Fixes: f44158485826 ("cifsd: add file operations")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reported-by: Jeff Layton <jlayton@kernel.org>
+Tested-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Cc: stable@kernel.org
+Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: Steve French <sfrench@samba.org>
+cc: Hyunchul Lee <hyc.lee@gmail.com>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Dave Wysochanski <dwysocha@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/hashtab.c |    2 ++
+ fs/attr.c |    2 ++
  1 file changed, 2 insertions(+)
 
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -2060,6 +2060,7 @@ static int bpf_iter_init_hash_map(void *
- 		seq_info->percpu_value_buf = value_buf;
- 	}
- 
-+	bpf_map_inc_with_uref(map);
- 	seq_info->map = map;
- 	seq_info->htab = container_of(map, struct bpf_htab, map);
- 	return 0;
-@@ -2069,6 +2070,7 @@ static void bpf_iter_fini_hash_map(void
+--- a/fs/attr.c
++++ b/fs/attr.c
+@@ -111,6 +111,8 @@ EXPORT_SYMBOL(setattr_prepare);
+  */
+ int inode_newsize_ok(const struct inode *inode, loff_t offset)
  {
- 	struct bpf_iter_seq_hash_map_info *seq_info = priv_data;
- 
-+	bpf_map_put_with_uref(seq_info->map);
- 	kfree(seq_info->percpu_value_buf);
- }
++	if (offset < 0)
++		return -EINVAL;
+ 	if (inode->i_size < offset) {
+ 		unsigned long limit;
  
 
 
