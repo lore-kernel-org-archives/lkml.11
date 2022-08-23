@@ -2,101 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A638EC54EEB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D32C52D79
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356873AbiHWKwb (ORCPT
+        id S1356798AbiHWKwJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
+        Tue, 23 Aug 2022 06:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355838AbiHWKoy (ORCPT
+        with ESMTP id S1355774AbiHWKoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:44:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D20AAB05E;
-        Tue, 23 Aug 2022 02:10:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D798A60EFB;
-        Tue, 23 Aug 2022 09:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA8BFC433C1;
-        Tue, 23 Aug 2022 09:10:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245834;
-        bh=nSVXgxZC2TqTRvLOmt8W7a5C2RKHcTGAbGR3K/+fB68=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OWf0VoNmWrYizqM4tHiSwTkO2M1NECZe4Qs74mcHZb2kxdii3u0WiybSTLxJ8TItA
-         E6bfT1wXiKWEQvG/t+YPAmcE6GkDEWub1U81yyHr6mdvvR0sfbgq8cMl7A/6MPtf1m
-         tULtZssdk3s+yRuNJq0JcYVG2KaRwhjR+e19jcyQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 174/287] kprobes: Forbid probing on trampoline and BPF code areas
-Date:   Tue, 23 Aug 2022 10:25:43 +0200
-Message-Id: <20220823080106.619249065@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 23 Aug 2022 06:44:18 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC62AB07C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:28 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id z14-20020a7bc7ce000000b003a5db0388a8so389218wmk.1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc;
+        bh=00nZRcZGH0Ch9kf2FG017OBarf3WrFRyr4+E06yZjt4=;
+        b=HpDVHm11YxrrBB9xsaNFKAhRf3RMEuMDCYt/ZksGm4V2FqeiOg0HxpYQNLjepXXUvO
+         T0A/Qs6JxvhXH/RbxYObI7rbn9urv4ibf+Q6OouveJTkDLkw1dqZvezYIEP/BH+a7tiW
+         nyjMap+JtyCGZLy32XdhzDJNETOf86ByMkQHNE2veSJ5EPGcGd3TuMXEOLAbDDqN5Su8
+         sGVWBhu3VFMUdQ1jZbSukiV8AszKnOsbo/tK9GNopSYAIi6KTWfceIOHgsdsah7WmIsJ
+         ChRmUoT4AjQQZPDDV/rCCqWQjLO4CbKVzIPIlvidTtvJdXcMrL4G+BNNAahfjU14mXcx
+         viRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=00nZRcZGH0Ch9kf2FG017OBarf3WrFRyr4+E06yZjt4=;
+        b=mTMPIuuUKxAfhBdttmdjCby7M75/cfcbDMnK+frkmtij5tpxLDPXVqr+Hk4mfoxQpQ
+         6uPvjjZN+r9LmC7FaRnPR6Sry6yAP4qfWEe2sVW91WrUFysZN7MkQQIpO+2GpOz7hZDC
+         p701M2MmNFL3SLLiVf0i1bCrG58xON//Ti70REB16pD2q0jOkG1JiAQpst81TEVEjcF4
+         5OhqgooUQaVzG7d6KLCA64rYBT/umUxzkE7Sfvmkpe9vsN7/K3N9lISrSYkGjd1kEPvl
+         vhmkyls2RXNh7DO9td7iqaGtvPjzmlUUt0sh+IMfBJDxptumq/JbQFZakbZEHwULhM3V
+         0naw==
+X-Gm-Message-State: ACgBeo0zkv1ijU7OikHcBFP1QSj3Gj52NfDXgKddlbCLgAO9pakDkyKh
+        yyKEwJVSfbLLLe6+MC41GHK4RQ==
+X-Google-Smtp-Source: AA6agR4IyoYCMb8Rm017id592w1HTMLhZsUXS8pSrQLfOj5pTWDvOcRMSxJATztL4ntF4BhAcHH6Aw==
+X-Received: by 2002:a7b:ca4c:0:b0:3a5:bbf1:9e3e with SMTP id m12-20020a7bca4c000000b003a5bbf19e3emr1545407wml.5.1661245826465;
+        Tue, 23 Aug 2022 02:10:26 -0700 (PDT)
+Received: from linaro.org ([2a00:23c5:6809:2201:4553:cf11:6cff:b293])
+        by smtp.gmail.com with ESMTPSA id w6-20020adfde86000000b002253d162491sm10760721wrl.52.2022.08.23.02.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:10:26 -0700 (PDT)
+From:   Mike Leach <mike.leach@linaro.org>
+To:     coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-perf-users@vger.kernel.org, leo.yan@linaro.org,
+        quic_jinlmao@quicinc.com, Mike Leach <mike.leach@linaro.org>
+Subject: [PATCH v4 12/13] coresight: events: PERF_RECORD_AUX_OUTPUT_HW_ID used for Trace ID
+Date:   Tue, 23 Aug 2022 10:10:08 +0100
+Message-Id: <20220823091009.14121-13-mike.leach@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220823091009.14121-1-mike.leach@linaro.org>
+References: <20220823091009.14121-1-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhongjin <chenzhongjin@huawei.com>
+Use the perf_report_aux_output_id() call to output the CoreSight trace ID
+and associated CPU as a PERF_RECORD_AUX_OUTPUT_HW_ID record in the
+perf.data file.
 
-[ Upstream commit 28f6c37a2910f565b4f5960df52b2eccae28c891 ]
-
-kernel_text_address() treats ftrace_trampoline, kprobe_insn_slot
-and bpf_text_address as valid kprobe addresses - which is not ideal.
-
-These text areas are removable and changeable without any notification
-to kprobes, and probing on them can trigger unexpected behavior:
-
-  https://lkml.org/lkml/2022/7/26/1148
-
-Considering that jump_label and static_call text are already
-forbiden to probe, kernel_text_address() should be replaced with
-core_kernel_text() and is_module_text_address() to check other text
-areas which are unsafe to kprobe.
-
-[ mingo: Rewrote the changelog. ]
-
-Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
-Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Link: https://lore.kernel.org/r/20220801033719.228248-1-chenzhongjin@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
 ---
- kernel/kprobes.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hwtracing/coresight/coresight-etm-perf.c |  7 +++++++
+ include/linux/coresight-pmu.h                    | 14 ++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 993b84cc1db5..099191716d4c 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1566,7 +1566,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 	preempt_disable();
+diff --git a/drivers/hwtracing/coresight/coresight-etm-perf.c b/drivers/hwtracing/coresight/coresight-etm-perf.c
+index 6166f716a6ac..59a2ad95c1dc 100644
+--- a/drivers/hwtracing/coresight/coresight-etm-perf.c
++++ b/drivers/hwtracing/coresight/coresight-etm-perf.c
+@@ -4,6 +4,7 @@
+  * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
+  */
  
- 	/* Ensure it is not in reserved area nor out of text */
--	if (!kernel_text_address((unsigned long) p->addr) ||
-+	if (!(core_kernel_text((unsigned long) p->addr) ||
-+	    is_module_text_address((unsigned long) p->addr)) ||
- 	    within_kprobe_blacklist((unsigned long) p->addr) ||
- 	    jump_label_text_reserved(p->addr, p->addr) ||
- 	    find_bug((unsigned long)p->addr)) {
++#include <linux/bitfield.h>
+ #include <linux/coresight.h>
+ #include <linux/coresight-pmu.h>
+ #include <linux/cpumask.h>
+@@ -448,6 +449,7 @@ static void etm_event_start(struct perf_event *event, int flags)
+ 	struct perf_output_handle *handle = &ctxt->handle;
+ 	struct coresight_device *sink, *csdev = per_cpu(csdev_src, cpu);
+ 	struct list_head *path;
++	u64 hw_id;
+ 
+ 	if (!csdev)
+ 		goto fail;
+@@ -493,6 +495,11 @@ static void etm_event_start(struct perf_event *event, int flags)
+ 	if (source_ops(csdev)->enable(csdev, event, CS_MODE_PERF))
+ 		goto fail_disable_path;
+ 
++	/* output cpu / trace ID in perf record */
++	hw_id = FIELD_PREP(CS_AUX_HW_ID_VERSION_MASK, CS_AUX_HW_ID_CURR_VERSION) |
++		FIELD_PREP(CS_AUX_HW_ID_TRACE_ID_MASK, coresight_trace_id_read_cpu_id(cpu));
++	perf_report_aux_output_id(event, hw_id);
++
+ out:
+ 	/* Tell the perf core the event is alive */
+ 	event->hw.state = 0;
+diff --git a/include/linux/coresight-pmu.h b/include/linux/coresight-pmu.h
+index 99bc3cc6bf2d..9aafafff219a 100644
+--- a/include/linux/coresight-pmu.h
++++ b/include/linux/coresight-pmu.h
+@@ -7,6 +7,8 @@
+ #ifndef _LINUX_CORESIGHT_PMU_H
+ #define _LINUX_CORESIGHT_PMU_H
+ 
++#include <linux/bits.h>
++
+ #define CORESIGHT_ETM_PMU_NAME "cs_etm"
+ 
+ /*
+@@ -44,4 +46,16 @@
+ #define ETM4_CFG_BIT_RETSTK	12
+ #define ETM4_CFG_BIT_VMID_OPT	15
+ 
++/*
++ * Interpretation of the PERF_RECORD_AUX_OUTPUT_HW_ID payload.
++ * Used to associate a CPU with the CoreSight Trace ID.
++ * [07:00] - Trace ID - uses 8 bits to make value easy to read in file.
++ * [59:08] - Unused (SBZ)
++ * [63:60] - Version
++ */
++#define CS_AUX_HW_ID_TRACE_ID_MASK	GENMASK_ULL(7, 0)
++#define CS_AUX_HW_ID_VERSION_MASK	GENMASK_ULL(63, 60)
++
++#define CS_AUX_HW_ID_CURR_VERSION 0
++
+ #endif
 -- 
-2.35.1
-
-
+2.17.1
 
