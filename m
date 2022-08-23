@@ -2,109 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F25C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E03C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241798AbiHWNU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57664 "EHLO
+        id S241958AbiHWNVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241767AbiHWNUT (ORCPT
+        with ESMTP id S242278AbiHWNUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:20:19 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA32140C97
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:19:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661249948; x=1692785948;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fusilmdSQD+FIBKYeUukiHJrxKRQ3B5pPSTTQeO8rTk=;
-  b=XphxZ09yA08rZUFMPA1jd9zWhL9eRh/sEeaJuMUk7kCC2G1f+Ug9vKBJ
-   AePNu/cn2lF+tU6SlBgE1uFCkg7IAp+DFZrl9dS/Za2r4Ifgti8p/z3j+
-   lQGh3jNCa9yKbNEyIj/RyyX9r48zCt0eoUWjgJpVWGUoDm21ywoveOp4Q
-   SzbXNItgON+Qapcghut4AAuduVlheKOGSGlyYKtWFPEJ3NqD7JYeX219z
-   f9iEALvHMyRtbj6L7frQt71J2mw3ROU2xCryIUB+2lBVRuiGaE6DHjPtM
-   Q//CdYCD81LIsjf3MJKIOdzyn23PgGiVTB3VnyzTj02L49Z5THfFfgwnz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="291206644"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="291206644"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 03:18:18 -0700
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="751639982"
-Received: from jabish-mobl2.amr.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.9.209])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 03:18:13 -0700
-From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-To:     intel-gfx@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        mchehab@kernel.org, chris@chris-wilson.co.uk,
-        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
-        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
-        daniel@ffwll.ch, andi.shyti@linux.intel.com,
-        andrzej.hajda@intel.com, keescook@chromium.org,
-        mauro.chehab@linux.intel.com,
-        intel-gfx-trybot@lists.freedesktop.org
-Subject: [PATCH v8 6/8] drm/i915: Check if the size is too big while creating shmem file
-Date:   Tue, 23 Aug 2022 19:17:27 +0900
-Message-Id: <20220823101729.2098841-7-gwan-gyeong.mun@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220823101729.2098841-1-gwan-gyeong.mun@intel.com>
-References: <20220823101729.2098841-1-gwan-gyeong.mun@intel.com>
+        Tue, 23 Aug 2022 09:20:30 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482D2140E95
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:19:13 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id l19so9904904ljg.8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:19:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=zsQrjzLlz1WwvkGgnIx2yqhoGVJPRWQAAvm1kJ/arH8=;
+        b=MRoulzA5Ch+EYpnMY32xtg51q2QEePLjf7GlsZywJBP/elkNXCYvcfv12YpmeDtSds
+         KeitN1Vw7Gs1cDEt0kGdoO9Pv1tIcFJUqTvFi8Xh8uizPJjhxUta7GRN/RAEoCDmak7y
+         PCYivdELVk56Br/VRL8MY0Kn6uND09aTzuV966cpxiiMOUh7MujafwoJHplLe2FiuTRu
+         PEd3fIkOd7DAE2g2z1OslDd7vO6MPXm+ggQi+WZQOccZgeEBjlGnPSKjbNeA1+FoEU/P
+         aFHjmsDNNTYmm4XuaLOxs4dYx7WGseTaFxDcZuheVhKGv0nIm40wHlfgn87GAPGitiWt
+         YXxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=zsQrjzLlz1WwvkGgnIx2yqhoGVJPRWQAAvm1kJ/arH8=;
+        b=0oKtM+oLrzCBT0VNkcdqHLMoGGHNDh9Su6rrUK4LiuWgrm7IE0MIz+Q18nV+Fgj+Zr
+         ahjRfrGDJILtxzrhpTR90MaF7oMZOcPDdZGTg1fcmyHo7IY/N+BFa8gfCf7/emIi81sC
+         PSKu3m/y0u/CKd3Yd0Xq/P9ZjwkbbTzjkYtPbgIQHPl9/xpDO/JCjhtcHkIey/AGYwyO
+         Dx2Hoia48Zr/EZjywpcFmKC7AMurYj5eO/TIjiUGZrs8jC1aXzvdhbw1/wjKQuENgbwc
+         +OAxl4xgYxkuytsWZ9GMCWGuajwQwETzaI1hNBgY/3UxiaRGB6BOxiA6BIWjXGjfHR1N
+         Vyfw==
+X-Gm-Message-State: ACgBeo0N4sy5jg8Zzoi+am4an7bRi9+KtXCiRkTDs5GLjwPPuaB+Gkgh
+        h2yLgQ4YwioifRpWSyL0oKm5Ow==
+X-Google-Smtp-Source: AA6agR6SStRV2Ym4CUUkrm3BT0NdS/bPaP1Ahl8puqMOULGHvQu0QkmzZ4yCqOreQsizM6DvzYFD0w==
+X-Received: by 2002:a2e:7309:0:b0:261:d14e:7af2 with SMTP id o9-20020a2e7309000000b00261d14e7af2mr2016553ljc.45.1661249897669;
+        Tue, 23 Aug 2022 03:18:17 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id g8-20020a2eb5c8000000b00261c6c80b38sm1503878ljn.75.2022.08.23.03.18.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:18:17 -0700 (PDT)
+Message-ID: <b572cfa0-a051-ee7f-c720-5f0ccbea8950@linaro.org>
+Date:   Tue, 23 Aug 2022 13:18:16 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/4] arm64: dts: ti: Add initial support for J784s4 SoC
+Content-Language: en-US
+To:     Apurva Nandan <a-nandan@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Cc:     Hari Nagalla <hnagalla@ti.com>
+References: <20220819190054.31348-1-a-nandan@ti.com>
+ <20220819190054.31348-4-a-nandan@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220819190054.31348-4-a-nandan@ti.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The __shmem_file_setup() function returns -EINVAL if size is greater than
-MAX_LFS_FILESIZE. To handle the same error as other code that returns
--E2BIG when the size is too large, it add a code that returns -E2BIG when
-the size is larger than the size that can be handled.
+On 19/08/2022 22:00, Apurva Nandan wrote:
+> The J784S4 SoC belongs to the K3 Multicore SoC architecture platform,
+> providing advanced system integration in automotive ADAS applications
+> and industrial applications requiring AI at the network edge. This SoC
+> extends the Jacinto 7 family of SoCs with focus on high performance
+> providing significant levels of processing power, graphics capability,
+> video and imaging processing, virtualization and coherent memory
+> support.
+> 
+> Some highlights of this SoC are:
 
-v4: If BITS_PER_LONG is 32, size > MAX_LFS_FILESIZE is always false, so it
-    checks only when BITS_PER_LONG is 64.
+Thank you for your patch. There is something to discuss/improve.
 
-Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Matthew Auld <matthew.auld@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Reviewed-by: Nirmoy Das <nirmoy.das@intel.com>
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
----
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index 339b0a9cf2d0..ca30060e34ab 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -541,6 +541,20 @@ static int __create_shmem(struct drm_i915_private *i915,
- 
- 	drm_gem_private_object_init(&i915->drm, obj, size);
- 
-+	/* XXX: The __shmem_file_setup() function returns -EINVAL if size is
-+	 * greater than MAX_LFS_FILESIZE.
-+	 * To handle the same error as other code that returns -E2BIG when
-+	 * the size is too large, we add a code that returns -E2BIG when the
-+	 * size is larger than the size that can be handled.
-+	 * If BITS_PER_LONG is 32, size > MAX_LFS_FILESIZE is always false,
-+	 * so we only needs to check when BITS_PER_LONG is 64.
-+	 * If BITS_PER_LONG is 32, E2BIG checks are processed when
-+	 * i915_gem_object_size_2big() is called before init_object() callback
-+	 * is called.
-+	 */
-+	if (BITS_PER_LONG == 64 && size > MAX_LFS_FILESIZE)
-+		return -E2BIG;
-+
- 	if (i915->mm.gemfs)
- 		filp = shmem_file_setup_with_mnt(i915->mm.gemfs, "i915", size,
- 						 flags);
--- 
-2.37.1
+> +
+> +	main_gpio_intr: interrupt-controller@a00000 {
+> +		compatible = "ti,sci-intr";
+> +		reg = <0x00 0x00a00000 0x00 0x800>;
 
+0x0, not 0x00. Here and all other places.
+
+> +		ti,intr-trigger-type = <1>;
+> +		interrupt-controller;
+> +		interrupt-parent = <&gic500>;
+> +		#interrupt-cells = <1>;
+> +		ti,sci = <&sms>;
+> +		ti,sci-dev-id = <10>;
+> +		ti,interrupt-ranges = <8 360 56>;
+> +	};
+> +
+> +	main_pmx0: pinctrl@11c000 {
+> +		compatible = "pinctrl-single";
+> +		/* Proxy 0 addressing */
+> +		reg = <0x0 0x11c000 0x0 0x120>;
+> +		#pinctrl-cells = <1>;
+> +		pinctrl-single,register-width = <32>;
+> +		pinctrl-single,function-mask = <0xffffffff>;
+> +	};
+> +
+
+
+(...)
+
+> +
+> +		main_udmass_inta: msi-controller@33d00000 {
+> +			compatible = "ti,sci-inta";
+> +			reg = <0x00 0x33d00000 0x00 0x100000>;
+> +			interrupt-controller;
+> +			#interrupt-cells = <0>;
+> +			interrupt-parent = <&main_navss_intr>;
+> +			msi-controller;
+> +			ti,sci = <&sms>;
+> +			ti,sci-dev-id = <321>;
+> +			ti,interrupt-ranges = <0 0 256>;
+> +		};
+> +
+> +		secure_proxy_main: mailbox@32c00000 {
+> +			compatible = "ti,am654-secure-proxy";
+> +			#mbox-cells = <1>;
+> +			reg-names = "target_data", "rt", "scfg";
+> +			reg = <0x00 0x32c00000 0x00 0x100000>,
+> +			      <0x00 0x32400000 0x00 0x100000>,
+> +			      <0x00 0x32800000 0x00 0x100000>;
+> +			interrupt-names = "rx_011";
+> +			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+> +		};
+> +
+> +		hwspinlock: spinlock@30e00000 {
+
+Node name: hwlock
+(spinlock is Linux specific)
+
+> +			compatible = "ti,am654-hwspinlock";
+> +			reg = <0x00 0x30e00000 0x00 0x1000>;
+> +			#hwlock-cells = <1>;
+> +		};
+> +
+> +		mailbox0_cluster0: mailbox@31f80000 {
+> +			compatible = "ti,am654-mailbox";
+> +			reg = <0x00 0x31f80000 0x00 0x200>;
+> +			#mbox-cells = <1>;
+> +			ti,mbox-num-users = <4>;
+> +			ti,mbox-num-fifos = <16>;
+> +			interrupt-parent = <&main_navss_intr>;
+> +		};
+
+
+(...)
+
+
+> +
+> +	wkup_pmx0: pinctrl@4301c000 {
+> +		compatible = "pinctrl-single";
+> +		/* Proxy 0 addressing */
+> +		reg = <0x00 0x4301c000 0x00 0x178>;
+> +		#pinctrl-cells = <1>;
+> +		pinctrl-single,register-width = <32>;
+> +		pinctrl-single,function-mask = <0xffffffff>;
+> +	};
+> +
+> +	wkup_gpio_intr: interrupt-controller@42200000 {
+> +		compatible = "ti,sci-intr";
+> +		reg = <0x00 0x42200000 0x00 0x400>;
+> +		ti,intr-trigger-type = <1>;
+> +		interrupt-controller;
+> +		interrupt-parent = <&gic500>;
+> +		#interrupt-cells = <1>;
+> +		ti,sci = <&sms>;
+> +		ti,sci-dev-id = <177>;
+> +		ti,interrupt-ranges = <16 928 16>;
+> +	};
+> +
+> +	mcu_conf: syscon@40f00000 {
+> +		compatible = "syscon", "simple-mfd";
+
+You need device specific compatible. Alone this is not allowed.
+
+
+
+Best regards,
+Krzysztof
