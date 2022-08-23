@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6AEC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0599EC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354261AbiHWKVD (ORCPT
+        id S1354286AbiHWKVI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
+        Tue, 23 Aug 2022 06:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352885AbiHWKJ2 (ORCPT
+        with ESMTP id S1352912AbiHWKJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:09:28 -0400
+        Tue, 23 Aug 2022 06:09:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041547D7A0;
-        Tue, 23 Aug 2022 01:55:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464DE6B65A;
+        Tue, 23 Aug 2022 01:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82CF6B81C35;
-        Tue, 23 Aug 2022 08:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1856C433C1;
-        Tue, 23 Aug 2022 08:55:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03BF2B81C28;
+        Tue, 23 Aug 2022 08:55:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A07C433C1;
+        Tue, 23 Aug 2022 08:55:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244914;
-        bh=bN3EKTlsIxDcvLIM4ArOYD58V+iKRrzDHbCvOFH9Ogw=;
+        s=korg; t=1661244924;
+        bh=HOXCiQRCue+WqyhD977c9T+bU9sdz6fgKX43vY6tDYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j0vdfaWXkCSzGDH9fcwtxgJQqF+PqtR7W+gn0yVUYt/ydqx6RMeJElwq+Ra7uFteE
-         o9ntCAB2zl/LbUi0pHe3HgskvVkBS/R4fyHX+dOTFb1Gi3AsFMYReQGebn1tDmAty1
-         FwGyKDb6rHfBaDELUsC+4UEre5NK9qAklzAe/RT8=
+        b=iAs6PntlpGWwH7/UEl6nPjniqxps2CXEASynQkM1niMdcs8mvxg2Km3vZ3H5iNYKV
+         MaoKe6zw0bLTkxP9LWI67J8KuKHfsEs/cVV24IbTgUfe+QbcpIu0j4nrGSaH3Mgwpt
+         6MSFAuMcJJf1Y3vyAeEx0f2s1rVz5Yhc811GQq6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 211/229] drm/meson: Fix refcount bugs in meson_vpu_has_available_connectors()
-Date:   Tue, 23 Aug 2022 10:26:12 +0200
-Message-Id: <20220823080101.180969502@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 4.14 190/229] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
+Date:   Tue, 23 Aug 2022 10:25:51 +0200
+Message-Id: <20220823080100.397245393@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -51,46 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 91b3c8dbe898df158fd2a84675f3a284ff6666f7 ]
+commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
 
-In this function, there are two refcount leak bugs:
-(1) when breaking out of for_each_endpoint_of_node(), we need call
-the of_node_put() for the 'ep';
-(2) we should call of_node_put() for the reference returned by
-of_graph_get_remote_port() when it is not used anymore.
+The value acpi_add_nondev_subnodes() returns is bool so change the return
+type of the function to match that.
 
-Fixes: bbbe775ec5b5 ("drm: Add support for Amlogic Meson Graphic Controller")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220726010722.1319416-1-windhl@126.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/meson/meson_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/acpi/property.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
-index 2d5f2ed3b0b2..0da33f7af654 100644
---- a/drivers/gpu/drm/meson/meson_drv.c
-+++ b/drivers/gpu/drm/meson/meson_drv.c
-@@ -136,8 +136,11 @@ static bool meson_vpu_has_available_connectors(struct device *dev)
- 	for_each_endpoint_of_node(dev->of_node, ep) {
- 		/* If the endpoint node exists, consider it enabled */
- 		remote = of_graph_get_remote_port(ep);
--		if (remote)
-+		if (remote) {
-+			of_node_put(remote);
-+			of_node_put(ep);
- 			return true;
-+		}
- 	}
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -132,10 +132,10 @@ static bool acpi_nondev_subnode_ok(acpi_
+ 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
+ }
  
- 	return false;
--- 
-2.35.1
-
+-static int acpi_add_nondev_subnodes(acpi_handle scope,
+-				    const union acpi_object *links,
+-				    struct list_head *list,
+-				    struct fwnode_handle *parent)
++static bool acpi_add_nondev_subnodes(acpi_handle scope,
++				     const union acpi_object *links,
++				     struct list_head *list,
++				     struct fwnode_handle *parent)
+ {
+ 	bool ret = false;
+ 	int i;
 
 
