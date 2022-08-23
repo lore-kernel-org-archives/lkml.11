@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 421D0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD8DC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243347AbiHWJsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
+        id S243977AbiHWJsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351916AbiHWJpl (ORCPT
+        with ESMTP id S1352128AbiHWJp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:45:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DDB2F7;
-        Tue, 23 Aug 2022 01:43:16 -0700 (PDT)
+        Tue, 23 Aug 2022 05:45:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C6343E71;
+        Tue, 23 Aug 2022 01:43:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EDD4B81C4F;
-        Tue, 23 Aug 2022 08:43:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A1B2C433D6;
-        Tue, 23 Aug 2022 08:43:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D89466153A;
+        Tue, 23 Aug 2022 08:43:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB05DC433C1;
+        Tue, 23 Aug 2022 08:43:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244180;
-        bh=wvDu/ipmfAlirHb5j2FpWgwFya3KrOeJTyYaZnia1G8=;
+        s=korg; t=1661244196;
+        bh=nBECbFiTYqDWMZnWshLEHrVJOnspAGOnYPScHv5uORA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CdHDgkxv9ioSHTRq9P0KRjNy/4t4kgWU6FkAj7L2NNPtTA1u8laAXlvFu9n+iTPvF
-         tJErhwXKTCMRGJ6tl5SVxZGywEpu0rcD5/2VGSCMyZGmr8yMyNj9Rnb1++1DDV2adk
-         7cfS7/35s77wW9XbS8l3SIZOWQFAagdZ06kv4BO4=
+        b=TDuL+OvOtzGIkc5IuOXl9p+1TsISBmgxdz75d499W9UerZjssb5Kj3rqZMLLCB/Kw
+         lZ9LdacHZMHu6kWhJdE71oD4Q+F0rz3DYUP2c/ZlVQpwu8wlvgk4QGqQye6GvdN10Z
+         PDEunl9F4x2uUCgyo2NhcJFF49zlh08eIE+7KUpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 069/229] drm/mediatek: dpi: Remove output format of YUV
-Date:   Tue, 23 Aug 2022 10:23:50 +0200
-Message-Id: <20220823080056.184219976@linuxfoundation.org>
+Subject: [PATCH 4.14 101/229] misc: rtsx: Fix an error handling path in rtsx_pci_probe()
+Date:   Tue, 23 Aug 2022 10:24:22 +0200
+Message-Id: <20220823080057.306630618@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,71 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit c9ed0713b3c35fc45677707ba47f432cad95da56 ]
+[ Upstream commit 44fd1917314e9d4f53dd95dd65df1c152f503d3a ]
 
-DPI is not support output format as YUV, but there is the setting of
-configuring output YUV. Therefore, remove them in this patch.
+If an error occurs after a successful idr_alloc() call, the corresponding
+resource must be released with idr_remove() as already done in the .remove
+function.
 
-Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-5-rex-bc.chen@mediatek.com/
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Update the error handling path to add the missing idr_remove() call.
+
+Fixes: ada8a8a13b13 ("mfd: Add realtek pcie card reader driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/e8dc41716cbf52fb37a12e70d8972848e69df6d6.1655271216.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 31 ++++++------------------------
- 1 file changed, 6 insertions(+), 25 deletions(-)
+ drivers/mfd/rtsx_pcr.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index e80a603e5fb0..6b12be8ca33e 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -51,13 +51,7 @@ enum mtk_dpi_out_channel_swap {
- };
+diff --git a/drivers/mfd/rtsx_pcr.c b/drivers/mfd/rtsx_pcr.c
+index c9e45b6befac..1c7afd9a14e3 100644
+--- a/drivers/mfd/rtsx_pcr.c
++++ b/drivers/mfd/rtsx_pcr.c
+@@ -1223,7 +1223,7 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
+ 	pcr->remap_addr = ioremap_nocache(base, len);
+ 	if (!pcr->remap_addr) {
+ 		ret = -ENOMEM;
+-		goto free_handle;
++		goto free_idr;
+ 	}
  
- enum mtk_dpi_out_color_format {
--	MTK_DPI_COLOR_FORMAT_RGB,
--	MTK_DPI_COLOR_FORMAT_RGB_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422,
--	MTK_DPI_COLOR_FORMAT_XV_YCC,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
-+	MTK_DPI_COLOR_FORMAT_RGB
- };
- 
- struct mtk_dpi {
-@@ -346,24 +340,11 @@ static void mtk_dpi_config_2n_h_fre(struct mtk_dpi *dpi)
- static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
- 					enum mtk_dpi_out_color_format format)
- {
--	if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_444) ||
--	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
--	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
--		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, true);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, true);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	} else {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, false);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	}
-+	/* only support RGB888 */
-+	mtk_dpi_config_yuv422_enable(dpi, false);
-+	mtk_dpi_config_csc_enable(dpi, false);
-+	mtk_dpi_config_swap_input(dpi, false);
-+	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
- }
- 
- static void mtk_dpi_power_off(struct mtk_dpi *dpi, enum mtk_dpi_power_ctl pctl)
+ 	pcr->rtsx_resv_buf = dma_alloc_coherent(&(pcidev->dev),
+@@ -1285,6 +1285,10 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
+ 			pcr->rtsx_resv_buf, pcr->rtsx_resv_buf_addr);
+ unmap:
+ 	iounmap(pcr->remap_addr);
++free_idr:
++	spin_lock(&rtsx_pci_lock);
++	idr_remove(&rtsx_pci_idr, pcr->id);
++	spin_unlock(&rtsx_pci_lock);
+ free_handle:
+ 	kfree(handle);
+ free_pcr:
 -- 
 2.35.1
 
