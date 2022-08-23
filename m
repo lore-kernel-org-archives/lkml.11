@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8BE4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D78DDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241015AbiHWJGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
+        id S241151AbiHWJGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242352AbiHWJEo (ORCPT
+        with ESMTP id S243417AbiHWJFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:04:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D959D83F2E;
-        Tue, 23 Aug 2022 01:29:16 -0700 (PDT)
+        Tue, 23 Aug 2022 05:05:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3554074B8F;
+        Tue, 23 Aug 2022 01:29:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24FAD61360;
-        Tue, 23 Aug 2022 08:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DA51C433C1;
-        Tue, 23 Aug 2022 08:28:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07BF8B81C48;
+        Tue, 23 Aug 2022 08:28:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68CDDC433D6;
+        Tue, 23 Aug 2022 08:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243288;
-        bh=8Jm9YYqLw/pElrVNBlgxZpV/Wi6IBZMDszQgvh2y7wA=;
+        s=korg; t=1661243285;
+        bh=0kRc/kQ7IVCbJ2ZgeyLpv5oI5kf4VZzx/zouu/0Opm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cLY15dk6CmQSeOdKgvaQDLe2D296n7xHFbuvrXWz+zV7J/pOpy8Gf+cugtvPhDaul
-         4NFH/DeN7Iiwzt7t2ozzpX1dAAIlHv/an6qdC/DK/jjyHfIcZpmxVhGQ3HZZrg3V/A
-         BUzOeSNGhpno9b9ohMzZmR9S50r6QgqaTaOBSzEw=
+        b=ZCj642yJQMEfTDgTiQ+I0WG8rZPEPs/K7Q+6TqGZr0ILYZscnzFbn/I9aY7Q7Nlef
+         JGy92gTASqFk5E1d57VwEWL5qJHXoQlbAXtiH2gEGbULI2dxTWOLoWX3DLxP6dmHbo
+         PeKE8EFphC3Ourzc4TW2CJx5hV5t20k+WHKRn4T0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        matoro <matoro_mailinglist_kernel@matoro.tk>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 5.19 228/365] modpost: fix module versioning when a symbol lacks valid CRC
-Date:   Tue, 23 Aug 2022 10:02:09 +0200
-Message-Id: <20220823080127.738695343@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.19 201/365] netfilter: nf_tables: disallow NFT_SET_ELEM_CATCHALL and NFT_SET_ELEM_INTERVAL_END
+Date:   Tue, 23 Aug 2022 10:01:42 +0200
+Message-Id: <20220823080126.628524897@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,80 +47,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 5b8a9a8fd1f0c3d55d407cf759d54ca68798d9ad upstream.
+commit fc0ae524b5fd2938c94d56da3f749f11eb3273d5 upstream.
 
-Since commit 7b4537199a4a ("kbuild: link symbol CRCs at final link,
-removing CONFIG_MODULE_REL_CRCS"), module versioning is broken on
-some architectures. Loading a module fails with "disagrees about
-version of symbol module_layout".
+These flags are mutually exclusive, report EINVAL in this case.
 
-On such architectures (e.g. ARCH=sparc build with sparc64_defconfig),
-modpost shows a warning, like follows:
-
-  WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation failed, symbol will not be versioned.
-  Is "_mcount" prototyped in <asm/asm-prototypes.h>?
-
-Previously, it was a harmless warning (CRC check was just skipped),
-but now wrong CRCs are used for comparison because invalid CRCs are
-just skipped.
-
-  $ sparc64-linux-gnu-nm -n vmlinux
-    [snip]
-  0000000000c2cea0 r __ksymtab__kstrtol
-  0000000000c2ceb8 r __ksymtab__kstrtoul
-  0000000000c2ced0 r __ksymtab__local_bh_enable
-  0000000000c2cee8 r __ksymtab__mcount
-  0000000000c2cf00 r __ksymtab__printk
-  0000000000c2cf18 r __ksymtab__raw_read_lock
-  0000000000c2cf30 r __ksymtab__raw_read_lock_bh
-    [snip]
-  0000000000c53b34 D __crc__kstrtol
-  0000000000c53b38 D __crc__kstrtoul
-  0000000000c53b3c D __crc__local_bh_enable
-  0000000000c53b40 D __crc__printk
-  0000000000c53b44 D __crc__raw_read_lock
-  0000000000c53b48 D __crc__raw_read_lock_bh
-
-Please notice __crc__mcount is missing here.
-
-When the module subsystem looks up a CRC that comes after, it results
-in reading out a wrong address. For example, when __crc__printk is
-needed, the module subsystem reads 0xc53b44 instead of 0xc53b40.
-
-All CRC entries must be output for correct index accessing. Invalid
-CRCs will be unused, but are needed to keep the one-to-one mapping
-between __ksymtab_* and __crc_*.
-
-The best is to fix all modpost warnings, but several warnings are still
-remaining on less popular architectures.
-
-Fixes: 7b4537199a4a ("kbuild: link symbol CRCs at final link, removing CONFIG_MODULE_REL_CRCS")
-Reported-by: matoro <matoro_mailinglist_kernel@matoro.tk>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Tested-by: matoro <matoro_mailinglist_kernel@matoro.tk>
+Fixes: aaa31047a6d2 ("netfilter: nftables: add catch-all set element support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/mod/modpost.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -2203,13 +2203,11 @@ static void add_exported_symbols(struct
- 	/* record CRCs for exported symbols */
- 	buf_printf(buf, "\n");
- 	list_for_each_entry(sym, &mod->exported_symbols, list) {
--		if (!sym->crc_valid) {
-+		if (!sym->crc_valid)
- 			warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
- 			     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
- 			     sym->name, mod->name, mod->is_vmlinux ? "" : ".ko",
- 			     sym->name);
--			continue;
--		}
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5198,6 +5198,9 @@ static int nft_setelem_parse_flags(const
+ 	if (!(set->flags & NFT_SET_INTERVAL) &&
+ 	    *flags & NFT_SET_ELEM_INTERVAL_END)
+ 		return -EINVAL;
++	if ((*flags & (NFT_SET_ELEM_INTERVAL_END | NFT_SET_ELEM_CATCHALL)) ==
++	    (NFT_SET_ELEM_INTERVAL_END | NFT_SET_ELEM_CATCHALL))
++		return -EINVAL;
  
- 		buf_printf(buf, "SYMBOL_CRC(%s, 0x%08x, \"%s\");\n",
- 			   sym->name, sym->crc, sym->is_gpl_only ? "_gpl" : "");
+ 	return 0;
+ }
 
 
