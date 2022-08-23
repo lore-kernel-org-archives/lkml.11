@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D359C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1CEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348872AbiHWJNR (ORCPT
+        id S1348854AbiHWJNY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34108 "EHLO
+        Tue, 23 Aug 2022 05:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348571AbiHWJKc (ORCPT
+        with ESMTP id S1348692AbiHWJKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:10:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9C86D558;
-        Tue, 23 Aug 2022 01:31:05 -0700 (PDT)
+        Tue, 23 Aug 2022 05:10:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA64686B72;
+        Tue, 23 Aug 2022 01:31:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 615B6B81C3B;
-        Tue, 23 Aug 2022 08:19:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F55C433D6;
-        Tue, 23 Aug 2022 08:19:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 496ECB81C54;
+        Tue, 23 Aug 2022 08:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C69C433D6;
+        Tue, 23 Aug 2022 08:30:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242759;
-        bh=vHPGp8AEhZpZ/FwWx4QLugFFEi7ycBigP5bAFx4OfiQ=;
+        s=korg; t=1661243429;
+        bh=GuOmZLylmuX6irrw0+j0dIRNspABPterYfA45dueXJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MQuo9d7xnRiIb5Ewwsd4H7m5CQid4fGBpyU9a+53okIAOxjMwVfXG1lhforGrbzp3
-         iFjRl5NQsLpVwczifhymKGus4WrTikDgJsM0T0ZheYI/Fmrnd5NyjVp1ib1iv8P5HP
-         tKk/ZMz1l79WPbFgEOBqgQP/tZiNz/ssCs+d3ldg=
+        b=Sy3qWYjlNs+EvObnPY5LoQgxJIAIo/lj/QxeNCNJIoHx4vsrxtuybL1f57dtUwWqR
+         WMHR+LvUp8nMfS+F9PqsOQzhx6TNTRwBByiGM1tZ7ZRuIujAir1sjdrZoDCSY0kJgR
+         OotV4th3wNE1vg3Fgc4xSx6JFRdxIR90O5BPyJc0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 191/365] netfilter: nf_tables: disallow NFTA_SET_ELEM_KEY_END with NFT_SET_ELEM_INTERVAL_END flag
-Date:   Tue, 23 Aug 2022 10:01:32 +0200
-Message-Id: <20220823080126.208106436@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 275/365] usb: host: ohci-ppc-of: Fix refcount leak bug
+Date:   Tue, 23 Aug 2022 10:02:56 +0200
+Message-Id: <20220823080129.669683655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,29 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Liang He <windhl@126.com>
 
-commit 4963674c2e71fc062f8f089f0f58ffbb5533060b upstream.
+[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
 
-These are mutually exclusive, actually NFTA_SET_ELEM_KEY_END replaces
-the flag notation.
+In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-Fixes: 7b225d0b5c6d ("netfilter: nf_tables: add NFTA_SET_ELEM_KEY_END attribute")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
+ drivers/usb/host/ohci-ppc-of.c | 1 +
  1 file changed, 1 insertion(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5855,6 +5855,7 @@ static int nft_add_set_elem(struct nft_c
- 	      nla[NFTA_SET_ELEM_EXPIRATION] ||
- 	      nla[NFTA_SET_ELEM_USERDATA] ||
- 	      nla[NFTA_SET_ELEM_EXPR] ||
-+	      nla[NFTA_SET_ELEM_KEY_END] ||
- 	      nla[NFTA_SET_ELEM_EXPRESSIONS]))
- 		return -EINVAL;
+diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
+index 1960b8dfdba5..591f675cc930 100644
+--- a/drivers/usb/host/ohci-ppc-of.c
++++ b/drivers/usb/host/ohci-ppc-of.c
+@@ -166,6 +166,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
+ 				release_mem_region(res.start, 0x4);
+ 		} else
+ 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
++		of_node_put(np);
+ 	}
  
+ 	irq_dispose_mapping(irq);
+-- 
+2.35.1
+
 
 
