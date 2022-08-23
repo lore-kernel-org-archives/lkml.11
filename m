@@ -2,106 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7593C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F237C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245689AbiHWQ72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
+        id S1343724AbiHWRAC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343592AbiHWQ6s (ORCPT
+        with ESMTP id S1343561AbiHWQ73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:58:48 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF11F7695A;
-        Tue, 23 Aug 2022 07:14:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FhxKkGuRSJCPS19swjGEpnaR6PB5g9G56uDDnI2exs8=; b=qBS8PF3KUObRGOHxSsX/YZs/JT
-        oPZPmI2danpk1ls93Xk7LLn78aiRupWSJa4LhoN9kfVoqsHp72lhYjr38lFER1XwSa9YqNEbpzb50
-        3bVClJu5cbnGW8I6bY0N8L/8ZwwCuiB/uQOzJ3gZfM7S6cL/mlTkpwgIhpG8zfZ3dh/U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQUfY-00EMAk-OF; Tue, 23 Aug 2022 16:14:16 +0200
-Date:   Tue, 23 Aug 2022 16:14:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4.4] net: phy: Add driver for Motorcomm yt8521 gigabit
- ethernet phy
-Message-ID: <YwTguA0azox3j5vi@lunn.ch>
-References: <20220817112554.383-1-Frank.Sae@motor-comm.com>
- <20220822202147.4be904de@kernel.org>
+        Tue, 23 Aug 2022 12:59:29 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C9D9E8A6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:13:17 -0700 (PDT)
+X-QQ-mid: bizesmtp83t1661263987tvsjyje9
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 22:13:05 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: 7jw2iSiCazoxMSclW6PN5wLbkkpq/R/rMTmC0eGoqLvPIJxpBnLVIzRsLMAg/
+        upG5xdRWhzuj9O0nPaTVSO+OI3lrvUEnp9WpqnqTthEkrwUURNEGbpaYoCZ7rtwovfvk+d0
+        sDnB8ApoYGIhjNvKFOtxLg9yLays9Ruy2jmZLSPxUOufAhRnywTbUqFWtxt+UHZwSW+d4qT
+        Tr4WE5j+9d8c1Xmb3EgV+EglZn3gQBWC0AaKk2JC+DhOZ7plUL9CB2zHD7Vt+8xiRaxf7fB
+        XPqmCOUnLMqzfHxndgC80hitO3yB3cNr7JL+hlvtMkGrW1jo2ac9y6JKpqq3L2rQAY/zqCY
+        rMa19kO8NGxjxOqjF7pFpAsgkojSVwxAlqYaVri4P2Mg9Fn/rEN5i0ebm4/5Q==
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, irlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] gpu/drm: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:12:59 +0800
+Message-Id: <20220823141259.10668-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822202147.4be904de@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 08:21:47PM -0700, Jakub Kicinski wrote:
-> On Wed, 17 Aug 2022 19:25:54 +0800 Frank wrote:
-> > +static int yt8521_fiber_config_aneg(struct phy_device *phydev)
-> > +{
-> > +	int err, changed;
-> > +	u16 adv;
-> > +
-> > +	if (phydev->autoneg != AUTONEG_ENABLE)
-> > +		return yt8521_fiber_setup_forced(phydev);
-> > +
-> > +	err =  ytphy_modify_ext_with_lock(phydev, YTPHY_MISC_CONFIG_REG,
-> > +					  YTPHY_MCR_FIBER_SPEED_MASK,
-> > +					  YTPHY_MCR_FIBER_1000BX);
-> > +	if (err < 0)
-> > +		return err;
-> > +
-> > +	/* enable Fiber auto sensing */
-> > +	err =  ytphy_modify_ext_with_lock(phydev, YT8521_LINK_TIMER_CFG2_REG,
-> > +					  0, YT8521_LTCR_EN_AUTOSEN);
-> > +	if (err < 0)
-> > +		return err;
-> > +
-> > +	/* Setup fiber advertisement */
-> > +	adv = ADVERTISE_1000XFULL | ADVERTISE_1000XPAUSE |
-> > +	      ADVERTISE_1000XPSE_ASYM;
-> 
-> Is it okay to ignore phydev->advertising and always set the same mask?
+ Delete the redundant word 'the'.
 
-The user could of changed the pause settings, which are going to be
-ignored here. Also, you should not assume the MAC can actually do
-asymmetric pause, not all can. phydev->advertising will be set to only
-include what the MAC can actually do.
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+---
+ drivers/gpu/drm/drm_rect.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The whole concept of having two line sides connected to one MAC and
-seeing which gets link first is unsupported in Linux. In theory, you
-want to be able to configure each line side differently. Maybe you
-want autoneg on copper, but fixed on fibre, asymmetric pause with
-fibre, but symmetric pause on copper, etc. Since there is only one
-instance of phydev here, you don't have anywhere to store two sets of
-configuration, nor any sort of kAPI to deal with two phydev structures
-etc. So the user experience is not so great.
-
-With the Marvell Switches which also have this capability, i actually
-ignore it, use the phy-mode it decide which should be used, either
-copper or fibre, and leave the other powered off so it can never get
-link. There is at least one Marvell PHY which does however support
-first up wins, so this behaviour is not new. I just don't recommend
-it.
-
-And it gets even more interesting when the SFP is actually copper. But
-since the integration with phylink is missing in this driver, that is
-not supported here.
-
-	Andrew
+diff --git a/drivers/gpu/drm/drm_rect.c b/drivers/gpu/drm/drm_rect.c
+index 0460e874896e..8873922d6dee 100644
+--- a/drivers/gpu/drm/drm_rect.c
++++ b/drivers/gpu/drm/drm_rect.c
+@@ -81,7 +81,7 @@ static u32 clip_scaled(int src, int dst, int *clip)
+  * @clip: clip rectangle
+  *
+  * Clip rectangle @dst by rectangle @clip. Clip rectangle @src by the
+- * the corresponding amounts, retaining the vertical and horizontal scaling
++ * corresponding amounts, retaining the vertical and horizontal scaling
+  * factors from @src to @dst.
+  *
+  * RETURNS:
+-- 
+2.36.1
 
