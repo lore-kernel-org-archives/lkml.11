@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BE1C49EC1
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41901C52D6C
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357773AbiHWL0r (ORCPT
+        id S1357908AbiHWL05 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43652 "EHLO
+        Tue, 23 Aug 2022 07:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357527AbiHWLRk (ORCPT
+        with ESMTP id S1357944AbiHWLVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E2E6717D;
-        Tue, 23 Aug 2022 02:21:23 -0700 (PDT)
+        Tue, 23 Aug 2022 07:21:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313BCBB0;
+        Tue, 23 Aug 2022 02:23:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 225AF6121F;
-        Tue, 23 Aug 2022 09:21:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16835C433C1;
-        Tue, 23 Aug 2022 09:21:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0DCB61220;
+        Tue, 23 Aug 2022 09:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8C4DC433D6;
+        Tue, 23 Aug 2022 09:23:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246482;
-        bh=t95JfVAsbvjZQPz/fb5tjYrWHwt5ViVfGfVIPpXnKwA=;
+        s=korg; t=1661246593;
+        bh=P+lG6CN5waLla/kapSKuAqM+XEWgYrqToEclSTDxzz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RmEoAiVYFRX/8MXqrUgiA9v4tcxeAfSnhKDakY577BgCUaoA0NiQzl832ZY8z4e1t
-         w8sCNSFGLFnxL8BBY0rJI1QQvJ8qy318vq68PxSzB0KVklvUysB39jTTatGiEDA907
-         Gynr/Jm5z3SBryDW7woXnqAEgTj+WZzwnGSZ+GWM=
+        b=lWmyBPEeV+w4smosQ7Eyz7Gt11SOsgFh/PZ/21AKwy45Ua9NTSaWIyY3C7i01YDuG
+         qRvJMQOJ3lC2GA3Bdx2v6oCxKqYNeyTO2i+GQx/Mr4/BbzXToaHED9MLJ+EXDVhJnc
+         FcZhG5PHoOPG13RKPLt29N/lYuZmXQ4ZYhc57raI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunhao Tian <t123yh.xyz@gmail.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 097/389] drm/mipi-dbi: align max_chunk to 2 in spi_transfer
-Date:   Tue, 23 Aug 2022 10:22:55 +0200
-Message-Id: <20220823080119.662538583@linuxfoundation.org>
+Subject: [PATCH 5.4 131/389] can: pch_can: do not report txerr and rxerr during bus-off
+Date:   Tue, 23 Aug 2022 10:23:29 +0200
+Message-Id: <20220823080121.101026688@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,46 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunhao Tian <t123yh.xyz@gmail.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 435c249008cba04ed6a7975e9411f3b934620204 ]
+[ Upstream commit 3a5c7e4611ddcf0ef37a3a17296b964d986161a6 ]
 
-In __spi_validate, there's a validation that no partial transfers
-are accepted (xfer->len % w_size must be zero). When
-max_chunk is not a multiple of bpw (e.g. max_chunk = 65535,
-bpw = 16), the transfer will be rejected.
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-This patch aligns max_chunk to 2 bytes (the maximum value of bpw is 16),
-so that no partial transfer will occur.
-
-Fixes: d23d4d4dac01 ("drm/tinydrm: Move tinydrm_spi_transfer()")
-
-Signed-off-by: Yunhao Tian <t123yh.xyz@gmail.com>
-Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220510030219.2486687-1-t123yh.xyz@gmail.com
+Fixes: 0c78ab76a05c ("pch_can: Add setting TEC/REC statistics processing")
+Link: https://lore.kernel.org/all/20220719143550.3681-2-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_mipi_dbi.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/can/pch_can.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_mipi_dbi.c b/drivers/gpu/drm/drm_mipi_dbi.c
-index 4042f5b39765..2a7ef1051b39 100644
---- a/drivers/gpu/drm/drm_mipi_dbi.c
-+++ b/drivers/gpu/drm/drm_mipi_dbi.c
-@@ -1156,6 +1156,13 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
- 	size_t chunk;
- 	int ret;
+diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
+index e90651f7b2ea..b148572e4a74 100644
+--- a/drivers/net/can/pch_can.c
++++ b/drivers/net/can/pch_can.c
+@@ -496,6 +496,9 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+ 		cf->can_id |= CAN_ERR_BUSOFF;
+ 		priv->can.can_stats.bus_off++;
+ 		can_bus_off(ndev);
++	} else {
++		cf->data[6] = errc & PCH_TEC;
++		cf->data[7] = (errc & PCH_REC) >> 8;
+ 	}
  
-+	/* In __spi_validate, there's a validation that no partial transfers
-+	 * are accepted (xfer->len % w_size must be zero).
-+	 * Here we align max_chunk to multiple of 2 (16bits),
-+	 * to prevent transfers from being rejected.
-+	 */
-+	max_chunk = ALIGN_DOWN(max_chunk, 2);
-+
- 	spi_message_init_with_transfers(&m, &tr, 1);
+ 	errc = ioread32(&priv->regs->errc);
+@@ -556,9 +559,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+ 		break;
+ 	}
  
- 	while (len) {
+-	cf->data[6] = errc & PCH_TEC;
+-	cf->data[7] = (errc & PCH_REC) >> 8;
+-
+ 	priv->can.state = state;
+ 	netif_receive_skb(skb);
+ 
 -- 
 2.35.1
 
