@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17DCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0986C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240363AbiHWJv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
+        id S242652AbiHWJwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242729AbiHWJu0 (ORCPT
+        with ESMTP id S1346391AbiHWJuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3A69DB47;
-        Tue, 23 Aug 2022 01:45:08 -0700 (PDT)
+        Tue, 23 Aug 2022 05:50:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5369D8DE;
+        Tue, 23 Aug 2022 01:45:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EACEB81C5A;
-        Tue, 23 Aug 2022 08:44:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFFD6C433C1;
-        Tue, 23 Aug 2022 08:44:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 242F76150F;
+        Tue, 23 Aug 2022 08:44:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9579C4314C;
+        Tue, 23 Aug 2022 08:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244268;
-        bh=/RaeS7m5dAmIU2S1dxom5JWgLdGUIw6c/w0E9WlM5zo=;
+        s=korg; t=1661244243;
+        bh=BfaIu5VZZ3+Z3xo5bcG1XjFtrpu+HVN/JIElpOiO6XU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hc5Q7/wiBwTCIRDtNrouRBp9CfCrDKgSLVIT/qFoRxTWmk5PeBXwGPbBLbgkSZvqN
-         fDljMV1qgx6D3p6eKB49nac6KGzq3VyvsPfQVQpmmVwwyZum9JeOmidZcM+2Bp3V9t
-         9qQs2CRUUt89oGFC1a5DhmbTHcLAXOfaEmLdzsIU=
+        b=Hvm/TFyDICryqUkWNJhwsRRoDhrKU5L/qxCVcDlmVK1sNmziD3AzAadkUyNMoab8A
+         IGirU+W98K7hDxGDfCnaG1RYIvI5orhnjj3z5m6bqQE2QSbhvrzJu++//7LJZ9RWGj
+         RlACXsQocVZ4evyqtGqpKDHMeOsObQY1QOx58kWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 111/229] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:24:32 +0200
-Message-Id: <20220823080057.645464694@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 061/244] selftests: forwarding: Fix failing tests with old libnet
+Date:   Tue, 23 Aug 2022 10:23:40 +0200
+Message-Id: <20220823080101.110058378@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +50,260 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
+commit 8bcfb4ae4d970b9a9724ddfbac26c387934e0e94 upstream.
 
-In thunder_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+The custom multipath hash tests use mausezahn in order to test how
+changes in various packet fields affect the packet distribution across
+the available nexthops.
 
-Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The tool uses the libnet library for various low-level packet
+construction and injection. The library started using the
+"SO_BINDTODEVICE" socket option for IPv6 sockets in version 1.1.6 and
+for IPv4 sockets in version 1.2.
+
+When the option is not set, packets are not routed according to the
+table associated with the VRF master device and tests fail.
+
+Fix this by prefixing the command with "ip vrf exec", which will cause
+the route lookup to occur in the VRF routing table. This makes the tests
+pass regardless of the libnet library version.
+
+Fixes: 511e8db54036 ("selftests: forwarding: Add test for custom multipath hash")
+Fixes: 185b0c190bb6 ("selftests: forwarding: Add test for custom multipath hash with IPv4 GRE")
+Fixes: b7715acba4d3 ("selftests: forwarding: Add test for custom multipath hash with IPv6 GRE")
+Reported-by: Ivan Vecera <ivecera@redhat.com>
+Tested-by: Ivan Vecera <ivecera@redhat.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Link: https://lore.kernel.org/r/20220809113320.751413-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/cavium-thunderx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../net/forwarding/custom_multipath_hash.sh   | 24 ++++++++++++-------
+ .../forwarding/gre_custom_multipath_hash.sh   | 24 ++++++++++++-------
+ .../ip6gre_custom_multipath_hash.sh           | 24 ++++++++++++-------
+ 3 files changed, 48 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
-index eee08d81b242..f79806e31e7e 100644
---- a/drivers/mmc/host/cavium-thunderx.c
-+++ b/drivers/mmc/host/cavium-thunderx.c
-@@ -138,8 +138,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
- 				continue;
+diff --git a/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh
+index a15d21dc035a..56eb83d1a3bd 100755
+--- a/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh
++++ b/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh
+@@ -181,37 +181,43 @@ ping_ipv6()
  
- 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
--			if (ret)
-+			if (ret) {
-+				of_node_put(child_node);
- 				goto error;
-+			}
- 		}
- 		i++;
- 	}
+ send_src_ipv4()
+ {
+-	$MZ $h1 -q -p 64 -A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_dst_ipv4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_src_udp4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B 203.0.113.2 \
+ 		-d 1msec -t udp "sp=0-32768,dp=30000"
+ }
+ 
+ send_dst_udp4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B 203.0.113.2 \
+ 		-d 1msec -t udp "sp=20000,dp=0-32768"
+ }
+ 
+ send_src_ipv6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:4::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:4::2 \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_dst_ipv6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B "2001:db8:4::2-2001:db8:4::fd" \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B "2001:db8:4::2-2001:db8:4::fd" \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+@@ -226,13 +232,15 @@ send_flowlabel()
+ 
+ send_src_udp6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:4::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B 2001:db8:4::2 \
+ 		-d 1msec -t udp "sp=0-32768,dp=30000"
+ }
+ 
+ send_dst_udp6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:4::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B 2001:db8:4::2 \
+ 		-d 1msec -t udp "sp=20000,dp=0-32768"
+ }
+ 
+diff --git a/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh
+index a73f52efcb6c..0446db9c6f74 100755
+--- a/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh
++++ b/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh
+@@ -276,37 +276,43 @@ ping_ipv6()
+ 
+ send_src_ipv4()
+ {
+-	$MZ $h1 -q -p 64 -A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_dst_ipv4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_src_udp4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B 203.0.113.2 \
+ 		-d 1msec -t udp "sp=0-32768,dp=30000"
+ }
+ 
+ send_dst_udp4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B 203.0.113.2 \
+ 		-d 1msec -t udp "sp=20000,dp=0-32768"
+ }
+ 
+ send_src_ipv6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:2::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:2::2 \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_dst_ipv6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B "2001:db8:2::2-2001:db8:2::fd" \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B "2001:db8:2::2-2001:db8:2::fd" \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+@@ -321,13 +327,15 @@ send_flowlabel()
+ 
+ send_src_udp6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B 2001:db8:2::2 \
+ 		-d 1msec -t udp "sp=0-32768,dp=30000"
+ }
+ 
+ send_dst_udp6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B 2001:db8:2::2 \
+ 		-d 1msec -t udp "sp=20000,dp=0-32768"
+ }
+ 
+diff --git a/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
+index 8fea2c2e0b25..d40183b4eccc 100755
+--- a/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
++++ b/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
+@@ -278,37 +278,43 @@ ping_ipv6()
+ 
+ send_src_ipv4()
+ {
+-	$MZ $h1 -q -p 64 -A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_dst_ipv4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_src_udp4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B 203.0.113.2 \
+ 		-d 1msec -t udp "sp=0-32768,dp=30000"
+ }
+ 
+ send_dst_udp4()
+ {
+-	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
++	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
++		-A 198.51.100.2 -B 203.0.113.2 \
+ 		-d 1msec -t udp "sp=20000,dp=0-32768"
+ }
+ 
+ send_src_ipv6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:2::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:2::2 \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+ send_dst_ipv6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B "2001:db8:2::2-2001:db8:2::fd" \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B "2001:db8:2::2-2001:db8:2::fd" \
+ 		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
+ }
+ 
+@@ -323,13 +329,15 @@ send_flowlabel()
+ 
+ send_src_udp6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B 2001:db8:2::2 \
+ 		-d 1msec -t udp "sp=0-32768,dp=30000"
+ }
+ 
+ send_dst_udp6()
+ {
+-	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
++	ip vrf exec v$h1 $MZ -6 $h1 -q -p 64 \
++		-A 2001:db8:1::2 -B 2001:db8:2::2 \
+ 		-d 1msec -t udp "sp=20000,dp=0-32768"
+ }
+ 
 -- 
-2.35.1
+2.37.2
 
 
 
