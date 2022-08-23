@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 801A5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77887C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240352AbiHWJrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
+        id S241571AbiHWJrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352645AbiHWJlm (ORCPT
+        with ESMTP id S1352618AbiHWJlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:41:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F9699269;
-        Tue, 23 Aug 2022 01:42:20 -0700 (PDT)
+        Tue, 23 Aug 2022 05:41:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789CC7AC1C;
+        Tue, 23 Aug 2022 01:42:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E952A614E9;
-        Tue, 23 Aug 2022 08:42:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B756C433D6;
-        Tue, 23 Aug 2022 08:42:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BB42B81C55;
+        Tue, 23 Aug 2022 08:42:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECF7C433D6;
+        Tue, 23 Aug 2022 08:42:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244134;
-        bh=3YWFN+XdT8fZR01BOiGHTKj+hLvtm2wKp6jWFyaFJ34=;
+        s=korg; t=1661244130;
+        bh=O4OdIvj+qRIuwagZ5tOXpv5FbzYibdhEX136dNJVPbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q+orXx6TQk0XQu3Zqn//M2qVPuoxoKvpX3CG7qJpUo8Newmr9P/U8o+ob508gWhoV
-         P5rY8P0Sg6nXk8xXx73TmNlP2kyRzY7YJJuY/2u4k+TYOkthCBC0TX3QvwWDGQfkVH
-         P2Rcys7qSSfB6cVU9m8JyT6W5+rO6ZUXw5t7zzek=
+        b=RDhT9VkmkRShsqdnR4MSCOKMZKK4eEcy8EkXtIb4Yml/P69tBmErCILyzZgSVNrBT
+         HDzrpccDUcd4Zy19NARvMISA8R8mYI9qOlspfSB5S53jxFNWGAh9GybGYPvpBDk0Ow
+         zQB+cnGrZx67eECc3mKdoCR7Khx2nSFVJZVQ4ROc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 068/229] drm/rockchip: vop: Dont crash for invalid duplicate_state()
-Date:   Tue, 23 Aug 2022 10:23:49 +0200
-Message-Id: <20220823080056.147646905@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.15 041/244] NFSv4/pnfs: Fix a use-after-free bug in open
+Date:   Tue, 23 Aug 2022 10:23:20 +0200
+Message-Id: <20220823080100.435094415@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 1449110b0dade8b638d2c17ab7c5b0ff696bfccb ]
+commit 2135e5d56278ffdb1c2e6d325dc6b87f669b9dac upstream.
 
-It's possible for users to try to duplicate the CRTC state even when the
-state doesn't exist. drm_atomic_helper_crtc_duplicate_state() (and other
-users of __drm_atomic_helper_crtc_duplicate_state()) already guard this
-with a WARN_ON() instead of crashing, so let's do that here too.
+If someone cancels the open RPC call, then we must not try to free
+either the open slot or the layoutget operation arguments, since they
+are likely still in use by the hung RPC call.
 
-Fixes: 4e257d9eee23 ("drm/rockchip: get rid of rockchip_drm_crtc_mode_config")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6949493884fe ("NFSv4: Don't hold the layoutget locks across multiple RPC calls")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/nfs/nfs4proc.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 80a65eaed0be..feb6a458f82d 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -1068,6 +1068,9 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
- {
- 	struct rockchip_crtc_state *rockchip_state;
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3106,12 +3106,13 @@ static int _nfs4_open_and_get_state(stru
+ 	}
  
-+	if (WARN_ON(!crtc->state))
-+		return NULL;
-+
- 	rockchip_state = kzalloc(sizeof(*rockchip_state), GFP_KERNEL);
- 	if (!rockchip_state)
- 		return NULL;
--- 
-2.35.1
-
+ out:
+-	if (opendata->lgp) {
+-		nfs4_lgopen_release(opendata->lgp);
+-		opendata->lgp = NULL;
+-	}
+-	if (!opendata->cancelled)
++	if (!opendata->cancelled) {
++		if (opendata->lgp) {
++			nfs4_lgopen_release(opendata->lgp);
++			opendata->lgp = NULL;
++		}
+ 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
++	}
+ 	return ret;
+ }
+ 
 
 
