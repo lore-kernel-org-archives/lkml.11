@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14AE3C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEB9C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242835AbiHWLwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
+        id S1358682AbiHWLww (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358493AbiHWLtx (ORCPT
+        with ESMTP id S1358584AbiHWLt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:49:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E005B77EA2;
-        Tue, 23 Aug 2022 02:31:09 -0700 (PDT)
+        Tue, 23 Aug 2022 07:49:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DAC77EB0;
+        Tue, 23 Aug 2022 02:31:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAEB4612D8;
-        Tue, 23 Aug 2022 09:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF458C433D6;
-        Tue, 23 Aug 2022 09:31:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CB36B81C66;
+        Tue, 23 Aug 2022 09:31:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA4BC433D6;
+        Tue, 23 Aug 2022 09:31:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247068;
-        bh=Ar0Ri1pXQ2u5TEvE1oM8+Sx9bnNlWLzCZzLjllN8NEw=;
+        s=korg; t=1661247072;
+        bh=IOsgaTxVBzA63oEuZIQOdrHHKRDvYavH/H8To3RGHZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONd5t7ZUKTJs5Sl+X74bQFOz1ddyOq5uPTWgOeSAj5SrNV7JusKIaXoS8WKAqhM0C
-         Ec8jHq71hgmJKfKsZj0UJVSEzM6ARUmtbYKhrZKRjAb4/g0rGIt/Q8MHZWJxtSMjkE
-         BQ/j2i7ApZNdT+dvyGtcZLOqOLNMBmzZHRb94cPc=
+        b=o08S1V/ClCCbakgLGCZOUtAvYrVU5BvbnSqIO/IxBNjgp61AoODA9Y31mOGggMxqd
+         Ds4Hptcd7YUy/qpH+YGNBdb3xC+UiqDqvduBY2OpBm6h/3UkFw5rOl4MpDaNprP8OU
+         CYnZcvuq5+uy7AwVeBs0EZVeqVLudEcgulwVj8/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.4 309/389] SUNRPC: Reinitialise the backchannel request buffers before reuse
-Date:   Tue, 23 Aug 2022 10:26:27 +0200
-Message-Id: <20220823080128.484628977@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 310/389] devlink: Fix use-after-free after a failed reload
+Date:   Tue, 23 Aug 2022 10:26:28 +0200
+Message-Id: <20220823080128.524086837@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -48,50 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
+commit 6b4db2e528f650c7fb712961aac36455468d5902 upstream.
 
-When we're reusing the backchannel requests instead of freeing them,
-then we should reinitialise any values of the send/receive xdr_bufs so
-that they reflect the available space.
+After a failed devlink reload, devlink parameters are still registered,
+which means user space can set and get their values. In the case of the
+mlxsw "acl_region_rehash_interval" parameter, these operations will
+trigger a use-after-free [1].
 
-Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fix this by rejecting set and get operations while in the failed state.
+Return the "-EOPNOTSUPP" error code which does not abort the parameters
+dump, but instead causes it to skip over the problematic parameter.
+
+Another possible fix is to perform these checks in the mlxsw parameter
+callbacks, but other drivers might be affected by the same problem and I
+am not aware of scenarios where these stricter checks will cause a
+regression.
+
+[1]
+mlxsw_spectrum3 0000:00:10.0: Port 125: Failed to register netdev
+mlxsw_spectrum3 0000:00:10.0: Failed to create ports
+
+==================================================================
+BUG: KASAN: use-after-free in mlxsw_sp_acl_tcam_vregion_rehash_intrvl_get+0xbd/0xd0 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c:904
+Read of size 4 at addr ffff8880099dcfd8 by task kworker/u4:4/777
+
+CPU: 1 PID: 777 Comm: kworker/u4:4 Not tainted 5.19.0-rc7-custom-126601-gfe26f28c586d #1
+Hardware name: QEMU MSN4700, BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+Workqueue: netns cleanup_net
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x92/0xbd lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:313 [inline]
+ print_report.cold+0x5e/0x5cf mm/kasan/report.c:429
+ kasan_report+0xb9/0xf0 mm/kasan/report.c:491
+ __asan_report_load4_noabort+0x14/0x20 mm/kasan/report_generic.c:306
+ mlxsw_sp_acl_tcam_vregion_rehash_intrvl_get+0xbd/0xd0 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c:904
+ mlxsw_sp_acl_region_rehash_intrvl_get+0x49/0x60 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c:1106
+ mlxsw_sp_params_acl_region_rehash_intrvl_get+0x33/0x80 drivers/net/ethernet/mellanox/mlxsw/spectrum.c:3854
+ devlink_param_get net/core/devlink.c:4981 [inline]
+ devlink_nl_param_fill+0x238/0x12d0 net/core/devlink.c:5089
+ devlink_param_notify+0xe5/0x230 net/core/devlink.c:5168
+ devlink_ns_change_notify net/core/devlink.c:4417 [inline]
+ devlink_ns_change_notify net/core/devlink.c:4396 [inline]
+ devlink_reload+0x15f/0x700 net/core/devlink.c:4507
+ devlink_pernet_pre_exit+0x112/0x1d0 net/core/devlink.c:12272
+ ops_pre_exit_list net/core/net_namespace.c:152 [inline]
+ cleanup_net+0x494/0xc00 net/core/net_namespace.c:582
+ process_one_work+0x9fc/0x1710 kernel/workqueue.c:2289
+ worker_thread+0x675/0x10b0 kernel/workqueue.c:2436
+ kthread+0x30c/0x3d0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+The buggy address belongs to the physical page:
+page:ffffea0000267700 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x99dc
+flags: 0x100000000000000(node=0|zone=1)
+raw: 0100000000000000 0000000000000000 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880099dce80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8880099dcf00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff8880099dcf80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                                    ^
+ ffff8880099dd000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8880099dd080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+Fixes: 98bbf70c1c41 ("mlxsw: spectrum: add "acl_region_rehash_interval" devlink param")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ net/core/devlink.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/sunrpc/backchannel_rqst.c
-+++ b/net/sunrpc/backchannel_rqst.c
-@@ -64,6 +64,17 @@ static void xprt_free_allocation(struct
- 	kfree(req);
- }
- 
-+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
-+{
-+	buf->head[0].iov_len = PAGE_SIZE;
-+	buf->tail[0].iov_len = 0;
-+	buf->pages = NULL;
-+	buf->page_len = 0;
-+	buf->flags = 0;
-+	buf->len = 0;
-+	buf->buflen = PAGE_SIZE;
-+}
-+
- static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2953,7 +2953,7 @@ static int devlink_param_get(struct devl
+ 			     const struct devlink_param *param,
+ 			     struct devlink_param_gset_ctx *ctx)
  {
- 	struct page *page;
-@@ -292,6 +303,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
- 	 */
- 	spin_lock_bh(&xprt->bc_pa_lock);
- 	if (xprt_need_to_requeue(xprt)) {
-+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
-+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
-+		req->rq_rcv_buf.len = PAGE_SIZE;
- 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
- 		xprt->bc_alloc_count++;
- 		atomic_inc(&xprt->bc_slot_count);
+-	if (!param->get)
++	if (!param->get || devlink->reload_failed)
+ 		return -EOPNOTSUPP;
+ 	return param->get(devlink, param->id, ctx);
+ }
+@@ -2962,7 +2962,7 @@ static int devlink_param_set(struct devl
+ 			     const struct devlink_param *param,
+ 			     struct devlink_param_gset_ctx *ctx)
+ {
+-	if (!param->set)
++	if (!param->set || devlink->reload_failed)
+ 		return -EOPNOTSUPP;
+ 	return param->set(devlink, param->id, ctx);
+ }
 
 
