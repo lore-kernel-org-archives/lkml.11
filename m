@@ -2,140 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA1AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C16CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbiHWRWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        id S232611AbiHWRWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240032AbiHWRVL (ORCPT
+        with ESMTP id S237471AbiHWRUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:21:11 -0400
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C787C529;
-        Tue, 23 Aug 2022 07:57:17 -0700 (PDT)
-Received: by mail-ot1-f51.google.com with SMTP id l5-20020a05683004a500b0063707ff8244so9929370otd.12;
-        Tue, 23 Aug 2022 07:57:17 -0700 (PDT)
+        Tue, 23 Aug 2022 13:20:42 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB79AE86E
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:44:25 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id cr9so10322536qtb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:44:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
+        bh=HYUWsAYXjW2i318BjbGbbKb+gkXQpUmwzmEIHMqDu5I=;
+        b=e4JErC0om1kvlDhOah9NQNcK+mXjibntNm23OS49JJRMoTF5yVIe6jgHxK1+mhwkan
+         CO91j95hoO+ZUqzvsHtB+vnZLWg5cZJTdAZd/KyriCrgfWZdH7J4b2bD2+oxHYpW5Ynh
+         bkfus5PrWDnnJai7yYslwwf0RJuvDjfZaW+T0ptWq1/uK1BfD0hq28qJyA5EosXuFBwl
+         LkroYPa5I6Jo56BQ5J86APmQj3fL+ojhLy+K7MEeJcpl/hMMdk9E+NQb6kTG1BmUr1Im
+         sChiFOU8KqdQH94ddHL7Teh5gp6YtpdjEWwaUUOb6/Dvss/yiCnPdZp8HNkmZgcmZZ5n
+         Xyhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=32fb+kP/GNTtD4yV9TOnD2b7RZ03KBwBx6+ibrPD+y8=;
-        b=YoKL8784sOKdLGvnkA2TH2RNCwV3bfT8AD1iJP3C9tqeIA/iSuJSEJhdymVWtgAEmn
-         x+yKWkkb/xnGSwa46aYI1x6YjUYo3vauOpH0S0geFzSWm3KqrYpkrC4kAxD3kDEmwTqd
-         3gJJ+YL6YSl8g0vONsduCPwFeG0xYRuYMLoiMaiCrslfB2jb+7A4xJEoSbClHiJv52Ia
-         glNiJ3vy+9wuCDtGtpvHP1kjgSxDJ5c3pxM6+GBJSKAV9+7zphdD/BaoZspk/Z9/XoUS
-         iCkC30zz4WuicUvSWOYqM6Kq5xTx8Hk/L8y4pFTx22B07eyZv+lNP5QDQ6I9HEtSUtWj
-         57JA==
-X-Gm-Message-State: ACgBeo2hfJgWlyBWGGG40rBKOHIEM00NR/Tb2pV7teIOT/LEU7ub2QSy
-        3javVQQcVamBGSYAu794hA==
-X-Google-Smtp-Source: AA6agR5gTDVPXYx4XrmwbScdPsvRYbDyHtuAdNcSHU1Fwpadq2Y01zAfG/CkPYSQeOvRnZjzCO7kHw==
-X-Received: by 2002:a05:6830:2498:b0:638:9325:3370 with SMTP id u24-20020a056830249800b0063893253370mr9666966ots.228.1661266636988;
-        Tue, 23 Aug 2022 07:57:16 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.15
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=HYUWsAYXjW2i318BjbGbbKb+gkXQpUmwzmEIHMqDu5I=;
+        b=Nz6RAAc3P6f7PS25j+ECR96TWcYSMPSKMxW3uVP6iYejU3lLzyQBjLYShpwLzyAvsR
+         CECTUVdD4mAmpeiQcz3ca/kkgIYhnsuF1w+/sGN2h24EbRg0p0BSt73JPISTkgxnFT6z
+         IImFjTKONIiC6IedKcyVVF8yLdc/MiovpUaxfRLHI566m7j5X1wSf1tJZsB6DvIZvwbD
+         zOLuVmZKP4Do0B5Uc4h8vDSjHKSVQLmh6vSV99Qf+VCRgsPYTdBd1/xQoqIGNfml2N6g
+         6UUlztXYijaDCDJrSC+AMOxoD6p9KFvdwxKhDchZN/eveD+PGtx7gkkhJGRqv4BUGFLE
+         6WEQ==
+X-Gm-Message-State: ACgBeo1Xpnm3CthF5OLM7N78av+D4RPoefkkBrYYqhU3MqihlhY99pnn
+        UJ/ZDZ47W/rdKOMd11YSPsW6yA==
+X-Google-Smtp-Source: AA6agR4t4vEazDNxYLh6eNEskT0+EKTIuQlsSu8YV3eXOkr/7tQ7UIDxzDgxf4QyRfzrcYAMvvoZeg==
+X-Received: by 2002:ac8:7e83:0:b0:344:7ee0:1241 with SMTP id w3-20020ac87e83000000b003447ee01241mr19324435qtj.587.1661262264917;
+        Tue, 23 Aug 2022 06:44:24 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
+        by smtp.gmail.com with ESMTPSA id v16-20020a05620a0f1000b006b97151d2b3sm13198030qkl.67.2022.08.23.06.44.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 07:57:16 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Tue, 23 Aug 2022 09:56:36 -0500
-Message-Id: <20220823145649.3118479-5-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 23 Aug 2022 06:44:24 -0700 (PDT)
+Message-ID: <ede840d10677041d2c8d0a07b81b3cd55a6c92ba.camel@ndufresne.ca>
+Subject: Re: [PATCH 2/2] [WIP]: media: Add Synaptics compressed tiled format
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     Hsia-Jun Li <Randy.Li@synaptics.com>
+Cc:     Tomasz Figa <tfiga@chromium.org>, dri-devel@lists.freedesktop.org,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, sakari.ailus@linux.intel.com,
+        ribalda@chromium.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sebastian.hesselbarth@gmail.com, jszhang@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Date:   Tue, 23 Aug 2022 09:44:22 -0400
+In-Reply-To: <2f3c8f6d-fc01-353e-fb74-b7f9af1ed2c4@synaptics.com>
+References: <20220808162750.828001-1-randy.li@synaptics.com>
+         <20220808162750.828001-3-randy.li@synaptics.com>
+         <CAAFQd5AKjpJ+fPAeCqdNnJbS4R7SdaHkfyW4qG1xXr-sE801pQ@mail.gmail.com>
+         <13d37c15-79f3-4e16-8cf4-fc37846f4a04@synaptics.com>
+         <Yv7HnHE7bLmgq5D0@pendragon.ideasonboard.com>
+         <6da7faf329128312f0862f555d1a855437ae99f3.camel@ndufresne.ca>
+         <50dd9b7a-8f48-0799-57f6-048d20de8dcc@synaptics.com>
+         <2662ac698898f71f60b9b7e0ad4703854de1d012.camel@ndufresne.ca>
+         <1f926989-eb13-14ee-e30d-ac6d01b86c52@synaptics.com>
+         <e15165f60ce801dd502bfe1992ea430fe37c5a91.camel@ndufresne.ca>
+         <2f3c8f6d-fc01-353e-fb74-b7f9af1ed2c4@synaptics.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to ensure only documented properties are present, node schemas
-must have unevaluatedProperties or additionalProperties set to false
-(typically).
+Le mardi 23 ao=C3=BBt 2022 =C3=A0 15:40 +0800, Hsia-Jun Li a =C3=A9crit=C2=
+=A0:
+> > In current state, If your driver can support it, userland does not stri=
+ctly
+> > need
+> > to re-allocate if the resolution is changed to smaller. In most SVC
+> > scenarios,
+> > the largest resolution is known in advance, so pre-allocation can happe=
+n to
+> > the
+> When you play a video from Youtube, you may notice that starting=20
+> resolution is low, then after it received more data knowning the=20
+> bandwidth is enough, it would switch to a higher resolution. I don't=20
+> think it would inform the codecs2 or OMX there is a higher target=20
+> resolution.
+>=20
+> Besides, for the case of SVC in a conference system, the remote(gatway)=
+=20
+> would not tell you there is a higer resolution or frame rate because you=
+=20
+> can't receive it in negotiate stage, it could be permanently(device=20
+> capability) or just bandwidth problem. Whether we know there is a higher=
+=20
+> requirement video depends on the transport protocols used here.
+>=20
+> The basic idea of SVC is that the low layer didn't depends on the upper=
+=20
+> layer, we can't tell how the bitstream usually.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/net/cortina,gemini-ethernet.yaml      | 1 +
- Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml     | 4 ++++
- .../devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml        | 1 +
- Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml   | 1 +
- 4 files changed, 7 insertions(+)
+I'm not saying against the fact the for drivers without IOMMU (hitting dire=
+ctly
+into the CMA allocator), allocation latency is massive challenge, and a
+mechanism to smoothly reallocate (rather then mass-reallocation) is needed =
+in
+the long run. This is what I'm referring to when saying that folks have
+considered extending CREATE_BUFS() with a DELETE_BUFS() ioctl.
 
-diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-index cc01b9b5752a..253b5d1407ee 100644
---- a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-+++ b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-@@ -37,6 +37,7 @@ properties:
- patternProperties:
-   "^ethernet-port@[0-9]+$":
-     type: object
-+    unevaluatedProperties: false
-     description: contains the resources for ethernet port
-     allOf:
-       - $ref: ethernet-controller.yaml#
-diff --git a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-index 31bf825c6598..46e330f45768 100644
---- a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-@@ -77,6 +77,8 @@ properties:
- 
-   ethernet-ports:
-     type: object
-+    additionalProperties: false
-+
-     properties:
-       '#address-cells':
-         const: 1
-@@ -89,6 +91,7 @@ properties:
-         description: CPSW external ports
- 
-         $ref: ethernet-controller.yaml#
-+        unevaluatedProperties: false
- 
-         properties:
-           reg:
-@@ -117,6 +120,7 @@ properties:
- 
-   cpts:
-     type: object
-+    unevaluatedProperties: false
-     description:
-       The Common Platform Time Sync (CPTS) module
- 
-diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-index b8281d8be940..fb61a2ce0ea8 100644
---- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-@@ -115,6 +115,7 @@ properties:
-         description: CPSWxG NUSS external ports
- 
-         $ref: ethernet-controller.yaml#
-+        unevaluatedProperties: false
- 
-         properties:
-           reg:
-diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-index b783ad0d1f53..e9f78cef6b7f 100644
---- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-@@ -95,6 +95,7 @@ properties:
- 
-   refclk-mux:
-     type: object
-+    additionalProperties: false
-     description: CPTS reference clock multiplexer clock
-     properties:
-       '#clock-cells':
--- 
-2.34.1
+Note that there is tones of software trickery you can use to mitigate this.=
+ The
+most simple one is to use CREATE_BUFS() instead of REQBUFS(). Instead of
+reallocating all the buffers you need in one go, you would allocate them on=
+e by
+one. This will distribute allocation latency. For stateful CODEC, most OMX
+focused firmware needs to be modified for that, since they stick with the o=
+ld
+OMX spec which did not allow run-time allocation.
+
+Another trick is to use a second codec session. Both stateful/stateless COD=
+EC
+have support for concurrent decoding. On the MSE requirement, is that the s=
+tream
+transition happens only on keyframe boundary. Meaning, there is no need to =
+reuse
+the same session, you can create a new decoder in parallel, and that before=
+ the
+drain is complete (after the event, before the last buffer). This will comp=
+ress
+the "setup" latency, to the cost of some extra memory usage. Specially in t=
+he
+MSE case, this is nearly always possible since browsers do require support =
+for
+more then 1 concurrent decode. This method also works with OMX style CODEC
+without any modification.
+
+regards,
+Nicolas
+
+
 
