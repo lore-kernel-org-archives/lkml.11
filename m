@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F28C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA56BC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358424AbiHWLsb (ORCPT
+        id S1358443AbiHWLsp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
+        Tue, 23 Aug 2022 07:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358169AbiHWLoE (ORCPT
+        with ESMTP id S1358246AbiHWLog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:44:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D678FD074F;
-        Tue, 23 Aug 2022 02:29:54 -0700 (PDT)
+        Tue, 23 Aug 2022 07:44:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A51DD11FE;
+        Tue, 23 Aug 2022 02:30:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7775AB81C66;
-        Tue, 23 Aug 2022 09:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E27B1C433C1;
-        Tue, 23 Aug 2022 09:29:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C83BE6139D;
+        Tue, 23 Aug 2022 09:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D123FC433D6;
+        Tue, 23 Aug 2022 09:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246991;
-        bh=hAFBu0imeopBah68UDNV2iX2Igkn6Hr9V1s5wp2Yw9U=;
+        s=korg; t=1661247000;
+        bh=ypEv1n++CtxAilts2e0nw7v+ULA4+1lQCQ2OdLMVVwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bvLi00Fi6FPWeMUz7ry4tyuBd3VWTMSV6SwOYedKWhO5YNptBnn5KczoQ/QAWfZiQ
-         HsnFLwBkKO2p4drbrPWbbz6aiXKyOgT5xujIKKj9ZuTZRflKIzGhLnGIfus8q2MiAh
-         AexnViYxcIVJ3rnlxS0kKUtSvzGHfsHzytc3mAiM=
+        b=wKoI6ilHeDLmIg3wVdm2+BZORR0UpCKYXyANPDC7676ZSIFLxAy4IIEd8/S9Zdfyv
+         D17xb+q51kpXnM8L3Pceo+c4zguUWgxpZwEUbzfXeNO+8WnQIpRIHLpE92NNzlXIhY
+         vyf0D6EB4wuTpR1wzW52sOifDHoibXGe4bXh1HWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.4 283/389] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
-Date:   Tue, 23 Aug 2022 10:26:01 +0200
-Message-Id: <20220823080127.376029742@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 286/389] ALSA: info: Fix llseek return value when using callback
+Date:   Tue, 23 Aug 2022 10:26:04 +0200
+Message-Id: <20220823080127.501170663@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,56 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
+commit 9be080edcca330be4af06b19916c35227891e8bc upstream.
 
-The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
-by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
-static checker warning:
+When using callback there was a flow of
 
-        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
-        error: we previously assumed 'c' could be null (see line 1996)
+	ret = -EINVAL
+	if (callback) {
+		offset = callback();
+		goto out;
+	}
+	...
+	offset = some other value in case of no callback;
+	ret = offset;
+out:
+	return ret;
 
-Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+which causes the snd_info_entry_llseek() to return -EINVAL when there is
+callback handler. Fix this by setting "ret" directly to callback return
+value before jumping to "out".
+
+Fixes: 73029e0ff18d ("ALSA: info - Implement common llseek for binary mode")
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220817124924.3974577-1-amadeuszx.slawinski@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/l2cap_core.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ sound/core/info.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1813,11 +1813,11 @@ static struct l2cap_chan *l2cap_global_c
- 						   bdaddr_t *dst,
- 						   u8 link_type)
- {
--	struct l2cap_chan *c, *c1 = NULL;
-+	struct l2cap_chan *c, *tmp, *c1 = NULL;
+--- a/sound/core/info.c
++++ b/sound/core/info.c
+@@ -112,9 +112,9 @@ static loff_t snd_info_entry_llseek(stru
+ 	entry = data->entry;
+ 	mutex_lock(&entry->access);
+ 	if (entry->c.ops->llseek) {
+-		offset = entry->c.ops->llseek(entry,
+-					      data->file_private_data,
+-					      file, offset, orig);
++		ret = entry->c.ops->llseek(entry,
++					   data->file_private_data,
++					   file, offset, orig);
+ 		goto out;
+ 	}
  
- 	read_lock(&chan_list_lock);
- 
--	list_for_each_entry(c, &chan_list, global_l) {
-+	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
- 		if (state && c->state != state)
- 			continue;
- 
-@@ -1836,11 +1836,10 @@ static struct l2cap_chan *l2cap_global_c
- 			dst_match = !bacmp(&c->dst, dst);
- 			if (src_match && dst_match) {
- 				c = l2cap_chan_hold_unless_zero(c);
--				if (!c)
--					continue;
--
--				read_unlock(&chan_list_lock);
--				return c;
-+				if (c) {
-+					read_unlock(&chan_list_lock);
-+					return c;
-+				}
- 			}
- 
- 			/* Closest match */
 
 
