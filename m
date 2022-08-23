@@ -2,69 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF9FC38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF52AC38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244241AbiHWQCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
+        id S244147AbiHWQCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244436AbiHWQA5 (ORCPT
+        with ESMTP id S244282AbiHWQAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:00:57 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2213B15C371;
-        Tue, 23 Aug 2022 05:12:58 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1661255468tk4a19c0
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 19:51:06 +0800 (CST)
-X-QQ-SSF: 01000000002000C0D000B00A0000000
-X-QQ-FEAT: DQ0OCu3gog2DpWggEOov9LWZw/zsVocqtlNvD3/KPuL43CWfdojDzP43r+azY
-        659Ez1TAChQGnyVD++OW24EVOzEWGIJp6tASNFv8EEEKeUHttUShZ2mSUukTsoHgaG+8AZp
-        Cjf9KmdwVlHszv++e1tND9fg0/RQwXpw2ij0jcMbMLMK59EuC8Do82B1GxYCJkDUCE1k8C9
-        AxfTDnsPYpAXayeFVcCcClgmkqjZ8d40Jt8qRJ1QDtlcpMwtlayWkuJRhJArjo9UNP41llW
-        MsSFTTiM8o1v/aRUZLDZVFTik44kEOScVNswQMdODH6agwdPZ5KyTVD8RHEYliHBsqIlFw2
-        z38dkGbdjWtXW8VCGo05O2ldU3YFVOgVt9W97gdz1HNS1R4NHA=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     robdclark@gmail.com, quic_abhinavk@quicinc.com,
-        dmitry.baryshkov@linaro.org, airlied@linux.ie, daniel@ffwll.ch
-Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] disp/dpu1: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 19:51:00 +0800
-Message-Id: <20220823115100.44060-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 12:00:42 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 269EE23DF38;
+        Tue, 23 Aug 2022 05:12:14 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 8690C8125;
+        Tue, 23 Aug 2022 11:45:41 +0000 (UTC)
+Date:   Tue, 23 Aug 2022 14:52:47 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Romain Naour <romain.naour@smile.fr>
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-omap@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] clk: ti: Fix reference imbalance in
+ ti_find_clock_provider
+Message-ID: <YwS/j5ATAfCb1U4l@atomide.com>
+References: <63d9211f-d5ce-562e-358a-50f26c7caf35@siemens.com>
+ <20220819212337.AECB9C433D6@smtp.kernel.org>
+ <c62649f0-2be1-459c-bfa5-4c94a3e4300f@smile.fr>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+In-Reply-To: <c62649f0-2be1-459c-bfa5-4c94a3e4300f@smile.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'is'.
+* Romain Naour <romain.naour@smile.fr> [220823 09:22]:
+> Hello,
+> 
+> Le 19/08/2022 à 23:23, Stephen Boyd a écrit :
+> > Quoting Jan Kiszka (2022-08-08 15:26:58)
+> >> From: Jan Kiszka <jan.kiszka@siemens.com>
+> >>
+> >> When a clock is found via clock-output-names, we need to reference it
+> >> explicitly to match of_find_node_by_name behavior. Failing to do so
+> >> causes warnings like this:
+> >>
+> > 
+> > Is this superseeded by
+> > https://lore.kernel.org/r/20220621091118.33930-1-tony@atomide.com?
+> 
+> I noticed the same issue and tested separately with both patches.
+> 
+> Indeed, this patch is not needed anymore with "[PATCH] clk: ti: Fix missing
+> of_node_get() ti_find_clock_provider()" applied.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+OK good to hear and thanks for testing.
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index bce47647d891..59ca7d70a652 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -1169,7 +1169,7 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
- 
- 	/*
- 	 * max crtc width is equal to the max mixer width * 2 and max height is
--	 * is 4K
-+	 * 4K
- 	 */
- 	dev->mode_config.max_width =
- 			dpu_kms->catalog->caps->max_mixer_width * 2;
--- 
-2.36.1
+Regards,
 
+Tony
