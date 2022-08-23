@@ -2,80 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ECADC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26450C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242848AbiHWIWR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
+        id S242915AbiHWIW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242358AbiHWIOU (ORCPT
+        with ESMTP id S242992AbiHWIQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:14:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC186CD10;
-        Tue, 23 Aug 2022 01:09:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 596A9611DD;
-        Tue, 23 Aug 2022 08:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64678C433C1;
-        Tue, 23 Aug 2022 08:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242179;
-        bh=aQR3DJEg3kHfSmbwMTdsmvUZ/TBQcuNlem3MABWTKe4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OhFGjjn/nv3EVO186tOPk7gfpiJk8+6P5zEW68jU0jxGSU09mJpVJviiEsCYfZRSF
-         hTg4q4PUcC9O1MjRAPe2bvytoTFsaxGE7APs/lzL+THDMZN4Y++00A34PCNGEOQOaL
-         VP2+4NxguC6S0hpTo5ockMZGJpDKU4JoiKGCCoKQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Allen Ballway <ballway@chromium.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 032/101] ALSA: hda/cirrus - support for iMac 12,1 model
-Date:   Tue, 23 Aug 2022 10:03:05 +0200
-Message-Id: <20220823080035.805745771@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:16:25 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACD36455;
+        Tue, 23 Aug 2022 01:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1661242248;
+  x=1692778248;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=90lMTt/ZXObsrajbLvhxlhFniuNo3NYsG99rwzGubV4=;
+  b=QtHPZwfZYRIrxwYMvcrxSu9EztzKiz0nXdQYG4DB28m2xocRELb0vAac
+   OhEdvcjR859428A2NfsfbZwSyO+4PfruV4Xrt5pp7S1X/hc3vodDXj3cG
+   2RI/K3hPyQ2rOWbWuzXu5Fpu/UVYSNiNUnefOE7+O4BWwnFFzBd5/it3C
+   mbiNhFaZj7kJkkLjpl4qklEWfDw/3AAveXd0mEMY/HXgXzb5I3AmEnU/i
+   Ek3Ib0SDq2CuNV9451Mo6cNvm0XOp5IiDhQHiSKAYiz0O+mHhfYSauya1
+   bFBvqKWv+6iknPPLzCgJJnAZtJuLlIHLZDs0cwqsn7wYluqxOaxzFrHsA
+   A==;
+Date:   Tue, 23 Aug 2022 10:10:45 +0200
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        kernel <kernel@axis.com>, Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: buffer: Silence lock nesting splat
+Message-ID: <YwSLhWFbGb26B3mx@axis.com>
+References: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
+ <CAHp75VebQfdHrfYTmF0w9M556ZV8fG5jJ2rAN5a3mrB1mbvOQw@mail.gmail.com>
+ <20220820120800.519b5eb5@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220820120800.519b5eb5@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Allen Ballway <ballway@chromium.org>
+On Sat, Aug 20, 2022 at 01:08:00PM +0200, Jonathan Cameron wrote:
+> On Fri, 19 Aug 2022 11:03:55 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On top of that, Fixes tag?
+> It's going to be tricky to identify - the interface predates usecases that were IIO
+> drivers by a long way.  I guess introduction of first IIO driver that used
+> a callback buffer? No idea which one that was :(
 
-commit 74bba640d69914cf832b87f6bbb700e5ba430672 upstream.
+AFAICS there's only one IIO driver upstream using a callback buffer, and
+it's lmp91000, so I can point the fixes tag to the patch which added
+that.
 
-The 12,1 model requires the same configuration as the 12,2 model
-to enable headphones but has a different codec SSID. Adds
-12,1 SSID for matching quirk.
-
-[ re-sorted in SSID order by tiwai ]
-
-Signed-off-by: Allen Ballway <ballway@chromium.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220810152701.1.I902c2e591bbf8de9acb649d1322fa1f291849266@changeid
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/pci/hda/patch_cirrus.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/sound/pci/hda/patch_cirrus.c
-+++ b/sound/pci/hda/patch_cirrus.c
-@@ -409,6 +409,7 @@ static const struct snd_pci_quirk cs420x
- 
- 	/* codec SSID */
- 	SND_PCI_QUIRK(0x106b, 0x0600, "iMac 14,1", CS420X_IMAC27_122),
-+	SND_PCI_QUIRK(0x106b, 0x0900, "iMac 12,1", CS420X_IMAC27_122),
- 	SND_PCI_QUIRK(0x106b, 0x1c00, "MacBookPro 8,1", CS420X_MBP81),
- 	SND_PCI_QUIRK(0x106b, 0x2000, "iMac 12,2", CS420X_IMAC27_122),
- 	SND_PCI_QUIRK(0x106b, 0x2800, "MacBookPro 10,1", CS420X_MBP101),
-
-
+By the way, note that lmp91000 actually fails to probe in mainline
+without extra patches, and it seems to have been that way for a while
+now.  I noticed this lockdep splat when working on a new driver which
+also uses a callback buffer.  I can post the fixes I used to get
+lmp91000 to probe successfully (in roadtest) separately.
