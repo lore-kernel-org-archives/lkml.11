@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDF2C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67598C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353276AbiHWKNR (ORCPT
+        id S1351993AbiHWKM1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
+        Tue, 23 Aug 2022 06:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352707AbiHWKGI (ORCPT
+        with ESMTP id S1352427AbiHWKFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:08 -0400
+        Tue, 23 Aug 2022 06:05:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC59B7D785;
-        Tue, 23 Aug 2022 01:52:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27272A3448;
+        Tue, 23 Aug 2022 01:52:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11C7C6123D;
-        Tue, 23 Aug 2022 08:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0304CC433C1;
-        Tue, 23 Aug 2022 08:52:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FC08611DD;
+        Tue, 23 Aug 2022 08:52:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE2DC433C1;
+        Tue, 23 Aug 2022 08:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244747;
-        bh=thibkoY1vJoCkfi1Ybho7TQwoOG2KHM67rYyFifPu9s=;
+        s=korg; t=1661244722;
+        bh=Lj3vgTIfpEYlX7Q9QBsnBXWw2WeUak/ATk2ICgEljuo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eVJdRCMUxkr2pQlNaDpMo12CkxYlRGTWnaMkm1hZ4c6prE7HCcDssumSPkRCK3hBD
-         y7mjMiUx1DDj0Qv/JRZIGsQDPnFtyIyrgGMdAeCnkiNXkPu2fJhfSrSCFhpd8Upo+Q
-         996cxx19Fdds0n3psGAIX8iNEOzuvrQYvGIUzXpo=
+        b=KCew92kTEalx7DJ4Qk5J6lgAnd/abseY9v6S5UHwlgjl9jLi0RSeZzXI7uCddWOt8
+         pQtAxWFr4eFMdnFtzuwU7SpUNLT3Jd5lUTL6GzIggL8q4aw4czY4Pr0EZcXZ3oCfYg
+         yIJ0wHVGY6qt+xoYB+PYP3e2ZraICF2CdFUCSmag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 4.14 184/229] apparmor: fix reference count leak in aa_pivotroot()
-Date:   Tue, 23 Aug 2022 10:25:45 +0200
-Message-Id: <20220823080100.177336614@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 139/244] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
+Date:   Tue, 23 Aug 2022 10:24:58 +0200
+Message-Id: <20220823080103.795969863@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-commit 11c3627ec6b56c1525013f336f41b79a983b4d46 upstream.
+commit 36c0d935015766bf20d621c18313f17691bda5e3 upstream.
 
-The aa_pivotroot() function has a reference counting bug in a specific
-path. When aa_replace_current_label() returns on success, the function
-forgets to decrement the reference count of “target”, which is
-increased earlier by build_pivotroot(), causing a reference leak.
+In the ksz9477_fdb_dump function it reads the ALU control register and
+exit from the timeout loop if there is valid entry or search is
+complete. After exiting the loop, it reads the alu entry and report to
+the user space irrespective of entry is valid. It works till the valid
+entry. If the loop exited when search is complete, it reads the alu
+table. The table returns all ones and it is reported to user space. So
+bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
+To fix it, after exiting the loop the entry is reported only if it is
+valid one.
 
-Fix it by decreasing the refcount of “target” in that path.
-
-Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220816105516.18350-1-arun.ramadoss@microchip.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/mount.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/microchip/ksz9477.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/security/apparmor/mount.c
-+++ b/security/apparmor/mount.c
-@@ -687,6 +687,7 @@ int aa_pivotroot(struct aa_label *label,
- 			aa_put_label(target);
- 			goto out;
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -759,6 +759,9 @@ static int ksz9477_port_fdb_dump(struct
+ 			goto exit;
  		}
-+		aa_put_label(target);
- 	} else
- 		/* already audited error */
- 		error = PTR_ERR(target);
+ 
++		if (!(ksz_data & ALU_VALID))
++			continue;
++
+ 		/* read ALU table */
+ 		ksz9477_read_table(dev, alu_table);
+ 
 
 
