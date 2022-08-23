@@ -2,145 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC05C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2089AC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241367AbiHWHxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36398 "EHLO
+        id S241376AbiHWHxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241371AbiHWHxL (ORCPT
+        with ESMTP id S241390AbiHWHxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:53:11 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BE265540
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:53:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661241190; x=1692777190;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cEOZdzegwHLzQIT58dSZ/XXOqg0uoIRUya/QlSkPQJU=;
-  b=BlzRloDk0y3ocHmLc0tLcDtW+Ic5QUIPtBpd2tD506R6apPV/hckjcBx
-   E/am+md5K9Wr5Yge4Pkpx4qooFCk1dN2C1Ot8X4jE7wGjdeBq04f7/Lf7
-   ZE8HyJPlgRKL5JhWngkUUzAGcO676COPc3K9jIJ6E6eJZrpJYWKT1Qep3
-   Ph42yRE0th4AIvs8aVF2I3A+wrjmRxQM+gP/npxcvIxRcvLF7dujtJ1wy
-   5hUrrd9BG975yMC6EzVd6Pm9OiKPYGGJa47GTbSLdHQcwzIsJ14mRn06z
-   LJOELmP4bAEaQeHxwZscDB83IuTHsq703VHFduJWtBvCnGSVJTFZGkeJU
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="355350091"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="355350091"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:52:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="609256215"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 23 Aug 2022 00:52:44 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQOiJ-00001O-34;
-        Tue, 23 Aug 2022 07:52:43 +0000
-Date:   Tue, 23 Aug 2022 15:52:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Davis <afd@ti.com>, Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <jstultz@google.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Andrew Davis <afd@ti.com>
-Subject: Re: [PATCH] dma-buf: cma_heap: Check for device max segment size
- when attaching
-Message-ID: <202208231555.eczOE9TV-lkp@intel.com>
-References: <20220822233025.3965-1-afd@ti.com>
+        Tue, 23 Aug 2022 03:53:42 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9038011819
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:53:40 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id t11-20020a17090a510b00b001fac77e9d1fso13722697pjh.5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=nEf9h9B8XFcsw7F7FHaP4rxVimh4AhqGZN0e/h8tVmE=;
+        b=H6eHdQC9nfpqxyFvScDKeIUMxPQixxwngCfLH06PzVsCieuC0wFtRfbviaHQJOZ2no
+         KCFxhv8QDvdg2lmpGanCvawqQssmfLAG/0dof0Milu2TexViPWyQPk7YGFVyCzEYdlt6
+         mmjUQqBLQRHNtzu0ceLLg4CKTcLb4WV/i7RWRuJ89FQHYSg1I3Tp8wP/alrEx2Vu3lzG
+         MuOiBfI2cgWGEeDFOQg/DxB0fMAMDQpn7qndnPxjbPRKmEawHG+E/cf1iq4ONtmvZZBt
+         SbM+vuVZbcUIpHNYo+NvsSPo/mCThabsQNYNurxvrvdB+wNJRtPH2tBuP4K/KXk4VDw3
+         hyxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=nEf9h9B8XFcsw7F7FHaP4rxVimh4AhqGZN0e/h8tVmE=;
+        b=qJACfZnQQqkc7Q9ZsG5TcO516/k8BVve6mrHpTVW0GdItVtAolMH67U41tx0AibWdm
+         q3eZVDYG4js8fjR0NJu1YeXtqiiXYIbsmsFC/r7/5cHgnMRcWyZSXs/nokPmbRhrWp2I
+         31zKyGEcZvcj0mv50fTOpqc401e177pngCBBHdKDKmuuNVU6uwVM51yZzfAy/Ogfpaqd
+         opkoifY/5Nm3LI2yfV0jht63ui+adHTyeiLlvDgWZgRC1aLQZM9i+zJP0QldbKBPJbpR
+         9betv3IWjaW/PDvBOHf7z+565dXR9DNsN5BLc6BzgstNW62TDLbzPEY+Gm4mycCQg9PX
+         FG0A==
+X-Gm-Message-State: ACgBeo2bbxhUA6LoG0ZdKhqBm1es/XbDtG8nafYx6pgAGVS9mZJaNRje
+        RY14l2Z8MImzmt0/7VZdwms=
+X-Google-Smtp-Source: AA6agR5PV7F4Fv1F70NJL2LVcXFE9N4pQkIOk+6vloijP9gA6TFUajv72QAWRFmdHKbokWoX6ssYYg==
+X-Received: by 2002:a17:90b:4c08:b0:1fb:66d3:79c with SMTP id na8-20020a17090b4c0800b001fb66d3079cmr1269718pjb.121.1661241220134;
+        Tue, 23 Aug 2022 00:53:40 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902dacc00b0017269cc60d7sm9737931plx.214.2022.08.23.00.53.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 00:53:39 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     broonie@kernel.org, linux-kernel@vger.kernel.org
+Cc:     codrin.ciubotariu@microchip.com, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] ASoC: atmel_ssc_dai: Remove the unneeded result variable
+Date:   Tue, 23 Aug 2022 07:53:35 +0000
+Message-Id: <20220823075335.209072-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822233025.3965-1-afd@ti.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrew,
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Thank you for the patch! Perhaps something to improve:
+Return the value from asoc_ssc_init() directly instead of storing it
+in another redundant variable.
 
-[auto build test WARNING on drm-misc/drm-misc-next]
-[also build test WARNING on linus/master v6.0-rc2 next-20220823]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ sound/soc/atmel/atmel_ssc_dai.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andrew-Davis/dma-buf-cma_heap-Check-for-device-max-segment-size-when-attaching/20220823-073240
-base:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-config: x86_64-randconfig-a002-20220822 (https://download.01.org/0day-ci/archive/20220823/202208231555.eczOE9TV-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f390cef50ba6681ea767283e413cb8e9f8f2b426
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andrew-Davis/dma-buf-cma_heap-Check-for-device-max-segment-size-when-attaching/20220823-073240
-        git checkout f390cef50ba6681ea767283e413cb8e9f8f2b426
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/dma-buf/heaps/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/dma-buf/heaps/cma_heap.c:61:9: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
-           size_t max_segment = dma_get_max_seg_size(attachment->dev);
-                  ^
-   1 warning generated.
-
-
-vim +61 drivers/dma-buf/heaps/cma_heap.c
-
-    49	
-    50	static int cma_heap_attach(struct dma_buf *dmabuf,
-    51				   struct dma_buf_attachment *attachment)
-    52	{
-    53		struct cma_heap_buffer *buffer = dmabuf->priv;
-    54		struct dma_heap_attachment *a;
-    55		int ret;
-    56	
-    57		a = kzalloc(sizeof(*a), GFP_KERNEL);
-    58		if (!a)
-    59			return -ENOMEM;
-    60	
-  > 61		size_t max_segment = dma_get_max_seg_size(attachment->dev);
-    62		ret = sg_alloc_table_from_pages_segment(&a->table, buffer->pages,
-    63							buffer->pagecount, 0,
-    64							buffer->pagecount << PAGE_SHIFT,
-    65							max_segment, GFP_KERNEL);
-    66		if (ret) {
-    67			kfree(a);
-    68			return ret;
-    69		}
-    70	
-    71		a->dev = attachment->dev;
-    72		INIT_LIST_HEAD(&a->list);
-    73		a->mapped = false;
-    74	
-    75		attachment->priv = a;
-    76	
-    77		mutex_lock(&buffer->lock);
-    78		list_add(&a->list, &buffer->attachments);
-    79		mutex_unlock(&buffer->lock);
-    80	
-    81		return 0;
-    82	}
-    83	
-
+diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
+index e868b7e028d6..3763454436c1 100644
+--- a/sound/soc/atmel/atmel_ssc_dai.c
++++ b/sound/soc/atmel/atmel_ssc_dai.c
+@@ -891,7 +891,6 @@ static int asoc_ssc_init(struct device *dev)
+ int atmel_ssc_set_audio(int ssc_id)
+ {
+ 	struct ssc_device *ssc;
+-	int ret;
+ 
+ 	/* If we can grab the SSC briefly to parent the DAI device off it */
+ 	ssc = ssc_request(ssc_id);
+@@ -903,9 +902,7 @@ int atmel_ssc_set_audio(int ssc_id)
+ 		ssc_info[ssc_id].ssc = ssc;
+ 	}
+ 
+-	ret = asoc_ssc_init(&ssc->pdev->dev);
+-
+-	return ret;
++	return asoc_ssc_init(&ssc->pdev->dev);
+ }
+ EXPORT_SYMBOL_GPL(atmel_ssc_set_audio);
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
