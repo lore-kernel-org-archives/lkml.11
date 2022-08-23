@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A224C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A38C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240766AbiHWJhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
+        id S1351347AbiHWJhT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351464AbiHWJfi (ORCPT
+        with ESMTP id S1351627AbiHWJfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3C496FEB;
-        Tue, 23 Aug 2022 01:39:45 -0700 (PDT)
+        Tue, 23 Aug 2022 05:35:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F7397D68;
+        Tue, 23 Aug 2022 01:40:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B00EBB81C69;
-        Tue, 23 Aug 2022 08:39:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB841C433C1;
-        Tue, 23 Aug 2022 08:39:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBF18B81C53;
+        Tue, 23 Aug 2022 08:39:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F55C433D6;
+        Tue, 23 Aug 2022 08:39:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243983;
-        bh=cCp7HDZu1TX9MiE28RgccNIpZL6o0PAcUvQZmt32Vb0=;
+        s=korg; t=1661243942;
+        bh=XXnsT8YnvLr5n07bfMayojz6yEaBHQq9iwO02OlXMVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OyWipnLEm9S5+oekBJZc4nqYxT3T6q4PfjJc23EviWyFzRyHSzbs8LbUVxtwCBtj7
-         2CCGp/hpMXpdvPZP9eXKxxQDrCs8TgLs4EMXFYWGrie93H4vePbjiZxk2ZlCfVpqaE
-         5yMTdDXp5OlkGWJmuoo9vU4fFAcbhZT6SrYu3eCg=
+        b=A33b7MDvfMlaL213tYjRk45mOGSPRu10aqT6gOC5d2ObWUgCRoYI6CETdVgd0LC8h
+         YiXio5Es4m+Fxz/FAIknywRyb5YOq/MWVGg6x188Mp6GfhIvqe8JDdHvI/7y/r1WML
+         aStylsF5wM3c3/k41VhGzDY6aYtphHQB0PTpL0ts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.14 038/229] netfilter: nf_tables: fix null deref due to zeroed list head
-Date:   Tue, 23 Aug 2022 10:23:19 +0200
-Message-Id: <20220823080054.943513120@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 012/244] mmc: pxamci: Fix an error handling path in pxamci_probe()
+Date:   Tue, 23 Aug 2022 10:22:51 +0200
+Message-Id: <20220823080059.492779138@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,45 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
+commit 98d7c5e5792b8ce3e1352196dac7f404bb1b46ec upstream.
 
-In nf_tables_updtable, if nf_tables_table_enable returns an error,
-nft_trans_destroy is called to free the transaction object.
+The commit in Fixes: has moved some code around without updating gotos to
+the error handling path.
 
-nft_trans_destroy() calls list_del(), but the transaction was never
-placed on a list -- the list head is all zeroes, this results in
-a null dereference:
+Update it now and release some resources if pxamci_of_init() fails.
 
-BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
-Call Trace:
- nft_trans_destroy+0x26/0x59
- nf_tables_newtable+0x4bc/0x9bc
- [..]
-
-Its sane to assume that nft_trans_destroy() can be called
-on the transaction object returned by nft_trans_alloc(), so
-make sure the list head is initialised.
-
-Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
-Reported-by: mingi cho <mgcho.minic@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: fa3a5115469c ("mmc: pxamci: call mmc_of_parse()")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/mmc/host/pxamci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -121,6 +121,7 @@ static struct nft_trans *nft_trans_alloc
- 	if (trans == NULL)
- 		return NULL;
+--- a/drivers/mmc/host/pxamci.c
++++ b/drivers/mmc/host/pxamci.c
+@@ -648,7 +648,7 @@ static int pxamci_probe(struct platform_
  
-+	INIT_LIST_HEAD(&trans->list);
- 	trans->msg_type = msg_type;
- 	trans->ctx	= *ctx;
+ 	ret = pxamci_of_init(pdev, mmc);
+ 	if (ret)
+-		return ret;
++		goto out;
  
+ 	host = mmc_priv(mmc);
+ 	host->mmc = mmc;
 
 
