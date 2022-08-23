@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DBFEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8084C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348579AbiHWLUO (ORCPT
+        id S1357547AbiHWLUc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:20:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        Tue, 23 Aug 2022 07:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357783AbiHWLQj (ORCPT
+        with ESMTP id S1357866AbiHWLQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:39 -0400
+        Tue, 23 Aug 2022 07:16:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DCD33376;
-        Tue, 23 Aug 2022 02:20:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEADBD2BF;
+        Tue, 23 Aug 2022 02:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C3A3612D6;
-        Tue, 23 Aug 2022 09:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FA25C433C1;
-        Tue, 23 Aug 2022 09:20:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6601061298;
+        Tue, 23 Aug 2022 09:20:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABA0C433C1;
+        Tue, 23 Aug 2022 09:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246415;
-        bh=1SDTwCdtOTRTOo+XqWDYP+A9MZUswavwQ6ns6FdDjMk=;
+        s=korg; t=1661246403;
+        bh=FutRVyWlE0IVP1TJoNBQC//wfoF54yZEDO2MEGYYXVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DchZsKwjKDOfIfMpeUqxrPYBhyhqya7tnyH/6hW0KfajOG9xApVRjpdrGDl5q40DB
-         KEwgXwUz7O/eaPHDm55qFAGcKgjcRNUqCHiTlNWw1KswG/SGCAyIyxzervkKrz4QZD
-         pPL+DwiEmq+YXRBxiCKYsPoFzKVy8XrJAqJypefM=
+        b=DsJn9Ku/M6QxDfLofJCz/ntrAgkEuOArWmeOMIASJql1afrq4xjX9WJIk+dMVrLQB
+         c807NXrDDvb4DOxugapjDc6EmjGfso8wNIOnpQjFUrXTJnDqUkt3v4Ml98AKT+9nww
+         plAWHbVlFofArVjm4w+lFnPo4RwCLOOI4BPA9yEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Steev Klimaszewski <steev@kali.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 095/389] ath10k: do not enforce interrupt trigger type
-Date:   Tue, 23 Aug 2022 10:22:53 +0200
-Message-Id: <20220823080119.584052457@linuxfoundation.org>
+Subject: [PATCH 5.4 068/389] arm64: dts: qcom: ipq8074: fix NAND node name
+Date:   Tue, 23 Aug 2022 10:22:26 +0200
+Message-Id: <20220823080118.452625311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,56 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 1ee6c5abebd3cacf2ac4378d0ed4f57fd4850421 ]
+[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
 
-Interrupt line can be configured on different hardware in different way,
-even inverted.  Therefore driver should not enforce specific trigger
-type - edge rising - but instead rely on Devicetree to configure it.
+Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
+Fix it to match nand-controller.yaml requirements.
 
-All Qualcomm DTSI with WCN3990 define the interrupt type as level high,
-so the mismatch between DTSI and driver causes rebind issues:
-
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/unbind
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/bind
-  [   44.763114] irq: type mismatch, failed to map hwirq-446 for interrupt-controller@17a00000!
-  [   44.763130] ath10k_snoc 18800000.wifi: error -ENXIO: IRQ index 0 not found
-  [   44.763140] ath10k_snoc 18800000.wifi: failed to initialize resource: -6
-
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.0.c8-00009-QCAHLSWSC8180XMTPLZ-1
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.2.0-01387-QCAHLSWMTPLZ-1
-
-Fixes: c963a683e701 ("ath10k: add resource init and deinit for WCN3990")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Tested-by: Steev Klimaszewski <steev@kali.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220513151516.357549-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/snoc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index d4589b2ab3b6..b6762fe2efe2 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1192,13 +1192,12 @@ static void ath10k_snoc_init_napi(struct ath10k *ar)
- static int ath10k_snoc_request_irq(struct ath10k *ar)
- {
- 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
--	int irqflags = IRQF_TRIGGER_RISING;
- 	int ret, id;
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+index 7822592664ff..1e9fa049c550 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -253,7 +253,7 @@ qpic_bam: dma@7984000 {
+ 			status = "disabled";
+ 		};
  
- 	for (id = 0; id < CE_COUNT_MAX; id++) {
- 		ret = request_irq(ar_snoc->ce_irqs[id].irq_line,
--				  ath10k_snoc_per_engine_handler,
--				  irqflags, ce_name[id], ar);
-+				  ath10k_snoc_per_engine_handler, 0,
-+				  ce_name[id], ar);
- 		if (ret) {
- 			ath10k_err(ar,
- 				   "failed to register IRQ handler for CE %d: %d",
+-		qpic_nand: nand@79b0000 {
++		qpic_nand: nand-controller@79b0000 {
+ 			compatible = "qcom,ipq8074-nand";
+ 			reg = <0x79b0000 0x10000>;
+ 			#address-cells = <1>;
 -- 
 2.35.1
 
