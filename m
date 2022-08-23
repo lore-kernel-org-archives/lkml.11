@@ -2,101 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD684C52D6C
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF4FC49EC1
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356232AbiHWKln (ORCPT
+        id S1356068AbiHWKlZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
+        Tue, 23 Aug 2022 06:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354472AbiHWK16 (ORCPT
+        with ESMTP id S1354791AbiHWK0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:27:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FBEA405E;
-        Tue, 23 Aug 2022 02:06:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 733B96158C;
-        Tue, 23 Aug 2022 09:06:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72363C433D6;
-        Tue, 23 Aug 2022 09:06:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245560;
-        bh=8NPO/RNil3EyMz/EeLQp6oCAYjcVHI/yHBSsPEKl6aE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tc0FCln69K+TnD8hJKRTi+iE/eGyrpNi0gIAILbqy1n67IXYe96LleSb3+Zv9hGl0
-         VCiqqpr9eEaR+8prT6vc+fCTo6XHeJx6M01pkkmCHSFZzY+tmFnB642nvBRD91Gbw+
-         SqqbHXH4J+grJSZx4Ks9CHJZCygOE11cM8bnKeOE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 117/287] mtd: sm_ftl: Fix deadlock caused by cancel_work_sync in sm_release
-Date:   Tue, 23 Aug 2022 10:24:46 +0200
-Message-Id: <20220823080104.327374824@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 23 Aug 2022 06:26:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B8383BFB
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:05:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661245543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=INN7PIgXiadwGovRAjy42jqyjlBtEC4HF54Zz7onxbw=;
+        b=Y/rufR7x9eQ31ob50BpbpiG3wsQtnxMkB+sXvHDYCWvrdwbE/f799IOP3RBj2VpS4widEY
+        rFpdZHPabwTb9cIxxf7BmP+H8r6Nagz9c3DvlnYUXV1L/EhcYLz1T63eduN9+vI/CJyeHJ
+        bm3SFke7LdmPAvBMaqCMHqvhopBQIcY=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-196-XP67eT6oMTKNqzi3ZoioQw-1; Tue, 23 Aug 2022 05:05:41 -0400
+X-MC-Unique: XP67eT6oMTKNqzi3ZoioQw-1
+Received: by mail-pl1-f199.google.com with SMTP id q6-20020a17090311c600b0017266460b8fso8751987plh.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:05:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to:from
+         :subject:cc:to:message-id:date:x-gm-message-state:from:to:cc;
+        bh=INN7PIgXiadwGovRAjy42jqyjlBtEC4HF54Zz7onxbw=;
+        b=Z99n8vXLDFOfO7BnehPfWxRICFPYgfdTC0ZB7gmt8xoJSLF0JfVh1+EzrZVRqbtvoI
+         Cs6dWFcFpMvCAW867KlgbtEMIEigxXrWvDV/2ESYW5GEqSU+tpPJ7Y4fGaqXTh2pgpvq
+         LNYVO8uaKCHp4MvstE4J1/UGc5GEWwSmUH/ekqSekNGKviZuupzveIAhf4ITz7ERTjSO
+         T5c4l9gzLr38ExzT+WTXBhkVgSM0FcAQ06M9rsURU2c2fVMoNq/D+JZr76AQXG1z18qW
+         UVHFcxhWQBYfVZCFzsSuDOrS4Ejy9By6hf83jj34wTR1mDRbX4zY+VKVKNmUKhUPlhv4
+         YWIg==
+X-Gm-Message-State: ACgBeo1Q1QeMA6vWmAwDphKMlus2Sv4kwyKa/L44lK9qLLJCInANd/RV
+        wFETIzFqvaOHznwImE8K/cUc0LpeFy70kEIsQJZlCY7cVNNubFQasVptkjSFG8SWpB6VA3HVgZJ
+        ppQX+bqZEh/UW6SzyUiPZQHD7
+X-Received: by 2002:a63:82c8:0:b0:42a:498e:93ae with SMTP id w191-20020a6382c8000000b0042a498e93aemr14683682pgd.607.1661245540291;
+        Tue, 23 Aug 2022 02:05:40 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4DHhQSi/HHjksiZl3epz+OBvTIZi3etnh1KD+p/SnaECEwWLyrQSv5Xeq/sqgreQqQSPBTMg==
+X-Received: by 2002:a63:82c8:0:b0:42a:498e:93ae with SMTP id w191-20020a6382c8000000b0042a498e93aemr14683666pgd.607.1661245540056;
+        Tue, 23 Aug 2022 02:05:40 -0700 (PDT)
+Received: from localhost ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
+        by smtp.gmail.com with ESMTPSA id l8-20020a170903244800b0016bea74d11esm6167062pls.267.2022.08.23.02.05.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:05:39 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 18:05:36 +0900 (JST)
+Message-Id: <20220823.180536.902316146510887788.syoshida@redhat.com>
+To:     apopple@nvidia.com
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+616ff0452fec30f4dcfd@syzkaller.appspotmail.com,
+        jhubbard@nvidia.com
+Subject: Re: [PATCH v2] mm/gup.c: Fix return value for
+ __gup_longterm_locked()
+From:   Shigeru Yoshida <syoshida@redhat.com>
+In-Reply-To: <8735dnu53w.fsf@nvdebian.thelocal>
+References: <20220822153713.962904-1-syoshida@redhat.com>
+        <8735dnu53w.fsf@nvdebian.thelocal>
+X-Mailer: Mew version 6.8 on Emacs 28.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit a61528d997619a518ee8c51cf0ef0513021afaff ]
+On Tue, 23 Aug 2022 11:15:29 +1000, Alistair Popple wrote:
+> 
+> Shigeru Yoshida <syoshida@redhat.com> writes:
+> 
+>> __get_user_pages_locked() may return the number of pages less than
+>> nr_pages.  So __gup_longterm_locked() have to return the number of
+>> pages __get_user_pages_locked() returns if it succeeded, not nr_pages
+>> requested.
+> 
+> Thanks for fixing this, I've been out the last few days so just catching
+> up. I think I missed that 'rc' was passed as nr_pages into
+> check_and_migrate_movable_pages(). Will double check that I don't make
+> the same mistake in my latest series.
 
-There is a deadlock between sm_release and sm_cache_flush_work
-which is a work item. The cancel_work_sync in sm_release will
-not return until sm_cache_flush_work is finished. If we hold
-mutex_lock and use cancel_work_sync to wait the work item to
-finish, the work item also requires mutex_lock. As a result,
-the sm_release will be blocked forever. The race condition is
-shown below:
+Thank you so much for your review.  Andrew has already applied the patch.
 
-    (Thread 1)             |   (Thread 2)
-sm_release                 |
-  mutex_lock(&ftl->mutex)  | sm_cache_flush_work
-                           |   mutex_lock(&ftl->mutex)
-  cancel_work_sync         |   ...
+>> Fixes: 61c63c2076d9 (mm/gup.c: simplify and fix check_and_migrate_movable_pages() return codes)
+> 
+> I couldn't find that SHA1, I'm guessing due to rebasing, etc. of
+> mm-unstable? Not sure how that is dealt with, but feel free to also add:
 
-This patch moves del_timer_sync and cancel_work_sync out of
-mutex_lock in order to mitigate deadlock.
+Yes, actually this hash is from from linux-next tree.
 
-Fixes: 7d17c02a01a1 ("mtd: Add new SmartMedia/xD FTL")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220524044841.10517-1-duoming@zju.edu.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/mtd/sm_ftl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
+Shigeru
 
-diff --git a/drivers/mtd/sm_ftl.c b/drivers/mtd/sm_ftl.c
-index f3bd86e13603..e57f7ba054bc 100644
---- a/drivers/mtd/sm_ftl.c
-+++ b/drivers/mtd/sm_ftl.c
-@@ -1091,9 +1091,9 @@ static void sm_release(struct mtd_blktrans_dev *dev)
- {
- 	struct sm_ftl *ftl = dev->priv;
- 
--	mutex_lock(&ftl->mutex);
- 	del_timer_sync(&ftl->timer);
- 	cancel_work_sync(&ftl->flush_work);
-+	mutex_lock(&ftl->mutex);
- 	sm_cache_flush(ftl);
- 	mutex_unlock(&ftl->mutex);
- }
--- 
-2.35.1
-
-
+> Reviewed-by: Alistair Popple <apopple@nvidia.com>
+> 
+>> CC: Alistair Popple <apopple@nvidia.com>
+>> Reported-by: syzbot+616ff0452fec30f4dcfd@syzkaller.appspotmail.com
+>> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+>> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+>> ---
+>>  mm/gup.c | 14 ++++++++------
+>>  1 file changed, 8 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index 5aa7531a703b..66582203220a 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -2068,22 +2068,24 @@ static long __gup_longterm_locked(struct mm_struct *mm,
+>>  				  unsigned int gup_flags)
+>>  {
+>>  	unsigned int flags;
+>> -	long rc;
+>> +	long rc, nr_pinned_pages;
+>>
+>>  	if (!(gup_flags & FOLL_LONGTERM))
+>>  		return __get_user_pages_locked(mm, start, nr_pages, pages, vmas,
+>>  					       NULL, gup_flags);
+>>  	flags = memalloc_pin_save();
+>>  	do {
+>> -		rc = __get_user_pages_locked(mm, start, nr_pages, pages, vmas,
+>> -					     NULL, gup_flags);
+>> -		if (rc <= 0)
+>> +		nr_pinned_pages =
+>> +			__get_user_pages_locked(mm, start, nr_pages, pages,
+>> +						vmas, NULL, gup_flags);
+>> +		if (nr_pinned_pages <= 0)
+>>  			break;
+>> -		rc = check_and_migrate_movable_pages(rc, pages, gup_flags);
+>> +		rc = check_and_migrate_movable_pages(nr_pinned_pages, pages,
+>> +						     gup_flags);
+>>  	} while (rc == -EAGAIN);
+>>  	memalloc_pin_restore(flags);
+>>
+>> -	return rc ? rc : nr_pages;
+>> +	return rc ? rc : nr_pinned_pages;
+>>  }
+>>
+>>  static bool is_valid_gup_flags(unsigned int gup_flags)
+> 
 
