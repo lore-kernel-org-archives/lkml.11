@@ -2,105 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C346CC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 030D5C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240578AbiHWHzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39830 "EHLO
+        id S241439AbiHWH6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241449AbiHWHza (ORCPT
+        with ESMTP id S240214AbiHWH56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:55:30 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208F71EEE1;
-        Tue, 23 Aug 2022 00:55:29 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id f21so13314701pjt.2;
-        Tue, 23 Aug 2022 00:55:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Xxc+am8JnZzn38/YDRBLpPnG3B37sa007H6emh7sE1Q=;
-        b=R5xBAQKoFl+3tgqEOz+RslovkAqgtUwmbSJqJbDX8B1c8NmMSCIwNWjdl/0syrbgWt
-         ut68/XCzsoTvkQYqU+36wRCNb49XsTNU4wwS1Hy0ILDfwwdhi66kMAVmIGrgns32Zvsi
-         FQ6Mch1DXKHhq1VZpdG4xfSP+VEoWiPCOF6Vmu1KemQdPLi47EAxYSb5lgfZMrWR7PQy
-         MXGNlClcX7/lqGHrMT2Ia3aigTO1SNHAntfbitDynXtzDAAPrEg+tmG6eTfeNF+9K20V
-         rhW023/By44bb1Xl8ZH1DgagEHsSHPTzu4cY6XLsQhIiBjP2Ggn+nXY78lfBWfyVdZNE
-         MXdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Xxc+am8JnZzn38/YDRBLpPnG3B37sa007H6emh7sE1Q=;
-        b=pptgG7ZDjo9Q5WGOgAfjRKnhkedr6WKJkfj1t4uoA7C0Y4efEuWk64Vvl5J06uv5Av
-         njD+doeZupi3thF5ROCrXm+nG7AdkFn2xZ4SNioWXQsyW8TwY5w/QYZhGkMDpmlRtHnD
-         wjX3F2PX5w1mjeVB6/4xCvfmn6DFXzxTmKRad9gfvbonRXheewwO4pLWGD3MkdfzSVcT
-         2z0E7/8gqRWR8Pu731FS1cPwUszhUjDu5+4J+T8HYjYRqAii0s5qCwrSSUL5ZRaWRXae
-         G1W8dwhx+5JOdfUHdNV+xpXsouVxg2u/W6D3oHltS61OpHZ9SOEM/5vCMSWuZClUpHck
-         e0Uw==
-X-Gm-Message-State: ACgBeo3zE2lufuadwZGuKLWiVn1lb5TuK5a3PyUZ5bp7G8HWczfH4+kh
-        +IkVNk8G3dFyul1FVSpjxy0=
-X-Google-Smtp-Source: AA6agR5ZqZn05y3setXe2Ki853S0taRN0SeK5U8VFr0708OGCldReMvivNFDBZIb4kfxxohTcbMs+g==
-X-Received: by 2002:a17:90a:304a:b0:1fa:d832:5aca with SMTP id q10-20020a17090a304a00b001fad8325acamr2104066pjl.16.1661241328592;
-        Tue, 23 Aug 2022 00:55:28 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-14.three.co.id. [180.214.232.14])
-        by smtp.gmail.com with ESMTPSA id z124-20020a626582000000b00536531536adsm5988664pfb.47.2022.08.23.00.55.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 00:55:28 -0700 (PDT)
-Message-ID: <468ecea7-81fb-4a61-2094-3223bfbf55d4@gmail.com>
-Date:   Tue, 23 Aug 2022 14:55:22 +0700
+        Tue, 23 Aug 2022 03:57:58 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB3D65810;
+        Tue, 23 Aug 2022 00:57:56 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98b2329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b2:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8A4D41EC04D3;
+        Tue, 23 Aug 2022 09:57:50 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661241470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=3mE3nTXApLjUmImCPqQybp4IqzCsnzvDjXelGFAt42I=;
+        b=qU+vii90OWFoZpTwbju3J8CZSUsW/vqp/l9uVNhhSinPQ7im2bebvXu9D3g8Ffl/iutupq
+        hfKsC+qpwB/66HuUD423Oei5Glh/ibJ4eUlQIHOMZwU8745hAa24swrDXcKnA6QZoT/ARN
+        c19n4ti0xnp8FsNpin+C75FyzggXwhQ=
+Date:   Tue, 23 Aug 2022 09:57:46 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-tip-commits@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Subject: Re: [tip: x86/cpu] x86/cpu: Add new Raptor Lake CPU model number
+Message-ID: <YwSIeutdDadRgFf5@zn.tnic>
+References: <YwO49TDHnLcOyE+F@agluck-desk3.sc.intel.com>
+ <166121188787.401.17379235294060223774.tip-bot2@tip-bot2>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] mips: pci: remove extraneous asterisk from top level
- comment of ar2315 PCI driver
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-doc@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        kernel test robot <lkp@intel.com>, stable@vger.kernel.org
-References: <202208221854.8ASrzjKa-lkp@intel.com>
- <20220823030056.123709-1-bagasdotme@gmail.com> <YwRzqiJjHdnCA65Y@kroah.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <YwRzqiJjHdnCA65Y@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <166121188787.401.17379235294060223774.tip-bot2@tip-bot2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 13:28, Greg KH wrote:
-> On Tue, Aug 23, 2022 at 10:00:56AM +0700, Bagas Sanjaya wrote:
->> kernel test robot reported kernel-doc warning:
->>
->> arch/mips/pci/pci-ar2315.c:6: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->>     * Both AR2315 and AR2316 chips have PCI interface unit, which supports DMA
->>
->> The warning above is caused by an extraneous asterisk on the top level
->> (description) comment of pci-ar2315.c, for which the comment is confused as
->> kernel-doc comment instead.
->>
->> Remove the asterisk.
->>
->> Link: https://lore.kernel.org/linux-doc/202208221854.8ASrzjKa-lkp@intel.com/
->> Fixes: 3ed7a2a702dc0f ("MIPS: ath25: add AR2315 PCI host controller driver")
->> Fixes: 3e58e839150db0 ("scripts: kernel-doc: add warning for comment not following kernel-doc syntax")
->> Reported-by: kernel test robot <lkp@intel.com>
->> Cc: stable@vger.kernel.org # v5.15, v5.19
+On Mon, Aug 22, 2022 at 11:44:47PM -0000, tip-bot2 for Tony Luck wrote:
+> The following commit has been merged into the x86/cpu branch of tip:
 > 
-> kerneldoc issues are not stable worth, sorry.
+> Commit-ID:     81779270304dd556e1bb9e62561115714c15fa6a
+> Gitweb:        https://git.kernel.org/tip/81779270304dd556e1bb9e62561115714c15fa6a
+> Author:        Tony Luck <tony.luck@intel.com>
+> AuthorDate:    Mon, 22 Aug 2022 10:12:21 -07:00
+> Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+> CommitterDate: Mon, 22 Aug 2022 16:35:53 -07:00
 > 
+> x86/cpu: Add new Raptor Lake CPU model number
+> 
+> Note1: Model 0xB7 already claimed the "no suffix" #define for a regular
+> client part, so add (yet another) suffix "S" to distinguish this new
+> part from the earlier one.
+> 
+> Note2: the RAPTORLAKE* and ALDERLAKE* processors are very similar from a
+> software enabling point of view.  There are no known features that have
+> model-specific enabling and also differ between the two.  In other words,
+> every single place that list *one* or more RAPTORLAKE* or ALDERLAKE*
+> processors should eventually list all of them.
+> 
+> Note3: This is being merged before there is an in-tree user.  Merging
+> this provides an "anchor" so that the different folks can update their
+> subsystems (like perf) in parallel to use this define and test it.
 
-Thanks for reminding me. Should I resend without Cc stable?
+Yeah, then you should probably stick it in x86/urgent so that it goes to
+Linus now.
 
 -- 
-An old man doll... just what I always wanted! - Clara
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
