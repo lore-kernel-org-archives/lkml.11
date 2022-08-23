@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E53C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D96AC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242355AbiHWIRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
+        id S242507AbiHWIRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242560AbiHWILd (ORCPT
+        with ESMTP id S241809AbiHWILl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:33 -0400
+        Tue, 23 Aug 2022 04:11:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2AE6B152;
-        Tue, 23 Aug 2022 01:08:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E086B64F;
+        Tue, 23 Aug 2022 01:08:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 145A96123D;
-        Tue, 23 Aug 2022 08:08:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB33C433D6;
-        Tue, 23 Aug 2022 08:08:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22CA8611A8;
+        Tue, 23 Aug 2022 08:08:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E5ADC433C1;
+        Tue, 23 Aug 2022 08:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242128;
-        bh=rhyB6i+Er1SWoPwFIMMk0wov/QnS/fbCmU1KUM1Bc58=;
+        s=korg; t=1661242131;
+        bh=sVRq6GYr36EyWxxaM/Q4HPEpxh0pt9Zt099fApkr6Ow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ROtxdsLKadMENzUphZRo7gTZ1fsgFbV/Wq3hBNZuADosxmeTCx0Gloc1DtEpH4T/f
-         1D01zIgg8s3aqenmU4Z1HJPuYqZY/XGwyXH8LrAAh8w9mhrnMOcLokcoTN7ghG5ZZV
-         J0ihVU5Er/cQht+mL6KmiqvhR5ftwD9sHT8zIAHA=
+        b=zOvHfCOZ84H8McuFHwspe35LOILoIXGLB1RzvExAPda9fMG7QGLy8waBbjSjX3r5S
+         2dNy2p91Lib2DqpG5GyVjkU0OfrkS1vJL1zFEc23+O1zJr3nB3UOx8n6/Xjx2Dh1Y9
+         TwTqOVRwvoIopO7sxZJZaxV7dUI2Uhal+y+qd8hA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YiFei Zhu <zhuyifei@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 062/365] bpf: Disallow bpf programs call prog_run command.
-Date:   Tue, 23 Aug 2022 09:59:23 +0200
-Message-Id: <20220823080120.784563663@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+Subject: [PATCH 4.9 023/101] random: only call boot_init_stack_canary() once
+Date:   Tue, 23 Aug 2022 10:02:56 +0200
+Message-Id: <20220823080035.453767597@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,87 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+From: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
 
-commit 86f44fcec22ce2979507742bc53db8400e454f46 upstream.
+In commit 166a592cad36 ("random: move rand_initialize() earlier") the
+boot_init_stack_canary() call was added after the new random_init()
+call.
 
-The verifier cannot perform sufficient validation of bpf_attr->test.ctx_in
-pointer, therefore bpf programs should not be allowed to call BPF_PROG_RUN
-command from within the program.
-To fix this issue split bpf_sys_bpf() bpf helper into normal kern_sys_bpf()
-kernel function that can only be used by the kernel light skeleton directly.
+However, the upstream commit d55535232c3d ("random: move
+rand_initialize() earlier") also included removing the earlier call to
+boot_init_stack_canary(), making sure this call is done after
+random_init().
 
-Reported-by: YiFei Zhu <zhuyifei@google.com>
-Fixes: b1d18a7574d0 ("bpf: Extend sys_bpf commands for bpf_syscall programs.")
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Hence fix what I assume is a wrong merge conflict resolution on the
+linux-4.9.y stable branch.
+
+Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/syscall.c          |   20 ++++++++++++++------
- tools/lib/bpf/skel_internal.h |    4 ++--
- 2 files changed, 16 insertions(+), 8 deletions(-)
+ init/main.c |    7 -------
+ 1 file changed, 7 deletions(-)
 
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -5035,9 +5035,6 @@ static bool syscall_prog_is_valid_access
- 
- BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
- {
--	struct bpf_prog * __maybe_unused prog;
--	struct bpf_tramp_run_ctx __maybe_unused run_ctx;
--
- 	switch (cmd) {
- 	case BPF_MAP_CREATE:
- 	case BPF_MAP_UPDATE_ELEM:
-@@ -5047,6 +5044,18 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union
- 	case BPF_LINK_CREATE:
- 	case BPF_RAW_TRACEPOINT_OPEN:
- 		break;
-+	default:
-+		return -EINVAL;
-+	}
-+	return __sys_bpf(cmd, KERNEL_BPFPTR(attr), attr_size);
-+}
-+
-+int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
-+{
-+	struct bpf_prog * __maybe_unused prog;
-+	struct bpf_tramp_run_ctx __maybe_unused run_ctx;
-+
-+	switch (cmd) {
- #ifdef CONFIG_BPF_JIT /* __bpf_prog_enter_sleepable used by trampoline and JIT */
- 	case BPF_PROG_TEST_RUN:
- 		if (attr->test.data_in || attr->test.data_out ||
-@@ -5077,11 +5086,10 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union
- 		return 0;
- #endif
- 	default:
--		return -EINVAL;
-+		return ____bpf_sys_bpf(cmd, attr, size);
- 	}
--	return __sys_bpf(cmd, KERNEL_BPFPTR(attr), attr_size);
- }
--EXPORT_SYMBOL(bpf_sys_bpf);
-+EXPORT_SYMBOL(kern_sys_bpf);
- 
- static const struct bpf_func_proto bpf_sys_bpf_proto = {
- 	.func		= bpf_sys_bpf,
---- a/tools/lib/bpf/skel_internal.h
-+++ b/tools/lib/bpf/skel_internal.h
-@@ -66,13 +66,13 @@ struct bpf_load_and_run_opts {
- 	const char *errstr;
- };
- 
--long bpf_sys_bpf(__u32 cmd, void *attr, __u32 attr_size);
-+long kern_sys_bpf(__u32 cmd, void *attr, __u32 attr_size);
- 
- static inline int skel_sys_bpf(enum bpf_cmd cmd, union bpf_attr *attr,
- 			  unsigned int size)
- {
- #ifdef __KERNEL__
--	return bpf_sys_bpf(cmd, attr, size);
-+	return kern_sys_bpf(cmd, attr, size);
- #else
- 	return syscall(__NR_bpf, cmd, attr, size);
- #endif
+--- a/init/main.c
++++ b/init/main.c
+@@ -500,13 +500,6 @@ asmlinkage __visible void __init start_k
+ 	page_address_init();
+ 	pr_notice("%s", linux_banner);
+ 	setup_arch(&command_line);
+-	/*
+-	 * Set up the the initial canary and entropy after arch
+-	 * and after adding latent and command line entropy.
+-	 */
+-	add_latent_entropy();
+-	add_device_randomness(command_line, strlen(command_line));
+-	boot_init_stack_canary();
+ 	mm_init_cpumask(&init_mm);
+ 	setup_command_line(command_line);
+ 	setup_nr_cpu_ids();
 
 
