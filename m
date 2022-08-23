@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EA6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D009DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345696AbiHWJAI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
+        id S235570AbiHWJAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241411AbiHWI7g (ORCPT
+        with ESMTP id S1346082AbiHWJAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:59:36 -0400
+        Tue, 23 Aug 2022 05:00:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A123872861;
-        Tue, 23 Aug 2022 01:26:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887E081B07;
+        Tue, 23 Aug 2022 01:27:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0726761326;
-        Tue, 23 Aug 2022 08:19:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE79AC433C1;
-        Tue, 23 Aug 2022 08:19:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4BB96148B;
+        Tue, 23 Aug 2022 08:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C65C433D6;
+        Tue, 23 Aug 2022 08:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242752;
-        bh=Y6ANw5KX4DbdM59Da3Kv2+eYubJ10ZRx8yC/Z07q1iU=;
+        s=korg; t=1661243230;
+        bh=Fc/ptDfLjFPxNpv7wJK9pnk9GeqBK66W9EGqSZq/lbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CdXpHORVMWKYER3eghs0Z/SK8NAHKYdx+TOy6RzTBpMbQ2hVa8eLVeGPOM06fNley
-         LAxE/3gu8nL8X5Ee7+1st6gar3PxhN9ZbA6lc/uFxPbrOmekU2AnDGFhnuvQc7pCUK
-         +AU4SHk8Z6/rka9tHqlqjlRC7nepfJ0FjKvEzSrM=
+        b=x8iHAHYMRx4okq1GrzA/hO3IvWyj+JH2I+mp6eyfzjc0AB0tiVO5d8od0VEcoD23x
+         IPh8QgElPX6tBAv+WnnUz8CSuCSrWn3kFZ8dA4/zr/NLbHel0LjaLhW+YQfpdUeHc8
+         5cPmLZGiE9vawbeuxpShIMXJJ0qOLq8NhjDr/2dQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 189/365] netfilter: nf_tables: use READ_ONCE and WRITE_ONCE for shared generation id access
-Date:   Tue, 23 Aug 2022 10:01:30 +0200
-Message-Id: <20220823080126.128862257@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 211/365] net: fix potential refcount leak in ndisc_router_discovery()
+Date:   Tue, 23 Aug 2022 10:01:52 +0200
+Message-Id: <20220823080127.025493750@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,109 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-commit 3400278328285a8c2f121904496aff5e7b610a01 upstream.
+commit 7396ba87f1edf549284869451665c7c4e74ecd4f upstream.
 
-The generation ID is bumped from the commit path while holding the
-mutex, however, netlink dump operations rely on RCU.
+The issue happens on specific paths in the function. After both the
+object `rt` and `neigh` are grabbed successfully, when `lifetime` is
+nonzero but the metric needs change, the function just deletes the
+route and set `rt` to NULL. Then, it may try grabbing `rt` and `neigh`
+again if above conditions hold. The function simply overwrite `neigh`
+if succeeds or returns if fails, without decreasing the reference
+count of previous `neigh`. This may result in memory leaks.
 
-This patch also adds missing cb->base_eq initialization in
-nf_tables_dump_set().
+Fix it by decrementing the reference count of `neigh` in place.
 
-Fixes: 38e029f14a97 ("netfilter: nf_tables: set NLM_F_DUMP_INTR if netlink dumping is stale")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 6b2e04bc240f ("net: allow user to set metric on default route learned via Router Advertisement")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ net/ipv6/ndisc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -889,7 +889,7 @@ static int nf_tables_dump_tables(struct
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -1358,6 +1358,9 @@ static void ndisc_router_discovery(struc
+ 	if (!rt && lifetime) {
+ 		ND_PRINTK(3, info, "RA: adding default router\n");
  
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -1705,7 +1705,7 @@ static int nf_tables_dump_chains(struct
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -3149,7 +3149,7 @@ static int nf_tables_dump_rules(struct s
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -4133,7 +4133,7 @@ static int nf_tables_dump_sets(struct sk
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (ctx->family != NFPROTO_UNSPEC &&
-@@ -5061,6 +5061,8 @@ static int nf_tables_dump_set(struct sk_
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
-+	cb->seq = READ_ONCE(nft_net->base_seq);
++		if (neigh)
++			neigh_release(neigh);
 +
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (dump_ctx->ctx.family != NFPROTO_UNSPEC &&
- 		    dump_ctx->ctx.family != table->family)
-@@ -6887,7 +6889,7 @@ static int nf_tables_dump_obj(struct sk_
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -7819,7 +7821,7 @@ static int nf_tables_dump_flowtable(stru
- 
- 	rcu_read_lock();
- 	nft_net = nft_pernet(net);
--	cb->seq = nft_net->base_seq;
-+	cb->seq = READ_ONCE(nft_net->base_seq);
- 
- 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
- 		if (family != NFPROTO_UNSPEC && family != table->family)
-@@ -8752,6 +8754,7 @@ static int nf_tables_commit(struct net *
- 	struct nft_trans_elem *te;
- 	struct nft_chain *chain;
- 	struct nft_table *table;
-+	unsigned int base_seq;
- 	LIST_HEAD(adl);
- 	int err;
- 
-@@ -8801,9 +8804,12 @@ static int nf_tables_commit(struct net *
- 	 * Bump generation counter, invalidate any dump in progress.
- 	 * Cannot fail after this point.
- 	 */
--	while (++nft_net->base_seq == 0)
-+	base_seq = READ_ONCE(nft_net->base_seq);
-+	while (++base_seq == 0)
- 		;
- 
-+	WRITE_ONCE(nft_net->base_seq, base_seq);
-+
- 	/* step 3. Start new generation, rules_gen_X now in use. */
- 	net->nft.gencursor = nft_gencursor_next(net);
- 
+ 		rt = rt6_add_dflt_router(net, &ipv6_hdr(skb)->saddr,
+ 					 skb->dev, pref, defrtr_usr_metric);
+ 		if (!rt) {
 
 
