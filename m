@@ -2,64 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAA0C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D86C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241316AbiHWHvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        id S241365AbiHWHvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241279AbiHWHuV (ORCPT
+        with ESMTP id S241300AbiHWHuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:50:21 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8F56554E
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:50:16 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VN0xkM-_1661241012;
-Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VN0xkM-_1661241012)
+        Tue, 23 Aug 2022 03:50:23 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE77565264
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:50:20 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VN0m784_1661241015;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VN0m784_1661241015)
           by smtp.aliyun-inc.com;
-          Tue, 23 Aug 2022 15:50:13 +0800
+          Tue, 23 Aug 2022 15:50:15 +0800
 From:   Baolin Wang <baolin.wang@linux.alibaba.com>
 To:     akpm@linux-foundation.org, songmuchun@bytedance.com,
         mike.kravetz@oracle.com
 Cc:     baolin.wang@linux.alibaba.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/5] Fix some issues when looking up hugetlb page
-Date:   Tue, 23 Aug 2022 15:50:00 +0800
-Message-Id: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+Subject: [PATCH v2 3/5] mm/hugetlb: fix races when looking up a CONT-PMD size hugetlb page
+Date:   Tue, 23 Aug 2022 15:50:03 +0800
+Message-Id: <e057d7392325d7fb8a16d24c41b1394359daae23.1661240170.git.baolin.wang@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+In-Reply-To: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On some architectures (like ARM64), it can support CONT-PTE/PMD size
+hugetlb, which means it can support not only PMD/PUD size hugetlb
+(2M and 1G), but also CONT-PTE/PMD size(64K and 32M) if a 4K page size
+specified.
 
-On ARM64 architecture, it can support CONT-PTE/PMD size hugetlb. When
-looking up hugetlb page by follow_page(), we will hold the incorrect
-pte/pmd lock for the CONT-PTE/PMD size hugetlb page, which will make
-the pte/pmd entry unstable even under the lock and cause some potential
-race issues. So considering the CONT-PTE/PMD size hugetlb, this patch set
-changes to use the correct function to get the correct pte/pmd entry lock
-to make the pte/pmd entry stable.
+When looking up a CONT-PMD size hugetlb page by follow_page(), it will
+always use the PMD page lock to protect the pmd entry in follow_huge_pmd().
+However this is not the correct lock for CONT-PMD size hugetlb, and the
+pmd entry will be unstable under the incorrect lock, which means it still
+can be migrated or poisoned, and can not get the correct CONT-PMD size
+page.
 
-Changes from v1:
- - Introduce a new helper to handle the CONT-PTE page.
- - Use finer grained locks for CONT-PTE/PMD entries.
- - Update some commit message.
+Thus changing to use huge_pte_lock() to get the correct pmd entry lock
+for CONT-PMD size hugetlb to fix the potential race.
 
-Baolin Wang (5):
-  mm/hugetlb: fix races when looking up a CONT-PTE size hugetlb page
-  mm/hugetlb: use PTE page lock to protect CONT-PTE entries
-  mm/hugetlb: fix races when looking up a CONT-PMD size hugetlb page
-  mm/hugetlb: use PMD page lock to protect CONT-PTE entries
-  mm/hugetlb: add FOLL_MIGRATION validation before waiting for a
-    migration entry
+Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+---
+ include/linux/hugetlb.h | 4 ++--
+ mm/gup.c                | 2 +-
+ mm/hugetlb.c            | 7 ++++---
+ 3 files changed, 7 insertions(+), 6 deletions(-)
 
- include/linux/hugetlb.h | 38 ++++++++++++++++++++++++---
- mm/gup.c                | 13 ++++++++-
- mm/hugetlb.c            | 70 ++++++++++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 113 insertions(+), 8 deletions(-)
-
+diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+index 4b172a7..3a96f67 100644
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -209,7 +209,7 @@ struct page *follow_huge_pd(struct vm_area_struct *vma,
+ 			    int flags, int pdshift);
+ struct page *follow_huge_pte(struct vm_area_struct *vma, unsigned long address,
+ 			     pmd_t *pmd, int flags);
+-struct page *follow_huge_pmd(struct mm_struct *mm, unsigned long address,
++struct page *follow_huge_pmd(struct vm_area_struct *vma, unsigned long address,
+ 				pmd_t *pmd, int flags);
+ struct page *follow_huge_pud(struct mm_struct *mm, unsigned long address,
+ 				pud_t *pud, int flags);
+@@ -320,7 +320,7 @@ static inline struct page *follow_huge_pte(struct vm_area_struct *vma,
+ 	return NULL;
+ }
+ 
+-static inline struct page *follow_huge_pmd(struct mm_struct *mm,
++static inline struct page *follow_huge_pmd(struct vm_area_struct *vma,
+ 				unsigned long address, pmd_t *pmd, int flags)
+ {
+ 	return NULL;
+diff --git a/mm/gup.c b/mm/gup.c
+index 87a94f5..014accd 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -673,7 +673,7 @@ static struct page *follow_pmd_mask(struct vm_area_struct *vma,
+ 	if (pmd_none(pmdval))
+ 		return no_page_table(vma, flags);
+ 	if (pmd_huge(pmdval) && is_vm_hugetlb_page(vma)) {
+-		page = follow_huge_pmd(mm, address, pmd, flags);
++		page = follow_huge_pmd(vma, address, pmd, flags);
+ 		if (page)
+ 			return page;
+ 		return no_page_table(vma, flags);
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index cf742d1..2c4048a 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -7035,9 +7035,11 @@ struct page * __weak
+ }
+ 
+ struct page * __weak
+-follow_huge_pmd(struct mm_struct *mm, unsigned long address,
++follow_huge_pmd(struct vm_area_struct *vma, unsigned long address,
+ 		pmd_t *pmd, int flags)
+ {
++	struct mm_struct *mm = vma->vm_mm;
++	struct hstate *hstate = hstate_vma(vma);
+ 	struct page *page = NULL;
+ 	spinlock_t *ptl;
+ 	pte_t pte;
+@@ -7050,8 +7052,7 @@ struct page * __weak
+ 		return NULL;
+ 
+ retry:
+-	ptl = pmd_lockptr(mm, pmd);
+-	spin_lock(ptl);
++	ptl = huge_pte_lock(hstate, mm, (pte_t *)pmd);
+ 	/*
+ 	 * make sure that the address range covered by this pmd is not
+ 	 * unmapped from other threads.
 -- 
 1.8.3.1
 
