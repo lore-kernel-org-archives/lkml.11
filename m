@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF33AC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0280CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229436AbiHWTIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
+        id S231993AbiHWTJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiHWTIJ (ORCPT
+        with ESMTP id S229548AbiHWTIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:08:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52F0C13492A;
-        Tue, 23 Aug 2022 10:46:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 23 Aug 2022 15:08:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7C986B73
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661276760;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JIm3RX4Nk/jYsusHRm7mFXdphP+WYA1xee7+a/x5ngY=;
+        b=fJQ8R3pRpCuAtD4vwgWr1tuweqRWbTUcM9eCZSVFzX4pWlYpzCoyAA1FCrt5n3Jj68ChU0
+        1SP1/NOKyQMJ+U09XyNYemyb7HjIDUSCu+o5sF4Ed6hUem/og87oA2D0unxlGFnqJGqNlo
+        G5s1R9irHqtjPjlQhat7CVxR+nlNeJg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-66-J29G1h04O6yUNRekH19yWg-1; Tue, 23 Aug 2022 13:42:45 -0400
+X-MC-Unique: J29G1h04O6yUNRekH19yWg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 680B26160B;
-        Tue, 23 Aug 2022 17:44:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7A80C433D7;
-        Tue, 23 Aug 2022 17:44:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661276661;
-        bh=Ul5bZ380er40qNxMbPejlJJeqU3zD3OVNwa3ZFt/HIo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=C9zBoc5PKmp58NcyygnC6xcVGC6VM2MA3uszmJexg+uHCcrbJ0MX1lMzFwmLesHlz
-         FyEHsjikk6au2Q51Ryztu++WlzbTLWFOQttW01f5sdl4u/w6qhKnP37jnTixRrp9FL
-         zlq6bnHQk34Qgdy37OdQ2jU+xBnqn11n9AE4Gda2LQWQ+OWI/yOQntH6CxrgHvYo29
-         eF24dMainibdHMsjSWGg2yLcrDh2Th11zIOur+y7mpvgEm5aPFCPppIsgcelHHE1Kw
-         KaPt9GTdxxXJp6kjj4bwGYco5nwDZXlWK+ftIpqXKpQy+GcyhRDCpxBQmjl7OmtQUE
-         yzhWCDDAbKSaw==
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-33387bf0c4aso398390557b3.11;
-        Tue, 23 Aug 2022 10:44:21 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0SAp8HRqPvHP51DW/A8/QZsbSioXKA6PT4PMd34X3/PeIpSjTu
-        /Yx0FVBYNfx0s2aLXoZ3wSHXfLaufIT/aIEGJkA=
-X-Google-Smtp-Source: AA6agR79RaYtkRmNjikCF3kqnEzKZQ6FfCWzj8r6LytYF5P1bOwtbDnte6PXDP5blgsV1thflnHhQEUQ8ZFu0DZWeiA=
-X-Received: by 2002:a81:63c3:0:b0:323:ce27:4e4d with SMTP id
- x186-20020a8163c3000000b00323ce274e4dmr27052114ywb.472.1661276660744; Tue, 23
- Aug 2022 10:44:20 -0700 (PDT)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 45C9E29DD9A4;
+        Tue, 23 Aug 2022 17:42:45 +0000 (UTC)
+Received: from cmirabil.redhat.com (unknown [10.22.33.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C13CF14152E0;
+        Tue, 23 Aug 2022 17:42:44 +0000 (UTC)
+From:   Charles Mirabile <cmirabil@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Charles Mirabile <cmirabil@redhat.com>,
+        Peter Robinson <pbrobinson@gmail.com>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, rh-kdlp@googlegroups.com,
+        Lee Jones <lee.jones@linaro.org>,
+        Joel Savitz <jsavitz@redhat.com>
+Subject: [PATCH 1/5] drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
+Date:   Tue, 23 Aug 2022 13:41:54 -0400
+Message-Id: <20220823174158.45579-2-cmirabil@redhat.com>
+In-Reply-To: <20220823174158.45579-1-cmirabil@redhat.com>
+References: <20220823174158.45579-1-cmirabil@redhat.com>
 MIME-Version: 1.0
-References: <20220817092140.4252-1-xupengfei@nfschina.com>
-In-Reply-To: <20220817092140.4252-1-xupengfei@nfschina.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 23 Aug 2022 10:44:09 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW51y6dEVPs_WatXvXNnELk5UvvKkk8_kLrySUDP_OSUBA@mail.gmail.com>
-Message-ID: <CAPhsuW51y6dEVPs_WatXvXNnELk5UvvKkk8_kLrySUDP_OSUBA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] md/raid5: Fix spelling mistakes in comments
-To:     XU pengfei <xupengfei@nfschina.com>
-Cc:     linux-raid <linux-raid@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 2:21 AM XU pengfei <xupengfei@nfschina.com> wrote:
->
-> Fix spelling of 'waitting' in comments.
->
-> Signed-off-by: XU pengfei <xupengfei@nfschina.com>
+This patch adds the compatible string for the Sense HAT device to
+the list of compatible strings in the simple_mfd_i2c driver so that
+it can match against the device and load its children and their drivers
 
-Applied to md-next.
+Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+---
+ drivers/mfd/simple-mfd-i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Song
+diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
+index f4c8fc3ee463..c47f36581f3f 100644
+--- a/drivers/mfd/simple-mfd-i2c.c
++++ b/drivers/mfd/simple-mfd-i2c.c
+@@ -75,6 +75,7 @@ static const struct simple_mfd_data silergy_sy7636a = {
+ static const struct of_device_id simple_mfd_i2c_of_match[] = {
+ 	{ .compatible = "kontron,sl28cpld" },
+ 	{ .compatible = "silergy,sy7636a", .data = &silergy_sy7636a},
++	{ .compatible = "raspberrypi,sensehat" },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
+-- 
+2.31.1
 
-> ---
->  drivers/md/raid5-cache.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
-> index f4e1cc1ece43..058d82e7fa13 100644
-> --- a/drivers/md/raid5-cache.c
-> +++ b/drivers/md/raid5-cache.c
-> @@ -1327,9 +1327,9 @@ static void r5l_write_super_and_discard_space(struct r5l_log *log,
->          * superblock is updated to new log tail. Updating superblock (either
->          * directly call md_update_sb() or depend on md thread) must hold
->          * reconfig mutex. On the other hand, raid5_quiesce is called with
-> -        * reconfig_mutex hold. The first step of raid5_quiesce() is waitting
-> -        * for all IO finish, hence waitting for reclaim thread, while reclaim
-> -        * thread is calling this function and waitting for reconfig mutex. So
-> +        * reconfig_mutex hold. The first step of raid5_quiesce() is waiting
-> +        * for all IO finish, hence waiting for reclaim thread, while reclaim
-> +        * thread is calling this function and waiting for reconfig mutex. So
->          * there is a deadlock. We workaround this issue with a trylock.
->          * FIXME: we could miss discard if we can't take reconfig mutex
->          */
-> --
-> 2.18.2
->
