@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D13C32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA58C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355072AbiHWKa5 (ORCPT
+        id S1355047AbiHWKay (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        Tue, 23 Aug 2022 06:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353186AbiHWKPD (ORCPT
+        with ESMTP id S1353114AbiHWKPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:15:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF297434D;
-        Tue, 23 Aug 2022 02:00:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D9772FE4;
+        Tue, 23 Aug 2022 02:00:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D066E6157F;
-        Tue, 23 Aug 2022 09:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D11C433D7;
-        Tue, 23 Aug 2022 09:00:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFB0861572;
+        Tue, 23 Aug 2022 09:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91281C433C1;
+        Tue, 23 Aug 2022 09:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245210;
-        bh=mZ1Eal+wbCJp/DyeVGMHEXpw1g7FqIdE0Oc7xwcTgtQ=;
+        s=korg; t=1661245206;
+        bh=h78+rvESYBGXJHbC/SddqUp5duaZ1uXyON64juuFpjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y6zbjlrINU8f7xEk0uYga8BFjdpCkL0XiauAhHUuaxphEWSQHN4qIQ01TUQ3TNbpW
-         qxqN3Pd1GCupqJs/ja2f2/hVr+gJQ4/pCWet/te9JxeZXwzi4oPsZiyCk0JHIE10oN
-         NfY30RUBIt23/lJ7RiOsLeVrRanphrgwoPdjQoL0=
+        b=LZAflfXK22vrbJwVMmjpt7D3MZQtcN4D8m5MGqwtpTXGTDEXFMc7cOTF3elaESfR0
+         fhpY9whwyRFUDAfDySont/txAlcw7EyGFs4gXOoeaNS3cvA5JkTSYxKfTMLCEaHf06
+         a9JC7xkjR+jzuiJd7yZ7M88X0xaUgm0W1b6lZK8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alois Wohlschlager <alois1@gmx-topmail.de>,
-        Miklos Szeredi <mszeredi@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 222/244] ovl: warn if trusted xattr creation fails
-Date:   Tue, 23 Aug 2022 10:26:21 +0200
-Message-Id: <20220823080106.954894142@linuxfoundation.org>
+Subject: [PATCH 5.15 221/244] powerpc/32: Dont always pass -mcpu=powerpc to the compiler
+Date:   Tue, 23 Aug 2022 10:26:20 +0200
+Message-Id: <20220823080106.924199228@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,66 +54,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit b10b85fe5149ee8b39fbbf86095b303632dde2cd ]
+[ Upstream commit 446cda1b21d9a6b3697fe399c6a3a00ff4a285f5 ]
 
-When mounting overlayfs in an unprivileged user namespace, trusted xattr
-creation will fail.  This will lead to failures in some file operations,
-e.g. in the following situation:
+Since commit 4bf4f42a2feb ("powerpc/kbuild: Set default generic
+machine type for 32-bit compile"), when building a 32 bits kernel
+with a bi-arch version of GCC, or when building a book3s/32 kernel,
+the option -mcpu=powerpc is passed to GCC at all time, relying on it
+being eventually overriden by a subsequent -mcpu=xxxx.
 
-  mkdir lower upper work merged
-  mkdir lower/directory
-  mount -toverlay -olowerdir=lower,upperdir=upper,workdir=work none merged
-  rmdir merged/directory
-  mkdir merged/directory
+But when building the same kernel with a 32 bits only version of GCC,
+that is not done, relying on gcc being built with the expected default
+CPU.
 
-The last mkdir will fail:
+This logic has two problems. First, it is a bit fragile to rely on
+whether the GCC version is bi-arch or not, because today we can have
+bi-arch versions of GCC configured with a 32 bits default. Second,
+there are some versions of GCC which don't support -mcpu=powerpc,
+for instance for e500 SPE-only versions.
 
-  mkdir: cannot create directory 'merged/directory': Input/output error
+So, stop relying on this approximative logic and allow the user to
+decide whether he/she wants to use the toolchain's default CPU or if
+he/she wants to set one, and allow only possible CPUs based on the
+selected target.
 
-The cause for these failures is currently extremely non-obvious and hard to
-debug.  Hence, warn the user and suggest using the userxattr mount option,
-if it is not already supplied and xattr creation fails during the
-self-check.
-
-Reported-by: Alois Wohlschlager <alois1@gmx-topmail.de>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Reported-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/d4df724691351531bf46d685d654689e5dfa0d74.1657549153.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/overlayfs/super.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/powerpc/Makefile                  | 26 +-------------------------
+ arch/powerpc/platforms/Kconfig.cputype | 21 ++++++++++++++++++---
+ 2 files changed, 19 insertions(+), 28 deletions(-)
 
-diff --git a/fs/overlayfs/super.c b/fs/overlayfs/super.c
-index 7bb0a47cb615..9837aaf9caf1 100644
---- a/fs/overlayfs/super.c
-+++ b/fs/overlayfs/super.c
-@@ -1413,11 +1413,12 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
- 	 */
- 	err = ovl_do_setxattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE, "0", 1);
- 	if (err) {
-+		pr_warn("failed to set xattr on upper\n");
- 		ofs->noxattr = true;
- 		if (ofs->config.index || ofs->config.metacopy) {
- 			ofs->config.index = false;
- 			ofs->config.metacopy = false;
--			pr_warn("upper fs does not support xattr, falling back to index=off,metacopy=off.\n");
-+			pr_warn("...falling back to index=off,metacopy=off.\n");
- 		}
- 		/*
- 		 * xattr support is required for persistent st_ino.
-@@ -1425,8 +1426,10 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
- 		 */
- 		if (ofs->config.xino == OVL_XINO_AUTO) {
- 			ofs->config.xino = OVL_XINO_OFF;
--			pr_warn("upper fs does not support xattr, falling back to xino=off.\n");
-+			pr_warn("...falling back to xino=off.\n");
- 		}
-+		if (err == -EPERM && !ofs->config.userxattr)
-+			pr_info("try mounting with 'userxattr' option\n");
- 		err = 0;
- 	} else {
- 		ovl_do_removexattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE);
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index 72610e2d6176..2bb0fe9b2058 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -17,23 +17,6 @@ HAS_BIARCH	:= $(call cc-option-yn, -m32)
+ # Set default 32 bits cross compilers for vdso and boot wrapper
+ CROSS32_COMPILE ?=
+ 
+-ifeq ($(HAS_BIARCH),y)
+-ifeq ($(CROSS32_COMPILE),)
+-ifdef CONFIG_PPC32
+-# These options will be overridden by any -mcpu option that the CPU
+-# or platform code sets later on the command line, but they are needed
+-# to set a sane 32-bit cpu target for the 64-bit cross compiler which
+-# may default to the wrong ISA.
+-KBUILD_CFLAGS		+= -mcpu=powerpc
+-KBUILD_AFLAGS		+= -mcpu=powerpc
+-endif
+-endif
+-endif
+-
+-ifdef CONFIG_PPC_BOOK3S_32
+-KBUILD_CFLAGS		+= -mcpu=powerpc
+-endif
+-
+ # If we're on a ppc/ppc64/ppc64le machine use that defconfig, otherwise just use
+ # ppc64_defconfig because we have nothing better to go on.
+ uname := $(shell uname -m)
+@@ -185,6 +168,7 @@ endif
+ endif
+ 
+ CFLAGS-$(CONFIG_TARGET_CPU_BOOL) += $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
++AFLAGS-$(CONFIG_TARGET_CPU_BOOL) += $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
+ 
+ # Altivec option not allowed with e500mc64 in GCC.
+ ifdef CONFIG_ALTIVEC
+@@ -195,14 +179,6 @@ endif
+ CFLAGS-$(CONFIG_E5500_CPU) += $(E5500_CPU)
+ CFLAGS-$(CONFIG_E6500_CPU) += $(call cc-option,-mcpu=e6500,$(E5500_CPU))
+ 
+-ifdef CONFIG_PPC32
+-ifdef CONFIG_PPC_E500MC
+-CFLAGS-y += $(call cc-option,-mcpu=e500mc,-mcpu=powerpc)
+-else
+-CFLAGS-$(CONFIG_E500) += $(call cc-option,-mcpu=8540 -msoft-float,-mcpu=powerpc)
+-endif
+-endif
+-
+ asinstr := $(call as-instr,lis 9$(comma)foo@high,-DHAVE_AS_ATHIGH=1)
+ 
+ KBUILD_CPPFLAGS	+= -I $(srctree)/arch/$(ARCH) $(asinstr)
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index 81f8c9634832..1b1e67ff9d21 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -137,9 +137,9 @@ config GENERIC_CPU
+ 	depends on PPC64 && CPU_LITTLE_ENDIAN
+ 	select ARCH_HAS_FAST_MULTIPLIER
+ 
+-config GENERIC_CPU
++config POWERPC_CPU
+ 	bool "Generic 32 bits powerpc"
+-	depends on PPC32 && !PPC_8xx
++	depends on PPC32 && !PPC_8xx && !PPC_85xx
+ 
+ config CELL_CPU
+ 	bool "Cell Broadband Engine"
+@@ -193,11 +193,23 @@ config G4_CPU
+ 	depends on PPC_BOOK3S_32
+ 	select ALTIVEC
+ 
++config E500_CPU
++	bool "e500 (8540)"
++	depends on PPC_85xx && !PPC_E500MC
++
++config E500MC_CPU
++	bool "e500mc"
++	depends on PPC_85xx && PPC_E500MC
++
++config TOOLCHAIN_DEFAULT_CPU
++	bool "Rely on the toolchain's implicit default CPU"
++	depends on PPC32
++
+ endchoice
+ 
+ config TARGET_CPU_BOOL
+ 	bool
+-	default !GENERIC_CPU
++	default !GENERIC_CPU && !TOOLCHAIN_DEFAULT_CPU
+ 
+ config TARGET_CPU
+ 	string
+@@ -212,6 +224,9 @@ config TARGET_CPU
+ 	default "e300c2" if E300C2_CPU
+ 	default "e300c3" if E300C3_CPU
+ 	default "G4" if G4_CPU
++	default "8540" if E500_CPU
++	default "e500mc" if E500MC_CPU
++	default "powerpc" if POWERPC_CPU
+ 
+ config PPC_BOOK3S
+ 	def_bool y
 -- 
 2.35.1
 
