@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D67C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69804C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352200AbiHWKEp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        id S241101AbiHWKEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351769AbiHWKAg (ORCPT
+        with ESMTP id S1351841AbiHWKAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:00:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9884FCD2;
-        Tue, 23 Aug 2022 01:48:18 -0700 (PDT)
+        Tue, 23 Aug 2022 06:00:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A750521B4;
+        Tue, 23 Aug 2022 01:48:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E48BBB81C28;
-        Tue, 23 Aug 2022 08:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144D0C433C1;
-        Tue, 23 Aug 2022 08:48:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F991CE1B4B;
+        Tue, 23 Aug 2022 08:38:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D19BC433D6;
+        Tue, 23 Aug 2022 08:38:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244496;
-        bh=urTZsfCXeDz7WoRcA6SCxIYIvurGxHNJ0Xuosy9QH3E=;
+        s=korg; t=1661243908;
+        bh=7qKPlnNSAjzMUXbmR4g01RfKXQU2sqDa2PE+Zy4CoJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JWXSq3BMOH938qrTOe9PffYlIYyFX84Th0EDh7rFUhwT/byMisNKS1h7drqh1hcr0
-         O4tMs/e3MEHgLslTitYZygo8dYLMBZP7LLswqurIwocnEIVaQV+phc1tXGUhmSKzim
-         k/1dspRg/8PhfS0AQdztgHRJDQ16g5WiDVrGLf60=
+        b=WeD9M4k8vYLcC9Ky9+hSUQZ3U2KoHEiQsrIYfbXVLDff4wvqq80evKY+kb8gRTzUt
+         wWtHKLDbjvwWhRA3IvwkP6ljPNJEFkA2OToSPOeu9tti5QwHld3mrSRPaLFiPKz2LI
+         G2mu1qG/YdSqZlBRQSotD6zwGYiJHbUtMfESh46A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 128/229] tty: n_gsm: fix DM command
-Date:   Tue, 23 Aug 2022 10:24:49 +0200
-Message-Id: <20220823080058.298743401@linuxfoundation.org>
+        stable@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.15 007/244] drm/nouveau: recognise GA103
+Date:   Tue, 23 Aug 2022 10:22:46 +0200
+Message-Id: <20220823080059.332289022@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,42 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-[ Upstream commit 18a948c7d90995d127785e308fa7b701df4c499f ]
+commit c20ee5749a3f688d9bab83a3b09b75587153ff13 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.3.3 defines the DM response. There exists
-no DM command. However, the current implementation incorrectly sends DM as
-command in case of unexpected UIH frames in gsm_queue().
-Correct this behavior by always sending DM as response.
+Appears to be ok with general GA10x code.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-2-daniel.starke@siemens.com
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Cc: <stable@vger.kernel.org> # v5.15+
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220803142745.2679510-1-kherbst@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../gpu/drm/nouveau/nvkm/engine/device/base.c | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 5f5a7ad4c46a..1d50f3ab4e5a 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1906,7 +1906,7 @@ static void gsm_queue(struct gsm_mux *gsm)
- 			goto invalid;
- #endif
- 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
--			gsm_command(gsm, address, DM|PF);
-+			gsm_response(gsm, address, DM|PF);
- 			return;
- 		}
- 		dlci->data(dlci, gsm->buf, gsm->len);
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
+index 62efbd0f3846..b7246b146e51 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
+@@ -2605,6 +2605,27 @@ nv172_chipset = {
+ 	.fifo     = { 0x00000001, ga102_fifo_new },
+ };
+ 
++static const struct nvkm_device_chip
++nv173_chipset = {
++	.name = "GA103",
++	.bar      = { 0x00000001, tu102_bar_new },
++	.bios     = { 0x00000001, nvkm_bios_new },
++	.devinit  = { 0x00000001, ga100_devinit_new },
++	.fb       = { 0x00000001, ga102_fb_new },
++	.gpio     = { 0x00000001, ga102_gpio_new },
++	.i2c      = { 0x00000001, gm200_i2c_new },
++	.imem     = { 0x00000001, nv50_instmem_new },
++	.mc       = { 0x00000001, ga100_mc_new },
++	.mmu      = { 0x00000001, tu102_mmu_new },
++	.pci      = { 0x00000001, gp100_pci_new },
++	.privring = { 0x00000001, gm200_privring_new },
++	.timer    = { 0x00000001, gk20a_timer_new },
++	.top      = { 0x00000001, ga100_top_new },
++	.disp     = { 0x00000001, ga102_disp_new },
++	.dma      = { 0x00000001, gv100_dma_new },
++	.fifo     = { 0x00000001, ga102_fifo_new },
++};
++
+ static const struct nvkm_device_chip
+ nv174_chipset = {
+ 	.name = "GA104",
+@@ -3092,6 +3113,7 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
+ 		case 0x167: device->chip = &nv167_chipset; break;
+ 		case 0x168: device->chip = &nv168_chipset; break;
+ 		case 0x172: device->chip = &nv172_chipset; break;
++		case 0x173: device->chip = &nv173_chipset; break;
+ 		case 0x174: device->chip = &nv174_chipset; break;
+ 		case 0x176: device->chip = &nv176_chipset; break;
+ 		case 0x177: device->chip = &nv177_chipset; break;
 -- 
-2.35.1
+2.37.2
 
 
 
