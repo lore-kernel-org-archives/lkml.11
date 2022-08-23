@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCDEC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BE3C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351720AbiHWLTr (ORCPT
+        id S1349084AbiHWLT6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
+        Tue, 23 Aug 2022 07:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357856AbiHWLQs (ORCPT
+        with ESMTP id S242420AbiHWLOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DF4BD1EB;
-        Tue, 23 Aug 2022 02:20:17 -0700 (PDT)
+        Tue, 23 Aug 2022 07:14:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFDFB95AC;
+        Tue, 23 Aug 2022 02:18:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1481961220;
-        Tue, 23 Aug 2022 09:19:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 072CCC433C1;
-        Tue, 23 Aug 2022 09:19:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DE427CE1B55;
+        Tue, 23 Aug 2022 09:18:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01C6BC433C1;
+        Tue, 23 Aug 2022 09:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246394;
-        bh=kCut2OdKbgOGp5VoixaQirlOjNEkb9rjzVzvP+yhMXs=;
+        s=korg; t=1661246325;
+        bh=lC1PDtOD4kVcf3eDjo4yBR1rOPmdYM1OQZgn1WPyCNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJyCw1AAk7YTrJo+qGyr/JGR78ATA8uNBflnQxS2VpsmC1BabygnCHEE54AO5fRqO
-         3dvtoL/6QEM8SkJ85n65nB8wmK68eUqiAT0jtsoH2CGgIstszKVuGowh65/CCNAZJS
-         GSdqdOY8KjLemBzWbHRtZ31+meAU5RZrhj10mDsA=
+        b=0IC7j+fJaAvq6f3pSKsNOXHNlrYyz+Ts5zyqjqM9VKmY/YJFaVK8NdaDmW+V//WO1
+         Fl6y6Mlbsi31ydNTSckOUGqAMnUouPN2RUbWiulcdJlSx04F7BkhKwgFr4GyKN8CIg
+         phySE89fuspYSBOS7D8SgUT1G+Hsf97k5rITER9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 065/389] ACPI: EC: Remove duplicate ThinkPad X1 Carbon 6th entry from DMI quirks
-Date:   Tue, 23 Aug 2022 10:22:23 +0200
-Message-Id: <20220823080118.320706659@linuxfoundation.org>
+Subject: [PATCH 5.4 074/389] ARM: findbit: fix overflowing offset
+Date:   Tue, 23 Aug 2022 10:22:32 +0200
+Message-Id: <20220823080118.736925402@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,39 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 0dd6db359e5f206cbf1dd1fd40dd211588cd2725 ]
+[ Upstream commit ec85bd369fd2bfaed6f45dd678706429d4f75b48 ]
 
-Somehow the "ThinkPad X1 Carbon 6th" entry ended up twice in the
-struct dmi_system_id acpi_ec_no_wakeup[] array. Remove one of
-the entries.
+When offset is larger than the size of the bit array, we should not
+attempt to access the array as we can perform an access beyond the
+end of the array. Fix this by changing the pre-condition.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Using "cmp r2, r1; bhs ..." covers us for the size == 0 case, since
+this will always take the branch when r1 is zero, irrespective of
+the value of r2. This means we can fix this bug without adding any
+additional code!
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/ec.c | 7 -------
- 1 file changed, 7 deletions(-)
+ arch/arm/lib/findbit.S | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index e5b92958c299..defc5796b508 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2118,13 +2118,6 @@ static const struct dmi_system_id acpi_ec_no_wakeup[] = {
- 			DMI_MATCH(DMI_PRODUCT_FAMILY, "Thinkpad X1 Carbon 6th"),
- 		},
- 	},
--	{
--		.ident = "ThinkPad X1 Carbon 6th",
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_FAMILY, "ThinkPad X1 Carbon 6th"),
--		},
--	},
- 	{
- 		.ident = "ThinkPad X1 Yoga 3rd",
- 		.matches = {
+diff --git a/arch/arm/lib/findbit.S b/arch/arm/lib/findbit.S
+index b5e8b9ae4c7d..7fd3600db8ef 100644
+--- a/arch/arm/lib/findbit.S
++++ b/arch/arm/lib/findbit.S
+@@ -40,8 +40,8 @@ ENDPROC(_find_first_zero_bit_le)
+  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
+  */
+ ENTRY(_find_next_zero_bit_le)
+-		teq	r1, #0
+-		beq	3b
++		cmp	r2, r1
++		bhs	3b
+ 		ands	ip, r2, #7
+ 		beq	1b			@ If new byte, goto old routine
+  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
+@@ -81,8 +81,8 @@ ENDPROC(_find_first_bit_le)
+  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
+  */
+ ENTRY(_find_next_bit_le)
+-		teq	r1, #0
+-		beq	3b
++		cmp	r2, r1
++		bhs	3b
+ 		ands	ip, r2, #7
+ 		beq	1b			@ If new byte, goto old routine
+  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
+@@ -115,8 +115,8 @@ ENTRY(_find_first_zero_bit_be)
+ ENDPROC(_find_first_zero_bit_be)
+ 
+ ENTRY(_find_next_zero_bit_be)
+-		teq	r1, #0
+-		beq	3b
++		cmp	r2, r1
++		bhs	3b
+ 		ands	ip, r2, #7
+ 		beq	1b			@ If new byte, goto old routine
+ 		eor	r3, r2, #0x18		@ big endian byte ordering
+@@ -149,8 +149,8 @@ ENTRY(_find_first_bit_be)
+ ENDPROC(_find_first_bit_be)
+ 
+ ENTRY(_find_next_bit_be)
+-		teq	r1, #0
+-		beq	3b
++		cmp	r2, r1
++		bhs	3b
+ 		ands	ip, r2, #7
+ 		beq	1b			@ If new byte, goto old routine
+ 		eor	r3, r2, #0x18		@ big endian byte ordering
 -- 
 2.35.1
 
