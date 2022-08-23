@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BADC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339ABC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243551AbiHWJrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S243614AbiHWJr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351867AbiHWJpg (ORCPT
+        with ESMTP id S1351930AbiHWJpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:45:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CFD208;
-        Tue, 23 Aug 2022 01:43:18 -0700 (PDT)
+        Tue, 23 Aug 2022 05:45:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3C32AE03;
+        Tue, 23 Aug 2022 01:43:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0178BCE1B50;
-        Tue, 23 Aug 2022 08:42:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF05C433C1;
-        Tue, 23 Aug 2022 08:42:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 102CD61538;
+        Tue, 23 Aug 2022 08:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09457C433C1;
+        Tue, 23 Aug 2022 08:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244152;
-        bh=gRXOJdIGssNxS+kxPIDu1FjF/pzKNtVhwUjsxe9M6fk=;
+        s=korg; t=1661244149;
+        bh=6bjpeb1yXqMnkg9+2/fYr7o7Pa+WhVmDu5sIiWvdvEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yDb5JIx2zqETTGlPmFQeUY6W4VMqsjo5rLSZEZc14OQXbm05YZXzLicCK8TsM3R23
-         cb1XSE91wySBHMzb5/p3wkRKjDxmq9Rstc96lD1Yyb/pQjeFM7LjIzAXXQUKCneiie
-         Q/kpATAz02klIJzxIFpQIR4CO9gKLtfGdRAZd430=
+        b=HHxHIztraFrj8Ir6NBhJq4+GkpWrEZ/89Nxa1ZUVsdP0G1lwfDPUzMp1Lt7JeD+zY
+         htX/J0qwEcdywRvwLoiZI6w/zDmiwQiEQ2drQm4kZj3khbVS33AYsKIjc2QZxPL4Bu
+         cfNtWFWd94L5JJ/eCq9pCzluhVWgGl4tZtHwOPQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 044/244] bpf: Acquire map uref in .init_seq_private for array map iterator
-Date:   Tue, 23 Aug 2022 10:23:23 +0200
-Message-Id: <20220823080100.536819994@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 093/229] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
+Date:   Tue, 23 Aug 2022 10:24:14 +0200
+Message-Id: <20220823080057.037313606@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,54 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit f76fa6b338055054f80c72b29c97fb95c1becadc upstream.
+[ Upstream commit a41b17ff9dacd22f5f118ee53d82da0f3e52d5e3 ]
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
+will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
+released before sock_alloc_send_skb and then relocked after
+sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
+to add skb to an already full sk_write_queue:
 
-Alternative fix is acquiring an extra bpf_link reference just like
-a pinned map iterator does, but it introduces unnecessary dependency
-on bpf_link instead of bpf_map.
+thread1--->lock
+thread1--->dccp_qpolicy_full: queue is full. drop a skb
+thread1--->unlock
+thread2--->lock
+thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
+thread2--->unlock
+thread1--->lock
+thread1--->dccp_qpolicy_push: add a skb. queue is full.
+thread1--->unlock
+thread2--->lock
+thread2--->dccp_qpolicy_push: add a skb!
+thread2--->unlock
 
-So choose another fix: acquiring an extra map uref in .init_seq_private
-for array map iterator.
+Fix this by moving dccp_qpolicy_full.
 
-Fixes: d3cc2ab546ad ("bpf: Implement bpf iterator for array maps")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-2-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220729110027.40569-1-hbh25y@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/arraymap.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ net/dccp/proto.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -620,6 +620,11 @@ static int bpf_iter_init_array_map(void
- 		seq_info->percpu_value_buf = value_buf;
- 	}
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index 936dab12f99f..e552009b6cc5 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -764,11 +764,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
  
-+	/* bpf_iter_attach_map() acquires a map uref, and the uref may be
-+	 * released before or in the middle of iterating map elements, so
-+	 * acquire an extra map uref for iterator.
-+	 */
-+	bpf_map_inc_with_uref(map);
- 	seq_info->map = map;
- 	return 0;
- }
-@@ -628,6 +633,7 @@ static void bpf_iter_fini_array_map(void
- {
- 	struct bpf_iter_seq_array_map_info *seq_info = priv_data;
+ 	lock_sock(sk);
  
-+	bpf_map_put_with_uref(seq_info->map);
- 	kfree(seq_info->percpu_value_buf);
- }
+-	if (dccp_qpolicy_full(sk)) {
+-		rc = -EAGAIN;
+-		goto out_release;
+-	}
+-
+ 	timeo = sock_sndtimeo(sk, noblock);
  
+ 	/*
+@@ -787,6 +782,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	if (skb == NULL)
+ 		goto out_release;
+ 
++	if (dccp_qpolicy_full(sk)) {
++		rc = -EAGAIN;
++		goto out_discard;
++	}
++
+ 	if (sk->sk_state == DCCP_CLOSED) {
+ 		rc = -ENOTCONN;
+ 		goto out_discard;
+-- 
+2.35.1
+
 
 
