@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 550CEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 036F5C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355318AbiHWKkT (ORCPT
+        id S1355688AbiHWKkb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
+        Tue, 23 Aug 2022 06:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354302AbiHWKZW (ORCPT
+        with ESMTP id S1354438AbiHWKZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:25:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321E3832E1;
-        Tue, 23 Aug 2022 02:04:55 -0700 (PDT)
+        Tue, 23 Aug 2022 06:25:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD790A4054;
+        Tue, 23 Aug 2022 02:05:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D793AB81C65;
-        Tue, 23 Aug 2022 09:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DCE9C433C1;
-        Tue, 23 Aug 2022 09:04:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A1036158C;
+        Tue, 23 Aug 2022 09:05:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B71C433C1;
+        Tue, 23 Aug 2022 09:05:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245492;
-        bh=DPuyn0vXH02KiwaX6fibOkAwgcLn6wDShe4JqCjHAHg=;
+        s=korg; t=1661245501;
+        bh=vtRXCHze60S9N+iuu3PGeK93PaQSS+De1RgKrNFEUBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gmWMDAxk0NyHLCeFosBJvJgffr5gNykNs733vqxRMAd62HJ73mg+ypdMPGEzTPj4R
-         FWn+IvWxO/YANgyrNj09uWRtwZtp4hbiCTIvNvWWOBmUih9awv0+UtrAtfTE0xdJ8q
-         9TcHl2qQHKUvjdHVP/N9Bosa5THUAMKSR6CwtU7Y=
+        b=x/HusN+Ae4yvwFpTWZuoSp8NF+IdXf3jdljKxbIObVjXBR32RTZF/J+k8sylpzyL9
+         bRtVwwC5Q8HBRDal8z3o/58hy+V8GwZfPs5XV3f3f5ba95YQzwy9tyzllpCuScw4De
+         Dij1n70jq4XObPXF5pofkigM2RUlTxaKUwCQzPiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 095/287] can: rcar_can: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:24:24 +0200
-Message-Id: <20220823080103.542142960@linuxfoundation.org>
+Subject: [PATCH 4.19 071/287] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
+Date:   Tue, 23 Aug 2022 10:24:00 +0200
+Message-Id: <20220823080102.623144799@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,49 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-[ Upstream commit a37b7245e831a641df360ca41db6a71c023d3746 ]
+[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+In the dsi_enable function, mtk_dsi_rxtx_control is to
+pull up the MIPI signal operation. Before dsi_disable,
+MIPI should also be pulled down by writing a register
+instead of disabling dsi.
 
-Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
-Link: https://lore.kernel.org/all/20220719143550.3681-3-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+If disable dsi without pulling the mipi signal low, the value of
+the register will still maintain the setting of the mipi signal being
+pulled high.
+After resume, even if the mipi signal is not pulled high, it will still
+be in the high state.
+
+Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
+
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/rcar/rcar_can.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
-index 963da8eda168..0156c18d5a2d 100644
---- a/drivers/net/can/rcar/rcar_can.c
-+++ b/drivers/net/can/rcar/rcar_can.c
-@@ -233,11 +233,8 @@ static void rcar_can_error(struct net_device *ndev)
- 	if (eifr & (RCAR_CAN_EIFR_EWIF | RCAR_CAN_EIFR_EPIF)) {
- 		txerr = readb(&priv->regs->tecr);
- 		rxerr = readb(&priv->regs->recr);
--		if (skb) {
-+		if (skb)
- 			cf->can_id |= CAN_ERR_CRTL;
--			cf->data[6] = txerr;
--			cf->data[7] = rxerr;
--		}
- 	}
- 	if (eifr & RCAR_CAN_EIFR_BEIF) {
- 		int rx_errors = 0, tx_errors = 0;
-@@ -337,6 +334,9 @@ static void rcar_can_error(struct net_device *ndev)
- 		can_bus_off(ndev);
- 		if (skb)
- 			cf->can_id |= CAN_ERR_BUSOFF;
-+	} else if (skb) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
- 	}
- 	if (eifr & RCAR_CAN_EIFR_ORIF) {
- 		netdev_dbg(priv->ndev, "Receive overrun error interrupt\n");
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 0dd317ac5fe5..a629a69c2756 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -651,6 +651,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_lane0_ulp_mode_enter(dsi);
+ 	mtk_dsi_clk_ulp_mode_enter(dsi);
++	/* set the lane number as 0 to pull down mipi */
++	writel(0, dsi->regs + DSI_TXRX_CTRL);
+ 
+ 	mtk_dsi_disable(dsi);
+ 
 -- 
 2.35.1
 
