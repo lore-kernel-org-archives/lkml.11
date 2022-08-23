@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60313C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD1AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351552AbiHWJhw (ORCPT
+        id S1351567AbiHWJh4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
+        Tue, 23 Aug 2022 05:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351945AbiHWJgJ (ORCPT
+        with ESMTP id S1351960AbiHWJgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:36:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2850C95E67;
-        Tue, 23 Aug 2022 01:40:11 -0700 (PDT)
+        Tue, 23 Aug 2022 05:36:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4939859A;
+        Tue, 23 Aug 2022 01:40:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9E2D4CE1B4D;
-        Tue, 23 Aug 2022 08:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1DDBC433D6;
-        Tue, 23 Aug 2022 08:39:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5E8B61485;
+        Tue, 23 Aug 2022 08:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AF0DC433D7;
+        Tue, 23 Aug 2022 08:39:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243955;
-        bh=LZkjIvVaPJ5PQVliSAj7ZPU9g5VAT/t9LqW3Bx3TFh0=;
+        s=korg; t=1661243977;
+        bh=Q+qKzqalJIXpjEuX1BFx6fnUtUTf+8iG8Dxcg/f1apM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Du1hVkKaYey64ForIaKbyOOqp9Gml+/VNA5T/qyT9f1EHdesq2lti9BFkY/xLGo5v
-         o0VveL6t43b01YZkm6oQIZa8tJMBFVXRRVUd3e3ZkaycOE3vUGsMsv5DwY6jm3xFHD
-         19cXO4BJHZFqthPRTnwrhTCfD2GAgevavF4JUPUU=
+        b=xQ2LSDyOFhaKz1aGvS3O2jEM8px8OIS98gK3OLjEHv2LLcLNf7iIcOWIUY9rQ57ap
+         x33sjaqiCwwAUxHGqi+Ecgr5l9EqriujPPgt0WmLSsgQxKH87CJ/l6Vk7uYI2/Ogcc
+         05f/miQZxFJUkNrEyaDxqSwVQ6ANnegAeWHWLekU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 061/229] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
-Date:   Tue, 23 Aug 2022 10:23:42 +0200
-Message-Id: <20220823080055.918335162@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        Zhang Xiaoxu <zhangxiaoxu5@huawei.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 017/244] cifs: Fix memory leak on the deferred close
+Date:   Tue, 23 Aug 2022 10:22:56 +0200
+Message-Id: <20220823080059.651423774@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+From: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
 
-[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
+commit ca08d0eac020d48a3141dbec0a3cf64fbdb17cde upstream.
 
-In the dsi_enable function, mtk_dsi_rxtx_control is to
-pull up the MIPI signal operation. Before dsi_disable,
-MIPI should also be pulled down by writing a register
-instead of disabling dsi.
+xfstests on smb21 report kmemleak as below:
 
-If disable dsi without pulling the mipi signal low, the value of
-the register will still maintain the setting of the mipi signal being
-pulled high.
-After resume, even if the mipi signal is not pulled high, it will still
-be in the high state.
+  unreferenced object 0xffff8881767d6200 (size 64):
+    comm "xfs_io", pid 1284, jiffies 4294777434 (age 20.789s)
+    hex dump (first 32 bytes):
+      80 5a d0 11 81 88 ff ff 78 8a aa 63 81 88 ff ff  .Z......x..c....
+      00 71 99 76 81 88 ff ff 00 00 00 00 00 00 00 00  .q.v............
+    backtrace:
+      [<00000000ad04e6ea>] cifs_close+0x92/0x2c0
+      [<0000000028b93c82>] __fput+0xff/0x3f0
+      [<00000000d8116851>] task_work_run+0x85/0xc0
+      [<0000000027e14f9e>] do_exit+0x5e5/0x1240
+      [<00000000fb492b95>] do_group_exit+0x58/0xe0
+      [<00000000129a32d9>] __x64_sys_exit_group+0x28/0x30
+      [<00000000e3f7d8e9>] do_syscall_64+0x35/0x80
+      [<00000000102e8a0b>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
+When cancel the deferred close work, we should also cleanup the struct
+cifs_deferred_close.
 
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9e992755be8f2 ("cifs: Call close synchronously during unlink/rename/lease break.")
+Fixes: e3fc065682ebb ("cifs: Deferred close performance improvements")
+Cc: stable@vger.kernel.org
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/cifs/misc.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index c1b8caad65e6..7ae243122f68 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -652,6 +652,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-+	/* set the lane number as 0 to pull down mipi */
-+	writel(0, dsi->regs + DSI_TXRX_CTRL);
- 
- 	mtk_dsi_disable(dsi);
- 
--- 
-2.35.1
-
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -736,6 +736,8 @@ cifs_close_deferred_file(struct cifsInod
+ 	list_for_each_entry(cfile, &cifs_inode->openFileList, flist) {
+ 		if (delayed_work_pending(&cfile->deferred)) {
+ 			if (cancel_delayed_work(&cfile->deferred)) {
++				cifs_del_deferred_close(cfile);
++
+ 				tmp_list = kmalloc(sizeof(struct file_list), GFP_ATOMIC);
+ 				if (tmp_list == NULL)
+ 					break;
+@@ -767,6 +769,8 @@ cifs_close_all_deferred_files(struct cif
+ 		cfile = list_entry(tmp, struct cifsFileInfo, tlist);
+ 		if (delayed_work_pending(&cfile->deferred)) {
+ 			if (cancel_delayed_work(&cfile->deferred)) {
++				cifs_del_deferred_close(cfile);
++
+ 				tmp_list = kmalloc(sizeof(struct file_list), GFP_ATOMIC);
+ 				if (tmp_list == NULL)
+ 					break;
+@@ -802,6 +806,8 @@ cifs_close_deferred_file_under_dentry(st
+ 		if (strstr(full_path, path)) {
+ 			if (delayed_work_pending(&cfile->deferred)) {
+ 				if (cancel_delayed_work(&cfile->deferred)) {
++					cifs_del_deferred_close(cfile);
++
+ 					tmp_list = kmalloc(sizeof(struct file_list), GFP_ATOMIC);
+ 					if (tmp_list == NULL)
+ 						break;
 
 
