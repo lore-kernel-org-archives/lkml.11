@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E082C38159
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB42C48BEA
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357753AbiHWLby (ORCPT
+        id S1357889AbiHWLcD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
+        Tue, 23 Aug 2022 07:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357951AbiHWL07 (ORCPT
+        with ESMTP id S1358043AbiHWL1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:26:59 -0400
+        Tue, 23 Aug 2022 07:27:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107A7C2769;
-        Tue, 23 Aug 2022 02:24:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EDEC22A9;
+        Tue, 23 Aug 2022 02:24:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D27EA61298;
-        Tue, 23 Aug 2022 09:24:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5124C433C1;
-        Tue, 23 Aug 2022 09:24:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DACBB61298;
+        Tue, 23 Aug 2022 09:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A1EC433C1;
+        Tue, 23 Aug 2022 09:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246679;
-        bh=J4/pvGaC8HEhSLGC2Rn8iOTgnE0RHSuP4UzFN4eR2Ak=;
+        s=korg; t=1661246692;
+        bh=SST7BgK6nRiYlNdnB7lLK158LHGtjk/AuY3lc7GNw78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BujDRbqaRf1leX2P9wTF8hUZH0E5Dc8W5g1GUH+jIC00pZ2QeuXofhcJ25+d4tt3t
-         Dxn+8aq/mAp2njeSnAwfV6bg7tW+RCizwx1+oW8TTwzptcLTA+bu/D7bC6TLqHXV5W
-         rVOCFQv1kciPOAjvhyfCGRZztI/+SzfzFwubVetg=
+        b=z9oG9eNuXxIJsrMT08YndL/zsMpiIUY8fcn2rVYeK0vOqh9ZdY/+9pD7ZWiB3cm4e
+         imd+NGLn3Y4ZIJHSFoaAlI6KRw1SsvZXIYZNjL5fqBbD34N1Uhfi7umhAO10AX7N42
+         ahhXzsJctIJHCXuy5Dh5lPGURSOBtjDhY5sI3BTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haoyue Xu <xuhaoyue1@hisilicon.com>,
-        Wenpeng Liang <liangwenpeng@huawei.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Robert Richter <rric@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 185/389] RDMA/hns: Fix incorrect clearing of interrupt status register
-Date:   Tue, 23 Aug 2022 10:24:23 +0200
-Message-Id: <20220823080123.360556054@linuxfoundation.org>
+Subject: [PATCH 5.4 189/389] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
+Date:   Tue, 23 Aug 2022 10:24:27 +0200
+Message-Id: <20220823080123.525084938@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,39 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haoyue Xu <xuhaoyue1@hisilicon.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ecb4db5c3590aa956b4b2c352081a5b632d1f9f9 ]
+[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
 
-The driver will clear all the interrupts in the same area
-when the driver handles the interrupt of type AEQ overflow.
-It should only set the interrupt status bit of type AEQ overflow.
+In octeon_mmc_probe(), we should call of_node_put() when breaking
+out of for_each_child_of_node() which has increased and decreased
+the refcount during each iteration.
 
-Fixes: a5073d6054f7 ("RDMA/hns: Add eq support of hip08")
-Link: https://lore.kernel.org/r/20220714134353.16700-4-liangwenpeng@huawei.com
-Signed-off-by: Haoyue Xu <xuhaoyue1@hisilicon.com>
-Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Robert Richter <rric@kernel.org>
+Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mmc/host/cavium-octeon.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-index d01e3222c00c..28bbc4708fd4 100644
---- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-@@ -5216,8 +5216,8 @@ static irqreturn_t hns_roce_v2_msix_interrupt_abn(int irq, void *dev_id)
- 
- 		dev_err(dev, "AEQ overflow!\n");
- 
--		int_st |= 1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S;
--		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG, int_st);
-+		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG,
-+			   1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S);
- 
- 		/* Set reset level for reset_event() */
- 		if (ops->set_default_reset_request)
+diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
+index 22aded1065ae..2245452a44c8 100644
+--- a/drivers/mmc/host/cavium-octeon.c
++++ b/drivers/mmc/host/cavium-octeon.c
+@@ -288,6 +288,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "Error populating slots\n");
+ 			octeon_mmc_set_shared_power(host, 0);
++			of_node_put(cn);
+ 			goto error;
+ 		}
+ 		i++;
 -- 
 2.35.1
 
