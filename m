@@ -2,87 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1C0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 216BEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245013AbiHWQiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
+        id S245144AbiHWQiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245045AbiHWQh2 (ORCPT
+        with ESMTP id S244962AbiHWQhZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:37:28 -0400
+        Tue, 23 Aug 2022 12:37:25 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E04D7CF1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:45:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5A29AFC5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:44:56 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oQV99-0004jZ-Jk; Tue, 23 Aug 2022 16:44:51 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oQV98-0007MY-Tu; Tue, 23 Aug 2022 16:44:50 +0200
-Date:   Tue, 23 Aug 2022 16:44:50 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     mchehab@kernel.org, laurent.pinchart+renesas@ideasonboard.com,
-        jacopo+renesas@jmondi.org, akinobu.mita@gmail.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH 3/4] media: mt9m111: fix device power usage
-Message-ID: <20220823144450.ctjmby53prjw5qis@pengutronix.de>
-References: <20220818144712.997477-1-m.felsch@pengutronix.de>
- <20220818144712.997477-3-m.felsch@pengutronix.de>
- <YwMix1+Bm1jEbWqv@paasikivi.fi.intel.com>
- <20220822075426.qjgxue7sjehazga4@pengutronix.de>
- <YwNJ8RpSR+oVxnS/@paasikivi.fi.intel.com>
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQV8x-0004ge-UB; Tue, 23 Aug 2022 16:44:39 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQV8v-0007MC-At; Tue, 23 Aug 2022 16:44:37 +0200
+Date:   Tue, 23 Aug 2022 16:44:37 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH net-next v1 2/7] dt-bindings: net: phy: add PoDL PSE
+ property
+Message-ID: <20220823144437.GN10138@pengutronix.de>
+References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+ <20220819120109.3857571-3-o.rempel@pengutronix.de>
+ <20220822184534.GB113650-robh@kernel.org>
+ <YwPaV2Frj+b++8hZ@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YwNJ8RpSR+oVxnS/@paasikivi.fi.intel.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <YwPaV2Frj+b++8hZ@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sakari,
-
-On 22-08-22, Sakari Ailus wrote:
-> On Mon, Aug 22, 2022 at 09:54:26AM +0200, Marco Felsch wrote:
-> > Hi Sakari,
-> > 
-> > On 22-08-22, Sakari Ailus wrote:
-> > > Hi Marco,
+On Mon, Aug 22, 2022 at 09:34:47PM +0200, Andrew Lunn wrote:
+> On Mon, Aug 22, 2022 at 01:45:34PM -0500, Rob Herring wrote:
+> > On Fri, Aug 19, 2022 at 02:01:04PM +0200, Oleksij Rempel wrote:
+> > > Add property to reference node representing a PoDL Power Sourcing Equipment.
 > > > 
-> > > On Thu, Aug 18, 2022 at 04:47:11PM +0200, Marco Felsch wrote:
-> > > > Currently the driver turn off the power after probe and toggle it during
-> > > > .stream by using the .s_power callback. This is problematic since other
-> > > > callbacks like .set_fmt accessing the hardware as well which will fail.
-> > > > So in the end the default format is the only supported format.
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > ---
+> > >  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
 > > > 
-> > > It'd be much better to add runtime PM support to the driver instead.
+> > > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > > index ed1415a4381f2..49c74e177c788 100644
+> > > --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > > @@ -144,6 +144,12 @@ properties:
+> > >        Mark the corresponding energy efficient ethernet mode as
+> > >        broken and request the ethernet to stop advertising it.
+> > >  
+> > > +  ieee802.3-podl-pse:
+> > > +    $ref: /schemas/types.yaml#/definitions/phandle
+> > > +    description:
+> > > +      Specifies a reference to a node representing a Power over Data Lines
+> > > +      Power Sourcing Equipment.
 > > 
-> > I got your point, but didn't have the time for it right now, I will drop
-> > the patch from my v2.
+> > Ah, here is the consumer.
+> > 
+> > Why do you anything more than just a -supply property here for the 
+> > PoE/PoDL supply? The only reason I see is you happen to want a separate 
+> > driver for this and a separate node happens to be a convenient way to 
+> > instantiate drivers in Linux. Convince me otherwise.
 > 
-> The API is different but generally involves doing more or less the same
-> what this and the 4th patch do together.
+> The regulator binding provides a lot of very useful properties, which
+> look to do a good job describing the regulator part of a PoE/PeDL
+> supplier side. What however is missing is the communication part, the
+> power provider and the power consumer communicate with each other, via
+> a serial protocol. They negotiate the supply of power, a sleep mode
+> where power is reduced, but not removed, etc.
+> 
+> So a Power Sourcing Equipment driver is very likely to have a
+> regulator embedded in it, but its more than a regulator.
 
-I know :) as soon as I got feedback on my TC35 series [1] I give it a
-try and change it to dev-pm.
-
-[1] https://lore.kernel.org/linux-media/20220818143307.967150-1-m.felsch@pengutronix.de/T/#t
+@Rob, is it enough to convince?
 
 Regards,
-  Marco
-
-
-> 
-> -- 
-> Sakari Ailus
-> 
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
