@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FABC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412A6C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242538AbiHWIRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        id S242562AbiHWIR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242511AbiHWIL1 (ORCPT
+        with ESMTP id S242517AbiHWIL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A19641F;
-        Tue, 23 Aug 2022 01:08:37 -0700 (PDT)
+        Tue, 23 Aug 2022 04:11:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8086170A;
+        Tue, 23 Aug 2022 01:08:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1D49B81C28;
-        Tue, 23 Aug 2022 08:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C30A2C433C1;
-        Tue, 23 Aug 2022 08:08:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8D06611A8;
+        Tue, 23 Aug 2022 08:08:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD78CC433D6;
+        Tue, 23 Aug 2022 08:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242115;
-        bh=VgfD82FDMnVQPgul32TgZhr3cf/IS1Hgbc5o8I1YtSE=;
+        s=korg; t=1661242119;
+        bh=yXT7p9wh4HXbnK7OLAUNhB3dmPOuBMTo6K5JG9vx2iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MKxneXVxAvj+1BSHH1/Fd6I+ZXGGE9q89uIfVMSwj4q+kI6lxw4sM/qYOGXTUC1S9
-         HOgYUuN+8eW+9q8gF0Wg/YHOIEtJKeIgCKdkmQx8z1qJkXVCLI+8c9FvUgPLBvSlPR
-         YqXUzE8Ja/Yvk7nqtKXO3zVLCVXZyNknxvRnJ4VY=
+        b=ssVVp2w7rKbcc6Kg38OK/17GwbmAuPpsYnYBKgn9srLdqwGi57jBfai7a3Kl7pkDg
+         qVi30VZrE6dIelkopBc6WJfkpOFJka/bsdjX8tYRUZ8NXpIhwXTmcqQj2RGSKAESzJ
+         YPgsGtjltEdDiKCycYlvC/EVjrwzzvwl+opiRvMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.9 021/101] ACPI: video: Force backlight native for some TongFang devices
-Date:   Tue, 23 Aug 2022 10:02:54 +0200
-Message-Id: <20220823080035.367723380@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.19 036/365] tracing: Have filter accept "common_cpu" to be consistent
+Date:   Tue, 23 Aug 2022 09:58:57 +0200
+Message-Id: <20220823080119.705956620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,90 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit c752089f7cf5b5800c6ace4cdd1a8351ee78a598 upstream.
+commit b2380577d4fe1c0ef3fa50417f1e441c016e4cbe upstream.
 
-The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
-Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
-NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
-They have a working native and video interface. However the default
-detection mechanism first registers the video interface before
-unregistering it again and switching to the native interface during boot.
-This results in a dangling SBIOS request for backlight change for some
-reason, causing the backlight to switch to ~2% once per boot on the first
-power cord connect or disconnect event. Setting the native interface
-explicitly circumvents this buggy behaviour by avoiding the unregistering
-process.
+Make filtering consistent with histograms. As "cpu" can be a field of an
+event, allow for "common_cpu" to keep it from being confused with the
+"cpu" field of the event.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lkml.kernel.org/r/20220820134401.513062765@goodmis.org
+Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/video_detect.c |   51 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+ kernel/trace/trace_events.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -210,7 +210,56 @@ static const struct dmi_system_id video_
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
--
-+	/*
-+	 * The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
-+	 * Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
-+	 * NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2. See the description
-+	 * above.
-+	 */
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5PU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5PU1G"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF4NU1F",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF4NU1F"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF4NU1F",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-+		DMI_MATCH(DMI_BOARD_NAME, "PULSE1401"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5NU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5NU1G"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5NU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-+		DMI_MATCH(DMI_BOARD_NAME, "PULSE1501"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5LUXG",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5LUXG"),
-+		},
-+	},
- 	/*
- 	 * These models have a working acpi_video backlight control, and using
- 	 * native backlight causes a regression where backlight does not work
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -176,6 +176,7 @@ static int trace_define_generic_fields(v
+ 
+ 	__generic_field(int, CPU, FILTER_CPU);
+ 	__generic_field(int, cpu, FILTER_CPU);
++	__generic_field(int, common_cpu, FILTER_CPU);
+ 	__generic_field(char *, COMM, FILTER_COMM);
+ 	__generic_field(char *, comm, FILTER_COMM);
+ 
 
 
