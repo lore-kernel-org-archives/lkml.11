@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F635C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEAFC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242807AbiHWIS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        id S242505AbiHWITD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242221AbiHWIOJ (ORCPT
+        with ESMTP id S242365AbiHWIOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:14:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3366A6CD28;
-        Tue, 23 Aug 2022 01:09:35 -0700 (PDT)
+        Tue, 23 Aug 2022 04:14:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9948C6CD0D;
+        Tue, 23 Aug 2022 01:09:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D65E611DD;
-        Tue, 23 Aug 2022 08:09:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42005C433C1;
-        Tue, 23 Aug 2022 08:09:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 194C3B81C22;
+        Tue, 23 Aug 2022 08:09:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633A9C433D7;
+        Tue, 23 Aug 2022 08:09:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242173;
-        bh=P8UEV1N27KxK4rVs22ewqoJc9ap4u38E5X9Mm+pEotI=;
+        s=korg; t=1661242182;
+        bh=qbghJcHm0gVRjNPJv+owcXxInm53demoP6ZbyBNgN08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jCn4Mt+MbfOwkr+qNiRsZRNYRNEKylseFLQzEDuIzD3RVFUs4scfIQNKQWTQf6j8t
-         tHInW0KSbia+raG9F7Pw7SsZheV3s7T4pMctYwslCoIePrfe9YbbHZ5r7ngK8HogzV
-         CKkDr7DVkrdkxgrhgU6GJgqMY+iL36pRQtBD3uh0=
+        b=DaxuLn9MC5nx7Ydy5xc0dQEPWP4FeaEb1hyDgLMEu8foU5XGSMlWziZ1k4xHXf/m9
+         LQXMXUnzWRf75gQqKbu4d4+KA4MH+DlwTPxaQZE0nuFmkLyaBSdW6Qj9lwL23Kccmc
+         Nbp5ByrQTMoNgRZ9/CW3pOPQ1gOkfEb5w4HGDxD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 031/101] ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
-Date:   Tue, 23 Aug 2022 10:03:04 +0200
-Message-Id: <20220823080035.773347754@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.19 073/365] sunrpc: fix expiry of auth creds
+Date:   Tue, 23 Aug 2022 09:59:34 +0200
+Message-Id: <20220823080121.239680148@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,57 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Dan Aloni <dan.aloni@vastdata.com>
 
-commit f83bb2592482fe94c6eea07a8121763c80f36ce5 upstream.
+commit f1bafa7375c01ff71fb7cb97c06caadfcfe815f3 upstream.
 
-There is another LENOVO 20149 (Type1Sku0) Notebook model with
-CX20590, the device PCI SSID is 17aa:3977, which headphones are
-not responding, that requires the quirk CXT_PINCFG_LENOVO_NOTEBOOK.
-Add the corresponding entry to the quirk table.
+Before this commit, with a large enough LRU of expired items (100), the
+loop skipped all the expired items and was entirely ineffectual in
+trimming the LRU list.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220808073406.19460-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 95cd623250ad ('SUNRPC: Clean up the AUTH cache code')
+Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_conexant.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/sunrpc/auth.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -238,6 +238,7 @@ enum {
- 	CXT_PINCFG_LEMOTE_A1205,
- 	CXT_PINCFG_COMPAQ_CQ60,
- 	CXT_FIXUP_STEREO_DMIC,
-+	CXT_PINCFG_LENOVO_NOTEBOOK,
- 	CXT_FIXUP_INC_MIC_BOOST,
- 	CXT_FIXUP_HEADPHONE_MIC_PIN,
- 	CXT_FIXUP_HEADPHONE_MIC,
-@@ -698,6 +699,14 @@ static const struct hda_fixup cxt_fixups
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cxt_fixup_stereo_dmic,
- 	},
-+	[CXT_PINCFG_LENOVO_NOTEBOOK] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x1a, 0x05d71030 },
-+			{ }
-+		},
-+		.chain_id = CXT_FIXUP_STEREO_DMIC,
-+	},
- 	[CXT_FIXUP_INC_MIC_BOOST] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cxt5066_increase_mic_boost,
-@@ -860,7 +869,7 @@ static const struct snd_pci_quirk cxt506
- 	SND_PCI_QUIRK(0x17aa, 0x3905, "Lenovo G50-30", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x390b, "Lenovo G50-80", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x3975, "Lenovo U300s", CXT_FIXUP_STEREO_DMIC),
--	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_FIXUP_STEREO_DMIC),
-+	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_PINCFG_LENOVO_NOTEBOOK),
- 	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo G50-70", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x397b, "Lenovo S205", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK_VENDOR(0x17aa, "Thinkpad", CXT_FIXUP_THINKPAD_ACPI),
+--- a/net/sunrpc/auth.c
++++ b/net/sunrpc/auth.c
+@@ -445,7 +445,7 @@ rpcauth_prune_expired(struct list_head *
+ 		 * Enforce a 60 second garbage collection moratorium
+ 		 * Note that the cred_unused list must be time-ordered.
+ 		 */
+-		if (!time_in_range(cred->cr_expire, expired, jiffies))
++		if (time_in_range(cred->cr_expire, expired, jiffies))
+ 			continue;
+ 		if (!rpcauth_unhash_cred(cred))
+ 			continue;
 
 
