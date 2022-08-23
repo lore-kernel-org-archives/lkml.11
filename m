@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 141BEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05137C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354658AbiHWK2i (ORCPT
+        id S1353595AbiHWK2p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
+        Tue, 23 Aug 2022 06:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352164AbiHWKM2 (ORCPT
+        with ESMTP id S1352908AbiHWKMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:12:28 -0400
+        Tue, 23 Aug 2022 06:12:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4324F26D6;
-        Tue, 23 Aug 2022 01:58:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B124BD24;
+        Tue, 23 Aug 2022 01:58:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0083B81C39;
-        Tue, 23 Aug 2022 08:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30901C433D6;
-        Tue, 23 Aug 2022 08:58:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93F0DB81C28;
+        Tue, 23 Aug 2022 08:58:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01658C433C1;
+        Tue, 23 Aug 2022 08:58:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245132;
-        bh=/jfp8U8V850bZODnU1RZhL/AMJJd513LUtYsEK6JinA=;
+        s=korg; t=1661245135;
+        bh=iX9bfe+ORv3IQGMdd+YgIjHQjRAB9HYr5kNWTyjhKAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZO1wIj/rS9kzXrgzirY9YobWdLhHzo+vV1vG6KNWx4nhKCZYDUoLqMKoJw3UMW+pX
-         tie+ZbSvth1l2duZUXPBWIz/lmnO97LYPOtTD6X490vpClhHtsZNcDp8vc36so7fVa
-         /fL6aeFv6wR7u0zVRIhX4LXkTTphIC9M1qiNa6SI=
+        b=XhhqX99r4Y6vwycKtERexj9BRnIKkiY8MFQ73ol0y1YC/iElwdL7wXa7ofapbJEyp
+         QbOAK1WgEJN3H1D5Wo0yRyr4ZMjoOE1VKBIKH27K7OtDmC77Lrs0Z8VHQSyMJR7SHT
+         q2YhKwcI9ecegTMpkVqDdyq/sz29Uui9/dezc/FI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dipanjan Das <mail.dipanjan.das@gmail.com>,
+        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
         Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 227/244] f2fs: fix to avoid use f2fs_bug_on() in f2fs_new_node_page()
-Date:   Tue, 23 Aug 2022 10:26:26 +0200
-Message-Id: <20220823080107.119633730@linuxfoundation.org>
+Subject: [PATCH 5.15 228/244] f2fs: fix to do sanity check on segment type in build_sit_entries()
+Date:   Tue, 23 Aug 2022 10:26:27 +0200
+Message-Id: <20220823080107.164193772@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,59 +52,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chao Yu <chao.yu@oppo.com>
 
-[ Upstream commit 141170b759e03958f296033bb7001be62d1d363b ]
+[ Upstream commit 09beadf289d6e300553e60d6e76f13c0427ecab3 ]
 
-As Dipanjan Das <mail.dipanjan.das@gmail.com> reported, syzkaller
-found a f2fs bug as below:
+As Wenqing Liu <wenqingliu0120@gmail.com> reported in bugzilla:
 
-RIP: 0010:f2fs_new_node_page+0x19ac/0x1fc0 fs/f2fs/node.c:1295
-Call Trace:
- write_all_xattrs fs/f2fs/xattr.c:487 [inline]
- __f2fs_setxattr+0xe76/0x2e10 fs/f2fs/xattr.c:743
- f2fs_setxattr+0x233/0xab0 fs/f2fs/xattr.c:790
- f2fs_xattr_generic_set+0x133/0x170 fs/f2fs/xattr.c:86
- __vfs_setxattr+0x115/0x180 fs/xattr.c:182
- __vfs_setxattr_noperm+0x125/0x5f0 fs/xattr.c:216
- __vfs_setxattr_locked+0x1cf/0x260 fs/xattr.c:277
- vfs_setxattr+0x13f/0x330 fs/xattr.c:303
- setxattr+0x146/0x160 fs/xattr.c:611
- path_setxattr+0x1a7/0x1d0 fs/xattr.c:630
- __do_sys_lsetxattr fs/xattr.c:653 [inline]
- __se_sys_lsetxattr fs/xattr.c:649 [inline]
- __x64_sys_lsetxattr+0xbd/0x150 fs/xattr.c:649
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
+https://bugzilla.kernel.org/show_bug.cgi?id=216285
 
-NAT entry and nat bitmap can be inconsistent, e.g. one nid is free
-in nat bitmap, and blkaddr in its NAT entry is not NULL_ADDR, it
-may trigger BUG_ON() in f2fs_new_node_page(), fix it.
+RIP: 0010:memcpy_erms+0x6/0x10
+ f2fs_update_meta_page+0x84/0x570 [f2fs]
+ change_curseg.constprop.0+0x159/0xbd0 [f2fs]
+ f2fs_do_replace_block+0x5c7/0x18a0 [f2fs]
+ f2fs_replace_block+0xeb/0x180 [f2fs]
+ recover_data+0x1abd/0x6f50 [f2fs]
+ f2fs_recover_fsync_data+0x12ce/0x3250 [f2fs]
+ f2fs_fill_super+0x4459/0x6190 [f2fs]
+ mount_bdev+0x2cf/0x3b0
+ legacy_get_tree+0xed/0x1d0
+ vfs_get_tree+0x81/0x2b0
+ path_mount+0x47e/0x19d0
+ do_mount+0xce/0xf0
+ __x64_sys_mount+0x12c/0x1a0
+ do_syscall_64+0x38/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Reported-by: Dipanjan Das <mail.dipanjan.das@gmail.com>
+The root cause is segment type is invalid, so in f2fs_do_replace_block(),
+f2fs accesses f2fs_sm_info::curseg_array with out-of-range segment type,
+result in accessing invalid curseg->sum_blk during memcpy in
+f2fs_update_meta_page(). Fix this by adding sanity check on segment type
+in build_sit_entries().
+
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
 Signed-off-by: Chao Yu <chao.yu@oppo.com>
 Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/node.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ fs/f2fs/segment.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index 69c6bcaf5aae..0e6e73bc42d4 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -1291,7 +1291,11 @@ struct page *f2fs_new_node_page(struct dnode_of_data *dn, unsigned int ofs)
- 		dec_valid_node_count(sbi, dn->inode, !ofs);
- 		goto fail;
- 	}
--	f2fs_bug_on(sbi, new_ni.blk_addr != NULL_ADDR);
-+	if (unlikely(new_ni.blk_addr != NULL_ADDR)) {
-+		err = -EFSCORRUPTED;
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		goto fail;
-+	}
- #endif
- 	new_ni.nid = dn->nid;
- 	new_ni.ino = dn->inode->i_ino;
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 841a978da083..e98c90bd8ef6 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4537,6 +4537,12 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 				return err;
+ 			seg_info_from_raw_sit(se, &sit);
+ 
++			if (se->type >= NR_PERSISTENT_LOG) {
++				f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++				return -EFSCORRUPTED;
++			}
++
+ 			sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 			if (f2fs_block_unit_discard(sbi)) {
+@@ -4585,6 +4591,13 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 			break;
+ 		seg_info_from_raw_sit(se, &sit);
+ 
++		if (se->type >= NR_PERSISTENT_LOG) {
++			f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++			err = -EFSCORRUPTED;
++			break;
++		}
++
+ 		sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 		if (f2fs_block_unit_discard(sbi)) {
 -- 
 2.35.1
 
