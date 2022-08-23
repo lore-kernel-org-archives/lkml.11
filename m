@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB21C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 574E7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241424AbiHWJjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
+        id S241936AbiHWJjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351505AbiHWJik (ORCPT
+        with ESMTP id S1351689AbiHWJim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:38:40 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F30C5F9BC;
-        Tue, 23 Aug 2022 01:40:52 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id e19so12193157pju.1;
-        Tue, 23 Aug 2022 01:40:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=BjyTp1rYXZbh0tG3MYfP1QG1fJZgUbfQ/sbIoo651Uo=;
-        b=HfohDmdWLWKSq9YTwl/9HcIjQ9n+PpwN9SG+tgxAKvwcdnDOaUmbnpsPXomnO8pDbQ
-         jvvh+MxiSNkiupFmYdS8P9u7hLDB9h2j4CKJm0hlx6k9K1NUogQ5S5mElTOIA21veSN4
-         NIZ/7iWsMluW2jJm3UX/BtK4T8TYEYuAxwUNU8gxdjn+6RUrrMb4A7RM1mxTV/q4AK61
-         6tM2NUbuYhq/NnMbl6h6cugoCGeoE65SorFq+eDb7tDlXlcHcVn5RKnEkgVPFV6dkGl9
-         X9z8ZDtWhiZfPatTbCtCA8VYuMDrEnLjn6koUJVw56JaWnT7Cq44tygpTZ6NuS0OFtOH
-         U1wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=BjyTp1rYXZbh0tG3MYfP1QG1fJZgUbfQ/sbIoo651Uo=;
-        b=cGvR/1B5X5VdP9M3LNlQ6p26EuNaNwk5DU/C1drqstxWm08AI7EvfttDNQvgEmB1/t
-         JhF/3E082mCcZ99uZRhcHweZsnLKZ2dkExKSfNQjguo1LD8Hw9p/attkIcxAjSwFTIcK
-         yaGO5DKnCVKi6ctpA24xmxbn7yP0QSD3XJ9/c8PdpaxyJ38OFOdrSNGexhCPRTlSUI0l
-         8GqLvW5OKDcTqtlhm4biDguJjmPYfFUkyGH/QUaVERJLZbbrRIRvpKjKYwE3Qcxd9Dzh
-         XmYeFO/+T2wpGGBh2X3NkAc45S/0UNP9/9jC65MaCWv5s2f7MPrkS9aPeE6YYrKn2WFP
-         zIIQ==
-X-Gm-Message-State: ACgBeo0dnBl3+NfMlsYq/c6YFPfK7qLOTD5TD/m1rTcgDa5TKEDqSbWC
-        +Y311LOAmPXVM6vJI2DRp4I=
-X-Google-Smtp-Source: AA6agR7bqHHDTFsoQJM3fNgJxY16Za603VCMAuEoJ2sYDxB9TB6siix6ySC1b7udrSjQA7v1iONuDw==
-X-Received: by 2002:a17:90b:1bd1:b0:1fb:5640:ffa4 with SMTP id oa17-20020a17090b1bd100b001fb5640ffa4mr2212440pjb.220.1661244005306;
-        Tue, 23 Aug 2022 01:40:05 -0700 (PDT)
-Received: from localhost ([192.55.55.51])
-        by smtp.gmail.com with ESMTPSA id k17-20020a170902c41100b001709b9d292esm10001850plk.268.2022.08.23.01.40.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 01:40:04 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 01:40:03 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kai Huang <kai.huang@intel.com>, Will Deacon <will@kernel.org>
-Subject: Re: [RFC PATCH 03/18] KVM: Drop kvm_count_lock and instead protect
- kvm_usage_count with kvm_lock
-Message-ID: <20220823084003.GF2147148@ls.amr.corp.intel.com>
-References: <cover.1660974106.git.isaku.yamahata@intel.com>
- <6b07c02dd361f834fea442eb8dae53f23618f983.1660974106.git.isaku.yamahata@intel.com>
- <YwQ6wTmbja4h2TYZ@gao-cwp>
+        Tue, 23 Aug 2022 05:38:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB43225EB1;
+        Tue, 23 Aug 2022 01:41:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D11D16153C;
+        Tue, 23 Aug 2022 08:39:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B084AC433D6;
+        Tue, 23 Aug 2022 08:39:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661243999;
+        bh=3nNFgxHraRJWA0ShV22x8RUpKDKlePeNDiV/IlDMamg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XQmJUufWNUijtmn5P/GDwEbN+d+WfmB9xU8INGKmbJ4rffpVfEXLB85N8Wa2cHWSM
+         liD/nOlxM1VIZD1QKqQYnLiJ30FPXVS6D9T75s7/2EPmiLsJZPTbGXBkwgDc3F0Dkz
+         jyaRVG12Ign2O+Kf7djQ0ifEklCM+gU+28q3BY+s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 066/229] media: hdpvr: fix error value returns in hdpvr_read
+Date:   Tue, 23 Aug 2022 10:23:47 +0200
+Message-Id: <20220823080056.079825043@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YwQ6wTmbja4h2TYZ@gao-cwp>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 10:26:09AM +0800,
-Chao Gao <chao.gao@intel.com> wrote:
+From: Niels Dossche <dossche.niels@gmail.com>
 
-> On Fri, Aug 19, 2022 at 11:00:09PM -0700, isaku.yamahata@intel.com wrote:
-> >From: Isaku Yamahata <isaku.yamahata@intel.com>
-> >
-> >Because kvm_count_lock unnecessarily complicates the KVM locking convention
-> >Drop kvm_count_lock and instead protect kvm_usage_count with kvm_lock for
-> >simplicity.
-> >
-> >Opportunistically add some comments on locking.
-> >
-> >Suggested-by: Sean Christopherson <seanjc@google.com>
-> >Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> >---
-> > static cpumask_var_t cpus_hardware_enabled;
-> >@@ -4999,6 +4998,8 @@ static void hardware_enable_nolock(void *junk)
-> > 	int cpu = raw_smp_processor_id();
-> > 	int r;
-> > 
-> >+	WARN_ON_ONCE(preemptible());
-> >+
-> > 	if (cpumask_test_cpu(cpu, cpus_hardware_enabled))
-> > 		return;
-> > 
-> >@@ -5015,10 +5016,10 @@ static void hardware_enable_nolock(void *junk)
-> > 
-> > static int kvm_starting_cpu(unsigned int cpu)
-> > {
-> >-	raw_spin_lock(&kvm_count_lock);
-> >+	mutex_lock(&kvm_lock);
-> 
-> kvm_starting_cpu() is called with interrupt disabled. So we cannot use
-> sleeping locks (e.g., mutex) here.
+[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
 
+Error return values are supposed to be negative in hdpvr_read. Most
+error returns are currently handled via an unsigned integer "ret". When
+setting a negative error value to "ret", the value actually becomes a
+large positive value, because "ret" is unsigned. Later on, the "ret"
+value is returned. But as ssize_t is a 64-bit signed number, the error
+return value stays a large positive integer instead of a negative
+integer. This can cause an error value to be interpreted as the read
+size, which can cause a buffer overread for applications relying on the
+returned size.
 
-So your patch to move it to online section [1] is needed.
-I thought I can pullin only some of your patches.  But whole your patches are
-needed.
+Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1] https://lore.kernel.org/lkml/20220317091539.GA7257@gao-cwp/T/#mcc0fd81e7a19601e7c3ce451582c516d38f977f6
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 1cecb37e16d2..59bd44736fae 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -413,7 +413,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
+ 	struct hdpvr_device *dev = video_drvdata(file);
+ 	struct hdpvr_buffer *buf = NULL;
+ 	struct urb *urb;
+-	unsigned int ret = 0;
++	int ret = 0;
+ 	int rem, cnt;
+ 
+ 	if (*pos)
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+2.35.1
+
+
+
