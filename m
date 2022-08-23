@@ -2,136 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 691F5C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADDBC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358333AbiHWLla (ORCPT
+        id S1358421AbiHWLls (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49204 "EHLO
+        Tue, 23 Aug 2022 07:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357714AbiHWLgH (ORCPT
+        with ESMTP id S1357856AbiHWLg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:36:07 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB9DC6FCD;
-        Tue, 23 Aug 2022 02:27:34 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:27:31 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661246853;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3x+O8UmSs793JeulQrqXXDnvAyqXb8zmZSqEkHDA1Gg=;
-        b=C1Y37yHXN8QZqt9FDef/DK8XCn/WeTFoZXq1BAQZ/HoQTjitXeqYV9+ZdGxSACYaPMK3bL
-        +x2/WopLPV/SDjdjnvPDq40CprCfCSF7x7kSI+gP+cxodoI/SOy0jF7byllh6QMgcgOOXM
-        bk7BRRklNnCYcY+eD136GgTmt1bDp4sp62Xzmr8JSaRvNtvM6hT51ZwO23TELCqXVMWPiA
-        AFr90MYEki4APlnxeTE+AZwxLVDmIfFpORmTIw7i6eV2g3Fo6GaxpSniGBFBZBSPhPD40N
-        d71nhiiAq0uysptmEDvCsJXF9C9pccwvnaL9jLHmejibU4ImKjNhdCTfh4sG7g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661246853;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3x+O8UmSs793JeulQrqXXDnvAyqXb8zmZSqEkHDA1Gg=;
-        b=zfZXQCugaqKMypxLmzVHeobm2/t07AoAN7v315cldhm8zAUvpO6aDr4RHebLgoHC/0HkL8
-        +RHovCPAG5eKR8CQ==
-From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Fix another detach on unattached task
- corner case
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220818124805.601-7-zhouchengming@bytedance.com>
-References: <20220818124805.601-7-zhouchengming@bytedance.com>
+        Tue, 23 Aug 2022 07:36:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C65C6EBB;
+        Tue, 23 Aug 2022 02:27:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F254B81C8B;
+        Tue, 23 Aug 2022 09:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE3ABC43140;
+        Tue, 23 Aug 2022 09:27:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246855;
+        bh=Fj3b5FbfyYapMdmRsavO8gTQqr1FglKiiruT+7qdDBI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sK4sxke9L8cib769nICtytcDZ4FvNJkr25pfNePNoq+AeZf2po0ErhUJHLvpIPsoC
+         pmkXSFoCS4JSDaMeD3rNM6xo6YZkLZpgpt1ml4GX8j1MGCOrFVzJXQPa8+hkztNSfV
+         EhG27noDg4/WB/7Zeht7vFOODHInyBWSA+lDoi0E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Siddh Raman Pant <code@siddh.me>,
+        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 242/389] x86/numa: Use cpumask_available instead of hardcoded NULL check
+Date:   Tue, 23 Aug 2022 10:25:20 +0200
+Message-Id: <20220823080125.670568206@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Message-ID: <166124685193.401.15399973538235063707.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Siddh Raman Pant <code@siddh.me>
 
-Commit-ID:     7e2edaf61814fb6aa363989d718950c023b882d4
-Gitweb:        https://git.kernel.org/tip/7e2edaf61814fb6aa363989d718950c023b882d4
-Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Thu, 18 Aug 2022 20:48:02 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 23 Aug 2022 11:01:19 +02:00
+[ Upstream commit 625395c4a0f4775e0fe00f616888d2e6c1ba49db ]
 
-sched/fair: Fix another detach on unattached task corner case
+GCC-12 started triggering a new warning:
 
-commit 7dc603c9028e ("sched/fair: Fix PELT integrity for new tasks")
-fixed two load tracking problems for new task, including detach on
-unattached new task problem.
+  arch/x86/mm/numa.c: In function ‘cpumask_of_node’:
+  arch/x86/mm/numa.c:916:39: warning: the comparison will always evaluate as ‘false’ for the address of ‘node_to_cpumask_map’ will never be NULL [-Waddress]
+    916 |         if (node_to_cpumask_map[node] == NULL) {
+        |                                       ^~
 
-There still left another detach on unattached task problem for the task
-which has been woken up by try_to_wake_up() and waiting for actually
-being woken up by sched_ttwu_pending().
+node_to_cpumask_map is of type cpumask_var_t[].
 
-try_to_wake_up(p)
-  cpu = select_task_rq(p)
-  if (task_cpu(p) != cpu)
-    set_task_cpu(p, cpu)
-      migrate_task_rq_fair()
-        remove_entity_load_avg()       --> unattached
-        se->avg.last_update_time = 0;
-      __set_task_cpu()
-  ttwu_queue(p, cpu)
-    ttwu_queue_wakelist()
-      __ttwu_queue_wakelist()
+When CONFIG_CPUMASK_OFFSTACK is set, cpumask_var_t is typedef'd to a
+pointer for dynamic allocation, else to an array of one element. The
+"wicked game" can be checked on line 700 of include/linux/cpumask.h.
 
-task_change_group_fair()
-  detach_task_cfs_rq()
-    detach_entity_cfs_rq()
-      detach_entity_load_avg()   --> detach on unattached task
-  set_task_rq()
-  attach_task_cfs_rq()
-    attach_entity_cfs_rq()
-      attach_entity_load_avg()
+The original code in debug_cpumask_set_cpu() and cpumask_of_node() were
+probably written by the original authors with CONFIG_CPUMASK_OFFSTACK=y
+(i.e. dynamic allocation) in mind, checking if the cpumask was available
+via a direct NULL check.
 
-The reason of this problem is similar, we should check in detach_entity_cfs_rq()
-that se->avg.last_update_time != 0, before do detach_entity_load_avg().
+When CONFIG_CPUMASK_OFFSTACK is not set, GCC gives the above warning
+while compiling the kernel.
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220818124805.601-7-zhouchengming@bytedance.com
+Fix that by using cpumask_available(), which does the NULL check when
+CONFIG_CPUMASK_OFFSTACK is set, otherwise returns true. Use it wherever
+such checks are made.
+
+Conditional definitions of cpumask_available() can be found along with
+the definition of cpumask_var_t. Check the cpumask.h reference mentioned
+above.
+
+Fixes: c032ef60d1aa ("cpumask: convert node_to_cpumask_map[] to cpumask_var_t")
+Fixes: de2d9445f162 ("x86: Unify node_to_cpumask_map handling between 32 and 64bit")
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220731160913.632092-1-code@siddh.me
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/x86/mm/numa.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index f52e7dc..e92bc05 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -11557,6 +11557,17 @@ static void detach_entity_cfs_rq(struct sched_entity *se)
- {
- 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
- 
-+#ifdef CONFIG_SMP
-+	/*
-+	 * In case the task sched_avg hasn't been attached:
-+	 * - A forked task which hasn't been woken up by wake_up_new_task().
-+	 * - A task which has been woken up by try_to_wake_up() but is
-+	 *   waiting for actually being woken up by sched_ttwu_pending().
-+	 */
-+	if (!se->avg.last_update_time)
-+		return;
-+#endif
-+
- 	/* Catch up with the cfs_rq and remove our load when we leave */
- 	update_load_avg(cfs_rq, se, 0);
- 	detach_entity_load_avg(cfs_rq, se);
+diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
+index 4123100e0eaf..67c617c4a7f2 100644
+--- a/arch/x86/mm/numa.c
++++ b/arch/x86/mm/numa.c
+@@ -822,7 +822,7 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enable)
+ 		return;
+ 	}
+ 	mask = node_to_cpumask_map[node];
+-	if (!mask) {
++	if (!cpumask_available(mask)) {
+ 		pr_err("node_to_cpumask_map[%i] NULL\n", node);
+ 		dump_stack();
+ 		return;
+@@ -868,7 +868,7 @@ const struct cpumask *cpumask_of_node(int node)
+ 		dump_stack();
+ 		return cpu_none_mask;
+ 	}
+-	if (node_to_cpumask_map[node] == NULL) {
++	if (!cpumask_available(node_to_cpumask_map[node])) {
+ 		printk(KERN_WARNING
+ 			"cpumask_of_node(%d): no node_to_cpumask_map!\n",
+ 			node);
+-- 
+2.35.1
+
+
+
