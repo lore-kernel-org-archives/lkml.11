@@ -2,160 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0340C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B527CC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344171AbiHWRMU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        id S244830AbiHWRNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344868AbiHWRLY (ORCPT
+        with ESMTP id S1345183AbiHWRLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:11:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584EC15015B
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:58:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661263104;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YHVefDGXU83xWUJyLerizfLITJD1h0bvpZUJLhnlk24=;
-        b=AXO1SNmNaxNAq3ngFOkjpwKd9OjFxUtQlCxgejQIg8YZhdDKJzOyAzsl0mGVGXKUuO3hpU
-        dxBSGLCI7QSqq5QwrWgBYdTx5HvdDZpa7Fm4cD8qFL0wMh389YJCml7DFA11upm7Hy0FHT
-        o9nsIdQoVq8WoDhDI1ANKETuLGKrX5A=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-142-Xad8IUjnPMKax8F7-vJb4Q-1; Tue, 23 Aug 2022 09:58:23 -0400
-X-MC-Unique: Xad8IUjnPMKax8F7-vJb4Q-1
-Received: by mail-qt1-f198.google.com with SMTP id cm10-20020a05622a250a00b003437b745ccdso10608116qtb.18
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:58:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=YHVefDGXU83xWUJyLerizfLITJD1h0bvpZUJLhnlk24=;
-        b=iAuuouA+lMc9tGf6TwFhZ1c1sztvuaRXoZygcAwJjp/PQTMfhhFSt7vNYGRkNsVWCr
-         1Y1FlwVy4rQM54eRfPgOQeK3t0OzVWE5f17Mc6TgEIEk8CEyiOyg9Z+1eEA+wTF8VedT
-         f0iGgyurKs22XVOzogq6A719dZopfKPg/37Qa0SKrebQeRAFxy2bpBj94KorJpDfti2Z
-         G0EmWsLgQ90XrMNjMFa1/tHpa2X09w4Ktu12lYxrwKJvqzdhkaZyC+Gsf9nMb2hZ4hRy
-         2q8EgKYfHbS7Ul7dWkJK+3yQVlXfpelR5H7Fuf60WXTT/tCtgJjjspLFNixOjuSEkcrv
-         gd+g==
-X-Gm-Message-State: ACgBeo1mYeKFo6ywNqNubhBpxypvq5zJ4nVop/GWFFAtAtIdaABaQdw5
-        tbxl5SdMf02zUyXYkUGv9j457gLLXEf4L59q+wcCtB/jpqAuLdqK6VkFACNePKtBw/sXe7FDzWF
-        G9d71R616gBLUopoFjcwvEISo
-X-Received: by 2002:ac8:5b15:0:b0:343:6789:193a with SMTP id m21-20020ac85b15000000b003436789193amr19117264qtw.647.1661263102661;
-        Tue, 23 Aug 2022 06:58:22 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7gd2yWDFVr17SP2RU0l4eAn5No/A726n2hPHBkND28yI2ySau6/YWpTWAdi0/4trPHGWQO6g==
-X-Received: by 2002:ac8:5b15:0:b0:343:6789:193a with SMTP id m21-20020ac85b15000000b003436789193amr19117247qtw.647.1661263102418;
-        Tue, 23 Aug 2022 06:58:22 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id g7-20020a05620a40c700b006a6ebde4799sm12544646qko.90.2022.08.23.06.58.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 06:58:21 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:58:19 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     Marc Zyngier <maz@kernel.org>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, pbonzini@redhat.com,
-        corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, oliver.upton@linux.dev,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
-        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
-        shan.gavin@gmail.com
-Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
- tracking
-Message-ID: <YwTc++Lz6lh3aR4F@xz-m1.local>
-References: <20220819005601.198436-1-gshan@redhat.com>
- <20220819005601.198436-2-gshan@redhat.com>
- <87lerkwtm5.wl-maz@kernel.org>
- <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
- <87fshovtu0.wl-maz@kernel.org>
- <171d0159-4698-354b-8b2f-49d920d03b1b@redhat.com>
+        Tue, 23 Aug 2022 13:11:40 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29BE914AED5;
+        Tue, 23 Aug 2022 06:56:31 -0700 (PDT)
+X-QQ-mid: bizesmtp79t1661262841tpfcwc0s
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 21:53:59 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: UMQM+3VOEYswySdPdmcuBIq8Lxprx4yh6Nu/SkjK0qCZp7D+keDzhUzeQJi8t
+        C6IOyfPmERvsAYe90iCLT8IX3BuUMWCkJS2Xad2NJHVV9He0Ahf5bhGO5zPSHkb4THLzBjm
+        VeABar7wRN5X8wgUxf6CA64O8WgomJX99Ske0v7bJT4JESqIxq+rP7eSrgP/n/zWVKw4S2s
+        g3LkOKjzx7k8Y5KHQhu3jVuT6cODxytqoZj51m2XA8Ar1rMZXLrSNU+gOwDPi7+v1lV0dwe
+        UlH9qE6rycrSyPGOOMJpFp5zPlCM5zChzqdm3Yf6aB7m/dx5PtBhoJw8BnzoCyy6HZeX36a
+        tPDI7FMyT5Q5lmsVn80qY1fQZbbP1psPjCkAIsCIZt4hroGc4u0BoEnUXzGN/YndZBntgcK
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     bbrezillon@kernel.org, arno@natisbad.org, schalla@marvell.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] marvell/octeontx: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 21:53:53 +0800
+Message-Id: <20220823135353.63767-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <171d0159-4698-354b-8b2f-49d920d03b1b@redhat.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 03:22:17PM +1000, Gavin Shan wrote:
-> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> > index 986cee6fbc7f..0b41feb6fb7d 100644
-> > --- a/arch/arm64/kvm/arm.c
-> > +++ b/arch/arm64/kvm/arm.c
-> > @@ -747,6 +747,12 @@ static int check_vcpu_requests(struct kvm_vcpu *vcpu)
-> >   		if (kvm_check_request(KVM_REQ_SUSPEND, vcpu))
-> >   			return kvm_vcpu_suspend(vcpu);
-> > +
-> > +		if (kvm_check_request(KVM_REQ_RING_SOFT_FULL, vcpu)) {
-> > +			vcpu->run->exit_reason = KVM_EXIT_DIRTY_RING_FULL;
-> > +			trace_kvm_dirty_ring_exit(vcpu);
-> > +			return 0;
-> > +		}
-> >   	}
-> >   	return 1;
-> > diff --git a/virt/kvm/dirty_ring.c b/virt/kvm/dirty_ring.c
-> > index f4c2a6eb1666..08b2f01164fa 100644
-> > --- a/virt/kvm/dirty_ring.c
-> > +++ b/virt/kvm/dirty_ring.c
-> > @@ -149,6 +149,7 @@ int kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring)
-> >   void kvm_dirty_ring_push(struct kvm_dirty_ring *ring, u32 slot, u64 offset)
-> >   {
-> > +	struct kvm_vcpu *vcpu = container_of(ring, struct kvm_vcpu, dirty_ring);
-> >   	struct kvm_dirty_gfn *entry;
-> >   	/* It should never get full */
-> > @@ -166,6 +167,9 @@ void kvm_dirty_ring_push(struct kvm_dirty_ring *ring, u32 slot, u64 offset)
-> >   	kvm_dirty_gfn_set_dirtied(entry);
-> >   	ring->dirty_index++;
-> >   	trace_kvm_dirty_ring_push(ring, slot, offset);
-> > +
-> > +	if (kvm_dirty_ring_soft_full(vcpu))
-> > +		kvm_make_request(KVM_REQ_RING_SOFT_FULL, vcpu);
-> >   }
-> >   struct page *kvm_dirty_ring_get_page(struct kvm_dirty_ring *ring, u32 offset)
-> > 
-> 
-> Ok, thanks for the details, Marc. I will adopt your code in next revision :)
+Delete the redundant word 'is'.
 
-Note that there can be a slight difference with the old/new code, in that
-an (especially malicious) userapp can logically ignore the DIRTY_RING_FULL
-vmexit and keep kicking VCPU_RUN with the new code.
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+---
+ drivers/crypto/marvell/octeontx/otx_cpt_hw_types.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Unlike the old code, the 2nd/3rd/... KVM_RUN will still run in the new code
-until the next dirty pfn being pushed to the ring, then it'll request ring
-full exit again.
-
-Each time it exits the ring grows 1.
-
-At last iiuc it can easily hit the ring full and trigger the warning at the
-entry of kvm_dirty_ring_push():
-
-	/* It should never get full */
-	WARN_ON_ONCE(kvm_dirty_ring_full(ring));
-
-We did that because kvm_dirty_ring_push() was previously designed to not be
-able to fail at all (e.g., in the old bitmap world we never will fail too).
-We can't because we can't lose any dirty page or migration could silently
-fail too (consider when we do user exit due to ring full and migration just
-completed; there could be unsynced pages on src/dst).
-
-So even though the old approach will need to read kvm->dirty_ring_size for
-every entrance which is a pity, it will avoid issue above.
-
-Side note: for x86 the dirty ring check was put at the entrance not because
-it needs to be the highest priority - it should really be the same when
-check kvm requests. It's just that it'll be the fastest way to fail
-properly if needed before loading mmu, disabling preemption/irq, etc.
-
-Thanks,
-
+diff --git a/drivers/crypto/marvell/octeontx/otx_cpt_hw_types.h b/drivers/crypto/marvell/octeontx/otx_cpt_hw_types.h
+index b8bdb9f134f3..205eacac4a34 100644
+--- a/drivers/crypto/marvell/octeontx/otx_cpt_hw_types.h
++++ b/drivers/crypto/marvell/octeontx/otx_cpt_hw_types.h
+@@ -403,7 +403,7 @@ union otx_cptx_pf_exe_bist_status {
+  *	big-endian format in memory.
+  *  iqb_ldwb:1 [7:7](R/W) Instruction load don't write back.
+  *	0 = The hardware issues NCB transient load (LDT) towards the cache,
+- *	which if the line hits and is is dirty will cause the line to be
++ *	which if the line hits and is dirty will cause the line to be
+  *	written back before being replaced.
+  *	1 = The hardware issues NCB LDWB read-and-invalidate command towards
+  *	the cache when fetching the last word of instructions; as a result the
 -- 
-Peter Xu
+2.36.1
 
