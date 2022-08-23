@@ -2,146 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905EBC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E80C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240866AbiHWHKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
+        id S240872AbiHWHKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240635AbiHWHJp (ORCPT
+        with ESMTP id S240867AbiHWHKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:09:45 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29BB61B0D;
-        Tue, 23 Aug 2022 00:09:42 -0700 (PDT)
+        Tue, 23 Aug 2022 03:10:07 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA2B61B0D
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:10:06 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id t11-20020a17090a510b00b001fac77e9d1fso13627564pjh.5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:10:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1661238583; x=1692774583;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AHjGqzbn5AEN1DPa4fi7l7adOs/3lxb+lkmMBcf6O7Y=;
-  b=l+Cksc4yFPjMS4a4WELy9l8RU2oF1OzK19/6QIYpoSV1qcgLZtH08Uje
-   3nGDw9Af3zzGWRvFj/IzIZ6Pi0w0yXWj2jubu8wPWv4pKBpT9xuhHmTT7
-   e17XXlx9iTk8pKW3BNdCmHttpq6aLKVzgaXrBxq0ZcLOOViScz8z6sSo9
-   W5xHPV7HutwFHfONllIr//GS2OO56PLmMygMILslZ5TPtO+sVQ0hxc3l2
-   b+aYdcaTZWI/dIrnEU9t7x+m2fH4tyiNgsQ9pcLRheS7AJIc7odf/JPN8
-   cnwzbVW+8mbvvJsFwTyifznhaEx8itM4VcfX1KPTk4aCSYN2L22PKiQe9
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,256,1654552800"; 
-   d="scan'208";a="25745654"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 23 Aug 2022 09:09:39 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 23 Aug 2022 09:09:39 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 23 Aug 2022 09:09:39 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1661238579; x=1692774579;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AHjGqzbn5AEN1DPa4fi7l7adOs/3lxb+lkmMBcf6O7Y=;
-  b=O89a04YFCt75bvQHupeYZgzQ5IYiSPHRv7/Fxvkika6jAVXwg8pHlMC/
-   GfY8tQiL/S9X6oBp+5oFeKnFmY+SmsnOZqAtL5AjTWnHQYxLkMoG6fBxW
-   /yF53dSYaqZ5vpsI+MstouunEiA3aSHDSofWZ5HXrtGbWVZpeKSJIK4WF
-   iCBr7UnZiFyAjSbnMNkJm/ECGZYEbFLS0pLLvnC5583ULKW0howNfU3PJ
-   CSQAgUGBO52Hz0//IRFg1bP4P7+wurLR9WK4hilmyPUK0MfOVsxY+RBKq
-   vOuObOQuDaklWU/x43onsnguZ9W+64b4fHdu8OAwR3RpFaKu/zVM4UJVS
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,256,1654552800"; 
-   d="scan'208";a="25745653"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 23 Aug 2022 09:09:39 +0200
-Received: from steina-w.localnet (unknown [10.123.49.11])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 16CBE280056;
-        Tue, 23 Aug 2022 09:09:39 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jean-Philippe Brucker <jpb@kernel.org>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] Bring back driver_deferred_probe_check_state() for now
-Date:   Tue, 23 Aug 2022 09:09:38 +0200
-Message-ID: <6787064.lOV4Wx5bFT@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <20220819221616.2107893-1-saravanak@google.com>
-References: <20220819221616.2107893-1-saravanak@google.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=Qm98Qsqpzi3gp9jivym+i6z48ahQ8BsAtz2LbL2QzGM=;
+        b=qw8pSqwQ5MRQZRk/hBPyjXrHSVI6QjQKPKiTPo+6elrntvT+Rt9oyyfllIHPPztn6E
+         AMgAd+cti0q2PIpZCmqa+53M6FMGgqopWY7vAOHGSxCNkrf/foktjhBwJH+a5YELsuw9
+         XF1mVEDIFyi8X67CobT6bUg+97RvJ1erfqMntjBnD1aAc96+1wEzWu1H5mM5CO1zqpWo
+         a0dmuVL1oI7pV1b1wX00ehvW4H2UYgovyMV9hN+RqMJgkknn2xWH9xyx7KapmIft9fqO
+         eiGFijdxgjibQj5qyMoUGZYcBqGZ6xA1loK/uik3kr0mKTERo4zxdV4Vh8fZONN6NcUl
+         MJFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=Qm98Qsqpzi3gp9jivym+i6z48ahQ8BsAtz2LbL2QzGM=;
+        b=eONquCt8fH2jp/9S4h/X/m7mq/lziPVhvz9RJddQiIeNJxcQwJ0KFsTmlTF2kXGQeD
+         37PFOcRkRMPGy2o22+wdmvHZyQ1gayhJHx9FXq8rYwi2Ka/NF5nQBTjwoDrCoiuE0C4O
+         m4D8JkS+0h+tlQB9Z2KAnxjT7/v1QsCE5S1IWFNzcCnWPd2aXka5es/y6jHHpuYxc64c
+         cr1jhjRq4nyP1zamJrLkyLgRK7Ciz4OFQV4V451WsaK6WJ2hyrgB9jBwbl9KskfmTk2X
+         QgcJwc9pEfCDi/VYmKPyyaybTxDeG1Ku7XaU02PeKLdX6MKtTW8VHPNfLIs5YSf9NI/x
+         6MSw==
+X-Gm-Message-State: ACgBeo2jmi0lWcengeXX1UqGREnxQUAmQFyScuwwG1mpdSha0fheJfra
+        rraXOhu4RkH4lF5fogzLsGuU5SLzbZc=
+X-Google-Smtp-Source: AA6agR4ZCIV/zQ5QgCXqZL1tSRstVPAWNJ0xJI+TRfEYE9JMCrRk3UoUC3fqyJFKNwqKFVcnOK64XQ==
+X-Received: by 2002:a17:902:a5c7:b0:172:dd10:f638 with SMTP id t7-20020a170902a5c700b00172dd10f638mr11390815plq.127.1661238606312;
+        Tue, 23 Aug 2022 00:10:06 -0700 (PDT)
+Received: from localhost.localdomain (121-200-9-125.79c809.mel.nbn.aussiebb.net. [121.200.9.125])
+        by smtp.gmail.com with ESMTPSA id 22-20020a630d56000000b0041c66a66d41sm8506773pgn.45.2022.08.23.00.10.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 00:10:06 -0700 (PDT)
+From:   Daniel Tobias <dan.g.tob@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Daniel Tobias <dan.g.tob@gmail.com>, nirmoy.das@amd.com,
+        alexander.deucher@amd.com, trivial@kernel.org
+Subject: [PATCH 1/3] amdgpu: fix typo debugsfs -> debugfs
+Date:   Tue, 23 Aug 2022 17:08:37 +1000
+Message-Id: <20220823070839.533562-2-dan.g.tob@gmail.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823070839.533562-1-dan.g.tob@gmail.com>
+References: <20220823070839.533562-1-dan.g.tob@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Saravana,
+Signed-off-by: Daniel Tobias <dan.g.tob@gmail.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Am Samstag, 20. August 2022, 00:16:10 CEST schrieb Saravana Kannan:
-> A bunch of issues have been reported in the original series[1] that removed
-> driver_deferred_probe_check_state(). While most of the issues have been
-> fixed in a new series that improved fw_devlink [2], there are still a few
-> unresolved issues I need to address.
-> 
-> So let's bring back driver_deferred_probe_check_state() until the other
-> issues are resolved.
-> 
-> Greg,
-> 
-> Can we get this into 6.0-rcX please?
-
-On my TQMa8MQ + MBa8Mxon top of 072e51356cd5 ("Merge tag 'nfs-for-5.20-2' of 
-git://git.linux-nfs.org/projects/trondmy/linux-nfs"):
-Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-
-> [1] -
-> https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
-> [2] -
-> https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
-> 
-> v1 -> v2:
-> - Added a revert of the iommu change too.
-> 
-> Saravana Kannan (4):
->   Revert "driver core: Delete driver_deferred_probe_check_state()"
->   Revert "net: mdio: Delete usage of
->     driver_deferred_probe_check_state()"
->   Revert "PM: domains: Delete usage of
->     driver_deferred_probe_check_state()"
->   Revert "iommu/of: Delete usage of driver_deferred_probe_check_state()"
-> 
->  drivers/base/dd.c              | 30 ++++++++++++++++++++++++++++++
->  drivers/base/power/domain.c    |  2 +-
->  drivers/iommu/of_iommu.c       |  2 +-
->  drivers/net/mdio/fwnode_mdio.c |  4 +++-
->  include/linux/device/driver.h  |  1 +
->  5 files changed, 36 insertions(+), 3 deletions(-)
-
-
-
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+index cb00c7d6f50b..5303a332e51c 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+@@ -1775,14 +1775,14 @@ int amdgpu_debugfs_init(struct amdgpu_device *adev)
+ 	ent = debugfs_create_file("amdgpu_preempt_ib", 0600, root, adev,
+ 				  &fops_ib_preempt);
+ 	if (IS_ERR(ent)) {
+-		DRM_ERROR("unable to create amdgpu_preempt_ib debugsfs file\n");
++		DRM_ERROR("unable to create amdgpu_preempt_ib debugfs file\n");
+ 		return PTR_ERR(ent);
+ 	}
+ 
+ 	ent = debugfs_create_file("amdgpu_force_sclk", 0200, root, adev,
+ 				  &fops_sclk_set);
+ 	if (IS_ERR(ent)) {
+-		DRM_ERROR("unable to create amdgpu_set_sclk debugsfs file\n");
++		DRM_ERROR("unable to create amdgpu_set_sclk debugfs file\n");
+ 		return PTR_ERR(ent);
+ 	}
+ 
+-- 
+2.37.2
 
