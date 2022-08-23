@@ -2,114 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E62C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F353C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbiHWRcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        id S231818AbiHWRck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbiHWRaY (ORCPT
+        with ESMTP id S235612AbiHWRa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:30:24 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8DC60EC;
-        Tue, 23 Aug 2022 08:07:20 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NF0XWR029365;
-        Tue, 23 Aug 2022 15:07:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=omApnrgtF9Z5XmKiZc62jLTdNnVnB5XqlLkFWCPxvPg=;
- b=YRO5RndTZej7PE+zS55Kjgj8dKAIucI5A4V3Nz0NmE2AyXoK2cLY+hUZTWc7c6xGy6oZ
- bHat2OYKNN+9yE3cLNLJCM/VpYML1refgmuUZoFSvR3SFto7ILtaP0AzXoKbR2SkLXHW
- W56PlG4/fu6Egfq6Myw18WnGRJUcmT5pf7bflcV33wyQ32jcCkdJlcau2olXhYMML+Wi
- uPIICSpCun1HECfvjaafyO0rJcV/lgDXhAlahVWIZFF8YKDWNJ9isgkOXiyRd/nou/KK
- nBKV5WUk4kpild6zOOsXmJv0uqzcbCaQOMN8bK289oTMSlbzZwNqxGEGqC2p4YN1/oCa rw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5159gabd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 15:07:19 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27NF12jY031836;
-        Tue, 23 Aug 2022 15:07:18 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5159ga4x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 15:07:17 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27NF4w02004386;
-        Tue, 23 Aug 2022 15:06:46 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma04wdc.us.ibm.com with ESMTP id 3j2q89bmy9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 15:06:46 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27NF6jX654460888
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Aug 2022 15:06:45 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3E1EE112062;
-        Tue, 23 Aug 2022 15:06:45 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B1019112061;
-        Tue, 23 Aug 2022 15:06:44 +0000 (GMT)
-Received: from li-2c1e724c-2c76-11b2-a85c-ae42eaf3cb3d.ibm.com.com (unknown [9.160.64.167])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 23 Aug 2022 15:06:44 +0000 (GMT)
-From:   Tony Krowiak <akrowiak@linux.ibm.com>
-To:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     jjherne@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com
-Subject: [PATCH v3 0/2] s390/vfio-ap: fix two problems discovered in the vfio_ap driver
-Date:   Tue, 23 Aug 2022 11:06:41 -0400
-Message-Id: <20220823150643.427737-1-akrowiak@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 23 Aug 2022 13:30:58 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55798D25EF;
+        Tue, 23 Aug 2022 08:08:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661267285; x=1692803285;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gWEpIuQrv6G7/Vjm7oq9A8FilFd6z/lOUmdAyJru9sE=;
+  b=ge17pMe34KL59eikDImifyXp6FNzDYzYDdAanA2LO5KQ4/N85DrPbbMZ
+   uyCK86AoiYxw4Y2v0gl5E+cQyXcq3KaLKqeKBKyTKCI6RIxUdHjAMdtGz
+   PVq+zpMM12kt3W9wGHiQqdhcxg60k4qGw9yS4oTKMKHut3wJqHHcyORFQ
+   dl/UId7G3Hkt59mEzpJUC82ZrQpCtiz4yHUeZeP3Cs6O2U0PBNL8NVSPa
+   RAhuFhhKephrOge8Og9ivv9eMa6eFFuPERp0abSXlcQO1VcjX/zW958HM
+   9YqnM1URQT8eDOw2eOE9JhzEMQ7oXtZw4noY8buyH66gcljyQyB24STJR
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="294995301"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="294995301"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 08:07:36 -0700
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="612439077"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 08:07:34 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oQVV6-002UOC-1i;
+        Tue, 23 Aug 2022 18:07:32 +0300
+Date:   Tue, 23 Aug 2022 18:07:32 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH v1 1/4] dmaengine: hsu: Finish conversion to managed
+ resources
+Message-ID: <YwTtNKCLb3NbXelj@smile.fi.intel.com>
+References: <20220713172235.22611-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HGFKurM5tLU1lrxggt6k5j6HpHNSrK14
-X-Proofpoint-ORIG-GUID: YwAMKYPJCo8o1liqvntxXUNpDWTweBbb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-23_05,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 spamscore=0
- impostorscore=0 suspectscore=0 phishscore=0 bulkscore=0 malwarescore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208230062
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713172235.22611-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two problems have been discovered with the vfio_ap device driver since the
-hot plug support was recently introduced:
+On Wed, Jul 13, 2022 at 08:22:32PM +0300, Andy Shevchenko wrote:
+> With help of devm_add_action_or_reset() we may finish conversion
+> the driver to use managed resources.
 
-1. Attempting to remove a matrix mdev after assigning a duplicate adapter
-   or duplicate domain results in a hang.
+Vinod, can these be applied?
 
-2. The queues associated with an adapter or domain being unassigned from
-   the matrix mdev do not get unlinked from it.
-
-Two patches are provided to resolve these problems.
-
-Change log v2 => v3:
---------------------
-* Replaced the wrong commit IDs in the 'Fixes' tags in both patches. 
-  (Halil and Alexander)
-
-* Changed the subject line and description of patch 01/02 to better reflect the
-  code changes in the patch. (Halil)
-
-Tony Krowiak (2):
-  s390/vfio-ap: bypass unnecessary processing of AP resources
-  s390/vfio-ap: fix unlinking of queues from the mdev
-
- drivers/s390/crypto/vfio_ap_ops.c | 36 +++++++++++++++++++++++++++----
- 1 file changed, 32 insertions(+), 4 deletions(-)
 
 -- 
-2.31.1
+With Best Regards,
+Andy Shevchenko
+
 
